@@ -80,13 +80,15 @@ class HrRecruitmentPortal(CustomerPortal):
                 else:
                     state = "current"
 
-            items.append({
-                "id": stage.id,
-                "name": stage.name or "-",
-                "state": state,
-            })
+            items.append(
+                {
+                    "id": stage.id,
+                    "name": stage.name or "-",
+                    "state": state,
+                }
+            )
         return items
-    
+
     def _education_level_rank(self, level):
         rank_map = {
             "high_school": 1,
@@ -117,7 +119,8 @@ class HrRecruitmentPortal(CustomerPortal):
         sorted_records = records.sorted(
             key=lambda r: (
                 self._education_level_rank(getattr(r, "level", False)),
-                getattr(r, "graduation_date", False) or fields.Date.from_string("1900-01-01"),
+                getattr(r, "graduation_date", False)
+                or fields.Date.from_string("1900-01-01"),
                 r.id,
             ),
             reverse=True,
@@ -129,10 +132,11 @@ class HrRecruitmentPortal(CustomerPortal):
             "program": getattr(rec, "program", "") or "-",
             "major": getattr(rec, "major", "") or "-",
             "institution": getattr(rec, "institution", "") or "-",
-            "country": rec.country_id.name if getattr(rec, "country_id", False) else "-",
-            "graduation_date": self._format_date(
-                getattr(rec, "graduation_date", False)
-            ) or "-",
+            "country": rec.country_id.name
+            if getattr(rec, "country_id", False)
+            else "-",
+            "graduation_date": self._format_date(getattr(rec, "graduation_date", False))
+            or "-",
         }
 
     def _prepare_work_history_items(self, application, profile):
@@ -141,17 +145,28 @@ class HrRecruitmentPortal(CustomerPortal):
             records = profile.work_history_ids
 
         items = []
-        for rec in records.sorted(
-            key=lambda r: (getattr(r, "date_start", False) or fields.Date.today(), r.id),
-            reverse=True,
-        ) if records else []:
-            items.append({
-                "company_name": getattr(rec, "company_name", "") or "-",
-                "job_title": getattr(rec, "job_title", "") or "-",
-                "salary": getattr(rec, "salary", 0) or 0,
-                "date_start": self._format_date(getattr(rec, "date_start", False)) or "-",
-                "date_end": self._format_date(getattr(rec, "date_end", False)) or "-",
-            })
+        for rec in (
+            records.sorted(
+                key=lambda r: (
+                    getattr(r, "date_start", False) or fields.Date.today(),
+                    r.id,
+                ),
+                reverse=True,
+            )
+            if records
+            else []
+        ):
+            items.append(
+                {
+                    "company_name": getattr(rec, "company_name", "") or "-",
+                    "job_title": getattr(rec, "job_title", "") or "-",
+                    "salary": getattr(rec, "salary", 0) or 0,
+                    "date_start": self._format_date(getattr(rec, "date_start", False))
+                    or "-",
+                    "date_end": self._format_date(getattr(rec, "date_end", False))
+                    or "-",
+                }
+            )
         return items
 
     def _prepare_document_items(self, application):
@@ -168,26 +183,34 @@ class HrRecruitmentPortal(CustomerPortal):
                 continue
             attachment = application[field_name]
             if attachment:
-                documents.append({
-                    "label": label,
-                    "filename": attachment.name or label,
-                    "download_url": "/web/content/%s?download=true" % attachment.id,
-                })
+                documents.append(
+                    {
+                        "label": label,
+                        "filename": attachment.name or label,
+                        "download_url": "/web/content/%s?download=true" % attachment.id,
+                    }
+                )
 
         if not documents:
-            attachments = request.env["ir.attachment"].sudo().search(
-                [
-                    ("res_model", "=", "hr.applicant"),
-                    ("res_id", "=", application.id),
-                ],
-                order="create_date asc",
+            attachments = (
+                request.env["ir.attachment"]
+                .sudo()
+                .search(
+                    [
+                        ("res_model", "=", "hr.applicant"),
+                        ("res_id", "=", application.id),
+                    ],
+                    order="create_date asc",
+                )
             )
             for attachment in attachments:
-                documents.append({
-                    "label": attachment.name or "Document",
-                    "filename": attachment.name or "-",
-                    "download_url": "/web/content/%s?download=true" % attachment.id,
-                })
+                documents.append(
+                    {
+                        "label": attachment.name or "Document",
+                        "filename": attachment.name or "-",
+                        "download_url": "/web/content/%s?download=true" % attachment.id,
+                    }
+                )
 
         return documents
 
@@ -209,8 +232,12 @@ class HrRecruitmentPortal(CustomerPortal):
             profile.birthday if profile else False,
         )
         nationality = self._first_non_empty(
-            application.nationality_id.name if getattr(application, "nationality_id", False) else False,
-            profile.nationality_id.name if profile and profile.nationality_id else False,
+            application.nationality_id.name
+            if getattr(application, "nationality_id", False)
+            else False,
+            profile.nationality_id.name
+            if profile and profile.nationality_id
+            else False,
             "-",
         )
 
@@ -229,12 +256,14 @@ class HrRecruitmentPortal(CustomerPortal):
         )
 
         full_name = " ".join(
-            part for part in [
+            part
+            for part in [
                 application.applicant_title or "",
                 application.first_name or "",
                 application.middle_name or "",
                 application.last_name or "",
-            ] if part
+            ]
+            if part
         )
         if not full_name:
             full_name = self._first_non_empty(
@@ -260,7 +289,9 @@ class HrRecruitmentPortal(CustomerPortal):
                 "",
             ),
             self._first_non_empty(
-                application.state_id.name if getattr(application, "state_id", False) else False,
+                application.state_id.name
+                if getattr(application, "state_id", False)
+                else False,
                 profile.state_id.name if profile and profile.state_id else False,
                 "",
             ),
@@ -270,20 +301,31 @@ class HrRecruitmentPortal(CustomerPortal):
                 "",
             ),
             self._first_non_empty(
-                application.country_id.name if getattr(application, "country_id", False) else False,
+                application.country_id.name
+                if getattr(application, "country_id", False)
+                else False,
                 profile.country_id.name if profile and profile.country_id else False,
                 "",
             ),
         ]
         address = ", ".join(part for part in address_parts if part) or "-"
 
-        academic_source = application if getattr(application, "academic_position", False) or getattr(application, "has_ocsc_exam", False) else profile
-        skills_source = application if (
-            getattr(application, "foreign_language_skills", False)
-            or getattr(application, "computer_skills", False)
-            or getattr(application, "other_abilities", False)
-            or getattr(application, "interests", False)
-        ) else profile
+        academic_source = (
+            application
+            if getattr(application, "academic_position", False)
+            or getattr(application, "has_ocsc_exam", False)
+            else profile
+        )
+        skills_source = (
+            application
+            if (
+                getattr(application, "foreign_language_skills", False)
+                or getattr(application, "computer_skills", False)
+                or getattr(application, "other_abilities", False)
+                or getattr(application, "interests", False)
+            )
+            else profile
+        )
 
         return {
             "summary": {
@@ -293,7 +335,9 @@ class HrRecruitmentPortal(CustomerPortal):
                 "current_stage": application.stage_id.name or "-",
                 "status": status,
                 "date_applied": self._format_datetime(application.create_date) or "-",
-                "hire_date": self._format_date(getattr(application, "date_closed", False)),
+                "hire_date": self._format_date(
+                    getattr(application, "date_closed", False)
+                ),
             },
             "progress": self._prepare_stage_items(application, all_stages),
             "tabs": {
@@ -325,9 +369,9 @@ class HrRecruitmentPortal(CustomerPortal):
                         profile.emergency_contact_email if profile else False,
                         "-",
                     ),
-                    "chronic_disease": self._first_non_empty(
-                        application.chronic_disease,
-                        profile.chronic_disease if profile else False,
+                    "congenital_disease": self._first_non_empty(
+                        application.congenital_disease,
+                        profile.congenital_disease if profile else False,
                         "-",
                     ),
                 },
@@ -338,36 +382,41 @@ class HrRecruitmentPortal(CustomerPortal):
                         academic_source,
                         "academic_position",
                         getattr(academic_source, "academic_position", False),
-                    ) or "-",
+                    )
+                    or "-",
                     "academic_position_date": self._format_date(
                         getattr(academic_source, "academic_position_date", False)
-                    ) or "-",
+                    )
+                    or "-",
                     "academic_position_institution": getattr(
                         academic_source, "academic_position_institution", ""
-                    ) or "-",
-                    "has_ocsc_exam": "Yes" if getattr(academic_source, "has_ocsc_exam", False) else "No",
+                    )
+                    or "-",
+                    "has_ocsc_exam": "Yes"
+                    if getattr(academic_source, "has_ocsc_exam", False)
+                    else "No",
                     "ocsc_exam_level": self._selection_label(
                         academic_source,
                         "ocsc_exam_level",
                         getattr(academic_source, "ocsc_exam_level", False),
-                    ) or "-",
+                    )
+                    or "-",
                     "ocsc_exam_date": self._format_date(
                         getattr(academic_source, "ocsc_exam_date", False)
-                    ) or "-",
-                    "ocsc_exam_number": getattr(
-                        academic_source, "ocsc_exam_number", ""
-                    ) or "-",
+                    )
+                    or "-",
+                    "ocsc_exam_number": getattr(academic_source, "ocsc_exam_number", "")
+                    or "-",
                 },
                 "skills": {
                     "foreign_language_skills": getattr(
                         skills_source, "foreign_language_skills", ""
-                    ) or "-",
-                    "computer_skills": getattr(
-                        skills_source, "computer_skills", ""
-                    ) or "-",
-                    "other_abilities": getattr(
-                        skills_source, "other_abilities", ""
-                    ) or "-",
+                    )
+                    or "-",
+                    "computer_skills": getattr(skills_source, "computer_skills", "")
+                    or "-",
+                    "other_abilities": getattr(skills_source, "other_abilities", "")
+                    or "-",
                     "interests": getattr(skills_source, "interests", "") or "-",
                 },
                 "documents": self._prepare_document_items(application),
@@ -436,7 +485,9 @@ class HrRecruitmentPortal(CustomerPortal):
         if not application.exists():
             return request.redirect("/my")
 
-        partner_match = application.partner_id and application.partner_id.id == partner.id
+        partner_match = (
+            application.partner_id and application.partner_id.id == partner.id
+        )
         email_match = (
             application.email_from
             and partner.email
@@ -460,4 +511,6 @@ class HrRecruitmentPortal(CustomerPortal):
             "view_data": self._prepare_view_data(application, all_stages),
             "page_name": "application",
         }
-        return request.render("hr_recruitment_kmitl.portal_my_application_detail", values)
+        return request.render(
+            "hr_recruitment_kmitl.portal_my_application_detail", values
+        )

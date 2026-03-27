@@ -59,7 +59,7 @@
                         </group>
                     </group>
                     <group string="Health">
-                        <field name="chronic_disease" nolabel="1" />
+                        <field name="congenital_disease" nolabel="1" />
                     </group>
                 </page>
                 <!-- Education History tab -->

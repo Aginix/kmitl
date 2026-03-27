@@ -846,22 +846,6 @@ msgstr ""
 #. module: hr_recruitment_kmitl
 #. odoo-javascript
 #: code:addons/hr_recruitment_kmitl/static/src/js/form_editor.js:0
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant__chronic_disease
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__chronic_disease
-#, python-format
-msgid "Chronic Disease"
-msgstr "โรคประจำตัว"
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_profile
-msgid ""
-"Chronic Disease /\n"
-"                                            โรคประจำตัว"
-msgstr "Chronic Disease / โรคประจำตัว"
-
-#. module: hr_recruitment_kmitl
-#. odoo-javascript
-#: code:addons/hr_recruitment_kmitl/static/src/js/form_editor.js:0
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant__city
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__city
 #, python-format
@@ -921,6 +905,22 @@ msgid ""
 "Computer Skills /\n"
 "                                            ทักษะคอมพิวเตอร์"
 msgstr "Computer Skills / ทักษะคอมพิวเตอร์"
+
+#. module: hr_recruitment_kmitl
+#. odoo-javascript
+#: code:addons/hr_recruitment_kmitl/static/src/js/form_editor.js:0
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant__congenital_disease
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__congenital_disease
+#, python-format
+msgid "Congenital Disease"
+msgstr "โรคประจำตัว"
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_profile
+msgid ""
+"Congenital Disease /\n"
+"                                            โรคประจำตัว"
+msgstr "Congenital Disease / โรคประจำตัว"
 
 #. module: hr_recruitment_kmitl
 #: model:ir.model,name:hr_recruitment_kmitl.model_res_partner

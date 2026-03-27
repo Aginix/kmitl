@@ -26,7 +26,7 @@ PROFILE_CHAR_FIELDS = [
     "zip",
 ]
 PROFILE_TEXT_FIELDS = [
-    "chronic_disease",
+    "congenital_disease",
     "foreign_language_skills",
     "computer_skills",
     "other_abilities",
@@ -96,7 +96,7 @@ class HrApplicant(models.Model):
     emergency_contact_email = fields.Char()
 
     # Health
-    chronic_disease = fields.Text()
+    congenital_disease = fields.Text()
 
     # Academic
     academic_position = fields.Selection(

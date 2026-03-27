@@ -59,7 +59,10 @@
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ความสัมพันธ์</t>
-                            <t t-set="value" t-value="tab['emergency_contact_relation']" />
+                            <t
+                                t-set="value"
+                                t-value="tab['emergency_contact_relation']"
+                            />
                         </t>
                     </div>
                     <div class="col-md-6">
@@ -83,7 +86,7 @@
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_textarea">
                             <t t-set="label">โรคประจำตัว</t>
-                            <t t-set="value" t-value="tab['chronic_disease']" />
+                            <t t-set="value" t-value="tab['congenital_disease']" />
                             <t t-set="rows">4</t>
                         </t>
                     </div>
@@ -156,34 +159,58 @@
                 </t>
                 <t t-if="tab">
                     <t t-foreach="tab" t-as="work" t-foreach-index="idx">
-                        <div t-attf-class="border rounded-3 p-3 #{'' if idx == 0 else 'mt-3'}">
+                        <div
+                            t-attf-class="border rounded-3 p-3 #{'' if idx == 0 else 'mt-3'}"
+                        >
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.application_readonly_field"
+                                    >
                                         <t t-set="label">บริษัท/หน่วยงาน</t>
-                                        <t t-set="value" t-value="work.get('company_name')" />
+                                        <t
+                                            t-set="value"
+                                            t-value="work.get('company_name')"
+                                        />
                                     </t>
                                 </div>
                                 <div class="col-md-6">
-                                    <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.application_readonly_field"
+                                    >
                                         <t t-set="label">ตำแหน่งงาน</t>
-                                        <t t-set="value" t-value="work.get('job_title')" />
+                                        <t
+                                            t-set="value"
+                                            t-value="work.get('job_title')"
+                                        />
                                     </t>
                                 </div>
                                 <div class="col-md-4">
-                                    <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.application_readonly_field"
+                                    >
                                         <t t-set="label">วันที่เริ่มงาน</t>
-                                        <t t-set="value" t-value="work.get('date_start')" />
+                                        <t
+                                            t-set="value"
+                                            t-value="work.get('date_start')"
+                                        />
                                     </t>
                                 </div>
                                 <div class="col-md-4">
-                                    <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.application_readonly_field"
+                                    >
                                         <t t-set="label">วันที่สิ้นสุดงาน</t>
-                                        <t t-set="value" t-value="work.get('date_end')" />
+                                        <t
+                                            t-set="value"
+                                            t-value="work.get('date_end')"
+                                        />
                                     </t>
                                 </div>
                                 <div class="col-md-4">
-                                    <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.application_readonly_field"
+                                    >
                                         <t t-set="label">เงินเดือน</t>
                                         <t t-set="value" t-value="work.get('salary')" />
                                     </t>
@@ -225,7 +252,10 @@
                     <div class="col-md-4">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">สถาบันที่ได้รับแต่งตั้ง</t>
-                            <t t-set="value" t-value="tab['academic_position_institution']" />
+                            <t
+                                t-set="value"
+                                t-value="tab['academic_position_institution']"
+                            />
                         </t>
                     </div>
                 </div>
@@ -322,7 +352,10 @@
                                 <t t-set="label" t-value="doc.get('label')" />
                                 <t t-set="filename" t-value="doc.get('filename')" />
                                 <t t-set="status" t-value="doc.get('status')" />
-                                <t t-set="download_url" t-value="doc.get('download_url')" />
+                                <t
+                                    t-set="download_url"
+                                    t-value="doc.get('download_url')"
+                                />
                             </t>
                         </t>
                     </div>

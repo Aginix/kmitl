@@ -31,7 +31,7 @@
                 'emergency_contact_relation': default.get('emergency_contact_relation', ''),
                 'emergency_contact_phone': default.get('emergency_contact_phone', ''),
                 'emergency_contact_email': default.get('emergency_contact_email', ''),
-                'chronic_disease': default.get('chronic_disease', ''),
+                'congenital_disease': default.get('congenital_disease', ''),
                 'academic_position': default.get('academic_position', ''),
                 'academic_position_date': default.get('academic_position_date', ''),
                 'academic_position_institution': default.get('academic_position_institution', ''),
@@ -47,15 +47,20 @@
         </xpath>
         <!-- header -->
         <xpath expr="//h1" position="replace">
-            <div class="bg-white rounded-3 p-4 mb-4 shadow-sm border-start border-4 border-primary">
+            <div
+                class="bg-white rounded-3 p-4 mb-4 shadow-sm border-start border-4 border-primary"
+            >
                 <div class="fw-bold text-primary mb-2">
                     ตำแหน่งที่ต้องการสมัคร
                 </div>
                 <div class="h5 fw-bold text-dark mb-3">
                     <span t-if="job.name" t-field="job.name" />
                 </div>
-                <div t-if="job.department_id" class="d-flex align-items-center text-secondary">
-                    <i class="fa fa-building-o fa-fw fs-5 me-2"></i>
+                <div
+                    t-if="job.department_id"
+                    class="d-flex align-items-center text-secondary"
+                >
+                    <i class="fa fa-building-o fa-fw fs-5 me-2" />
                     <span t-field="job.department_id" />
                 </div>
             </div>
@@ -63,46 +68,87 @@
         <!-- Form -->
         <xpath expr="//div[@id='jobs_section']" position="replace">
             <div id="jobs_section" class="my-4">
-                <section id="forms" class="s_website_form" data-vcss="001" data-snippet="s_website_form">
-                    <form id="hr_recruitment_form" action="/website/form/" method="post" enctype="multipart/form-data"
-                        class="o_mark_required" data-mark="*" data-model_name="hr.applicant"
-                        data-success-mode="redirect" data-success-page="/job-thank-you" hide-change-model="true">
-                        <nav class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-12 flex-column flex-lg-row gap-1 mb-4"
-                            id="form-tabs" role="tablist">
-                            <a class="nav-link active text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
-                                href="#nav-personnel" data-bs-toggle="tab">
-                                <i class="fa fa-user"></i>
+                <section
+                    id="forms"
+                    class="s_website_form"
+                    data-vcss="001"
+                    data-snippet="s_website_form"
+                >
+                    <form
+                        id="hr_recruitment_form"
+                        action="/website/form/"
+                        method="post"
+                        enctype="multipart/form-data"
+                        class="o_mark_required"
+                        data-mark="*"
+                        data-model_name="hr.applicant"
+                        data-success-mode="redirect"
+                        data-success-page="/job-thank-you"
+                        hide-change-model="true"
+                    >
+                        <nav
+                            class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-12 flex-column flex-lg-row gap-1 mb-4"
+                            id="form-tabs"
+                            role="tablist"
+                        >
+                            <a
+                                class="nav-link active text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-personnel"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-user" />
                                 <span>ข้อมูลส่วนบุคคล</span>
                             </a>
-                            <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
-                                href="#nav-educations" data-bs-toggle="tab">
-                                <i class="fa fa-graduation-cap"></i>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-educations"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-graduation-cap" />
                                 <span>การศึกษา</span>
                             </a>
-                            <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
-                                href="#nav-exp" data-bs-toggle="tab">
-                                <i class="fa fa-briefcase"></i>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-exp"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-briefcase" />
                                 <span>ประสบการณ์</span>
                             </a>
-                            <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
-                                href="#nav-academic" data-bs-toggle="tab">
-                                <i class="fa fa-university"></i>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-academic"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-university" />
                                 <span>ข้อมูลทางวิชาการ</span>
                             </a>
-                            <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
-                                href="#nav-skills" data-bs-toggle="tab">
-                                <i class="fa fa-star"></i>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-skills"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-star" />
                                 <span>ทักษะและความสนใจ</span>
                             </a>
-                            <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
-                                href="#nav-documents" data-bs-toggle="tab">
-                                <i class="fa fa-file-text"></i>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-documents"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-file-text" />
                                 <span>เอกสาร</span>
                             </a>
-                            <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
-                                href="#nav-submit" id="nav-submit-tab" data-bs-toggle="tab" data-bs-target="#nav-submit"
-                                role="tab" aria-controls="nav-submit">
-                                <i class="fa fa-paper-plane"></i>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-submit"
+                                id="nav-submit-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#nav-submit"
+                                role="tab"
+                                aria-controls="nav-submit"
+                            >
+                                <i class="fa fa-paper-plane" />
                                 <span>ส่งใบสมัคร</span>
                             </a>
                         </nav>
@@ -110,39 +156,88 @@
                             <div class="card-body p-4 p-md-5">
                                 <div class="tab-content" id="nav-formTabContent">
                                     <!-- Personnel -->
-                                    <div class="tab-pane fade show active" id="nav-personnel" role="tabpanel"
-                                        aria-labelledby="nav-personnel-tab" tabindex="0">
-                                        <t t-call="hr_recruitment_kmitl.apply_tab_personal"/>
+                                    <div
+                                        class="tab-pane fade show active"
+                                        id="nav-personnel"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-personnel-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_personal"
+                                        />
                                     </div>
                                     <!-- Educations -->
-                                    <div class="tab-pane fade show" id="nav-educations" role="tabpanel"
-                                        aria-labelledby="nav-educations-tab" tabindex="0">
-                                        <t t-call="hr_recruitment_kmitl.apply_tab_education"/>
+                                    <div
+                                        class="tab-pane fade show"
+                                        id="nav-educations"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-educations-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_education"
+                                        />
                                     </div>
                                     <!-- Experience -->
-                                    <div class="tab-pane fade" id="nav-exp" role="tabpanel"
-                                        aria-labelledby="nav-exp-tab" tabindex="0">
-                                        <t t-call="hr_recruitment_kmitl.apply_tab_work_history"/>
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-exp"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-exp-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_work_history"
+                                        />
                                     </div>
                                     <!-- Academic -->
-                                    <div class="tab-pane fade" id="nav-academic" role="tabpanel"
-                                        aria-labelledby="nav-academic-tab" tabindex="0">
-                                        <t t-call="hr_recruitment_kmitl.apply_tab_academic"/>
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-academic"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-academic-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_academic"
+                                        />
                                     </div>
                                     <!-- Skills -->
-                                    <div class="tab-pane fade" id="nav-skills" role="tabpanel"
-                                        aria-labelledby="nav-skills-tab" tabindex="0">
-                                        <t t-call="hr_recruitment_kmitl.apply_tab_skills"/>
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-skills"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-skills-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_skills"
+                                        />
                                     </div>
                                     <!-- Document -->
-                                    <div class="tab-pane fade" id="nav-documents" role="tabpanel"
-                                        aria-labelledby="nav-documents-tab" tabindex="0">
-                                        <t t-call="hr_recruitment_kmitl.apply_tab_documents"/>
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-documents"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-documents-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_documents"
+                                        />
                                     </div>
                                     <!-- Submit -->
-                                    <div class="tab-pane fade" id="nav-submit" role="tabpanel"
-                                        aria-labelledby="nav-submit-tab" tabindex="0">
-                                        <t t-call="hr_recruitment_kmitl.apply_tab_submit"/>
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-submit"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-submit-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_submit"
+                                        />
                                     </div>
                                 </div>
                             </div>

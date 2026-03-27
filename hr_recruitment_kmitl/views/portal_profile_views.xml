@@ -86,7 +86,7 @@
                         </page>
                         <page string="Health" name="health">
                             <group>
-                                <field name="chronic_disease" />
+                                <field name="congenital_disease" />
                             </group>
                         </page>
                         <page string="Academic Position" name="academic">

@@ -101,7 +101,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("emergency_contact_email", profile.emergency_contact_email or "")
 
                 # Health
-                d("chronic_disease", profile.chronic_disease or "")
+                d("congenital_disease", profile.congenital_disease or "")
 
                 # Academic
                 d("academic_position", profile.academic_position or "")

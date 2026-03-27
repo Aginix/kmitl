@@ -92,7 +92,7 @@ class PortalProfile(models.Model):
     emergency_contact_email = fields.Char()
 
     # Health
-    chronic_disease = fields.Text()
+    congenital_disease = fields.Text()
 
     # Academic info
     academic_position = fields.Selection(

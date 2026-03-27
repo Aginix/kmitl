@@ -5,162 +5,314 @@
             <t t-call="hr_recruitment_kmitl.section_tab_intro">
                 <t t-set="title">1. ข้อมูลส่วนบุคคล (Personal Information)</t>
             </t>
-            <div class="col-12 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-4 col-sm-auto s_website_form_label mb-2" style="width: 200px" for="recruitment1">
+            <div
+                class="col-12 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-4 col-sm-auto s_website_form_label mb-2"
+                    style="width: 200px"
+                    for="recruitment1"
+                >
                     <span class="s_website_form_label_content">ชื่อ - นามสกุล</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="recruitment1" type="text" class="form-control s_website_form_input text-muted"
-                        name="partner_name" required="" readonly="readonly" data-fill-with="name" />
+                    <input
+                        id="recruitment1"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="partner_name"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="name"
+                    />
                 </div>
             </div>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="birthday">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="birthday"
+                >
                     <span class="s_website_form_label_content">วัน/เดือน/ปี เกิด</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="birthday" type="text" class="form-control s_website_form_input text-muted"
-                        name="birthday" required="" readonly="readonly" data-fill-with="birthday" />
+                    <input
+                        id="birthday"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="birthday"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="birthday"
+                    />
                 </div>
             </div>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="nationality_id">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="nationality_id"
+                >
                     <span class="s_website_form_label_content">สัญชาติ</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="nationality_id" type="text" class="form-control s_website_form_input text-muted"
-                        name="nationality_id" required="" readonly="readonly" data-fill-with="nationality_id" />
+                    <input
+                        id="nationality_id"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="nationality_id"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="nationality_id"
+                    />
                 </div>
             </div>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="email">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="email"
+                >
                     <span class="s_website_form_label_content">อีเมล</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="email" type="text" class="form-control s_website_form_input text-muted" name="email_from"
-                        required="" readonly="readonly" data-fill-with="email" />
+                    <input
+                        id="email"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="email_from"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="email"
+                    />
                 </div>
             </div>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="phone">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="phone"
+                >
                     <span class="s_website_form_label_content">โทรศัพท์</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="phone" type="text" class="form-control s_website_form_input text-muted"
-                        name="partner_mobile" required="" readonly="readonly" data-fill-with="phone" />
+                    <input
+                        id="phone"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="partner_mobile"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="phone"
+                    />
                 </div>
             </div>
-            <div class="col-12 mb-0 py-2 s_website_form_field" data-type="text" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="address">
+            <div
+                class="col-12 mb-0 py-2 s_website_form_field"
+                data-type="text"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="address"
+                >
                     <span class="s_website_form_label_content">ที่อยู่ปัจจุบัน</span>
                 </label>
                 <div class="col-sm">
-                    <textarea id="address" class="form-control s_website_form_input text-muted" name="address_from"
-                        readonly="readonly">
-                        <t t-esc="default.get('address') or ''"/>
+                    <textarea
+                        id="address"
+                        class="form-control s_website_form_input text-muted"
+                        name="address_from"
+                        readonly="readonly"
+                    >
+                        <t t-esc="default.get('address') or ''" />
                     </textarea>
                 </div>
             </div>
             <hr class="my-4" />
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
-                <span class="section-indicator bg-primary"></span>
+                <span class="section-indicator bg-primary" />
                 บุคคลที่ติดต่อได้ในกรณีเร่งด่วน
             </h5>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_name">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="emergency_contact_name"
+                >
                     <span class="s_website_form_label_content">ชื่อผู้ติดต่อ</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="emergency_contact_name" type="text" class="form-control s_website_form_input text-muted"
-                        name="emergency_contact_name" required="" readonly="readonly"
-                        data-fill-with="emergency_contact_name" />
+                    <input
+                        id="emergency_contact_name"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="emergency_contact_name"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="emergency_contact_name"
+                    />
                 </div>
             </div>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_relation">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="emergency_contact_relation"
+                >
                     <span class="s_website_form_label_content">ความสัมพันธ์</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="emergency_contact_relation" type="text"
-                        class="form-control s_website_form_input text-muted" name="emergency_contact_relation"
-                        required="" readonly="readonly" data-fill-with="emergency_contact_relation" />
+                    <input
+                        id="emergency_contact_relation"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="emergency_contact_relation"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="emergency_contact_relation"
+                    />
                 </div>
             </div>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_phone">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="emergency_contact_phone"
+                >
                     <span class="s_website_form_label_content">เบอร์ติดต่อ</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="emergency_contact_phone" type="text" class="form-control s_website_form_input text-muted"
-                        name="emergency_contact_phone" required="" readonly="readonly"
-                        data-fill-with="emergency_contact_phone" />
+                    <input
+                        id="emergency_contact_phone"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="emergency_contact_phone"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="emergency_contact_phone"
+                    />
                 </div>
             </div>
-            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_email">
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="emergency_contact_email"
+                >
                     <span class="s_website_form_label_content">อีเมลติดต่อ</span>
                     <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
-                    <input id="emergency_contact_email" type="text" class="form-control s_website_form_input text-muted"
-                        name="emergency_contact_email" required="" readonly="readonly"
-                        data-fill-with="emergency_contact_email" />
+                    <input
+                        id="emergency_contact_email"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="emergency_contact_email"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="emergency_contact_email"
+                    />
                 </div>
             </div>
             <hr class="my-4" />
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
-                <span class="section-indicator bg-primary"></span>
+                <span class="section-indicator bg-primary" />
                 ข้อมูลสุขภาพ
             </h5>
-            <div class="col-12 mb-0 py-2 s_website_form_field" data-type="char" data-name="Field">
-                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="chronic_disease">
+            <div
+                class="col-12 mb-0 py-2 s_website_form_field"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="congenital_disease"
+                >
                     <span class="s_website_form_label_content">โรคประจำตัว</span>
                 </label>
                 <div class="col-sm">
-                    <textarea id="chronic_disease" class="form-control s_website_form_input text-muted"
-                        name="chronic_disease" readonly="readonly">
-                        <t t-esc="default.get('chronic_disease') or ''"/>
+                    <textarea
+                        id="congenital_disease"
+                        class="form-control s_website_form_input text-muted"
+                        name="congenital_disease"
+                        readonly="readonly"
+                    >
+                        <t t-esc="default.get('congenital_disease') or ''" />
                     </textarea>
                 </div>
             </div>
             <div class="col-12 mb-0 py-2 s_website_form_field s_website_form_dnone">
                 <div class="row s_col_no_resize s_col_no_bgcolor">
-                    <label class="col-4 col-sm-auto s_website_form_label" style="width: 200px" for="recruitment7">
+                    <label
+                        class="col-4 col-sm-auto s_website_form_label"
+                        style="width: 200px"
+                        for="recruitment7"
+                    >
                         <span class="s_website_form_label_content">
                             Job</span>
                     </label>
                     <div class="col-sm">
-                        <input id="recruitment7" type="hidden" class="form-control s_website_form_input text-muted"
-                            name="job_id" />
+                        <input
+                            id="recruitment7"
+                            type="hidden"
+                            class="form-control s_website_form_input text-muted"
+                            name="job_id"
+                        />
                     </div>
                 </div>
             </div>
             <div class="col-12 mb-0 py-2 s_website_form_field s_website_form_dnone">
                 <div class="row s_col_no_resize s_col_no_bgcolor">
-                    <label class="col-4 col-sm-auto s_website_form_label" style="width: 200px" for="recruitment8">
+                    <label
+                        class="col-4 col-sm-auto s_website_form_label"
+                        style="width: 200px"
+                        for="recruitment8"
+                    >
                         <span class="s_website_form_label_content">
                             Department</span>
                     </label>
                     <div class="col-sm">
-                        <input id="recruitment8" type="hidden" class="form-control s_website_form_input text-muted"
-                            name="department_id" />
+                        <input
+                            id="recruitment8"
+                            type="hidden"
+                            class="form-control s_website_form_input text-muted"
+                            name="department_id"
+                        />
                     </div>
                 </div>
             </div>
@@ -173,70 +325,135 @@
             <t t-set="description">แสดงวุฒิการศึกษาที่ใช้ในการสมัครงาน</t>
         </t>
         <!-- หา selected degree อัตโนมัติ: สูงสุดก่อน -->
-        <t t-set="selected_education_level" t-value="
+        <t
+            t-set="selected_education_level"
+            t-value="
                 'doctor' if education_by_level and education_by_level.get('doctor') else
                 'master' if education_by_level and education_by_level.get('master') else
                 'bachelor' if education_by_level and education_by_level.get('bachelor') else
                 'under_bachelor' if education_by_level and education_by_level.get('under_bachelor') else
                 False
-            " />
+            "
+        />
         <t t-if="selected_education_level">
-            <t t-set="edu_rec" t-value="education_by_level.get(selected_education_level)" />
-            <t t-set="edu_label" t-value="
+            <t
+                t-set="edu_rec"
+                t-value="education_by_level.get(selected_education_level)"
+            />
+            <t
+                t-set="edu_label"
+                t-value="
                     'ปริญญาเอก' if selected_education_level == 'doctor' else
                     'ปริญญาโท' if selected_education_level == 'master' else
                     'ปริญญาตรี' if selected_education_level == 'bachelor' else
                     'ต่ำกว่าปริญญาตรี'
-                " />
+                "
+            />
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark small">วุฒิการศึกษา *</label>
-                    <input type="text" class="form-control text-muted border-0 py-2" t-att-value="edu_label"
-                        readonly="readonly" />
-                    <input type="hidden" name="selected_education_level" t-att-value="selected_education_level" />
-                    <input type="hidden" name="edu_level" t-att-value="selected_education_level" />
+                    <label
+                        class="form-label fw-semibold text-dark small"
+                    >วุฒิการศึกษา *</label>
+                    <input
+                        type="text"
+                        class="form-control text-muted border-0 py-2"
+                        t-att-value="edu_label"
+                        readonly="readonly"
+                    />
+                    <input
+                        type="hidden"
+                        name="selected_education_level"
+                        t-att-value="selected_education_level"
+                    />
+                    <input
+                        type="hidden"
+                        name="edu_level"
+                        t-att-value="selected_education_level"
+                    />
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark small">หลักสูตร *</label>
-                    <input type="text" class="form-control text-muted border-0 py-2"
-                        t-att-value="edu_rec and edu_rec.program or ''" readonly="readonly" />
-                    <input type="hidden" name="edu_program" t-att-value="edu_rec and edu_rec.program or ''" />
+                    <label
+                        class="form-label fw-semibold text-dark small"
+                    >หลักสูตร *</label>
+                    <input
+                        type="text"
+                        class="form-control text-muted border-0 py-2"
+                        t-att-value="edu_rec and edu_rec.program or ''"
+                        readonly="readonly"
+                    />
+                    <input
+                        type="hidden"
+                        name="edu_program"
+                        t-att-value="edu_rec and edu_rec.program or ''"
+                    />
                 </div>
             </div>
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark small">สาขา/วิชาเอก</label>
-                    <input type="text" class="form-control text-muted border-0 py-2"
-                        t-att-value="edu_rec and edu_rec.major or ''" readonly="readonly" />
-                    <input type="hidden" name="edu_major" t-att-value="edu_rec and edu_rec.major or ''" />
+                    <label
+                        class="form-label fw-semibold text-dark small"
+                    >สาขา/วิชาเอก</label>
+                    <input
+                        type="text"
+                        class="form-control text-muted border-0 py-2"
+                        t-att-value="edu_rec and edu_rec.major or ''"
+                        readonly="readonly"
+                    />
+                    <input
+                        type="hidden"
+                        name="edu_major"
+                        t-att-value="edu_rec and edu_rec.major or ''"
+                    />
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark small">สถาบัน/มหาวิทยาลัย *</label>
-                    <input type="text" class="form-control text-muted border-0 py-2"
-                        t-att-value="edu_rec and edu_rec.institution or ''" readonly="readonly" />
-                    <input type="hidden" name="edu_institution" t-att-value="edu_rec and edu_rec.institution or ''" />
+                    <label
+                        class="form-label fw-semibold text-dark small"
+                    >สถาบัน/มหาวิทยาลัย *</label>
+                    <input
+                        type="text"
+                        class="form-control text-muted border-0 py-2"
+                        t-att-value="edu_rec and edu_rec.institution or ''"
+                        readonly="readonly"
+                    />
+                    <input
+                        type="hidden"
+                        name="edu_institution"
+                        t-att-value="edu_rec and edu_rec.institution or ''"
+                    />
                 </div>
             </div>
             <div class="row g-4 mb-2">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark small">สำเร็จการศึกษาเมื่อ *</label>
+                    <label
+                        class="form-label fw-semibold text-dark small"
+                    >สำเร็จการศึกษาเมื่อ *</label>
                     <div class="input-group">
-                        <input type="text" class="form-control text-muted border-0 py-2"
-                            t-att-value="edu_rec and edu_rec.graduation_date or ''" readonly="readonly" />
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="edu_rec and edu_rec.graduation_date or ''"
+                            readonly="readonly"
+                        />
                         <span class="input-group-text border-0">
                             <i class="fa fa-calendar-o text-secondary" />
                         </span>
                     </div>
-                    <input type="hidden" name="edu_graduation_date"
-                        t-att-value="edu_rec and edu_rec.graduation_date or ''" />
-                    <input type="hidden" name="edu_country_id"
-                        t-att-value="edu_rec and edu_rec.country_id and edu_rec.country_id.id or ''" />
+                    <input
+                        type="hidden"
+                        name="edu_graduation_date"
+                        t-att-value="edu_rec and edu_rec.graduation_date or ''"
+                    />
+                    <input
+                        type="hidden"
+                        name="edu_country_id"
+                        t-att-value="edu_rec and edu_rec.country_id and edu_rec.country_id.id or ''"
+                    />
                 </div>
             </div>
         </t>
         <t t-else="">
             <div class="d-flex align-items-start gap-3 p-4 rounded-4 bg-light border">
-                <i class="fa fa-exclamation-triangle text-danger fs-4 mt-1"></i>
+                <i class="fa fa-exclamation-triangle text-danger fs-4 mt-1" />
                 <div>
                     <h6 class="fw-bold text-dark mb-1">ไม่พบข้อมูลประวัติการศึกษา</h6>
                     <p class="text-secondary small mb-0">
@@ -262,51 +479,109 @@
                         </h6>
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold text-dark small">บริษัท/หน่วยงาน
+                                <label
+                                    class="form-label fw-semibold text-dark small"
+                                >บริษัท/หน่วยงาน
                                     *</label>
-                                <input type="text" class="form-control text-muted border-0 py-2"
-                                    t-att-value="work.company_name or ''" readonly="readonly" />
-                                <input type="hidden" name="wh_id" t-att-value="work.id or ''" />
-                                <input type="hidden" name="wh_company_name" t-att-value="work.company_name or ''" />
+                                <input
+                                    type="text"
+                                    class="form-control text-muted border-0 py-2"
+                                    t-att-value="work.company_name or ''"
+                                    readonly="readonly"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="wh_id"
+                                    t-att-value="work.id or ''"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="wh_company_name"
+                                    t-att-value="work.company_name or ''"
+                                />
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold text-dark small">ตำแหน่งงาน
+                                <label
+                                    class="form-label fw-semibold text-dark small"
+                                >ตำแหน่งงาน
                                     / ลักษณะงาน *</label>
-                                <input type="text" class="form-control text-muted border-0 py-2"
-                                    t-att-value="work.job_title or ''" readonly="readonly" />
-                                <input type="hidden" name="wh_job_title" t-att-value="work.job_title or ''" />
+                                <input
+                                    type="text"
+                                    class="form-control text-muted border-0 py-2"
+                                    t-att-value="work.job_title or ''"
+                                    readonly="readonly"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="wh_job_title"
+                                    t-att-value="work.job_title or ''"
+                                />
                             </div>
                         </div>
                         <div class="row g-4 mb-2">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold text-dark small">เงินเดือนล่าสุด
+                                <label
+                                    class="form-label fw-semibold text-dark small"
+                                >เงินเดือนล่าสุด
                                     *</label>
-                                <input type="text" class="form-control text-muted border-0 py-2"
-                                    t-att-value="work.salary or ''" readonly="readonly" />
-                                <input type="hidden" name="wh_salary" t-att-value="work.salary or ''" />
+                                <input
+                                    type="text"
+                                    class="form-control text-muted border-0 py-2"
+                                    t-att-value="work.salary or ''"
+                                    readonly="readonly"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="wh_salary"
+                                    t-att-value="work.salary or ''"
+                                />
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold text-dark small">วันที่เริ่มงาน
+                                <label
+                                    class="form-label fw-semibold text-dark small"
+                                >วันที่เริ่มงาน
                                     *</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control text-muted border-0 py-2"
-                                        t-att-value="work.date_start or ''" readonly="readonly" />
-                                    <span class="input-group-text bg-secondary-light border-0">
+                                    <input
+                                        type="text"
+                                        class="form-control text-muted border-0 py-2"
+                                        t-att-value="work.date_start or ''"
+                                        readonly="readonly"
+                                    />
+                                    <span
+                                        class="input-group-text bg-secondary-light border-0"
+                                    >
                                         <i class="fa fa-calendar-o text-secondary" />
                                     </span>
                                 </div>
-                                <input type="hidden" name="wh_date_start" t-att-value="work.date_start or ''" />
+                                <input
+                                    type="hidden"
+                                    name="wh_date_start"
+                                    t-att-value="work.date_start or ''"
+                                />
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold text-dark small">วันที่สิ้นสุดงาน</label>
+                                <label
+                                    class="form-label fw-semibold text-dark small"
+                                >วันที่สิ้นสุดงาน</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control text-muted border-0 py-2"
-                                        t-att-value="work.date_end or ''" readonly="readonly" />
-                                    <span class="input-group-text bg-secondary-light border-0">
+                                    <input
+                                        type="text"
+                                        class="form-control text-muted border-0 py-2"
+                                        t-att-value="work.date_end or ''"
+                                        readonly="readonly"
+                                    />
+                                    <span
+                                        class="input-group-text bg-secondary-light border-0"
+                                    >
                                         <i class="fa fa-calendar-o text-secondary" />
                                     </span>
                                 </div>
-                                <input type="hidden" name="wh_date_end" t-att-value="work.date_end or ''" />
+                                <input
+                                    type="hidden"
+                                    name="wh_date_end"
+                                    t-att-value="work.date_end or ''"
+                                />
                             </div>
                         </div>
                     </div>
@@ -314,8 +589,10 @@
             </t>
         </t>
         <t t-else="">
-            <div class="alert d-flex align-items-start gap-3 p-4 mb-4 rounded-4 bg-danger-light">
-                <i class="fa fa-exclamation-triangle text-danger fs-4 mt-1"></i>
+            <div
+                class="alert d-flex align-items-start gap-3 p-4 mb-4 rounded-4 bg-danger-light"
+            >
+                <i class="fa fa-exclamation-triangle text-danger fs-4 mt-1" />
                 <div>
                     <h6 class="fw-bold text-dark mb-1">ไม่พบข้อมูลประสบการณ์การทำงาน
                     </h6>
@@ -329,49 +606,100 @@
     </template>
     <template id="apply_tab_academic">
         <t t-call="hr_recruitment_kmitl.profile_banner" />
-        <t t-set="academic_position_value" t-value="default and default.get('academic_position') or ''" />
-        <t t-set="academic_position_date_value" t-value="default and default.get('academic_position_date') or ''" />
-        <t t-set="academic_position_institution_value"
-            t-value="default and default.get('academic_position_institution') or ''" />
-        <t t-set="has_ocsc_exam_value" t-value="default and default.get('has_ocsc_exam') or ''" />
-        <t t-set="ocsc_exam_level_value" t-value="default and default.get('ocsc_exam_level') or ''" />
-        <t t-set="ocsc_exam_date_value" t-value="default and default.get('ocsc_exam_date') or ''" />
-        <t t-set="ocsc_exam_number_value" t-value="default and default.get('ocsc_exam_number') or ''" />
+        <t
+            t-set="academic_position_value"
+            t-value="default and default.get('academic_position') or ''"
+        />
+        <t
+            t-set="academic_position_date_value"
+            t-value="default and default.get('academic_position_date') or ''"
+        />
+        <t
+            t-set="academic_position_institution_value"
+            t-value="default and default.get('academic_position_institution') or ''"
+        />
+        <t
+            t-set="has_ocsc_exam_value"
+            t-value="default and default.get('has_ocsc_exam') or ''"
+        />
+        <t
+            t-set="ocsc_exam_level_value"
+            t-value="default and default.get('ocsc_exam_level') or ''"
+        />
+        <t
+            t-set="ocsc_exam_date_value"
+            t-value="default and default.get('ocsc_exam_date') or ''"
+        />
+        <t
+            t-set="ocsc_exam_number_value"
+            t-value="default and default.get('ocsc_exam_number') or ''"
+        />
         <t t-call="hr_recruitment_kmitl.section_tab_intro">
-            <t t-set="title">4. ข้อมูลทางวิชาการและราชการ (Academic &amp; Civil Service Information)</t>
+            <t
+                t-set="title"
+            >4. ข้อมูลทางวิชาการและราชการ (Academic &amp; Civil Service Information)</t>
         </t>
         <div class="card border-secondary rounded-4 mb-3 shadow-none">
             <div class="card-body p-4">
                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
-                    <i class="fa fa-university text-primary"></i>
+                    <i class="fa fa-university text-primary" />
                     ตำแหน่งทางวิชาการ (Academic Position)
                 </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold text-dark small">ตำแหน่งทางวิชาการ</label>
-                        <input type="text" class="form-control text-muted border-0 py-2"
-                            t-att-value="academic_position_value" readonly="readonly" />
-                        <input type="hidden" name="academic_position" t-att-value="academic_position_value" />
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >ตำแหน่งทางวิชาการ</label>
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="academic_position_value"
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="academic_position"
+                            t-att-value="academic_position_value"
+                        />
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold text-dark small">สถาบันที่ได้รับแต่งตั้ง</label>
-                        <input type="text" class="form-control text-muted border-0 py-2"
-                            t-att-value="academic_position_institution_value" readonly="readonly" />
-                        <input type="hidden" name="academic_position_institution"
-                            t-att-value="academic_position_institution_value" />
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >สถาบันที่ได้รับแต่งตั้ง</label>
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="academic_position_institution_value"
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="academic_position_institution"
+                            t-att-value="academic_position_institution_value"
+                        />
                     </div>
                 </div>
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold text-dark small">วันที่ได้รับแต่งตั้ง</label>
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >วันที่ได้รับแต่งตั้ง</label>
                         <div class="input-group">
-                            <input type="text" class="form-control text-muted border-0 py-2"
-                                t-att-value="academic_position_date_value" readonly="readonly" />
+                            <input
+                                type="text"
+                                class="form-control text-muted border-0 py-2"
+                                t-att-value="academic_position_date_value"
+                                readonly="readonly"
+                            />
                             <span class="input-group-text bg-secondary-light border-0">
-                                <i class="fa fa-calendar-o text-secondary"></i>
+                                <i class="fa fa-calendar-o text-secondary" />
                             </span>
                         </div>
-                        <input type="hidden" name="academic_position_date" t-att-value="academic_position_date_value" />
+                        <input
+                            type="hidden"
+                            name="academic_position_date"
+                            t-att-value="academic_position_date_value"
+                        />
                     </div>
                 </div>
             </div>
@@ -379,42 +707,81 @@
         <div class="card border-secondary rounded-4 mb-3 shadow-none">
             <div class="card-body p-4">
                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
-                    <i class="fa fa-certificate text-primary"></i>
+                    <i class="fa fa-certificate text-primary" />
                     การสอบ ก.พ. (OCSC Exam)
                 </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold text-dark small">สถานะการสอบ
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >สถานะการสอบ
                             ก.พ.</label>
-                        <input type="text" class="form-control text-muted border-0 py-2"
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
                             t-att-value="'ผ่าน' if has_ocsc_exam_value == 'true' else 'ไม่ผ่าน / ไม่มีข้อมูล'"
-                            readonly="readonly" />
-                        <input type="hidden" name="has_ocsc_exam" t-att-value="has_ocsc_exam_value" />
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="has_ocsc_exam"
+                            t-att-value="has_ocsc_exam_value"
+                        />
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold text-dark small">ระดับการสอบ</label>
-                        <input type="text" class="form-control text-muted border-0 py-2"
-                            t-att-value="ocsc_exam_level_value" readonly="readonly" />
-                        <input type="hidden" name="ocsc_exam_level" t-att-value="ocsc_exam_level_value" />
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >ระดับการสอบ</label>
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="ocsc_exam_level_value"
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="ocsc_exam_level"
+                            t-att-value="ocsc_exam_level_value"
+                        />
                     </div>
                 </div>
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold text-dark small">วันที่สอบผ่าน</label>
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >วันที่สอบผ่าน</label>
                         <div class="input-group">
-                            <input type="text" class="form-control text-muted border-0 py-2"
-                                t-att-value="ocsc_exam_date_value" readonly="readonly" />
+                            <input
+                                type="text"
+                                class="form-control text-muted border-0 py-2"
+                                t-att-value="ocsc_exam_date_value"
+                                readonly="readonly"
+                            />
                             <span class="input-group-text bg-secondary-light border-0">
-                                <i class="fa fa-calendar-o text-secondary"></i>
+                                <i class="fa fa-calendar-o text-secondary" />
                             </span>
                         </div>
-                        <input type="hidden" name="ocsc_exam_date" t-att-value="ocsc_exam_date_value" />
+                        <input
+                            type="hidden"
+                            name="ocsc_exam_date"
+                            t-att-value="ocsc_exam_date_value"
+                        />
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold text-dark small">เลขที่ใบรับรอง</label>
-                        <input type="text" class="form-control text-muted border-0 py-2"
-                            t-att-value="ocsc_exam_number_value" readonly="readonly" />
-                        <input type="hidden" name="ocsc_exam_number" t-att-value="ocsc_exam_number_value" />
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >เลขที่ใบรับรอง</label>
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="ocsc_exam_number_value"
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="ocsc_exam_number"
+                            t-att-value="ocsc_exam_number_value"
+                        />
                     </div>
                 </div>
             </div>
@@ -430,36 +797,57 @@
                 <label class="form-label fw-semibold text-dark small">
                     ทักษะภาษาต่างประเทศ (Foreign Language Skills)
                 </label>
-                <textarea class="form-control text-muted border-0 py-2" name="foreign_language_skills" rows="4"
-                    readonly="readonly" data-fill-with="foreign_language_skills"></textarea>
+                <textarea
+                    class="form-control text-muted border-0 py-2"
+                    name="foreign_language_skills"
+                    rows="4"
+                    readonly="readonly"
+                    data-fill-with="foreign_language_skills"
+                />
             </div>
             <div class="col-12">
                 <label class="form-label fw-semibold text-dark small">
                     ทักษะทางคอมพิวเตอร์ (Computer Skills)
                 </label>
-                <textarea class="form-control text-muted border-0 py-2" name="computer_skills" rows="4"
-                    readonly="readonly" data-fill-with="computer_skills"></textarea>
+                <textarea
+                    class="form-control text-muted border-0 py-2"
+                    name="computer_skills"
+                    rows="4"
+                    readonly="readonly"
+                    data-fill-with="computer_skills"
+                />
             </div>
             <div class="col-12">
                 <label class="form-label fw-semibold text-dark small">
                     ความสามารถพิเศษอื่น ๆ (Other Abilities)
                 </label>
-                <textarea class="form-control text-muted border-0 py-2" name="other_abilities" rows="4"
-                    readonly="readonly" data-fill-with="other_abilities"></textarea>
+                <textarea
+                    class="form-control text-muted border-0 py-2"
+                    name="other_abilities"
+                    rows="4"
+                    readonly="readonly"
+                    data-fill-with="other_abilities"
+                />
             </div>
             <div class="col-12">
                 <label class="form-label fw-semibold text-dark small">
                     ความสนใจ (Interests)
                 </label>
-                <textarea class="form-control text-muted border-0 py-2" name="interests" rows="4" readonly="readonly"
-                    data-fill-with="interests"></textarea>
+                <textarea
+                    class="form-control text-muted border-0 py-2"
+                    name="interests"
+                    rows="4"
+                    readonly="readonly"
+                    data-fill-with="interests"
+                />
             </div>
         </div>
     </template>
     <template id="apply_tab_documents">
         <div
-            class="alert d-flex align-items-start gap-3 p-3 mb-4 rounded-4 bg-primary-light border border-primary shadow-none">
-            <i class="fa fa-exclamation-circle text-primary fs-4 mt-1"></i>
+            class="alert d-flex align-items-start gap-3 p-3 mb-4 rounded-4 bg-primary-light border border-primary shadow-none"
+        >
+            <i class="fa fa-exclamation-circle text-primary fs-4 mt-1" />
             <div>
                 <h6 class="fw-bold text-dark mb-1">ข้อกำหนดการอัปโหลดเอกสาร</h6>
                 <p class="text-secondary small mb-0">
@@ -519,8 +907,10 @@
         <!-- Warning -->
         <div class="card border-danger bg-danger shadow-none rounded-12 mb-4">
             <div class="card-body">
-                <div class="d-flex align-items-center fw-bold text-danger mb-2 submit-section-title">
-                    <i class="fa fa-exclamation-triangle me-2"></i>
+                <div
+                    class="d-flex align-items-center fw-bold text-danger mb-2 submit-section-title"
+                >
+                    <i class="fa fa-exclamation-triangle me-2" />
                     คำเตือน: ไม่อนุญาตให้แก้ไขใบสมัครหลังส่ง
                 </div>
                 <ul class="text-dark mb-0 submit-section-list">
@@ -544,13 +934,21 @@
             <div class="card-body p-4">
 
                 <div class="d-flex align-items-center gap-2 fw-bold text-dark mb-3">
-                    <i class="fa fa-check-square-o text-success fs-4"></i>
+                    <i class="fa fa-check-square-o text-success fs-4" />
                     <p class="mb-0 fw-bold">การรับรองข้อมูล</p>
                 </div>
 
                 <div class="form-check mb-0">
-                    <input class="form-check-input" type="checkbox" id="certifyCheck" required="required" />
-                    <label class="form-check-label text-dark fw-normal" for="certifyCheck">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="certifyCheck"
+                        required="required"
+                    />
+                    <label
+                        class="form-check-label text-dark fw-normal"
+                        for="certifyCheck"
+                    >
                         ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวทั้งหมดในใบสมัครนี้เป็นความจริงทุกประการ
                         และมีคุณสมบัติครบถ้วนตรงตามตำแหน่งที่ต้องการ
                         หากปรากฏภายหลังว่าข้อความในใบสมัครงานและเอกสารที่นำมาแสดง
@@ -574,7 +972,7 @@
             <div class="card-body p-4">
 
                 <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="fa fa-shield text-info fs-5"></i>
+                    <i class="fa fa-shield text-info fs-5" />
                     <p class="mb-0 fw-bold text-dark">
                         ข้อตกลง PDPA (พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล)
                     </p>
@@ -601,16 +999,28 @@
 
                 <div class="d-flex flex-wrap gap-4">
                     <div class="form-check mb-0">
-                        <input class="form-check-input" type="radio" name="pdpaConsent" id="pdpaAgree" value="agreed"
-                            required="required" />
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="pdpaConsent"
+                            id="pdpaAgree"
+                            value="agreed"
+                            required="required"
+                        />
                         <label class="form-check-label text-primary" for="pdpaAgree">
                             ยินยอม (Agreed)
                         </label>
                     </div>
 
                     <div class="form-check mb-0">
-                        <input class="form-check-input" type="radio" name="pdpaConsent" id="pdpaDisagree"
-                            value="disagreed" required="required" />
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="pdpaConsent"
+                            id="pdpaDisagree"
+                            value="disagreed"
+                            required="required"
+                        />
                         <label class="form-check-label text-danger" for="pdpaDisagree">
                             ไม่ยินยอม (Disagreed)
                         </label>
@@ -620,11 +1030,15 @@
             </div>
         </div>
         <!-- Submit -->
-        <div class="d-flex justify-content-end border-top border-secondary pt-4 s_website_form_submit"
-            data-name="Submit Button">
-            <button type="submit"
-                class="btn btn-primary px-5 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center s_website_form_send">
-                <i class="fa fa-paper-plane-o me-2"></i>
+        <div
+            class="d-flex justify-content-end border-top border-secondary pt-4 s_website_form_submit"
+            data-name="Submit Button"
+        >
+            <button
+                type="submit"
+                class="btn btn-primary px-5 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center s_website_form_send"
+            >
+                <i class="fa fa-paper-plane-o me-2" />
                 ส่งใบสมัคร
             </button>
         </div>

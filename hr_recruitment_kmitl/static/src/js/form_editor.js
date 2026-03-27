@@ -48,7 +48,7 @@ odoo.define("hr_recruitment_kmitl.form_editor", function (require) {
             string: _lt("Emergency Email"),
         },
         // Health
-        {type: "text", name: "chronic_disease", string: _lt("Chronic Disease")},
+        {type: "text", name: "congenital_disease", string: _lt("Congenital Disease")},
         // Academic
         {type: "char", name: "academic_position", string: _lt("Academic Position")},
         {
