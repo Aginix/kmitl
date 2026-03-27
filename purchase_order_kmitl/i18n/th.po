@@ -3129,3 +3129,18 @@ msgstr "เอกสารแนบ"
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 msgid "File Name"
 msgstr "ชื่อไฟล์"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
+msgid "use invoice plan"
+msgstr "แบ่งงวดงาน"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
+msgid "ข้อมูล"
+msgstr ""
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
+msgid "งวดงาน"
+msgstr ""
