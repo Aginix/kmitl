@@ -11,6 +11,12 @@ class WorkAcceptance(models.Model):
     _name = "work.acceptance"
     _inherit = ["work.acceptance", "thai.date.mixin"]
     _tier_validation_manual_config = True  # We need more buttons
+    _state_from = ["in_review"]
+    _state_to = ["accept"]
+
+    state = fields.Selection(
+        selection_add=[("in_review", "In Review"), ("accept",)]
+    )
 
     wa_tier_validation = fields.Boolean(
         string="Paperless WA",
@@ -23,6 +29,14 @@ class WorkAcceptance(models.Model):
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
+    attachment_ids = fields.One2many(
+        "ir.attachment",
+        "res_id",
+        string="Document Attachments",
+        domain=[("res_model", "=", "work.acceptance")],
+        tracking=True,
+    )
+
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",
         inverse_name="wa_id",
@@ -126,6 +140,17 @@ class WorkAcceptance(models.Model):
     def _can_auto_accept(self):
         return True
 
+    def _get_under_validation_allowed_fields(self):
+        fields = super()._get_under_validation_allowed_fields()
+        return fields + ["state"]
+
+    def request_validation(self):
+        self.write({"state": "in_review"})
+        return super().request_validation()
+
+    def button_review(self):
+        self.write({"state": "in_review"})
+
     def _check_state_conditions(self, vals):
         if self.env.context.get('skip_committee_wizard'):
             return False
@@ -176,6 +201,12 @@ class WorkAcceptance(models.Model):
         return res
 
     def button_accept(self, force=False):
+        for rec in self:
+            if not rec.wa_tier_validation and not rec.attachment_ids:
+                raise UserError(
+                    _("กรุณาแนบหลักฐานการตรวจรับ")
+                )
+
         if self.env.context.get('skip_committee_wizard'):
             self.mapped('review_ids').unlink()
             self._unlink_zero_quantity()
