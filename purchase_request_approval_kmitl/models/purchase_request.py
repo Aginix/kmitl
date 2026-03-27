@@ -61,5 +61,5 @@ class PurchaseRequest(models.Model):
         super()._compute_is_budget_editable()
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.substate_sequence == 10 and rec.state == "to_verify" and can_edit:
+            if rec.state == "to_verify" and can_edit:
                 rec.is_budget_editable = True
