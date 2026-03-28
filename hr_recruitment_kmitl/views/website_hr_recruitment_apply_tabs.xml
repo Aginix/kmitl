@@ -932,35 +932,35 @@
         </t>
         <div class="d-flex flex-column gap-3">
             <!-- Photo -->
-            <t t-call="hr_recruitment_kmitl.document_upload_item">
+            <t t-call="hr_recruitment_kmitl.document_upload_card">
                 <t t-set="name">doc_photo</t>
                 <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
                 <t t-set="description">ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
                 <t t-set="required">True</t>
             </t>
             <!-- ID Card -->
-            <t t-call="hr_recruitment_kmitl.document_upload_item">
+            <t t-call="hr_recruitment_kmitl.document_upload_card">
                 <t t-set="name">doc_id_card</t>
                 <t t-set="label">สำเนาบัตรประชาชน</t>
                 <t t-set="description">ลงลายมือชื่อสำเนาถูกต้อง</t>
                 <t t-set="required">True</t>
             </t>
             <!-- House -->
-            <t t-call="hr_recruitment_kmitl.document_upload_item">
+            <t t-call="hr_recruitment_kmitl.document_upload_card">
                 <t t-set="name">doc_house</t>
                 <t t-set="label">สำเนาทะเบียนบ้าน</t>
                 <t t-set="description">ลงลายมือชื่อสำเนาถูกต้อง</t>
                 <t t-set="required">True</t>
             </t>
             <!-- Transcript -->
-            <t t-call="hr_recruitment_kmitl.document_upload_item">
+            <t t-call="hr_recruitment_kmitl.document_upload_card">
                 <t t-set="name">doc_transcript</t>
                 <t t-set="label">Transcript</t>
                 <t t-set="description">ใบรายงานผลการศึกษา</t>
                 <t t-set="required">True</t>
             </t>
             <!-- Resume -->
-            <t t-call="hr_recruitment_kmitl.document_upload_item">
+            <t t-call="hr_recruitment_kmitl.document_upload_card">
                 <t t-set="name">doc_resume</t>
                 <t t-set="label">Resume / CV</t>
                 <t t-set="description">ประวัติส่วนตัว</t>

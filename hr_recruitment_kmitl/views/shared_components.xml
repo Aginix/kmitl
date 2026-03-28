@@ -121,6 +121,88 @@
             </div>
         </div>
     </template>
+    <template id="document_upload_card">
+        <div
+            class="js-file-upload-wrapper d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 p-3 border rounded-12 bg-white"
+            t-att-data-has-file="'1' if existing_filename else '0'"
+        >
+            <input
+                type="hidden"
+                t-att-name="'delete_' + name"
+                value="0"
+                class="js-delete-flag"
+            />
+            <div class="d-flex align-items-start gap-3 flex-grow-1">
+                <div
+                    class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon"
+                >
+                    <i class="fa fa-file-text-o text-secondary" />
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                        <span class="fw-semibold text-dark">
+                            <t t-esc="label" />
+                        </span>
+                        <t t-if="required">
+                            <span
+                                class="badge rounded-pill text-danger bg-danger-subtle"
+                            >
+                            จำเป็น
+                        </span>
+                        </t>
+                    </div>
+                    <p class="text-secondary small mb-2">
+                        <t t-esc="description" />
+                    </p>
+                    <div
+                        t-att-class="'small text-success js-file-status' if existing_filename else 'small text-muted js-file-status'"
+                    >
+                        <t t-if="existing_filename">
+                            <i class="fa fa-check-circle me-1" />
+                            <a
+                                t-if="download_url"
+                                t-att-href="download_url"
+                                class="text-success text-decoration-underline"
+                                target="_blank"
+                            >
+                                <t t-esc="existing_filename" />
+                            </a>
+                            <t t-else="">
+                                <t t-esc="existing_filename" />
+                            </t>
+                        </t>
+                        <t t-else="">
+                            ยังไม่ได้เลือกไฟล์
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-shrink-0">
+                <label
+                    class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-4 fw-medium mb-0 js-upload-btn"
+                    t-att-style="'display:none' if existing_filename else ''"
+                >
+                    <i class="fa fa-upload me-1" />
+                    <span class="js-upload-label">อัปโหลด</span>
+                    <input
+                        type="file"
+                        class="d-none js-file-input"
+                        t-att-name="name"
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    />
+                </label>
+                <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm px-3 py-2 rounded-4 fw-medium js-file-remove"
+                    t-att-style="'' if existing_filename else 'display:none'"
+                    title="ลบไฟล์"
+                >
+                    <i class="fa fa-trash me-1" />
+                    ลบไฟล์
+                </button>
+            </div>
+        </div>
+    </template>
     <template id="application_status_badge">
         <span
             t-attf-class="badge text-bg-#{badge_class or 'primary'} px-3 py-2 rounded-pill fw-semibold"

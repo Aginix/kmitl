@@ -1447,7 +1447,7 @@
                                     <div class="d-flex flex-column gap-3">
                                         <!-- Photo -->
                                         <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                            t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_photo</t>
                                             <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
@@ -1457,7 +1457,7 @@
                                         </t>
                                         <!-- ID Card -->
                                         <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                            t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_id_card</t>
                                             <t
@@ -1477,7 +1477,7 @@
                                         </t>
                                         <!-- Household Registration -->
                                         <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                            t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t
                                                 t-set="name"
@@ -1497,7 +1497,7 @@
                                         </t>
                                         <!-- Resume -->
                                         <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                            t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_resume</t>
                                             <t
@@ -1514,7 +1514,7 @@
                                         </t>
                                         <!-- Military Certificate -->
                                         <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                            t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_military_certificate</t>
                                             <t
@@ -1535,7 +1535,7 @@
                                         </t>
                                         <!-- Work Certificate -->
                                         <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                            t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_work_certificate</t>
                                             <t t-set="label">
@@ -1557,7 +1557,7 @@
                                         </t>
                                         <!-- Other Documents -->
                                         <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                            t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_other_documents</t>
                                             <t
