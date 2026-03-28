@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_change_wizard_form_invoice" model="ir.ui.view">
+        <field name="name"
+            >view.purchase.order.change.wizard.form(Change Invoice Plan)</field
+        >
+        <field name="model">purchase.order.change.wizard</field>
+        <field
+            name="inherit_id"
+            ref="purchase_order_change.view_purchase_order_change_wizard"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='field_groups']" position="after">
+                <separator string="ข้อมูลงวดงาน" />
+                <div>
+                    <field name="purchase_id" invisible="1" />
+                    <field name="show_invoice" invisible="1" />
+                    <field
+                        name="invoice_plan_ids_old"
+                        attrs="{'invisible': [('show_invoice', '=', False)]}"
+                    />
+                </div>
+                <div>
+                    <button
+                        name="%(purchase_invoice_plan.action_purchase_create_invoice_plan)d"
+                        string="Create Invoice Plan"
+                        type="action"
+                        context="{'default_purchase_id': purchase_id}"
+                        class="btn btn-primary"
+                        attrs="{'invisible': [('show_invoice', '=', False)]}"
+                    />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

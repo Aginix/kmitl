@@ -128,6 +128,8 @@ class PurchaseOrderChange(models.Model):
                 field_name = field.name
                 new_value = line.new_value
 
+                if field.ttype in ("many2many", "one2many"):
+                    continue
                 # แปลงค่าตาม type
                 if field.ttype in ("float", "monetary"):
                     try:
