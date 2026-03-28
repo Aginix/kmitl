@@ -1339,32 +1339,23 @@
                                         </div>
                                     </div>
                                     <div class="english-score-upload">
-                                        <label
-                                            class="form-label fw-semibold small d-block mb-2"
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
                                         >
-                                            English Test Result Attachment
-                                        </label>
-                                        <div
-                                            class="d-flex flex-column flex-sm-row align-items-sm-center gap-2"
-                                        >
-                                            <label
-                                                class="btn btn-outline-secondary btn-sm px-4 py-2 fw-medium rounded-3 mb-0"
-                                            >
-                                                <i class="fa fa-upload me-2" />
-                                                <span
-                                                    class="js-upload-text"
-                                                >Upload File</span>
-                                                <input
-                                                    type="file"
-                                                    class="d-none js-file-input"
-                                                    name="doc_english_score"
-                                                    accept=".pdf,.jpg,.jpeg,.png"
-                                                />
-                                            </label>
-                                            <div class="small text-muted js-file-name">
-                                                No file selected
-                                            </div>
-                                        </div>
+                                            <t t-set="name">doc_english_score</t>
+                                            <t
+                                                t-set="label"
+                                            >English Test Result Attachment</t>
+                                            <t t-set="required" t-value="False" />
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.english_score_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=english_score_file&amp;filename_field=english_score_filename&amp;download=true' % profile.id if profile.english_score_filename else False"
+                                            />
+                                        </t>
                                     </div>
                                 </div>
                             </div>
