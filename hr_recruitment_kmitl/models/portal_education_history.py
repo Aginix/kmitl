@@ -22,6 +22,10 @@ class PortalEducationHistory(models.Model):
     institution = fields.Char(required=True)
     country_id = fields.Many2one("res.country", required=True)
     graduation_date = fields.Date(required=True)
+    certificate_file = fields.Binary(string="Certificate", attachment=True)
+    certificate_filename = fields.Char()
+    transcript_file = fields.Binary(string="Transcript", attachment=True)
+    transcript_filename = fields.Char()
 
     _sql_constraints = [
         (

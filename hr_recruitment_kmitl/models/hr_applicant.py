@@ -260,6 +260,10 @@ class HrApplicant(models.Model):
                     "institution": edu.institution,
                     "country_id": edu.country_id.id,
                     "graduation_date": edu.graduation_date,
+                    "certificate_file": edu.certificate_file,
+                    "certificate_filename": edu.certificate_filename,
+                    "transcript_file": edu.transcript_file,
+                    "transcript_filename": edu.transcript_filename,
                 }
             )
 

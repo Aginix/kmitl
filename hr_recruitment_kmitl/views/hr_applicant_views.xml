@@ -83,6 +83,16 @@
                             <field name="institution" />
                             <field name="country_id" />
                             <field name="graduation_date" />
+                            <field
+                                name="certificate_file"
+                                filename="certificate_filename"
+                            />
+                            <field name="certificate_filename" column_invisible="1" />
+                            <field
+                                name="transcript_file"
+                                filename="transcript_filename"
+                            />
+                            <field name="transcript_filename" column_invisible="1" />
                         </tree>
                     </field>
                 </page>

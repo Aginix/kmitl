@@ -1566,15 +1566,6 @@
                                                 หรือหลักฐานทาง ทหารอื่น ๆ</t>
                                             <t t-set="description">เฉพาะเพศชาย</t>
                                         </t>
-                                        <!-- Education Report -->
-                                        <t
-                                            t-call="hr_recruitment_kmitl.document_upload_item"
-                                        >
-                                            <t t-set="name">doc_education_report</t>
-                                            <t
-                                                t-set="label"
-                                            >สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</t>
-                                        </t>
                                         <!-- Work Certificate -->
                                         <t
                                             t-call="hr_recruitment_kmitl.document_upload_item"
@@ -1712,6 +1703,50 @@
                                 class="form-control"
                                 t-att-value="edu_rec.graduation_date if edu_rec else ''"
                             />
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="mb-3 col-md-6">
+                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                <t t-set="label">ใบรับรอง (Certificate)</t>
+                                <t
+                                    t-set="description"
+                                >อัปโหลดไฟล์ PDF, รูปภาพ หรือเอกสาร</t>
+                                <t t-set="required" t-value="False" />
+                                <t
+                                    t-set="name"
+                                    t-valuef="#{section_prefix}certificate_file"
+                                />
+                                <t
+                                    t-set="existing_filename"
+                                    t-value="edu_rec.certificate_filename if edu_rec else False"
+                                />
+                                <t
+                                    t-set="download_url"
+                                    t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=certificate_file&amp;filename_field=certificate_filename&amp;download=true' % edu_rec.id if edu_rec and edu_rec.certificate_filename else False"
+                                />
+                            </t>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                <t t-set="label">ผลการเรียนรายวิชา (Transcript)</t>
+                                <t
+                                    t-set="description"
+                                >อัปโหลดไฟล์ PDF, รูปภาพ หรือเอกสาร</t>
+                                <t t-set="required" t-value="False" />
+                                <t
+                                    t-set="name"
+                                    t-valuef="#{section_prefix}transcript_file"
+                                />
+                                <t
+                                    t-set="existing_filename"
+                                    t-value="edu_rec.transcript_filename if edu_rec else False"
+                                />
+                                <t
+                                    t-set="download_url"
+                                    t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=transcript_file&amp;filename_field=transcript_filename&amp;download=true' % edu_rec.id if edu_rec and edu_rec.transcript_filename else False"
+                                />
+                            </t>
                         </div>
                     </div>
                 </div>

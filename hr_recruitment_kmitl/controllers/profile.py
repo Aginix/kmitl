@@ -238,9 +238,27 @@ class PortalProfile(CustomerPortal):
                 rec.write(vals)
             else:
                 vals["profile_id"] = profile.id
-                EduHistory.create(vals)
+                rec = EduHistory.create(vals)
+            self._save_education_files(rec, prefix)
         elif rec:
             rec.unlink()
+
+    def _save_education_files(self, rec, prefix):
+        """Handle certificate and transcript file uploads for an education record."""
+        for doc_type in ("certificate", "transcript"):
+            delete_flag = f"delete_{prefix}{doc_type}_file"
+            file_input = f"{prefix}{doc_type}_file"
+            if request.httprequest.form.get(delete_flag) == "1":
+                rec.write({f"{doc_type}_file": False, f"{doc_type}_filename": False})
+            else:
+                uploaded = request.httprequest.files.get(file_input)
+                if uploaded and uploaded.filename:
+                    rec.write(
+                        {
+                            f"{doc_type}_file": base64.b64encode(uploaded.read()),
+                            f"{doc_type}_filename": uploaded.filename,
+                        }
+                    )
 
     def _save_education_history(self, profile, post):
         existing = {

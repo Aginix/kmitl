@@ -22,3 +22,7 @@ class HrApplicantEducationHistory(models.Model):
     institution = fields.Char()
     country_id = fields.Many2one("res.country")
     graduation_date = fields.Date()
+    certificate_file = fields.Binary(string="Certificate", attachment=True)
+    certificate_filename = fields.Char()
+    transcript_file = fields.Binary(string="Transcript", attachment=True)
+    transcript_filename = fields.Char()
