@@ -168,6 +168,17 @@ class PortalProfile(CustomerPortal):
                             "academic_position_filename": ap_file.filename,
                         }
                     )
+            if post.get("delete_doc_resume") == "1":
+                profile.sudo().write({"resume_file": False, "resume_filename": False})
+            else:
+                resume_file = request.httprequest.files.get("doc_resume")
+                if resume_file and resume_file.filename:
+                    profile.sudo().write(
+                        {
+                            "resume_file": base64.b64encode(resume_file.read()),
+                            "resume_filename": resume_file.filename,
+                        }
+                    )
             return request.redirect("/my/profile")
 
         values = self._prepare_profile_render_values(partner, profile)

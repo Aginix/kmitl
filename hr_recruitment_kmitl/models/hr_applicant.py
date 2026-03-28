@@ -138,6 +138,8 @@ class HrApplicant(models.Model):
     ocsc_exam_number = fields.Char(string="OCSC Exam Number")
     ocsc_exam_file = fields.Binary(string="OCSC Exam Proof", attachment=True)
     ocsc_exam_filename = fields.Char(string="OCSC Exam Filename")
+    resume_file = fields.Binary(string="Resume", attachment=True)
+    resume_filename = fields.Char()
 
     # Skills
     foreign_language_skills = fields.Text()
@@ -245,6 +247,9 @@ class HrApplicant(models.Model):
         if profile.academic_position_file:
             vals["academic_position_file"] = profile.academic_position_file
             vals["academic_position_filename"] = profile.academic_position_filename
+        if profile.resume_file:
+            vals["resume_file"] = profile.resume_file
+            vals["resume_filename"] = profile.resume_filename
 
         if vals:
             self.sudo().write(vals)

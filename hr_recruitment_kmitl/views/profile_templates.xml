@@ -1552,6 +1552,14 @@
                                             <t
                                                 t-set="label"
                                             >ประวัติการทำงาน (Resume)</t>
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.resume_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=resume_file&amp;filename_field=resume_filename&amp;download=true' % profile.id if profile.resume_filename else False"
+                                            />
                                         </t>
                                         <!-- Military Certificate -->
                                         <t
