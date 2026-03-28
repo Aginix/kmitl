@@ -1067,67 +1067,26 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <label class="col-form-label">
-                                                แนบหลักฐานการผ่าน (ก.พ.)
-                                            </label>
-                                            <div
-                                                class="js-file-upload-wrapper d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3"
-                                                t-att-data-has-file="'1' if profile.ocsc_exam_filename else '0'"
+                                            <t
+                                                t-call="hr_recruitment_kmitl.document_upload_item"
                                             >
-                                                <input
-                                                    type="hidden"
-                                                    name="delete_ocsc_file"
-                                                    value="0"
-                                                    class="js-delete-flag"
+                                                <t t-set="name">doc_ocsc_proof</t>
+                                                <t
+                                                    t-set="label"
+                                                >แนบหลักฐานการผ่าน (ก.พ.)</t>
+                                                <t
+                                                    t-set="description"
+                                                >ไฟล์ PDF หรือรูปภาพ</t>
+                                                <t t-set="required" t-value="False" />
+                                                <t
+                                                    t-set="existing_filename"
+                                                    t-value="profile.ocsc_exam_filename"
                                                 />
-                                                <label
-                                                    class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0 js-upload-btn"
-                                                    t-att-style="'display:none' if profile.ocsc_exam_filename else ''"
-                                                >
-                                                    <i class="fa fa-upload me-2" />
-                                                    <span>Upload</span>
-                                                    <input
-                                                        type="file"
-                                                        class="d-none js-file-input"
-                                                        name="doc_ocsc_proof"
-                                                        accept=".pdf,.jpg,.jpeg,.png"
-                                                    />
-                                                </label>
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-outline-danger btn-sm px-3 py-2 fw-medium rounded-3 js-file-remove"
-                                                    t-att-style="'' if profile.ocsc_exam_filename else 'display:none'"
-                                                    title="ลบไฟล์"
-                                                >
-                                                    <i class="fa fa-trash me-2" />
-                                                    <span>Delete</span>
-                                                </button>
-
-                                                <div
-                                                    class="small js-file-status"
-                                                    t-att-class="'small text-success' if profile.ocsc_exam_filename else 'small text-muted'"
-                                                >
-                                                    <t
-                                                        t-if="profile.ocsc_exam_filename"
-                                                    >
-                                                        <i
-                                                            class="fa fa-check-circle me-1"
-                                                        />
-                                                        <a
-                                                            t-attf-href="/web/content?model=portal.profile&amp;id=#{profile.id}&amp;field=ocsc_exam_file&amp;filename_field=ocsc_exam_filename&amp;download=true"
-                                                            class="text-success text-decoration-underline js-file-name-link"
-                                                            target="_blank"
-                                                        >
-                                                            <t
-                                                                t-esc="profile.ocsc_exam_filename"
-                                                            />
-                                                        </a>
-                                                    </t>
-                                                    <t t-else="">
-                                                        ยังไม่ได้เลือกไฟล์
-                                                    </t>
-                                                </div>
-                                            </div>
+                                                <t
+                                                    t-set="download_url"
+                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=ocsc_exam_file&amp;filename_field=ocsc_exam_filename&amp;download=true' % profile.id if profile.ocsc_exam_filename else False"
+                                                />
+                                            </t>
                                         </div>
                                     </div>
                                 </div>
@@ -1200,67 +1159,28 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <label class="col-form-label">
-                                                แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ
-                                            </label>
-                                            <div
-                                                class="js-file-upload-wrapper d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3"
-                                                t-att-data-has-file="'1' if profile.academic_position_filename else '0'"
+                                            <t
+                                                t-call="hr_recruitment_kmitl.document_upload_item"
                                             >
-                                                <input
-                                                    type="hidden"
-                                                    name="delete_academic_position_file"
-                                                    value="0"
-                                                    class="js-delete-flag"
+                                                <t
+                                                    t-set="name"
+                                                >doc_academic_position</t>
+                                                <t
+                                                    t-set="label"
+                                                >แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ</t>
+                                                <t
+                                                    t-set="description"
+                                                >ไฟล์ PDF หรือรูปภาพ</t>
+                                                <t t-set="required" t-value="False" />
+                                                <t
+                                                    t-set="existing_filename"
+                                                    t-value="profile.academic_position_filename"
                                                 />
-                                                <label
-                                                    class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0 js-upload-btn"
-                                                    t-att-style="'display:none' if profile.academic_position_filename else ''"
-                                                >
-                                                    <i class="fa fa-upload me-2" />
-                                                    <span>Upload</span>
-                                                    <input
-                                                        type="file"
-                                                        class="d-none js-file-input"
-                                                        name="doc_academic_position"
-                                                        accept=".pdf,.jpg,.jpeg,.png"
-                                                    />
-                                                </label>
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-outline-danger btn-sm px-3 py-2 fw-medium rounded-3 js-file-remove"
-                                                    t-att-style="'' if profile.academic_position_filename else 'display:none'"
-                                                    title="ลบไฟล์"
-                                                >
-                                                    <i class="fa fa-trash me-2" />
-                                                    <span>Delete</span>
-                                                </button>
-
-                                                <div
-                                                    class="small js-file-status"
-                                                    t-att-class="'small text-success' if profile.academic_position_filename else 'small text-muted'"
-                                                >
-                                                    <t
-                                                        t-if="profile.academic_position_filename"
-                                                    >
-                                                        <i
-                                                            class="fa fa-check-circle me-1"
-                                                        />
-                                                        <a
-                                                            t-attf-href="/web/content?model=portal.profile&amp;id=#{profile.id}&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true"
-                                                            class="text-success text-decoration-underline js-file-name-link"
-                                                            target="_blank"
-                                                        >
-                                                            <t
-                                                                t-esc="profile.academic_position_filename"
-                                                            />
-                                                        </a>
-                                                    </t>
-                                                    <t t-else="">
-                                                        ยังไม่ได้เลือกไฟล์
-                                                    </t>
-                                                </div>
-                                            </div>
+                                                <t
+                                                    t-set="download_url"
+                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % profile.id if profile.academic_position_filename else False"
+                                                />
+                                            </t>
                                         </div>
                                     </div>
                                 </div>

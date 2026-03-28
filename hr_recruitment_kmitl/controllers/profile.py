@@ -139,36 +139,9 @@ class PortalProfile(CustomerPortal):
             profile.sudo().write(vals)
             self._save_education_history(profile, post)
             self._save_work_history(profile, request.httprequest.form)
-            if post.get("delete_ocsc_file") == "1":
-                profile.sudo().write(
-                    {"ocsc_exam_file": False, "ocsc_exam_filename": False}
-                )
-            else:
-                ocsc_file = request.httprequest.files.get("doc_ocsc_proof")
-                if ocsc_file and ocsc_file.filename:
-                    profile.sudo().write(
-                        {
-                            "ocsc_exam_file": base64.b64encode(ocsc_file.read()),
-                            "ocsc_exam_filename": ocsc_file.filename,
-                        }
-                    )
-            if post.get("delete_academic_position_file") == "1":
-                profile.sudo().write(
-                    {
-                        "academic_position_file": False,
-                        "academic_position_filename": False,
-                    }
-                )
-            else:
-                ap_file = request.httprequest.files.get("doc_academic_position")
-                if ap_file and ap_file.filename:
-                    profile.sudo().write(
-                        {
-                            "academic_position_file": base64.b64encode(ap_file.read()),
-                            "academic_position_filename": ap_file.filename,
-                        }
-                    )
             for doc_name, field_name in [
+                ("doc_ocsc_proof", "ocsc_exam"),
+                ("doc_academic_position", "academic_position"),
                 ("doc_resume", "resume"),
                 ("doc_military_certificate", "military_certificate"),
                 ("doc_id_card", "id_card"),
