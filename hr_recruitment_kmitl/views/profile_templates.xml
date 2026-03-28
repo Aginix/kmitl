@@ -1,22 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Add "My Profile" link to portal home -->
-    <template id="portal_my_home_profile" name="Portal My Home: Profile"
+    <template
+        id="portal_my_home_profile"
+        name="Portal My Home: Profile"
         inherit_id="portal.portal_my_home"
-        priority="40">
+        priority="40"
+    >
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-call="portal.portal_docs_entry">
-                <t t-set="icon" t-value="'/hr_recruitment_kmitl/static/src/img/profile.svg'" />
+                <t
+                    t-set="icon"
+                    t-value="'/hr_recruitment_kmitl/static/src/img/profile.svg'"
+                />
                 <t t-set="title">My Profile</t>
                 <t t-set="url" t-value="'/my/profile'" />
             </t>
         </xpath>
     </template>
     <!-- Change Edit button to link to /my/profile -->
-    <template id="portal_layout_inherit_profile" name="Portal Layout: Profile Edit"
-        inherit_id="portal.portal_layout">
-        <xpath expr="//div[hasclass('o_portal_my_details')]//a[@href='/my/account']"
-            position="attributes">
+    <template
+        id="portal_layout_inherit_profile"
+        name="Portal Layout: Profile Edit"
+        inherit_id="portal.portal_layout"
+    >
+        <xpath
+            expr="//div[hasclass('o_portal_my_details')]//a[@href='/my/account']"
+            position="attributes"
+        >
             <attribute name="href">/my/profile</attribute>
         </xpath>
     </template>
@@ -24,10 +35,16 @@
     <template id="portal_my_profile" name="My Profile">
         <t t-call="website.layout">
             <t t-set="no_breadcrumbs" t-value="1" />
-            <div class="py-5 overflow-hidden position-relative text-white bg-thai-d-dark">
-                <div class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25" />
+            <div
+                class="py-5 overflow-hidden position-relative text-white bg-thai-d-dark"
+            >
+                <div
+                    class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25"
+                />
                 <div class="container position-relative z-1 py-4">
-                    <h1 class="display-5 fw-bold mb-2">แฟ้มประวัติผู้สมัคร (Master Profile)</h1>
+                    <h1
+                        class="display-5 fw-bold mb-2"
+                    >แฟ้มประวัติผู้สมัคร (Master Profile)</h1>
                     <p class="lead text-white-50 mb-0">
                         ข้อมูลส่วนนี้จะถูกใช้เป็นข้อมูลพื้นฐานในการสมัครงานทุกตำแหน่ง
                         เพื่อความสะดวกรวดเร็ว
@@ -45,11 +62,17 @@
                 </div>
                 <div class="card border-secondary mb-4">
                     <div class="card-body p-4 d-flex align-items-center">
-                        <t t-set="user_name" t-value="request.env.user.name or 'User'" />
-                        <t t-set="initials"
-                            t-value="''.join([w[0].upper() for w in user_name.split()[:2]])" />
+                        <t
+                            t-set="user_name"
+                            t-value="request.env.user.name or 'User'"
+                        />
+                        <t
+                            t-set="initials"
+                            t-value="''.join([w[0].upper() for w in user_name.split()[:2]])"
+                        />
                         <div
-                            class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 me-4 border border-primary p-3 flex-shrink-0 bg-primary-light text-primary">
+                            class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 me-4 border border-primary p-3 flex-shrink-0 bg-primary-light text-primary"
+                        >
                             <t t-esc="initials" />
                         </div>
                         <div>
@@ -59,34 +82,43 @@
                             <div class="text-secondary small d-flex flex-wrap gap-3">
                                 <span class="d-flex align-items-center">
                                     <i class="fa fa-envelope-o me-2" />
-                                    <t t-esc="request.env.user.email or 'ไม่มีข้อมูลอีเมล'" />
+                                    <t
+                                        t-esc="request.env.user.email or 'ไม่มีข้อมูลอีเมล'"
+                                    />
                                 </span>
                                 <span class="d-flex align-items-center">
                                     <i class="fa fa-phone me-2" />
                                     <t
-                                        t-esc="request.env.user.partner_id.phone or request.env.user.partner_id.mobile or 'ไม่มีข้อมูลเบอร์โทร'" />
+                                        t-esc="request.env.user.partner_id.phone or request.env.user.partner_id.mobile or 'ไม่มีข้อมูลเบอร์โทร'"
+                                    />
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div
-                    class="alert d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 p-4 mb-4 rounded-5 border border-thai-d bg-thai-d-light">
+                    class="alert d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 p-4 mb-4 rounded-5 border border-thai-d bg-thai-d-light"
+                >
                     <div class="d-flex align-items-start align-items-md-center gap-3">
                         <div
                             class="d-flex align-items-center justify-content-center rounded-circle bg-white flex-shrink-0"
-                            style="width: 48px; height: 48px;">
+                            style="width: 48px; height: 48px;"
+                        >
                             <i class="fa fa-id-badge fs-5 text-thai-d" />
                         </div>
                         <div>
-                            <h6 class="mb-1 fw-bold text-thai-d">ยืนยันตัวตนด้วยแอปพลิเคชัน ThaiD</h6>
+                            <h6
+                                class="mb-1 fw-bold text-thai-d"
+                            >ยืนยันตัวตนด้วยแอปพลิเคชัน ThaiD</h6>
                             <p class="mb-0 small text-secondary">
                                 เพิ่มความน่าเชื่อถือให้โปรไฟล์ของคุณ และลดเวลาในการกรอกข้อมูลส่วนตัว
                             </p>
                         </div>
                     </div>
-                    <button type="button"
-                        class="btn bg-thai-d text-white px-4 py-2 rounded-3 fw-medium shadow-sm flex-shrink-0">
+                    <button
+                        type="button"
+                        class="btn bg-thai-d text-white px-4 py-2 rounded-3 fw-medium shadow-sm flex-shrink-0"
+                    >
                         <i class="fa fa-id-card-o me-2" /> เชื่อมต่อบัญชี </button>
                 </div>
                 <form action="/my/profile" method="post" enctype="multipart/form-data">
@@ -102,56 +134,90 @@
                     >
                         <button
                             class="nav-link active py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
-                            id="tab-personal-tab" data-bs-toggle="tab"
-                            data-bs-target="#tab-personal" type="button"
-                            role="tab" aria-controls="tab-personal" aria-selected="true">
+                            id="tab-personal-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#tab-personal"
+                            type="button"
+                            role="tab"
+                            aria-controls="tab-personal"
+                            aria-selected="true"
+                        >
                             <i class="fa fa-user" />
                             <span>ข้อมูลส่วนตัว</span>
                         </button>
                         <button
                             class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
-                            id="tab-education-tab" data-bs-toggle="tab"
-                            data-bs-target="#tab-education" type="button"
-                            role="tab" aria-controls="tab-education" aria-selected="false">
+                            id="tab-education-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#tab-education"
+                            type="button"
+                            role="tab"
+                            aria-controls="tab-education"
+                            aria-selected="false"
+                        >
                             <i class="fa fa-graduation-cap" />
                             <span>การศึกษา</span>
                         </button>
                         <button
                             class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
-                            id="tab-work-tab" data-bs-toggle="tab" data-bs-target="#tab-work"
-                            type="button" role="tab"
-                            aria-controls="tab-work" aria-selected="false">
+                            id="tab-work-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#tab-work"
+                            type="button"
+                            role="tab"
+                            aria-controls="tab-work"
+                            aria-selected="false"
+                        >
                             <i class="fa fa-briefcase" />
                             <span>ประสบการณ์</span>
                         </button>
                         <button
                             class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
-                            id="tab-academic-tab" data-bs-toggle="tab"
-                            data-bs-target="#tab-academic" type="button"
-                            role="tab" aria-controls="tab-academic" aria-selected="false">
+                            id="tab-academic-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#tab-academic"
+                            type="button"
+                            role="tab"
+                            aria-controls="tab-academic"
+                            aria-selected="false"
+                        >
                             <i class="fa fa-university" />
                             <span>ข้อมูลทางวิชาการและราชการ</span>
                         </button>
                         <button
                             class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
-                            id="tab-skills-tab" data-bs-toggle="tab" data-bs-target="#tab-skills"
+                            id="tab-skills-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#tab-skills"
                             type="button"
-                            role="tab" aria-controls="tab-skills" aria-selected="false">
+                            role="tab"
+                            aria-controls="tab-skills"
+                            aria-selected="false"
+                        >
                             <i class="fa fa-star" />
                             <span>ทักษะและความสนใจ</span>
                         </button>
                         <button
                             class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
-                            id="tab-documents-tab" data-bs-toggle="tab"
-                            data-bs-target="#tab-documents" type="button"
-                            role="tab" aria-controls="tab-documents" aria-selected="false">
+                            id="tab-documents-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#tab-documents"
+                            type="button"
+                            role="tab"
+                            aria-controls="tab-documents"
+                            aria-selected="false"
+                        >
                             <i class="fa fa-file-text-o" />
                             <span>เอกสาร</span>
                         </button>
                     </nav>
                     <div class="tab-content" id="profileTabContent">
                         <!-- Tab 1: ข้อมูลส่วนตัว (Personal Info) -->
-                        <div class="tab-pane fade show active" id="tab-personal" role="tabpanel">
+                        <div
+                            class="tab-pane fade show active"
+                            id="tab-personal"
+                            role="tabpanel"
+                        >
                             <!-- ข้อมูลส่วนบุคคล (Personal Info) -->
                             <div class="card shadow-sm border-0 rounded-4 mb-4">
                                 <div class="card-body p-4 p-md-5">
@@ -163,147 +229,249 @@
                                     (TH) -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-2">
-                                            <label class="col-form-label" for="title">คำนำหน้า
+                                            <label
+                                                class="col-form-label"
+                                                for="title"
+                                            >คำนำหน้า
                                                 (Title)</label>
                                             <select name="title" class="form-select">
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="titles or []" t-as="t">
-                                                    <option t-att-value="t.id"
-                                                        t-att-selected="t.id == profile.title.id or None">
+                                                    <option
+                                                        t-att-value="t.id"
+                                                        t-att-selected="t.id == profile.title.id or None"
+                                                    >
                                                         <t t-esc="t.name" />
                                                     </option>
                                                 </t>
                                             </select>
                                         </div>
                                         <div class="mb-3 col-lg-4">
-                                            <label class="col-form-label" for="first_name">ชื่อจริง
+                                            <label
+                                                class="col-form-label"
+                                                for="first_name"
+                                            >ชื่อจริง
                                                 (First Name TH)
                                                 *</label>
-                                            <input type="text" name="first_name"
+                                            <input
+                                                type="text"
+                                                name="first_name"
                                                 class="form-control"
                                                 t-att-value="profile.first_name or ''"
-                                                required="required" />
+                                                required="required"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-3">
-                                            <label class="col-form-label" for="middle_name">ชื่อกลาง
+                                            <label
+                                                class="col-form-label"
+                                                for="middle_name"
+                                            >ชื่อกลาง
                                                 (Middle Name
                                                 TH)</label>
-                                            <input type="text" name="middle_name"
+                                            <input
+                                                type="text"
+                                                name="middle_name"
                                                 class="form-control"
-                                                t-att-value="profile.middle_name or ''" />
+                                                t-att-value="profile.middle_name or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-3">
-                                            <label class="col-form-label" for="last_name">นามสกุล
+                                            <label
+                                                class="col-form-label"
+                                                for="last_name"
+                                            >นามสกุล
                                                 (Last Name TH)
                                                 *</label>
-                                            <input type="text" name="last_name" class="form-control"
+                                            <input
+                                                type="text"
+                                                name="last_name"
+                                                class="form-control"
                                                 t-att-value="profile.last_name or ''"
-                                                required="required" />
+                                                required="required"
+                                            />
                                         </div>
                                     </div>
                                     <!-- Row: First Name (EN) | Middle Name (EN) | Last Name (EN) -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-4 offset-lg-2">
-                                            <label class="col-form-label" for="first_name_en">First
+                                            <label
+                                                class="col-form-label"
+                                                for="first_name_en"
+                                            >First
                                                 Name (EN)</label>
-                                            <input type="text" name="first_name_en"
+                                            <input
+                                                type="text"
+                                                name="first_name_en"
                                                 class="form-control"
-                                                t-att-value="profile.first_name_en or ''" />
+                                                t-att-value="profile.first_name_en or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-3">
-                                            <label class="col-form-label" for="middle_name_en">Middle
+                                            <label
+                                                class="col-form-label"
+                                                for="middle_name_en"
+                                            >Middle
                                                 Name (EN)</label>
-                                            <input type="text" name="middle_name_en"
+                                            <input
+                                                type="text"
+                                                name="middle_name_en"
                                                 class="form-control"
-                                                t-att-value="profile.middle_name_en or ''" />
+                                                t-att-value="profile.middle_name_en or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-3">
-                                            <label class="col-form-label" for="last_name_en">Last
+                                            <label
+                                                class="col-form-label"
+                                                for="last_name_en"
+                                            >Last
                                                 Name (EN)</label>
-                                            <input type="text" name="last_name_en"
+                                            <input
+                                                type="text"
+                                                name="last_name_en"
                                                 class="form-control"
-                                                t-att-value="profile.last_name_en or ''" />
+                                                t-att-value="profile.last_name_en or ''"
+                                            />
                                         </div>
                                     </div>
                                     <!-- Row: Nationality | Identification No. -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label" for="nationality_id">สัญชาติ
+                                            <label
+                                                class="col-form-label"
+                                                for="nationality_id"
+                                            >สัญชาติ
                                                 (Nationality)
                                                 *</label>
-                                            <select name="nationality_id" class="form-select">
+                                            <select
+                                                name="nationality_id"
+                                                class="form-select"
+                                            >
                                                 <option value="">-- เลือก --</option>
-                                                <t t-foreach="countries or []" t-as="country">
-                                                    <option t-att-value="country.id"
-                                                        t-att-selected="country.id == profile.nationality_id.id or None">
+                                                <t
+                                                    t-foreach="countries or []"
+                                                    t-as="country"
+                                                >
+                                                    <option
+                                                        t-att-value="country.id"
+                                                        t-att-selected="country.id == profile.nationality_id.id or None"
+                                                    >
                                                         <t t-esc="country.name" />
                                                     </option>
                                                 </t>
                                             </select>
                                         </div>
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label" for="identification_id">เลขบัตรประชาชน
+                                            <label
+                                                class="col-form-label"
+                                                for="identification_id"
+                                            >เลขบัตรประชาชน
                                                 (Identification No.)</label>
-                                            <input type="text" name="identification_id"
+                                            <input
+                                                type="text"
+                                                name="identification_id"
                                                 class="form-control"
-                                                t-att-value="profile.identification_id or ''" />
+                                                t-att-value="profile.identification_id or ''"
+                                            />
                                         </div>
                                     </div>
                                     <!-- Row: Birthday | Age -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-4">
-                                            <label class="col-form-label" for="birthday">วัน/เดือน/ปี
+                                            <label
+                                                class="col-form-label"
+                                                for="birthday"
+                                            >วัน/เดือน/ปี
                                                 เกิด (Birthday)
                                                 *</label>
-                                            <input type="date" name="birthday" id="birthday"
+                                            <input
+                                                type="date"
+                                                name="birthday"
+                                                id="birthday"
                                                 class="form-control"
-                                                t-att-value="profile.birthday or ''" />
+                                                t-att-value="profile.birthday or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-2">
-                                            <label class="col-form-label">อายุ (Age)</label>
-                                            <input type="text" id="age-display" class="form-control"
-                                                readonly="readonly" />
+                                            <label
+                                                class="col-form-label"
+                                            >อายุ (Age)</label>
+                                            <input
+                                                type="text"
+                                                id="age-display"
+                                                class="form-control"
+                                                readonly="readonly"
+                                            />
                                         </div>
                                     </div>
                                     <!-- Row: Phone | Email -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label" for="phone">หมายเลขโทรศัพท์
+                                            <label
+                                                class="col-form-label"
+                                                for="phone"
+                                            >หมายเลขโทรศัพท์
                                                 (Phone) *</label>
-                                            <input type="tel" name="phone" class="form-control"
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                class="form-control"
                                                 t-att-value="profile.phone or ''"
-                                                required="required" />
+                                                required="required"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label" for="email">อีเมล (Email)
+                                            <label
+                                                class="col-form-label"
+                                                for="email"
+                                            >อีเมล (Email)
                                                 *</label>
-                                            <input type="email" name="email" class="form-control"
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                class="form-control"
                                                 t-att-value="profile.email or ''"
-                                                required="required" />
+                                                required="required"
+                                            />
                                         </div>
                                     </div>
                                     <!-- ที่อยู่ตามทะเบียนบ้าน (Registered Address) -->
-                                    <h6 class="fw-bold mt-3 mb-2">ที่อยู่ตามทะเบียนบ้าน (Registered
+                                    <h6
+                                        class="fw-bold mt-3 mb-2"
+                                    >ที่อยู่ตามทะเบียนบ้าน (Registered
                                         Address)</h6>
                                     <div class="row">
                                         <div class="mb-3 col-lg-12">
-                                            <label class="col-form-label" for="address_street">
+                                            <label
+                                                class="col-form-label"
+                                                for="address_street"
+                                            >
                                                 ที่อยู่</label>
-                                            <input type="text" name="address_street"
+                                            <input
+                                                type="text"
+                                                name="address_street"
                                                 class="form-control"
-                                                t-att-value="profile.address_street or ''" />
+                                                t-att-value="profile.address_street or ''"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-lg-12">
-                                            <label class="col-form-label" for="address_zip_id">ที่ตั้ง
+                                            <label
+                                                class="col-form-label"
+                                                for="address_zip_id"
+                                            >ที่ตั้ง
                                                 (ZIP
                                                 Location)</label>
-                                            <select name="address_zip_id" class="form-select">
+                                            <select
+                                                name="address_zip_id"
+                                                class="form-select"
+                                            >
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="zips or []" t-as="z">
-                                                    <option t-att-value="z.id"
-                                                        t-att-selected="z.id == profile.address_zip_id.id or None">
+                                                    <option
+                                                        t-att-value="z.id"
+                                                        t-att-selected="z.id == profile.address_zip_id.id or None"
+                                                    >
                                                         <t t-esc="z.display_name" />
                                                     </option>
                                                 </t>
@@ -311,38 +479,63 @@
                                         </div>
                                     </div>
                                     <!-- ที่อยู่ปัจจุบัน (Current Address) -->
-                                    <h6 class="fw-bold mt-3 mb-2">ที่อยู่ปัจจุบัน (Current Address)</h6>
+                                    <h6
+                                        class="fw-bold mt-3 mb-2"
+                                    >ที่อยู่ปัจจุบัน (Current Address)</h6>
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input"
+                                        <input
+                                            type="checkbox"
+                                            class="form-check-input"
                                             id="same_as_registered_address"
                                             name="same_as_registered_address"
-                                            t-att-checked="profile.same_as_registered_address or None" />
-                                        <label class="form-check-label"
-                                            for="same_as_registered_address">
+                                            t-att-checked="profile.same_as_registered_address or None"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="same_as_registered_address"
+                                        >
                                             ที่อยู่ปัจจุบันใช้ตามที่อยู่ทะเบียนบ้าน
                                         </label>
                                     </div>
-                                    <div id="current_address_fields"
-                                        t-att-style="'display:none' if profile.same_as_registered_address else ''">
+                                    <div
+                                        id="current_address_fields"
+                                        t-att-style="'display:none' if profile.same_as_registered_address else ''"
+                                    >
                                         <div class="row">
                                             <div class="mb-3 col-lg-12">
-                                                <label class="col-form-label" for="current_street">
+                                                <label
+                                                    class="col-form-label"
+                                                    for="current_street"
+                                                >
                                                     ที่อยู่</label>
-                                                <input type="text" name="current_street"
+                                                <input
+                                                    type="text"
+                                                    name="current_street"
                                                     class="form-control"
-                                                    t-att-value="profile.current_street or ''" />
+                                                    t-att-value="profile.current_street or ''"
+                                                />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="mb-3 col-lg-12">
-                                                <label class="col-form-label" for="current_zip_id">ที่ตั้ง
+                                                <label
+                                                    class="col-form-label"
+                                                    for="current_zip_id"
+                                                >ที่ตั้ง
                                                     (ZIP
                                                     Location)</label>
-                                                <select name="current_zip_id" class="form-select">
-                                                    <option value="">-- เลือก --</option>
+                                                <select
+                                                    name="current_zip_id"
+                                                    class="form-select"
+                                                >
+                                                    <option
+                                                        value=""
+                                                    >-- เลือก --</option>
                                                     <t t-foreach="zips or []" t-as="z">
-                                                        <option t-att-value="z.id"
-                                                            t-att-selected="z.id == profile.current_zip_id.id or None">
+                                                        <option
+                                                            t-att-value="z.id"
+                                                            t-att-selected="z.id == profile.current_zip_id.id or None"
+                                                        >
                                                             <t t-esc="z.display_name" />
                                                         </option>
                                                     </t>
@@ -362,65 +555,109 @@
                                     <!-- Row: Marital Status -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label" for="marital">สถานภาพสมรส
+                                            <label
+                                                class="col-form-label"
+                                                for="marital"
+                                            >สถานภาพสมรส
                                                 (Marital
                                                 Status)</label>
-                                            <select name="marital" id="marital" class="form-select">
+                                            <select
+                                                name="marital"
+                                                id="marital"
+                                                class="form-select"
+                                            >
                                                 <option value="">-- เลือก --</option>
-                                                <option value="single"
-                                                    t-att-selected="profile.marital == 'single' or None">โสด
+                                                <option
+                                                    value="single"
+                                                    t-att-selected="profile.marital == 'single' or None"
+                                                >โสด
                                                     (Single)</option>
-                                                <option value="married"
-                                                    t-att-selected="profile.marital == 'married' or None">สมรส
+                                                <option
+                                                    value="married"
+                                                    t-att-selected="profile.marital == 'married' or None"
+                                                >สมรส
                                                     (Married)</option>
-                                                <option value="divorced"
-                                                    t-att-selected="profile.marital == 'divorced' or None">หย่าร้าง
+                                                <option
+                                                    value="divorced"
+                                                    t-att-selected="profile.marital == 'divorced' or None"
+                                                >หย่าร้าง
                                                     (Divorced)</option>
-                                                <option value="widowed"
-                                                    t-att-selected="profile.marital == 'widowed' or None">หม้าย
+                                                <option
+                                                    value="widowed"
+                                                    t-att-selected="profile.marital == 'widowed' or None"
+                                                >หม้าย
                                                     (Widowed)</option>
                                             </select>
                                         </div>
                                     </div>
                                     <!-- Row: Spouse Name (shown when married) -->
-                                    <div id="spouse_fields" class="row"
-                                        t-attf-style="{{ '' if profile.marital == 'married' else 'display: none;' }}">
+                                    <div
+                                        id="spouse_fields"
+                                        class="row"
+                                        t-attf-style="{{ '' if profile.marital == 'married' else 'display: none;' }}"
+                                    >
                                         <div class="mb-3 col-lg-2">
-                                            <label class="col-form-label" for="spouse_prefix">คำนำหน้า
+                                            <label
+                                                class="col-form-label"
+                                                for="spouse_prefix"
+                                            >คำนำหน้า
                                                 (Title)</label>
-                                            <select name="spouse_prefix" class="form-select">
+                                            <select
+                                                name="spouse_prefix"
+                                                class="form-select"
+                                            >
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="titles or []" t-as="t">
-                                                    <option t-att-value="t.id"
-                                                        t-att-selected="t.id == profile.spouse_prefix.id or None">
+                                                    <option
+                                                        t-att-value="t.id"
+                                                        t-att-selected="t.id == profile.spouse_prefix.id or None"
+                                                    >
                                                         <t t-esc="t.name" />
                                                     </option>
                                                 </t>
                                             </select>
                                         </div>
                                         <div class="mb-3 col-lg-4">
-                                            <label class="col-form-label" for="spouse_first_name">ชื่อจริง
+                                            <label
+                                                class="col-form-label"
+                                                for="spouse_first_name"
+                                            >ชื่อจริง
                                                 (First
                                                 Name)</label>
-                                            <input type="text" name="spouse_first_name"
+                                            <input
+                                                type="text"
+                                                name="spouse_first_name"
                                                 class="form-control"
-                                                t-att-value="profile.spouse_first_name or ''" />
+                                                t-att-value="profile.spouse_first_name or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-3">
-                                            <label class="col-form-label" for="spouse_middle_name">ชื่อกลาง
+                                            <label
+                                                class="col-form-label"
+                                                for="spouse_middle_name"
+                                            >ชื่อกลาง
                                                 (Middle
                                                 Name)</label>
-                                            <input type="text" name="spouse_middle_name"
+                                            <input
+                                                type="text"
+                                                name="spouse_middle_name"
                                                 class="form-control"
-                                                t-att-value="profile.spouse_middle_name or ''" />
+                                                t-att-value="profile.spouse_middle_name or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-3">
-                                            <label class="col-form-label" for="spouse_last_name">นามสกุล
+                                            <label
+                                                class="col-form-label"
+                                                for="spouse_last_name"
+                                            >นามสกุล
                                                 (Last
                                                 Name)</label>
-                                            <input type="text" name="spouse_last_name"
+                                            <input
+                                                type="text"
+                                                name="spouse_last_name"
                                                 class="form-control"
-                                                t-att-value="profile.spouse_last_name or ''" />
+                                                t-att-value="profile.spouse_last_name or ''"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -434,34 +671,54 @@
                                     </t>
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label"
-                                                for="emergency_contact_name">Name</label>
-                                            <input type="text" name="emergency_contact_name"
+                                            <label
+                                                class="col-form-label"
+                                                for="emergency_contact_name"
+                                            >Name</label>
+                                            <input
+                                                type="text"
+                                                name="emergency_contact_name"
                                                 class="form-control"
-                                                t-att-value="profile.emergency_contact_name or ''" />
+                                                t-att-value="profile.emergency_contact_name or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label"
-                                                for="emergency_contact_relation">Relation</label>
-                                            <input type="text" name="emergency_contact_relation"
+                                            <label
+                                                class="col-form-label"
+                                                for="emergency_contact_relation"
+                                            >Relation</label>
+                                            <input
+                                                type="text"
+                                                name="emergency_contact_relation"
                                                 class="form-control"
-                                                t-att-value="profile.emergency_contact_relation or ''" />
+                                                t-att-value="profile.emergency_contact_relation or ''"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label"
-                                                for="emergency_contact_phone">Phone</label>
-                                            <input type="tel" name="emergency_contact_phone"
+                                            <label
+                                                class="col-form-label"
+                                                for="emergency_contact_phone"
+                                            >Phone</label>
+                                            <input
+                                                type="tel"
+                                                name="emergency_contact_phone"
                                                 class="form-control"
-                                                t-att-value="profile.emergency_contact_phone or ''" />
+                                                t-att-value="profile.emergency_contact_phone or ''"
+                                            />
                                         </div>
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label"
-                                                for="emergency_contact_email">Email</label>
-                                            <input type="email" name="emergency_contact_email"
+                                            <label
+                                                class="col-form-label"
+                                                for="emergency_contact_email"
+                                            >Email</label>
+                                            <input
+                                                type="email"
+                                                name="emergency_contact_email"
                                                 class="form-control"
-                                                t-att-value="profile.emergency_contact_email or ''" />
+                                                t-att-value="profile.emergency_contact_email or ''"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -473,11 +730,17 @@
                                         <t t-set="title">สุขภาพ (Health)</t>
                                     </t>
                                     <div class="mb-3">
-                                        <label class="col-form-label" for="congenital_disease">Congenital
+                                        <label
+                                            class="col-form-label"
+                                            for="congenital_disease"
+                                        >Congenital
                                             Disease /
                                             โรคประจำตัว</label>
-                                        <textarea name="congenital_disease" class="form-control"
-                                            rows="3">
+                                        <textarea
+                                            name="congenital_disease"
+                                            class="form-control"
+                                            rows="3"
+                                        >
                                             <t
                                                 t-esc="profile.congenital_disease or ''"
                                             />
@@ -497,59 +760,102 @@
                                     </t>
                                     <div class="row mb-4">
                                         <div class="col-md-6">
-                                            <label class="col-form-label fw-semibold"
-                                                for="highest_education">วุฒิการศึกษาสูงสุด (Highest
+                                            <label
+                                                class="col-form-label fw-semibold"
+                                                for="highest_education"
+                                            >วุฒิการศึกษาสูงสุด (Highest
                                                 Education
                                                 Level)</label>
-                                            <select name="highest_education" id="highest_education"
-                                                class="form-select">
+                                            <select
+                                                name="highest_education"
+                                                id="highest_education"
+                                                class="form-select"
+                                            >
                                                 <option value="">-- เลือก --</option>
-                                                <option value="doctor"
-                                                    t-att-selected="profile.highest_education == 'doctor' or None">
+                                                <option
+                                                    value="doctor"
+                                                    t-att-selected="profile.highest_education == 'doctor' or None"
+                                                >
                                                     ปริญญาเอก</option>
-                                                <option value="master"
-                                                    t-att-selected="profile.highest_education == 'master' or None">
+                                                <option
+                                                    value="master"
+                                                    t-att-selected="profile.highest_education == 'master' or None"
+                                                >
                                                     ปริญญาโท</option>
-                                                <option value="bachelor"
-                                                    t-att-selected="profile.highest_education == 'bachelor' or None">
+                                                <option
+                                                    value="bachelor"
+                                                    t-att-selected="profile.highest_education == 'bachelor' or None"
+                                                >
                                                     ปริญญาตรี</option>
-                                                <option value="under_bachelor"
-                                                    t-att-selected="profile.highest_education == 'under_bachelor' or None">
+                                                <option
+                                                    value="under_bachelor"
+                                                    t-att-selected="profile.highest_education == 'under_bachelor' or None"
+                                                >
                                                     ต่ำกว่าปริญญาตรี</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div id="education_sections"
-                                        t-att-style="'' if profile.highest_education else 'display: none;'">
+                                    <div
+                                        id="education_sections"
+                                        t-att-style="'' if profile.highest_education else 'display: none;'"
+                                    >
                                         <!-- 1-3: ปริญญาเอก / โท / ตรี (readonly level) -->
-                                        <t t-foreach="education_levels or []" t-as="edu_level">
+                                        <t
+                                            t-foreach="education_levels or []"
+                                            t-as="edu_level"
+                                        >
                                             <t t-set="edu_key" t-value="edu_level.id" />
-                                            <t t-set="edu_label" t-value="edu_level.name" />
-                                            <t t-set="edu_rec"
-                                                t-value="education_by_level.get(edu_key)" />
-                                            <div class="edu-section"
+                                            <t
+                                                t-set="edu_label"
+                                                t-value="edu_level.name"
+                                            />
+                                            <t
+                                                t-set="edu_rec"
+                                                t-value="education_by_level.get(edu_key)"
+                                            />
+                                            <div
+                                                class="edu-section"
                                                 t-att-data-edu-level="edu_level.level"
-                                                t-att-style="'' if (profile.highest_education == 'doctor' and edu_level.level in [70, 80, 90]) or (profile.highest_education == 'master' and edu_level.level in [70, 80]) or (profile.highest_education == 'bachelor' and edu_level.level == 70) else 'display: none;'">
+                                                t-att-style="'' if (profile.highest_education == 'doctor' and edu_level.level in [70, 80, 90]) or (profile.highest_education == 'master' and edu_level.level in [70, 80]) or (profile.highest_education == 'bachelor' and edu_level.level == 70) else 'display: none;'"
+                                            >
                                                 <t
-                                                    t-call="hr_recruitment_kmitl.profile_education_section">
-                                                    <t t-set="section_index"
-                                                        t-value="edu_level_index + 1" />
-                                                    <t t-set="section_prefix"
-                                                        t-valuef="edu_#{edu_key}_" />
-                                                    <t t-set="show_level_select" t-value="False" />
+                                                    t-call="hr_recruitment_kmitl.profile_education_section"
+                                                >
+                                                    <t
+                                                        t-set="section_index"
+                                                        t-value="edu_level_index + 1"
+                                                    />
+                                                    <t
+                                                        t-set="section_prefix"
+                                                        t-valuef="edu_#{edu_key}_"
+                                                    />
+                                                    <t
+                                                        t-set="show_level_select"
+                                                        t-value="False"
+                                                    />
                                                 </t>
                                             </div>
                                         </t>
                                         <!-- 4: ต่ำกว่าปริญญาตรี (selectable level) -->
-                                        <t t-set="edu_rec" t-value="sub_bachelor_edu_rec" />
+                                        <t
+                                            t-set="edu_rec"
+                                            t-value="sub_bachelor_edu_rec"
+                                        />
                                         <t t-set="edu_label">ต่ำกว่าปริญญาตรี</t>
-                                        <div class="edu-section" data-edu-level="sub"
-                                            t-att-style="'' if profile.highest_education == 'under_bachelor' else 'display: none;'">
+                                        <div
+                                            class="edu-section"
+                                            data-edu-level="sub"
+                                            t-att-style="'' if profile.highest_education == 'under_bachelor' else 'display: none;'"
+                                        >
                                             <t
-                                                t-call="hr_recruitment_kmitl.profile_education_section">
+                                                t-call="hr_recruitment_kmitl.profile_education_section"
+                                            >
                                                 <t t-set="section_index" t-value="4" />
                                                 <t t-set="section_prefix">edu_sub_</t>
-                                                <t t-set="show_level_select" t-value="True" />
+                                                <t
+                                                    t-set="show_level_select"
+                                                    t-value="True"
+                                                />
                                             </t>
                                         </div>
                                     </div>
@@ -577,43 +883,66 @@
                                             </tr>
                                         </thead>
                                         <tbody id="wh-tbody">
-                                            <t t-foreach="profile.work_history_ids" t-as="wh">
+                                            <t
+                                                t-foreach="profile.work_history_ids"
+                                                t-as="wh"
+                                            >
                                                 <tr>
                                                     <td>
-                                                        <input type="hidden" name="wh_id"
-                                                            t-att-value="wh.id" />
-                                                        <input type="text" name="wh_company_name"
+                                                        <input
+                                                            type="hidden"
+                                                            name="wh_id"
+                                                            t-att-value="wh.id"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            name="wh_company_name"
                                                             class="form-control form-control-sm"
                                                             t-att-value="wh.company_name"
-                                                            required="required" />
+                                                            required="required"
+                                                        />
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="wh_job_title"
+                                                        <input
+                                                            type="text"
+                                                            name="wh_job_title"
                                                             class="form-control form-control-sm"
                                                             t-att-value="wh.job_title"
-                                                            required="required" />
+                                                            required="required"
+                                                        />
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="wh_salary"
+                                                        <input
+                                                            type="number"
+                                                            name="wh_salary"
                                                             class="form-control form-control-sm"
                                                             step="0.01"
                                                             t-att-value="wh.salary"
-                                                            required="required" />
+                                                            required="required"
+                                                        />
                                                     </td>
                                                     <td>
-                                                        <input type="date" name="wh_date_start"
+                                                        <input
+                                                            type="date"
+                                                            name="wh_date_start"
                                                             class="form-control form-control-sm"
                                                             t-att-value="wh.date_start"
-                                                            required="required" />
+                                                            required="required"
+                                                        />
                                                     </td>
                                                     <td>
-                                                        <input type="date" name="wh_date_end"
+                                                        <input
+                                                            type="date"
+                                                            name="wh_date_end"
                                                             class="form-control form-control-sm"
-                                                            t-att-value="wh.date_end or ''" />
+                                                            t-att-value="wh.date_end or ''"
+                                                        />
                                                     </td>
                                                     <td>
-                                                        <button type="button"
-                                                            class="btn btn-sm btn-outline-danger btn-wh-remove">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline-danger btn-wh-remove"
+                                                        >
                                                             <i class="fa fa-trash" />
                                                         </button>
                                                     </td>
@@ -621,9 +950,14 @@
                                             </t>
                                         </tbody>
                                     </table>
-                                    <button type="button" class="btn btn-sm btn-outline-success"
-                                        id="btn-wh-add">
-                                        <i class="fa fa-plus-circle me-1" /> Add Work History </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-success"
+                                        id="btn-wh-add"
+                                    >
+                                        <i
+                                            class="fa fa-plus-circle me-1"
+                                        /> Add Work History </button>
                                 </div>
                             </div>
                         </div>
@@ -639,11 +973,17 @@
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
                                             <div class="form-check">
-                                                <input type="checkbox" name="has_ocsc_exam"
+                                                <input
+                                                    type="checkbox"
+                                                    name="has_ocsc_exam"
                                                     class="form-check-input"
                                                     id="has_ocsc_exam"
-                                                    t-att-checked="profile.has_ocsc_exam or None" />
-                                                <label class="form-check-label" for="has_ocsc_exam">
+                                                    t-att-checked="profile.has_ocsc_exam or None"
+                                                />
+                                                <label
+                                                    class="form-check-label"
+                                                    for="has_ocsc_exam"
+                                                >
                                                     Has OCSC Exam / ผ่านการสอบ ก.พ.
                                                 </label>
                                             </div>
@@ -655,26 +995,42 @@
                                     >
                                         <div class="row">
                                             <div class="mb-3 col-lg-12">
-                                                <label class="col-form-label d-block">Exam Level</label>
-                                                <div class="form-check form-check-inline">
-                                                    <input type="radio" name="ocsc_exam_level"
+                                                <label
+                                                    class="col-form-label d-block"
+                                                >Exam Level</label>
+                                                <div
+                                                    class="form-check form-check-inline"
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="ocsc_exam_level"
                                                         value="bachelor"
                                                         class="form-check-input"
                                                         id="ocsc_level_bachelor"
-                                                        t-att-checked="profile.ocsc_exam_level == 'bachelor' or None" />
-                                                    <label class="form-check-label"
-                                                        for="ocsc_level_bachelor">
+                                                        t-att-checked="profile.ocsc_exam_level == 'bachelor' or None"
+                                                    />
+                                                    <label
+                                                        class="form-check-label"
+                                                        for="ocsc_level_bachelor"
+                                                    >
                                                         Bachelor
                                                     </label>
                                                 </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input type="radio" name="ocsc_exam_level"
+                                                <div
+                                                    class="form-check form-check-inline"
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="ocsc_exam_level"
                                                         value="master"
                                                         class="form-check-input"
                                                         id="ocsc_level_master"
-                                                        t-att-checked="profile.ocsc_exam_level == 'master' or None" />
-                                                    <label class="form-check-label"
-                                                        for="ocsc_level_master">
+                                                        t-att-checked="profile.ocsc_exam_level == 'master' or None"
+                                                    />
+                                                    <label
+                                                        class="form-check-label"
+                                                        for="ocsc_level_master"
+                                                    >
                                                         Master
                                                     </label>
                                                 </div>
@@ -682,20 +1038,32 @@
                                         </div>
                                         <div class="row">
                                             <div class="mb-3 col-lg-6">
-                                                <label class="col-form-label" for="ocsc_exam_date">Exam
+                                                <label
+                                                    class="col-form-label"
+                                                    for="ocsc_exam_date"
+                                                >Exam
                                                     Date</label>
-                                                <input type="date" id="ocsc_exam_date"
+                                                <input
+                                                    type="date"
+                                                    id="ocsc_exam_date"
                                                     name="ocsc_exam_date"
                                                     class="form-control"
-                                                    t-att-value="profile.ocsc_exam_date or ''" />
+                                                    t-att-value="profile.ocsc_exam_date or ''"
+                                                />
                                             </div>
                                             <div class="mb-3 col-lg-6">
-                                                <label class="col-form-label" for="ocsc_exam_number">Exam
+                                                <label
+                                                    class="col-form-label"
+                                                    for="ocsc_exam_number"
+                                                >Exam
                                                     Number</label>
-                                                <input type="text" id="ocsc_exam_number"
+                                                <input
+                                                    type="text"
+                                                    id="ocsc_exam_number"
                                                     name="ocsc_exam_number"
                                                     class="form-control"
-                                                    t-att-value="profile.ocsc_exam_number or ''" />
+                                                    t-att-value="profile.ocsc_exam_number or ''"
+                                                />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -773,42 +1141,62 @@
                                     </t>
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
-                                            <label class="col-form-label" for="academic_standing_id">ตำแหน่งทางวิชาการ
+                                            <label
+                                                class="col-form-label"
+                                                for="academic_standing_id"
+                                            >ตำแหน่งทางวิชาการ
                                                 (Academic Position)</label>
-                                            <select name="academic_standing_id"
+                                            <select
+                                                name="academic_standing_id"
                                                 id="academic_standing_id"
-                                                class="form-select">
+                                                class="form-select"
+                                            >
                                                 <option value="">ไม่มี</option>
-                                                <t t-foreach="academic_standings or []"
-                                                    t-as="standing">
-                                                    <option t-att-value="standing.id"
-                                                        t-att-selected="standing.id == profile.academic_standing_id.id or None">
+                                                <t
+                                                    t-foreach="academic_standings or []"
+                                                    t-as="standing"
+                                                >
+                                                    <option
+                                                        t-att-value="standing.id"
+                                                        t-att-selected="standing.id == profile.academic_standing_id.id or None"
+                                                    >
                                                         <t t-esc="standing.name" />
                                                     </option>
                                                 </t>
                                             </select>
                                         </div>
                                     </div>
-                                    <div id="academic_position_details"
-                                        t-att-style="'' if profile.academic_standing_id.id else 'display: none;'">
+                                    <div
+                                        id="academic_position_details"
+                                        t-att-style="'' if profile.academic_standing_id.id else 'display: none;'"
+                                    >
                                         <div class="row">
                                             <div class="mb-3 col-lg-6">
-                                                <label class="col-form-label"
-                                                    for="academic_position_date">แต่งตั้งเมื่อ
+                                                <label
+                                                    class="col-form-label"
+                                                    for="academic_position_date"
+                                                >แต่งตั้งเมื่อ
                                                     (Appointed
                                                     Date)</label>
-                                                <input type="date" name="academic_position_date"
+                                                <input
+                                                    type="date"
+                                                    name="academic_position_date"
                                                     class="form-control"
-                                                    t-att-value="profile.academic_position_date or ''" />
+                                                    t-att-value="profile.academic_position_date or ''"
+                                                />
                                             </div>
                                             <div class="mb-3 col-lg-6">
-                                                <label class="col-form-label"
-                                                    for="academic_position_institution">สถาบันที่ได้รับ
+                                                <label
+                                                    class="col-form-label"
+                                                    for="academic_position_institution"
+                                                >สถาบันที่ได้รับ
                                                     (Institution)</label>
-                                                <input type="text"
+                                                <input
+                                                    type="text"
                                                     name="academic_position_institution"
                                                     class="form-control"
-                                                    t-att-value="profile.academic_position_institution or ''" />
+                                                    t-att-value="profile.academic_position_institution or ''"
+                                                />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -816,17 +1204,61 @@
                                                 แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ
                                             </label>
                                             <div
-                                                class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3">
+                                                class="js-file-upload-wrapper d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3"
+                                                t-att-data-has-file="'1' if profile.academic_position_filename else '0'"
+                                            >
+                                                <input
+                                                    type="hidden"
+                                                    name="delete_academic_position_file"
+                                                    value="0"
+                                                    class="js-delete-flag"
+                                                />
                                                 <label
-                                                    class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0">
+                                                    class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0 js-upload-btn"
+                                                    t-att-style="'display:none' if profile.academic_position_filename else ''"
+                                                >
                                                     <i class="fa fa-upload me-2" />
-                                                    <span class="js-upload-text">Upload</span>
-                                                    <input type="file" class="d-none js-file-input"
-                                                        name="doc_english_score"
-                                                        accept=".pdf,.jpg,.jpeg,.png" />
+                                                    <span>Upload</span>
+                                                    <input
+                                                        type="file"
+                                                        class="d-none js-file-input"
+                                                        name="doc_academic_position"
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                    />
                                                 </label>
-                                                <div class="small text-muted js-file-name">
-                                                    ยังไม่ได้เลือกไฟล์
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-danger btn-sm px-3 py-2 fw-medium rounded-3 js-file-remove"
+                                                    t-att-style="'' if profile.academic_position_filename else 'display:none'"
+                                                    title="ลบไฟล์"
+                                                >
+                                                    <i class="fa fa-trash me-2" />
+                                                    <span>Delete</span>
+                                                </button>
+
+                                                <div
+                                                    class="small js-file-status"
+                                                    t-att-class="'small text-success' if profile.academic_position_filename else 'small text-muted'"
+                                                >
+                                                    <t
+                                                        t-if="profile.academic_position_filename"
+                                                    >
+                                                        <i
+                                                            class="fa fa-check-circle me-1"
+                                                        />
+                                                        <a
+                                                            t-attf-href="/web/content?model=portal.profile&amp;id=#{profile.id}&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true"
+                                                            class="text-success text-decoration-underline js-file-name-link"
+                                                            target="_blank"
+                                                        >
+                                                            <t
+                                                                t-esc="profile.academic_position_filename"
+                                                            />
+                                                        </a>
+                                                    </t>
+                                                    <t t-else="">
+                                                        ยังไม่ได้เลือกไฟล์
+                                                    </t>
                                                 </div>
                                             </div>
                                         </div>
@@ -835,15 +1267,25 @@
                             </div>
 
                             <div class="mb-4">
-                                <h6 class="fw-bold mb-3">Minimum English Test Scores</h6>
+                                <h6
+                                    class="fw-bold mb-3"
+                                >Minimum English Test Scores</h6>
 
-                                <div class="table-responsive rounded-3 border overflow-hidden">
+                                <div
+                                    class="table-responsive rounded-3 border overflow-hidden"
+                                >
                                     <table class="table table-sm align-middle mb-0">
                                         <thead class="bg-light border-bottom">
                                             <tr>
-                                                <th class="px-4 py-3 fw-semibold">Test Type</th>
-                                                <th class="px-4 py-3 fw-semibold">Format</th>
-                                                <th class="px-4 py-3 fw-semibold text-end">Minimum
+                                                <th
+                                                    class="px-4 py-3 fw-semibold"
+                                                >Test Type</th>
+                                                <th
+                                                    class="px-4 py-3 fw-semibold"
+                                                >Format</th>
+                                                <th
+                                                    class="px-4 py-3 fw-semibold text-end"
+                                                >Minimum
                                                     Score</th>
                                             </tr>
                                         </thead>
@@ -853,23 +1295,30 @@
                                                 <td class="px-4 py-3">TOEFL</td>
                                                 <td class="px-4 py-3">Paper-Based</td>
                                                 <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold">
+                                                    class="px-4 py-3 text-end text-primary fw-semibold"
+                                                >
                                                     500</td>
                                             </tr>
 
                                             <tr>
                                                 <td class="px-4 py-3">TOEFL</td>
-                                                <td class="px-4 py-3">Computer-Based</td>
                                                 <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold">
+                                                    class="px-4 py-3"
+                                                >Computer-Based</td>
+                                                <td
+                                                    class="px-4 py-3 text-end text-primary fw-semibold"
+                                                >
                                                     173</td>
                                             </tr>
 
                                             <tr>
                                                 <td class="px-4 py-3">TOEFL</td>
-                                                <td class="px-4 py-3">Internet-Based (iBT)</td>
                                                 <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold">
+                                                    class="px-4 py-3"
+                                                >Internet-Based (iBT)</td>
+                                                <td
+                                                    class="px-4 py-3 text-end text-primary fw-semibold"
+                                                >
                                                     61</td>
                                             </tr>
 
@@ -877,7 +1326,8 @@
                                                 <td class="px-4 py-3">IELTS</td>
                                                 <td class="px-4 py-3">-</td>
                                                 <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold">
+                                                    class="px-4 py-3 text-end text-primary fw-semibold"
+                                                >
                                                     5.0</td>
                                             </tr>
 
@@ -885,7 +1335,8 @@
                                                 <td class="px-4 py-3">CU-TEP</td>
                                                 <td class="px-4 py-3">-</td>
                                                 <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold">
+                                                    class="px-4 py-3 text-end text-primary fw-semibold"
+                                                >
                                                     60</td>
                                             </tr>
 
@@ -893,7 +1344,8 @@
                                                 <td class="px-4 py-3">KMITL-TEP</td>
                                                 <td class="px-4 py-3">-</td>
                                                 <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold">B1
+                                                    class="px-4 py-3 text-end text-primary fw-semibold"
+                                                >B1
                                                     Level</td>
                                             </tr>
                                         </tbody>
@@ -904,14 +1356,20 @@
                             <div class="card shadow-sm border-0 rounded-4">
                                 <div class="card-body p-4 p-md-5">
                                     <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                                        <t t-set="title">คะแนนสอบภาษาอังกฤษ (English Proficiency
+                                        <t
+                                            t-set="title"
+                                        >คะแนนสอบภาษาอังกฤษ (English Proficiency
                                             Scores)</t>
                                     </t>
                                     <div class="row g-4 mb-4">
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small">Test Type</label>
+                                            <label
+                                                class="form-label fw-semibold small"
+                                            >Test Type</label>
                                             <select class="form-select py-2">
-                                                <option selected="selected">Please select</option>
+                                                <option
+                                                    selected="selected"
+                                                >Please select</option>
                                                 <option>TOEFL (Paper-Based)</option>
                                                 <option>TOEFL (Computer-Based)</option>
                                                 <option>TOEFL (Internet-Based)</option>
@@ -921,41 +1379,67 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small">Score</label>
-                                            <input type="text" class="form-control py-2"
-                                                placeholder="Enter score" />
+                                            <label
+                                                class="form-label fw-semibold small"
+                                            >Score</label>
+                                            <input
+                                                type="text"
+                                                class="form-control py-2"
+                                                placeholder="Enter score"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row g-4 mb-4">
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small">Test Date</label>
+                                            <label
+                                                class="form-label fw-semibold small"
+                                            >Test Date</label>
                                             <div class="input-group">
-                                                <input type="date" class="form-control py-2" />
+                                                <input
+                                                    type="date"
+                                                    class="form-control py-2"
+                                                />
                                                 <span class="input-group-text">
-                                                    <i class="fa fa-calendar-o text-secondary"></i>
+                                                    <i
+                                                        class="fa fa-calendar-o text-secondary"
+                                                    />
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small">Certificate
+                                            <label
+                                                class="form-label fw-semibold small"
+                                            >Certificate
                                                 Number</label>
-                                            <input type="text" class="form-control py-2"
-                                                placeholder="Enter certificate number" />
+                                            <input
+                                                type="text"
+                                                class="form-control py-2"
+                                                placeholder="Enter certificate number"
+                                            />
                                         </div>
                                     </div>
                                     <div class="english-score-upload">
-                                        <label class="form-label fw-semibold small d-block mb-2">
+                                        <label
+                                            class="form-label fw-semibold small d-block mb-2"
+                                        >
                                             English Test Result Attachment
                                         </label>
                                         <div
-                                            class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+                                            class="d-flex flex-column flex-sm-row align-items-sm-center gap-2"
+                                        >
                                             <label
-                                                class="btn btn-outline-secondary btn-sm px-4 py-2 fw-medium rounded-3 mb-0">
-                                                <i class="fa fa-upload me-2"></i>
-                                                <span class="js-upload-text">Upload File</span>
-                                                <input type="file" class="d-none js-file-input"
+                                                class="btn btn-outline-secondary btn-sm px-4 py-2 fw-medium rounded-3 mb-0"
+                                            >
+                                                <i class="fa fa-upload me-2" />
+                                                <span
+                                                    class="js-upload-text"
+                                                >Upload File</span>
+                                                <input
+                                                    type="file"
+                                                    class="d-none js-file-input"
                                                     name="doc_english_score"
-                                                    accept=".pdf,.jpg,.jpeg,.png" />
+                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                />
                                             </label>
                                             <div class="small text-muted js-file-name">
                                                 No file selected
@@ -974,47 +1458,66 @@
                                         <t t-set="title">ทักษะและความสนใจ
                                             (Skills &amp; Interests)</t>
                                     </t>
-                                    <label class="col-form-label" for="foreign_language_skills">Foreign
+                                    <label
+                                        class="col-form-label"
+                                        for="foreign_language_skills"
+                                    >Foreign
                                         Language
                                         Skills /
                                         ทักษะภาษาต่างประเทศ</label>
-                                    <textarea name="foreign_language_skills" class="form-control"
-                                        rows="3">
+                                    <textarea
+                                        name="foreign_language_skills"
+                                        class="form-control"
+                                        rows="3"
+                                    >
                                         <t
                                             t-esc="profile.foreign_language_skills or ''"
                                         />
                                     </textarea>
                                     <div class="mb-3">
-                                        <label class="col-form-label" for="computer_skills">Computer
+                                        <label
+                                            class="col-form-label"
+                                            for="computer_skills"
+                                        >Computer
                                             Skills
                                             /
                                             ทักษะคอมพิวเตอร์</label>
-                                        <textarea name="computer_skills" class="form-control"
-                                            rows="3">
-                                            <t
-                                                t-esc="profile.computer_skills or ''"
-                                            />
+                                        <textarea
+                                            name="computer_skills"
+                                            class="form-control"
+                                            rows="3"
+                                        >
+                                            <t t-esc="profile.computer_skills or ''" />
                                         </textarea>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="col-form-label" for="other_abilities">Other
+                                        <label
+                                            class="col-form-label"
+                                            for="other_abilities"
+                                        >Other
                                             Abilities
                                             /
                                             ความสามารถอื่นๆ</label>
-                                        <textarea name="other_abilities" class="form-control"
-                                            rows="3">
-                                            <t
-                                                t-esc="profile.other_abilities or ''"
-                                            />
+                                        <textarea
+                                            name="other_abilities"
+                                            class="form-control"
+                                            rows="3"
+                                        >
+                                            <t t-esc="profile.other_abilities or ''" />
                                         </textarea>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="col-form-label" for="interests">Interests /
+                                        <label
+                                            class="col-form-label"
+                                            for="interests"
+                                        >Interests /
                                             ความสนใจ</label>
-                                        <textarea name="interests" class="form-control" rows="3">
-                                            <t
-                                                t-esc="profile.interests or ''"
-                                            />
+                                        <textarea
+                                            name="interests"
+                                            class="form-control"
+                                            rows="3"
+                                        >
+                                            <t t-esc="profile.interests or ''" />
                                         </textarea>
                                     </div>
                                 </div>
@@ -1026,48 +1529,74 @@
                             <div class="card shadow-sm border-0 rounded-4">
                                 <div class="card-body p-4 p-md-5">
                                     <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                                        <t t-set="title">เอกสารประกอบ (Supporting Documents)</t>
+                                        <t
+                                            t-set="title"
+                                        >เอกสารประกอบ (Supporting Documents)</t>
                                     </t>
                                     <div class="d-flex flex-column gap-3">
                                         <!-- Photo -->
-                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
                                             <t t-set="name">doc_photo</t>
                                             <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
-                                            <t t-set="description">ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
+                                            <t
+                                                t-set="description"
+                                            >ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
                                         </t>
                                         <!-- Resume -->
-                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
                                             <t t-set="name">doc_resume</t>
-                                            <t t-set="label">ประวัติการทำงาน (Resume)</t>
+                                            <t
+                                                t-set="label"
+                                            >ประวัติการทำงาน (Resume)</t>
                                         </t>
                                         <!-- Military Certificate -->
-                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
                                             <t t-set="name">doc_military_certificate</t>
-                                            <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
+                                            <t
+                                                t-set="label"
+                                            >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
                                                 หรือได้รับการยกเว้นการเกณฑ์ทหารใบ สด.8 สด.9 หรือ
                                                 สด.43
                                                 หรือหลักฐานทาง ทหารอื่น ๆ</t>
                                             <t t-set="description">เฉพาะเพศชาย</t>
                                         </t>
                                         <!-- Education Report -->
-                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
                                             <t t-set="name">doc_education_report</t>
-                                            <t t-set="label">สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</t>
+                                            <t
+                                                t-set="label"
+                                            >สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</t>
                                         </t>
                                         <!-- Work Certificate -->
-                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
                                             <t t-set="name">doc_work_certificate</t>
                                             <t t-set="label">
                                                 หนังสือรับรองการทำงาน
                                                 กรณีบุคคลที่ปฏิบัติหน้าที่เป็นอาจารย์ประจำจากสถาบันอุดมศึกษาอื่น
                                             </t>
-                                            <t t-set="description">กรณีไม่มีผลคะแนน ภาษาอังกฤษ
+                                            <t
+                                                t-set="description"
+                                            >กรณีไม่มีผลคะแนน ภาษาอังกฤษ
                                                 และจบการศึกษาจากสถาบันการศึกษาในประเทศ</t>
                                         </t>
                                         <!-- Other Documents -->
-                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
                                             <t t-set="name">doc_other_documents</t>
-                                            <t t-set="label">สำเนาเอกสารอื่น ๆ เช่น การเปลี่ยนชื่อ
+                                            <t
+                                                t-set="label"
+                                            >สำเนาเอกสารอื่น ๆ เช่น การเปลี่ยนชื่อ
                                                 นามสกุล</t>
                                             <t t-set="description">เอกสารเพิ่มเติม</t>
                                         </t>
@@ -1092,11 +1621,13 @@
             <div class="row g-0">
                 <!-- Left: Degree label -->
                 <div
-                    class="col-lg-3 d-flex align-items-center justify-content-center p-3 border-end">
+                    class="col-lg-3 d-flex align-items-center justify-content-center p-3 border-end"
+                >
                     <div class="text-center">
                         <div
                             class="rounded-circle border border-2 border-primary text-primary d-inline-flex align-items-center justify-content-center mb-2"
-                            style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;">
+                            style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;"
+                        >
                             <t t-esc="section_index" />
                         </div>
                         <h6 class="mb-0 fw-bold">
@@ -1110,12 +1641,16 @@
                     <div t-if="show_level_select" class="row">
                         <div class="mb-3 col-md-6">
                             <label class="col-form-label">ระดับการศึกษา</label>
-                            <select t-attf-name="#{section_prefix}education_level_id"
-                                class="form-select">
+                            <select
+                                t-attf-name="#{section_prefix}education_level_id"
+                                class="form-select"
+                            >
                                 <option value="">-- เลือก --</option>
                                 <t t-foreach="sub_bachelor_levels or []" t-as="sub_lv">
-                                    <option t-att-value="sub_lv.id"
-                                        t-att-selected="edu_rec and sub_lv.id == edu_rec.education_level_id.id or None">
+                                    <option
+                                        t-att-value="sub_lv.id"
+                                        t-att-selected="edu_rec and sub_lv.id == edu_rec.education_level_id.id or None"
+                                    >
                                         <t t-esc="sub_lv.name" />
                                     </option>
                                 </t>
@@ -1125,31 +1660,45 @@
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label class="col-form-label">Program</label>
-                            <input type="text" t-attf-name="#{section_prefix}program"
+                            <input
+                                type="text"
+                                t-attf-name="#{section_prefix}program"
                                 class="form-control"
-                                t-att-value="edu_rec.program if edu_rec else ''" />
+                                t-att-value="edu_rec.program if edu_rec else ''"
+                            />
                         </div>
                         <div class="mb-3 col-md-6">
                             <label class="col-form-label">Major</label>
-                            <input type="text" t-attf-name="#{section_prefix}major"
+                            <input
+                                type="text"
+                                t-attf-name="#{section_prefix}major"
                                 class="form-control"
-                                t-att-value="edu_rec.major if edu_rec else ''" />
+                                t-att-value="edu_rec.major if edu_rec else ''"
+                            />
                         </div>
                     </div>
                     <div class="row">
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Institution</label>
-                            <input type="text" t-attf-name="#{section_prefix}institution"
+                            <input
+                                type="text"
+                                t-attf-name="#{section_prefix}institution"
                                 class="form-control"
-                                t-att-value="edu_rec.institution if edu_rec else ''" />
+                                t-att-value="edu_rec.institution if edu_rec else ''"
+                            />
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Country</label>
-                            <select t-attf-name="#{section_prefix}country_id" class="form-select">
+                            <select
+                                t-attf-name="#{section_prefix}country_id"
+                                class="form-select"
+                            >
                                 <option value="">-- Select --</option>
                                 <t t-foreach="countries or []" t-as="country">
-                                    <option t-att-value="country.id"
-                                        t-att-selected="edu_rec and country.id == edu_rec.country_id.id or None">
+                                    <option
+                                        t-att-value="country.id"
+                                        t-att-selected="edu_rec and country.id == edu_rec.country_id.id or None"
+                                    >
                                         <t t-esc="country.name" />
                                     </option>
                                 </t>
@@ -1157,9 +1706,12 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Graduation Date</label>
-                            <input type="date" t-attf-name="#{section_prefix}graduation_date"
+                            <input
+                                type="date"
+                                t-attf-name="#{section_prefix}graduation_date"
                                 class="form-control"
-                                t-att-value="edu_rec.graduation_date if edu_rec else ''" />
+                                t-att-value="edu_rec.graduation_date if edu_rec else ''"
+                            />
                         </div>
                     </div>
                 </div>

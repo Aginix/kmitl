@@ -152,6 +152,22 @@ class PortalProfile(CustomerPortal):
                             "ocsc_exam_filename": ocsc_file.filename,
                         }
                     )
+            if post.get("delete_academic_position_file") == "1":
+                profile.sudo().write(
+                    {
+                        "academic_position_file": False,
+                        "academic_position_filename": False,
+                    }
+                )
+            else:
+                ap_file = request.httprequest.files.get("doc_academic_position")
+                if ap_file and ap_file.filename:
+                    profile.sudo().write(
+                        {
+                            "academic_position_file": base64.b64encode(ap_file.read()),
+                            "academic_position_filename": ap_file.filename,
+                        }
+                    )
             return request.redirect("/my/profile")
 
         values = self._prepare_profile_render_values(partner, profile)

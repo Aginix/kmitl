@@ -120,6 +120,10 @@ class HrApplicant(models.Model):
     )
     academic_position_date = fields.Date()
     academic_position_institution = fields.Char()
+    academic_position_file = fields.Binary(
+        string="Academic Position Proof", attachment=True
+    )
+    academic_position_filename = fields.Char(string="Academic Position Proof Filename")
 
     # OCSC exam
     has_ocsc_exam = fields.Boolean(string="Has OCSC Exam")
@@ -238,6 +242,9 @@ class HrApplicant(models.Model):
         if profile.ocsc_exam_file:
             vals["ocsc_exam_file"] = profile.ocsc_exam_file
             vals["ocsc_exam_filename"] = profile.ocsc_exam_filename
+        if profile.academic_position_file:
+            vals["academic_position_file"] = profile.academic_position_file
+            vals["academic_position_filename"] = profile.academic_position_filename
 
         if vals:
             self.sudo().write(vals)

@@ -115,6 +115,10 @@ class PortalProfile(models.Model):
     )
     academic_position_date = fields.Date()
     academic_position_institution = fields.Char()
+    academic_position_file = fields.Binary(
+        string="Academic Position Proof", attachment=True
+    )
+    academic_position_filename = fields.Char(string="Academic Position Proof Filename")
 
     # OCSC exam
     has_ocsc_exam = fields.Boolean(string="Has OCSC Exam")
