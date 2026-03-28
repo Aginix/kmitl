@@ -140,6 +140,18 @@ class HrApplicant(models.Model):
     ocsc_exam_filename = fields.Char(string="OCSC Exam Filename")
     resume_file = fields.Binary(string="Resume", attachment=True)
     resume_filename = fields.Char()
+    military_certificate_file = fields.Binary(
+        string="Military Certificate", attachment=True
+    )
+    military_certificate_filename = fields.Char()
+    id_card_file = fields.Binary(string="ID Card", attachment=True)
+    id_card_filename = fields.Char()
+    household_registration_file = fields.Binary(
+        string="Household Registration", attachment=True
+    )
+    household_registration_filename = fields.Char()
+    work_certificate_file = fields.Binary(string="Work Certificate", attachment=True)
+    work_certificate_filename = fields.Char()
 
     # Skills
     foreign_language_skills = fields.Text()
@@ -250,6 +262,22 @@ class HrApplicant(models.Model):
         if profile.resume_file:
             vals["resume_file"] = profile.resume_file
             vals["resume_filename"] = profile.resume_filename
+        if profile.military_certificate_file:
+            vals["military_certificate_file"] = profile.military_certificate_file
+            vals[
+                "military_certificate_filename"
+            ] = profile.military_certificate_filename
+        if profile.id_card_file:
+            vals["id_card_file"] = profile.id_card_file
+            vals["id_card_filename"] = profile.id_card_filename
+        if profile.household_registration_file:
+            vals["household_registration_file"] = profile.household_registration_file
+            vals[
+                "household_registration_filename"
+            ] = profile.household_registration_filename
+        if profile.work_certificate_file:
+            vals["work_certificate_file"] = profile.work_certificate_file
+            vals["work_certificate_filename"] = profile.work_certificate_filename
 
         if vals:
             self.sudo().write(vals)

@@ -168,17 +168,26 @@ class PortalProfile(CustomerPortal):
                             "academic_position_filename": ap_file.filename,
                         }
                     )
-            if post.get("delete_doc_resume") == "1":
-                profile.sudo().write({"resume_file": False, "resume_filename": False})
-            else:
-                resume_file = request.httprequest.files.get("doc_resume")
-                if resume_file and resume_file.filename:
+            for doc_name, field_name in [
+                ("doc_resume", "resume"),
+                ("doc_military_certificate", "military_certificate"),
+                ("doc_id_card", "id_card"),
+                ("doc_household_registration", "household_registration"),
+                ("doc_work_certificate", "work_certificate"),
+            ]:
+                if post.get(f"delete_{doc_name}") == "1":
                     profile.sudo().write(
-                        {
-                            "resume_file": base64.b64encode(resume_file.read()),
-                            "resume_filename": resume_file.filename,
-                        }
+                        {f"{field_name}_file": False, f"{field_name}_filename": False}
                     )
+                else:
+                    uploaded = request.httprequest.files.get(doc_name)
+                    if uploaded and uploaded.filename:
+                        profile.sudo().write(
+                            {
+                                f"{field_name}_file": base64.b64encode(uploaded.read()),
+                                f"{field_name}_filename": uploaded.filename,
+                            }
+                        )
             return request.redirect("/my/profile")
 
         values = self._prepare_profile_render_values(partner, profile)

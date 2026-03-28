@@ -1544,6 +1544,46 @@
                                                 t-set="description"
                                             >ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
                                         </t>
+                                        <!-- ID Card -->
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
+                                            <t t-set="name">doc_id_card</t>
+                                            <t
+                                                t-set="label"
+                                            >สำเนาบัตรประจำตัวประชาชน</t>
+                                            <t
+                                                t-set="description"
+                                            >เซ็นรับรองสำเนาถูกต้องด้วย</t>
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.id_card_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=id_card_file&amp;filename_field=id_card_filename&amp;download=true' % profile.id if profile.id_card_filename else False"
+                                            />
+                                        </t>
+                                        <!-- Household Registration -->
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
+                                            <t
+                                                t-set="name"
+                                            >doc_household_registration</t>
+                                            <t t-set="label">สำเนาทะเบียนบ้าน</t>
+                                            <t
+                                                t-set="description"
+                                            >เซ็นรับรองสำเนาถูกต้องด้วย</t>
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.household_registration_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=household_registration_file&amp;filename_field=household_registration_filename&amp;download=true' % profile.id if profile.household_registration_filename else False"
+                                            />
+                                        </t>
                                         <!-- Resume -->
                                         <t
                                             t-call="hr_recruitment_kmitl.document_upload_item"
@@ -1569,10 +1609,18 @@
                                             <t
                                                 t-set="label"
                                             >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
-                                                หรือได้รับการยกเว้นการเกณฑ์ทหารใบ สด.8 สด.9 หรือ
-                                                สด.43
-                                                หรือหลักฐานทาง ทหารอื่น ๆ</t>
+                                                หรือได้รับการยกเว้นการเกณฑ์ทหาร<br
+                                                /> (ใบ สด.8 สด.9
+                                                หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ)</t>
                                             <t t-set="description">เฉพาะเพศชาย</t>
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.military_certificate_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=true' % profile.id if profile.military_certificate_filename else False"
+                                            />
                                         </t>
                                         <!-- Work Certificate -->
                                         <t
@@ -1587,6 +1635,14 @@
                                                 t-set="description"
                                             >กรณีไม่มีผลคะแนน ภาษาอังกฤษ
                                                 และจบการศึกษาจากสถาบันการศึกษาในประเทศ</t>
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.work_certificate_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=work_certificate_file&amp;filename_field=work_certificate_filename&amp;download=true' % profile.id if profile.work_certificate_filename else False"
+                                            />
                                         </t>
                                         <!-- Other Documents -->
                                         <t

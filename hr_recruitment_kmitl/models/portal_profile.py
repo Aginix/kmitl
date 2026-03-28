@@ -135,6 +135,18 @@ class PortalProfile(models.Model):
     ocsc_exam_filename = fields.Char(string="OCSC Exam Proof Filename")
     resume_file = fields.Binary(string="Resume", attachment=True)
     resume_filename = fields.Char()
+    military_certificate_file = fields.Binary(
+        string="Military Certificate", attachment=True
+    )
+    military_certificate_filename = fields.Char()
+    id_card_file = fields.Binary(string="ID Card", attachment=True)
+    id_card_filename = fields.Char()
+    household_registration_file = fields.Binary(
+        string="Household Registration", attachment=True
+    )
+    household_registration_filename = fields.Char()
+    work_certificate_file = fields.Binary(string="Work Certificate", attachment=True)
+    work_certificate_filename = fields.Char()
 
     # Skills & interests
     foreign_language_skills = fields.Text()
