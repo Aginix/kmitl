@@ -148,6 +148,7 @@ class PortalProfile(CustomerPortal):
                 ("doc_household_registration", "household_registration"),
                 ("doc_work_certificate", "work_certificate"),
                 ("doc_english_score", "english_score"),
+                ("doc_other_documents", "other_documents"),
             ]:
                 if post.get(f"delete_{doc_name}") == "1":
                     profile.sudo().write(

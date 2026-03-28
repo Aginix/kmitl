@@ -1565,6 +1565,14 @@
                                             >สำเนาเอกสารอื่น ๆ เช่น การเปลี่ยนชื่อ
                                                 นามสกุล</t>
                                             <t t-set="description">เอกสารเพิ่มเติม</t>
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.other_documents_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=other_documents_file&amp;filename_field=other_documents_filename&amp;download=true' % profile.id if profile.other_documents_filename else False"
+                                            />
                                         </t>
                                     </div>
                                 </div>

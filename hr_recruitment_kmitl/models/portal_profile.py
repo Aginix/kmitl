@@ -149,6 +149,8 @@ class PortalProfile(models.Model):
     work_certificate_filename = fields.Char()
     english_score_file = fields.Binary(string="English Test Result", attachment=True)
     english_score_filename = fields.Char()
+    other_documents_file = fields.Binary(string="Other Documents", attachment=True)
+    other_documents_filename = fields.Char()
 
     # Skills & interests
     foreign_language_skills = fields.Text()

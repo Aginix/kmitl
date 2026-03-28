@@ -154,6 +154,8 @@ class HrApplicant(models.Model):
     work_certificate_filename = fields.Char()
     english_score_file = fields.Binary(string="English Test Result", attachment=True)
     english_score_filename = fields.Char()
+    other_documents_file = fields.Binary(string="Other Documents", attachment=True)
+    other_documents_filename = fields.Char()
 
     # Skills
     foreign_language_skills = fields.Text()
@@ -283,6 +285,9 @@ class HrApplicant(models.Model):
         if profile.english_score_file:
             vals["english_score_file"] = profile.english_score_file
             vals["english_score_filename"] = profile.english_score_filename
+        if profile.other_documents_file:
+            vals["other_documents_file"] = profile.other_documents_file
+            vals["other_documents_filename"] = profile.other_documents_filename
 
         if vals:
             self.sudo().write(vals)
