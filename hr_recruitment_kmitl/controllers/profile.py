@@ -115,10 +115,23 @@ class PortalProfile(CustomerPortal):
 
         if post and request.httprequest.method == "POST":
             profile_required = {
+                "title": "Title",
                 "first_name": "First Name",
                 "last_name": "Last Name",
-                "email": "Email",
+                "first_name_en": "First Name (EN)",
+                "last_name_en": "Last Name (EN)",
+                "identification_id": "Identification No.",
+                "nationality_id": "Nationality",
+                "birthday": "Birthday",
                 "phone": "Phone",
+                "email": "Email",
+                "address_street": "Registered Address",
+                "address_zip_id": "Registered ZIP Location",
+                "marital": "Marital Status",
+                "emergency_contact_name": "Emergency Contact Name",
+                "emergency_contact_relation": "Emergency Contact Relation",
+                "emergency_contact_phone": "Emergency Contact Phone",
+                "emergency_contact_email": "Emergency Contact Email",
             }
             errors = []
             missing_profile = [

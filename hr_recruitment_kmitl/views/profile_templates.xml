@@ -233,8 +233,13 @@
                                                 class="col-form-label"
                                                 for="title"
                                             >คำนำหน้า
-                                                (Title)</label>
-                                            <select name="title" class="form-select">
+                                                (Title)
+                                                *</label>
+                                            <select
+                                                name="title"
+                                                class="form-select"
+                                                required="required"
+                                            >
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="titles or []" t-as="t">
                                                     <option
@@ -298,12 +303,14 @@
                                                 class="col-form-label"
                                                 for="first_name_en"
                                             >First
-                                                Name (EN)</label>
+                                                Name (EN)
+                                                *</label>
                                             <input
                                                 type="text"
                                                 name="first_name_en"
                                                 class="form-control"
                                                 t-att-value="profile.first_name_en or ''"
+                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-3">
@@ -324,12 +331,14 @@
                                                 class="col-form-label"
                                                 for="last_name_en"
                                             >Last
-                                                Name (EN)</label>
+                                                Name (EN)
+                                                *</label>
                                             <input
                                                 type="text"
                                                 name="last_name_en"
                                                 class="form-control"
                                                 t-att-value="profile.last_name_en or ''"
+                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -345,6 +354,7 @@
                                             <select
                                                 name="nationality_id"
                                                 class="form-select"
+                                                required="required"
                                             >
                                                 <option value="">-- เลือก --</option>
                                                 <t
@@ -365,12 +375,14 @@
                                                 class="col-form-label"
                                                 for="identification_id"
                                             >เลขบัตรประชาชน
-                                                (Identification No.)</label>
+                                                (Identification No.)
+                                                *</label>
                                             <input
                                                 type="text"
                                                 name="identification_id"
                                                 class="form-control"
                                                 t-att-value="profile.identification_id or ''"
+                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -389,6 +401,7 @@
                                                 id="birthday"
                                                 class="form-control"
                                                 t-att-value="profile.birthday or ''"
+                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-2">
@@ -445,12 +458,14 @@
                                                 class="col-form-label"
                                                 for="address_street"
                                             >
-                                                ที่อยู่</label>
+                                                ที่อยู่
+                                                *</label>
                                             <input
                                                 type="text"
                                                 name="address_street"
                                                 class="form-control"
                                                 t-att-value="profile.address_street or ''"
+                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -461,10 +476,12 @@
                                                 for="address_zip_id"
                                             >ที่ตั้ง
                                                 (ZIP
-                                                Location)</label>
+                                                Location)
+                                                *</label>
                                             <select
                                                 name="address_zip_id"
                                                 class="form-select"
+                                                required="required"
                                             >
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="zips or []" t-as="z">
@@ -560,11 +577,13 @@
                                                 for="marital"
                                             >สถานภาพสมรส
                                                 (Marital
-                                                Status)</label>
+                                                Status)
+                                                *</label>
                                             <select
                                                 name="marital"
                                                 id="marital"
                                                 class="form-select"
+                                                required="required"
                                             >
                                                 <option value="">-- เลือก --</option>
                                                 <option
@@ -674,24 +693,28 @@
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_name"
-                                            >Name</label>
+                                            >Name
+                                                *</label>
                                             <input
                                                 type="text"
                                                 name="emergency_contact_name"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_name or ''"
+                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_relation"
-                                            >Relation</label>
+                                            >Relation
+                                                *</label>
                                             <input
                                                 type="text"
                                                 name="emergency_contact_relation"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_relation or ''"
+                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -700,24 +723,28 @@
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_phone"
-                                            >Phone</label>
+                                            >Phone
+                                                *</label>
                                             <input
                                                 type="tel"
                                                 name="emergency_contact_phone"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_phone or ''"
+                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_email"
-                                            >Email</label>
+                                            >Email
+                                                *</label>
                                             <input
                                                 type="email"
                                                 name="emergency_contact_email"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_email or ''"
+                                                required="required"
                                             />
                                         </div>
                                     </div>
