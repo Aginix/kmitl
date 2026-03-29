@@ -84,6 +84,7 @@ class PortalProfile(models.Model):
     # Personal info
     identification_id = fields.Char(string="Identification No.")
     birthday = fields.Date()
+    gender = fields.Selection([("male", "Male"), ("female", "Female")])
     nationality_id = fields.Many2one("res.country")
     marital = fields.Selection(
         [

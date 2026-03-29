@@ -74,6 +74,8 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 # Personal
                 d("identification_id", profile.identification_id or "")
                 d("age", str(profile.age) if profile.age else "")
+                gender_labels = {"male": "ชาย (Male)", "female": "หญิง (Female)"}
+                d("gender", gender_labels.get(profile.gender, ""))
                 d("address_address", profile.address_address or "")
                 d("birthday", str(profile.birthday) if profile.birthday else "")
                 d(
@@ -209,6 +211,33 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 work_history_ids = profile.work_history_ids.sorted(
                     key=lambda r: (r.date_start or "", r.id), reverse=True
                 )
+
+        # Remove role-irrelevant defaults
+        _ACADEMIC_DEFAULTS = [
+            "academic_standing_id",
+            "academic_position_date",
+            "academic_position_institution",
+            "english_test_type",
+            "english_test_score",
+            "english_test_date",
+            "english_test_certificate_number",
+        ]
+        _SUPPORT_DEFAULTS = [
+            "has_ocsc_exam",
+            "ocsc_exam_level",
+            "ocsc_exam_date",
+            "ocsc_exam_number",
+            "foreign_language_skills",
+            "computer_skills",
+            "other_abilities",
+            "interests",
+        ]
+        if job.role == "academic":
+            for f in _SUPPORT_DEFAULTS:
+                default.pop(f, None)
+        elif job.role == "support":
+            for f in _ACADEMIC_DEFAULTS:
+                default.pop(f, None)
 
         return request.render(
             "website_hr_recruitment.apply",

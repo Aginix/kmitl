@@ -416,6 +416,31 @@
                                             />
                                         </div>
                                     </div>
+                                    <!-- Row: Gender -->
+                                    <div class="row">
+                                        <div class="mb-3 col-lg-4">
+                                            <label
+                                                class="col-form-label"
+                                                for="gender"
+                                            >เพศ (Gender) *</label>
+                                            <select
+                                                name="gender"
+                                                id="gender"
+                                                class="form-select"
+                                                required="required"
+                                            >
+                                                <option value="">-- เลือก --</option>
+                                                <option
+                                                    value="male"
+                                                    t-att-selected="profile.gender == 'male' or None"
+                                                >ชาย (Male)</option>
+                                                <option
+                                                    value="female"
+                                                    t-att-selected="profile.gender == 'female' or None"
+                                                >หญิง (Female)</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <!-- Row: Phone | Email -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
@@ -1560,26 +1585,30 @@
                                                 t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=resume_file&amp;filename_field=resume_filename&amp;download=true' % profile.id if profile.resume_filename else False"
                                             />
                                         </t>
-                                        <!-- Military Certificate -->
-                                        <t
-                                            t-call="hr_recruitment_kmitl.document_upload_card"
-                                        >
-                                            <t t-set="name">doc_military_certificate</t>
+                                        <!-- Military Certificate (male only) -->
+                                        <t t-if="profile.gender != 'female'">
                                             <t
-                                                t-set="label"
-                                            >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
-                                                หรือได้รับการยกเว้นการเกณฑ์ทหาร<br
-                                                /> (ใบ สด.8 สด.9
-                                                หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ)</t>
-                                            <t t-set="description">เฉพาะเพศชาย</t>
-                                            <t
-                                                t-set="existing_filename"
-                                                t-value="profile.military_certificate_filename"
-                                            />
-                                            <t
-                                                t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=true' % profile.id if profile.military_certificate_filename else False"
-                                            />
+                                                t-call="hr_recruitment_kmitl.document_upload_card"
+                                            >
+                                                <t
+                                                    t-set="name"
+                                                >doc_military_certificate</t>
+                                                <t
+                                                    t-set="label"
+                                                >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
+                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร<br
+                                                    /> (ใบ สด.8 สด.9
+                                                    หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ)</t>
+                                                <t t-set="description">เฉพาะเพศชาย</t>
+                                                <t
+                                                    t-set="existing_filename"
+                                                    t-value="profile.military_certificate_filename"
+                                                />
+                                                <t
+                                                    t-set="download_url"
+                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=true' % profile.id if profile.military_certificate_filename else False"
+                                                />
+                                            </t>
                                         </t>
                                         <!-- Work Certificate -->
                                         <t

@@ -64,6 +64,7 @@
                     for="identification_id"
                 >
                     <span class="s_website_form_label_content">เลขบัตรประชาชน</span>
+                    <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
                     <input
@@ -71,6 +72,7 @@
                         type="text"
                         class="form-control s_website_form_input text-muted"
                         name="identification_id"
+                        required=""
                         readonly="readonly"
                         data-fill-with="identification_id"
                     />
@@ -97,6 +99,29 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="birthday"
+                    />
+                </div>
+            </div>
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="gender"
+                >
+                    <span class="s_website_form_label_content">เพศ</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input
+                        id="gender"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="gender_display"
+                        readonly="readonly"
+                        t-att-value="default.get('gender', '')"
                     />
                 </div>
             </div>
@@ -160,22 +185,23 @@
                     <span
                         class="s_website_form_label_content"
                     >ที่อยู่ตามทะเบียนบ้าน</span>
+                    <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
                     <textarea
-                        id="address_address"
-                        class="form-control s_website_form_input text-muted"
+                        class="form-control text-muted border-0 py-2"
                         name="address_address_from"
+                        rows="4"
                         readonly="readonly"
-                    >
-                        <t t-esc="default.get('address_address') or ''" />
-                    </textarea>
+                        required=""
+                    ><t t-esc="default.get('address_address') or ''" /></textarea>
                 </div>
                 <label
                     class="col-form-label col-sm-auto s_website_form_label mb-2 mt-3"
                     for="current_address"
                 >
                     <span class="s_website_form_label_content">ที่อยู่ปัจจุบัน</span>
+                    <span class="s_website_form_mark"> *</span>
                 </label>
                 <div class="col-sm">
                     <textarea
@@ -183,9 +209,8 @@
                         class="form-control s_website_form_input text-muted"
                         name="current_address_from"
                         readonly="readonly"
-                    >
-                        <t t-esc="default.get('current_address') or ''" />
-                    </textarea>
+                        required=""
+                    ><t t-esc="default.get('current_address') or ''" /></textarea>
                 </div>
             </div>
             <hr class="my-4" />
@@ -372,6 +397,12 @@
                 <t t-set="best_edu_rec" t-value="candidate" />
             </t>
         </t>
+        <!-- Validation: must have education data -->
+        <input
+            type="hidden"
+            data-required-label="ประวัติการศึกษา"
+            t-att-value="'1' if education_by_level else ''"
+        />
         <t t-if="education_by_level">
             <!-- Hidden fields for form submission (best/highest education) -->
             <t t-set="default_level_id" t-value="best_edu_rec.education_level_id.id" />
@@ -436,6 +467,7 @@
                                     <label
                                         class="col-form-label fw-semibold text-dark small"
                                     >Program</label>
+                                    <span class="s_website_form_mark"> *</span>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
@@ -447,6 +479,7 @@
                                     <label
                                         class="col-form-label fw-semibold text-dark small"
                                     >Major</label>
+                                    <span class="s_website_form_mark"> *</span>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
@@ -461,6 +494,7 @@
                                         class="col-form-label fw-semibold text-dark small"
                                     >
                                         Institution</label>
+                                    <span class="s_website_form_mark"> *</span>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
@@ -472,6 +506,7 @@
                                     <label
                                         class="col-form-label fw-semibold text-dark small"
                                     >Country</label>
+                                    <span class="s_website_form_mark"> *</span>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
@@ -484,6 +519,7 @@
                                         class="col-form-label fw-semibold text-dark small"
                                     >Graduation
                                         Date</label>
+                                    <span class="s_website_form_mark"> *</span>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
@@ -497,7 +533,9 @@
                                     <t
                                         t-call="hr_recruitment_kmitl.application_document_item"
                                     >
-                                        <t t-set="label">ใบรับรอง (Certificate)</t>
+                                        <t t-set="label">ใบรับรอง (Certificate)<span
+                                                class="s_website_form_mark"
+                                            > *</span></t>
                                         <t
                                             t-set="filename"
                                             t-value="edu_rec.certificate_filename"
@@ -514,7 +552,9 @@
                                     >
                                         <t
                                             t-set="label"
-                                        >ผลการเรียนรายวิชา (Transcript)</t>
+                                        >ผลการเรียนรายวิชา (Transcript)<span
+                                                class="s_website_form_mark"
+                                            > *</span></t>
                                         <t
                                             t-set="filename"
                                             t-value="edu_rec.transcript_filename"
@@ -549,6 +589,12 @@
         <t t-call="hr_recruitment_kmitl.section_tab_intro">
             <t t-set="title">3. ประสบการณ์การทำงาน (Work History)</t>
         </t>
+        <!-- Validation: must have work history -->
+        <input
+            type="hidden"
+            data-required-label="ประสบการณ์การทำงาน"
+            t-att-value="'1' if work_history_ids else ''"
+        />
         <t t-if="work_history_ids and len(work_history_ids) > 0">
             <t t-foreach="work_history_ids" t-as="work">
                 <div class="card border-secondary rounded-4 mb-3 shadow-none">
@@ -643,7 +689,7 @@
                             <div class="col-md-4">
                                 <label
                                     class="form-label fw-semibold text-dark small"
-                                >วันที่สิ้นสุดงาน</label>
+                                >วันที่สิ้นสุดงาน *</label>
                                 <div class="input-group">
                                     <input
                                         type="text"
@@ -743,6 +789,7 @@
                             type="hidden"
                             name="academic_standing_id"
                             t-att-value="academic_standing_value"
+                            data-required-label="ตำแหน่งทางวิชาการ"
                         />
                     </div>
                     <div class="col-md-6">
@@ -759,6 +806,7 @@
                             type="hidden"
                             name="academic_position_institution"
                             t-att-value="academic_position_institution_value"
+                            data-required-label="สถาบันที่ได้รับแต่งตั้ง"
                         />
                     </div>
                 </div>
@@ -782,6 +830,7 @@
                             type="hidden"
                             name="academic_position_date"
                             t-att-value="academic_position_date_value"
+                            data-required-label="วันที่ได้รับแต่งตั้ง"
                         />
                     </div>
                 </div>
@@ -825,6 +874,7 @@
                             type="hidden"
                             name="has_ocsc_exam"
                             t-att-value="has_ocsc_exam_value"
+                            data-required-label="สถานะการสอบ ก.พ."
                         />
                     </div>
                     <div class="col-md-6">
@@ -841,6 +891,7 @@
                             type="hidden"
                             name="ocsc_exam_level"
                             t-att-value="ocsc_exam_level_value"
+                            t-att-data-required-label="'ระดับการสอบ ก.พ.' if has_ocsc_exam_value == 'true' else False"
                         />
                     </div>
                 </div>
@@ -865,6 +916,7 @@
                             type="hidden"
                             name="ocsc_exam_date"
                             t-att-value="ocsc_exam_date_value"
+                            t-att-data-required-label="'วันที่สอบผ่าน ก.พ.' if has_ocsc_exam_value == 'true' else False"
                         />
                     </div>
                     <div class="col-md-6">
@@ -881,6 +933,7 @@
                             type="hidden"
                             name="ocsc_exam_number"
                             t-att-value="ocsc_exam_number_value"
+                            t-att-data-required-label="'เลขที่ใบรับรอง ก.พ.' if has_ocsc_exam_value == 'true' else False"
                         />
                     </div>
                 </div>
@@ -1012,7 +1065,7 @@
             </div>
         </div>
     </template>
-    <template id="apply_tab_skills" t-if="job.role == 'support'">
+    <template id="apply_tab_skills">
         <t t-call="hr_recruitment_kmitl.profile_banner" />
         <t t-call="hr_recruitment_kmitl.section_tab_intro">
             <t t-set="title">5. ทักษะและความสนใจ (Skills &amp; Interests)</t>
@@ -1074,6 +1127,17 @@
             <t t-set="title">6. เอกสารประกอบ (Supporting Documents)</t>
             <t t-set="description">แสดงเอกสารจากแฟ้มประวัติ (Master Profile)</t>
         </t>
+        <!-- Validation: required documents -->
+        <input
+            type="hidden"
+            data-required-label="สำเนาบัตรประจำตัวประชาชน"
+            t-att-value="profile.id_card_filename or ''"
+        />
+        <input
+            type="hidden"
+            data-required-label="สำเนาทะเบียนบ้าน"
+            t-att-value="profile.household_registration_filename or ''"
+        />
         <div class="d-flex flex-column gap-3">
             <!-- ID Card -->
             <t t-call="hr_recruitment_kmitl.application_document_item">
@@ -1093,17 +1157,26 @@
                     t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=household_registration_file&amp;filename_field=household_registration_filename&amp;download=true' % profile.id if profile.household_registration_filename else False"
                 />
             </t>
-            <!-- Military Certificate -->
-            <t t-call="hr_recruitment_kmitl.application_document_item">
-                <t
-                    t-set="label"
-                >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร
-                    (ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางทหารอื่น ๆ)</t>
-                <t t-set="filename" t-value="profile.military_certificate_filename" />
-                <t
-                    t-set="download_url"
-                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=true' % profile.id if profile.military_certificate_filename else False"
+            <!-- Military Certificate (male only) -->
+            <t t-if="profile.gender == 'male'">
+                <input
+                    type="hidden"
+                    data-required-label="สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร"
+                    t-att-value="profile.military_certificate_filename or ''"
                 />
+                <t t-call="hr_recruitment_kmitl.application_document_item">
+                    <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
+                        หรือได้รับการยกเว้นการเกณฑ์ทหาร
+                        (ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางทหารอื่น ๆ)</t>
+                    <t
+                        t-set="filename"
+                        t-value="profile.military_certificate_filename"
+                    />
+                    <t
+                        t-set="download_url"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=true' % profile.id if profile.military_certificate_filename else False"
+                    />
+                </t>
             </t>
             <!-- Resume -->
             <t
@@ -1200,6 +1273,7 @@
                                 class="form-control s_website_form_input"
                                 name="exam_fee_file"
                                 accept=".pdf,.jpg,.jpeg,.png"
+                                data-required-label="ค่าธรรมเนียมการสอบ"
                             />
                         </div>
                     </div>
@@ -1225,6 +1299,7 @@
                                 class="form-control s_website_form_input"
                                 name="medical_certificate_file"
                                 accept=".pdf,.jpg,.jpeg,.png"
+                                data-required-label="ใบรับรองแพทย์"
                             />
                         </div>
                     </div>
@@ -1245,7 +1320,8 @@
                         class="form-check-input"
                         type="checkbox"
                         id="certifyCheck"
-                        required="required"
+                        name="data_certification"
+                        value="true"
                     />
                     <label
                         class="form-check-label text-dark fw-normal"
@@ -1312,10 +1388,9 @@
                         <input
                             class="form-check-input"
                             type="radio"
-                            name="pdpaConsent"
+                            name="pdpa_consent"
                             id="pdpaAgree"
-                            value="agreed"
-                            required="required"
+                            value="true"
                         />
                         <label class="form-check-label text-primary" for="pdpaAgree">
                             ยินยอม (Agreed)
@@ -1326,10 +1401,9 @@
                         <input
                             class="form-check-input"
                             type="radio"
-                            name="pdpaConsent"
+                            name="pdpa_consent"
                             id="pdpaDisagree"
-                            value="disagreed"
-                            required="required"
+                            value=""
                         />
                         <label class="form-check-label text-danger" for="pdpaDisagree">
                             ไม่ยินยอม (Disagreed)
@@ -1350,5 +1424,6 @@
             >
                 <i class="fa fa-paper-plane-o me-2" /> ส่งใบสมัคร </button>
         </div>
+        <div id="s_website_form_result" class="mt-3" />
     </template>
 </odoo>

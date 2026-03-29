@@ -7,6 +7,8 @@
                 'partner_name': default.get('partner_name', ''),
                 'email_from': default.get('email_from', ''),
                 'partner_phone': default.get('partner_phone', ''),
+                'phone': default.get('partner_phone', ''),
+                'age': default.get('age', ''),
                 'applicant_title': default.get('applicant_title', ''),
                 'first_name': default.get('first_name', ''),
                 'middle_name': default.get('middle_name', ''),
@@ -15,6 +17,7 @@
                 'middle_name_en': default.get('middle_name_en', ''),
                 'last_name_en': default.get('last_name_en', ''),
                 'identification_id': default.get('identification_id', ''),
+                'gender': default.get('gender', ''),
                 'birthday': default.get('birthday', ''),
                 'nationality_id': default.get('nationality_id', ''),
                 'marital': default.get('marital', ''),
@@ -27,6 +30,8 @@
                 'address_state_id': default.get('address_state_id', ''),
                 'address_zip': default.get('address_zip', ''),
                 'address_country_id': default.get('address_country_id', ''),
+                'address_address': default.get('address_address', ''),
+                'current_address': default.get('current_address', ''),
                 'current_street': default.get('current_street', ''),
                 'current_city': default.get('current_city', ''),
                 'current_state_id': default.get('current_state_id', ''),
@@ -73,23 +78,21 @@
         <!-- Form -->
         <xpath expr="//div[@id='jobs_section']" position="replace">
             <div id="jobs_section" class="my-4">
-                <section
-                    id="forms"
-                    class="s_website_form"
-                    data-vcss="001"
-                    data-snippet="s_website_form"
-                >
+                <section id="forms">
                     <form
                         id="hr_recruitment_form"
                         action="/website/form/"
                         method="post"
                         enctype="multipart/form-data"
-                        class="o_mark_required"
+                        class="o_mark_required s_website_form"
+                        data-vcss="001"
+                        data-snippet="s_website_form"
                         data-mark="*"
                         data-model_name="hr.applicant"
                         data-success-mode="redirect"
                         data-success-page="/job-thank-you"
                         hide-change-model="true"
+                        novalidate="novalidate"
                     >
                         <nav
                             class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-12 flex-column flex-lg-row gap-1 mb-4"
@@ -216,6 +219,7 @@
                                         role="tabpanel"
                                         aria-labelledby="nav-skills-tab"
                                         tabindex="0"
+                                        t-if="job.role == 'support'"
                                     >
                                         <t
                                             t-call="hr_recruitment_kmitl.apply_tab_skills"

@@ -67,7 +67,7 @@
                         </group>
                     </group>
                     <group string="Health">
-                        <field name="congenital_disease" nolabel="1" />
+                        <field name="congenital_disease" />
                     </group>
                 </page>
                 <!-- Education History tab -->

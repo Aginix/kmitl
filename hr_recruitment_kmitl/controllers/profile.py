@@ -43,6 +43,7 @@ class PortalProfile(CustomerPortal):
     ]
 
     SELECTION_FIELDS = [
+        "gender",
         "marital",
         "ocsc_exam_level",
         "highest_education",
@@ -126,6 +127,7 @@ class PortalProfile(CustomerPortal):
                 "last_name_en": "Last Name (EN)",
                 "identification_id": "Identification No.",
                 "nationality_id": "Nationality",
+                "gender": "Gender",
                 "birthday": "Birthday",
                 "phone": "Phone",
                 "email": "Email",

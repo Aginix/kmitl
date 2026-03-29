@@ -1,6 +1,7 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
@@ -60,6 +61,38 @@ PROFILE_SELECTION_FIELDS = [
     "highest_education",
     "english_test_type",
 ]
+
+# Role-specific fields to skip when copying from profile
+ACADEMIC_ONLY_FIELDS = {
+    "academic_standing_id",
+    "academic_position_date",
+    "academic_position_institution",
+    "english_test_type",
+    "english_test_score",
+    "english_test_date",
+    "english_test_certificate_number",
+    "academic_position_file",
+    "academic_position_filename",
+    "english_score_file",
+    "english_score_filename",
+    "resume_file",
+    "resume_filename",
+    "work_certificate_file",
+    "work_certificate_filename",
+}
+
+SUPPORT_ONLY_FIELDS = {
+    "has_ocsc_exam",
+    "ocsc_exam_level",
+    "ocsc_exam_date",
+    "ocsc_exam_number",
+    "ocsc_exam_file",
+    "ocsc_exam_filename",
+    "foreign_language_skills",
+    "computer_skills",
+    "other_abilities",
+    "interests",
+}
 
 
 class HrApplicant(models.Model):
@@ -182,6 +215,10 @@ class HrApplicant(models.Model):
     )
     medical_certificate_filename = fields.Char()
 
+    # Consent
+    data_certification = fields.Boolean()
+    pdpa_consent = fields.Boolean(string="PDPA Consent")
+
     # Skills
     foreign_language_skills = fields.Text()
     computer_skills = fields.Text()
@@ -202,6 +239,81 @@ class HrApplicant(models.Model):
         "hr.applicant.education.history", "applicant_id"
     )
     work_history_ids = fields.One2many("hr.applicant.work.history", "applicant_id")
+
+    ROLE_REQUIRED_FIELDS = {
+        "academic": {
+            "academic_standing_id": "ตำแหน่งทางวิชาการ",
+            "academic_position_institution": "สถาบันที่ได้รับแต่งตั้ง",
+            "academic_position_date": "วันที่ได้รับแต่งตั้ง",
+        },
+        "support": {
+            "has_ocsc_exam": "สถานะการสอบ ก.พ.",
+        },
+    }
+
+    OCSC_CONDITIONAL_FIELDS = {
+        "ocsc_exam_level": "ระดับการสอบ ก.พ.",
+        "ocsc_exam_date": "วันที่สอบผ่าน ก.พ.",
+        "ocsc_exam_number": "เลขที่ใบรับรอง ก.พ.",
+    }
+
+    def website_form_input_filter(self, request, values):
+        """Validate required fields and set default name."""
+        # Auto-generate subject from partner_name
+        if not values.get("name") and values.get("partner_name"):
+            values["name"] = values["partner_name"]
+        job_id = values.get("job_id")
+        if not job_id:
+            return values
+        job = self.env["hr.job"].browse(int(job_id))
+        if not job.exists():
+            return values
+        user = request.env.user
+        if user._is_public():
+            return values
+        profile = (
+            self.env["portal.profile"]
+            .sudo()
+            .search([("partner_id", "=", user.partner_id.id)], limit=1)
+        )
+        if not profile:
+            return values
+        missing = []
+        # Common required: education, work history, documents
+        if not profile.education_history_ids:
+            missing.append("ประวัติการศึกษา")
+        if not profile.work_history_ids:
+            missing.append("ประสบการณ์การทำงาน")
+        if not profile.id_card_file:
+            missing.append("สำเนาบัตรประจำตัวประชาชน")
+        if not profile.household_registration_file:
+            missing.append("สำเนาทะเบียนบ้าน")
+        if profile.gender == "male" and not profile.military_certificate_file:
+            missing.append("สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร")
+        # Role-specific required fields
+        if job.role:
+            required = dict(self.ROLE_REQUIRED_FIELDS.get(job.role, {}))
+            if job.role == "support" and profile.has_ocsc_exam:
+                required.update(self.OCSC_CONDITIONAL_FIELDS)
+            for field_name, label in required.items():
+                if not getattr(profile, field_name, False):
+                    missing.append(label)
+        # Consent & file validation — check raw request data directly
+        # because extract_data may not put them in values if fields
+        # aren't in authorized_fields yet
+        req_form = request.httprequest.form
+        req_files = request.httprequest.files
+        if req_form.get("data_certification") != "true":
+            missing.append("การรับรองข้อมูล")
+        if req_form.get("pdpa_consent") != "true":
+            missing.append("ข้อตกลง PDPA")
+        if not any(k.startswith("exam_fee_file") for k in req_files):
+            missing.append("ค่าธรรมเนียมการสอบ")
+        if not any(k.startswith("medical_certificate_file") for k in req_files):
+            missing.append("ใบรับรองแพทย์")
+        if missing:
+            raise UserError(_("กรุณากรอกข้อมูลให้ครบถ้วน:\n• " + "\n• ".join(missing)))
+        return values
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -313,6 +425,15 @@ class HrApplicant(models.Model):
         if profile.other_documents_file:
             vals["other_documents_file"] = profile.other_documents_file
             vals["other_documents_filename"] = profile.other_documents_filename
+
+        # Filter out fields not relevant to the job role
+        role = self.job_id.role
+        if role == "academic":
+            for f in SUPPORT_ONLY_FIELDS:
+                vals.pop(f, None)
+        elif role == "support":
+            for f in ACADEMIC_ONLY_FIELDS:
+                vals.pop(f, None)
 
         if vals:
             self.sudo().write(vals)
