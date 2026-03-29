@@ -44,32 +44,45 @@ class BudgetNode:
         return total
 
     def commitment(self):
+        """(b) จองเงิน = sum(reserve) - sum(obligate) — reserved, not yet obligated"""
         total = 0
         for record in self.children:
             total += record.commitment()
+        reserve_total = 0
+        obligate_total = 0
         for line in self.lines:
-            if line["model"] == "budget.commitment" and line["state"] == "reserved":
-                total += line["balance"]
+            if line["model"] == "budget.commitment.line":
+                if line["move_type"] == "reserve":
+                    reserve_total += line["balance"]
+                elif line["move_type"] == "obligate":
+                    obligate_total += line["balance"]
+        total += reserve_total - obligate_total
         return total
 
     def obligation(self):
+        """(c) ผูกพัน = sum(obligate) - sum(consume) — obligated, not yet consumed"""
         total = 0
         for record in self.children:
-            total += record.obligation()  # Fix: use obligation() not commitment()
+            total += record.obligation()
+        obligate_total = 0
+        consume_total = 0
         for line in self.lines:
-            if line["model"] == "budget.commitment" and line["state"] in ("reserved", "partial"):
-                total += line["balance"]
+            if line["model"] == "budget.commitment.line":
+                if line["move_type"] == "obligate":
+                    obligate_total += line["balance"]
+                elif line["move_type"] == "consume":
+                    consume_total += line["balance"]
+        total += obligate_total - consume_total
         return total
 
     def expenditure(self):
+        """(d) เบิกจ่ายแล้ว = sum(consume) from commitment lines"""
         total = 0
         for record in self.children:
             total += record.expenditure()
         for line in self.lines:
-            if line["model"] == "budget.move.line":
-                # Use credit for consumption (money spent)
-                # Only count consume type moves
-                if line.get("move_type") == "consume":
+            if line["model"] == "budget.commitment.line":
+                if line["move_type"] == "consume":
                     total += line["balance"]
         return total
 
@@ -149,7 +162,8 @@ class BudgetTree:
             data["balance"] = line.balance
             data["credit"] = line.credit
             data["debit"] = line.debit
-        elif model == "budget.commitment":
+        elif model == "budget.commitment.line":
+            data["move_type"] = line.move_type
             data["state"] = line.state
             data["balance"] = line.amount
 
@@ -211,7 +225,7 @@ class BudgetTree:
 
         # Prepare commitment lines
         commitment_line_map = dict(
-            (record.id, self._prepare_line(record, model="budget.commitment"))
+            (record.id, self._prepare_line(record, model="budget.commitment.line"))
             for record in self.commitment_lines
         )
 

@@ -251,6 +251,20 @@ class BudgetCommitment(models.Model):
         currency_field="currency_id",
     )
 
+    # Cross-year carry-over references
+    carried_over_from_id = fields.Many2one(
+        "budget.commitment",
+        string="Carried Over From",
+        readonly=True,
+        copy=False,
+    )
+    carried_over_to_id = fields.Many2one(
+        "budget.commitment",
+        string="Carried Over To",
+        readonly=True,
+        copy=False,
+    )
+
     # Related budget moves
     budget_move_ids = fields.One2many(
         comodel_name="budget.move",

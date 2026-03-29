@@ -269,6 +269,10 @@ class BudgetController(models.AbstractModel):
         total_used = reserved + consumed
         utilization = (total_used / appropriated * 100) if appropriated > 0 else 0
 
+        breakdown = self._get_budget_status_breakdown(
+            analytic_data, fiscal_year_id, company_id
+        )
+
         return {
             "appropriated_amount": appropriated,
             "reserved_amount": reserved,
@@ -278,6 +282,54 @@ class BudgetController(models.AbstractModel):
             "utilization_percentage": utilization,
             "is_over_budget": total_used > appropriated,
             "shortage_amount": max(0.0, total_used - appropriated),
+            "breakdown": breakdown,
+        }
+
+    @api.model
+    def _get_budget_status_breakdown(
+        self, analytic_data, fiscal_year_id, company_id=None
+    ):
+        """Get b/c/d breakdown from commitment lines.
+
+        Returns:
+            reserved_pending (b): total_reserved - total_obligated
+            obligated_pending (c): total_obligated - total_consumed
+            consumed (d): total_consumed
+            total_used (e): b + c + d = total_reserved
+        """
+        if not company_id:
+            company_id = self.env.company.id
+
+        lines = self.env["budget.commitment.line"].search(
+            [
+                ("state", "=", "posted"),
+                ("commitment_id.state", "in", ["reserved", "partial", "done"]),
+                ("account_fiscal_year_id", "=", fiscal_year_id),
+                ("company_id", "=", company_id),
+            ]
+        )
+
+        total_reserved = 0.0
+        total_obligated = 0.0
+        total_consumed = 0.0
+
+        for line in lines:
+            if self._commitment_line_matches_analytic_data(line, analytic_data):
+                if line.move_type == "reserve":
+                    total_reserved += line.amount
+                elif line.move_type == "obligate":
+                    total_obligated += line.amount
+                elif line.move_type == "consume":
+                    total_consumed += line.amount
+
+        reserved_pending = total_reserved - total_obligated
+        obligated_pending = total_obligated - total_consumed
+
+        return {
+            "reserved_pending": max(0.0, reserved_pending),
+            "obligated_pending": max(0.0, obligated_pending),
+            "consumed": total_consumed,
+            "total_used": total_reserved,
         }
 
     @api.model
