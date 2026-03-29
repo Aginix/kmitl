@@ -57,6 +57,8 @@ class HrJob(models.Model):
         self._make_attachments_public(vals)
         if vals.get("website_published") or "old_code_ids" in vals:
             self._check_old_codes_on_publish()
+        if vals.get("website_published") or "date_close" in vals:
+            self._check_date_close_on_publish()
         return res
 
     def _check_old_codes_on_publish(self):
@@ -71,6 +73,19 @@ class HrJob(models.Model):
                         name=record.name,
                         codes=len(record.old_code_ids),
                         recruitment=record.no_of_recruitment,
+                    )
+                )
+
+    def _check_date_close_on_publish(self):
+        now = fields.Datetime.now()
+        for record in self:
+            if not record.website_published:
+                continue
+            if not record.date_close or record.date_close <= now:
+                raise ValidationError(
+                    _(
+                        "Cannot publish '%(name)s': closing date must be in the future.",
+                        name=record.name,
                     )
                 )
 
