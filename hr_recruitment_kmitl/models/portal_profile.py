@@ -147,6 +147,19 @@ class PortalProfile(models.Model):
     household_registration_filename = fields.Char()
     work_certificate_file = fields.Binary(string="Work Certificate", attachment=True)
     work_certificate_filename = fields.Char()
+    english_test_type = fields.Selection(
+        [
+            ("toefl_paper", "TOEFL (Paper-Based)"),
+            ("toefl_computer", "TOEFL (Computer-Based)"),
+            ("toefl_internet", "TOEFL (Internet-Based)"),
+            ("ielts", "IELTS"),
+            ("cutep", "CU-TEP"),
+            ("kmitl_tep", "KMITL-TEP"),
+        ],
+    )
+    english_test_score = fields.Char()
+    english_test_date = fields.Date()
+    english_test_certificate_number = fields.Char()
     english_score_file = fields.Binary(string="English Test Result", attachment=True)
     english_score_filename = fields.Char()
     other_documents_file = fields.Binary(string="Other Documents", attachment=True)

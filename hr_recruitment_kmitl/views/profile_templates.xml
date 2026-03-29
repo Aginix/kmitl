@@ -767,11 +767,9 @@
                                             name="congenital_disease"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t
+                                        ><t
                                                 t-esc="profile.congenital_disease or ''"
-                                            />
-                                        </textarea>
+                                            /></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1313,16 +1311,35 @@
                                             <label
                                                 class="form-label fw-semibold small"
                                             >Test Type</label>
-                                            <select class="form-select py-2">
+                                            <select
+                                                name="english_test_type"
+                                                class="form-select py-2"
+                                            >
+                                                <option value="">Please select</option>
                                                 <option
-                                                    selected="selected"
-                                                >Please select</option>
-                                                <option>TOEFL (Paper-Based)</option>
-                                                <option>TOEFL (Computer-Based)</option>
-                                                <option>TOEFL (Internet-Based)</option>
-                                                <option>IELTS</option>
-                                                <option>CU-TEP</option>
-                                                <option>KMITL-TEP</option>
+                                                    value="toefl_paper"
+                                                    t-att-selected="profile.english_test_type == 'toefl_paper' or None"
+                                                >TOEFL (Paper-Based)</option>
+                                                <option
+                                                    value="toefl_computer"
+                                                    t-att-selected="profile.english_test_type == 'toefl_computer' or None"
+                                                >TOEFL (Computer-Based)</option>
+                                                <option
+                                                    value="toefl_internet"
+                                                    t-att-selected="profile.english_test_type == 'toefl_internet' or None"
+                                                >TOEFL (Internet-Based)</option>
+                                                <option
+                                                    value="ielts"
+                                                    t-att-selected="profile.english_test_type == 'ielts' or None"
+                                                >IELTS</option>
+                                                <option
+                                                    value="cutep"
+                                                    t-att-selected="profile.english_test_type == 'cutep' or None"
+                                                >CU-TEP</option>
+                                                <option
+                                                    value="kmitl_tep"
+                                                    t-att-selected="profile.english_test_type == 'kmitl_tep' or None"
+                                                >KMITL-TEP</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
@@ -1331,8 +1348,10 @@
                                             >Score</label>
                                             <input
                                                 type="text"
+                                                name="english_test_score"
                                                 class="form-control py-2"
                                                 placeholder="Enter score"
+                                                t-att-value="profile.english_test_score or ''"
                                             />
                                         </div>
                                     </div>
@@ -1344,7 +1363,9 @@
                                             <div class="input-group">
                                                 <input
                                                     type="date"
+                                                    name="english_test_date"
                                                     class="form-control py-2"
+                                                    t-att-value="str(profile.english_test_date) if profile.english_test_date else ''"
                                                 />
                                                 <span class="input-group-text">
                                                     <i
@@ -1360,8 +1381,10 @@
                                                 Number</label>
                                             <input
                                                 type="text"
+                                                name="english_test_certificate_number"
                                                 class="form-control py-2"
                                                 placeholder="Enter certificate number"
+                                                t-att-value="profile.english_test_certificate_number or ''"
                                             />
                                         </div>
                                     </div>
@@ -1407,11 +1430,9 @@
                                         name="foreign_language_skills"
                                         class="form-control"
                                         rows="3"
-                                    >
-                                        <t
+                                    ><t
                                             t-esc="profile.foreign_language_skills or ''"
-                                        />
-                                    </textarea>
+                                        /></textarea>
                                     <div class="mb-3">
                                         <label
                                             class="col-form-label"
@@ -1424,9 +1445,9 @@
                                             name="computer_skills"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.computer_skills or ''" />
-                                        </textarea>
+                                        ><t
+                                                t-esc="profile.computer_skills or ''"
+                                            /></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
@@ -1440,9 +1461,9 @@
                                             name="other_abilities"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.other_abilities or ''" />
-                                        </textarea>
+                                        ><t
+                                                t-esc="profile.other_abilities or ''"
+                                            /></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
@@ -1454,9 +1475,9 @@
                                             name="interests"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.interests or ''" />
-                                        </textarea>
+                                        ><t
+                                                t-esc="profile.interests or ''"
+                                            /></textarea>
                                     </div>
                                 </div>
                             </div>

@@ -162,6 +162,18 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 )
                 d("ocsc_exam_number", profile.ocsc_exam_number or "")
 
+                # English test
+                d("english_test_type", profile.english_test_type or "")
+                d("english_test_score", profile.english_test_score or "")
+                d(
+                    "english_test_date",
+                    str(profile.english_test_date) if profile.english_test_date else "",
+                )
+                d(
+                    "english_test_certificate_number",
+                    profile.english_test_certificate_number or "",
+                )
+
                 # Skills
                 d("foreign_language_skills", profile.foreign_language_skills or "")
                 d("computer_skills", profile.computer_skills or "")

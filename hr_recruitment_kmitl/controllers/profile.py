@@ -30,6 +30,8 @@ class PortalProfile(CustomerPortal):
         "emergency_contact_email",
         "ocsc_exam_number",
         "academic_position_institution",
+        "english_test_score",
+        "english_test_certificate_number",
     ]
 
     TEXT_FIELDS = [
@@ -44,12 +46,14 @@ class PortalProfile(CustomerPortal):
         "marital",
         "ocsc_exam_level",
         "highest_education",
+        "english_test_type",
     ]
 
     DATE_FIELDS = [
         "birthday",
         "academic_position_date",
         "ocsc_exam_date",
+        "english_test_date",
     ]
 
     M2O_FIELDS = [

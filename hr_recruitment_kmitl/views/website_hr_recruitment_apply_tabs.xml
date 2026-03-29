@@ -186,9 +186,9 @@
             </div>
             <hr class="my-4" />
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
-                <span class="section-indicator bg-primary" />
-                บุคคลที่ติดต่อได้ในกรณีเร่งด่วน
-            </h5>
+                <span
+                    class="section-indicator bg-primary"
+                /> บุคคลที่ติดต่อได้ในกรณีเร่งด่วน </h5>
             <div
                 class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
                 data-type="char"
@@ -287,9 +287,7 @@
             </div>
             <hr class="my-4" />
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
-                <span class="section-indicator bg-primary" />
-                ข้อมูลสุขภาพ
-            </h5>
+                <span class="section-indicator bg-primary" /> ข้อมูลสุขภาพ </h5>
             <div
                 class="col-12 mb-0 py-2 s_website_form_field"
                 data-type="char"
@@ -457,7 +455,8 @@
                                 <div class="mb-3 col-md-4">
                                     <label
                                         class="col-form-label fw-semibold text-dark small"
-                                    >Institution</label>
+                                    >
+                                        Institution</label>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
@@ -479,7 +478,8 @@
                                 <div class="mb-3 col-md-4">
                                     <label
                                         class="col-form-label fw-semibold text-dark small"
-                                    >Graduation Date</label>
+                                    >Graduation
+                                        Date</label>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
@@ -549,9 +549,9 @@
             <t t-foreach="work_history_ids" t-as="work">
                 <div class="card border-secondary rounded-4 mb-3 shadow-none">
                     <div class="card-body p-4">
-                        <h6 class="fw-bold text-dark mb-4">
-                            ประสบการณ์การทำงานที่
-                            <t t-esc="work_index + 1" />
+                        <h6 class="fw-bold text-dark mb-4"> ประสบการณ์การทำงานที่ <t
+                                t-esc="work_index + 1"
+                            />
                         </h6>
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
@@ -718,9 +718,10 @@
         <div class="card border-secondary rounded-4 mb-3 shadow-none">
             <div class="card-body p-4">
                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
-                    <i class="fa fa-university text-primary" />
-                    ตำแหน่งทางวิชาการ (Academic Position)
-                </h6>
+                    <i
+                        class="fa fa-university text-primary"
+                    /> ตำแหน่งทางวิชาการ (Academic
+                    Position) </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
@@ -755,7 +756,7 @@
                         />
                     </div>
                 </div>
-                <div class="row g-4">
+                <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
                             class="form-label fw-semibold text-dark small"
@@ -778,14 +779,27 @@
                         />
                     </div>
                 </div>
+
+                <t t-call="hr_recruitment_kmitl.application_document_item">
+                    <t
+                        t-set="label"
+                    >หลักฐานตำแหน่งทางวิชาการ (Academic Position Proof)</t>
+                    <t t-set="filename" t-value="profile.academic_position_filename" />
+                    <t
+                        t-set="download_url"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % profile.id if profile.academic_position_filename else False"
+                    />
+                </t>
             </div>
         </div>
+
+        <!-- สอบ ก.พ. -->
         <div class="card border-secondary rounded-4 mb-3 shadow-none">
             <div class="card-body p-4">
                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
-                    <i class="fa fa-certificate text-primary" />
-                    การสอบ ก.พ. (OCSC Exam)
-                </h6>
+                    <i
+                        class="fa fa-certificate text-primary"
+                    /> การสอบ ก.พ. (OCSC Exam) </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
@@ -821,7 +835,8 @@
                         />
                     </div>
                 </div>
-                <div class="row g-4">
+
+                <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
                             class="form-label fw-semibold text-dark small"
@@ -860,6 +875,127 @@
                         />
                     </div>
                 </div>
+
+                <t t-call="hr_recruitment_kmitl.application_document_item">
+                    <t t-set="label">หลักฐานการสอบ ก.พ. (OCSC Exam Proof)</t>
+                    <t t-set="filename" t-value="profile.ocsc_exam_filename" />
+                    <t
+                        t-set="download_url"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=ocsc_exam_file&amp;filename_field=ocsc_exam_filename&amp;download=true' % profile.id if profile.ocsc_exam_filename else False"
+                    />
+                </t>
+            </div>
+        </div>
+
+        <t
+            t-set="english_test_type_map"
+            t-value="{'toefl_paper': 'TOEFL (Paper-Based)', 'toefl_computer': 'TOEFL (Computer-Based)', 'toefl_internet': 'TOEFL (Internet-Based)', 'ielts': 'IELTS', 'cutep': 'CU-TEP', 'kmitl_tep': 'KMITL-TEP'}"
+        />
+        <t
+            t-set="english_test_type_value"
+            t-value="default and default.get('english_test_type') or ''"
+        />
+        <t
+            t-set="english_test_score_value"
+            t-value="default and default.get('english_test_score') or ''"
+        />
+        <t
+            t-set="english_test_date_value"
+            t-value="default and default.get('english_test_date') or ''"
+        />
+        <t
+            t-set="english_test_certificate_number_value"
+            t-value="default and default.get('english_test_certificate_number') or ''"
+        />
+        <div class="card border-secondary rounded-4 mb-3 shadow-none">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
+                    <i class="fa fa-language text-primary" />
+                    ผลสอบภาษาอังกฤษ (English Test Result)
+                </h6>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >ประเภทการสอบ (Test Type)</label>
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="english_test_type_map.get(english_test_type_value, '')"
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="english_test_type"
+                            t-att-value="english_test_type_value"
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >คะแนน (Score)</label>
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="english_test_score_value"
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="english_test_score"
+                            t-att-value="english_test_score_value"
+                        />
+                    </div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >วันที่สอบ (Test Date)</label>
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control text-muted border-0 py-2"
+                                t-att-value="english_test_date_value"
+                                readonly="readonly"
+                            />
+                            <span class="input-group-text bg-secondary-light border-0">
+                                <i class="fa fa-calendar-o text-secondary" />
+                            </span>
+                        </div>
+                        <input
+                            type="hidden"
+                            name="english_test_date"
+                            t-att-value="english_test_date_value"
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label
+                            class="form-label fw-semibold text-dark small"
+                        >เลขที่ใบรับรอง (Certificate Number)</label>
+                        <input
+                            type="text"
+                            class="form-control text-muted border-0 py-2"
+                            t-att-value="english_test_certificate_number_value"
+                            readonly="readonly"
+                        />
+                        <input
+                            type="hidden"
+                            name="english_test_certificate_number"
+                            t-att-value="english_test_certificate_number_value"
+                        />
+                    </div>
+                </div>
+                <t t-call="hr_recruitment_kmitl.application_document_item">
+                    <t
+                        t-set="label"
+                    >ไฟล์แนบผลสอบภาษาอังกฤษ (English Test Result Attachment)</t>
+                    <t t-set="filename" t-value="profile.english_score_filename" />
+                    <t
+                        t-set="download_url"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=english_score_file&amp;filename_field=english_score_filename&amp;download=true' % profile.id if profile.english_score_filename else False"
+                    />
+                </t>
             </div>
         </div>
     </template>
@@ -957,7 +1093,8 @@
             <t t-call="hr_recruitment_kmitl.application_document_item">
                 <t
                     t-set="label"
-                >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร (ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางทหารอื่น ๆ)</t>
+                >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร
+                    (ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางทหารอื่น ๆ)</t>
                 <t t-set="filename" t-value="profile.military_certificate_filename" />
                 <t
                     t-set="download_url"
@@ -996,9 +1133,8 @@
                 <div
                     class="d-flex align-items-center fw-bold text-danger mb-2 submit-section-title"
                 >
-                    <i class="fa fa-exclamation-triangle me-2" />
-                    คำเตือน: ไม่อนุญาตให้แก้ไขใบสมัครหลังส่ง
-                </div>
+                    <i class="fa fa-exclamation-triangle me-2" /> คำเตือน:
+                    ไม่อนุญาตให้แก้ไขใบสมัครหลังส่ง </div>
                 <ul class="text-dark mb-0 submit-section-list">
                     <li class="mb-2">
                         เมื่อกดยืนยันส่งใบสมัครแล้ว ท่านจะไม่สามารถแก้ไขข้อมูลใด ๆ
@@ -1038,14 +1174,17 @@
                         ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวทั้งหมดในใบสมัครนี้เป็นความจริงทุกประการ
                         และมีคุณสมบัติครบถ้วนตรงตามตำแหน่งที่ต้องการ
                         หากปรากฏภายหลังว่าข้อความในใบสมัครงานและเอกสารที่นำมาแสดง
-                        หรือรายละเอียดที่ให้ไว้ไม่เป็นความจริงหรือเป็นเท็จ ข้าพเจ้ายินยอมสละสิทธิ์การสมัครงาน
+                        หรือรายละเอียดที่ให้ไว้ไม่เป็นความจริงหรือเป็นเท็จ
+                        ข้าพเจ้ายินยอมสละสิทธิ์การสมัครงาน
                         โดยไม่ต้องจ่ายเงินชดเชยหรือค่าเสียหายใด ๆ ทั้งสิ้น
                     </label>
 
                     <div class="text-dark mt-2">
-                        I certify that all information in this application is true and that I fully meet the
+                        I certify that all information in this application is true and that I fully
+                        meet the
                         qualifications
-                        for the position. If it is later found that any statement or supporting document is false, I
+                        for the position. If it is later found that any statement or supporting
+                        document is false, I
                         agree to
                         waive my right to apply for the job without any compensation or damages.
                     </div>
@@ -1067,17 +1206,22 @@
                 <div class="text-dark mb-4">
                     <p class="mb-2">
                         ข้าพเจ้ายินยอมให้สถาบันฯ ใช้และเปิดเผยข้อมูลส่วนบุคคล
-                        รวมทั้งยินยอมให้เก็บรวบรวมข้อมูลส่วนบุคคลในข้างต้น สำหรับวัตถุประสงค์ในการสมัครงาน
-                        ทั้งนี้เป็นไปตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 หรือกฎหมาย/ระเบียบข้อบังคับอื่น ๆ
+                        รวมทั้งยินยอมให้เก็บรวบรวมข้อมูลส่วนบุคคลในข้างต้น
+                        สำหรับวัตถุประสงค์ในการสมัครงาน
+                        ทั้งนี้เป็นไปตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
+                        หรือกฎหมาย/ระเบียบข้อบังคับอื่น ๆ
                         ที่เกี่ยวข้อง รวมถึงยินยอมให้ตรวจสอบความถูกต้องในรายละเอียดใบสมัครงาน
                     </p>
 
                     <p class="mb-0 text-dark">
-                        I agree that the institute may use and disclose personal information, including collecting the
+                        I agree that the institute may use and disclose personal information,
+                        including collecting the
                         personal
-                        information above for job application purposes. This is in accordance with the Personal Data
+                        information above for job application purposes. This is in accordance with
+                        the Personal Data
                         Protection
-                        Act B.E. 2562 and other relevant laws or regulations, including verification of the accuracy of
+                        Act B.E. 2562 and other relevant laws or regulations, including verification
+                        of the accuracy of
                         the job
                         application details.
                     </p>
@@ -1124,9 +1268,7 @@
                 type="submit"
                 class="btn btn-primary px-5 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center s_website_form_send"
             >
-                <i class="fa fa-paper-plane-o me-2" />
-                ส่งใบสมัคร
-            </button>
+                <i class="fa fa-paper-plane-o me-2" /> ส่งใบสมัคร </button>
         </div>
     </template>
 </odoo>
