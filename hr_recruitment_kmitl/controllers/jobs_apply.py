@@ -36,6 +36,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
         education_by_level = {}
         education_json = "{}"
         work_history_ids = request.env["portal.work.history"]
+        profile = request.env["portal.profile"]
 
         if "website_hr_recruitment_error" in request.session:
             error = request.session.pop("website_hr_recruitment_error")
@@ -203,6 +204,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 "job": job,
                 "error": error,
                 "default": default,
+                "profile": profile,
                 "education_by_level": education_by_level,
                 "education_json": education_json,
                 "work_history_ids": work_history_ids,
