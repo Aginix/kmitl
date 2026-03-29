@@ -216,15 +216,28 @@ class PortalProfile(CustomerPortal):
             errors.append("%s: please fill %s" % (label, ", ".join(empty)))
         return errors
 
+    EDUCATION_VISIBILITY = {
+        "doctor": [90, 80, 70],
+        "master": [80, 70],
+        "bachelor": [70],
+        "under_bachelor": [],
+    }
+
     def _validate_education_history(self, post):
         errors = []
+        highest = post.get("highest_education", "")
+        visible_levels = self.EDUCATION_VISIBILITY.get(highest, [])
         for level in self._get_main_education_levels():
+            if level.level in visible_levels:
+                errors.extend(
+                    self._validate_education_section(
+                        post, f"edu_{level.id}_", level.name
+                    )
+                )
+        if highest == "under_bachelor":
             errors.extend(
-                self._validate_education_section(post, f"edu_{level.id}_", level.name)
+                self._validate_education_section(post, "edu_sub_", "ต่ำกว่าปริญญาตรี")
             )
-        errors.extend(
-            self._validate_education_section(post, "edu_sub_", "ต่ำกว่าปริญญาตรี")
-        )
         return errors
 
     def _save_education_section(self, profile, post, prefix, level_id, existing):
@@ -276,13 +289,16 @@ class PortalProfile(CustomerPortal):
         existing = {
             rec.education_level_id.id: rec for rec in profile.education_history_ids
         }
+        highest = post.get("highest_education", "")
+        visible_levels = self.EDUCATION_VISIBILITY.get(highest, [])
         for level in self._get_main_education_levels():
-            self._save_education_section(
-                profile, post, f"edu_{level.id}_", level.id, existing
-            )
+            if level.level in visible_levels:
+                self._save_education_section(
+                    profile, post, f"edu_{level.id}_", level.id, existing
+                )
+            elif existing.get(level.id):
+                existing.pop(level.id).unlink()
         # Sub-bachelor section
-        sub_level_id = int(post.get("edu_sub_education_level_id") or 0) or False
-        # Remove old sub-bachelor record if level changed
         old_sub = next(
             (
                 rec
@@ -291,13 +307,17 @@ class PortalProfile(CustomerPortal):
             ),
             False,
         )
-        if old_sub and old_sub.education_level_id.id != sub_level_id:
+        if highest == "under_bachelor":
+            sub_level_id = int(post.get("edu_sub_education_level_id") or 0) or False
+            if old_sub and old_sub.education_level_id.id != sub_level_id:
+                old_sub.unlink()
+                existing.pop(old_sub.education_level_id.id, None)
+            if sub_level_id:
+                self._save_education_section(
+                    profile, post, "edu_sub_", sub_level_id, existing
+                )
+        elif old_sub:
             old_sub.unlink()
-            existing.pop(old_sub.education_level_id.id, None)
-        if sub_level_id:
-            self._save_education_section(
-                profile, post, "edu_sub_", sub_level_id, existing
-            )
 
     WH_REQUIRED_FIELDS = {
         "wh_company_name": "Company",

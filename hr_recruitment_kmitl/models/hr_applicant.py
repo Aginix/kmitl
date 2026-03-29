@@ -174,6 +174,14 @@ class HrApplicant(models.Model):
     other_documents_file = fields.Binary(string="Other Documents", attachment=True)
     other_documents_filename = fields.Char()
 
+    # Confirmation documents
+    exam_fee_file = fields.Binary(string="Exam Fee Receipt", attachment=True)
+    exam_fee_filename = fields.Char()
+    medical_certificate_file = fields.Binary(
+        string="Medical Certificate", attachment=True
+    )
+    medical_certificate_filename = fields.Char()
+
     # Skills
     foreign_language_skills = fields.Text()
     computer_skills = fields.Text()

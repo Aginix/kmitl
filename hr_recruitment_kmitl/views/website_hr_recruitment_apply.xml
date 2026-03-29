@@ -132,6 +132,7 @@
                                 class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
                                 href="#nav-skills"
                                 data-bs-toggle="tab"
+                                t-if="job.role == 'support'"
                             >
                                 <i class="fa fa-star" />
                                 <span>ทักษะและความสนใจ</span>
