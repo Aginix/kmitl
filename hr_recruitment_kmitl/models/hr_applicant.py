@@ -56,6 +56,7 @@ PROFILE_M2O_FIELDS = [
     "academic_standing_id",
 ]
 PROFILE_SELECTION_FIELDS = [
+    "gender",
     "marital",
     "ocsc_exam_level",
     "highest_education",
@@ -98,6 +99,9 @@ SUPPORT_ONLY_FIELDS = {
 class HrApplicant(models.Model):
     _inherit = "hr.applicant"
 
+    job_role = fields.Selection(related="job_id.role", string="Job Role")
+    old_code = fields.Char()
+
     # Name fields
     applicant_title = fields.Many2one("res.partner.title")
     first_name = fields.Char(string="First Name (TH)")
@@ -126,6 +130,7 @@ class HrApplicant(models.Model):
     # Personal
     identification_id = fields.Char(string="Identification No.")
     birthday = fields.Date()
+    gender = fields.Selection([("male", "Male"), ("female", "Female")])
     nationality_id = fields.Many2one("res.country")
     marital = fields.Selection(
         [
@@ -434,6 +439,10 @@ class HrApplicant(models.Model):
         elif role == "support":
             for f in ACADEMIC_ONLY_FIELDS:
                 vals.pop(f, None)
+
+        # Auto-fill old_code if the job has exactly 1 position
+        if self.job_id and len(self.job_id.old_code_ids) == 1:
+            vals["old_code"] = self.job_id.old_code_ids.name
 
         if vals:
             self.sudo().write(vals)
