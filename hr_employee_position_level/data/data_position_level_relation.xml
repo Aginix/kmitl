@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- hr.employee.position.level.relation -->
+    <record model="hr.employee.position.level.relation" id="a01">
+        <field name="name">อาจารย์</field>
+        <field name="role">academic</field>
+        <field name="level">10</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="a02">
+        <field name="name">ผู้ช่วยศาสตราจารย์</field>
+        <field name="role">academic</field>
+        <field name="level">80</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="a03">
+        <field name="name">รองศาสตราจารย์</field>
+        <field name="role">academic</field>
+        <field name="level">90</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="a04">
+        <field name="name">ศาสตราจารย์</field>
+        <field name="role">academic</field>
+        <field name="level">100</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="a05">
+        <field name="name">นักวิจัย</field>
+        <field name="role">academic</field>
+        <field name="level">10</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="a06">
+        <field name="name">ผศ. นักวิจัย</field>
+        <field name="role">academic</field>
+        <field name="level">80</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="a07">
+        <field name="name">รศ. นักวิจัย</field>
+        <field name="role">academic</field>
+        <field name="level">90</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="a08">
+        <field name="name">ศ. นักวิจัย</field>
+        <field name="role">academic</field>
+        <field name="level">100</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b01">
+        <field name="name">พื้นฐาน</field>
+        <field name="role">support</field>
+        <field name="level">1</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b02">
+        <field name="name">ปฏิบัติงาน</field>
+        <field name="role">support</field>
+        <field name="level">2</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b03">
+        <field name="name">ชำนาญงาน</field>
+        <field name="role">support</field>
+        <field name="level">3</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b04">
+        <field name="name">ชำนาญงานพิเศษ</field>
+        <field name="role">support</field>
+        <field name="level">4</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b05">
+        <field name="name">ปฏิบัติการ</field>
+        <field name="role">support</field>
+        <field name="level">5</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b06">
+        <field name="name">ชำนาญการ</field>
+        <field name="role">support</field>
+        <field name="level">6</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b07">
+        <field name="name">ชำนาญการพิเศษ</field>
+        <field name="role">support</field>
+        <field name="level">7</field>
+    </record>
+    <record model="hr.employee.position.level.relation" id="b08">
+        <field name="name">เชี่ยวชาญ</field>
+        <field name="role">support</field>
+        <field name="level">8</field>
+    </record>
+</odoo>

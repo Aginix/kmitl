@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- hr.employee.profession -->
+    <record model="hr.employee.profession" id="P01">
+        <field name="name">นายแพทย์</field>
+        <field name="name_abbreviation">นพ.</field>
+        <field name="name_en">Doctor of Medicine</field>
+        <field name="name_abbreviation_en">M.D.</field>
+    </record>
+    <record model="hr.employee.profession" id="P02">
+        <field name="name">ทันตแพทย์</field>
+        <field name="name_abbreviation">ทพ.</field>
+        <field name="name_en">DR.</field>
+        <field name="name_abbreviation_en">Doctor of Dental Surgery,DDS.</field>
+    </record>
+    <record model="hr.employee.profession" id="P03">
+        <field name="name">ทันตแพทย์หญิง</field>
+        <field name="name_abbreviation">ทพญ.</field>
+        <field name="name_en">DR.</field>
+        <field name="name_abbreviation_en">Doctor of Dental Surgery,DDS.</field>
+    </record>
+    <record model="hr.employee.profession" id="P04">
+        <field name="name">เทคนิคการแพทย์</field>
+        <field name="name_abbreviation">ทนพ.</field>
+        <field name="name_en" />
+        <field name="name_abbreviation_en" />
+    </record>
+    <record model="hr.employee.profession" id="P05">
+        <field name="name">เทคนิคการแพทย์หญิง</field>
+        <field name="name_abbreviation">ทนพญ.</field>
+        <field name="name_en" />
+        <field name="name_abbreviation_en" />
+    </record>
+    <record model="hr.employee.profession" id="P06">
+        <field name="name">นายแพทย์</field>
+        <field name="name_abbreviation">นพ.</field>
+        <field name="name_en">DR.</field>
+        <field name="name_abbreviation_en">Doctor</field>
+    </record>
+    <record model="hr.employee.profession" id="P07">
+        <field name="name">แพทย์หญิง</field>
+        <field name="name_abbreviation">พญ.</field>
+        <field name="name_en">DR.</field>
+        <field name="name_abbreviation_en">Doctor</field>
+    </record>
+    <record model="hr.employee.profession" id="P08">
+        <field name="name">นายสัตวแพทย์</field>
+        <field name="name_abbreviation">นสพ.</field>
+        <field name="name_en">DR.</field>
+        <field name="name_abbreviation_en">Doctor of Veterinary Medicine,DVM.</field>
+    </record>
+    <record model="hr.employee.profession" id="P09">
+        <field name="name">เภสัชกร</field>
+        <field name="name_abbreviation">ภก.</field>
+        <field name="name_en">Pharmacist</field>
+        <field name="name_abbreviation_en">Pharm.</field>
+    </record>
+    <record model="hr.employee.profession" id="P10">
+        <field name="name">เภสัชกรหญิง</field>
+        <field name="name_abbreviation">ภกญ.</field>
+        <field name="name_en">Pharmacist</field>
+        <field name="name_abbreviation_en">Pharm.</field>
+    </record>
+    <record model="hr.employee.profession" id="P11">
+        <field name="name">สัตวแพทย์</field>
+        <field name="name_abbreviation">สพ.</field>
+        <field name="name_en">DR.</field>
+        <field name="name_abbreviation_en">Doctor of Veterinary Medicine,DVM.</field>
+    </record>
+    <record model="hr.employee.profession" id="P12">
+        <field name="name">สัตวแพทย์หญิง</field>
+        <field name="name_abbreviation">สพญ.</field>
+        <field name="name_en">DR.</field>
+        <field name="name_abbreviation_en">Doctor of Veterinary Medicine,DVM.</field>
+    </record>
+</odoo>
