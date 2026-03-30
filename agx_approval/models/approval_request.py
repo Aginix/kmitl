@@ -243,6 +243,19 @@ class ApprovalRequest(models.Model):
     def _onchange_category_id(self):
         self.line_ids = False
         self.description = self.category_id.default_description
+        if self.category_id:
+            distribution = {}
+            for field_name in (
+                "activity_analytic_id",
+                "department_analytic_id",
+                "fund_analytic_id",
+                "source_analytic_id",
+            ):
+                analytic = self.category_id[field_name]
+                if analytic:
+                    distribution[str(analytic.id)] = 100
+            if distribution:
+                self.analytic_distribution = distribution
 
     @api.onchange("owner_id")
     def _onchange_owner_id(self):
