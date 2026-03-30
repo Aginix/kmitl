@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AdvancePayment(models.Model):
@@ -14,6 +14,17 @@ class AdvancePayment(models.Model):
     _description = "Advance Payment"
     _inherit = ["mail.thread", "mail.activity.mixin", "base.exception", "analytic.mixin"]
     _order = "main_exception_id asc, name desc, id desc"
+
+    _PROTECTED_FIELDS = {
+        "loan_amount",
+        "loan_type_id",
+        "loan_reason",
+        "bank_id",
+        "bank_account_number",
+        "reference",
+        "requested_by",
+        "department_id",
+    }
 
     READONLY_STATES = {
         "submitted": [("readonly", True)],
@@ -56,9 +67,7 @@ class AdvancePayment(models.Model):
     department_id = fields.Many2one(
         comodel_name="hr.department",
         string="Department",
-        default=lambda self: self.env.user.employee_id.department_id
-        if self.env.user.employee_id
-        else False,
+        default=lambda self: self.env.user.employee_id.department_id,
         states=READONLY_STATES,
     )
 
@@ -109,6 +118,7 @@ class AdvancePayment(models.Model):
         inverse_name="agreement_id",
         string="Usage Records",
         readonly=True,
+        copy=False,
     )
 
     amount_used = fields.Monetary(
@@ -128,6 +138,7 @@ class AdvancePayment(models.Model):
         inverse_name="advance_payment_id",
         string="Payments",
         readonly=True,
+        copy=False,
     )
 
     payment_count = fields.Integer(
@@ -144,6 +155,10 @@ class AdvancePayment(models.Model):
         copy=False,
         tracking=True,
     )
+
+    date_submitted = fields.Datetime(string="Date Submitted", readonly=True, copy=False)
+    date_approved = fields.Datetime(string="Date Approved", readonly=True, copy=False)
+    date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
 
     attachment_ids = fields.One2many(
         "ir.attachment",
@@ -229,6 +244,16 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.payment_count = len(rec.payment_ids)
 
+    @api.constrains("name")
+    def _check_name_unique(self):
+        for rec in self:
+            if rec.name == _("New"):
+                continue
+            if self.search([("name", "=", rec.name), ("id", "!=", rec.id)], limit=1):
+                raise ValidationError(
+                    _("Agreement number '%(name)s' must be unique!", name=rec.name)
+                )
+
     def _prepare_account_payment_vals(self, payment_type):
         vals = {
             "partner_id": self.requested_by.partner_id.id,
@@ -259,6 +284,13 @@ class AdvancePayment(models.Model):
         if records:
             records._check_exception()
 
+    def write(self, vals):
+        if self._PROTECTED_FIELDS & set(vals):
+            non_draft = self.filtered(lambda r: r.state != "draft")
+            if non_draft:
+                raise UserError(_("Cannot modify a non-draft agreement."))
+        return super().write(vals)
+
     def button_draft(self):
         self.write({"state": "draft"})
 
@@ -283,6 +315,12 @@ class AdvancePayment(models.Model):
 
     def action_submit(self):
         """Submit the agreement for approval (ส่งเพื่อขออนุมัติ)."""
+        if not self.env.user.has_group("advance_payment.group_advance_payment_manager"):
+            for rec in self:
+                if rec.requested_by != self.env.user:
+                    raise UserError(
+                        _("Only the requestor or a manager can submit this agreement.")
+                    )
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft agreements can be submitted."))
@@ -290,6 +328,7 @@ class AdvancePayment(models.Model):
                 return rec._popup_exceptions()
             if rec.name == _("New"):
                 rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
+            rec.date_submitted = fields.Datetime.now()
             rec.state = "submitted"
             rec.message_post(
                 body=_(
@@ -311,7 +350,13 @@ class AdvancePayment(models.Model):
         payment_type = self.env.ref("advance_payment.payment_type_advance_payment_outbound")
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
         payments = self.env["account.payment"].create(vals_list)
-        self.write({"state": "approved", "disbursement_state": "pending"})
+        self.write(
+            {
+                "state": "approved",
+                "disbursement_state": "pending",
+                "date_approved": fields.Datetime.now(),
+            }
+        )
         payments.action_submit()
         for rec, payment in zip(self, payments):
             rec.message_post(
@@ -335,6 +380,7 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "in_progress":
                 raise UserError(_("Only in-progress agreements can be closed."))
+            rec.date_closed = fields.Datetime.now()
             rec.state = "done"
             rec.message_post(
                 body=_(

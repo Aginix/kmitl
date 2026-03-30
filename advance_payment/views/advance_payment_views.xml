@@ -17,7 +17,7 @@
                     decoration-warning="state in ('submitted', 'in_progress')"
                     decoration-primary="state == 'approved'"
                     decoration-success="state == 'done'"/>
-                <field name="disbursement_state" optional="show" widget="badge"
+                <field name="disbursement_state" optional="hide" widget="badge"
                     decoration-warning="disbursement_state == 'pending'"
                     decoration-success="disbursement_state == 'paid'"/>
             </tree>
@@ -104,6 +104,10 @@
                     <group string="สรุปยอดเงิน" attrs="{'invisible': [('state', '=', 'draft')]}">
                         <field name="amount_used"/>
                         <field name="amount_remaining"/>
+                        <field name="disbursement_state" widget="badge"
+                            attrs="{'invisible': [('disbursement_state', '=', False)]}"
+                            decoration-warning="disbursement_state == 'pending'"
+                            decoration-success="disbursement_state == 'paid'"/>
                     </group>
                     <notebook>
                         <page string="รายการใช้เงิน" name="usage_lines">

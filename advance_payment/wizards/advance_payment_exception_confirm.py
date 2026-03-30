@@ -16,7 +16,7 @@ class AdvancePaymentExceptionConfirm(models.TransientModel):
         if self.ignore and not self.exception_ids.filtered("is_blocking"):
             self.related_model_id.button_draft()
             self.related_model_id.ignore_exception = True
-            self.related_model_id.action_submit()
+            self.related_model_id.state = "submitted"
         else:
             self.related_model_id.ignore_exception = False
         return super().action_confirm()
