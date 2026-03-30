@@ -5,14 +5,14 @@
             id="purchase_change_section_wa_committee"
             model="purchase.change.section"
         >
-            <field name="name">Procurement Inspection Committee</field>
+            <field name="name">คณะกรรมการตรวจรับพัสดุ</field>
             <field name="section_type">modification</field>
         </record>
         <record
             id="purchase_change_section_work_supervisor"
             model="purchase.change.section"
         >
-            <field name="name">Work Supervisor</field>
+            <field name="name">ผู้ควบคุมงาน</field>
             <field name="section_type">modification</field>
         </record>
     </data>

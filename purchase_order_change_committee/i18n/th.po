@@ -50,7 +50,7 @@ msgstr "ความเปลี่ยนแปลงคณะกรรมกา
 #. module: purchase_order_change_committee
 #: model_terms:ir.ui.view,arch_db:purchase_order_change_committee.view_purchase_order_change_form_committee
 msgid "Committee Changes"
-msgstr "การแก้ไขสัญญา - คณะกรรมการตรวจรับพัสดุ"
+msgstr "การแก้ไขสัญญาคณะกรรมการ"
 
 #. module: purchase_order_change_committee
 #: model:ir.model.fields,field_description:purchase_order_change_committee.field_purchase_order_change__committee_snapshot_ids
