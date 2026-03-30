@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- hr.employee.academic.standing -->
+    <record model="hr.employee.academic.standing" id="AS01">
+        <field name="name">ศาสตราจารย์</field>
+        <field name="name_abbreviation">ศ.</field>
+        <field name="name_en">Professor</field>
+        <field name="name_abbreviation_en">Prof.</field>
+    </record>
+    <record model="hr.employee.academic.standing" id="AS02">
+        <field name="name">รองศาสตราจารย์</field>
+        <field name="name_abbreviation">รศ.</field>
+        <field name="name_en">Associate Professor</field>
+        <field name="name_abbreviation_en">Assoc. Prof.</field>
+    </record>
+    <record model="hr.employee.academic.standing" id="AS03">
+        <field name="name">ผู้ช่วยศาสตราจารย์</field>
+        <field name="name_abbreviation">ผศ.</field>
+        <field name="name_en">Assistant Professor</field>
+        <field name="name_abbreviation_en">Asst. Prof.</field>
+    </record>
+    <record model="hr.employee.academic.standing" id="AS04">
+        <field name="name">ศาสตราจารย์พิเศษ</field>
+        <field name="name_abbreviation">ศ. (พิเศษ)</field>
+        <field name="name_en">Professor (Special)</field>
+        <field name="name_abbreviation_en">Prof. (Special)</field>
+    </record>
+    <record model="hr.employee.academic.standing" id="AS05">
+        <field name="name">รองศาสตราจารย์พิเศษ</field>
+        <field name="name_abbreviation">รศ. (พิเศษ)</field>
+        <field name="name_en">Associate Professor (Special)</field>
+        <field name="name_abbreviation_en">Assoc. Prof. (Special)</field>
+    </record>
+    <record model="hr.employee.academic.standing" id="AS06">
+        <field name="name">ผู้ช่วยศาสตราจารย์พิเศษ</field>
+        <field name="name_abbreviation">ผศ. (พิเศษ)</field>
+        <field name="name_en">Assistant Professor (Special)</field>
+        <field name="name_abbreviation_en">Asst. Prof. (Special)</field>
+    </record>
+    <record model="hr.employee.academic.standing" id="AS07">
+        <field name="name">ศาสตราจารย์เกียรติคุณ</field>
+        <field name="name_abbreviation">ศ.(เกียรติคุณ)</field>
+        <field name="name_en">Emeritus Professor</field>
+        <field name="name_abbreviation_en" />
+    </record>
+    <record model="hr.employee.academic.standing" id="AS08">
+        <field name="name">ศาสตราจารย์กิตติคุณ</field>
+        <field name="name_abbreviation">ศ.(กิตติคุณ)</field>
+        <field name="name_en">Emeritus Professor</field>
+        <field name="name_abbreviation_en" />
+    </record>
+    <record model="hr.employee.academic.standing" id="AS09">
+        <field name="name">ศาสตราจารย์คลินิก</field>
+        <field name="name_abbreviation">ศ.คลินิก</field>
+        <field name="name_en" />
+        <field name="name_abbreviation_en" />
+    </record>
+    <record model="hr.employee.academic.standing" id="AS10">
+        <field name="name">อาจารย์</field>
+        <field name="name_abbreviation" />
+        <field name="name_en" />
+        <field name="name_abbreviation_en" />
+    </record>
+</odoo>

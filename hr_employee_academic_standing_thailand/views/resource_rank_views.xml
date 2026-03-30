@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- View resource.rank View Tree -->
+    <record id="view_resource_rank_tree" model="ir.ui.view">
+        <field name="name">view.resource.rank.tree</field>
+        <field name="model">resource.rank</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="name_abbreviation" />
+                <field name="name_en" />
+                <field name="name_abbreviation_en" />
+                <field name="rank_agency_id" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View resource.rank form -->
+    <record id="view_resource_rank_form" model="ir.ui.view">
+        <field name="name">view.resource.rank.form</field>
+        <field name="model">resource.rank</field>
+        <field name="arch" type="xml">
+            <form string="HR Employee Rank">
+                <sheet>
+                    <group>
+                        <field name="rank_agency_id" />
+                    </group>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="name_abbreviation" />
+                        </group>
+                        <group>
+                            <field name="name_en" />
+                            <field name="name_abbreviation_en" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View resource.rank search -->
+    <record id="view_resource_rank_search" model="ir.ui.view">
+        <field name="name">view.resource.rank.search</field>
+        <field name="model">resource.rank</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action resource.rank -->
+    <record id="action_resource_rank" model="ir.actions.act_window">
+        <field name="name">HR Employee Rank</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">resource.rank</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Resource Rank.
+            </p>
+        </field>
+    </record>
+
+</odoo>
