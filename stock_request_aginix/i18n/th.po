@@ -463,3 +463,13 @@ msgstr "ราคารวม"
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request_line__price_unit
 msgid "Unit Price"
 msgstr "ราคาต่อหน่วย"
+
+#. module: stock_request_aginix
+#: model_terms:ir.ui.view,arch_db:stock_request_aginix.view_stock_request_form
+msgid "Reject"
+msgstr "ปฏิเสธ"
+
+#. module: stock_request_aginix
+#: model:ir.model.fields.selection,name:stock_request_aginix.selection__stock_request__state__rejected
+msgid "Rejected"
+msgstr "ปฏิเสธคำขอ"
