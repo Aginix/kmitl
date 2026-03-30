@@ -103,11 +103,11 @@ class StockRequest(models.Model):
         )
         picking_type = self.env['stock.picking.type'].search([
             ('code', '=', 'outgoing'),
-            ('warehouse_id.operating_unit_id', '=', operating_unit.id),
+            # ('warehouse_id.operating_unit_id', '=', operating_unit.id),
         ], limit=1)
         if picking_type:
             res['picking_type_id'] = picking_type.id
-        if operating_unit:  # BUG FIX: เช็คก่อนว่ามี OU
+        if operating_unit:
             location = self.env['stock.location'].search([
                 ('operating_unit_id', '=', operating_unit.id)
             ], limit=1)
