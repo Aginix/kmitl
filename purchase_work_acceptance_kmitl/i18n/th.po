@@ -925,7 +925,7 @@ msgstr "คู่ค้า"
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 msgid "WA"
-msgstr ""
+msgstr "ใบตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_accepted
@@ -1549,3 +1549,14 @@ msgstr "การตรวจรับ"
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__reason
 msgid "Reason"
 msgstr "หมายเหตุ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_receive
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_receive
+msgid "Received Date"
+msgstr "วันที่ตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__in_review
+msgid "In Review"
+msgstr "อยู่ระหว่างการตรวจรับ"
