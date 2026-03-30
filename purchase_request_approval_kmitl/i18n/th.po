@@ -16,11 +16,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: purchase_request_approval_kmitl
-#: model:base.substate,name:purchase_request_approval_kmitl.base_substate_budget_validaition
-msgid "Budget Validation"
-msgstr "รอจองงบประมาณ"
-
-#. module: purchase_request_approval_kmitl
 #. odoo-python
 #: code:addons/purchase_request_approval_kmitl/models/purchase_request.py:0
 #, python-format
@@ -96,20 +91,10 @@ msgid "Status"
 msgstr "สถานะ"
 
 #. module: purchase_request_approval_kmitl
-#: model:base.substate,name:purchase_request_approval_kmitl.base_substate_to_be_verified
-msgid "To be Verified"
-msgstr "รอตรวจสอบความถูกต้อง"
-
-#. module: purchase_request_approval_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_approval_kmitl.selection__purchase_request__state__to_verify
 #: model:target.state.value,name:purchase_request_approval_kmitl.target_state_value_approved
 msgid "To be verified"
 msgstr "จองงบประมาณ"
-
-#. module: purchase_request_approval_kmitl
-#: model:base.substate,name:purchase_request_approval_kmitl.base_substate_waiting_for_approval
-msgid "Waiting for request approval"
-msgstr "รอส่งขออนุมัติ"
 
 #. module: purchase_request_approval_kmitl
 #: model:tier.definition,name:purchase_request_approval_kmitl.tier_definition_purchase_request_kmitl_manager

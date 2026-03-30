@@ -207,7 +207,7 @@
                                                     <t t-esc="work_acceptance.name" />
                                                 </td>
                                             </tr>
-                                            <tr t-if="wa_committee">
+                                            <tr t-if="wa_committee and work_acceptance.purchase_id">
                                                 <th class="ps-0 pb-0">
                                                     สัญญา/ใบสั่งซื้อ/จ้าง
                                                 </th>

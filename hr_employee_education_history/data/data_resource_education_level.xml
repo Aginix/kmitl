@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- resource.education.level -->
+    <record model="resource.education.level" id="Q01">
+        <field name="name">ปริญญาเอก</field>
+        <field name="level">90</field>
+    </record>
+    <record model="resource.education.level" id="Q02">
+        <field name="name">ปริญญาโท</field>
+        <field name="level">80</field>
+    </record>
+    <record model="resource.education.level" id="Q03">
+        <field name="name">ปริญญาตรี</field>
+        <field name="level">70</field>
+    </record>
+    <record model="resource.education.level" id="Q04">
+        <field name="name">อนุปริญญา</field>
+        <field name="level">65</field>
+    </record>
+    <record model="resource.education.level" id="Q05">
+        <field name="name">ประกาศนียบัตรวิชาชีพเทียบเท่า</field>
+        <field name="level">60</field>
+    </record>
+    <record model="resource.education.level" id="Q06">
+        <field name="name">ประกาศนียบัตรวิชาชีพชั้นสูง</field>
+        <field name="level">55</field>
+    </record>
+    <record model="resource.education.level" id="Q07">
+        <field name="name">มัธยมศึกษาตอนปลาย</field>
+        <field name="level">50</field>
+    </record>
+    <record model="resource.education.level" id="Q08">
+        <field name="name">ประกาศนียบัตรวิชาชีพ</field>
+        <field name="level">45</field>
+    </record>
+    <record model="resource.education.level" id="Q09">
+        <field name="name">มัธยมศึกษาตอนต้น</field>
+        <field name="level">40</field>
+    </record>
+    <record model="resource.education.level" id="Q10">
+        <field name="name">ประถมศึกษาตอนปลาย</field>
+        <field name="level">35</field>
+    </record>
+    <record model="resource.education.level" id="Q11">
+        <field name="name">ประถมศึกษาตอนต้น</field>
+        <field name="level">30</field>
+    </record>
+    <record model="resource.education.level" id="Q12">
+        <field name="name">ประกาศนียบัตรชั้นสูง</field>
+        <field name="level">25</field>
+    </record>
+    <record model="resource.education.level" id="Q13">
+        <field name="name">ประกาศนียบัตร</field>
+        <field name="level">20</field>
+    </record>
+    <record model="resource.education.level" id="Q14">
+        <field name="name">ประกาศนียบัตรวิชาการศึกษาสูง</field>
+        <field name="level">15</field>
+    </record>
+    <record model="resource.education.level" id="Q15">
+        <field name="name">ประกาศนียบัตรวิชาการศึกษาต้น</field>
+        <field name="level">10</field>
+    </record>
+</odoo>

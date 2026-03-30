@@ -1,0 +1,85 @@
+<odoo>
+    <!-- เพิ่มเข้า snippet list -->
+    <template
+        id="s_benefit_card_snippet"
+        inherit_id="website.snippets"
+        name="Benefit Card Snippet"
+    >
+        <xpath
+            expr="//div[@id='snippet_content']/div[hasclass('o_panel_body')]"
+            position="inside"
+        >
+            <t
+                t-snippet="hr_recruitment_kmitl.s_benefit_card"
+                string="Benefit Card"
+                t-thumbnail="/hr_recruitment_kmitl/static/src/img/snippets/s_benefit_card.svg"
+                t-forbid-sanitize="form"
+            />
+        </xpath>
+    </template>
+
+    <template
+        id="snippet_options"
+        inherit_id="website_hr_recruitment.snippet_options"
+        name="Hr Recruitment KMITL Snippet Options"
+    >
+        <xpath expr="." position="inside">
+            <div
+                data-selector="main:has(.o_website_hr_recruitment_jobs_list)"
+                data-page-options="true"
+                groups="website.group_website_designer"
+                data-no-check="true"
+                string="Jobs Page"
+            >
+                <we-checkbox
+                    string="Roles Filter"
+                    data-customize-website-views="hr_recruitment_kmitl.job_filter_by_roles"
+                    data-no-preview="true"
+                    data-reload="/"
+                />
+                <we-checkbox
+                    string="Employee Type Filter"
+                    data-customize-website-views="hr_recruitment_kmitl.job_filter_by_employee_types"
+                    data-no-preview="true"
+                    data-reload="/"
+                />
+                <we-checkbox
+                    string="Education Level Filter"
+                    data-customize-website-views="hr_recruitment_kmitl.job_filter_by_education_levels"
+                    data-no-preview="true"
+                    data-reload="/"
+                />
+                <we-checkbox
+                    string="Tags Filter"
+                    data-customize-website-views="hr_recruitment_kmitl.job_filter_by_tags"
+                    data-no-preview="true"
+                    data-reload="/"
+                />
+            </div>
+        </xpath>
+
+        <xpath
+            expr="//we-checkbox[@data-customize-website-views='website_hr_recruitment.job_filter_by_departments']"
+            position="attributes"
+        >
+            <attribute name="data-customize-website-views">
+                hr_recruitment_kmitl.job_filter_by_departments</attribute>
+        </xpath>
+
+        <xpath
+            expr="//we-checkbox[@data-customize-website-views='website_hr_recruitment.job_filter_by_offices']"
+            position="attributes"
+        >
+            <attribute name="data-customize-website-views">
+                hr_recruitment_kmitl.job_filter_by_offices</attribute>
+        </xpath>
+
+        <xpath
+            expr="//we-checkbox[@data-customize-website-views='website_hr_recruitment.job_filter_by_employment_type']"
+            position="attributes"
+        >
+            <attribute name="data-customize-website-views">
+                hr_recruitment_kmitl.job_filter_by_employment_type</attribute>
+        </xpath>
+    </template>
+</odoo>

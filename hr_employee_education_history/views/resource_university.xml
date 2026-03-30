@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <record model="ir.ui.view" id="resource_university_form_view">
+    <field name="name">resource.university.form (in
+      resource_university)</field>
+    <field name="model">resource.university</field>
+    <field name="arch" type="xml">
+      <form>
+        <header />
+        <sheet>
+          <group>
+            <field name="name" />
+            <field name="name_th" />
+            <field name="country_id" />
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <record model="ir.ui.view" id="resource_university_search_view">
+    <field name="name">resource.university.search (in
+      resource_university)</field>
+    <field name="model">resource.university</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name" />
+        <field name="name_th" />
+        <field name="country_id" />
+      </search>
+    </field>
+  </record>
+  <record model="ir.ui.view" id="resource_university_tree_view">
+    <field name="name">resource.university.tree (in
+      resource_university)</field>
+    <field name="model">resource.university</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name" />
+        <field name="name_th" />
+        <field name="country_id" />
+      </tree>
+    </field>
+  </record>
+  <record model="ir.actions.act_window" id="resource_university_act_window">
+    <field name="name">University List</field>
+    <field name="res_model">resource.university</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[]</field>
+    <field name="context">{}</field>
+  </record>
+</odoo>

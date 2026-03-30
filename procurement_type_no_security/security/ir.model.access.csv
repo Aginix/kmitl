@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_procurement_type_all_user,procurement_type_all_user,l10n_th_gov_purchase_request.model_procurement_type,base.group_user,1,0,0,0
