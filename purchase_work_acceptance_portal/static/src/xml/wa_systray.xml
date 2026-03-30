@@ -34,7 +34,7 @@
                             <div class="o_wa_systray_item px-2 py-2 border-bottom">
                                 <div class="fw-bold small" t-esc="item.name"/>
                                 <div><a t-att-href="item.wa_url" target="_blank">กรุณาตรวจรับพัสดุ</a></div>
-                                <div><a t-att-href="item.order_url" target="_blank">เอกสารสัญญา</a></div>
+                                <div t-if="item.order_url"><a t-att-href="item.order_url" target="_blank">เอกสารสัญญา</a></div>
                             </div>
                         </t>
                     </div>
