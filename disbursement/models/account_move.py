@@ -8,12 +8,19 @@ class AccountMove(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if "payment_state" in vals:
-            paid_moves = self.filtered(lambda m: m.payment_state == "paid")
-            if paid_moves:
-                disbursements = self.env["disbursement.request"].search([
-                    ("bill_id", "in", paid_moves.ids),
-                    ("state", "=", "in_progress"),
-                ])
-                disbursements.action_done()
+        if "state" in vals or "payment_state" in vals:
+            pipeline_states = (
+                "waiting_bill_post",
+                "bill_posted",
+                "waiting_payment_post",
+                "payment_posted",
+            )
+            disbursements = self.env["disbursement.request"].search(
+                [
+                    ("bill_id", "in", self.ids),
+                    ("state", "in", pipeline_states),
+                ]
+            )
+            if disbursements:
+                disbursements._update_state_from_pipeline()
         return res

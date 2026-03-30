@@ -25,12 +25,22 @@ class DisbursementRequest(models.Model):
     _commitment_id_field = "budget_commitment_id"
     _commitment_account_id_field = "budget_account_id"
 
+    PIPELINE_STATES = (
+        "waiting_bill_post",
+        "bill_posted",
+        "waiting_payment_post",
+        "payment_posted",
+    )
+
     READONLY_STATES = {
         "submitted": [("readonly", True)],
         "sent": [("readonly", True)],
         "validated": [("readonly", True)],
         "approved": [("readonly", True)],
-        "in_progress": [("readonly", True)],
+        "waiting_bill_post": [("readonly", True)],
+        "bill_posted": [("readonly", True)],
+        "waiting_payment_post": [("readonly", True)],
+        "payment_posted": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
@@ -235,7 +245,10 @@ class DisbursementRequest(models.Model):
             ("sent", "Sent"),
             ("validated", "Validated"),
             ("approved", "Approved"),
-            ("in_progress", "In Progress"),
+            ("waiting_bill_post", "Waiting Bill Post"),
+            ("bill_posted", "Bill Posted"),
+            ("waiting_payment_post", "Waiting Payment Post"),
+            ("payment_posted", "Payment Posted"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
@@ -563,6 +576,43 @@ class DisbursementRequest(models.Model):
                 and rec.bill_id.payment_state in ("not_paid", "partial")
             )
 
+    def _update_state_from_pipeline(self):
+        """Recompute state based on bill/payment status for records in pipeline."""
+        for rec in self:
+            if rec.state not in rec.PIPELINE_STATES:
+                continue
+            if not rec.bill_id:
+                continue
+            bill = rec.bill_id
+            if bill.payment_state == "paid":
+                rec.state = "done"
+                rec.message_post(
+                    body=_("Payment complete. Disbursement done."),
+                    subtype_xmlid="mail.mt_note",
+                )
+            elif rec._get_pipeline_payments().filtered(
+                lambda p: p.state == "posted"
+            ):
+                rec.state = "payment_posted"
+            elif rec._get_pipeline_payments():
+                rec.state = "waiting_payment_post"
+            elif bill.state == "posted":
+                rec.state = "bill_posted"
+            else:
+                rec.state = "waiting_bill_post"
+
+    def _get_pipeline_payments(self):
+        """Return payment records associated with this DR's bill."""
+        self.ensure_one()
+        Payment = self.env["account.payment"]
+        payments = Payment
+        if self.bill_id:
+            payments |= self.bill_id._get_reconciled_payments()
+            payments |= Payment.search(
+                [("to_reconcile_payment_line_ids.move_id", "=", self.bill_id.id)]
+            )
+        return payments
+
     @api.depends("partner_id", "company_id")
     def _compute_partner_bank_id(self):
         for request in self:
@@ -723,7 +773,7 @@ class DisbursementRequest(models.Model):
 
         # Link the bill to this request and advance state
         self.bill_id = bill.id
-        self.state = "in_progress"
+        self.state = "waiting_bill_post"
 
         # Log in Disbursement chatter
         bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
@@ -817,7 +867,7 @@ class DisbursementRequest(models.Model):
     def action_done(self):
         """Mark as done when bill is fully paid"""
         for record in self:
-            if record.state != "in_progress":
+            if record.state not in record.PIPELINE_STATES:
                 continue
             record.state = "done"
             record.message_post(
@@ -831,6 +881,18 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state in ("cancel", "done"):
                 raise UserError(_("Cannot cancel a done or already cancelled request."))
+            if record.bill_id and record.bill_id.state == "posted":
+                raise UserError(
+                    _("Cannot cancel: the bill %s is already posted. "
+                      "Reverse the bill first.")
+                    % record.bill_id.name
+                )
+            if record.bill_id and record._get_pipeline_payments():
+                raise UserError(
+                    _("Cannot cancel: there are payments linked to bill %s. "
+                      "Remove payments first.")
+                    % record.bill_id.name
+                )
             if record.budget_commitment_id:
                 try:
                     record._cancel_budget_commitment()

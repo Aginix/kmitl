@@ -14,7 +14,7 @@
                 <field name="payment_type" />
                 <field name="ref" />
                 <field name="amount_total" />
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('submitted', 'sent')" decoration-primary="state in ('validated', 'in_progress')" decoration-success="state in ('approved', 'done')" />
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('submitted', 'sent')" decoration-primary="state in ('validated', 'waiting_bill_post', 'bill_posted', 'waiting_payment_post')" decoration-success="state in ('approved', 'payment_posted', 'done')" />
                 <field name="main_exception_id" />
                 <field name="budget_commitment_id" optional="hide" />
                 <field name="source_analytic_id" optional="show" />
@@ -30,7 +30,7 @@
             <form string="Disbursement Request">
                 <header>
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                    <button name="action_send" string="Send" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_officer" />
+                    <button name="action_send" string="Send" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'sent')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'validated')]}" confirm="Are you sure you want to approve? This will reserve budget." groups="disbursement.group_disbursement_manager" />
                     <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}" groups="disbursement.group_disbursement_officer" />
@@ -38,11 +38,11 @@
                             string="Register Payment"
                             type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('hide_register_payment_button', '=', True)]}"
+                            attrs="{'invisible': ['|', ('state', 'not in', ('bill_posted', 'waiting_payment_post', 'payment_posted')), ('hide_register_payment_button', '=', True)]}"
                             groups="account.group_account_invoice"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'sent', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="disbursement.group_disbursement_officer" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,sent,validated,approved,in_progress,done" />
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel', 'bill_posted', 'waiting_payment_post', 'payment_posted'))]}" groups="disbursement.group_disbursement_officer" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,sent,validated,approved,waiting_bill_post,bill_posted,waiting_payment_post,payment_posted,done" />
                 </header>
                 <!-- Exception Alert -->
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
@@ -99,11 +99,11 @@
                         <group id="budget" string="มิติทางบัญชี">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
                             <field name="budget_commitment_id" />
-                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'sent', 'validated', 'approved', 'in_progress', 'done', 'cancel'])]}" />
-                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'sent', 'validated', 'approved', 'in_progress', 'done', 'cancel'])]}" />
-                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'sent', 'validated', 'approved', 'in_progress', 'done', 'cancel'])]}" />
-                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'sent', 'validated', 'approved', 'in_progress', 'done', 'cancel'])]}" />
-                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'sent', 'validated', 'approved', 'in_progress', 'done', 'cancel'])]}" />
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
+                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
+                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="budget_account_id" invisible="1" />
                             <field name="analytic_distribution" invisible="1"/>
                         </group>
@@ -141,7 +141,8 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <page string="Pipeline" name="pipeline">
+                        <page string="Pipeline" name="pipeline"
+                            attrs="{'invisible': [('state', 'not in', ['waiting_bill_post', 'bill_posted', 'waiting_payment_post', 'payment_posted', 'done'])]}">
                             <group>
                                 <group string="Vendor Bill">
                                     <field name="bill_id" readonly="1"/>
@@ -186,7 +187,10 @@
                 <filter string="Sent" name="sent" domain="[('state', '=', 'sent')]" />
                 <filter string="Validated" name="validated" domain="[('state', '=', 'validated')]" />
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
-                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]" />
+                <filter string="Waiting Bill Post" name="waiting_bill_post" domain="[('state', '=', 'waiting_bill_post')]" />
+                <filter string="Bill Posted" name="bill_posted" domain="[('state', '=', 'bill_posted')]" />
+                <filter string="Waiting Payment Post" name="waiting_payment_post" domain="[('state', '=', 'waiting_payment_post')]" />
+                <filter string="Payment Posted" name="payment_posted" domain="[('state', '=', 'payment_posted')]" />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <separator />
                 <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
