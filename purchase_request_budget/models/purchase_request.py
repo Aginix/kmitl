@@ -286,7 +286,7 @@ class PurchaseRequest(models.Model):
                         "product_id": product_id.id,
                         "name": product_id.display_name,
                         "product_uom_id": product_id.uom_id.id,
-                        "price_unit": self.procurement_plan_id.total_price or default_price,
+                        "price_unit": getattr(self, 'procurement_plan_id', False) and self.procurement_plan_id.total_price or default_price,
                         "product_qty": 1.0,
                     }
                 )

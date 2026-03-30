@@ -25,6 +25,7 @@
         "views/budget_journal_views.xml",
         "views/budget_move_views.xml",
         "views/budget_transfer_views.xml",
+        "wizard/budget_commitment_line_wizard_views.xml",
         "views/budget_menus.xml",
         "views/res_config_settings_views.xml",
     ],

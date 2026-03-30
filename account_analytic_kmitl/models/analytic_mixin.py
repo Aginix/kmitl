@@ -135,4 +135,6 @@ class AnalyticMixin(models.AbstractModel):
             account_ids = [int(account_id) for account_id in rec.analytic_distribution or {}]
             accounts = self.env['account.analytic.account'].browse(account_ids)
             for account_id in accounts:
-                rec[self._analytic_keys.get(account_id.plan_id.code)] = account_id.id
+                field_name = self._analytic_keys.get(account_id.plan_id.code)
+                if field_name:
+                    rec[field_name] = account_id.id

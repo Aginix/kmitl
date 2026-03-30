@@ -1,12 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="procurement_type_view_tree_construction" model="ir.ui.view">
         <field name="name">procurement.type.view.tree.construction</field>
         <field name="model">procurement.type</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.procurement_type_view_tree"/>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.procurement_type_view_tree"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="is_construction"/>
+                <field name="is_construction" />
             </xpath>
         </field>
     </record>
@@ -14,10 +17,13 @@
     <record id="procurement_type_view_form_construction" model="ir.ui.view">
         <field name="name">procurement.type.view.form.construction</field>
         <field name="model">procurement.type</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.procurement_type_view_form"/>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.procurement_type_view_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="is_construction"/>
+                <field name="is_construction" />
             </xpath>
         </field>
     </record>

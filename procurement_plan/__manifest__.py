@@ -7,7 +7,7 @@
     "depends": [
         "web",
         "budget",
-        "l10n_th_gov_purchase_request",
+        "purchase_request_kmitl",
     ],
     "data": [
         "data/account.analytic.plan.csv",
