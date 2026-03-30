@@ -20,7 +20,6 @@ class AdvancePayment(models.Model):
         "loan_type_id",
         "loan_reason",
         "bank_id",
-        "bank_account_number",
         "reference",
         "requested_by",
         "department_id",
@@ -66,6 +65,13 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
+    requested_by_partner_id = fields.Many2one(
+        comodel_name="res.partner",
+        related="requested_by.partner_id",
+        string="Requestor Partner",
+        store=False,
+    )
+
     department_id = fields.Many2one(
         comodel_name="hr.department",
         string="Department",
@@ -104,14 +110,9 @@ class AdvancePayment(models.Model):
         required=True,
     )
 
-    bank_account_number = fields.Char(
-        string="Bank Account Number",
-        states=READONLY_STATES,
-    )
-
     bank_id = fields.Many2one(
-        comodel_name="advance.payment.bank",
-        string="Bank",
+        comodel_name="res.partner.bank",
+        string="บัญชีธนาคาร",
         states=READONLY_STATES,
     )
 
@@ -215,6 +216,11 @@ class AdvancePayment(models.Model):
         store=False,
     )
 
+    @api.onchange("requested_by")
+    def _onchange_requested_by(self):
+        if self.bank_id and self.bank_id.partner_id != self.requested_by.partner_id:
+            self.bank_id = False
+
     @api.depends("analytic_distribution")
     def _compute_analytic_ids(self):
         for rec in self:
@@ -273,6 +279,8 @@ class AdvancePayment(models.Model):
         }
         if payment_type.journal_id:
             vals["journal_id"] = payment_type.journal_id.id
+        if self.bank_id:
+            vals["partner_bank_id"] = self.bank_id.id
         return vals
 
     @api.model

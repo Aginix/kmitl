@@ -105,8 +105,9 @@
                         </group>
                     </group>
                     <group string="ข้อมูลธนาคาร">
-                        <field name="bank_id"/>
-                        <field name="bank_account_number"/>
+                        <field name="requested_by_partner_id" invisible="1"/>
+                        <field name="bank_id"
+                            domain="[('partner_id', '=', requested_by_partner_id)]"/>
                     </group>
                     <group string="มิติทางบัญชี">
                         <field name="department_analytic_id"

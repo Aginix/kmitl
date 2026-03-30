@@ -30,9 +30,4 @@
         action="action_advance_payment_loan_type"
         sequence="10"/>
 
-    <menuitem id="menu_advance_payment_bank"
-        name="ธนาคาร"
-        parent="menu_advance_payment_config"
-        action="action_advance_payment_bank"
-        sequence="20"/>
 </odoo>
