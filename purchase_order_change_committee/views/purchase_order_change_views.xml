@@ -24,7 +24,7 @@
                         attrs="{'invisible': [('has_wa_snapshot', '=', False)]}"
                     >
                         <field name="old_wa_snapshot_ids" nolabel="1" readonly="1">
-                            <tree>
+                            <tree no_open="1">
                                 <field name="employee_id" />
                                 <field name="approve_role" />
                             </tree>
@@ -37,7 +37,7 @@
                         col="1"
                     >
                         <field name="new_wa_snapshot_ids" nolabel="1" readonly="1">
-                            <tree>
+                            <tree no_open="1">
                                 <field name="employee_id" />
                                 <field name="approve_role" />
                             </tree>
@@ -51,7 +51,7 @@
                         col="1"
                     >
                         <field name="old_ws_snapshot_ids" nolabel="1" readonly="1">
-                            <tree>
+                            <tree no_open="1">
                                 <field name="employee_id" />
                                 <field name="approve_role" />
                             </tree>
@@ -64,7 +64,7 @@
                         col="1"
                     >
                         <field name="new_ws_snapshot_ids" nolabel="1" readonly="1">
-                            <tree>
+                            <tree no_open="1">
                                 <field name="employee_id" />
                                 <field name="approve_role" />
                             </tree>
