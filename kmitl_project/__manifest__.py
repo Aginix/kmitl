@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KMITL Project",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -41,7 +41,10 @@
         "views/project_methodology_views.xml",
         "views/project_strategic_plan_views.xml",
         "views/kmitl_project_report.xml",
+        "wizard/kmitl_project_exception_confirm_view.xml",
+        "wizard/kmitl_project_reject_wizard_view.xml",
     ],
+    "post_init_hook": "_post_init_approval_state",
     "assets": {
         "web.assets_backend": ["kmitl_project/static/src/components/**/*"],
         "web.assets_frontend": [

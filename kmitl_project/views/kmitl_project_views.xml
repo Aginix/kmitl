@@ -32,6 +32,10 @@
                 <field name="project_type"/>
                 <field name="department_id" optional="show" />
                 <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
+                <field name="approval_state" widget="badge" optional="show"
+                       decoration-info="approval_state == 'submitted'"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'rejected'" />
                 <field name="state" widget="badge" />
             </tree>
         </field>
@@ -44,14 +48,27 @@
         <field name="arch" type="xml">
             <form string="KMITL Project">
                 <header>
-                    <button string="Confirm" name="button_new" states="draft" type="object" class="oe_highlight" />
+                    <!-- Approval Phase Buttons -->
+                    <button string="Submit for Approval" name="action_submit_approval" type="object" class="oe_highlight"
+                            attrs="{'invisible': [('show_submit_button', '=', False)]}" />
+                    <button string="Approve" name="action_approve" type="object" class="btn-success"
+                            attrs="{'invisible': [('show_approve_button', '=', False)]}" />
+                    <button string="Reject" name="action_reject" type="object" class="btn-warning"
+                            attrs="{'invisible': [('show_reject_button', '=', False)]}" />
+                    <button string="Reset to Draft" name="action_reset_approval" type="object"
+                            attrs="{'invisible': [('show_reset_approval_button', '=', False)]}" />
+                    <!-- Execution Phase Buttons -->
                     <button string="In Progress" name="button_in_progress" states="new" type="object" />
                     <button string="On hold" name="button_on_hold" states="new" type="object" />
                     <button string="Complete" name="button_complete" states="in_progress" type="object" class="oe_highlight" />
-                    <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,in_progress,on_hold" type="object" />
+                    <button string="Reset to Draft" name="button_draft" groups="kmitl_project.group_kmitl_project_manager" states="cancel,in_progress,on_hold" type="object" />
                     <button string="Reset to Draft" name="button_draft" states="new" type="object" />
-                    <button string="Cancel" name="button_cancel" groups="project.group_project_manager" states="draft,new,in_progress,on_hold" type="object" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,complete" />
+                    <button string="Cancel" name="button_cancel" groups="kmitl_project.group_kmitl_project_manager" states="new,in_progress,on_hold" type="object" />
+                    <!-- Phase-aware Status Bars -->
+                    <field name="approval_state" widget="statusbar" statusbar_visible="draft,submitted,approved"
+                           attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="new,in_progress,complete"
+                           attrs="{'invisible': [('state', '=', 'draft')]}" />
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
@@ -59,6 +76,15 @@
                     <widget name="web_ribbon" title="On hold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'on_hold')]}" />
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <field name="is_editable" invisible="1" />
+                    <field name="show_submit_button" invisible="1" />
+                    <field name="show_approve_button" invisible="1" />
+                    <field name="show_reject_button" invisible="1" />
+                    <field name="show_reset_approval_button" invisible="1" />
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('approval_state', '!=', 'rejected')]}">
+                        <strong>Rejected: </strong>
+                        <field name="rejection_reason" nolabel="1" readonly="1" />
+                    </div>
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
                         <button
                             string="Portal Preview"
@@ -240,6 +266,10 @@
                                 </group>
                                 <group>
                                     <field name="creating_user_id" widget="many2one_avatar_user" attrs="{'readonly': [('id', '!=', False)]}" />
+                                    <field name="approval_user_id" widget="many2one_avatar_user"
+                                           attrs="{'invisible': [('approval_user_id', '=', False)]}" />
+                                    <field name="approval_date"
+                                           attrs="{'invisible': [('approval_date', '=', False)]}" />
                                 </group>
                             </group>
                         </page>
@@ -267,12 +297,17 @@
                 <separator />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
+                <filter string="Pending Approval" name="pending_approval" domain="[('approval_state', '=', 'submitted')]" />
+                <filter string="Approved" name="approved" domain="[('approval_state', '=', 'approved')]" />
+                <filter string="Rejected" name="rejected" domain="[('approval_state', '=', 'rejected')]" />
+                <separator />
                 <filter string="Late Activities" name="activities_overdue" domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which have a next action date before today"/>
                 <filter string="Today Activities" name="activities_today" domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter string="Future Activities" name="activities_upcoming_all" domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <group expand="1" string="Group By">
                     <filter string="ประเภทโครงการ" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
                     <filter string="สถานะ" name="by_state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="สถานะอนุมัติ" name="by_approval_state" domain="[]" context="{'group_by':'approval_state'}"/>
                     <filter string="ปีงบประมาณ" name="by_account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}"/>
                     <filter string="Operating Unit" name="by_operating_unit" domain="[]" context="{'group_by':'operating_unit_id'}" groups="operating_unit.group_multi_operating_unit"/>
                 </group>

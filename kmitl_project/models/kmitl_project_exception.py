@@ -33,7 +33,7 @@ class KmitlProject(models.Model):
     def button_confirm(self):
         if self.detect_exceptions() and not self.ignore_exception:
             return self._popup_exceptions()
-        return super().button_confirm()
+        self.write({"approval_state": "submitted"})
 
     @api.model
     def _get_popup_action(self):

@@ -153,6 +153,43 @@ class KmitlProject(models.Model):
         copy=False,
         tracking=True,
     )
+    approval_state = fields.Selection(
+        [
+            ("draft", "Draft"),
+            ("submitted", "Submitted"),
+            ("approved", "Approved"),
+            ("rejected", "Rejected"),
+        ],
+        string="Approval Status",
+        default="draft",
+        required=True,
+        readonly=True,
+        copy=False,
+        tracking=True,
+        index=True,
+    )
+    approval_user_id = fields.Many2one(
+        "res.users",
+        string="Approved/Rejected by",
+        readonly=True,
+        copy=False,
+        tracking=True,
+    )
+    approval_date = fields.Datetime(
+        string="Approval Date",
+        readonly=True,
+        copy=False,
+        tracking=True,
+    )
+    rejection_reason = fields.Text(
+        string="Rejection Reason",
+        readonly=True,
+        tracking=True,
+    )
+    show_submit_button = fields.Boolean(compute="_compute_approval_buttons")
+    show_approve_button = fields.Boolean(compute="_compute_approval_buttons")
+    show_reject_button = fields.Boolean(compute="_compute_approval_buttons")
+    show_reset_approval_button = fields.Boolean(compute="_compute_approval_buttons")
 
     impact_id = fields.Many2one(
         comodel_name="project.impact",
@@ -407,14 +444,85 @@ class KmitlProject(models.Model):
             if user_departments and self.department_id not in user_departments:
                 self.user_id = False
 
+    @api.depends("state", "approval_state")
+    def _compute_approval_buttons(self):
+        is_manager = self.env.user.has_group(
+            "kmitl_project.group_kmitl_project_manager"
+        )
+        for rec in self:
+            rec.show_submit_button = (
+                rec.state == "draft" and rec.approval_state == "draft"
+            )
+            rec.show_approve_button = (
+                rec.approval_state == "submitted" and is_manager
+            )
+            rec.show_reject_button = (
+                rec.approval_state == "submitted" and is_manager
+            )
+            rec.show_reset_approval_button = rec.approval_state == "rejected"
+
+    def action_submit_approval(self):
+        for rec in self:
+            if rec.state != "draft" or rec.approval_state != "draft":
+                raise UserError(
+                    _("Can only submit projects in draft approval state.")
+                )
+        return self.button_confirm()
+
+    def action_approve(self):
+        if not self.env.user.has_group(
+            "kmitl_project.group_kmitl_project_manager"
+        ):
+            raise UserError(
+                _("Only KMITL Project Managers can approve projects.")
+            )
+        self.write(
+            {
+                "approval_state": "approved",
+                "approval_user_id": self.env.user.id,
+                "approval_date": fields.Datetime.now(),
+                "state": "new",
+            }
+        )
+
+    def action_reject(self):
+        self.ensure_one()
+        if not self.env.user.has_group(
+            "kmitl_project.group_kmitl_project_manager"
+        ):
+            raise UserError(
+                _("Only KMITL Project Managers can reject projects.")
+            )
+        return {
+            "name": _("Reject Project"),
+            "type": "ir.actions.act_window",
+            "res_model": "kmitl.project.reject.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_project_id": self.id},
+        }
+
+    def action_reset_approval(self):
+        self.write(
+            {
+                "approval_state": "draft",
+                "rejection_reason": False,
+            }
+        )
+
     def button_cancel(self):
         self.write({"state": "cancel"})
 
     def button_draft(self):
-        self.write({"state": "draft"})
-
-    def button_new(self):
-        self.write({"state": "new"})
+        self.write(
+            {
+                "state": "draft",
+                "approval_state": "draft",
+                "approval_user_id": False,
+                "approval_date": False,
+                "rejection_reason": False,
+            }
+        )
 
     def button_in_progress(self):
         self.write({"state": "in_progress"})
@@ -425,12 +533,13 @@ class KmitlProject(models.Model):
     def button_complete(self):
         self.write({"state": "complete"})
 
+    @api.depends("state", "approval_state")
     def _compute_is_editable(self):
         for rec in self:
-            if rec.state in ('draft', 'cancel'):
-                rec.is_editable = True
-            else:
-                rec.is_editable = False
+            rec.is_editable = rec.state in (
+                "draft",
+                "cancel",
+            ) and rec.approval_state in ("draft", "rejected")
 
     def unlink(self):
         for rec in self:
