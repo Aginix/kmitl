@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_config_education_history"
+        name="Education History"
+        parent="hr.menu_human_resources_configuration"
+        sequence="18"
+    />
+
+    <menuitem
+        id="menu_view_resource_education_university"
+        action="resource_university_act_window"
+        parent="menu_config_education_history"
+        sequence="1"
+    />
+
+    <menuitem
+        id="menu_view_resource_education_faculty"
+        action="resource_education_faculty_act_window"
+        parent="menu_config_education_history"
+        sequence="2"
+    />
+
+    <menuitem
+        id="menu_view_resource_education_department"
+        action="resource_education_department_act_window"
+        parent="menu_config_education_history"
+        sequence="3"
+    />
+
+    <menuitem
+        id="menu_view_resource_education_program"
+        action="resource_education_program_act_window"
+        parent="menu_config_education_history"
+        sequence="4"
+    />
+
+    <menuitem
+        id="menu_view_resource_education_level"
+        action="resource_education_level_act_window"
+        parent="menu_config_education_history"
+        sequence="5"
+    />
+
+    <menuitem
+        id="menu_hr_education_history_root"
+        name="Education History"
+        parent="hr.menu_hr_employee_payroll"
+        action="action_hr_education_history"
+        sequence="16"
+    />
+
+</odoo>

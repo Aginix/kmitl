@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <record model="ir.ui.view" id="resource_education_department_form_view">
+    <field name="name">resource.education.department.form (in
+      resource_education_department)</field>
+    <field name="model">resource.education.department</field>
+    <field name="arch" type="xml">
+      <form>
+        <header />
+        <sheet>
+          <group>
+            <field name="name" />
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <record model="ir.ui.view" id="resource_education_department_search_view">
+    <field name="name">resource.education.department.search (in
+      resource_education_department)</field>
+    <field name="model">resource.education.department</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name" />
+      </search>
+    </field>
+  </record>
+  <record model="ir.ui.view" id="resource_education_department_tree_view">
+    <field name="name">resource.education.department.tree (in
+      resource_education_department)</field>
+    <field name="model">resource.education.department</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name" />
+      </tree>
+    </field>
+  </record>
+  <record model="ir.actions.act_window" id="resource_education_department_act_window">
+    <field name="name">Department List</field>
+    <field name="res_model">resource.education.department</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[]</field>
+    <field name="context">{}</field>
+  </record>
+</odoo>
