@@ -1,12 +1,10 @@
 from werkzeug.utils import redirect
 
-from odoo import api, http
-from odoo.exceptions import AccessError, MissingError, ValidationError
+from odoo import http
+from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
 from odoo.addons.portal.controllers import portal
-from odoo.addons.portal.controllers.mail import _message_post_helper
-from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class WorkAcceptance(portal.CustomerPortal):

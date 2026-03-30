@@ -6,9 +6,9 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
-        "purchase",
         "purchase_requisition",
         "purchase_no_rfq",
+        "purchase_invoice_plan_kmitl",
         "account_fiscal_year",
         "hr",
         "purchase_operating_unit",

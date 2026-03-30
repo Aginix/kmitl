@@ -97,13 +97,6 @@
                                 />
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col"> โดยมีการเบิกจ่ายดังนี้ <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-field="o.payment_type"
-                                />
-                            </div>
-                        </div>
 
                         <div class="my-4" />
 

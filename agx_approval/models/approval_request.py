@@ -15,17 +15,44 @@ class ApprovalRequest(models.Model):
     _order = "name"
 
     READONLY_STATES = {
+        "to_verify": [("readonly", True)],
         "submitted": [("readonly", True)],
         "approved": [("readonly", True)],
         "billed": [("readonly", True)],
         "cancelled": [("readonly", True)],
     }
 
+    attachment_ids = fields.One2many(
+        'ir.attachment',
+        'res_id',
+        string='Document Attachments',
+        tracking=True,
+    )
+
     active = fields.Boolean(
         string="Active",
         default=True,
         tracking=True,
     )
+
+    payment_type = fields.Selection(
+        selection=[
+            ("direct", "Direct paid"),
+            ("loan", "Loan"),
+            ("prepaid", "Prepaid")
+        ],
+        tracking=True,
+        string="Payment Type",
+        states=READONLY_STATES,
+    )
+
+    is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
+
+    hide_reserve_budget_button = fields.Boolean(
+        compute="_compute_hide_reserve_budget_button"
+    )
+
+    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
 
     category_id = fields.Many2one(
         string="Category",
@@ -137,6 +164,7 @@ class ApprovalRequest(models.Model):
 
     state = fields.Selection([
         ("draft", "Draft"),
+        ("to_verify", "To Verify"),
         ("submitted", "Submitted"),
         ("validated", "Validated"),
         ("approved", "Approved"),
@@ -150,10 +178,9 @@ class ApprovalRequest(models.Model):
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
-        domain=[("state", "not in", ["draft", "done", "cancel"])],
+        readonly=True,
         copy=False,
-        tracking=True,
-        states=READONLY_STATES,
+        help="Related budget commitment for this approval request",
     )
 
     budget_account_id = fields.Many2one(
@@ -162,7 +189,6 @@ class ApprovalRequest(models.Model):
         domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
         copy=False,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     activity_analytic_id = fields.Many2one(
@@ -173,7 +199,6 @@ class ApprovalRequest(models.Model):
         domain=[("root_plan_id.code", "=", "activities")],
         store=False,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     department_analytic_id = fields.Many2one(
@@ -184,7 +209,6 @@ class ApprovalRequest(models.Model):
         domain=[("root_plan_id.code", "=", "departments")],
         store=False,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     fund_analytic_id = fields.Many2one(
@@ -195,7 +219,6 @@ class ApprovalRequest(models.Model):
         domain=[("root_plan_id.code", "=", "funds")],
         store=False,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     source_analytic_id = fields.Many2one(
@@ -207,7 +230,6 @@ class ApprovalRequest(models.Model):
         store=False,
         tracking=True,
         search="_search_source_analytic_id",
-        states=READONLY_STATES,
     )
 
     _analytic_keys = {
@@ -221,14 +243,6 @@ class ApprovalRequest(models.Model):
     def _onchange_category_id(self):
         self.line_ids = False
         self.description = self.category_id.default_description
-
-    @api.onchange("budget_commitment_id")
-    def _onchange_budget_commitment_id(self):
-        for rec in self:
-            if rec.budget_commitment_id:
-                budget = rec.budget_commitment_id
-                rec.budget_account_id = budget.account_id
-                rec.analytic_distribution = budget.analytic_distribution
 
     @api.onchange("owner_id")
     def _onchange_owner_id(self):
@@ -266,6 +280,12 @@ class ApprovalRequest(models.Model):
             )
         ]
 
+    @api.onchange("analytic_distribution")
+    def _onchange_analytic_distribution(self):
+        """When change analytic_distribution set analytic distribution on all order lines"""
+        if self.analytic_distribution:
+            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
+
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""
         for line in self:
@@ -285,12 +305,20 @@ class ApprovalRequest(models.Model):
         """Update distribution when source changes"""
         for line in self:
             line._update_analytic_distribution("sources")
+    
+    def action_to_verify(self):
+        # TODO: validate budget commitment before submit
+        for record in self:
+            if record.state != "draft":
+                raise UserError(_("Only draft requests can be verified."))
+            record.state = "to_verify"
+        return True
 
     def action_submit(self):
         # TODO: validate budget commitment before submit
         for record in self:
-            if record.state != "draft":
-                raise UserError(_("Only draft requests can be submitted."))
+            if record.state != "to_verify":
+                raise UserError(_("Only To Verify requests can be submitted."))
             record.state = "submitted"
         return True
 
@@ -306,26 +334,50 @@ class ApprovalRequest(models.Model):
             if record.state == "cancelled":
                 raise UserError(_("Request is already cancelled."))
             record.state = "cancelled"
+            if record.budget_commitment_id:
+                try:
+                    record._cancel_budget_commitment()
+                    record.message_post(
+                        body=_("Budget commitment %s has been cancelled")
+                        % record.budget_commitment_id.name
+                    )
+                except UserError as e:
+                    record.message_post(
+                        body=_("Warning: Could not cancel budget commitment: %s")
+                        % str(e)
+                    )
         return True
 
     def action_draft(self):
         for record in self:
             record.state = "draft"
+            if record.budget_commitment_id:
+                try:
+                    record._cancel_budget_commitment()
+                    record.message_post(
+                        body=_("Budget commitment %s has been cancelled")
+                        % record.budget_commitment_id.name
+                    )
+                except UserError as e:
+                    record.message_post(
+                        body=_("Warning: Could not cancel budget commitment: %s")
+                        % str(e)
+                    )
         return True
 
-    def write(self, values):
-        if (
-            "budget_commitment_id" in values
-            and values.get("budget_commitment_id") != self.budget_commitment_id.id
-        ):
-            self._log_budget_commitment_unlinked()
+    # def write(self, values):
+    #     if (
+    #         "budget_commitment_id" in values
+    #         and values.get("budget_commitment_id") != self.budget_commitment_id.id
+    #     ):
+    #         self._log_budget_commitment_unlinked()
 
-        res = super().write(values)
+    #     res = super().write(values)
 
-        if "budget_commitment_id" in values and values.get("budget_commitment_id"):
-            self._log_budget_commitment_linked()
+    #     if "budget_commitment_id" in values and values.get("budget_commitment_id"):
+    #         self._log_budget_commitment_linked()
 
-        return res
+    #     return res
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -358,3 +410,102 @@ class ApprovalRequest(models.Model):
             % {"name": self.name},
             subtype_xmlid="mail.mt_comment",
         )
+
+    def action_open_budget_commitment(self):
+        self.ensure_one()
+        if not self.budget_commitment_id:
+            raise UserError("ยังไม่มี Budget Commitment สำหรับเอกสารนี้")
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Budget Commitment",
+            "res_model": "budget.commitment",
+            "view_mode": "form",
+            "res_id": self.budget_commitment_id.id,
+            "target": "current",
+        }
+    
+    def action_reserve_budget(self):
+        """Reserve budget by creating commitment"""
+        self.ensure_one()
+
+        amount = sum(self.line_ids.mapped("total_amount"))
+
+        check_result = self._check_budget_availability(
+            amount=amount,
+            activity_analytic_id=self.activity_analytic_id.id,
+            department_analytic_id=self.department_analytic_id.id,
+            fund_analytic_id=self.fund_analytic_id.id,
+            source_analytic_id=self.source_analytic_id.id,
+        )
+
+        if not check_result["is_sufficient"]:
+            raise UserError(
+                _("Cannot reserve budget due to insufficient funds: %s")
+                % check_result["message"]
+            )
+
+        try:
+            commitment = self._create_budget_commitment(
+                amount=amount,
+                activity_analytic_id=self.activity_analytic_id.id,
+                department_analytic_id=self.department_analytic_id.id,
+                fund_analytic_id=self.fund_analytic_id.id,
+                source_analytic_id=self.source_analytic_id.id,
+                ref=self.name,
+                description=f"Approval Request: {self.name}",
+                auto_reserve=True,
+            )
+            self.message_post(
+                body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
+            )
+            self.action_submit()
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "approval.request",
+                "view_mode": "form",
+                "res_id": self.id,
+                "target": "current",
+                "context": self.env.context,
+            }
+
+        except UserError as e:
+            raise UserError(_("Cannot reserve budget: %s") % str(e))
+        
+    @api.depends("state")
+    def _compute_is_budget_editable(self):
+        can_edit = self.env.user.has_group("budget.group_budget_commitment")
+        for rec in self:
+            if rec.state in ("to_verify") and (
+                not rec.budget_commitment_id
+                or rec.budget_commitment_id.state == "cancel"
+            ):
+                rec.is_budget_editable = can_edit
+            else:
+                rec.is_budget_editable = rec.is_editable
+
+    @api.depends("state", "budget_commitment_id")
+    def _compute_hide_reserve_budget_button(self):
+        for rec in self:
+            if rec.state in ("to_verify") and (
+                rec.budget_commitment_id.state == "cancel"
+                or not rec.budget_commitment_id
+            ):
+                rec.hide_reserve_budget_button = False
+            else:
+                rec.hide_reserve_budget_button = True
+    
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            if rec.state in (
+                "to_verify",
+                "submitted",
+                "validated",
+                "approved",
+                "billed",
+                "cancelled"
+            ):
+                rec.is_editable = False
+            else:
+                rec.is_editable = True

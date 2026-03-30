@@ -1,20 +1,24 @@
-# -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Work Acceptance Kmitl',
-    'version': '16.0.1.0.0',
-    'summary': """ Purchase Work Acceptance Kmitl Summary """,
+    "name": "Purchase Work Acceptance Kmitl",
+    "version": "16.0.1.0.0",
+    "summary": """ Purchase Work Acceptance Kmitl Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': [
-        'l10n_th_gov_work_acceptance',
+    "depends": [
+        'hr',
+        'base_tier_validation_formula',
+        'base_tier_validation_forward',
+        'base_tier_validation_server_action',
         'base_tier_validation_comment',
+        'purchase_work_acceptance_tier_validation',
+        'purchase_request_kmitl',
         'thai_date_utils',
-        'purchase_contract_kmitl',
         'l10n_th_amount_to_text',
         'purchase_kmitl',
     ],
     "data": [
+        "security/ir.model.access.csv",
         "data/server_action.xml",
         "data/tier.definition.csv",
         "report/paperformat.xml",
@@ -23,7 +27,8 @@
         "views/work_acceptance_views.xml",
         "views/purchase_work_acceptance_report.xml",
     ],
-    'installable': True,
-    'auto_install': False,
-    'license': 'LGPL-3',
+    "post_init_hook": "post_init_hook",
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
 }

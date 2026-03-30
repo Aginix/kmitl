@@ -281,6 +281,13 @@ class BudgetMove(models.Model):
         ondelete="set null",
         states=READONLY_STATES,
     )
+    commitment_line_id = fields.Many2one(
+        comodel_name="budget.commitment.line",
+        string="Related Commitment Line",
+        index=True,
+        ondelete="set null",
+        states=READONLY_STATES,
+    )
 
     first_account_id = fields.Many2one(
         'budget.account',

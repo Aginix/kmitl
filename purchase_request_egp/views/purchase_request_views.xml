@@ -60,7 +60,7 @@
                 <button
                     name="action_egp_create_purchase_order"
                     type="object"
-                    string="สร้างใบจัดซื้อ/จ้าง"
+                    string="Create PO"
                     attrs="{'invisible': [('show_egp_create_purchase_order_button', '=', False)]}"
                     groups="purchase.group_purchase_user"
                     class="btn-primary"
@@ -139,4 +139,32 @@
         id="menu_purchase_request_tier_validation_exception"
         parent="purchase.menu_purchase_config"
     />
+
+    <!-- UX override: move is_egp into the purchase_request_group (defined in
+         purchase_request_kmitl.view_purchase_request_form_ux). This view inherits from
+         the UX view so it is applied right after the UX restructure. -->
+    <record id="view_purchase_request_form_ux" model="ir.ui.view">
+        <field name="name">view.purchase.request.form.ux (e-GP)</field>
+        <field name="model">purchase.request</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form"
+        />
+        <field name="arch" type="xml">
+            <!-- Hide is_egp from its original position (near origin) -->
+            <xpath expr="//field[@name='is_egp']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Re-add is_egp into the custom group, before operating_unit_id -->
+            <xpath
+                expr="//group[@name='purchase_request_group']//field[@name='operating_unit_id']"
+                position="before"
+            >
+                <field
+                    name="is_egp"
+                    attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
 </odoo>
