@@ -64,7 +64,7 @@
                         <field
                             name="work_acceptance_committee_ids"
                             nolabel="1"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            readonly="1"
                         >
                             <tree editable="bottom">
                                 <field
@@ -178,7 +178,7 @@
                  <button
                     name="request_validation"
                     string="Request Validation"
-                    attrs="{'invisible': ['|','|',('need_validation', '!=', True),('rejected','=',True),('state', 'not in', ['draft'])]}"
+                    attrs="{'invisible': ['|', ('wa_tier_validation', '!=', False), ('state', 'not in', ['draft'])]}"
                     type="object"
                     groups="purchase.group_purchase_user"
                 />
@@ -392,26 +392,6 @@
                     </div>
                     <field name="fines_total" nolabel="1"/>
                 </group>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="view_work_acceptance_notebook_form" model="ir.ui.view">
-        <field name="name">view.work.acceptance.form</field>
-        <field name="model">work.acceptance</field>
-        <field
-            name="inherit_id"
-            ref="view_work_acceptance_form_gov"
-        />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='wa_tier_validation']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath
-                expr="//field[@name='work_acceptance_committee_ids']"
-                position="attributes"
-            >
-                <attribute name="readonly">1</attribute>
             </xpath>
         </field>
     </record>

@@ -657,7 +657,7 @@ msgstr "ตรวจรับแบบมีเงื่อนไข"
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__wa_tier_validation
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_search
 msgid "Paperless WA"
-msgstr "จัดทำการตรวจรับ"
+msgstr "ตรวจรับภายในระบบ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_search
