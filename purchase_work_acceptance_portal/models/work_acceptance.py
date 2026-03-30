@@ -20,7 +20,7 @@ class WorkAcceptance(models.Model):
         for wa in self:
             if not wa.work_acceptance_committee_ids:
                 continue
-            order_url = wa.purchase_id.get_portal_link()
+            order_url = wa.purchase_id.get_portal_link() if wa.purchase_id else ""
             wa_url = wa.get_portal_link()
             for committee in wa.work_acceptance_committee_ids:
                 committee.get_portal_link()
@@ -28,7 +28,7 @@ class WorkAcceptance(models.Model):
                 if not user:
                     continue
                 wa_link = f"{wa_url}&committee_token={committee.access_token}"
-                order_link = f"{order_url}&wa_token={wa.access_token}"
+                order_link = f"{order_url}&wa_token={wa.access_token}" if order_url else ""
                 Inbox = self.env["work.acceptance.inbox"].sudo()
                 existing = Inbox.search(
                     [("user_id", "=", user.id), ("work_acceptance_id", "=", wa.id)],
