@@ -110,13 +110,11 @@ class AccountMove(models.Model):
             )
 
     def _post(self, soft=True):
-        """Validate budget, consume commitment, and auto-fill tax invoices."""
+        """Validate budget and auto-fill tax invoices."""
         for move in self:
             payment = move.payment_id
             if payment and payment.payment_type == "outbound":
                 move._check_analytic_distribution_complete()
-                if move.budget_commitment_id:
-                    move._consume_commitment(amount=payment.amount)
         res = super()._post(soft=soft)
         self._auto_fill_tax_invoice()
         return res

@@ -2,14 +2,17 @@
 <odoo noupdate="1">
     <!-- Procurement plan 1 -->
     <record id="procurement_plan_1" model="procurement.plan">
-        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
         <field name="description">ปรับปรุงอาคารเรียนรวม 12 ชั้น</field>
         <field name="amount">12</field>
         <field name="unit">ชั้น</field>
         <field name="total_price">18000000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="state">draft</field>
         <field name="note">ผู้รับเหมาจะดำเนินงานในวันหยุดพิเศษต่าง ๆ ด้วย</field>
@@ -65,7 +68,10 @@
 
     <!-- Procurement plan 2 -->
     <record id="procurement_plan_2" model="procurement.plan">
-        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
         <field
             name="description"
         >ปรับปรุงห้องเรียนและห้องปฏิบัติการ อาคารปฏิบัติการพิเศษจอมไตร</field>
@@ -74,7 +80,7 @@
         <field name="total_price">5250000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="state">draft</field>
         <field name="purchase_request_eta">4</field>
@@ -115,14 +121,17 @@
 
     <!-- Procurement plan 3 -->
     <record id="procurement_plan_3" model="procurement.plan">
-        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
         <field name="description">ครุภัณฑ์วิทยาศาสตร์และการแพทย์ จำนวน 5 รายการ</field>
         <field name="amount">1</field>
         <field name="unit">โครงการ</field>
         <field name="total_price">2360700</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_specific"
+            ref="purchase_request_kmitl.procurement_specific"
         />
         <field name="state">draft</field>
         <field name="note">รับประกันสินค้าทั้งหมด 1.5 ปี</field>
@@ -150,14 +159,19 @@
 
     <!-- Procurement plan 4 -->
     <record id="procurement_plan_4" model="procurement.plan">
-        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
-        <field name="description">ปรับปรุงห้องผ่าตัด โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
+        <field
+            name="description"
+        >ปรับปรุงห้องผ่าตัด โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
         <field name="amount">1</field>
         <field name="unit">ห้อง</field>
         <field name="total_price">17540000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_select"
+            ref="purchase_request_kmitl.procurement_select"
         />
         <field name="state">draft</field>
         <field name="note">-</field>
@@ -206,14 +220,17 @@
 
     <!-- Procurement plan 5 -->
     <record id="procurement_plan_5" model="procurement.plan">
-        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
         <field name="description">ปรับปรุงไฟแสงสว่างสนามฟุตบอล</field>
         <field name="amount">1</field>
         <field name="unit">สนาม</field>
         <field name="total_price">4498300</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="state">draft</field>
         <field name="note" />
@@ -248,14 +265,17 @@
 
     <!-- Procurement plan 6 -->
     <record id="procurement_plan_6" model="procurement.plan">
-        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
         <field name="description">ปรับปรุงห้องปฏิบัติการฟิสิกส์</field>
         <field name="amount">1</field>
         <field name="unit">รายการ</field>
         <field name="total_price">19500000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_bidding"
+            ref="purchase_request_kmitl.procurement_bidding"
         />
         <field name="state">draft</field>
         <field name="note" />

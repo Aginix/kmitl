@@ -5,6 +5,7 @@ from . import budget_journal
 # Modern budget models (renamed from _new to normal)
 from . import budget_commitment_mixin
 from . import budget_commitment
+from . import budget_commitment_line
 
 
 # Budget integration components
