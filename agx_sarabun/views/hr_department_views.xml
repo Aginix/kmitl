@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='manager_id']" position="after">
                 <field name="sarabun_officer_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                <field name="use_central_correspondence"/>
             </xpath>
         </field>
     </record>

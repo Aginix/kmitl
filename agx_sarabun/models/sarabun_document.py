@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 READONLY_STATES = {
     "sent": [("readonly", True)],
     "completed": [("readonly", True)],
+    "rejected": [("readonly", True)],
     "cancelled": [("readonly", True)],
 }
 
@@ -190,6 +191,7 @@ class SarabunDocument(models.Model):
             ("draft", "Draft"),
             ("sent", "Sent"),
             ("completed", "Completed"),
+            ("rejected", "Rejected"),
             ("cancelled", "Cancelled"),
         ],
         string="Status",
@@ -198,6 +200,11 @@ class SarabunDocument(models.Model):
         copy=False,
         tracking=True,
         default="draft",
+    )
+    resubmit_count = fields.Integer(
+        string="Resubmit Count",
+        default=0,
+        readonly=True,
     )
 
     # === Routing ===
@@ -360,6 +367,8 @@ class SarabunDocument(models.Model):
                 done = len(
                     record.recipient_ids.filtered(
                         lambda r: r.state in ("acknowledged", "approved")
+                        and not r.is_cc
+                        and not r.is_delegated
                     )
                 )
                 record.routing_progress = (done / total) * 100
@@ -370,11 +379,17 @@ class SarabunDocument(models.Model):
     def _compute_routing_counts(self):
         for record in self:
             record.pending_routing_count = len(
-                record.recipient_ids.filtered(lambda r: r.state == "new")
+                record.recipient_ids.filtered(
+                    lambda r: r.state == "new"
+                    and not r.is_cc
+                    and not r.is_delegated
+                )
             )
             record.completed_routing_count = len(
                 record.recipient_ids.filtered(
                     lambda r: r.state in ("acknowledged", "approved")
+                    and not r.is_cc
+                    and not r.is_delegated
                 )
             )
 
@@ -382,7 +397,9 @@ class SarabunDocument(models.Model):
     def _compute_current_user_recipient(self):
         for record in self:
             recipient = False
-            for r in record.recipient_ids.filtered(lambda x: x.state == "new"):
+            for r in record.recipient_ids.filtered(
+                lambda x: x.state == "new" and not x.is_cc
+            ):
                 if r._can_user_access():
                     recipient = r
                     break
@@ -444,6 +461,8 @@ class SarabunDocument(models.Model):
                         tmpl_line.department_id.id if tmpl_line.department_id else False
                     ),
                     "role_id": tmpl_line.role_id.id if tmpl_line.role_id else False,
+                    "required": tmpl_line.required,
+                    "on_complete_method": tmpl_line.on_complete_method,
                 }
                 lines.append((0, 0, line_vals))
             self.routing_line_ids = lines
@@ -513,6 +532,25 @@ class SarabunDocument(models.Model):
                 message_type="notification",
             )
 
+    def action_resubmit(self):
+        """Reset rejected document to draft for editing and re-sending."""
+        for document in self:
+            if document.state != "rejected":
+                raise UserError(_("Only rejected documents can be resubmitted."))
+            if document.sender_user_id != self.env.user:
+                raise UserError(
+                    _("Only the sender can resubmit a document.")
+                )
+            # Detach old recipients from routing lines so routing starts fresh
+            document.recipient_ids.write({"routing_line_id": False})
+            document.resubmit_count += 1
+            document.state = "draft"
+            document.message_post(
+                body=_("Document reset for resubmission (attempt %s).")
+                % document.resubmit_count,
+                message_type="notification",
+            )
+
     def action_cancel(self):
         """Cancel draft document - like email, once sent cannot be cancelled"""
         for document in self:
@@ -545,6 +583,33 @@ class SarabunDocument(models.Model):
         if not self.current_user_recipient_id:
             raise UserError(_("No pending action for you."))
         return self.current_user_recipient_id.action_reject()
+
+    def action_forward_cc(self):
+        """Open forward CC wizard. Available to sender and any recipient."""
+        self.ensure_one()
+        if self.state not in ("sent", "completed"):
+            raise UserError(_("Can only forward sent or completed documents."))
+        is_sender = self.sender_user_id == self.env.user
+        is_recipient = any(r._can_user_access() for r in self.recipient_ids)
+        if not is_sender and not is_recipient:
+            raise UserError(
+                _("Only the sender or a recipient can forward this document.")
+            )
+        return {
+            "name": _("Forward Document (CC)"),
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.forward.cc.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_document_id": self.id},
+        }
+
+    def action_delegate_current(self):
+        """Delegate current user's pending action."""
+        self.ensure_one()
+        if not self.current_user_recipient_id:
+            raise UserError(_("No pending action for you."))
+        return self.current_user_recipient_id.action_delegate()
 
     def action_view_origin(self):
         """View origin record"""
@@ -651,6 +716,8 @@ class SarabunDocument(models.Model):
                 "user_id": tmpl_line.user_id.id if tmpl_line.user_id else False,
                 "department_id": tmpl_line.department_id.id if tmpl_line.department_id else False,
                 "role_id": tmpl_line.role_id.id if tmpl_line.role_id else False,
+                "required": tmpl_line.required,
+                "on_complete_method": tmpl_line.on_complete_method,
             }
             lines.append((0, 0, line_vals))
         # Clear existing and set new
@@ -716,7 +783,10 @@ class SarabunDocument(models.Model):
             return
 
         # Find which routing lines already have recipients
-        existing_line_ids = self.recipient_ids.mapped("routing_line_id").ids
+        # Exclude CC and delegated recipients from this check
+        existing_line_ids = self.recipient_ids.filtered(
+            lambda r: r.routing_line_id and not r.is_cc and not r.is_delegated
+        ).mapped("routing_line_id").ids
 
         # Find next routing line that doesn't have a recipient yet
         next_line = self.routing_line_ids.filtered(
@@ -738,6 +808,9 @@ class SarabunDocument(models.Model):
                 "role_id": next_line.role_id.id if next_line.role_id else False,
                 "state": "new",
             })
+            # Check central correspondence interception
+            if self._should_intercept_central_correspondence(new_recipient):
+                new_recipient.write({"needs_dispatch": True})
             new_recipient._send_notification()
         else:
             # No more routing lines - check if completed
@@ -750,17 +823,21 @@ class SarabunDocument(models.Model):
         if self.state != "sent":
             return
 
-        # Check for rejected recipients
-        rejected = self.recipient_ids.filtered(lambda r: r.state == "rejected")
+        # Check for rejected recipients (only routing recipients)
+        rejected = self.recipient_ids.filtered(
+            lambda r: r.state == "rejected" and r.routing_line_id
+        )
         if rejected:
-            # Document stays in sent state, origin notified
+            self.state = "rejected"
+            self._on_routing_rejected(rejected[0])
             return
 
         # Check if all routing lines have been processed
-        # (recipient exists and state is not 'new')
         all_lines_count = len(self.routing_line_ids)
         completed_count = len(self.recipient_ids.filtered(
             lambda r: r.state in ("acknowledged", "approved")
+            and not r.is_cc
+            and not r.is_delegated
         ))
 
         if completed_count >= all_lines_count:
@@ -797,6 +874,12 @@ class SarabunDocument(models.Model):
             message_type="notification",
         )
 
+        # Email sender about completion
+        self._send_sarabun_email(
+            self.sender_user_id,
+            "agx_sarabun.email_template_sarabun_completed",
+        )
+
         # Callback to origin record if exists
         # Use sudo() because the approver may not have access to the origin record
         if self.origin_model and self.origin_res_id:
@@ -820,6 +903,12 @@ class SarabunDocument(models.Model):
             body=_("Document rejected by %s. Reason: %s")
             % (recipient.actioned_by.name, recipient.comment or _("No reason")),
             message_type="notification",
+        )
+
+        # Email sender about rejection
+        self._send_sarabun_email(
+            self.sender_user_id,
+            "agx_sarabun.email_template_sarabun_rejected",
         )
 
         # Callback to origin record if exists
@@ -857,6 +946,73 @@ class SarabunDocument(models.Model):
                     self.origin_model, self.origin_res_id, e
                 )
 
+    def _should_intercept_central_correspondence(self, recipient):
+        """Check if recipient's department uses central correspondence."""
+        dept = False
+        if recipient.recipient_type == "department" and recipient.department_id:
+            dept = recipient.department_id
+        elif recipient.recipient_type == "user" and recipient.user_id:
+            emp = recipient.user_id.employee_id
+            if emp and emp.department_id:
+                dept = emp.department_id
+        elif recipient.recipient_type == "role" and recipient.role_id:
+            role_users = recipient.role_id.get_users_for_document(self)
+            for user in role_users:
+                if user.employee_id and user.employee_id.department_id:
+                    dept = user.employee_id.department_id
+                    break
+        return bool(
+            dept and dept.use_central_correspondence and dept.sarabun_officer_ids
+        )
+
+    def _execute_step_hook(self, routing_line):
+        """Execute callback method on origin record when routing step completes."""
+        self.ensure_one()
+        method_name = routing_line.on_complete_method
+        if not method_name:
+            return
+        if not method_name.startswith("_on_sarabun_step_"):
+            raise UserError(
+                _("Invalid callback method name '%s'. "
+                  "Must start with '_on_sarabun_step_'.")
+                % method_name
+            )
+        if not self.origin_model or not self.origin_res_id:
+            return
+        try:
+            origin_record = self.env[self.origin_model].sudo().browse(
+                self.origin_res_id
+            )
+            if origin_record.exists() and hasattr(origin_record, method_name):
+                getattr(origin_record, method_name)(self, routing_line)
+        except UserError:
+            raise
+        except Exception as e:
+            _logger.exception(
+                "Error executing step hook %s on %s (id=%s): %s",
+                method_name, self.origin_model, self.origin_res_id, e,
+            )
+            raise
+
+    def _send_sarabun_email(self, users, template_xmlid, extra_values=None):
+        """Send email notification to users who have email notifications enabled."""
+        self.ensure_one()
+        users_to_email = users.filtered(
+            lambda u: u.sarabun_email_notification and u.email
+        )
+        if not users_to_email:
+            return
+        template = self.env.ref(template_xmlid, raise_if_not_found=False)
+        if not template:
+            return
+        for user in users_to_email:
+            template.with_context(
+                recipient_user=user,
+                **(extra_values or {}),
+            ).send_mail(self.id, force_send=False, email_values={
+                "email_to": user.email,
+            })
+
     # === Constraints ===
     @api.constrains("routing_line_ids")
     def _check_routing_lines(self):
@@ -867,6 +1023,21 @@ class SarabunDocument(models.Model):
             if len(approve_lines) > 1:
                 # Allow multiple approvers but warn via tracking
                 pass
+
+    @api.constrains("routing_line_ids", "route_template_id")
+    def _check_required_routing_lines(self):
+        """Prevent deletion of required routing lines from template."""
+        for doc in self.filtered("route_template_id"):
+            required_count = len(
+                doc.route_template_id.line_ids.filtered("required")
+            )
+            existing_required = len(
+                doc.routing_line_ids.filtered("required")
+            )
+            if existing_required < required_count:
+                raise ValidationError(
+                    _("Cannot remove required routing steps from the template.")
+                )
 
     # === Portal ===
     def _compute_access_url(self):

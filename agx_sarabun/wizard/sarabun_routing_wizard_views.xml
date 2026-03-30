@@ -18,25 +18,68 @@
         </field>
     </record>
 
-    <!-- Forward Wizard Form -->
-    <record id="sarabun_routing_forward_wizard_view_form" model="ir.ui.view">
-        <field name="name">sarabun.routing.forward.wizard.form</field>
-        <field name="model">sarabun.routing.forward.wizard</field>
+    <!-- Forward CC Wizard Form -->
+    <record id="sarabun_forward_cc_wizard_view_form" model="ir.ui.view">
+        <field name="name">sarabun.forward.cc.wizard.form</field>
+        <field name="model">sarabun.forward.cc.wizard</field>
         <field name="arch" type="xml">
-            <form string="Forward Document">
+            <form string="Forward Document (CC)">
                 <group>
-                    <field name="routing_line_id" invisible="1"/>
-                    <field name="forward_type" widget="radio"/>
+                    <field name="document_id" invisible="1"/>
+                    <field name="recipient_type" widget="radio"/>
                 </group>
                 <group>
-                    <field name="forward_to_user_id" attrs="{'invisible': [('forward_type', '!=', 'user')], 'required': [('forward_type', '=', 'user')]}"/>
-                    <field name="forward_to_department_id" attrs="{'invisible': [('forward_type', '!=', 'department')], 'required': [('forward_type', '=', 'department')]}"/>
+                    <field name="user_ids" widget="many2many_tags" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}" options="{'no_create': True}"/>
+                    <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}" options="{'no_create': True}"/>
+                    <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}" options="{'no_create': True}"/>
                 </group>
                 <group>
                     <field name="comment" placeholder="Optional comment..."/>
                 </group>
                 <footer>
-                    <button name="action_forward" string="Forward" type="object" class="btn-primary"/>
+                    <button name="action_forward_cc" string="Forward" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Delegate Action Wizard Form -->
+    <record id="sarabun_delegate_wizard_view_form" model="ir.ui.view">
+        <field name="name">sarabun.delegate.wizard.form</field>
+        <field name="model">sarabun.delegate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Delegate Action">
+                <group>
+                    <field name="recipient_id" invisible="1"/>
+                    <field name="delegate_to_user_id" options="{'no_create': True}"/>
+                </group>
+                <group>
+                    <field name="comment" placeholder="Optional comment..."/>
+                </group>
+                <footer>
+                    <button name="action_delegate" string="Delegate" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Dispatch Wizard Form -->
+    <record id="sarabun_dispatch_wizard_view_form" model="ir.ui.view">
+        <field name="name">sarabun.dispatch.wizard.form</field>
+        <field name="model">sarabun.dispatch.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Dispatch Document">
+                <group>
+                    <field name="recipient_id" invisible="1"/>
+                    <field name="dispatch_to_user_id" options="{'no_create': True}"/>
+                </group>
+                <group>
+                    <field name="note" placeholder="Optional dispatch note..."/>
+                </group>
+                <footer>
+                    <button name="action_dispatch" string="Dispatch" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

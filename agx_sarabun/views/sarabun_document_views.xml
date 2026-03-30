@@ -5,7 +5,7 @@
         <field name="name">sarabun.document.view.tree</field>
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
-            <tree string="Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
+            <tree string="Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'rejected'" decoration-muted="state == 'cancelled'">
                 <field name="urgency" optional="hide"/>
                 <field name="recipient" string="To"/>
                 <field name="name"/>
@@ -72,10 +72,13 @@
                     <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('current_user_can_approve', '=', False)]}"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|', ('current_user_recipient_id', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_print_report" string="Print" type="object" icon="fa-print" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_forward_cc" string="Forward (CC)" type="object" class="btn-secondary" icon="fa-share" attrs="{'invisible': [('state', 'not in', ['sent', 'completed'])]}"/>
+                    <button name="action_delegate_current" string="Delegate" type="object" class="btn-secondary" icon="fa-user-plus" attrs="{'invisible': [('current_user_recipient_id', '=', False)]}"/>
                     <button name="action_mark_inbox_read" string="Mark as Read" type="object" class="btn-secondary" icon="fa-envelope-open" attrs="{'invisible': ['|', ('current_user_inbox_is_read', '=', True), ('state', '!=', 'sent')]}"/>
                     <button name="action_mark_inbox_unread" string="Mark as Unread" type="object" class="btn-secondary" icon="fa-envelope" attrs="{'invisible': ['|', ('current_user_inbox_is_read', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
+                    <button name="action_resubmit" string="Edit &amp; Resubmit" type="object" class="btn-warning" icon="fa-refresh" attrs="{'invisible': ['|', ('state', '!=', 'rejected'), ('sender_user_id', '!=', uid)]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed,rejected"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -163,6 +166,8 @@
                                     <field name="department_text" attrs="{'invisible': [('recipient_type', '!=', 'department')]}"/>
                                     <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')]}" optional="hide" string="Route To (System)"/>
                                     <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
+                                    <field name="required" invisible="1"/>
+                                    <field name="on_complete_method" optional="hide"/>
                                     <field name="recipient_state" widget="badge" attrs="{'invisible': [('parent.state', '=', 'draft')]}" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'"/>
                                 </tree>
                             </field>
@@ -218,6 +223,8 @@
                     <field name="current_user_can_approve" invisible="1"/>
                     <field name="has_delegated_report" invisible="1"/>
                     <field name="current_user_inbox_is_read" invisible="1"/>
+                    <field name="sender_user_id" invisible="1"/>
+                    <field name="resubmit_count" invisible="1"/>
                 </sheet>
                 <!-- Attachment preview -->
                 <div class="o_attachment_preview"
@@ -252,6 +259,7 @@
                 <filter string="Sent" name="sent" domain="[('state', '=', 'sent')]"/>
                 <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <filter string="Rejected" name="rejected" domain="[('state', '=', 'rejected')]"/>
                 <separator/>
                 <filter string="Urgent" name="urgent" domain="[('urgency', 'in', ['urgent', 'very_urgent', 'immediate'])]"/>
                 <separator/>

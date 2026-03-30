@@ -15,9 +15,13 @@
                 <field name="read_date" optional="show"/>
                 <field name="signed_as_text" optional="show"/>
                 <field name="actioned_date" optional="hide"/>
-                <button name="action_acknowledge" string="Acknowledge" type="object" icon="fa-check" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '=', 'approve')]}"/>
-                <button name="action_approve" string="Approve" type="object" icon="fa-thumbs-up" class="text-success" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '!=', 'approve')]}"/>
-                <button name="action_reject" string="Reject" type="object" icon="fa-thumbs-down" class="text-danger" attrs="{'invisible': [('state', '!=', 'new')]}"/>
+                <field name="is_cc" invisible="1"/>
+                <field name="is_delegated" invisible="1"/>
+                <field name="needs_dispatch" invisible="1"/>
+                <button name="action_dispatch" string="Dispatch" type="object" icon="fa-paper-plane" attrs="{'invisible': [('needs_dispatch', '!=', True)]}"/>
+                <button name="action_acknowledge" string="Acknowledge" type="object" icon="fa-check" attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'new'), ('routing_type', '=', 'approve'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
+                <button name="action_approve" string="Approve" type="object" icon="fa-thumbs-up" class="text-success" attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'new'), ('routing_type', '!=', 'approve'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
+                <button name="action_reject" string="Reject" type="object" icon="fa-thumbs-down" class="text-danger" attrs="{'invisible': ['|', '|', ('state', '!=', 'new'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
             </tree>
         </field>
     </record>
@@ -29,9 +33,13 @@
         <field name="arch" type="xml">
             <form string="Document Recipient">
                 <header>
-                    <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '=', 'approve')]}"/>
-                    <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '!=', 'approve')]}"/>
-                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'new')]}"/>
+                    <field name="is_cc" invisible="1"/>
+                    <field name="needs_dispatch" invisible="1"/>
+                    <button name="action_dispatch" string="Dispatch" type="object" class="btn-primary" icon="fa-paper-plane" attrs="{'invisible': [('needs_dispatch', '!=', True)]}"/>
+                    <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-primary" attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'new'), ('routing_type', '=', 'approve'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
+                    <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'new'), ('routing_type', '!=', 'approve'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|', '|', ('state', '!=', 'new'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
+                    <button name="action_delegate" string="Delegate" type="object" class="btn-secondary" icon="fa-user-plus" attrs="{'invisible': ['|', '|', ('state', '!=', 'new'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>

@@ -69,6 +69,16 @@ class SarabunRoutingLine(models.Model):
         string="Role/Position",
         help="Select a role/position for routing",
     )
+    required = fields.Boolean(
+        string="Required",
+        default=False,
+        readonly=True,
+        help="Step originated from a required template step and cannot be removed",
+    )
+    on_complete_method = fields.Char(
+        string="On Complete Callback",
+        help="Method name called on origin record when step completes",
+    )
     recipient_name = fields.Char(
         string="Recipient",
         compute="_compute_recipient_name",

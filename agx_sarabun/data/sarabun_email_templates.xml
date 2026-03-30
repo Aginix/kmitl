@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- New Document Notification -->
+    <record id="email_template_sarabun_new_document" model="mail.template">
+        <field name="name">Sarabun: New Document</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="subject">New Sarabun Document: {{ object.subject or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or '') }}</field>
+        <field name="body_html" type="html">
+<table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; font-size: 13px;">
+    <tr><td style="background-color: #875A7B; color: white; padding: 15px; text-align: center; border-radius: 4px 4px 0 0;">
+        <h2 style="margin: 0;">New Document Received</h2>
+    </td></tr>
+    <tr><td style="padding: 20px; border: 1px solid #dee2e6;">
+        <p>You have received a new document requiring your attention.</p>
+        <table style="width: 100%; margin: 10px 0;">
+            <tr><td style="padding: 5px 10px; font-weight: bold; width: 130px;">Document No.:</td><td>{{ object.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Subject:</td><td>{{ object.subject }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">From:</td><td>{{ object.sender_display or object.sender_user_id.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Date:</td><td>{{ object.date }}</td></tr>
+        </table>
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=sarabun.document&amp;view_type=form"
+               style="background-color: #875A7B; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                View Document
+            </a>
+        </p>
+    </td></tr>
+</table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Action Taken Notification -->
+    <record id="email_template_sarabun_action_taken" model="mail.template">
+        <field name="name">Sarabun: Action Taken</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="subject">Action Taken on: {{ object.subject or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or '') }}</field>
+        <field name="body_html" type="html">
+<table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; font-size: 13px;">
+    <tr><td style="background-color: #28A745; color: white; padding: 15px; text-align: center; border-radius: 4px 4px 0 0;">
+        <h2 style="margin: 0;">Action Taken</h2>
+    </td></tr>
+    <tr><td style="padding: 20px; border: 1px solid #dee2e6;">
+        <p>An action has been taken on a document.</p>
+        <table style="width: 100%; margin: 10px 0;">
+            <tr><td style="padding: 5px 10px; font-weight: bold; width: 130px;">Document No.:</td><td>{{ object.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Subject:</td><td>{{ object.subject }}</td></tr>
+        </table>
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=sarabun.document&amp;view_type=form"
+               style="background-color: #28A745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                View Document
+            </a>
+        </p>
+    </td></tr>
+</table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Forwarded (CC) Notification -->
+    <record id="email_template_sarabun_forwarded" model="mail.template">
+        <field name="name">Sarabun: Document Forwarded</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="subject">Document Forwarded to You: {{ object.subject or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or '') }}</field>
+        <field name="body_html" type="html">
+<table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; font-size: 13px;">
+    <tr><td style="background-color: #17A2B8; color: white; padding: 15px; text-align: center; border-radius: 4px 4px 0 0;">
+        <h2 style="margin: 0;">Document Forwarded (CC)</h2>
+    </td></tr>
+    <tr><td style="padding: 20px; border: 1px solid #dee2e6;">
+        <p>A document has been forwarded to you for your information.</p>
+        <table style="width: 100%; margin: 10px 0;">
+            <tr><td style="padding: 5px 10px; font-weight: bold; width: 130px;">Document No.:</td><td>{{ object.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Subject:</td><td>{{ object.subject }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">From:</td><td>{{ object.sender_display or object.sender_user_id.name }}</td></tr>
+        </table>
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=sarabun.document&amp;view_type=form"
+               style="background-color: #17A2B8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                View Document
+            </a>
+        </p>
+    </td></tr>
+</table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Delegated Notification -->
+    <record id="email_template_sarabun_delegated" model="mail.template">
+        <field name="name">Sarabun: Action Delegated</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="subject">Action Delegated to You: {{ object.subject or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or '') }}</field>
+        <field name="body_html" type="html">
+<table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; font-size: 13px;">
+    <tr><td style="background-color: #FFC107; color: #333; padding: 15px; text-align: center; border-radius: 4px 4px 0 0;">
+        <h2 style="margin: 0;">Action Delegated to You</h2>
+    </td></tr>
+    <tr><td style="padding: 20px; border: 1px solid #dee2e6;">
+        <p>An action on a document has been delegated to you.</p>
+        <table style="width: 100%; margin: 10px 0;">
+            <tr><td style="padding: 5px 10px; font-weight: bold; width: 130px;">Document No.:</td><td>{{ object.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Subject:</td><td>{{ object.subject }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">From:</td><td>{{ object.sender_display or object.sender_user_id.name }}</td></tr>
+        </table>
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=sarabun.document&amp;view_type=form"
+               style="background-color: #FFC107; color: #333; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                View Document
+            </a>
+        </p>
+    </td></tr>
+</table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Dispatched Notification -->
+    <record id="email_template_sarabun_dispatched" model="mail.template">
+        <field name="name">Sarabun: Document Dispatched</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="subject">Document Dispatched to You: {{ object.subject or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or '') }}</field>
+        <field name="body_html" type="html">
+<table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; font-size: 13px;">
+    <tr><td style="background-color: #6F42C1; color: white; padding: 15px; text-align: center; border-radius: 4px 4px 0 0;">
+        <h2 style="margin: 0;">Document Dispatched</h2>
+    </td></tr>
+    <tr><td style="padding: 20px; border: 1px solid #dee2e6;">
+        <p>A document has been dispatched to you by the central correspondence office.</p>
+        <table style="width: 100%; margin: 10px 0;">
+            <tr><td style="padding: 5px 10px; font-weight: bold; width: 130px;">Document No.:</td><td>{{ object.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Subject:</td><td>{{ object.subject }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">From:</td><td>{{ object.sender_display or object.sender_user_id.name }}</td></tr>
+        </table>
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=sarabun.document&amp;view_type=form"
+               style="background-color: #6F42C1; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                View Document
+            </a>
+        </p>
+    </td></tr>
+</table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Rejected Notification -->
+    <record id="email_template_sarabun_rejected" model="mail.template">
+        <field name="name">Sarabun: Document Rejected</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="subject">Document Rejected: {{ object.subject or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or '') }}</field>
+        <field name="body_html" type="html">
+<table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; font-size: 13px;">
+    <tr><td style="background-color: #DC3545; color: white; padding: 15px; text-align: center; border-radius: 4px 4px 0 0;">
+        <h2 style="margin: 0;">Document Rejected</h2>
+    </td></tr>
+    <tr><td style="padding: 20px; border: 1px solid #dee2e6;">
+        <p>Your document has been rejected.</p>
+        <table style="width: 100%; margin: 10px 0;">
+            <tr><td style="padding: 5px 10px; font-weight: bold; width: 130px;">Document No.:</td><td>{{ object.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Subject:</td><td>{{ object.subject }}</td></tr>
+        </table>
+        <p>You can edit the document and resubmit it for routing.</p>
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=sarabun.document&amp;view_type=form"
+               style="background-color: #DC3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                View Document
+            </a>
+        </p>
+    </td></tr>
+</table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Completed Notification -->
+    <record id="email_template_sarabun_completed" model="mail.template">
+        <field name="name">Sarabun: Routing Completed</field>
+        <field name="model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="subject">Routing Completed: {{ object.subject or object.name }}</field>
+        <field name="email_from">{{ (user.email_formatted or user.company_id.email_formatted or '') }}</field>
+        <field name="body_html" type="html">
+<table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; font-size: 13px;">
+    <tr><td style="background-color: #28A745; color: white; padding: 15px; text-align: center; border-radius: 4px 4px 0 0;">
+        <h2 style="margin: 0;">Routing Completed</h2>
+    </td></tr>
+    <tr><td style="padding: 20px; border: 1px solid #dee2e6;">
+        <p>All routing steps for your document have been completed.</p>
+        <table style="width: 100%; margin: 10px 0;">
+            <tr><td style="padding: 5px 10px; font-weight: bold; width: 130px;">Document No.:</td><td>{{ object.name }}</td></tr>
+            <tr><td style="padding: 5px 10px; font-weight: bold;">Subject:</td><td>{{ object.subject }}</td></tr>
+        </table>
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=sarabun.document&amp;view_type=form"
+               style="background-color: #28A745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+                View Document
+            </a>
+        </p>
+    </td></tr>
+</table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

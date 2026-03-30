@@ -142,3 +142,14 @@ class SarabunRouteTemplateLine(models.Model):
         string="Role/Position",
         help="Select a role/position for routing",
     )
+    required = fields.Boolean(
+        string="Required",
+        default=False,
+        help="If checked, this step cannot be removed by users when customizing the route",
+    )
+    on_complete_method = fields.Char(
+        string="On Complete Callback",
+        help="Method name to call on origin record when this step completes. "
+             "Must start with '_on_sarabun_step_'. "
+             "Example: _on_sarabun_step_dept_approved",
+    )

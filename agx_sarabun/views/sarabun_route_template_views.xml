@@ -48,6 +48,8 @@
                                     <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}"/>
                                     <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}"/>
                                     <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
+                                    <field name="required" widget="boolean_toggle"/>
+                                    <field name="on_complete_method" optional="hide"/>
                                 </tree>
                             </field>
                         </page>

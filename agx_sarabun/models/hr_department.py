@@ -14,3 +14,9 @@ class HrDepartment(models.Model):
         help="Users who can receive and process sarabun documents for this department. "
         "If not set, the department manager will receive documents.",
     )
+    use_central_correspondence = fields.Boolean(
+        string="Use Central Correspondence (สารบรรณกลาง)",
+        default=False,
+        help="When enabled, all incoming documents for this department "
+        "are first routed to sarabun officers (clerks) for dispatch.",
+    )

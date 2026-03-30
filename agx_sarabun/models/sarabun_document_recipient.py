@@ -121,6 +121,67 @@ class SarabunDocumentRecipient(models.Model):
         readonly=True,
     )
 
+    # === CC Forward ===
+    is_cc = fields.Boolean(
+        string="CC (Read Only)",
+        default=False,
+        help="CC recipients have read-only access, cannot take routing actions",
+    )
+    forwarded_by_user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Forwarded By",
+        readonly=True,
+    )
+    forwarded_by_recipient_id = fields.Many2one(
+        comodel_name="sarabun.document.recipient",
+        string="Forwarded From",
+        readonly=True,
+    )
+    forward_comment = fields.Text(
+        string="Forward Comment",
+    )
+
+    # === Delegation ===
+    is_delegated = fields.Boolean(
+        string="Delegated",
+        default=False,
+        help="This recipient was created via delegation",
+    )
+    delegated_by_user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Delegated By",
+        readonly=True,
+    )
+    delegated_by_recipient_id = fields.Many2one(
+        comodel_name="sarabun.document.recipient",
+        string="Delegated From",
+        readonly=True,
+    )
+    delegation_chain_ids = fields.One2many(
+        comodel_name="sarabun.document.recipient",
+        inverse_name="delegated_by_recipient_id",
+        string="Delegated To",
+    )
+
+    # === Central Correspondence Dispatch ===
+    needs_dispatch = fields.Boolean(
+        string="Needs Dispatch",
+        default=False,
+        help="Pending dispatch by central correspondence clerk",
+    )
+    dispatched_by_user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Dispatched By",
+        readonly=True,
+    )
+    dispatched_date = fields.Datetime(
+        string="Dispatched Date",
+        readonly=True,
+    )
+    dispatch_note = fields.Text(
+        string="Dispatch Note",
+    )
+
     # === Notifications ===
     is_notified = fields.Boolean(
         string="Notified",
@@ -231,6 +292,13 @@ class SarabunDocumentRecipient(models.Model):
         # Trigger callback on origin
         self.document_id._trigger_origin_action_callback(self, "acknowledge")
 
+        # Execute step hook on origin record
+        if self.routing_line_id:
+            self.document_id._execute_step_hook(self.routing_line_id)
+
+        # Resolve delegation chain
+        self._resolve_delegation_chain()
+
         # Activate next recipient
         self.document_id._activate_next_recipient()
 
@@ -266,6 +334,13 @@ class SarabunDocumentRecipient(models.Model):
 
         # Trigger callback on origin
         self.document_id._trigger_origin_action_callback(self, "approve")
+
+        # Execute step hook on origin record
+        if self.routing_line_id:
+            self.document_id._execute_step_hook(self.routing_line_id)
+
+        # Resolve delegation chain
+        self._resolve_delegation_chain()
 
         # Activate next recipient
         self.document_id._activate_next_recipient()
@@ -329,25 +404,61 @@ class SarabunDocumentRecipient(models.Model):
         if self.document_id.state != "sent":
             raise UserError(_("Document is not in sent state."))
 
-        can_action = False
+        if self.is_cc:
+            raise UserError(_("CC recipients cannot take routing actions."))
 
-        if self.recipient_type == "user":
-            can_action = self.user_id == self.env.user
-        elif self.recipient_type == "department":
-            if self.department_id:
-                # Check if user is a sarabun officer
-                if self.env.user in self.department_id.sarabun_officer_ids:
+        if self.needs_dispatch:
+            raise UserError(
+                _("This document must be dispatched by the "
+                  "correspondence office first.")
+            )
+
+        can_action = self._can_user_access()
+
+        # Walk delegation chain — delegator can act on delegated recipient
+        if not can_action and self.delegated_by_recipient_id:
+            parent = self.delegated_by_recipient_id
+            while parent:
+                if parent._can_user_access():
                     can_action = True
-                # Or if user is manager of department
-                elif self.department_id.manager_id:
-                    can_action = self.department_id.manager_id.user_id == self.env.user
-        elif self.recipient_type == "role":
-            if self.role_id:
-                role_users = self.role_id.get_users_for_document(self.document_id)
-                can_action = self.env.user in role_users
+                    break
+                parent = parent.delegated_by_recipient_id
 
         if not can_action:
             raise UserError(_("You are not authorized to perform this action."))
+
+    def _get_users_to_notify(self):
+        """Get users who should receive notification for this recipient."""
+        self.ensure_one()
+        # If needs dispatch, notify clerks instead of actual recipient
+        if self.needs_dispatch:
+            dept = self._get_recipient_department()
+            if dept and dept.sarabun_officer_ids:
+                return dept.sarabun_officer_ids
+            # Fallback: no clerks, clear dispatch flag and notify normally
+            self.needs_dispatch = False
+
+        if self.recipient_type == "user":
+            return self.user_id or self.env["res.users"]
+        elif self.recipient_type == "department" and self.department_id:
+            if self.department_id.sarabun_officer_ids:
+                return self.department_id.sarabun_officer_ids
+            elif self.department_id.manager_id:
+                return self.department_id.manager_id.user_id
+        elif self.recipient_type == "role" and self.role_id:
+            return self.role_id.get_users_for_document(self.document_id)
+        return self.env["res.users"]
+
+    def _get_recipient_department(self):
+        """Get the department associated with this recipient."""
+        self.ensure_one()
+        if self.recipient_type == "department" and self.department_id:
+            return self.department_id
+        if self.recipient_type == "user" and self.user_id:
+            emp = self.user_id.employee_id
+            if emp and emp.department_id:
+                return emp.department_id
+        return False
 
     def _send_notification(self):
         """Send activity notification to recipient"""
@@ -356,19 +467,7 @@ class SarabunDocumentRecipient(models.Model):
         if self.is_notified:
             return
 
-        users_to_notify = self.env["res.users"]
-
-        if self.recipient_type == "user":
-            users_to_notify = self.user_id
-        elif self.recipient_type == "department" and self.department_id:
-            # Send to all sarabun officers
-            if self.department_id.sarabun_officer_ids:
-                users_to_notify = self.department_id.sarabun_officer_ids
-            # Fallback to department manager
-            elif self.department_id.manager_id:
-                users_to_notify = self.department_id.manager_id.user_id
-        elif self.recipient_type == "role" and self.role_id:
-            users_to_notify = self.role_id.get_users_for_document(self.document_id)
+        users_to_notify = self._get_users_to_notify()
 
         # Create per-user inbox records (one per document per user)
         Inbox = self.env["sarabun.inbox"].sudo()
@@ -396,6 +495,12 @@ class SarabunDocumentRecipient(models.Model):
                     'document_id': self.document_id.id,
                 }
             )
+
+        # Send email notification
+        self.document_id._send_sarabun_email(
+            users_to_notify,
+            "agx_sarabun.email_template_sarabun_new_document",
+        )
 
         self.write({
             "is_notified": True,
@@ -443,6 +548,13 @@ class SarabunDocumentRecipient(models.Model):
         if user is None:
             user = self.env.user
 
+        # Central correspondence clerk access
+        if self.needs_dispatch:
+            dept = self._get_recipient_department()
+            if dept and user in dept.sarabun_officer_ids:
+                return True
+            return False
+
         if self.recipient_type == "user":
             return self.user_id == user
         elif self.recipient_type == "department" and self.department_id:
@@ -456,3 +568,85 @@ class SarabunDocumentRecipient(models.Model):
             return user in role_users
 
         return False
+
+    # === Delegation ===
+    def action_delegate(self):
+        """Open delegation wizard."""
+        self.ensure_one()
+        if self.state != "new":
+            raise UserError(_("Can only delegate pending actions."))
+        if self.is_cc:
+            raise UserError(_("CC recipients cannot delegate."))
+        if not self._can_user_access():
+            raise UserError(
+                _("You are not authorized to delegate this action.")
+            )
+        return {
+            "name": _("Delegate Action"),
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.delegate.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_recipient_id": self.id},
+        }
+
+    def _resolve_delegation_chain(self):
+        """When one recipient in a chain acts, resolve all others."""
+        if not self.delegated_by_recipient_id and not self.delegation_chain_ids:
+            return
+        # Find root of delegation chain
+        root = self
+        while root.delegated_by_recipient_id:
+            root = root.delegated_by_recipient_id
+        # Collect all in chain
+        all_in_chain = self._collect_delegation_chain(root)
+        # Mark siblings as resolved
+        siblings = all_in_chain.filtered(
+            lambda r: r.id != self.id and r.state == "new"
+        )
+        now = fields.Datetime.now()
+        for sibling in siblings:
+            sibling.write({
+                "state": self.state,
+                "actioned_by": self.env.user.id,
+                "actioned_date": now,
+                "comment": _("Resolved: action taken by %s")
+                % self.env.user.name,
+            })
+        # Notify all users in chain (except actor)
+        users_to_notify = self.env["res.users"]
+        for r in all_in_chain.filtered(lambda r: r.id != self.id):
+            if r.user_id:
+                users_to_notify |= r.user_id
+        if users_to_notify:
+            self.document_id._send_sarabun_email(
+                users_to_notify,
+                "agx_sarabun.email_template_sarabun_action_taken",
+            )
+
+    def _collect_delegation_chain(self, root):
+        """Recursively collect all recipients in a delegation chain."""
+        result = root
+        for child in root.delegation_chain_ids:
+            result |= self._collect_delegation_chain(child)
+        return result
+
+    # === Central Correspondence Dispatch ===
+    def action_dispatch(self):
+        """Open dispatch wizard for central correspondence clerk."""
+        self.ensure_one()
+        if not self.needs_dispatch:
+            raise UserError(_("This recipient does not need dispatch."))
+        dept = self._get_recipient_department()
+        if not dept or self.env.user not in dept.sarabun_officer_ids:
+            raise UserError(
+                _("Only sarabun officers can dispatch documents.")
+            )
+        return {
+            "name": _("Dispatch Document"),
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.dispatch.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_recipient_id": self.id},
+        }

@@ -27,52 +27,6 @@ class SarabunRoutingRejectWizard(models.TransientModel):
         return {"type": "ir.actions.act_window_close"}
 
 
-class SarabunRoutingForwardWizard(models.TransientModel):
-    _name = "sarabun.routing.forward.wizard"
-    _description = "Forward Document Wizard"
-
-    routing_line_id = fields.Many2one(
-        comodel_name="sarabun.routing.line",
-        string="Routing Line",
-        required=True,
-    )
-    forward_type = fields.Selection(
-        selection=[
-            ("user", "User"),
-            ("department", "Department"),
-        ],
-        string="Forward To",
-        required=True,
-        default="user",
-    )
-    forward_to_user_id = fields.Many2one(
-        comodel_name="res.users",
-        string="User",
-    )
-    forward_to_department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Department",
-    )
-    comment = fields.Text(
-        string="Comment",
-    )
-
-    def action_forward(self):
-        """Confirm forward"""
-        self.ensure_one()
-        if self.forward_type == "user" and not self.forward_to_user_id:
-            raise UserError(_("Please select a user to forward to."))
-        if self.forward_type == "department" and not self.forward_to_department_id:
-            raise UserError(_("Please select a department to forward to."))
-
-        self.routing_line_id.action_do_forward(
-            forward_to_user_id=self.forward_to_user_id.id if self.forward_to_user_id else False,
-            forward_to_department_id=self.forward_to_department_id.id if self.forward_to_department_id else False,
-            comment=self.comment,
-        )
-        return {"type": "ir.actions.act_window_close"}
-
-
 class SarabunDepartmentLookupWizard(models.TransientModel):
     """Wizard to search and select department, then insert text into target field"""
 

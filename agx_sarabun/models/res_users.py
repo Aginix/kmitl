@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
+
+    sarabun_email_notification = fields.Boolean(
+        string="Sarabun Email Notifications",
+        default=True,
+        help="Receive email notifications for sarabun document events",
+    )
+
+    @property
+    def SELF_WRITEABLE_FIELDS(self):
+        return super().SELF_WRITEABLE_FIELDS + ["sarabun_email_notification"]
 
     @api.model
     def get_sarabun_inbox_count(self):

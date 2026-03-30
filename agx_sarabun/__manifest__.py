@@ -15,6 +15,7 @@
         "data/sarabun_sequence.xml",
         "data/sarabun_document_type.xml",
         "data/sarabun_role.xml",
+        "data/sarabun_email_templates.xml",
         "report/paperformat.xml",
         "report/report_sarabun.xml",
         # Wizard
@@ -28,6 +29,7 @@
         "views/sarabun_document_recipient_views.xml",
         "views/sarabun_document_sequence_views.xml",
         "views/sarabun_role_views.xml",
+        "views/res_users_views.xml",
         "views/hr_department_views.xml",
         "views/sarabun_menus.xml",
     ],
