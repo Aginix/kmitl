@@ -12,21 +12,6 @@
         </field>
     </record>
 
-    <!-- Hide payment_type from purchase_order_payment_type -->
-    <record id="view_purchase_order_form_payment_type" model="ir.ui.view">
-        <field name="name">view.purchase.order.form(Hide Payment Type)</field>
-        <field name="model">purchase.order</field>
-        <field
-            name="inherit_id"
-            ref="purchase_order_payment_type.view_purchase_order_form"
-        />
-        <field name="arch" type="xml">
-            <field name="payment_type" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
-        </field>
-    </record>
-
     <!-- Hide exception_ids from purchase_exception -->
     <record id="view_purchase_order_form_invisible_exception" model="ir.ui.view">
         <field name="name">view.purchase.order.form(Hide Exception)</field>

@@ -16,7 +16,7 @@
         "purchase_request_department",
         "purchase_order_link_purchase_request",
         "purchase_contract_kmitl",
-        "purchase_order_payment_type",
+        # payment type merged into this module
         "purchase_exception",
         "purchase_stock",
     ],
