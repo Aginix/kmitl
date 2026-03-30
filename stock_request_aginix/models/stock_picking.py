@@ -41,12 +41,11 @@ class StockPicking(models.Model):
             'target': 'current',
         }
 
-    def write(self, vals):
-        res = super().write(vals)
-        if vals.get('state') == 'done':
-            requests = self.mapped('stock_request_id').filtered(
-                lambda r: r.state == 'approved'
-            )
-            if requests:
-                requests.action_done()
+    def button_validate(self):
+        res = super().button_validate()
+        for picking in self:
+            if picking.state == 'done' and picking.stock_request_id:
+                picking.stock_request_id.filtered(
+                    lambda r: r.state == 'approved'
+                ).action_done()
         return res
