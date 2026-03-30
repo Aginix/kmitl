@@ -347,7 +347,8 @@ class AdvancePayment(models.Model):
                 body = _(
                     "Payment <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a>"
                     " has been confirmed. Funds of <b>%(amount)s %(currency)s</b> have been disbursed"
-                    " to <b>%(partner)s</b>.",
+                    " to <b>%(partner)s</b>."
+                    " ขั้นตอนถัดไป: ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้",
                     id=payment.id,
                     name=payment.name,
                     amount=payment.amount,
@@ -409,7 +410,8 @@ class AdvancePayment(models.Model):
                     "Agreement approved. Payment"
                     " <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a>"
                     " created for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b>"
-                    " via journal <b>%(journal)s</b>.",
+                    " via journal <b>%(journal)s</b>."
+                    " ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย",
                     id=payment.id,
                     name=payment.name,
                     amount=payment.amount,

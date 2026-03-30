@@ -18,7 +18,7 @@
                     decoration-primary="state == 'approved'"
                     decoration-success="state == 'done'"
                     decoration-danger="state == 'cancel'"/>
-                <field name="disbursement_state" optional="hide" widget="badge"
+                <field name="disbursement_state" optional="show" widget="badge"
                     decoration-warning="disbursement_state == 'pending'"
                     decoration-success="disbursement_state == 'paid'"/>
             </tree>
@@ -36,6 +36,14 @@
                         <strong>มีข้อผิดพลาดที่ต้องแก้ไข:</strong>
                     </p>
                     <field name="exceptions_summary"/>
+                </div>
+                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
+                     attrs="{'invisible': [('disbursement_state', '!=', 'pending')]}">
+                    <strong>อนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการเบิกจ่าย
+                </div>
+                <div class="alert alert-success" role="alert" style="margin-bottom:0px;"
+                     attrs="{'invisible': [('disbursement_state', '!=', 'paid')]}">
+                    <strong>เบิกจ่ายแล้ว</strong> — สัญญากำลังดำเนินการ
                 </div>
                 <header>
                     <button name="action_submit"
