@@ -1,14 +1,14 @@
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class AdvancePaymentReturnWizard(models.TransientModel):
     """
     Wizard for employee to submit a return request (แจ้งคืนเงิน).
 
-    The employee attaches proof of bank transfer and confirms. This sets
-    is_return_requested=True on the agreement so the manager can review
-    and manually close it. The agreement is NOT closed automatically.
+    Creates a return line (state=draft) with amount and proof of transfer.
+    The manager then reviews and confirms the return line to create
+    the inbound payment.
     """
 
     _name = "advance.payment.return.wizard"
@@ -38,10 +38,21 @@ class AdvancePaymentReturnWizard(models.TransientModel):
         readonly=True,
     )
 
+    amount_returned = fields.Monetary(
+        string="Amount Returned",
+        related="agreement_id.amount_returned",
+        readonly=True,
+    )
+
     amount_remaining = fields.Monetary(
         string="Amount Remaining",
         related="agreement_id.amount_remaining",
         readonly=True,
+    )
+
+    amount = fields.Monetary(
+        string="Return Amount",
+        required=True,
     )
 
     attachment_ids = fields.Many2many(
@@ -54,26 +65,51 @@ class AdvancePaymentReturnWizard(models.TransientModel):
 
     note = fields.Text(string="Note")
 
+    @api.constrains("amount")
+    def _check_amount(self):
+        for rec in self:
+            if rec.amount <= 0:
+                raise ValidationError(_("Return amount must be greater than zero."))
+            if rec.amount > rec.agreement_id.amount_remaining:
+                raise ValidationError(
+                    _(
+                        "Return amount (%(amount)s) exceeds remaining balance"
+                        " (%(remaining)s).",
+                        amount=rec.amount,
+                        remaining=rec.agreement_id.amount_remaining,
+                    )
+                )
+
     def action_confirm_return(self):
-        """Submit return request: attach proof and flag the agreement for manager review."""
+        """Create a return line (draft) for manager review."""
         self.ensure_one()
         if self.agreement_id.state != "in_progress":
             raise UserError(_("Only in-progress agreements can have a return request."))
         if not self.attachment_ids:
             raise UserError(_("Please attach proof of bank transfer before confirming."))
-        # Relink attachments from the wizard to the agreement record
+        line = self.env["advance.payment.return.line"].create(
+            {
+                "agreement_id": self.agreement_id.id,
+                "amount": self.amount,
+                "date": fields.Date.today(),
+                "note": self.note,
+            }
+        )
+        # Relink attachments from the wizard to the return line
         self.attachment_ids.write(
             {
-                "res_model": "advance.payment",
-                "res_id": self.agreement_id.id,
+                "res_model": "advance.payment.return.line",
+                "res_id": line.id,
             }
         )
         note_part = _(" Note: %(note)s", note=self.note) if self.note else ""
-        self.agreement_id.write({"is_return_requested": True})
         self.agreement_id.message_post(
             body=_(
-                "Return requested by <b>%(user)s</b>.%(note)s"
+                "Return of <b>%(amount)s %(currency)s</b> submitted by"
+                " <b>%(user)s</b>.%(note)s"
                 " %(count)s attachment(s) uploaded as proof.",
+                amount=self.amount,
+                currency=self.currency_id.name,
                 user=self.env.user.name,
                 note=note_part,
                 count=len(self.attachment_ids),

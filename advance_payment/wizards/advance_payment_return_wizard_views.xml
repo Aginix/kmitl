@@ -10,7 +10,11 @@
                     <field name="currency_id" invisible="1"/>
                     <field name="loan_amount"/>
                     <field name="amount_used"/>
+                    <field name="amount_returned"/>
                     <field name="amount_remaining"/>
+                </group>
+                <group string="รายละเอียดการคืนเงิน">
+                    <field name="amount"/>
                 </group>
                 <group string="หลักฐานการคืนเงิน">
                     <field name="attachment_ids" widget="many2many_binary" nolabel="1"/>

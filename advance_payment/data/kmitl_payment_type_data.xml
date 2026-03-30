@@ -6,5 +6,10 @@
             <field name="direction">outbound</field>
             <field name="sequence">10</field>
         </record>
+        <record id="payment_type_advance_payment_inbound" model="kmitl.payment.type">
+            <field name="name">รับคืนเงินยืม</field>
+            <field name="direction">inbound</field>
+            <field name="sequence">20</field>
+        </record>
     </data>
 </odoo>

@@ -44,6 +44,16 @@ class TestAdvancePayment(TransactionCase):
             }
         )
 
+    def _make_attachment(self, res_model="advance.payment.return.wizard"):
+        return self.env["ir.attachment"].create(
+            {
+                "name": "proof.pdf",
+                "datas": base64.b64encode(b"proof content"),
+                "res_model": res_model,
+                "res_id": 0,
+            }
+        )
+
     # ------------------------------------------------------------------ #
     # Lifecycle: draft → submitted                                         #
     # ------------------------------------------------------------------ #
@@ -74,8 +84,6 @@ class TestAdvancePayment(TransactionCase):
     def test_submit_requires_loan_amount_above_100(self):
         """Exception rule blocks submission if loan_amount <= 100 (blocking exception)."""
         agreement = self._make_agreement(loan_amount=50)
-        # detect_exceptions returns truthy → popup is triggered; action_submit returns early
-        # The state should remain 'draft'
         agreement.action_submit()
         self.assertEqual(agreement.state, "draft")
 
@@ -98,7 +106,6 @@ class TestAdvancePayment(TransactionCase):
         """Non-protected fields (e.g. ignore_exception) can still be set."""
         agreement = self._make_agreement()
         agreement.action_submit()
-        # Should not raise (not in _PROTECTED_FIELDS)
         agreement.write({"ignore_exception": True})
 
     # ------------------------------------------------------------------ #
@@ -110,7 +117,6 @@ class TestAdvancePayment(TransactionCase):
         agreement = self.env["advance.payment"].create(
             {"requested_by": self.user.id, "loan_amount": 1000}
         )
-        # manager submits (not the requestor) — should work
         agreement.with_user(self.manager).action_submit()
         self.assertEqual(agreement.state, "submitted")
 
@@ -129,13 +135,12 @@ class TestAdvancePayment(TransactionCase):
         agreement = self._make_agreement()
         agreement.action_submit()
         self.assertFalse(agreement.date_approved)
-        # Bypass payment creation: write state directly
         agreement.write({"state": "approved", "date_approved": "2026-01-01 00:00:00"})
         self.assertTrue(agreement.date_approved)
 
     def test_date_closed_set_on_close(self):
         agreement = self._make_agreement()
-        agreement.write({"state": "in_progress", "is_return_requested": True})
+        agreement.write({"state": "in_progress"})
         self.assertFalse(agreement.date_closed)
         agreement.action_close()
         self.assertTrue(agreement.date_closed)
@@ -149,6 +154,14 @@ class TestAdvancePayment(TransactionCase):
         agreement = self._make_agreement()
         with self.assertRaises(UserError):
             agreement.action_close()
+
+    def test_close_allowed_without_full_return(self):
+        """Manager can close even when amount_remaining > 0 (Q7 decision)."""
+        agreement = self._make_agreement(loan_amount=10000)
+        agreement.write({"state": "in_progress"})
+        agreement.action_close()
+        self.assertEqual(agreement.state, "done")
+        self.assertEqual(agreement.amount_remaining, 10000)
 
     # ------------------------------------------------------------------ #
     # Uniqueness constraint (QW5)                                          #
@@ -234,84 +247,177 @@ class TestAdvancePayment(TransactionCase):
         self.assertEqual(agreement.state, "cancel")
 
     # ------------------------------------------------------------------ #
-    # F2: Return payment flow                                              #
+    # Return lines: wizard creates return line                             #
     # ------------------------------------------------------------------ #
 
-    def test_return_request_sets_flag(self):
+    def test_return_wizard_creates_line(self):
+        """Wizard creates a return line in draft state."""
         agreement = self._make_agreement()
         agreement.write({"state": "in_progress"})
-        attachment = self.env["ir.attachment"].create(
-            {
-                "name": "proof.pdf",
-                "datas": base64.b64encode(b"proof content"),
-                "res_model": "advance.payment.return.wizard",
-                "res_id": 0,
-            }
-        )
+        attachment = self._make_attachment()
         wizard = self.env["advance.payment.return.wizard"].create(
             {
                 "agreement_id": agreement.id,
+                "amount": 500,
                 "attachment_ids": [(4, attachment.id)],
             }
         )
         wizard.action_confirm_return()
-        self.assertTrue(agreement.is_return_requested)
+        self.assertEqual(len(agreement.return_line_ids), 1)
+        line = agreement.return_line_ids
+        self.assertEqual(line.state, "draft")
+        self.assertEqual(line.amount, 500)
 
-    def test_return_request_relinks_attachment(self):
+    def test_return_wizard_relinks_attachment(self):
         agreement = self._make_agreement()
         agreement.write({"state": "in_progress"})
-        attachment = self.env["ir.attachment"].create(
-            {
-                "name": "proof.pdf",
-                "datas": base64.b64encode(b"proof content"),
-                "res_model": "advance.payment.return.wizard",
-                "res_id": 0,
-            }
-        )
+        attachment = self._make_attachment()
         wizard = self.env["advance.payment.return.wizard"].create(
             {
                 "agreement_id": agreement.id,
+                "amount": 500,
                 "attachment_ids": [(4, attachment.id)],
             }
         )
         wizard.action_confirm_return()
-        self.assertEqual(attachment.res_model, "advance.payment")
-        self.assertEqual(attachment.res_id, agreement.id)
+        line = agreement.return_line_ids
+        self.assertEqual(attachment.res_model, "advance.payment.return.line")
+        self.assertEqual(attachment.res_id, line.id)
 
-    def test_return_request_requires_attachment(self):
+    def test_return_wizard_requires_attachment(self):
         agreement = self._make_agreement()
         agreement.write({"state": "in_progress"})
         wizard = self.env["advance.payment.return.wizard"].create(
-            {"agreement_id": agreement.id}
+            {"agreement_id": agreement.id, "amount": 500}
         )
         with self.assertRaises(UserError):
             wizard.action_confirm_return()
 
-    def test_return_request_only_for_in_progress(self):
+    def test_return_wizard_requires_in_progress(self):
         agreement = self._make_agreement()
-        attachment = self.env["ir.attachment"].create(
-            {
-                "name": "proof.pdf",
-                "datas": base64.b64encode(b"proof"),
-                "res_model": "advance.payment.return.wizard",
-                "res_id": 0,
-            }
-        )
+        attachment = self._make_attachment()
         wizard = self.env["advance.payment.return.wizard"].create(
             {
                 "agreement_id": agreement.id,
+                "amount": 500,
                 "attachment_ids": [(4, attachment.id)],
             }
         )
         with self.assertRaises(UserError):
             wizard.action_confirm_return()
 
-    def test_close_after_return_request(self):
+    def test_return_wizard_validates_amount_positive(self):
         agreement = self._make_agreement()
-        agreement.write({"state": "in_progress", "is_return_requested": True})
-        agreement.action_close()
-        self.assertEqual(agreement.state, "done")
-        self.assertTrue(agreement.date_closed)
+        agreement.write({"state": "in_progress"})
+        with self.assertRaises(ValidationError):
+            self.env["advance.payment.return.wizard"].create(
+                {"agreement_id": agreement.id, "amount": 0}
+            )
+
+    def test_return_wizard_validates_amount_not_exceeding(self):
+        agreement = self._make_agreement(loan_amount=1000)
+        agreement.write({"state": "in_progress"})
+        with self.assertRaises(ValidationError):
+            self.env["advance.payment.return.wizard"].create(
+                {"agreement_id": agreement.id, "amount": 1500}
+            )
+
+    # ------------------------------------------------------------------ #
+    # Return lines: amount computation                                     #
+    # ------------------------------------------------------------------ #
+
+    def test_amount_returned_from_confirmed_lines(self):
+        """amount_returned includes confirmed and paid return lines."""
+        agreement = self._make_agreement(loan_amount=10000)
+        agreement.write({"state": "in_progress"})
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 2000, "state": "confirmed"}
+        )
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 1000, "state": "paid"}
+        )
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 500, "state": "draft"}
+        )
+        agreement.invalidate_recordset()
+        self.assertEqual(agreement.amount_returned, 3000)
+        self.assertEqual(agreement.amount_remaining, 7000)
+
+    def test_amount_remaining_with_usage_and_returns(self):
+        """amount_remaining = loan - used - returned."""
+        agreement = self._make_agreement(loan_amount=10000)
+        agreement.write({"state": "in_progress"})
+        # Record usage of 3000
+        self.env["advance.payment.usage.line"].create(
+            {"agreement_id": agreement.id, "amount": 3000, "date": "2026-01-01"}
+        )
+        # Return 2000 (confirmed)
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 2000, "state": "confirmed"}
+        )
+        agreement.invalidate_recordset()
+        self.assertEqual(agreement.amount_used, 3000)
+        self.assertEqual(agreement.amount_returned, 2000)
+        self.assertEqual(agreement.amount_remaining, 5000)
+
+    # ------------------------------------------------------------------ #
+    # Return lines: multiple partial returns                               #
+    # ------------------------------------------------------------------ #
+
+    def test_multiple_partial_returns(self):
+        """Multiple return lines reduce amount_remaining correctly."""
+        agreement = self._make_agreement(loan_amount=10000)
+        agreement.write({"state": "in_progress"})
+        # Usage: 3000
+        self.env["advance.payment.usage.line"].create(
+            {"agreement_id": agreement.id, "amount": 3000, "date": "2026-01-01"}
+        )
+        # Return 1: 2000
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 2000, "state": "confirmed"}
+        )
+        agreement.invalidate_recordset()
+        self.assertEqual(agreement.amount_remaining, 5000)
+        # Return 2: 5000
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 5000, "state": "confirmed"}
+        )
+        agreement.invalidate_recordset()
+        self.assertEqual(agreement.amount_remaining, 0)
+
+    def test_return_count(self):
+        agreement = self._make_agreement()
+        agreement.write({"state": "in_progress"})
+        self.assertEqual(agreement.return_count, 0)
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 100}
+        )
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 200}
+        )
+        agreement.invalidate_recordset()
+        self.assertEqual(agreement.return_count, 2)
+
+    # ------------------------------------------------------------------ #
+    # Return lines: confirm creates payment                                #
+    # ------------------------------------------------------------------ #
+
+    def test_return_line_confirm_requires_draft(self):
+        agreement = self._make_agreement()
+        agreement.write({"state": "in_progress"})
+        line = self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 500, "state": "confirmed"}
+        )
+        with self.assertRaises(UserError):
+            line.action_confirm()
+
+    def test_return_line_confirm_requires_in_progress(self):
+        agreement = self._make_agreement()
+        line = self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 500}
+        )
+        with self.assertRaises(UserError):
+            line.action_confirm()
 
     # ------------------------------------------------------------------ #
     # F3: Bank account field (res.partner.bank)                           #

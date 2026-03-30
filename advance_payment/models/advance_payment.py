@@ -164,8 +164,22 @@ class AdvancePayment(models.Model):
     date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
 
     cancel_reason = fields.Text(string="Reason", readonly=True, copy=False)
-    is_return_requested = fields.Boolean(
-        string="Return Requested", readonly=True, copy=False, default=False
+
+    return_line_ids = fields.One2many(
+        comodel_name="advance.payment.return.line",
+        inverse_name="agreement_id",
+        string="Return Lines",
+        copy=False,
+    )
+
+    amount_returned = fields.Monetary(
+        string="Amount Returned",
+        compute="_compute_amounts",
+        store=True,
+    )
+
+    return_count = fields.Integer(
+        compute="_compute_return_count",
     )
 
     attachment_ids = fields.One2many(
@@ -245,17 +259,33 @@ class AdvancePayment(models.Model):
     def _inverse_source_analytic_id(self):
         self._update_analytic_distribution("sources")
 
-    @api.depends("loan_amount", "usage_line_ids.amount")
+    @api.depends(
+        "loan_amount",
+        "usage_line_ids.amount",
+        "return_line_ids.amount",
+        "return_line_ids.state",
+    )
     def _compute_amounts(self):
         for rec in self:
             used = sum(rec.usage_line_ids.mapped("amount"))
+            returned = sum(
+                rec.return_line_ids.filtered(
+                    lambda l: l.state in ("confirmed", "paid")
+                ).mapped("amount")
+            )
             rec.amount_used = used
-            rec.amount_remaining = rec.loan_amount - used
+            rec.amount_returned = returned
+            rec.amount_remaining = rec.loan_amount - used - returned
 
     @api.depends("payment_ids")
     def _compute_payment_count(self):
         for rec in self:
             rec.payment_count = len(rec.payment_ids)
+
+    @api.depends("return_line_ids")
+    def _compute_return_count(self):
+        for rec in self:
+            rec.return_count = len(rec.return_line_ids)
 
     @api.constrains("name")
     def _check_name_unique(self):
@@ -515,3 +545,19 @@ class AdvancePayment(models.Model):
             "target": "new",
             "context": {"default_agreement_id": self.id},
         }
+
+    def action_view_return_lines(self):
+        """Open linked return lines."""
+        self.ensure_one()
+        action = {
+            "type": "ir.actions.act_window",
+            "name": _("รายการคืนเงิน"),
+            "res_model": "advance.payment.return.line",
+            "view_mode": "tree,form",
+            "domain": [("agreement_id", "=", self.id)],
+            "context": {"default_agreement_id": self.id},
+        }
+        if self.return_count == 1:
+            action["views"] = [(False, "form")]
+            action["res_id"] = self.return_line_ids.id
+        return action

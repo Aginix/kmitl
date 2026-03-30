@@ -66,12 +66,12 @@
                     <button name="action_open_return_wizard"
                         string="แจ้งคืนเงิน"
                         type="object"
-                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_return_requested', '=', True)]}"/>
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
                     <button name="action_close"
                         string="ปิดสัญญา"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_return_requested', '=', False)]}"
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"
                         groups="advance_payment.group_advance_payment_manager"/>
                     <field name="state" widget="statusbar"
                         statusbar_visible="draft,submitted,approved,in_progress,done"/>
@@ -84,6 +84,13 @@
                             icon="fa-credit-card"
                             attrs="{'invisible': [('payment_count', '=', 0)]}">
                             <field name="payment_count" string="Payments" widget="statinfo"/>
+                        </button>
+                        <button name="action_view_return_lines"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-undo"
+                            attrs="{'invisible': [('return_count', '=', 0)]}">
+                            <field name="return_count" string="Returns" widget="statinfo"/>
                         </button>
                     </div>
                     <div class="oe_title">
@@ -121,12 +128,12 @@
                     </group>
                     <group string="สรุปยอดเงิน" attrs="{'invisible': [('state', '=', 'draft')]}">
                         <field name="amount_used"/>
+                        <field name="amount_returned"/>
                         <field name="amount_remaining"/>
                         <field name="disbursement_state" widget="badge"
                             attrs="{'invisible': [('disbursement_state', '=', False)]}"
                             decoration-warning="disbursement_state == 'pending'"
                             decoration-success="disbursement_state == 'paid'"/>
-                        <field name="is_return_requested" invisible="1"/>
                     </group>
                     <group string="เหตุผล" attrs="{'invisible': [('cancel_reason', '=', False)]}">
                         <field name="cancel_reason" readonly="1" nolabel="1"/>
@@ -138,6 +145,28 @@
                                     <field name="date"/>
                                     <field name="amount"/>
                                     <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="รายการคืนเงิน" name="return_lines"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'submitted'])]}">
+                            <field name="return_line_ids">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="amount"/>
+                                    <field name="note"/>
+                                    <field name="payment_id" optional="show"/>
+                                    <field name="state" widget="badge"
+                                        decoration-info="state == 'draft'"
+                                        decoration-warning="state == 'confirmed'"
+                                        decoration-success="state == 'paid'"/>
+                                    <button name="action_confirm"
+                                        string="ยืนยัน"
+                                        type="object"
+                                        icon="fa-check"
+                                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                                        groups="advance_payment.group_advance_payment_manager"/>
                                 </tree>
                             </field>
                         </page>

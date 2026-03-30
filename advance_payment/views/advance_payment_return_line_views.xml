@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_advance_payment_return_line_tree" model="ir.ui.view">
+        <field name="name">advance.payment.return.line.tree</field>
+        <field name="model">advance.payment.return.line</field>
+        <field name="arch" type="xml">
+            <tree string="รายการคืนเงิน">
+                <field name="agreement_id"/>
+                <field name="date"/>
+                <field name="amount"/>
+                <field name="note"/>
+                <field name="payment_id"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'confirmed'"
+                    decoration-success="state == 'paid'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_return_line_form" model="ir.ui.view">
+        <field name="name">advance.payment.return.line.form</field>
+        <field name="model">advance.payment.return.line</field>
+        <field name="arch" type="xml">
+            <form string="รายการคืนเงิน">
+                <header>
+                    <button name="action_confirm"
+                        string="ยืนยัน"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        groups="advance_payment.group_advance_payment_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="รายละเอียด">
+                            <field name="agreement_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="date"/>
+                        </group>
+                        <group string="การชำระเงิน">
+                            <field name="payment_id"
+                                attrs="{'invisible': [('payment_id', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <group string="หมายเหตุ">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                    <group string="เอกสารแนบ">
+                        <field name="attachment_ids" widget="many2many_binary" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_advance_payment_return_line" model="ir.actions.act_window">
+        <field name="name">รายการคืนเงิน</field>
+        <field name="res_model">advance.payment.return.line</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
