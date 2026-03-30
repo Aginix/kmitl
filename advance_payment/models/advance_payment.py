@@ -31,6 +31,7 @@ class AdvancePayment(models.Model):
         "approved": [("readonly", True)],
         "in_progress": [("readonly", True)],
         "done": [("readonly", True)],
+        "cancel": [("readonly", True)],
     }
 
     name = fields.Char(
@@ -47,6 +48,7 @@ class AdvancePayment(models.Model):
             ("approved", "Approved"),
             ("in_progress", "In Progress"),
             ("done", "Done"),
+            ("cancel", "Cancelled"),
         ],
         string="Status",
         required=True,
@@ -159,6 +161,11 @@ class AdvancePayment(models.Model):
     date_submitted = fields.Datetime(string="Date Submitted", readonly=True, copy=False)
     date_approved = fields.Datetime(string="Date Approved", readonly=True, copy=False)
     date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
+
+    cancel_reason = fields.Text(string="Reason", readonly=True, copy=False)
+    is_return_requested = fields.Boolean(
+        string="Return Requested", readonly=True, copy=False, default=False
+    )
 
     attachment_ids = fields.One2many(
         "ir.attachment",
@@ -393,6 +400,76 @@ class AdvancePayment(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+
+    def action_open_cancel_wizard(self):
+        """Open wizard to cancel the agreement (manager only)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยกเลิกสัญญา"),
+            "res_model": "advance.payment.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_agreement_id": self.id,
+                "default_action_type": "cancel",
+            },
+        }
+
+    def action_open_reject_wizard(self):
+        """Open wizard to reject (return to draft) the agreement (manager only)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ส่งกลับแก้ไข"),
+            "res_model": "advance.payment.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_agreement_id": self.id,
+                "default_action_type": "reject",
+            },
+        }
+
+    def _cancel_payments(self):
+        """Reset or cancel linked outbound payments."""
+        for payment in self.payment_ids.filtered(lambda p: p.state != "cancel"):
+            if payment.state == "posted":
+                payment.button_draft()
+            elif payment.state == "submitted":
+                payment.write({"state": "draft"})
+            payment.button_cancel()
+
+    def _action_do_cancel(self, reason):
+        """Cancel the agreement (manager only). Voids linked payments if needed."""
+        self.ensure_one()
+        if self.state not in ("submitted", "approved", "in_progress"):
+            raise UserError(
+                _("Only submitted, approved, or in-progress agreements can be cancelled.")
+            )
+        self._cancel_payments()
+        self.write(
+            {
+                "state": "cancel",
+                "cancel_reason": reason,
+                "disbursement_state": False,
+            }
+        )
+        self.message_post(
+            body=_("Agreement cancelled. Reason: %(reason)s", reason=reason),
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def _action_do_reject(self, reason):
+        """Return the agreement to draft with a reason (manager only)."""
+        self.ensure_one()
+        if self.state != "submitted":
+            raise UserError(_("Only submitted agreements can be rejected."))
+        self.write({"state": "draft", "cancel_reason": reason})
+        self.message_post(
+            body=_("Agreement returned to draft. Reason: %(reason)s", reason=reason),
+            subtype_xmlid="mail.mt_note",
+        )
 
     def action_view_payments(self):
         """Open linked account.payments."""

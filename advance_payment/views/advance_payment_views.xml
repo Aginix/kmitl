@@ -16,7 +16,8 @@
                     decoration-info="state == 'draft'"
                     decoration-warning="state in ('submitted', 'in_progress')"
                     decoration-primary="state == 'approved'"
-                    decoration-success="state == 'done'"/>
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"/>
                 <field name="disbursement_state" optional="hide" widget="badge"
                     decoration-warning="disbursement_state == 'pending'"
                     decoration-success="disbursement_state == 'paid'"/>
@@ -48,14 +49,30 @@
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'submitted')]}"
                         groups="advance_payment.group_advance_payment_manager"/>
+                    <button name="action_open_reject_wizard"
+                        string="ส่งกลับแก้ไข"
+                        type="object"
+                        attrs="{'invisible': [('state', '!=', 'submitted')]}"
+                        groups="advance_payment.group_advance_payment_manager"/>
+                    <button name="action_open_cancel_wizard"
+                        string="ยกเลิกสัญญา"
+                        type="object"
+                        attrs="{'invisible': [('state', 'not in', ['submitted', 'approved', 'in_progress'])]}"
+                        groups="advance_payment.group_advance_payment_manager"/>
                     <button name="action_open_usage_wizard"
                         string="บันทึกการใช้เงิน"
                         type="object"
                         attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
                     <button name="action_open_return_wizard"
-                        string="คืนเงิน"
+                        string="แจ้งคืนเงิน"
                         type="object"
-                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_return_requested', '=', True)]}"/>
+                    <button name="action_close"
+                        string="ปิดสัญญา"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_return_requested', '=', False)]}"
+                        groups="advance_payment.group_advance_payment_manager"/>
                     <field name="state" widget="statusbar"
                         statusbar_visible="draft,submitted,approved,in_progress,done"/>
                 </header>
@@ -108,6 +125,10 @@
                             attrs="{'invisible': [('disbursement_state', '=', False)]}"
                             decoration-warning="disbursement_state == 'pending'"
                             decoration-success="disbursement_state == 'paid'"/>
+                        <field name="is_return_requested" invisible="1"/>
+                    </group>
+                    <group string="เหตุผล" attrs="{'invisible': [('cancel_reason', '=', False)]}">
+                        <field name="cancel_reason" readonly="1" nolabel="1"/>
                     </group>
                     <notebook>
                         <page string="รายการใช้เงิน" name="usage_lines">
@@ -149,6 +170,7 @@
                 <filter string="Approved" name="approved" domain="[('state','=','approved')]"/>
                 <filter string="In Progress" name="in_progress" domain="[('state','=','in_progress')]"/>
                 <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state','=','cancel')]"/>
                 <group expand="0" string="Group By">
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Loan Type" name="group_loan_type" context="{'group_by':'loan_type_id'}"/>

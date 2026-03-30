@@ -10,3 +10,4 @@ access_advance_payment_usage_line_manager,advance.payment.usage.line manager,mod
 access_advance_payment_usage_wizard,advance.payment.usage.wizard,model_advance_payment_usage_wizard,group_advance_payment_user,1,1,1,1
 access_advance_payment_return_wizard,advance.payment.return.wizard,model_advance_payment_return_wizard,group_advance_payment_user,1,1,1,1
 access_advance_payment_exception_confirm,advance.payment.exception.confirm,model_advance_payment_exception_confirm,group_advance_payment_user,1,1,1,1
+access_advance_payment_cancel_wizard,advance.payment.cancel.wizard,model_advance_payment_cancel_wizard,group_advance_payment_manager,1,1,1,1
