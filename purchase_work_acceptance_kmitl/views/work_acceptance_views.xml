@@ -178,7 +178,7 @@
                  <button
                     name="request_validation"
                     string="Request Validation"
-                    attrs="{'invisible': ['|', ('wa_tier_validation', '!=', False), ('state', 'not in', ['draft'])]}"
+                    attrs="{'invisible': ['|', ('wa_tier_validation', '!=', True), ('state', 'not in', ['draft'])]}"
                     type="object"
                     groups="purchase.group_purchase_user"
                 />
