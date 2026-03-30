@@ -974,3 +974,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "ใบขอเบิกเงิน"
 msgstr ""
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__amount_net
+msgid "Net Total"
+msgstr "มูลค่าสุทธิ"

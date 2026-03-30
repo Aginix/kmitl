@@ -131,3 +131,8 @@ msgstr ""
 #, python-format
 msgid "ค่าปรับ"
 msgstr ""
+
+#. module: purchase_work_acceptance_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_disbursement.view_disbursement_request_form_inherit_wa
+msgid "Value Before Tax"
+msgstr "มูลค่าก่อนภาษี"
