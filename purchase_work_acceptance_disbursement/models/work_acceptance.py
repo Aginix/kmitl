@@ -41,6 +41,48 @@ class WorkAcceptance(models.Model):
                     ) % (wa.purchase_id.name, blocking[0].name)
                 )
             
+    def _link_to_disbursement(self, disbursement, analytic_distribution=False):
+        self.ensure_one()
+        self.write({"disbursement_request_id": disbursement.id})
+
+        if self.fines_late > 0:
+            fine_account = self.env["account.account"].search(
+                [
+                    ("code", "=", "4310000003"),
+                    ("company_id", "=", disbursement.company_id.id),
+                ],
+                limit=1,
+            )
+            if not fine_account:
+                raise UserError(
+                    _("Account with code '4310000003' not found. Please check your chart of accounts.")
+                )
+
+            disbursement.write({
+                "line_ids": [
+                    Command.create({
+                        "name": _("ค่าปรับ"),
+                        "quantity": 1,
+                        "price_unit": -self.fines_late,
+                        "account_id": fine_account.id,
+                        "analytic_distribution": analytic_distribution or False,
+                    })
+                ]
+            })
+
+            disbursement.message_post(
+                body=_("Added fine line: <b>%.2f</b> (from WA %s)") % (self.fines_late, self.name),
+                subtype_xmlid="mail.mt_note",
+            )
+
+        dr_link = "/web#id=%d&model=disbursement.request&view_type=form" % disbursement.id
+        self.message_post(
+            body=_(
+                'Disbursement Request <a href="%(link)s">%(name)s</a> created.'
+            ) % {"link": dr_link, "name": disbursement.name},
+            subtype_xmlid="mail.mt_note",
+        )
+            
 class WorkAcceptanceLine(models.Model):
     _inherit = "work.acceptance.line"
 
