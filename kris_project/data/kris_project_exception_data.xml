@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- Confirm-phase rules (state == 'draft')                       -->
+    <!-- ============================================================ -->
+
+    <record id="kris_excep_no_project_value" model="exception.rule">
+        <field name="name">มูลค่างานไม่ถูกต้อง</field>
+        <field name="description">มูลค่างานต้องมากกว่า 0</field>
+        <field name="sequence">10</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.project_value &lt;= 0:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_allocation_mismatch" model="exception.rule">
+        <field name="name">ผลรวมจัดสรรไม่ตรงกับค่าบำรุง</field>
+        <field name="description">ผลรวมจัดสรรรายได้ไม่เท่ากับมูลค่าหักค่าบำรุง</field>
+        <field name="sequence">20</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.warn_allocation_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_installments" model="exception.rule">
+        <field name="name">ไม่มีงวดงาน</field>
+        <field name="description">กรุณากำหนดงวดงานอย่างน้อย 1 รายการ</field>
+        <field name="sequence">30</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.installment_ids:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_installment_total_mismatch" model="exception.rule">
+        <field name="name">ยอดรวมงวดงานไม่ตรง</field>
+        <field name="description">ผลรวมจำนวนเงินงวดงานไม่เท่ากับมูลค่างาน</field>
+        <field name="sequence">40</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.installment_ids and self.warn_installment_total_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_installment_maintenance_mismatch" model="exception.rule">
+        <field name="name">ค่าบำรุงในงวดไม่ตรง</field>
+        <field name="description">ผลรวมค่าบำรุงสถาบันในงวดงานไม่เท่ากับมูลค่าหักค่าบำรุง</field>
+        <field name="sequence">50</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.installment_ids and self.warn_installment_maintenance_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Done-phase rules (state == 'confirmed')                      -->
+    <!-- ============================================================ -->
+
+    <record id="kris_excep_installments_not_received" model="exception.rule">
+        <field name="name">งวดงานยังไม่ครบ</field>
+        <field name="description">ยังมีงวดงานที่ยังไม่ได้รับเงิน</field>
+        <field name="sequence">60</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'confirmed' and self.installment_ids and any(i.state != 'received' for i in self.installment_ids):
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_revenue_remaining" model="exception.rule">
+        <field name="name">ยังเก็บรายได้ไม่ครบ</field>
+        <field name="description">ยังมียอดรายได้คงเหลือที่ยังไม่ได้รับ</field>
+        <field name="sequence">70</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'confirmed' and self.revenue_remaining > 0:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Cancel-phase rule                                            -->
+    <!-- ============================================================ -->
+
+    <record id="kris_excep_cancel_with_receipts" model="exception.rule">
+        <field name="name">มีรายรับอยู่</field>
+        <field name="description">โครงการนี้มีรายรับที่บันทึกไว้แล้ว</field>
+        <field name="sequence">80</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state in ('draft', 'confirmed') and self.receipt_ids:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

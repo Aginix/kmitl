@@ -189,11 +189,10 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    project_duration = fields.Char(
-        string="ระยะเวลาโครงการ",
-        tracking=True,
-        states=READONLY_STATES,
-        help="เช่น '6 เดือน', '1 ปี'",
+    project_duration = fields.Integer(
+        string="ระยะเวลาโครงการ (วัน)",
+        compute="_compute_project_duration",
+        store=True,
     )
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
@@ -354,6 +353,16 @@ class KrisProject(models.Model):
             rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
             rec.revenue_remaining = rec.project_value - rec.total_received_amount
 
+    @api.depends("date_contract_start", "date_contract_end")
+    def _compute_project_duration(self):
+        for rec in self:
+            if rec.date_contract_start and rec.date_contract_end:
+                rec.project_duration = (
+                    rec.date_contract_end - rec.date_contract_start
+                ).days
+            else:
+                rec.project_duration = 0
+
     @api.onchange("project_value", "equipment_cost")
     def _onchange_operating_expense_suggest(self):
         self.operating_expense = self.project_value - self.equipment_cost
@@ -379,30 +388,6 @@ class KrisProject(models.Model):
                     self.env["ir.sequence"].next_by_code("kris.project") or _("New")
                 )
         return super().create(vals_list)
-
-    def action_confirm(self):
-        for rec in self:
-            if rec.state != "draft":
-                raise UserError(_("สามารถยืนยันได้เฉพาะโครงการที่อยู่ในสถานะร่างเท่านั้น"))
-        self.write({"state": "confirmed"})
-
-    def action_done(self):
-        for rec in self:
-            if rec.state != "confirmed":
-                raise UserError(_("สามารถปิดได้เฉพาะโครงการที่ยืนยันแล้วเท่านั้น"))
-        self.write({"state": "done"})
-
-    def action_cancel(self):
-        for rec in self:
-            if rec.state == "done":
-                raise UserError(_("ไม่สามารถยกเลิกโครงการที่เสร็จสิ้นแล้วได้"))
-        self.write({"state": "cancel"})
-
-    def action_draft(self):
-        for rec in self:
-            if rec.state != "cancel":
-                raise UserError(_("สามารถรีเซ็ตได้เฉพาะโครงการที่ถูกยกเลิกเท่านั้น"))
-        self.write({"state": "draft"})
 
     def action_add_receipt(self):
         self.ensure_one()

@@ -65,4 +65,13 @@
         groups="kris_project.group_kris_project_manager"
     />
 
+    <menuitem
+        id="menu_kris_project_exception_rules"
+        name="Exception Rules"
+        parent="menu_kris_project_config"
+        action="action_kris_project_exception_rule"
+        sequence="40"
+        groups="kris_project.group_kris_project_manager"
+    />
+
 </odoo>

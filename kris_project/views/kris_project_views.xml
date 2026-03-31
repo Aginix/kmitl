@@ -89,6 +89,11 @@
                         statusbar_visible="draft,confirmed,done"
                     />
                 </header>
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary', '=', False)]}">
+                    <p><strong>มีข้อควรระวัง:</strong></p>
+                    <field name="exceptions_summary"/>
+                </div>
                 <sheet>
                     <field name="warn_allocation_mismatch" invisible="1"/>
                     <field name="warn_installment_maintenance_mismatch" invisible="1"/>
@@ -157,10 +162,10 @@
                                 name="date_contract_end"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
-                            <field
-                                name="project_duration"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
-                            />
+                            <label for="project_duration"/>
+                            <div>
+                                <field name="project_duration" class="oe_inline"/> วัน
+                            </div>
                             <field
                                 name="account_fiscal_year_id"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
@@ -425,6 +430,15 @@
     <!-- ============================================================ -->
     <!-- ACTION                                                       -->
     <!-- ============================================================ -->
+
+    <record id="action_kris_project_exception_rule" model="ir.actions.act_window">
+        <field name="name">Exception Rules</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree"/>
+        <field name="domain">[('model', '=', 'kris.project')]</field>
+        <field name="context">{'active_test': False, 'default_model': 'kris.project'}</field>
+    </record>
 
     <record id="action_kris_project" model="ir.actions.act_window">
         <field name="name">โครงการ KRIS</field>
