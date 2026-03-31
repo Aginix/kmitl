@@ -10,9 +10,9 @@ class AccountMove(models.Model):
         res = super().write(vals)
         if "state" in vals or "payment_state" in vals:
             pipeline_states = (
-                "waiting_bill_post",
+                "bill_draft",
                 "bill_posted",
-                "waiting_payment_post",
+                "payment_draft",
                 "payment_posted",
             )
             disbursements = self.env["disbursement.request"].search(

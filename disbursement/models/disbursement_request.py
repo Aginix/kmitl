@@ -26,20 +26,20 @@ class DisbursementRequest(models.Model):
     _commitment_account_id_field = "budget_account_id"
 
     PIPELINE_STATES = (
-        "waiting_bill_post",
+        "bill_draft",
         "bill_posted",
-        "waiting_payment_post",
+        "payment_draft",
         "payment_posted",
     )
 
     READONLY_STATES = {
         "submitted": [("readonly", True)],
-        "sent": [("readonly", True)],
-        "validated": [("readonly", True)],
+        "signed": [("readonly", True)],
+        "verified": [("readonly", True)],
         "approved": [("readonly", True)],
-        "waiting_bill_post": [("readonly", True)],
+        "bill_draft": [("readonly", True)],
         "bill_posted": [("readonly", True)],
-        "waiting_payment_post": [("readonly", True)],
+        "payment_draft": [("readonly", True)],
         "payment_posted": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
@@ -74,7 +74,7 @@ class DisbursementRequest(models.Model):
         store=True,
     )
     reference_model_name = fields.Char(
-        string="ประเภทเอกสารอ้างอิง",
+        string="Reference Document Type",
         compute="_compute_reference_fields",
         store=True,
     )
@@ -242,12 +242,12 @@ class DisbursementRequest(models.Model):
         selection=[
             ("draft", "Draft"),
             ("submitted", "Submitted"),
-            ("sent", "Sent"),
-            ("validated", "Validated"),
+            ("signed", "Signed"),
+            ("verified", "Verified"),
             ("approved", "Approved"),
-            ("waiting_bill_post", "Waiting Bill Post"),
+            ("bill_draft", "Bill Draft"),
             ("bill_posted", "Bill Posted"),
-            ("waiting_payment_post", "Waiting Payment Post"),
+            ("payment_draft", "Payment Draft"),
             ("payment_posted", "Payment Posted"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
@@ -287,7 +287,7 @@ class DisbursementRequest(models.Model):
     # Analytic dimension fields
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กิจกรรม",
+        string="Activity",
         compute="_compute_analytic_id",
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
@@ -298,7 +298,7 @@ class DisbursementRequest(models.Model):
 
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="ส่วนงาน",
+        string="Department",
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
@@ -309,7 +309,7 @@ class DisbursementRequest(models.Model):
 
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กองทุน",
+        string="Fund",
         compute="_compute_analytic_id",
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
@@ -320,7 +320,7 @@ class DisbursementRequest(models.Model):
 
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="แหล่งเงิน",
+        string="Source",
         compute="_compute_analytic_id",
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
@@ -595,11 +595,11 @@ class DisbursementRequest(models.Model):
             ):
                 rec.state = "payment_posted"
             elif rec._get_pipeline_payments():
-                rec.state = "waiting_payment_post"
+                rec.state = "payment_draft"
             elif bill.state == "posted":
                 rec.state = "bill_posted"
             else:
-                rec.state = "waiting_bill_post"
+                rec.state = "bill_draft"
 
     def _get_pipeline_payments(self):
         """Return payment records associated with this DR's bill."""
@@ -773,7 +773,7 @@ class DisbursementRequest(models.Model):
 
         # Link the bill to this request and advance state
         self.bill_id = bill.id
-        self.state = "waiting_bill_post"
+        self.state = "bill_draft"
 
         # Log in Disbursement chatter
         bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
@@ -802,23 +802,23 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state != "submitted":
                 raise UserError(_("Only submitted requests can be sent."))
-            record.state = "sent"
+            record.state = "signed"
         return True
 
     def action_validate(self):
         """Inspector validates the request"""
         for record in self:
-            if record.state != "sent":
-                raise UserError(_("Only sent requests can be validated."))
-            record.state = "validated"
+            if record.state != "signed":
+                raise UserError(_("Only signed requests can be validated."))
+            record.state = "verified"
         return True
 
     def action_approve(self):
         """Director approves and commits budget"""
         for record in self:
-            if record.state != "validated":
+            if record.state != "verified":
                 raise UserError(
-                    _("Only validated requests can be approved.")
+                    _("Only verified requests can be approved.")
                 )
             record._action_approve_budget()
             record.state = "approved"
@@ -914,7 +914,7 @@ class DisbursementRequest(models.Model):
     def action_draft(self):
         """Reset to draft"""
         for record in self:
-            if record.state not in ("submitted", "sent", "cancel"):
+            if record.state not in ("submitted", "signed", "cancel"):
                 raise UserError(
                     _("Only submitted, sent, or cancelled requests can be reset to draft.")
                 )

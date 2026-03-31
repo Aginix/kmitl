@@ -23,9 +23,9 @@ class AccountPayment(models.Model):
             bill_ids.update(payment.reconciled_bill_ids.ids)
         if bill_ids:
             pipeline_states = (
-                "waiting_bill_post",
+                "bill_draft",
                 "bill_posted",
-                "waiting_payment_post",
+                "payment_draft",
                 "payment_posted",
             )
             disbursements = self.env["disbursement.request"].search(
