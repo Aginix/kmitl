@@ -416,7 +416,7 @@
         <field name="name">Incoming Documents</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">['|', ('routing_line_ids.user_id', '=', uid), ('recipient_ids.user_id', '=', uid)]</field>
+        <field name="domain">['|', '|', ('routing_line_ids.user_id', '=', uid), ('recipient_ids.user_id', '=', uid), ('inbox_ids.user_id', '=', uid)]</field>
         <field name="context">{'create': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_incoming')}),

@@ -228,6 +228,11 @@ class SarabunDocument(models.Model):
         string="Recipients",
         readonly=True,
     )
+    inbox_ids = fields.One2many(
+        comodel_name="sarabun.inbox",
+        inverse_name="document_id",
+        string="Inbox Entries",
+    )
 
     # === Computed Routing Status ===
     routing_progress = fields.Float(
