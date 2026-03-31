@@ -16,12 +16,7 @@ class StockRequest(models.Model):
     _tier_validation_manual_config = False
 
     is_stock_request = fields.Boolean(compute="_compute_is_stock_request")
-    show_request = fields.Boolean(
-        compute='_compute_show_buttons'
-    )
-    show_restart = fields.Boolean(
-        compute='_compute_show_buttons'
-    )
+
     can_request = fields.Boolean(compute="_compute_can_request")
 
     @api.model
@@ -62,19 +57,3 @@ class StockRequest(models.Model):
                 rec.user_id.id == current_user.id
             )
             rec.can_request = own_by_me or is_admin
-    
-    @api.depends('need_validation', 'validation_status', 'rejected', 'state', 'can_request')
-    def _compute_show_buttons(self):
-        for record in self:
-            record.show_request = (
-                record.need_validation or
-                record.validation_status == 'pending' or
-                record.rejected or
-                record.state != 'submitted' or
-                not record.can_request
-            )
-            record.show_restart = (
-                not record.need_validation or
-                record.validation_status != 'pending' or
-                not record.can_request
-            )

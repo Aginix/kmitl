@@ -11,5 +11,6 @@ def post_init_hook(cr, registry):
         warehouse.write({
             'name': 'KMITL',
             'operating_unit_id': False,
+            'code': 'KMITL',
         })
         _logger.warning("Updated warehouse %s -> KMITL, OU cleared", warehouse.id)
