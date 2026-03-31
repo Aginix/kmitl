@@ -259,6 +259,9 @@ class SarabunDocument(models.Model):
     current_user_can_approve = fields.Boolean(
         compute="_compute_current_user_recipient",
     )
+    is_current_user_sender = fields.Boolean(
+        compute="_compute_is_current_user_sender",
+    )
     report_preview_url = fields.Char(
         compute="_compute_report_preview_url",
     )
@@ -409,6 +412,13 @@ class SarabunDocument(models.Model):
             )
             record.current_user_can_approve = (
                 bool(recipient) and recipient.routing_type == "approve"
+            )
+
+    @api.depends("sender_user_id")
+    def _compute_is_current_user_sender(self):
+        for record in self:
+            record.is_current_user_sender = (
+                record.sender_user_id == self.env.user
             )
 
     def _compute_current_user_inbox_is_read(self):

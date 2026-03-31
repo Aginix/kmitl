@@ -65,6 +65,7 @@
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
             <form string="Document">
+                <field name="is_current_user_sender" invisible="1"/>
                 <header>
                     <button name="action_send" string="Send" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <!-- Action buttons for recipient -->
@@ -77,7 +78,7 @@
                     <button name="action_mark_inbox_read" string="Mark as Read" type="object" class="btn-secondary" icon="fa-envelope-open" attrs="{'invisible': ['|', ('current_user_inbox_is_read', '=', True), ('state', '!=', 'sent')]}"/>
                     <button name="action_mark_inbox_unread" string="Mark as Unread" type="object" class="btn-secondary" icon="fa-envelope" attrs="{'invisible': ['|', ('current_user_inbox_is_read', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_resubmit" string="Edit &amp; Resubmit" type="object" class="btn-warning" icon="fa-refresh" attrs="{'invisible': ['|', ('state', '!=', 'rejected'), ('sender_user_id', '!=', uid)]}"/>
+                    <button name="action_resubmit" string="Edit &amp; Resubmit" type="object" class="btn-warning" icon="fa-refresh" attrs="{'invisible': ['|', ('state', '!=', 'rejected'), ('is_current_user_sender', '=', False)]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed,rejected"/>
                 </header>
                 <sheet>
