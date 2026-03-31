@@ -11,3 +11,4 @@ access_advance_payment_exception_confirm,advance.payment.exception.confirm,model
 access_advance_payment_return_line_user,advance.payment.return.line user,model_advance_payment_return_line,group_advance_payment_user,1,0,0,0
 access_advance_payment_return_line_manager,advance.payment.return.line manager,model_advance_payment_return_line,group_advance_payment_manager,1,1,1,1
 access_advance_payment_cancel_wizard,advance.payment.cancel.wizard,model_advance_payment_cancel_wizard,group_advance_payment_manager,1,1,1,1
+access_advance_payment_close_confirm,advance.payment.close.confirm,model_advance_payment_close_confirm,group_advance_payment_manager,1,1,1,1

@@ -176,7 +176,7 @@ class TestAdvancePayment(TransactionCase):
         agreement = self._make_agreement()
         agreement.write({"state": "in_progress"})
         self.assertFalse(agreement.date_closed)
-        agreement.action_close()
+        agreement._do_close()
         self.assertTrue(agreement.date_closed)
         self.assertEqual(agreement.state, "done")
 
@@ -189,13 +189,53 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             agreement.action_close()
 
-    def test_close_allowed_without_full_return(self):
-        """Manager can close even when amount_remaining > 0 (Q7 decision)."""
+    def test_close_shows_wizard_when_remaining(self):
+        """action_close returns wizard when amount_remaining > 0."""
         agreement = self._make_agreement(loan_amount=10000)
         agreement.write({"state": "in_progress"})
+        result = agreement.action_close()
+        self.assertEqual(result["res_model"], "advance.payment.close.confirm")
+        self.assertEqual(agreement.state, "in_progress")
+
+    def test_close_direct_when_no_remaining(self):
+        """action_close closes directly when amount_remaining == 0."""
+        agreement = self._make_agreement(loan_amount=1000)
+        agreement.write({"state": "in_progress"})
+        # Use up all money via usage + return
+        self.env["advance.payment.usage.line"].create(
+            {"agreement_id": agreement.id, "amount": 500, "date": "2026-01-01"}
+        )
+        self.env["advance.payment.return.line"].create(
+            {"agreement_id": agreement.id, "amount": 500, "state": "confirmed"}
+        )
+        agreement.invalidate_recordset()
         agreement.action_close()
         self.assertEqual(agreement.state, "done")
-        self.assertEqual(agreement.amount_remaining, 10000)
+
+    def test_close_wizard_confirms(self):
+        """Close confirmation wizard actually closes the agreement."""
+        agreement = self._make_agreement(loan_amount=10000)
+        agreement.write({"state": "in_progress"})
+        wizard = self.env["advance.payment.close.confirm"].create(
+            {"agreement_id": agreement.id}
+        )
+        wizard.action_confirm()
+        self.assertEqual(agreement.state, "done")
+
+    def test_reopen_done_to_in_progress(self):
+        """ERP admin can reopen a closed agreement."""
+        agreement = self._make_agreement()
+        agreement.write({"state": "in_progress"})
+        agreement._do_close()
+        self.assertEqual(agreement.state, "done")
+        agreement.action_reopen()
+        self.assertEqual(agreement.state, "in_progress")
+        self.assertFalse(agreement.date_closed)
+
+    def test_reopen_only_from_done(self):
+        agreement = self._make_agreement()
+        with self.assertRaises(UserError):
+            agreement.action_reopen()
 
     # ------------------------------------------------------------------ #
     # Uniqueness constraint (QW5)                                          #

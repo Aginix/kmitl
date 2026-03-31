@@ -24,6 +24,7 @@
         "wizards/advance_payment_usage_wizard_views.xml",
         "wizards/advance_payment_return_wizard_views.xml",
         "wizards/advance_payment_cancel_wizard_views.xml",
+        "wizards/advance_payment_close_confirm_views.xml",
         "views/advance_payment_loan_type_views.xml",
         "views/advance_payment_usage_line_views.xml",
         "views/advance_payment_return_line_views.xml",

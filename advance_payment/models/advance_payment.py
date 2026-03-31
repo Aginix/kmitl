@@ -428,7 +428,23 @@ class AdvancePayment(models.Model):
             )
 
     def action_close(self):
-        """Close the agreement (ปิดสัญญา)."""
+        """Close the agreement, or show confirmation wizard if money remains."""
+        self.ensure_one()
+        if self.state != "in_progress":
+            raise UserError(_("Only in-progress agreements can be closed."))
+        if self.amount_remaining > 0:
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("ยืนยันการปิดสัญญา"),
+                "res_model": "advance.payment.close.confirm",
+                "view_mode": "form",
+                "target": "new",
+                "context": {"default_agreement_id": self.id},
+            }
+        self._do_close()
+
+    def _do_close(self):
+        """Actually close the agreement (ปิดสัญญา)."""
         for rec in self:
             if rec.state != "in_progress":
                 raise UserError(_("Only in-progress agreements can be closed."))
@@ -443,6 +459,18 @@ class AdvancePayment(models.Model):
                     currency=rec.currency_id.name,
                     remaining=rec.amount_remaining,
                 ),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def action_reopen(self):
+        """Reopen a closed agreement back to in_progress (ERP admin only)."""
+        for rec in self:
+            if rec.state != "done":
+                raise UserError(_("Only closed agreements can be reopened."))
+            rec.date_closed = False
+            rec.state = "in_progress"
+            rec.message_post(
+                body=_("Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
             )
 
