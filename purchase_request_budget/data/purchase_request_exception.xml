@@ -12,4 +12,16 @@ if self.state == 'to_verify':
 ]]>
         </field>
     </record>
+
+    <record id="pr_exception_5_digit_budget_code" model="exception.rule">
+        <field name="name">ไม่สามารถเลือกรหัสงบประมาณที่มี 5 หลักได้ กรุณาเลือกรหัสงบประมาณย่อย</field>
+        <field name="description">รหัสงบประมาณ</field>
+        <field name="model">purchase.request</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"><![CDATA[
+if self._has_5_digit_budget_code():
+    failed = True
+]]>
+        </field>
+    </record>
 </odoo>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="budget.BudgetOverviewWidget" owl="1">
+        <div class="budget_overview_widget">
+            <!-- Loading -->
+            <div t-if="state.loading" class="text-center text-muted py-2">
+                <i class="fa fa-spinner fa-spin"/> กำลังโหลด...
+            </div>
+
+            <!-- Error -->
+            <div t-elif="state.error" class="alert alert-warning py-2 px-3 mb-0 mt-2">
+                <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
+            </div>
+
+            <!-- Budget Overview Card -->
+            <div t-elif="hasData" class="card mt-2 mb-2">
+                <div class="card-header py-2 px-3">
+                    <strong>ภาพรวมงบประมาณ</strong>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted ps-3">เงินจัดสรร</td>
+                                <td class="text-end pe-3">
+                                    <t t-esc="formatCurrency(state.data.appropriated_amount)"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted ps-3">ผูกพัน/กันไว้</td>
+                                <td class="text-end pe-3">
+                                    <t t-esc="formatCurrency(state.data.reserved_amount)"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted ps-3">เบิกจ่ายแล้ว</td>
+                                <td class="text-end pe-3">
+                                    <t t-esc="formatCurrency(state.data.consumed_amount)"/>
+                                </td>
+                            </tr>
+                            <tr t-att-class="state.data.is_over_budget ? 'table-danger' : 'table-success'">
+                                <td class="ps-3 fw-bold">คงเหลือ</td>
+                                <td class="text-end pe-3 fw-bold">
+                                    <t t-esc="formatCurrency(state.data.available_amount)"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Utilization Bar -->
+                    <div class="px-3 pb-2 pt-1">
+                        <div class="progress" style="height: 18px;">
+                            <div
+                                t-att-class="'progress-bar ' + utilizationBarClass"
+                                role="progressbar"
+                                t-att-style="'width: ' + utilizationPercent + '%'"
+                                t-att-aria-valuenow="utilizationPercent"
+                                aria-valuemin="0"
+                                aria-valuemax="100">
+                                <small t-esc="utilizationPercent.toFixed(1) + '%'"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Over-budget Warning -->
+                    <div t-if="state.data.is_over_budget" class="alert alert-danger py-1 px-3 mb-0 rounded-0 border-start-0 border-end-0 border-bottom-0">
+                        <i class="fa fa-exclamation-circle"/>
+                        งบไม่เพียงพอ (ขาด <t t-esc="formatCurrency(state.data.shortage_amount)"/> บาท)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

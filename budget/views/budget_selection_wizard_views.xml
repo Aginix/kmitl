@@ -17,6 +17,7 @@
                     <field name="budget_account_id"
                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                 </group>
+                <widget name="budget_overview"/>
                 <footer>
                     <button string="บันทึก" name="action_apply" type="object" class="btn-primary"/>
                     <button string="ยกเลิก" special="cancel"/>

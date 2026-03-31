@@ -607,3 +607,25 @@ class BudgetController(models.AbstractModel):
             analytic_data.get("fund_analytic_id"),
             analytic_data.get("source_analytic_id"),
         )
+
+    @api.model
+    def get_budget_status_for_widget(
+        self, analytic_data, fiscal_year_id=None, company_id=None
+    ):
+        """Get budget status for the OWL widget, with fiscal year auto-detection."""
+        if not company_id:
+            company_id = self.env.company.id
+        if not fiscal_year_id:
+            today = fields.Date.today()
+            fiscal_year = self.env["account.fiscal.year"].search(
+                [
+                    ("date_from", "<=", today),
+                    ("date_to", ">=", today),
+                    ("company_id", "=", company_id),
+                ],
+                limit=1,
+            )
+            fiscal_year_id = fiscal_year.id if fiscal_year else False
+        if not fiscal_year_id:
+            return {"error": "no_fiscal_year"}
+        return self.get_budget_status(analytic_data, fiscal_year_id, company_id)

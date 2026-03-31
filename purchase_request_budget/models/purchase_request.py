@@ -9,7 +9,13 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequest(models.Model):
     _name = "purchase.request"
-    _inherit = ["purchase.request", "budget.commitment.mixin", "analytic.mixin", "budget.selection.mixin"]
+    _inherit = [
+        "purchase.request",
+        "budget.commitment.mixin",
+        "analytic.mixin",
+        "budget.selection.mixin",
+        "budget.exception.mixin",
+    ]
 
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
