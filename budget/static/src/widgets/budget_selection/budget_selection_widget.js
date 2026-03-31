@@ -3,6 +3,11 @@
 import { Component } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import {
+    getMany2oneId,
+    getMany2oneDisplay,
+    BUDGET_DIMENSION_FIELDS,
+} from "@budget/utils/budget_utils";
 
 export class BudgetSelectionWidget extends Component {
     setup() {
@@ -13,29 +18,24 @@ export class BudgetSelectionWidget extends Component {
         return this.props.record;
     }
 
-    _getDisplayName(fieldName) {
-        const val = this.record.data[fieldName];
-        return val ? (val[1] || val.display_name || "") : "";
-    }
-
     get budgetAccountName() {
-        return this._getDisplayName("budget_account_id");
+        return getMany2oneDisplay(this.record.data, "budget_account_id");
     }
 
     get activityName() {
-        return this._getDisplayName("activity_analytic_id");
+        return getMany2oneDisplay(this.record.data, "activity_analytic_id");
     }
 
     get departmentName() {
-        return this._getDisplayName("department_analytic_id");
+        return getMany2oneDisplay(this.record.data, "department_analytic_id");
     }
 
     get fundName() {
-        return this._getDisplayName("fund_analytic_id");
+        return getMany2oneDisplay(this.record.data, "fund_analytic_id");
     }
 
     get sourceName() {
-        return this._getDisplayName("source_analytic_id");
+        return getMany2oneDisplay(this.record.data, "source_analytic_id");
     }
 
     get hasBudgetData() {
@@ -43,26 +43,20 @@ export class BudgetSelectionWidget extends Component {
     }
 
     get isEditable() {
+        const field = this.record.data["is_budget_editable"];
+        if (field !== undefined) return !!field;
         return this.record.mode === "edit";
     }
 
-    _getDefaultValue(fieldName) {
-        const val = this.record.data[fieldName];
-        if (!val) return false;
-        // Many2one fields in record.data are [id, name] or {id, display_name}
-        return val[0] || val.id || false;
-    }
-
     async onSelectBudget() {
+        const data = this.record.data;
         const context = {
             default_res_model: this.record.resModel,
             default_res_id: this.record.resId,
-            default_budget_account_id: this._getDefaultValue("budget_account_id"),
-            default_activity_analytic_id: this._getDefaultValue("activity_analytic_id"),
-            default_department_analytic_id: this._getDefaultValue("department_analytic_id"),
-            default_fund_analytic_id: this._getDefaultValue("fund_analytic_id"),
-            default_source_analytic_id: this._getDefaultValue("source_analytic_id"),
         };
+        for (const fieldName of BUDGET_DIMENSION_FIELDS) {
+            context[`default_${fieldName}`] = getMany2oneId(data, fieldName);
+        }
 
         this.action.doAction(
             {

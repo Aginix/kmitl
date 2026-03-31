@@ -60,6 +60,22 @@ class BudgetController(models.AbstractModel):
         return max(0.0, available)
 
     @api.model
+    def _resolve_fiscal_year_id(self, fiscal_year_id, company_id):
+        """Auto-detect current fiscal year if not provided."""
+        if fiscal_year_id:
+            return fiscal_year_id
+        today = fields.Date.today()
+        fiscal_year = self.env["account.fiscal.year"].search(
+            [
+                ("date_from", "<=", today),
+                ("date_to", ">=", today),
+                ("company_id", "=", company_id),
+            ],
+            limit=1,
+        )
+        return fiscal_year.id if fiscal_year else False
+
+    @api.model
     def get_budget_breakdown(
         self, analytic_data, fiscal_year_id=None, company_id=None
     ):
@@ -67,17 +83,7 @@ class BudgetController(models.AbstractModel):
         if not company_id:
             company_id = self.env.company.id
 
-        if not fiscal_year_id:
-            today = fields.Date.today()
-            fiscal_year = self.env["account.fiscal.year"].search(
-                [
-                    ("date_from", "<=", today),
-                    ("date_to", ">=", today),
-                    ("company_id", "=", company_id),
-                ],
-                limit=1,
-            )
-            fiscal_year_id = fiscal_year.id if fiscal_year else False
+        fiscal_year_id = self._resolve_fiscal_year_id(fiscal_year_id, company_id)
 
         if not fiscal_year_id:
             return {
@@ -615,17 +621,7 @@ class BudgetController(models.AbstractModel):
         """Get budget status for the OWL widget, with fiscal year auto-detection."""
         if not company_id:
             company_id = self.env.company.id
-        if not fiscal_year_id:
-            today = fields.Date.today()
-            fiscal_year = self.env["account.fiscal.year"].search(
-                [
-                    ("date_from", "<=", today),
-                    ("date_to", ">=", today),
-                    ("company_id", "=", company_id),
-                ],
-                limit=1,
-            )
-            fiscal_year_id = fiscal_year.id if fiscal_year else False
+        fiscal_year_id = self._resolve_fiscal_year_id(fiscal_year_id, company_id)
         if not fiscal_year_id:
             return {"error": "no_fiscal_year"}
         return self.get_budget_status(analytic_data, fiscal_year_id, company_id)
