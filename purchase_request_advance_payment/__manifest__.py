@@ -11,6 +11,7 @@
     ],
     "data": [
         "views/purchase_request_views.xml",
+        "views/advance_payment_views.xml",
     ],
     "installable": True,
     "auto_install": False,
