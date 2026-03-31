@@ -5,7 +5,7 @@
     <record id="view_stock_request_form" model="ir.ui.view">
         <field name="name">view.stock.request.form</field>
         <field name="model">stock.request</field>
-        <field name="inherit_id" ref="stock_request_aginix.view_stock_request_form"/>
+        <field name="inherit_id" ref="stock_request_kmitl.view_stock_request_form"/>
         <field name="arch" type="xml">
             <button name="action_reset" position="after">
               <field name="rejected" invisible="1" />
@@ -45,7 +45,7 @@
                 <button name="action_approved" 
                         string="Approved" 
                         type="object" 
-                        groups="stock_request_aginix.group_stock_request_approver"
+                        groups="stock_request_kmitl.group_stock_request_approver"
                         attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', '!=', 'validated')]}"/>
             </xpath>
             <xpath expr="//button[@name='action_cancel']" position="replace">
@@ -54,7 +54,7 @@
                     string="Cancel"
                     type="object"
                     states="submitted"
-                    groups="stock_request_aginix.group_stock_request_approver"
+                    groups="stock_request_kmitl.group_stock_request_approver"
                     attrs="{'invisible': [('state', '!=', 'submitted'), ('validation_status', '!=', 'rejected')]}"
                 />
             </xpath>
