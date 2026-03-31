@@ -16,6 +16,7 @@ class PurchaseOrder(models.Model):
             order.pending_wa_count = self.env["work.acceptance"].search_count([
                 ("purchase_id", "=", order.id),
                 ("is_disbursed", "=", False),
+                ("state", "=", "accept"),
             ])
 
     def _get_pending_wa(self):

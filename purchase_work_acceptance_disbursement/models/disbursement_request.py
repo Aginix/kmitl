@@ -46,6 +46,7 @@ class DisbursementRequest(models.Model):
             result = rec.amount_untaxed - rec.fines_late
             rec.fines_total = max(result, 0)
 
+    @api.depends("wa_ids")
     def _compute_wa_count(self):
         for rec in self:
             rec.wa_count = len(rec.wa_ids)

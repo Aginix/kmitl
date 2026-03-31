@@ -19,7 +19,7 @@ msgstr ""
 
 #. module: purchase_work_acceptance_disbursement
 #. odoo-python
-#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#: code:addons/purchase_work_acceptance_disbursement/models/purchase_order.py:0
 #, python-format
 msgid ""
 "Account with code '4310000003' not found. Please check your chart of "
@@ -28,7 +28,7 @@ msgstr ""
 
 #. module: purchase_work_acceptance_disbursement
 #. odoo-python
-#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#: code:addons/purchase_work_acceptance_disbursement/models/purchase_order.py:0
 #, python-format
 msgid "Added fine line: <b>%.2f</b> (from WA %s)"
 msgstr ""
@@ -55,7 +55,7 @@ msgstr "ใบขอเบิก"
 
 #. module: purchase_work_acceptance_disbursement
 #. odoo-python
-#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#: code:addons/purchase_work_acceptance_disbursement/models/purchase_order.py:0
 #, python-format
 msgid "Disbursement Request <a href=\"%(link)s\">%(name)s</a> created."
 msgstr ""
@@ -79,7 +79,7 @@ msgstr ""
 
 #. module: purchase_work_acceptance_disbursement
 #. odoo-python
-#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#: code:addons/purchase_work_acceptance_disbursement/models/purchase_order.py:0
 #, python-format
 msgid "No accepted Work Acceptance pending disbursement for PO '%s'."
 msgstr ""
@@ -127,7 +127,7 @@ msgstr ""
 
 #. module: purchase_work_acceptance_disbursement
 #. odoo-python
-#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#: code:addons/purchase_work_acceptance_disbursement/models/purchase_order.py:0
 #, python-format
 msgid "ค่าปรับ"
 msgstr ""
