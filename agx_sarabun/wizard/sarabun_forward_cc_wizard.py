@@ -83,4 +83,19 @@ class SarabunForwardCCWizard(models.TransientModel):
             recipient = Recipient.create(vals)
             recipient._send_notification()
 
+        # Audit trail
+        if self.recipient_type == "user":
+            target_names = ", ".join(self.user_ids.mapped("name"))
+        elif self.recipient_type == "department":
+            target_names = self.department_id.name
+        else:
+            target_names = self.role_id.name
+        body = _("%s forwarded document (CC) to: %s") % (
+            self.env.user.name,
+            target_names,
+        )
+        if self.comment:
+            body += "<br/>" + _("Comment: %s") % self.comment
+        self.document_id.message_post(body=body, message_type="notification")
+
         return {"type": "ir.actions.act_window_close"}

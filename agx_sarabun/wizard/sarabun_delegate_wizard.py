@@ -45,9 +45,18 @@ class SarabunDelegateWizard(models.TransientModel):
             "agx_sarabun.email_template_sarabun_delegated",
         )
 
+        routing_type_label = dict(
+            original._fields["routing_type"].selection
+        ).get(original.routing_type, "")
+        body = _("%s delegated %s action to %s") % (
+            self.env.user.name,
+            routing_type_label,
+            self.delegate_to_user_id.name,
+        )
+        if self.comment:
+            body += "<br/>" + _("Comment: %s") % self.comment
         original.document_id.message_post(
-            body=_("%s delegated action to %s")
-            % (self.env.user.name, self.delegate_to_user_id.name),
+            body=body,
             message_type="notification",
         )
         return {"type": "ir.actions.act_window_close"}

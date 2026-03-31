@@ -477,7 +477,10 @@ class SarabunDocumentRecipient(models.Model):
                 ("user_id", "=", user.id),
                 ("document_id", "=", self.document_id.id),
             ], limit=1)
-            if not existing:
+            if existing:
+                if existing.is_read:
+                    existing.write({"is_read": False})
+            else:
                 Inbox.create({
                     "user_id": user.id,
                     "document_id": self.document_id.id,

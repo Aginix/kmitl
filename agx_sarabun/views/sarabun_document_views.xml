@@ -175,6 +175,27 @@
                             <group attrs="{'invisible': [('state', 'not in', ['sent', 'completed'])]}">
                                 <field name="routing_progress" widget="progressbar"/>
                             </group>
+                            <!-- CC & Delegated Recipients -->
+                            <group string="CC &amp; Delegated Recipients"
+                                   attrs="{'invisible': [('state', 'not in', ['sent', 'completed'])]}">
+                                <field name="recipient_ids" nolabel="1"
+                                       domain="['|', ('is_cc', '=', True), ('is_delegated', '=', True)]"
+                                       readonly="1">
+                                    <tree decoration-info="is_cc == True"
+                                          decoration-warning="is_delegated == True">
+                                        <field name="is_cc" invisible="1"/>
+                                        <field name="is_delegated" invisible="1"/>
+                                        <field name="recipient_name"/>
+                                        <field name="routing_type"/>
+                                        <field name="forwarded_by_user_id" string="Forwarded By"/>
+                                        <field name="delegated_by_user_id" string="Delegated By"/>
+                                        <field name="state" widget="badge"
+                                               decoration-info="state == 'new'"
+                                               decoration-success="state in ('acknowledged', 'approved')"/>
+                                        <field name="create_date" string="Date"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
 
                         <page string="References" name="references">
@@ -395,7 +416,7 @@
         <field name="name">Incoming Documents</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('routing_line_ids.user_id', '=', uid)]</field>
+        <field name="domain">['|', ('routing_line_ids.user_id', '=', uid), ('recipient_ids.user_id', '=', uid)]</field>
         <field name="context">{'create': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_incoming')}),

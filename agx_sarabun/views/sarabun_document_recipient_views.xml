@@ -15,8 +15,10 @@
                 <field name="read_date" optional="show"/>
                 <field name="signed_as_text" optional="show"/>
                 <field name="actioned_date" optional="hide"/>
-                <field name="is_cc" invisible="1"/>
-                <field name="is_delegated" invisible="1"/>
+                <field name="is_cc" widget="boolean_toggle" readonly="1" optional="show" string="CC"/>
+                <field name="is_delegated" widget="boolean_toggle" readonly="1" optional="show" string="Delegated"/>
+                <field name="forwarded_by_user_id" optional="hide" string="Forwarded By"/>
+                <field name="delegated_by_user_id" optional="hide" string="Delegated By"/>
                 <field name="needs_dispatch" invisible="1"/>
                 <button name="action_dispatch" string="Dispatch" type="object" icon="fa-paper-plane" attrs="{'invisible': [('needs_dispatch', '!=', True)]}"/>
                 <button name="action_acknowledge" string="Acknowledge" type="object" icon="fa-check" attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'new'), ('routing_type', '=', 'approve'), ('is_cc', '=', True), ('needs_dispatch', '=', True)]}"/>
@@ -62,6 +64,25 @@
                     </group>
                     <group attrs="{'invisible': [('comment', '=', False)]}">
                         <field name="comment" readonly="1"/>
+                    </group>
+                    <group string="Forward (CC) Information"
+                           attrs="{'invisible': [('is_cc', '=', False)]}">
+                        <field name="forwarded_by_user_id" readonly="1"/>
+                        <field name="forward_comment" readonly="1"
+                               attrs="{'invisible': [('forward_comment', '=', False)]}"/>
+                    </group>
+                    <group string="Delegation Information"
+                           attrs="{'invisible': [('is_delegated', '=', False)]}">
+                        <field name="is_delegated" invisible="1"/>
+                        <field name="delegated_by_user_id" readonly="1"/>
+                        <field name="delegated_by_recipient_id" readonly="1"/>
+                    </group>
+                    <group string="Dispatch Information"
+                           attrs="{'invisible': [('dispatched_by_user_id', '=', False)]}">
+                        <field name="dispatched_by_user_id" readonly="1"/>
+                        <field name="dispatched_date" readonly="1"/>
+                        <field name="dispatch_note" readonly="1"
+                               attrs="{'invisible': [('dispatch_note', '=', False)]}"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">

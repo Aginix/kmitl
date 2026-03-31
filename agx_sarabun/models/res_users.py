@@ -26,7 +26,7 @@ class ResUsers(models.Model):
         entries = Inbox.search([
             ("user_id", "=", self.env.user.id),
             ("is_read", "=", False),
-            ("document_id.state", "=", "sent"),
+            ("document_id.state", "in", ["sent", "completed"]),
         ], order="create_date desc")
 
         # Deduplicate by document
