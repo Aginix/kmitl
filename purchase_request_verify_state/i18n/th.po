@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-17 10:13+0000\n"
-"PO-Revision-Date: 2026-02-17 17:14+0700\n"
+"POT-Creation-Date: 2026-03-31 09:58+0000\n"
+"PO-Revision-Date: 2026-03-31 17:00+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -18,9 +18,28 @@ msgstr ""
 "X-Generator: Poedit 3.6\n"
 
 #. module: purchase_request_verify_state
+#: model:ir.model.fields,field_description:purchase_request_verify_state.field_res_config_settings__purchase_request_allow_supplier_state
+msgid "Activate verification step for procurement officer"
+msgstr "เปิดใช้งานขั้นตอนการยืนยันสำหรับเจ้าหน้าที่จัดซื้อจัดจ้าง"
+
+#. module: purchase_request_verify_state
+#: model:ir.model.fields,help:purchase_request_verify_state.field_res_config_settings__purchase_request_allow_supplier_state
+msgid ""
+"Add a verification step for procurement officers before proceeding to the "
+"payment stage"
+msgstr "เพิ่มขั้นตอนการยืนยันสำหรับเจ้าหน้าที่จัดซื้อจัดจ้างก่อนดำเนินการไปยังขั้นตอนการชำระเงิน"
+
+#. module: purchase_request_verify_state
 #: model_terms:ir.ui.view,arch_db:purchase_request_verify_state.view_res_config_settings_form
-msgid "Allow verify State"
-msgstr ""
+msgid ""
+"Add a verification step for procurement officers before proceeding to the "
+"payment stage."
+msgstr "เพิ่มขั้นตอนการยืนยันสำหรับเจ้าหน้าที่จัดซื้อจัดจ้างก่อนดำเนินการไปยังขั้นตอนการชำระเงิน"
+
+#. module: purchase_request_verify_state
+#: model_terms:ir.ui.view,arch_db:purchase_request_verify_state.view_res_config_settings_form
+msgid "Allow Purchase Request Verification"
+msgstr "อนุญาตการตรวจสอบคำขอซื้อ"
 
 #. module: purchase_request_verify_state
 #: model:ir.model,name:purchase_request_verify_state.model_res_config_settings
@@ -39,8 +58,8 @@ msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_request_verify_state
 #: model_terms:ir.ui.view,arch_db:purchase_request_verify_state.view_res_config_settings_form
-msgid "Purchase Request verify State"
-msgstr ""
+msgid "Purchase Request Verification"
+msgstr "การตรวจสอบคำขอซื้อ"
 
 #. module: purchase_request_verify_state
 #: model:ir.model.fields,field_description:purchase_request_verify_state.field_purchase_request__state
@@ -51,14 +70,3 @@ msgstr "สถานะ"
 #: model:ir.model.fields.selection,name:purchase_request_verify_state.selection__purchase_request__state__to_examine
 msgid "To Examine"
 msgstr "พัสดุตรวจสอบ"
-
-#. module: purchase_request_verify_state
-#: model:ir.model.fields,field_description:purchase_request_verify_state.field_res_config_settings__purchase_request_allow_verify_state
-msgid "Activate verification step for procurement officer"
-msgstr "เปิดใช้งานขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุ"
-
-#. module: purchase_request_verify_state
-#: model:ir.model.fields,help:purchase_request_verify_state.field_res_config_settings__purchase_request_allow_verify_state
-#: model_terms:ir.ui.view,arch_db:purchase_request_verify_state.view_res_config_settings_form
-msgid "Add a verification step for procurement officers before proceeding to the payment stage"
-msgstr "เพิ่มขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุก่อนเข้าสู่ขั้นตอนของการเงิน"
