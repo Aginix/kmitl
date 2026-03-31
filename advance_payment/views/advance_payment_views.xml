@@ -108,7 +108,10 @@
                     </div>
                     <group>
                         <group string="ข้อมูลผู้ยืม">
-                            <field name="requested_by"/>
+                            <field name="requested_by"
+                                groups="advance_payment.group_advance_payment_manager"/>
+                            <field name="requested_by" readonly="1"
+                                groups="!advance_payment.group_advance_payment_manager"/>
                             <field name="department_id"/>
                         </group>
                         <group string="ข้อมูลการยืม">

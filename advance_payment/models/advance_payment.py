@@ -87,12 +87,14 @@ class AdvancePayment(models.Model):
 
     loan_reason = fields.Text(
         string="Loan Reason",
+        required=True,
         states=READONLY_STATES,
     )
 
     loan_type_id = fields.Many2one(
         comodel_name="advance.payment.loan.type",
         string="Loan Type",
+        required=True,
         states=READONLY_STATES,
     )
 
@@ -113,6 +115,7 @@ class AdvancePayment(models.Model):
     bank_id = fields.Many2one(
         comodel_name="res.partner.bank",
         string="บัญชีธนาคาร",
+        required=True,
         states=READONLY_STATES,
     )
 
@@ -234,6 +237,8 @@ class AdvancePayment(models.Model):
     def _onchange_requested_by(self):
         if self.bank_id and self.bank_id.partner_id != self.requested_by.partner_id:
             self.bank_id = False
+        if self.requested_by:
+            self.department_id = self.requested_by.employee_id.department_id
 
     @api.depends("analytic_distribution")
     def _compute_analytic_ids(self):

@@ -35,12 +35,34 @@ class TestAdvancePayment(TransactionCase):
             }
         )
 
+        cls.loan_type = cls.env["advance.payment.loan.type"].create(
+            {"name": "Test Loan Type"}
+        )
+
+        cls.manager_bank = cls.env["res.partner.bank"].create(
+            {
+                "acc_number": "111-222-333",
+                "partner_id": cls.manager.partner_id.id,
+            }
+        )
+
+        cls.user_bank = cls.env["res.partner.bank"].create(
+            {
+                "acc_number": "444-555-666",
+                "partner_id": cls.user.partner_id.id,
+            }
+        )
+
     def _make_agreement(self, user=None, loan_amount=1000):
         user = user or self.manager
+        bank = self.user_bank if user == self.user else self.manager_bank
         return self.env["advance.payment"].create(
             {
                 "requested_by": user.id,
                 "loan_amount": loan_amount,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test loan reason",
+                "bank_id": bank.id,
             }
         )
 
@@ -115,14 +137,26 @@ class TestAdvancePayment(TransactionCase):
     def test_submitter_validation_manager_can_submit_any(self):
         """Manager can submit agreements on behalf of others."""
         agreement = self.env["advance.payment"].create(
-            {"requested_by": self.user.id, "loan_amount": 1000}
+            {
+                "requested_by": self.user.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test",
+                "bank_id": self.user_bank.id,
+            }
         )
         agreement.with_user(self.manager).action_submit()
         self.assertEqual(agreement.state, "submitted")
 
     def test_submitter_validation_requestor_can_submit_own(self):
         agreement = self.env["advance.payment"].with_user(self.user).create(
-            {"requested_by": self.user.id, "loan_amount": 1000}
+            {
+                "requested_by": self.user.id,
+                "loan_amount": 1000,
+                "loan_type_id": self.loan_type.id,
+                "loan_reason": "Test",
+                "bank_id": self.user_bank.id,
+            }
         )
         agreement.with_user(self.user).action_submit()
         self.assertEqual(agreement.state, "submitted")
