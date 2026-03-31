@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<odoo>
     <!-- View purchase.request.line.make.purchase.order form -->
     <record id="view_purchase_request_line_make_purchase_order_form" model="ir.ui.view">
         <field name="name">view.purchase.request.line.make.purchase.order.form</field>
         <field name="model">purchase.request.line.make.purchase.order</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_line_make_purchase_order"/>
+        <field
+            name="inherit_id"
+            ref="purchase_request.view_purchase_request_line_make_purchase_order"
+        />
         <field name="arch" type="xml">
             <xpath expr="//form/separator[1]" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -14,15 +16,33 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='request_id']" position="attributes">
-              <attribute name="invisible">1</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='keep_description']" position="attributes">
-              <attribute name="invisible">1</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='keep_estimated_cost']" position="attributes">
-              <attribute name="invisible">1</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='supplier_id']" position="after">
+                <div colspan="2" class="alert alert-warning show" role="alert">
+                    If vendor name not found, contact procurement staff to add the
+                    information
+                </div>
+            </xpath>
+            <xpath
+                expr="//field[@name='item_ids']/tree/field[@name='product_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='item_ids']/tree/field[@name='name']"
+                position="attributes"
+            >
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
         </field>
     </record>
-
-  </odoo>
+</odoo>

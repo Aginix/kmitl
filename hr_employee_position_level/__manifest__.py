@@ -1,0 +1,21 @@
+{
+    "name": "HR Employee Position Level",
+    "version": "16.0.1.1.1",
+    "summary": "HR Employee Position Level",
+    "website": "https://github.com/aginix/kmitl-odoo",
+    "author": "Nonpawit, Aginix Technologies",
+    "maintainers": ["n3n", "nopparuts"],
+    "license": "AGPL-3",
+    "category": "extra-tools",
+    "depends": ["base", "hr", "office_order", "mail", "hr_employee_security_role"],
+    "data": [
+        "data/data_position_level_relation.xml",
+        "security/ir.model.access.csv",
+        "views/hr_employee_view.xml",
+        "views/hr_employee_position_level.xml",
+        "views/hr_employee_position_level_relation.xml",
+        "views/resource_academic_discipline.xml",
+    ],
+    "auto_install": False,
+    "application": False,
+}

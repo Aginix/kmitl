@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_purchase_request_tree" model="ir.ui.view">
-        <field name="name">view.purchase.request.tree (KMITL)</field>
+        <field name="name">purchase.request.tree (KMITL)</field>
         <field name="model">purchase.request</field>
+        <field name="priority">30</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
@@ -11,9 +12,26 @@
             <xpath expr="//field[@name='requested_by']" position="before">
                 <field name="user_id" widget="many2one_avatar_user" optional="hide" />
             </xpath>
+            <field name="origin" position="after">
+                <field name="assigned_to" optional="hide" />
+                <field name="purchase_type_id" invisible="1" />
+                <field name="procurement_method_id" optional="hide" />
+            </field>
             <xpath expr="//field[@name='requested_by']" position="after">
                 <field name="procurement_type_id" optional="hide" />
                 <field name="account_fiscal_year_id" optional="hide" />
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='requested_by']" position="attributes">
+                <attribute name="optional">show</attribute>
             </xpath>
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
                 <attribute name="optional">show</attribute>
@@ -24,88 +42,239 @@
         </field>
     </record>
 
-    <record id="view_purchase_request_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.form (KMITL)</field>
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.list.select (KMITL)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="priority">30</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='description']" position="before">
-                <field name="title" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+            <field name="requested_by" position="before">
+                <field name="purchase_type_id" />
+                <field name="procurement_method_id" />
+                <searchpanel>
+                    <field
+                        name="procurement_type_id"
+                        icon="fa-money"
+                        enable_counters="1"
+                    />
+                </searchpanel>
+            </field>
+            <xpath expr="//filter[@name='my_requests']" position="after">
+                <filter
+                    name="created_by_me"
+                    domain="[('user_id','=', uid)]"
+                    help="Created by me"
+                />
             </xpath>
-            <xpath expr="//field[@name='description']" position="attributes">
-                <attribute name="required">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='assigned_to']" position="after">
-                <field name="user_id" readonly="1" />
-            </xpath>
-            <xpath expr="//form/header/field[@name='state']" position="attributes">
-                <attribute name="statusbar_visible">draft,to_approve,approved,in_progress,done</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_in_progress']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_done']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_rejected']" position="attributes">
-                <attribute name="states">to_approve</attribute>
-                <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify</attribute>
-                <attribute name="groups"></attribute>
-            </xpath>
-            <xpath expr="//page[@name='committee']" position="after">
-                <page name="logs" string="Operation">
-                    <group>
-                        <field name="date_start" readonly="1" />
-                    </group>
-                </page>
-            </xpath>
-            <xpath expr="//notebook" position="inside">
-                <page name="document" string="Attachment">
-                    <field name="attachment_ids"
-                           attrs="{'readonly': [('is_editable','=', False)]}"
-                           context="{'default_res_model': 'purchase.request'}">
-                        <tree default_order="attachment_type, sequence">
-                            <field name="sequence" widget="handle"/>
-                            <field name="attachment_type" required="1"/>
-                            <field name="name" string="File Name" required="1"/>
-                            <field name="description"/>
-                        </tree>
-                        <form>
-                            <sheet>
-                                <group>
-                                    <field name="res_model" invisible="1" readonly="0"/>
-                                    <field name="res_id" invisible="1" readonly="0"/>
-                                    <field name="attachment_type" required="1"/>
-                                    <field name="name" required="1" invisible="1"/>
-                                    <field name="datas" filename="name" required="1"/>
-                                    <field name="description" placeholder="Description"/>
-                                </group>
-                            </sheet>
-                        </form>
-                    </field>
-                </page>
-            </xpath>
+            <group position="inside">
+                <filter
+                    string="Purchase Type"
+                    name="purchase_type"
+                    domain="[]"
+                    context="{'group_by': 'purchase_type_id'}"
+                />
+                <filter
+                    string="Procurement Method"
+                    name="procurement_method"
+                    domain="[]"
+                    context="{'group_by': 'procurement_method_id'}"
+                />
+            </group>
         </field>
     </record>
 
-    <record id="view_purchase_request_form_l10n" model="ir.ui.view">
-        <field name="name">view.purchase.request.form (Committee)</field>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form (KMITL)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form" />
+        <field name="priority">100</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='committee']" position="replace">
+
+            <xpath expr="//field[@name='line_ids']" position="before">
+                <group name="warning_prepaid">
+                    <group>
+                        <div
+                            colspan="2"
+                            class="alert alert-warning show"
+                            role="alert"
+                            attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
+                        >
+                            When payment type is Prepaid, please select the advance
+                            payer's name in the Vendor field.
+                        </div>
+                    </group>
+                </group>
+                <group name="warning_loan">
+                    <group>
+                        <div
+                            colspan="2"
+                            class="alert alert-warning show"
+                            role="alert"
+                            attrs="{'invisible': [('payment_type', '!=', 'loan')]}"
+                        >
+                            When payment type is Loan, please select the loan's
+                            name in the Vendor field.
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+
+            <xpath expr="//form" position="inside">
+                <field name="hide_create_po_button" invisible="1" />
+            </xpath>
+
+            <xpath expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']" position="attributes">
+                <attribute name="states"/>
+                <attribute name="attrs">{'invisible':[('hide_create_po_button', '=', True)]}</attribute>
+            </xpath>
+
+            <button name="button_rejected" position="attributes">
+                <attribute name="states">to_approve</attribute>
+                <attribute
+                    name="groups"
+                >purchase_request.group_purchase_request_manager</attribute>
+            </button>
+
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="states">to_verify</attribute>
+                <attribute name="groups" />
+            </xpath>
+
+            <xpath expr="//form/header/field[@name='state']" position="attributes">
+                <attribute
+                    name="statusbar_visible"
+                >draft,to_approve,approved,in_progress,done</attribute>
+            </xpath>
+
+            <xpath expr="//h1/field[@name='name']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='assigned_to']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('state','not in', ['to_approve', 'approved'])]}</attribute>
+            </xpath>
+
+            <field name="requested_by" position="before">
+                <field name="to_create" invisible="True" />
+                <field name="procurement_method_ids" invisible="True" />
+                <field
+                    name="expense_reason"
+                    attrs="{'invisible': [('to_create', '!=', 'expense')], 'required': [('to_create', '=', 'expense')], 'readonly': [('is_editable','=', False)]}"
+                />
+            </field>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='name']"
+                position="attributes"
+            >
+                <attribute name="required">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='line_ids']//tree" position="attributes">
+                <attribute name="no_open">1</attribute>
+            </xpath>
+
+            <xpath expr="//h1" position="after">
+                <group string="รายละเอียดคำขอซื้อขอจ้าง" name="purchase_request_details_group">
+                    <group>
+                        <field
+                            name="title"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="description"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="requested_by"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="department_id"
+                            string="Department"
+                            options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                        />
+                        <field name="user_id" readonly="1" />
+                    </group>
+                </group>
+                <group string="คำขอซื้อขอจ้าง" name="purchase_request_group">
+                    <group>
+                        <field
+                            name="account_fiscal_year_id"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            required="1"
+                            widget="selection"
+                        />
+                        <field
+                            name="procurement_type_id"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="procurement_method_id"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="payment_type"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            widget="radio"
+                            options="{'horizontal': true}"
+                        />
+                        <field
+                            name="operating_unit_id"
+                            widget="selection"
+                            groups="operating_unit.group_multi_operating_unit"
+                        />
+                    </group>
+                </group>
+            </xpath>
+
+            <!-- === Notebook pages === -->
+            <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
-                    <separator string="TOR Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
-                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
-                    <separator string="Price Determine Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
-                    <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
-                    <separator string="Evaluation Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
-                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
+                    <separator
+                        string="TOR Committee"
+                        attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
+                    />
+                    <field
+                        name="tor_committee_ids"
+                        nolabel="1"
+                        context="{'default_committee_type': 'tor_committee'}"
+                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
+                    />
+                    <separator
+                        string="Price Determine Committee"
+                        attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
+                    />
+                    <field
+                        name="price_determine_committee_ids"
+                        nolabel="1"
+                        context="{'default_committee_type': 'price_determine'}"
+                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
+                    />
+                    <separator
+                        string="Evaluation Committee"
+                        attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
+                    />
+                    <field
+                        name="evaluation_committee_ids"
+                        nolabel="1"
+                        context="{'default_committee_type': 'evaluation'}"
+                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
+                    />
                     <separator string="Work Acceptance Committee" />
-                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" attrs="{'readonly': [('is_editable', '=', False)]}" />
+                    <field
+                        name="work_acceptance_committee_ids"
+                        nolabel="1"
+                        context="{'default_committee_type': 'work_acceptance'}"
+                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                    />
                 </page>
                 <page name="work_supervisor" string="Work Supervisors">
                     <field
@@ -116,7 +285,10 @@
                     >
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
-                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
+                            <field
+                                name="employee_id"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
                             <field name="name" />
                             <field name="department_id" />
                             <field name="email" />
@@ -124,48 +296,151 @@
                         </tree>
                     </field>
                 </page>
+                <page name="document" string="Attachment">
+                    <field
+                        name="attachment_ids"
+                        attrs="{'readonly': [('is_editable','=', False)]}"
+                        context="{'default_res_model': 'purchase.request'}"
+                    >
+                        <tree default_order="attachment_type, sequence">
+                            <field name="sequence" widget="handle" />
+                            <field name="attachment_type" required="1" />
+                            <field name="name" string="File Name" required="1" />
+                            <field name="description" />
+                        </tree>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <field
+                                        name="res_model"
+                                        invisible="1"
+                                        readonly="0"
+                                    />
+                                    <field name="res_id" invisible="1" readonly="0" />
+                                    <field name="attachment_type" required="1" />
+                                    <field name="name" required="1" invisible="1" />
+                                    <field name="datas" filename="name" required="1" />
+                                    <field
+                                        name="description"
+                                        placeholder="Description"
+                                    />
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+
+            <!-- === Notebook Operation pages === -->
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page name="operation" string="Operation">
+                    <group>
+                        <group>
+                            <field name="date_start" attrs="{'readonly': [('is_editable','=', False)]}" />
+                        </group>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>
 
-    <record id="view_purchase_request_form_fiscal_year" model="ir.ui.view">
-        <field name="name">view.purchase.request.form (fiscal year)</field>
+    <record id="view_purchase_request_hide_form" model="ir.ui.view">
+        <field name="name">purchase.request.form (KMITL Hide)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form" />
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='procurement_type_id']" position="before">
-                <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable','=', False)]}" required="1" widget="selection" />
-            </xpath>
-        </field>
-    </record>
 
-    <record id="view_purchase_request_search" model="ir.ui.view">
-        <field name="name">purchase.request.list.select</field>
-        <field name="model">purchase.request</field>
-        <field name="priority">30</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_search" />
-        <field name="arch" type="xml">
-            <field name="requested_by" position="before">
-                <searchpanel>
-                    <field name="procurement_type_id" icon="fa-money" enable_counters="1"/>
-                </searchpanel>
-            </field>
-        </field>
-    </record>
-
-    <record id="view_purchase_request_search_user" model="ir.ui.view">
-        <field name="name">purchase.request.list.select (Responsible User)</field>
-        <field name="model">purchase.request</field>
-        <field name="priority">30</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
-        <field name="arch" type="xml">
-            <xpath expr="//filter[@name='my_requests']" position="after">
-                <filter
-                    name="created_by_me"
-                    domain="[('user_id','=', uid)]"
-                    help="Created by me"
-                />
+            <xpath expr="//button[@name='button_in_progress']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
+
+            <xpath expr="//button[@name='button_done']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">0</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='date_required']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='purchased_qty']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='purchase_state']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_show_details']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath
+                expr="//button[@name='action_view_purchase_request_line']"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+             <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='group_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='origin']" position="attributes">
+                <attribute name="attrs">{'invisible': [('origin', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='assigned_to']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='description']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='requested_by']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='exception_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='ignore_exception']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
         </field>
     </record>
 
@@ -176,14 +451,27 @@
     />
 
     <!-- hide menu -->
-    <menuitem id="purchase_request.menu_purchase_request_line_act" active="False"/>
-    <menuitem id="purchase_request.menu_purchase_request_act" active="False"/>
+    <menuitem id="purchase_request.menu_purchase_request_line_act" active="False" />
+    <menuitem id="purchase_request.menu_purchase_request_act" active="False" />
     <!-- menu -->
-    <menuitem id="purchase_request.menu_purchase_request" action="purchase_request.purchase_request_form_action" parent="purchase_request.parent_menu_purchase_request"/>
-    <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="3" />
+    <menuitem
+        id="purchase_request.menu_purchase_request"
+        action="purchase_request.purchase_request_form_action"
+        parent="purchase_request.parent_menu_purchase_request"
+    />
+    <menuitem
+        id="purchase_request_kmitl_root_menu"
+        name="PR1"
+        parent="purchase.menu_purchase_root"
+        action="purchase_request.purchase_request_form_action"
+        sequence="3"
+    />
 
     <function name="write" model="ir.actions.act_window">
-        <value model="ir.actions.act_window" search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]" />
-        <value eval="{'context': '{}'}"/>
+        <value
+            model="ir.actions.act_window"
+            search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]"
+        />
+        <value eval="{'context': '{}'}" />
     </function>
 </odoo>

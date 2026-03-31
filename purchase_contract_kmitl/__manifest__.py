@@ -5,7 +5,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['hr_department_short_name', 'purchase_exception', 'purchase_order_kmitl', 'purchase_invoice_plan', 'purchase_budget', 'purchase_work_acceptance_kmitl'],
+    'depends': ['hr_department_short_name', 'purchase_exception', 'purchase_invoice_plan'],
     "data": [
         "data/cron.xml",
         "data/purchase_contract_type.xml",

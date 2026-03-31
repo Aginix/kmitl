@@ -16,6 +16,16 @@ class PurchaseOrder(models.Model):
         'cancel': [('readonly', True)],
     }
 
+    invoice_plan_ids = fields.One2many(
+        comodel_name="purchase.invoice.plan",
+        inverse_name="purchase_id",
+        states=READONLY_STATES,
+    )
+
+    use_invoice_plan = fields.Boolean(
+        states=READONLY_STATES,
+    )
+    
     attachment_ids = fields.One2many(
         'ir.attachment',
         'res_id',

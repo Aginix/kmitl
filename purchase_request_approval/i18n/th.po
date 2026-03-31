@@ -379,11 +379,6 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__substate_sequence
-msgid "Gives the sequence order when applying the default substate"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Group By"
 msgstr ""
@@ -958,11 +953,6 @@ msgid "Sent for approval via Sarabun document: %s"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__substate_sequence
-msgid "Sequence"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__show_egp_create_purchase_order_button
 msgid "Show Egp Create Purchase Order Button"
 msgstr ""
@@ -995,11 +985,6 @@ msgstr ""
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__move_count
 msgid "Stock Move count"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__substate_id
-msgid "Sub State"
 msgstr ""
 
 #. module: purchase_request_approval

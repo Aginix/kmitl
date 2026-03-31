@@ -1,0 +1,528 @@
+from datetime import date
+
+from odoo import Command
+from odoo.exceptions import UserError, ValidationError
+from odoo.tests.common import TransactionCase, tagged
+
+
+@tagged("post_install", "-at_install")
+class TestBudgetCommitment(TransactionCase):
+    """Test budget.commitment ledger-style multi-line operations."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        env = cls.env
+
+        # Fiscal year covering today
+        cls.fiscal_year = env["account.fiscal.year"].search([], limit=1)
+        if not cls.fiscal_year:
+            cls.fiscal_year = env["account.fiscal.year"].create(
+                {
+                    "name": "FY-TEST",
+                    "date_from": date(2025, 10, 1),
+                    "date_to": date(2026, 9, 30),
+                    "company_id": env.company.id,
+                }
+            )
+
+        # Analytic plans (from account_analytic_kmitl data)
+        Plan = env["account.analytic.plan"]
+        cls.plan_activities = Plan.search([("code", "=", "activities")], limit=1)
+        cls.plan_departments = Plan.search([("code", "=", "departments")], limit=1)
+        cls.plan_funds = Plan.search([("code", "=", "funds")], limit=1)
+        cls.plan_sources = Plan.search([("code", "=", "sources")], limit=1)
+
+        if not cls.plan_activities:
+            cls.plan_activities = Plan.create(
+                {"name": "Activities", "code": "activities"}
+            )
+        if not cls.plan_departments:
+            cls.plan_departments = Plan.create(
+                {"name": "Departments", "code": "departments"}
+            )
+        if not cls.plan_funds:
+            cls.plan_funds = Plan.create({"name": "Funds", "code": "funds"})
+        if not cls.plan_sources:
+            cls.plan_sources = Plan.create({"name": "Sources", "code": "sources"})
+
+        # Analytic accounts
+        AA = env["account.analytic.account"]
+        cls.activity = AA.create(
+            {
+                "name": "Test Activity",
+                "code": "TEST_ACT",
+                "plan_id": cls.plan_activities.id,
+            }
+        )
+        cls.department = AA.create(
+            {
+                "name": "Test Department",
+                "code": "TEST_DEPT",
+                "plan_id": cls.plan_departments.id,
+            }
+        )
+        cls.fund = AA.create(
+            {
+                "name": "Test Fund",
+                "code": "TEST_FUND",
+                "plan_id": cls.plan_funds.id,
+            }
+        )
+        cls.source = AA.create(
+            {
+                "name": "Test Source",
+                "code": "TEST_SRC",
+                "plan_id": cls.plan_sources.id,
+            }
+        )
+
+        # Budget accounts (two different accounts, same dimensions)
+        BA = env["budget.account"]
+        cls.account_1 = BA.search(
+            [("budgetable", "=", True), ("budget_type", "=", "expense")], limit=1
+        )
+        if not cls.account_1:
+            cls.account_1 = BA.create(
+                {
+                    "code": "TEST001",
+                    "name": "Test Account 1",
+                    "budget_type": "expense",
+                    "budgetable": True,
+                }
+            )
+        cls.account_2 = BA.search(
+            [
+                ("budgetable", "=", True),
+                ("budget_type", "=", "expense"),
+                ("id", "!=", cls.account_1.id),
+            ],
+            limit=1,
+        )
+        if not cls.account_2:
+            cls.account_2 = BA.create(
+                {
+                    "code": "TEST002",
+                    "name": "Test Account 2",
+                    "budget_type": "expense",
+                    "budgetable": True,
+                }
+            )
+
+    # --- Helpers ---
+
+    def _header_analytic(self):
+        """Build header analytic_distribution (department + source + activity + fund)."""
+        return {
+            str(self.department.id): 100.0,
+            str(self.source.id): 100.0,
+            str(self.activity.id): 100.0,
+            str(self.fund.id): 100.0,
+        }
+
+    def _line_analytic(self):
+        """Build line analytic_distribution (activity + fund)."""
+        return {
+            str(self.activity.id): 100.0,
+            str(self.fund.id): 100.0,
+        }
+
+    def _create_commitment(self, amount, account_id=None, **kw):
+        """Create a commitment in draft state with a single reserve line."""
+        vals = {
+            "date": date.today(),
+            "account_id": (account_id or self.account_1).id,
+            "amount": amount,
+            "analytic_distribution": self._header_analytic(),
+            "account_fiscal_year_id": self.fiscal_year.id,
+            "company_id": self.env.company.id,
+            "currency_id": self.env.company.currency_id.id,
+            "line_ids": [
+                Command.create(
+                    {
+                        "move_type": "reserve",
+                        "account_id": (account_id or self.account_1).id,
+                        "analytic_distribution": self._line_analytic(),
+                        "amount": amount,
+                        "name": "Reserve",
+                    }
+                )
+            ],
+        }
+        vals.update(kw)
+        return self.env["budget.commitment"].create(vals)
+
+    def _add_line(self, commitment, move_type, amount, account_id=None, **kw):
+        """Add a ledger line to a commitment."""
+        vals = {
+            "commitment_id": commitment.id,
+            "move_type": move_type,
+            "account_id": (account_id or commitment.account_id).id,
+            "analytic_distribution": self._line_analytic(),
+            "amount": amount,
+            "name": move_type,
+        }
+        vals.update(kw)
+        return self.env["budget.commitment.line"].create(vals)
+
+    # ====================================================================
+    # 1. Basic lifecycle: draft -> reserved -> partial -> done / cancel
+    # ====================================================================
+
+    def test_01_basic_reserve(self):
+        """Draft commitment with a reserve line can be reserved."""
+        c = self._create_commitment(100_000)
+        self.assertEqual(c.state, "draft")
+        c.action_reserve()
+        self.assertEqual(c.state, "reserved")
+        self.assertEqual(c.total_reserved, 100_000)
+
+    def test_02_reserve_without_lines_fails(self):
+        """Cannot reserve a commitment with no lines."""
+        c = self.env["budget.commitment"].create(
+            {
+                "date": date.today(),
+                "account_id": self.account_1.id,
+                "amount": 50_000,
+                "analytic_distribution": self._header_analytic(),
+                "account_fiscal_year_id": self.fiscal_year.id,
+                "company_id": self.env.company.id,
+                "currency_id": self.env.company.currency_id.id,
+            }
+        )
+        with self.assertRaises(UserError):
+            c.action_reserve()
+
+    def test_03_obligate_moves_to_partial(self):
+        """Adding an obligate line transitions header to partial."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 50_000)
+        self.assertEqual(c.state, "partial")
+        self.assertEqual(c.total_obligated, 50_000)
+        self.assertEqual(c.available_to_obligate, 50_000)
+
+    def test_04_consume_moves_to_partial(self):
+        """Adding a consume line transitions header to partial."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        self._add_line(c, "consume", 30_000)
+        self.assertEqual(c.state, "partial")
+        self.assertEqual(c.total_consumed, 30_000)
+        self.assertEqual(c.available_to_consume, 70_000)
+
+    def test_05_action_done(self):
+        """A reserved commitment can be closed."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        c.action_done()
+        self.assertEqual(c.state, "done")
+
+    def test_06_cancel_and_reset(self):
+        """Cancel then reset to draft."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        c.action_cancel()
+        self.assertEqual(c.state, "cancel")
+        # All posted lines should be cancelled
+        self.assertTrue(
+            all(l.state == "cancel" for l in c.line_ids)
+        )
+        c.action_reset_to_draft()
+        self.assertEqual(c.state, "draft")
+
+    # ====================================================================
+    # 2. Cascade constraints: reserved <= cap, obligated <= reserved, consumed <= obligated
+    # ====================================================================
+
+    def test_10_reserve_exceeds_cap(self):
+        """Total reserved cannot exceed the header cap amount."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        with self.assertRaises(ValidationError):
+            self._add_line(c, "reserve", 1)
+
+    def test_11_obligate_exceeds_reserved(self):
+        """Total obligated cannot exceed total reserved."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        with self.assertRaises(ValidationError):
+            self._add_line(c, "obligate", 100_001)
+
+    def test_12_consume_exceeds_obligated(self):
+        """Total consumed cannot exceed total obligated."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 50_000)
+        with self.assertRaises(ValidationError):
+            self._add_line(c, "consume", 50_001)
+
+    # ====================================================================
+    # 3. Immutability of posted lines
+    # ====================================================================
+
+    def test_20_posted_line_cannot_be_edited(self):
+        """Protected fields on a posted line cannot be edited."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        line = c.line_ids[0]
+        self.assertEqual(line.state, "posted")
+        with self.assertRaises(UserError):
+            line.write({"amount": 999})
+
+    def test_21_posted_line_cannot_be_deleted(self):
+        """Posted lines cannot be deleted."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        with self.assertRaises(UserError):
+            c.line_ids[0].unlink()
+
+    def test_22_cancelled_line_can_be_deleted(self):
+        """Cancelled lines can be deleted."""
+        c = self._create_commitment(100_000)
+        # Line created in posted state; cancel it first
+        line = c.line_ids[0]
+        line.action_cancel()
+        self.assertEqual(line.state, "cancel")
+        line.unlink()
+        self.assertFalse(c.line_ids)
+
+    # ====================================================================
+    # 4. Consume auto-creates budget.move
+    # ====================================================================
+
+    def test_30_consume_creates_budget_move(self):
+        """A consume line auto-creates a posted budget.move."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        consume_line = self._add_line(c, "consume", 40_000)
+        self.assertTrue(consume_line.budget_move_id)
+        self.assertEqual(consume_line.budget_move_id.state, "posted")
+        self.assertEqual(consume_line.budget_move_id.move_type, "consume")
+
+    def test_31_cancel_consume_cascades_to_move(self):
+        """Cancelling a consume line cascades to its budget.move."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        consume_line = self._add_line(c, "consume", 40_000)
+        bm = consume_line.budget_move_id
+        consume_line.action_cancel()
+        self.assertEqual(bm.state, "cancel")
+
+    # ====================================================================
+    # 5. Multiple budget accounts, same dimensions
+    # ====================================================================
+
+    def test_40_multi_account_same_dimensions(self):
+        """Reserve two different budget accounts in separate commitments, same analytics."""
+        c1 = self._create_commitment(80_000, account_id=self.account_1)
+        c1.action_reserve()
+
+        c2 = self._create_commitment(60_000, account_id=self.account_2)
+        c2.action_reserve()
+
+        self.assertEqual(c1.total_reserved, 80_000)
+        self.assertEqual(c2.total_reserved, 60_000)
+        self.assertEqual(c1.account_id, self.account_1)
+        self.assertEqual(c2.account_id, self.account_2)
+
+    def test_41_multi_account_independent_constraints(self):
+        """Constraints on one commitment don't affect another."""
+        c1 = self._create_commitment(50_000, account_id=self.account_1)
+        c1.action_reserve()
+        self._add_line(c1, "obligate", 50_000, account_id=self.account_1)
+        self._add_line(c1, "consume", 50_000, account_id=self.account_1)
+
+        c2 = self._create_commitment(70_000, account_id=self.account_2)
+        c2.action_reserve()
+        # c2 is still fully available
+        self.assertEqual(c2.available_to_obligate, 70_000)
+
+    # ====================================================================
+    # 6. Reversal lines (negative amounts)
+    # ====================================================================
+
+    def test_50_obligate_reversal(self):
+        """Negative obligate line (return) increases available_to_obligate."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 60_000)
+        self.assertEqual(c.available_to_obligate, 40_000)
+        # Return 20k of the obligation
+        self._add_line(c, "obligate", -20_000)
+        self.assertEqual(c.total_obligated, 40_000)
+        self.assertEqual(c.available_to_obligate, 60_000)
+
+    def test_51_consume_reversal(self):
+        """Negative consume line (refund) increases available_to_consume."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        self._add_line(c, "consume", 60_000)
+        self.assertEqual(c.available_to_consume, 40_000)
+        # Refund 10k
+        self._add_line(c, "consume", -10_000)
+        self.assertEqual(c.total_consumed, 50_000)
+        self.assertEqual(c.available_to_consume, 50_000)
+
+    # ====================================================================
+    # 7. Computed balance formulas
+    # ====================================================================
+
+    def test_60_balance_formulas(self):
+        """Verify all computed balance formulas after mixed operations."""
+        c = self._create_commitment(200_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 120_000)
+        self._add_line(c, "consume", 80_000)
+
+        self.assertEqual(c.total_reserved, 200_000)
+        self.assertEqual(c.total_obligated, 120_000)
+        self.assertEqual(c.total_consumed, 80_000)
+        self.assertEqual(c.available_to_obligate, 80_000)   # 200k - 120k
+        self.assertEqual(c.available_to_consume, 40_000)    # 120k - 80k
+        # Legacy fields
+        self.assertEqual(c.consumed_amount, 80_000)
+        self.assertEqual(c.remaining_amount, 120_000)       # cap 200k - consumed 80k
+
+    # ====================================================================
+    # 8. Header positive amount constraint
+    # ====================================================================
+
+    def test_70_zero_amount_fails(self):
+        """Commitment cap must be positive."""
+        with self.assertRaises(UserError):
+            self.env["budget.commitment"].create(
+                {
+                    "date": date.today(),
+                    "account_id": self.account_1.id,
+                    "amount": 0,
+                    "analytic_distribution": self._header_analytic(),
+                    "account_fiscal_year_id": self.fiscal_year.id,
+                    "company_id": self.env.company.id,
+                    "currency_id": self.env.company.currency_id.id,
+                }
+            )
+
+    def test_71_negative_amount_fails(self):
+        """Commitment cap cannot be negative."""
+        with self.assertRaises(UserError):
+            self.env["budget.commitment"].create(
+                {
+                    "date": date.today(),
+                    "account_id": self.account_1.id,
+                    "amount": -1,
+                    "analytic_distribution": self._header_analytic(),
+                    "account_fiscal_year_id": self.fiscal_year.id,
+                    "company_id": self.env.company.id,
+                    "currency_id": self.env.company.currency_id.id,
+                }
+            )
+
+    # ====================================================================
+    # 9. Full workflow: reserve -> obligate -> consume -> done
+    # ====================================================================
+
+    def test_80_full_lifecycle(self):
+        """Complete lifecycle: reserve, obligate all, consume all, close."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self.assertEqual(c.state, "reserved")
+
+        self._add_line(c, "obligate", 100_000)
+        self.assertEqual(c.state, "partial")
+        self.assertEqual(c.available_to_obligate, 0)
+
+        self._add_line(c, "consume", 100_000)
+        self.assertEqual(c.available_to_consume, 0)
+        self.assertTrue(c.line_ids.filtered(
+            lambda l: l.move_type == "consume" and l.budget_move_id
+        ))
+
+        c.action_done()
+        self.assertEqual(c.state, "done")
+
+    # ====================================================================
+    # 10. State transition guards
+    # ====================================================================
+
+    def test_90_reserve_only_from_draft(self):
+        """action_reserve only works from draft."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        with self.assertRaises(UserError):
+            c.action_reserve()
+
+    def test_91_done_not_from_draft(self):
+        """Cannot close a draft commitment."""
+        c = self._create_commitment(100_000)
+        with self.assertRaises(UserError):
+            c.action_done()
+
+    def test_92_cancel_done_fails(self):
+        """Cannot cancel a done commitment."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        c.action_done()
+        with self.assertRaises(UserError):
+            c.action_cancel()
+
+    def test_93_reset_only_from_cancel(self):
+        """action_reset_to_draft only works from cancel."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        with self.assertRaises(UserError):
+            c.action_reset_to_draft()
+
+    # ====================================================================
+    # 11. Cancel recalculates balances
+    # ====================================================================
+
+    def test_100_cancel_line_recalculates(self):
+        """Cancelling a line recalculates commitment totals."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        obl = self._add_line(c, "obligate", 60_000)
+        self.assertEqual(c.available_to_obligate, 40_000)
+
+        obl.action_cancel()
+        self.assertEqual(c.total_obligated, 0)
+        self.assertEqual(c.available_to_obligate, 100_000)
+
+    # ====================================================================
+    # 12. Cross-year carry-over fields exist
+    # ====================================================================
+
+    def test_110_carry_over_fields(self):
+        """carry-over fields exist and default to empty."""
+        c = self._create_commitment(100_000)
+        self.assertFalse(c.carried_over_from_id)
+        self.assertFalse(c.carried_over_to_id)
+
+    # ====================================================================
+    # 13. Partial operations with multiple lines
+    # ====================================================================
+
+    def test_120_multiple_obligate_lines(self):
+        """Multiple obligate lines accumulate correctly."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 30_000)
+        self._add_line(c, "obligate", 20_000)
+        self._add_line(c, "obligate", 10_000)
+        self.assertEqual(c.total_obligated, 60_000)
+        self.assertEqual(c.available_to_obligate, 40_000)
+
+    def test_121_multiple_consume_lines(self):
+        """Multiple consume lines each create their own budget.move."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        c1 = self._add_line(c, "consume", 20_000)
+        c2 = self._add_line(c, "consume", 30_000)
+        self.assertEqual(c.total_consumed, 50_000)
+        self.assertNotEqual(c1.budget_move_id, c2.budget_move_id)
+        self.assertEqual(len(c.budget_move_ids), 2)
