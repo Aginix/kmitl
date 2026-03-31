@@ -74,16 +74,12 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                ตามใบสั่งซื้อเลขที่ เลขที่
+                                ตาม
                                 <span
                                     class="ms-2 fw-bolder text-decoration-underline"
-                                    t-out="o.purchase_id.name"
+                                    t-field="o.purchase_id.contract_type_id"
                                 />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                ตาม สัญญาซื้อขาย เลขที่
+                                เลขที่
                                 <span
                                     class="ms-2 fw-bolder text-decoration-underline"
                                     t-out="o.purchase_id.contract_number"
@@ -97,6 +93,7 @@
                         </div>
                         <div class="row">
                             <div class="col">
+                                ตามใบส่งมอบงาน
                                 ลงวันที่
                                 <span
                                     class="ms-2 fw-bolder text-decoration-underline"
