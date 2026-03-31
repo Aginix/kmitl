@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_position_level_employee,hr.employee.position.level,model_hr_employee_position_level,base.group_user,1,0,0,0
+access_hr_employee_position_level_user,hr.employee.position.level,model_hr_employee_position_level,hr_employee_security_role.group_hr_central_user,1,1,1,1
+access_hr_employee_position_level_relation_employee,hr.employee.position.level.relation,model_hr_employee_position_level_relation,base.group_user,1,0,0,0
+access_hr_employee_position_level_relation_user,hr.employee.position.level.relation,model_hr_employee_position_level_relation,hr.group_hr_manager,1,1,1,1
+access_resource_academic_discipline_hr,resource.academic.discipline hr_officer,model_resource_academic_discipline,hr_employee_security_role.group_hr_central_user,1,1,1,1
+access_resource_academic_discipline_user,resource.academic.discipline hr_department,model_resource_academic_discipline,hr.group_hr_user,1,0,0,0

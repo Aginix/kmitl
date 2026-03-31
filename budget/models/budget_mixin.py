@@ -218,43 +218,41 @@ class BudgetMixin(models.AbstractModel):
     currency_id = fields.Many2one('res.currency', required=True)
     date = fields.Date(required=True)
 
-    @api.depends('budget_commitment_id', 'budget_move_id')
+    @api.depends('budget_commitment_id', 'budget_commitment_id.state', 'budget_move_id')
     def _compute_budget_state(self):
         """Compute budget state based on linked records"""
         for record in self:
             if record.budget_move_id:
                 record.budget_state = 'consumed'
             elif record.budget_commitment_id:
-                if record.budget_commitment_id.state == 'reserved':
+                state = record.budget_commitment_id.state
+                if state == 'reserved':
                     record.budget_state = 'reserved'
-                elif record.budget_commitment_id.state == 'cancel':
+                elif state in ('partial', 'done'):
+                    record.budget_state = 'consumed'
+                elif state == 'cancel':
                     record.budget_state = 'cancelled'
                 else:
                     record.budget_state = 'committed'
             else:
                 record.budget_state = 'none'
 
-    @api.depends('budget_commitment_id.total_amount')
+    @api.depends('budget_commitment_id.amount')
     def _compute_budget_amount(self):
-        """Compute budget amount from commitment"""
+        """Compute budget amount from commitment cap"""
         for record in self:
             if record.budget_commitment_id:
-                record.budget_amount = record.budget_commitment_id.total_amount
+                record.budget_amount = record.budget_commitment_id.amount
             else:
                 record.budget_amount = 0.0
 
     def create_budget_commitment(self, line_data=None):
-        """
-        Create budget commitment for this record
+        """Create budget commitment with reserve lines.
 
         Args:
-            line_data (list): List of dicts with budget line data
-                Each dict should contain:
-                - account_id: Budget account ID
-                - activity_analytic_id: Activity analytic account ID
-                - fund_analytic_id: Fund analytic account ID
-                - amount: Amount for this line
-                - name: Description for this line
+            line_data (list): List of dicts with budget line data.
+                Each dict should contain: account_id, activity_analytic_id,
+                fund_analytic_id, amount, name.
 
         Returns:
             budget.commitment: Created commitment record
@@ -267,8 +265,26 @@ class BudgetMixin(models.AbstractModel):
         if not line_data:
             line_data = self._prepare_default_budget_lines()
 
+        # Ensure lines have move_type and analytic_distribution
+        processed_lines = []
+        for line in line_data:
+            line_vals = dict(line)
+            line_vals.setdefault('move_type', 'reserve')
+            # Build analytic_distribution from individual IDs if not present
+            if not line_vals.get('analytic_distribution'):
+                dist = {}
+                if line_vals.get('activity_analytic_id'):
+                    dist[str(line_vals['activity_analytic_id'])] = 100.0
+                if line_vals.get('fund_analytic_id'):
+                    dist[str(line_vals['fund_analytic_id'])] = 100.0
+                line_vals['analytic_distribution'] = dist or False
+            processed_lines.append(line_vals)
+
         commitment_data = self._prepare_budget_commitment_data()
-        commitment_data['line_ids'] = [(0, 0, line) for line in line_data]
+        # Set cap amount as sum of line amounts
+        total = sum(l.get('amount', 0) for l in processed_lines)
+        commitment_data['amount'] = total
+        commitment_data['line_ids'] = [(0, 0, line) for line in processed_lines]
 
         commitment = self.env['budget.commitment'].create(commitment_data)
         self.budget_commitment_id = commitment.id
@@ -293,24 +309,38 @@ class BudgetMixin(models.AbstractModel):
         if not self.budget_commitment_id:
             raise UserError(_('No budget commitment found to consume from.'))
 
-        if self.budget_commitment_id.state != 'reserved':
-            raise UserError(_('Budget commitment must be in reserved state to consume.'))
+        if self.budget_commitment_id.state not in ('reserved', 'partial'):
+            raise UserError(_('Budget commitment must be in reserved or partial state to consume.'))
 
-        consumption_move = self.budget_commitment_id.create_consumption_move(amount)
-        self.budget_move_id = consumption_move.id
+        # Add a consume line to the commitment
+        first_reserve = self.budget_commitment_id.line_ids.filtered(
+            lambda l: l.move_type == 'reserve' and l.state == 'posted'
+        )[:1]
+        if not first_reserve:
+            raise UserError(_('No active reserve lines found on commitment.'))
+
+        consume_amount = amount if amount else self.budget_commitment_id.available_to_consume
+        consume_line = self.env['budget.commitment.line'].create({
+            'commitment_id': self.budget_commitment_id.id,
+            'move_type': 'consume',
+            'account_id': first_reserve.account_id.id,
+            'analytic_distribution': first_reserve.analytic_distribution,
+            'amount': consume_amount,
+            'name': _('Consumption from %s') % self.display_name,
+        })
 
         _logger.info('Consumed budget %s from commitment %s for %s %s',
-                    consumption_move.total_amount, self.budget_commitment_id.name,
+                    consume_amount, self.budget_commitment_id.name,
                     self._name, self.id)
 
-        return consumption_move
+        return consume_line
 
     def cancel_budget_integration(self):
         """Cancel budget integration - sets commitment to cancelled state"""
         self.ensure_one()
 
-        if self.budget_commitment_id and self.budget_commitment_id.state not in ['cancel', 'consumed']:
-            self.budget_commitment_id.write({'state': 'cancel'})
+        if self.budget_commitment_id and self.budget_commitment_id.state not in ['cancel', 'done']:
+            self.budget_commitment_id.action_cancel()
             self.budget_commitment_id.message_post(
                 body=_('Cancelled due to source record cancellation.')
             )
@@ -324,28 +354,30 @@ class BudgetMixin(models.AbstractModel):
         if not self.budget_commitment_id:
             raise UserError(_('No budget commitment to reserve.'))
 
-        if self.budget_commitment_id.state == 'confirmed':
+        if self.budget_commitment_id.state == 'draft':
             self.budget_commitment_id.action_reserve()
 
         return self.budget_commitment_id
 
     def _prepare_budget_commitment_data(self):
-        """
-        Prepare data for budget commitment creation.
-        Override this method in inheriting models to customize.
+        """Prepare data for budget commitment creation."""
+        dept_id = self._get_department_analytic_id()
+        source_id = self._get_source_analytic_id()
 
-        Returns:
-            dict: Data for budget.commitment creation
-        """
+        # Build header analytic_distribution (department + source)
+        header_dist = {}
+        if dept_id:
+            header_dist[str(dept_id)] = 100.0
+        if source_id:
+            header_dist[str(source_id)] = 100.0
+
         return {
             'name': self._get_budget_commitment_name(),
             'date': self.date,
-            'department_analytic_id': self._get_department_analytic_id(),
-            'source_analytic_id': self._get_source_analytic_id(),
+            'analytic_distribution': header_dist or False,
             'account_fiscal_year_id': self._get_fiscal_year_id(),
             'company_id': self.company_id.id,
             'currency_id': self.currency_id.id,
-            'state': 'draft',
         }
 
     def _prepare_default_budget_lines(self):
@@ -402,32 +434,21 @@ class BudgetMixin(models.AbstractModel):
     # Lifecycle hooks for automatic budget integration
 
     def _auto_create_budget_commitment(self):
-        """
-        Automatically create budget commitment.
-        Call this from appropriate state transitions in inheriting models.
-        """
+        """Automatically create budget commitment."""
         if self.has_budget_integration and not self.budget_commitment_id:
-            commitment = self.create_budget_commitment()
-            commitment.action_confirm()
-            return commitment
+            return self.create_budget_commitment()
         return False
 
     def _auto_reserve_budget_commitment(self):
-        """
-        Automatically reserve budget commitment.
-        Call this from appropriate state transitions in inheriting models.
-        """
-        if self.budget_commitment_id and self.budget_commitment_id.state == 'confirmed':
+        """Automatically reserve budget commitment."""
+        if self.budget_commitment_id and self.budget_commitment_id.state == 'draft':
             self.budget_commitment_id.action_reserve()
             return True
         return False
 
     def _auto_consume_budget_commitment(self):
-        """
-        Automatically consume budget commitment.
-        Call this from appropriate state transitions in inheriting models.
-        """
-        if self.budget_commitment_id and self.budget_commitment_id.state == 'reserved':
+        """Automatically consume budget commitment."""
+        if self.budget_commitment_id and self.budget_commitment_id.state in ('reserved', 'partial'):
             return self.consume_budget_commitment()
         return False
 

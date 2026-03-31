@@ -1,0 +1,862 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- resource.rank -->
+    <record model="resource.rank" id="R01">
+        <field name="name">จอมพล</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Field Marshall</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">100</field>
+    </record>
+    <record model="resource.rank" id="R02">
+        <field name="name">พลเอก</field>
+        <field name="name_abbreviation">พล.อ.</field>
+        <field name="name_en">General</field>
+        <field name="name_abbreviation_en">Gen.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">101</field>
+    </record>
+    <record model="resource.rank" id="R03">
+        <field name="name">พลโท</field>
+        <field name="name_abbreviation">พล.ท.</field>
+        <field name="name_en">Lieutenant General</field>
+        <field name="name_abbreviation_en">Lt. Gen.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">102</field>
+    </record>
+    <record model="resource.rank" id="R04">
+        <field name="name">พลตรี</field>
+        <field name="name_abbreviation">พล.ต.</field>
+        <field name="name_en">Major General</field>
+        <field name="name_abbreviation_en">Maj. Gen.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">103</field>
+    </record>
+    <record model="resource.rank" id="R05">
+        <field name="name">พันเอก</field>
+        <field name="name_abbreviation">พ.อ.</field>
+        <field name="name_en">Colonel</field>
+        <field name="name_abbreviation_en">Col.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">104</field>
+    </record>
+    <record model="resource.rank" id="R06">
+        <field name="name">พันโท</field>
+        <field name="name_abbreviation">พ.ท.</field>
+        <field name="name_en">Lieutenant Colonel</field>
+        <field name="name_abbreviation_en">Lt. Col.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">105</field>
+    </record>
+    <record model="resource.rank" id="R07">
+        <field name="name">พันตรี</field>
+        <field name="name_abbreviation">พ.ต.</field>
+        <field name="name_en">Major</field>
+        <field name="name_abbreviation_en">Maj.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">106</field>
+    </record>
+    <record model="resource.rank" id="R08">
+        <field name="name">ร้อยเอก</field>
+        <field name="name_abbreviation">ร.อ.</field>
+        <field name="name_en">Captain</field>
+        <field name="name_abbreviation_en">Capt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">107</field>
+    </record>
+    <record model="resource.rank" id="R09">
+        <field name="name">ร้อยโท</field>
+        <field name="name_abbreviation">ร.ท.</field>
+        <field name="name_en">Lieutenant</field>
+        <field name="name_abbreviation_en">Lt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">108</field>
+    </record>
+    <record model="resource.rank" id="R10">
+        <field name="name">ร้อยตรี</field>
+        <field name="name_abbreviation">ร.ต.</field>
+        <field name="name_en">Sub Lieutenant</field>
+        <field name="name_abbreviation_en">Sub Lt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">109</field>
+    </record>
+    <record model="resource.rank" id="R11">
+        <field name="name">จ่าสิบเอก</field>
+        <field name="name_abbreviation">จ.ส.อ.</field>
+        <field name="name_en">Sergeant Major First Class</field>
+        <field name="name_abbreviation_en">SM1</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">110</field>
+    </record>
+    <record model="resource.rank" id="R12">
+        <field name="name">จ่าสิบโท</field>
+        <field name="name_abbreviation">จ.ส.ท.</field>
+        <field name="name_en">Sergeant Major Second Class</field>
+        <field name="name_abbreviation_en">SM2</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">111</field>
+    </record>
+    <record model="resource.rank" id="R13">
+        <field name="name">จ่าสิบตรี</field>
+        <field name="name_abbreviation">จ.ส.ต.</field>
+        <field name="name_en">Sergeant Major Third Class</field>
+        <field name="name_abbreviation_en">SM3</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">112</field>
+    </record>
+    <record model="resource.rank" id="R14">
+        <field name="name">สิบเอก</field>
+        <field name="name_abbreviation">ส.อ.</field>
+        <field name="name_en">Sergeant</field>
+        <field name="name_abbreviation_en">Sgt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">113</field>
+    </record>
+    <record model="resource.rank" id="R15">
+        <field name="name">สิบโท</field>
+        <field name="name_abbreviation">ส.ท.</field>
+        <field name="name_en">Corporal</field>
+        <field name="name_abbreviation_en">Cpl.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">114</field>
+    </record>
+    <record model="resource.rank" id="R16">
+        <field name="name">สิบตรี</field>
+        <field name="name_abbreviation">ส.ต.</field>
+        <field name="name_en">Private First Class</field>
+        <field name="name_abbreviation_en">Pfc.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">115</field>
+    </record>
+    <record model="resource.rank" id="R17">
+        <field name="name">พลทหาร</field>
+        <field name="name_abbreviation">พลฯ</field>
+        <field name="name_en">Private</field>
+        <field name="name_abbreviation_en">Pvt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">116</field>
+    </record>
+    <record model="resource.rank" id="R18">
+        <field name="name">นักเรียนนายร้อย</field>
+        <field name="name_abbreviation">นนร.</field>
+        <field name="name_en">Army Cadet</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">117</field>
+    </record>
+    <record model="resource.rank" id="R19">
+        <field name="name">นักเรียนนายสิบ</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Army Non-Commissioned Officer Student</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">118</field>
+    </record>
+    <record model="resource.rank" id="R20">
+        <field name="name">ว่าที่พันตรี</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Acting Major</field>
+        <field name="name_abbreviation_en">Acting Maj.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">119</field>
+    </record>
+    <record model="resource.rank" id="R21">
+        <field name="name">ว่าที่ร้อยเอก</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Acting Captain</field>
+        <field name="name_abbreviation_en">Acting Capt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">120</field>
+    </record>
+    <record model="resource.rank" id="R22">
+        <field name="name">ว่าที่ร้อยโท</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Acting Lieutenant</field>
+        <field name="name_abbreviation_en">Acting Lt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">121</field>
+    </record>
+    <record model="resource.rank" id="R23">
+        <field name="name">ว่าที่ร้อยตรี</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Acting Sub. Lieutenant</field>
+        <field name="name_abbreviation_en">Acting Sub Lt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">122</field>
+    </record>
+    <record model="resource.rank" id="R24">
+        <field name="name">ว่าที่ร้อยตรีหญิง</field>
+        <field name="name_abbreviation" />
+        <field name="name_en" />
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">123</field>
+    </record>
+    <record model="resource.rank" id="R25">
+        <field name="name">นักศึกษาวิชาทหาร</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Reserve Officer Training Cops Student</field>
+        <field name="name_abbreviation_en">ROTCS</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rta')"
+        />
+        <field name="sequence">124</field>
+    </record>
+    <record model="resource.rank" id="R26">
+        <field name="name">จอมพลเรือ</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Admiral of the Fleet</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">200</field>
+    </record>
+    <record model="resource.rank" id="R27">
+        <field name="name">พลเรือเอก</field>
+        <field name="name_abbreviation">พล.ร.อ.</field>
+        <field name="name_en">Admiral</field>
+        <field name="name_abbreviation_en">Adm.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">201</field>
+    </record>
+    <record model="resource.rank" id="R28">
+        <field name="name">พลเรือโท</field>
+        <field name="name_abbreviation">พล.ร.ท.</field>
+        <field name="name_en">Vice Admiral</field>
+        <field name="name_abbreviation_en">VAdm.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">202</field>
+    </record>
+    <record model="resource.rank" id="R29">
+        <field name="name">พลเรือตรี</field>
+        <field name="name_abbreviation">พล.ร.ต.</field>
+        <field name="name_en">Rear Admiral</field>
+        <field name="name_abbreviation_en">RAdm.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">203</field>
+    </record>
+    <record model="resource.rank" id="R30">
+        <field name="name">นาวาเอก</field>
+        <field name="name_abbreviation">น.อ. (ชื่อ) ร.น.</field>
+        <field name="name_en">Captain</field>
+        <field name="name_abbreviation_en">Capt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">204</field>
+    </record>
+    <record model="resource.rank" id="R31">
+        <field name="name">นาวาโท</field>
+        <field name="name_abbreviation">น.ท. (ชื่อ) ร.น.</field>
+        <field name="name_en">Commander</field>
+        <field name="name_abbreviation_en">Cdr.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">205</field>
+    </record>
+    <record model="resource.rank" id="R32">
+        <field name="name">นาวาตรี</field>
+        <field name="name_abbreviation">น.ต. (ชื่อ) ร.น.</field>
+        <field name="name_en">Lieutenant Commander</field>
+        <field name="name_abbreviation_en">LCdr.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">206</field>
+    </record>
+    <record model="resource.rank" id="R33">
+        <field name="name">เรือเอก</field>
+        <field name="name_abbreviation">ร.อ. (ชื่อ) ร.น.</field>
+        <field name="name_en">Lieutenant</field>
+        <field name="name_abbreviation_en">Lt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">207</field>
+    </record>
+    <record model="resource.rank" id="R34">
+        <field name="name">เรือโท</field>
+        <field name="name_abbreviation">ร.ท. (ชื่อ) ร.น.</field>
+        <field name="name_en">Lieutenant Junior Grade</field>
+        <field name="name_abbreviation_en">Lt. JG.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">208</field>
+    </record>
+    <record model="resource.rank" id="R35">
+        <field name="name">เรือตรี</field>
+        <field name="name_abbreviation">ร.ต. (ชื่อ) ร.น.</field>
+        <field name="name_en">Sub Lieutenant</field>
+        <field name="name_abbreviation_en">Subl.t.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">209</field>
+    </record>
+    <record model="resource.rank" id="R36">
+        <field name="name">พันจ่าเอก</field>
+        <field name="name_abbreviation">พ.จ.อ.</field>
+        <field name="name_en">Chief Petty Officer First Class</field>
+        <field name="name_abbreviation_en">CPO1</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">210</field>
+    </record>
+    <record model="resource.rank" id="R37">
+        <field name="name">พันจ่าโท</field>
+        <field name="name_abbreviation">พ.จ.ท.</field>
+        <field name="name_en">Chief Petty Officer Second Class</field>
+        <field name="name_abbreviation_en">CPO2</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">211</field>
+    </record>
+    <record model="resource.rank" id="R38">
+        <field name="name">พันจ่าตรี</field>
+        <field name="name_abbreviation">พ.จ.ต.</field>
+        <field name="name_en">Chief Petty Officer Third Class</field>
+        <field name="name_abbreviation_en">CPO3</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">212</field>
+    </record>
+    <record model="resource.rank" id="R39">
+        <field name="name">จ่าเอก</field>
+        <field name="name_abbreviation">จ.อ.</field>
+        <field name="name_en">Petty Officer First Class</field>
+        <field name="name_abbreviation_en">PO1</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">213</field>
+    </record>
+    <record model="resource.rank" id="R40">
+        <field name="name">จ่าโท</field>
+        <field name="name_abbreviation">จ.ท.</field>
+        <field name="name_en">Petty Officer Second Class</field>
+        <field name="name_abbreviation_en">PO2</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">214</field>
+    </record>
+    <record model="resource.rank" id="R41">
+        <field name="name">จ่าตรี</field>
+        <field name="name_abbreviation">จ.ต.</field>
+        <field name="name_en">Petty Officer Third Class</field>
+        <field name="name_abbreviation_en">PO3</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">215</field>
+    </record>
+    <record model="resource.rank" id="R42">
+        <field name="name">พลทหาร</field>
+        <field name="name_abbreviation">พลฯ</field>
+        <field name="name_en">Seaman</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">216</field>
+    </record>
+    <record model="resource.rank" id="R43">
+        <field name="name">นักเรียนทหารเรือ</field>
+        <field name="name_abbreviation">นนร.</field>
+        <field name="name_en">Naval Cadet</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">217</field>
+    </record>
+    <record model="resource.rank" id="R44">
+        <field name="name">นักเรียนจ่าทหารเรือ</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Naval Rating Student</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtn')"
+        />
+        <field name="sequence">218</field>
+    </record>
+    <record model="resource.rank" id="R45">
+        <field name="name">จอมพลอากาศ</field>
+        <field name="name_abbreviation" />
+        <field name="name_en">Marshal of the Royal Thai Air Force</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">300</field>
+    </record>
+    <record model="resource.rank" id="R46">
+        <field name="name">พลอากาศเอก</field>
+        <field name="name_abbreviation">พล.อ.อ.</field>
+        <field name="name_en">Air Chef Marshal</field>
+        <field name="name_abbreviation_en">ACM</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">301</field>
+    </record>
+    <record model="resource.rank" id="R47">
+        <field name="name">พลอากาศโท</field>
+        <field name="name_abbreviation">พล.อ.ท.</field>
+        <field name="name_en">Air Marshal</field>
+        <field name="name_abbreviation_en">AM</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">302</field>
+    </record>
+    <record model="resource.rank" id="R48">
+        <field name="name">พลอากาศตรี</field>
+        <field name="name_abbreviation">พล.อ.ต.</field>
+        <field name="name_en">Air Vice Marshal</field>
+        <field name="name_abbreviation_en">AVM</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">303</field>
+    </record>
+    <record model="resource.rank" id="R49">
+        <field name="name">นาวาอากาศเอก</field>
+        <field name="name_abbreviation">น.อ.</field>
+        <field name="name_en">Group Captain</field>
+        <field name="name_abbreviation_en">Gp. Capt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">304</field>
+    </record>
+    <record model="resource.rank" id="R50">
+        <field name="name">นาวาอากาศโท</field>
+        <field name="name_abbreviation">น.ท.</field>
+        <field name="name_en">Wing Commander</field>
+        <field name="name_abbreviation_en">Wg. Cdr.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">305</field>
+    </record>
+    <record model="resource.rank" id="R51">
+        <field name="name">นาวาอากาศตรี</field>
+        <field name="name_abbreviation">น.ต.</field>
+        <field name="name_en">Squadron Leader</field>
+        <field name="name_abbreviation_en">Sgn. Ldr.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">306</field>
+    </record>
+    <record model="resource.rank" id="R52">
+        <field name="name">เรืออากาศเอก</field>
+        <field name="name_abbreviation">ร.อ.</field>
+        <field name="name_en">Flight Lieutenant</field>
+        <field name="name_abbreviation_en">Flt. L.t.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">307</field>
+    </record>
+    <record model="resource.rank" id="R53">
+        <field name="name">เรืออากาศโท</field>
+        <field name="name_abbreviation">ร.ท.</field>
+        <field name="name_en">Flying Officer</field>
+        <field name="name_abbreviation_en">Flg. Off.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">308</field>
+    </record>
+    <record model="resource.rank" id="R54">
+        <field name="name">เรืออากาศตรี</field>
+        <field name="name_abbreviation">ร.ต.</field>
+        <field name="name_en">Pilot Officer</field>
+        <field name="name_abbreviation_en">Plt. Off.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">309</field>
+    </record>
+    <record model="resource.rank" id="R55">
+        <field name="name">พันจ่าอากาศเอก</field>
+        <field name="name_abbreviation">พ.อ.อ.</field>
+        <field name="name_en">Flight Sergeant First Class</field>
+        <field name="name_abbreviation_en">FS1</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">310</field>
+    </record>
+    <record model="resource.rank" id="R56">
+        <field name="name">พันจ่าอากาศโท</field>
+        <field name="name_abbreviation">พ.อ.ท.</field>
+        <field name="name_en">Flight Sergeant Second Class</field>
+        <field name="name_abbreviation_en">FS2</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">311</field>
+    </record>
+    <record model="resource.rank" id="R57">
+        <field name="name">พันจ่าอากาศตรี</field>
+        <field name="name_abbreviation">พ.อ.ต.</field>
+        <field name="name_en">Flight Sergeant Third Class</field>
+        <field name="name_abbreviation_en">FS3</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">312</field>
+    </record>
+    <record model="resource.rank" id="R58">
+        <field name="name">จ่าอากาศเอก</field>
+        <field name="name_abbreviation">จ.อ.</field>
+        <field name="name_en">Sergeant</field>
+        <field name="name_abbreviation_en">Sgt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">313</field>
+    </record>
+    <record model="resource.rank" id="R59">
+        <field name="name">จ่าอากาศโท</field>
+        <field name="name_abbreviation">จ.ท.</field>
+        <field name="name_en">Corporal</field>
+        <field name="name_abbreviation_en">Cpl.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">314</field>
+    </record>
+    <record model="resource.rank" id="R60">
+        <field name="name">จ่าอากาศตรี</field>
+        <field name="name_abbreviation">จ.ต.</field>
+        <field name="name_en">Leading Aircraftman</field>
+        <field name="name_abbreviation_en">LAC</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">315</field>
+    </record>
+    <record model="resource.rank" id="R61">
+        <field name="name">พลทหาร</field>
+        <field name="name_abbreviation">พลฯ</field>
+        <field name="name_en">Airman</field>
+        <field name="name_abbreviation_en">Amn.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">316</field>
+    </record>
+    <record model="resource.rank" id="R62">
+        <field name="name">นักเรีนนายเรืออากาศ</field>
+        <field name="name_abbreviation">นนอ.</field>
+        <field name="name_en">Air Cadet</field>
+        <field name="name_abbreviation_en">A/cdt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">317</field>
+    </record>
+    <record model="resource.rank" id="R63">
+        <field name="name">นักเรียนจ่าอากาศ</field>
+        <field name="name_abbreviation">นจอ.</field>
+        <field name="name_en">Air Technical Student</field>
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.rtaf')"
+        />
+        <field name="sequence">318</field>
+    </record>
+    <record model="resource.rank" id="R64">
+        <field name="name">พลตำรวจเอก</field>
+        <field name="name_abbreviation">พล.ต.อ.</field>
+        <field name="name_en">Police General</field>
+        <field name="name_abbreviation_en">Pol. Gen.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">400</field>
+    </record>
+    <record model="resource.rank" id="R65">
+        <field name="name">พลตำรวจโท</field>
+        <field name="name_abbreviation">พล.ต.ท.</field>
+        <field name="name_en">Police Lieutenant General</field>
+        <field name="name_abbreviation_en">Pol. Lt. Gen.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">401</field>
+    </record>
+    <record model="resource.rank" id="R66">
+        <field name="name">พลตำรวจตรี</field>
+        <field name="name_abbreviation">พล.ต.ต.</field>
+        <field name="name_en">Police Major General</field>
+        <field name="name_abbreviation_en">Pol. Maj. Gen.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">402</field>
+    </record>
+    <record model="resource.rank" id="R67">
+        <field name="name">พันตำรวจเอก</field>
+        <field name="name_abbreviation">พ.ต.อ.</field>
+        <field name="name_en">Police Colonel</field>
+        <field name="name_abbreviation_en">Pol. Col.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">403</field>
+    </record>
+    <record model="resource.rank" id="R68">
+        <field name="name">พันตำรวจโท</field>
+        <field name="name_abbreviation">พ.ต.ท.</field>
+        <field name="name_en">Police Lieutenant Colonel</field>
+        <field name="name_abbreviation_en">Pol. Lt. Col.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">404</field>
+    </record>
+    <record model="resource.rank" id="R69">
+        <field name="name">พันตำรวจโทหญิง</field>
+        <field name="name_abbreviation">พ.ต.ท.หญิง</field>
+        <field name="name_en" />
+        <field name="name_abbreviation_en" />
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">405</field>
+    </record>
+    <record model="resource.rank" id="R70">
+        <field name="name">พันตำรวจตรี</field>
+        <field name="name_abbreviation">พ.ต.ต.</field>
+        <field name="name_en">Police Major</field>
+        <field name="name_abbreviation_en">Pol. Maj.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">406</field>
+    </record>
+    <record model="resource.rank" id="R71">
+        <field name="name">ร้อยตำรวจเอก</field>
+        <field name="name_abbreviation">ร.ต.อ.</field>
+        <field name="name_en">Police Captain</field>
+        <field name="name_abbreviation_en">Pol. Capt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">407</field>
+    </record>
+    <record model="resource.rank" id="R72">
+        <field name="name">ร้อยตำรวจโท</field>
+        <field name="name_abbreviation">ร.ต.ท.</field>
+        <field name="name_en">Police Lieutenant</field>
+        <field name="name_abbreviation_en">Pol. Lt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">408</field>
+    </record>
+    <record model="resource.rank" id="R73">
+        <field name="name">ร้อยตำรวจตรี</field>
+        <field name="name_abbreviation">ร.ต.ต.</field>
+        <field name="name_en">Police Sub-Lieutenant</field>
+        <field name="name_abbreviation_en">Pol. Sub-Lt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">409</field>
+    </record>
+    <record model="resource.rank" id="R74">
+        <field name="name">ดาบตำรวจ</field>
+        <field name="name_abbreviation">ด.ต.</field>
+        <field name="name_en">Police Senior Sergeant Major</field>
+        <field name="name_abbreviation_en">Pol. Snr. Sgt. Maj.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">410</field>
+    </record>
+    <record model="resource.rank" id="R75">
+        <field name="name">จ่าสิบตำรวจ</field>
+        <field name="name_abbreviation">จ.ส.ต.</field>
+        <field name="name_en">Police Sergeant Major</field>
+        <field name="name_abbreviation_en">Pol. Sgt. Maj.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">411</field>
+    </record>
+    <record model="resource.rank" id="R76">
+        <field name="name">สิบตำรวจเอก</field>
+        <field name="name_abbreviation">ส.ต.อ.</field>
+        <field name="name_en">Police Sergeant</field>
+        <field name="name_abbreviation_en">Pol. Sgt.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">412</field>
+    </record>
+    <record model="resource.rank" id="R77">
+        <field name="name">สิบตำรวจโท</field>
+        <field name="name_abbreviation">ส.ต.ท.</field>
+        <field name="name_en">Police Corporal</field>
+        <field name="name_abbreviation_en">Pol. Cpl.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">413</field>
+    </record>
+    <record model="resource.rank" id="R78">
+        <field name="name">สิบตำรวจตรี</field>
+        <field name="name_abbreviation">ส.ต.ต.</field>
+        <field name="name_en">Police Lance Corporal</field>
+        <field name="name_abbreviation_en">Pol. L/Cpl.</field>
+        <field
+            name="rank_agency_id"
+            eval="ref('hr_employee_academic_standing_thailand.pol')"
+        />
+        <field name="sequence">414</field>
+    </record>
+</odoo>

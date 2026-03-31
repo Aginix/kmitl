@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- resource.rank.agency -->
+    <record model="resource.rank.agency" id="rta">
+        <field name="name">Royal Thai Army</field>
+        <field name="name_abbreviation">RTA</field>
+    </record>
+    <record model="resource.rank.agency" id="rtn">
+        <field name="name">Royal Thai Navy</field>
+        <field name="name_abbreviation">RTN</field>
+    </record>
+    <record model="resource.rank.agency" id="rtaf">
+        <field name="name">Royal Thai Air Force</field>
+        <field name="name_abbreviation">RTAF</field>
+    </record>
+    <record model="resource.rank.agency" id="pol">
+        <field name="name">Police</field>
+        <field name="name_abbreviation">POL</field>
+    </record>
+</odoo>

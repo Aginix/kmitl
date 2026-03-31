@@ -1,0 +1,20 @@
+{
+    "name": "HR Employee Security Role",
+    "version": "16.0.1.1.1",
+    "summary": "HR Employee Security Role",
+    "website": "https://github.com/aginix/kmitl-odoo",
+    "author": "Nopparut, Aginix Technologies",
+    "maintainers": ["nopparuts"],
+    "license": "AGPL-3",
+    "category": "Human Resources",
+    "depends": ["base", "hr", "aginix_hrms_base"],
+    "data": [
+        "security/hr_security.xml",
+        "security/ir.model.access.csv",
+        "views/hr_employee_form_view.xml",
+    ],
+    "auto_install": False,
+    "application": False,
+    "post_init_hook": "post_init_hook",
+    "uninstall_hook": "uninstall_hook",
+}
