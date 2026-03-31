@@ -26,6 +26,7 @@
                         <field name="old_wa_snapshot_ids" nolabel="1" readonly="1">
                             <tree no_open="1">
                                 <field name="employee_id" />
+                                <field name="approve_role" />
                             </tree>
                         </field>
                     </group>
@@ -38,6 +39,7 @@
                         <field name="new_wa_snapshot_ids" nolabel="1" readonly="1">
                             <tree no_open="1">
                                 <field name="employee_id" />
+                                <field name="approve_role" />
                             </tree>
                         </field>
                     </group>

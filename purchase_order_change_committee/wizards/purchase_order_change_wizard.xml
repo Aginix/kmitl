@@ -30,6 +30,7 @@
                     >
                         <tree no_open="1">
                             <field name="employee_id" />
+                            <field name="approve_role" />
                         </tree>
                     </field>
                 </group>
@@ -46,6 +47,7 @@
                                 name="employee_id"
                                 options="{'no_create': True}"
                             />
+                            <field name="approve_role" />
                         </tree>
                     </field>
                 </group>
