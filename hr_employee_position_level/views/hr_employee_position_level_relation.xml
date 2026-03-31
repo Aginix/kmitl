@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="hr_employee_position_level_relation_form_view">
+        <field name="name">hr.employee.position.level.relation.form (in
+            hr_employee_position_level_relation)</field>
+        <field name="model">hr.employee.position.level.relation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header />
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="role" />
+                        <field name="level" />
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="hr_employee_position_level_relation_search_view">
+        <field name="name">hr.employee.position.level.relation.search (in
+            hr_employee_position_level_relation)</field>
+        <field name="model">hr.employee.position.level.relation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="role" />
+                <field name="level" />
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="hr_employee_position_level_relation_tree_view">
+        <field name="name">hr.employee.position.level.relation.tree (in
+            hr_employee_position_level_relation)</field>
+        <field name="model">hr.employee.position.level.relation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="role" />
+                <field name="level" />
+            </tree>
+        </field>
+    </record>
+    <record
+        model="ir.actions.act_window"
+        id="hr_employee_position_level_relation_act_window"
+    >
+        <field name="name">Position Level List</field>
+        <field name="res_model">hr.employee.position.level.relation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+    <record model="ir.ui.menu" id="hr_employee_position_level_relation_menu">
+        <field name="name">Position Level List</field>
+        <field name="parent_id" ref="hr.menu_config_employee" />
+        <field name="action" ref="hr_employee_position_level_relation_act_window" />
+        <field name="sequence" eval="16" />
+    </record>
+</odoo>

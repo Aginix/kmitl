@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_education_history_employee,hr.employee.education_history,model_hr_employee_education_history,base.group_user,1,0,0,0
+access_hr_employee_education_history_user,hr.employee.education_history,model_hr_employee_education_history,hr.group_hr_user,1,1,1,1
+access_resource_university_employee,resource.university,model_resource_university,hr.group_hr_user,1,1,1,1
+access_resource_education_level_employee,resource.education.level,model_resource_education_level,hr.group_hr_user,1,0,0,0
+access_resource_education_level_employee_manager,resource.education.level,model_resource_education_level,hr.group_hr_manager,1,1,1,1
+access_resource_education_faculty_employee,resource.education.faculty,model_resource_education_faculty,hr.group_hr_user,1,1,1,1
+access_resource_education_department_employee,resource.education.department,model_resource_education_department,hr.group_hr_user,1,1,1,1
+access_resource_education_program_employee,resource.education.program,model_resource_education_program,hr.group_hr_user,1,1,1,1
