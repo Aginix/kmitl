@@ -137,21 +137,21 @@
                                 คณะกรรมการ ได้รับหนังสือส่งมอบงาน ลงวันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.date_receive)"
+                                    t-esc="o.format_date_thai(o.date_committee_received)"
                                 />
                             </div>
                             <div>
                                 เสร็จถูกต้องตามสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.requested_delivery_date or o.date_due)"
+                                    t-esc="o.format_date_thai(o.date_contract_complete)"
                                 />
                             </div>
                             <div>
                                 และได้รับมอบงานแล้ว ตั้งแต่วันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.date_accept)"
+                                    t-esc="o.format_date_thai(o.date_work_handover)"
                                 />
                             </div>
                         </div>
@@ -178,7 +178,7 @@
                                 ถึงวันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.date_receive)"
+                                    t-esc="o.format_date_thai(o.requested_delivery_date)"
                                 />
                                 เป็นเวลา
                                 <span

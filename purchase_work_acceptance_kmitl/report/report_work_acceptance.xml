@@ -45,7 +45,7 @@
                         <div class="row">
                             <div class="col-8" />
                             <div class="col">
-                                <div>เลขที่ อว. <span t-esc="o.name" /></div>
+                                <div>เลขที่ <span t-esc="o.name" /></div>
                             </div>
                         </div>
                         <div class="row">
@@ -93,8 +93,7 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                ตามใบส่งมอบงาน
-                                ลงวันที่
+                                ตามใบส่งมอบงาน ลงวันที่
                                 <span
                                     class="ms-2 fw-bolder text-decoration-underline"
                                     t-esc="o.format_date_thai(o.requested_delivery_date)"
@@ -346,120 +345,6 @@
                                 </div>
                             </t>
                         </t>
-                    </div>
-
-                    <!-- PAGE 4: กรรมการและเลขานุการ + ส่วนบันทึกงานพัสดุ -->
-                    <div class="page" style="page-break-before: always">
-                        <div style="position: absolute; top: 0px; right: 0px">
-                            แบบ พ.36
-                        </div>
-                        <hr class="mt-5" />
-                        <div class="row mt-3">
-                            <div class="col fw-bolder">ส่วนบันทึกงานพัสดุ</div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col ms-5">
-                                ด้วยสำนักงานพัสดุ สำนักงานอธิการบดี
-                                มีความประสงค์ขอเบิกเงินรายได้ ประจำปี 2568
-                                ตามรายละเอียดดังต่อไปนี้
-                            </div>
-                        </div>
-                        <table class="table table-borderless table-sm">
-                            <tbody>
-                                <tr>
-                                    <td style="width: 60%">
-                                        สำนักบริหารข้อมูลดิจิทัลฯ
-                                    </td>
-                                    <td>รหัสสำนักงาน</td>
-                                    <td>09</td>
-                                </tr>
-                                <tr>
-                                    <td>กองทุนสินทรัพย์ถาวร</td>
-                                    <td>รหัสกองทุน</td>
-                                    <td>0600</td>
-                                </tr>
-                                <tr>
-                                    <td>แผนงาน จัดการศึกษาอุดมศึกษา</td>
-                                    <td>รหัสแผนงาน</td>
-                                    <td>09007</td>
-                                </tr>
-                                <tr>
-                                    <td>งาน - กิจกรรมหลัก งานสนับสนุนการจัดการศึกษา</td>
-                                    <td>รหัส - กิจกรรมหลัก</td>
-                                    <td>0101</td>
-                                </tr>
-                                <tr>
-                                    <td>- กิจกรรมรอง บริการคอมพิวเตอร์ทางวิชาการ</td>
-                                    <td>- กิจกรรมรอง</td>
-                                    <td>13</td>
-                                </tr>
-                                <tr>
-                                    <td>- กิจกรรมย่อย งานด้านบริการคอมพิวเตอร์</td>
-                                    <td>- กิจกรรมย่อย</td>
-                                    <td>134</td>
-                                </tr>
-                                <tr>
-                                    <td>งบรายจ่าย งบลงทุน</td>
-                                    <td>รหัสงบรายจ่าย</td>
-                                    <td>53000</td>
-                                </tr>
-                                <tr>
-                                    <td>ค่าใช้จ่ายงบลงทุน</td>
-                                    <td>รหัสประเภทรายจ่าย</td>
-                                    <td>53100</td>
-                                </tr>
-                                <tr>
-                                    <td>ครุภัณฑ์</td>
-                                    <td>รหัส</td>
-                                    <td>5412000000</td>
-                                </tr>
-                                <tr>
-                                    <td>ค่าครุภัณฑ์คอมพิวเตอร์</td>
-                                    <td>รหัส</td>
-                                    <td>5412000003</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            <div class="col">
-                                จำนวนเงิน
-                                <span
-                                    class="ms-2 fw-bolder text-decoration-underline"
-                                    t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
-                                />
-                                บาท (
-                                <t
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
-    sum(o.wa_line_ids.mapped('price_subtotal'))
-)"
-                                />)
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col ms-5">
-                                จึงเรียนมาเพื่อทราบรายงานการตรวจรับพัสดุของคณะกรรมการและเห็นควรแจ้งหน่วยงานที่เกี่ยวข้องเพื่อดำเนินการต่อไป
-                            </div>
-                        </div>
-                        <div class="row mt-5">
-                            <div class="col-9 offset-3 text-center">
-                                ลงชื่อ
-                                <span class="sig-line"></span>
-                                ผู้อำนวยการสำนักงานพัสดุ
-                                <div class="mt-2">(นางสาวกรองทิพย์ สกุนตศรี)</div>
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-9 offset-3 text-center fw-bolder">
-                                ทราบ/ดำเนินการเสนอ
-                            </div>
-                        </div>
-                        <div class="row mt-5">
-                            <div class="col-9 offset-3 text-center">
-                                <div>(รองศาสตราจารย์ไพฑูรย์ พิมดี)</div>
-                                <div>รองอธิการบดีฝ่ายพัสดุ ปฏิบัติการแทน</div>
-                                <div>อธิการบดี</div>
-                            </div>
-                        </div>
                     </div>
                 </t>
             </t>
