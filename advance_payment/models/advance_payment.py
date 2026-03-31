@@ -115,7 +115,6 @@ class AdvancePayment(models.Model):
     bank_id = fields.Many2one(
         comodel_name="res.partner.bank",
         string="บัญชีธนาคาร",
-        required=True,
         states=READONLY_STATES,
     )
 

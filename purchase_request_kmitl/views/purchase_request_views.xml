@@ -104,16 +104,16 @@
                         </div>
                     </group>
                 </group>
-                <group name="warning_loan">
+                <group name="warning_advance">
                     <group>
                         <div
                             colspan="2"
                             class="alert alert-warning show"
                             role="alert"
-                            attrs="{'invisible': [('payment_type', '!=', 'loan')]}"
+                            attrs="{'invisible': [('payment_type', '!=', 'advance')]}"
                         >
-                            When payment type is Loan, please select the loan's
-                            name in the Vendor field.
+                            เมื่อประเภทการชำระเงินเป็น "เงินยืม"
+                            กรุณาสร้างสัญญาเงินยืมหลังจากอนุมัติคำขอจัดซื้อจัดจ้าง
                         </div>
                     </group>
                 </group>
