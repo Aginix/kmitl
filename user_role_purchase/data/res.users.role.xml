@@ -8,7 +8,7 @@
                 eval="[(6, 0, [
                 ref('budget.group_budget_user'),
                 ref('budget.group_budget_commitment'),
-                ref('l10n_th_gov_purchase_request.group_purchase_request_verify'),
+                ref('purchase_request_kmitl.group_purchase_request_verify'),
                 ref('disbursement.group_disbursement_user'),
                 ref('procurement_plan.group_procurement_plan_user'),
                 ref('agx_sarabun.group_sarabun_user'),
@@ -24,7 +24,7 @@
                 eval="[(6, 0, [
                 ref('budget.group_budget_user'),
                 ref('budget.group_budget_commitment'),
-                ref('l10n_th_gov_purchase_request.group_purchase_request_verify'),
+                ref('purchase_request_kmitl.group_purchase_request_verify'),
                 ref('disbursement.group_disbursement_user'),
                 ref('procurement_plan.group_procurement_plan_user'),
                 ref('agx_sarabun.group_sarabun_user'),
@@ -41,7 +41,7 @@
                 eval="[(6, 0, [
                 ref('budget.group_budget_user'),
                 ref('budget.group_budget_commitment'),
-                ref('l10n_th_gov_purchase_request.group_purchase_request_verify'),
+                ref('purchase_request_kmitl.group_purchase_request_verify'),
                 ref('disbursement.group_disbursement_user'),
                 ref('procurement_plan.group_procurement_plan_user'),
                 ref('agx_sarabun.group_sarabun_user'),
