@@ -51,6 +51,17 @@ class PurchaseOrder(models.Model):
         tracking=True
     )
 
+    payment_type = fields.Selection(
+        [
+            ("direct", "Direct paid"),
+            ("loan", "Loan"),
+            ("prepaid", "Prepaid"),
+        ],
+        tracking=True,
+        string="Payment Type",
+        states=READONLY_STATES,
+    )
+
     state = fields.Selection(selection_add=[
         ("purchase", "Open"),
         ("done", "Done")
