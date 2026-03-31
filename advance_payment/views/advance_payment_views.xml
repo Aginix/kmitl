@@ -90,7 +90,8 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-credit-card"
-                            attrs="{'invisible': [('payment_count', '=', 0)]}">
+                            attrs="{'invisible': [('payment_count', '=', 0)]}"
+                            groups="advance_payment.group_advance_payment_manager">
                             <field name="payment_count" string="Payments" widget="statinfo"/>
                         </button>
                         <button name="action_view_return_lines"
