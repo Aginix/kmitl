@@ -13,18 +13,18 @@
                 <h2>Purchase Request Verification</h2>
                 <div
                     class="row mt16 o_settings_container"
-                    name="purchase_request_supplier_state_settings"
+                    name="purchase_request_verify_state_settings"
                 >
                     <div
                         class="col-12 col-lg-6 o_setting_box"
-                        id="purchase_request_allow_supplier_state_settings"
+                        id="purchase_request_allow_verify_state_settings"
                     >
                         <div class="o_setting_left_pane">
-                            <field name="purchase_request_allow_supplier_state" />
+                            <field name="purchase_request_allow_verify_state" />
                         </div>
                         <div class="o_setting_right_pane">
                             <label
-                                for="purchase_request_allow_supplier_state"
+                                for="purchase_request_allow_verify_state"
                                 string="Allow Purchase Request Verification"
                             />
                             <div class="text-muted">

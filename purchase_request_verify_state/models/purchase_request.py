@@ -26,8 +26,9 @@ class PurchaseRequest(models.Model):
 
     def button_to_verify(self):
         if self._is_verification_enabled():
+            to_examine = self.filtered(lambda r: r.state == 'draft')
             super().button_to_verify()
-            self.filtered(lambda r: r.state == 'draft').write({'state': 'to_examine'})
+            to_examine.write({'state': 'to_examine'})
             return True
         return super().button_to_verify()
     
