@@ -21,7 +21,7 @@
 
     <record id="bank_scb" model="res.bank">
         <field name="name">ธนาคารไทยพาณิชย์ (Siam Commercial Bank)</field>
-        <field name="bic">SICO</field>
+        <field name="bic">SCB</field>
         <field name="street">9 ถนนรัชดาภิเษก</field>
         <field name="city">กรุงเทพมหานคร</field>
         <field name="zip">10900</field>
