@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase request supplier state',
+    'name': 'Purchase request verify state',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase request supplier state Summary """,
+    'summary': """ Purchase request verify state Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",

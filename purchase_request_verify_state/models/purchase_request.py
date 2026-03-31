@@ -21,10 +21,12 @@ class PurchaseRequest(models.Model):
             self.env['ir.config_parameter']
             .sudo()
             .get_param('purchase_request_verification.enable_verification', default=False)
+            == 'True'
         )
 
     def button_to_verify(self):
         if self._is_verification_enabled():
+            super().button_to_verify()
             self.filtered(lambda r: r.state == 'draft').write({'state': 'to_examine'})
             return True
         return super().button_to_verify()
