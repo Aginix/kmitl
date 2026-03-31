@@ -1,0 +1,14 @@
+{
+    "name": "Aginix HRMS Base",
+    "version": "16.0.1.0.1",
+    "category": "Human Resources",
+    "summary": "Aginix HRMS Base",
+    "website": "https://github.com/aginix/kmitl-odoo",
+    "author": "Nopparut, Aginix Technologies",
+    "maintainers": ["nopparuts"],
+    "license": "AGPL-3",
+    "depends": ["base", "hr"],
+    "data": ["views/hr_employee_view.xml"],
+    "application": False,
+    "installable": True,
+}

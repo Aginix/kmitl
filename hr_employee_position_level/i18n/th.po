@@ -1,0 +1,5409 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_employee_position_level
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0-20230109\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-15 09:58+0000\n"
+"PO-Revision-Date: 2023-02-15 16:58+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.2.2\n"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields.selection,name:hr_employee_position_level.selection__hr_employee_position_level_relation__role__academic
+msgid "Academic"
+msgstr "สายวิชาการ"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_needaction
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_attachment_count
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__code
+msgid "Code"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__create_uid
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__create_uid
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__create_date
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__create_date
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__discipline_id
+msgid "Discipline"
+msgstr "สาขาวิชา"
+
+#. module: hr_employee_position_level
+#: model:ir.actions.act_window,name:hr_employee_position_level.resource_academic_discipline_act_window
+#: model:ir.ui.menu,name:hr_employee_position_level.resource_academic_discipline_menu
+msgid "Discipline List"
+msgstr "รายชื่อสาขาวิชา"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__name
+msgid "Discipline Name"
+msgstr "ชื่อสาขาวิชา"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__display_name
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__display_name
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__effective_date
+msgid "Effective Date"
+msgstr "วันที่ดำรงตำแหน่ง"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__employee_id
+msgid "Employee"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_follower_ids
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_partner_ids
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model_terms:ir.ui.view,arch_db:hr_employee_position_level.view_employee_filter
+msgid "Group By"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model,name:hr_employee_position_level.model_hr_employee_position_level
+msgid "HR Employee Position Level"
+msgstr "วิทยฐานะ"
+
+#. module: hr_employee_position_level
+#: model:ir.model,name:hr_employee_position_level.model_hr_employee_position_level_relation
+msgid "HR Employee Position Level Relation"
+msgstr "วิทยฐานะ"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__has_message
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__id
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__id
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__id
+msgid "ID"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,help:hr_employee_position_level.field_hr_employee_position_level_relation__message_needaction
+#: model:ir.model.fields,help:hr_employee_position_level.field_resource_academic_discipline__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,help:hr_employee_position_level.field_hr_employee_position_level_relation__message_has_error
+#: model:ir.model.fields,help:hr_employee_position_level.field_resource_academic_discipline__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_is_follower
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level____last_update
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation____last_update
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__write_uid
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__write_uid
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__write_date
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__write_date
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__level
+msgid "Level"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_main_attachment_id
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_has_error
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_ids
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__name
+msgid "Name"
+msgstr "วิทยฐานะ"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_needaction_counter
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__message_has_error_counter
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_resource_academic_discipline__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,help:hr_employee_position_level.field_hr_employee_position_level_relation__message_needaction_counter
+#: model:ir.model.fields,help:hr_employee_position_level.field_resource_academic_discipline__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,help:hr_employee_position_level.field_hr_employee_position_level_relation__message_has_error_counter
+#: model:ir.model.fields,help:hr_employee_position_level.field_resource_academic_discipline__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:ir.model,name:hr_employee_position_level.model_office_order
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__office_order_id
+msgid "Office Order"
+msgstr "เลขที่คำสั่ง"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__order_date
+msgid "Order Date"
+msgstr "วันที่คำสั่ง"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee__position_level_id
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee__position_level_ids
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_office_order__position_level_ids
+#: model_terms:ir.ui.view,arch_db:hr_employee_position_level.hr_employee_view_form
+#: model_terms:ir.ui.view,arch_db:hr_employee_position_level.view_employee_filter
+msgid "Position Level"
+msgstr "วิทยฐานะ"
+
+#. module: hr_employee_position_level
+#: model:ir.actions.act_window,name:hr_employee_position_level.hr_employee_position_level_relation_act_window
+#: model:ir.ui.menu,name:hr_employee_position_level.hr_employee_position_level_relation_menu
+msgid "Position Level List"
+msgstr "รายชื่อวิทยฐานะ"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee__position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__name
+msgid "Position Level Name"
+msgstr "ชื่อวิทยฐานะ"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__relation_id
+msgid "Relation"
+msgstr "วิทยฐานะ"
+
+#. module: hr_employee_position_level
+#: model:ir.model,name:hr_employee_position_level.model_resource_academic_discipline
+msgid "Resource Academic Discipline"
+msgstr "ข้อมูลสาขาวิชา"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level_relation__role
+msgid "Role"
+msgstr "สายงาน"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields,field_description:hr_employee_position_level.field_hr_employee_position_level__subdiscipline_id
+msgid "Subdiscipline"
+msgstr "อนุสาขาวิชา"
+
+#. module: hr_employee_position_level
+#: model:ir.model.fields.selection,name:hr_employee_position_level.selection__hr_employee_position_level_relation__role__support
+msgid "Support"
+msgstr "สายสนับสนุน"
+
+#. module: hr_employee_position_level
+#: model:ir.model,name:hr_employee_position_level.model_hr_employee
+msgid "hr.employee"
+msgstr "พนักงาน"
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670203
+msgid "กฎหมายการคลังและการภาษีอากร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6708
+msgid "กฎหมายธุรกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670202
+msgid "กฎหมายปกครอง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670102
+msgid "กฎหมายพาณิชย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6702
+msgid "กฎหมายมหาชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670302
+msgid "กฎหมายมหาชนระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670201
+msgid "กฎหมายรัฐธรรมนูญ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6704
+msgid "กฎหมายสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.540104
+#: model:resource.academic.discipline,name:hr_employee_position_level.670204
+msgid "กฎหมายสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6709
+msgid "กฎหมายอาญา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670303
+msgid "กฎหมายอาญาระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670901
+msgid "กฎหมายอาญาและกระบวนการยุติธรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670902
+msgid "กฎหมายอาญาและอาชญาวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6706
+msgid "กฎหมายเปรียบเทียบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6705
+msgid "กฎหมายเศรษฐกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670304
+msgid "กฎหมายเศรษฐกิจระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6701
+msgid "กฎหมายเอกชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670301
+msgid "กฎหมายเอกชนระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670101
+msgid "กฎหมายแพ่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670401
+msgid "กฎหมายแรงงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3903
+msgid "กายภาพบำบัด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0144
+#: model:resource.academic.discipline,name:hr_employee_position_level.2101
+#: model:resource.academic.discipline,name:hr_employee_position_level.4101
+msgid "กายวิภาคศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3905
+msgid "กายอุปกรณ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610204
+#: model:resource.academic.discipline,name:hr_employee_position_level.610309
+msgid "การคลังสาธารณะ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610306
+msgid "การค้าระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680201
+msgid "การจัดการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680231
+msgid "การจัดการการกีฬา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680205
+msgid "การจัดการการดำเนินงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.915102
+msgid "การจัดการการท่องเที่ยว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680212
+msgid "การจัดการการท่องเที่ยวและบริการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680219
+msgid "การจัดการการผลิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510301
+msgid "การจัดการการผลิตพืช"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611202
+msgid "การจัดการการเสี่ยงภัยและการประกันภัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.018302
+msgid "การจัดการขยะและของเสียอันตราย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.630103
+msgid "การจัดการข้อมูล สารสนเทศ และความรู้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680204
+msgid "การจัดการข้อมูลสารสนเทศ หรือ ระบบสารสนเทศเพื่อการจัดการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680213
+msgid "การจัดการความรู้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680226
+msgid "การจัดการงานก่อสร้าง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611012
+msgid "การจัดการชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514307
+msgid "การจัดการดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530104
+msgid "การจัดการทรัพยากรทางทะเลและชายฝั่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530107
+msgid "การจัดการทรัพยากรธรรมชาติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5301
+msgid "การจัดการทรัพยากรธรรมชาติและสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530105
+msgid "การจัดการทรัพยากรป่าไม้และสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680202
+msgid "การจัดการทรัพยากรมนุษย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.630101
+msgid "การจัดการทรัพยากรห้องสมุดและบริการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680228
+msgid "การจัดการธุรกิจดนตรี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680227
+msgid "การจัดการธุรกิจบันเทิง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680207
+msgid "การจัดการธุรกิจระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680230
+msgid "การจัดการบริการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5508
+msgid "การจัดการประมง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530101
+msgid "การจัดการป่าไม้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680206
+msgid "การจัดการผู้ประกอบการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180302
+msgid "การจัดการพลังงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530102
+msgid "การจัดการลุ่มน้ำ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680229
+msgid "การจัดการสหกรณ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530106
+msgid "การจัดการสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.018301
+#: model:resource.academic.discipline,name:hr_employee_position_level.180402
+msgid "การจัดการสิ่งแวดล้อมและภัยพิบัติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680208
+msgid "การจัดการห่วงโซ่อุปทานและโลจิสติกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.630105
+msgid "การจัดการองค์กรสารสนเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680220
+msgid "การจัดการอุตสาหกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680203
+msgid "การจัดการเชิงกลยุทธ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680211
+msgid "การจัดการเทคโนโลยีและนวัตกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.630104
+msgid "การจัดการเอกสารและจดหมายเหตุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180702
+msgid "การจัดการและโลจิสติกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.915104
+msgid "การจัดการโรงแรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.915101
+msgid "การจัดการโรงแรมและการท่องเที่ยว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.011204
+msgid "การจำลองสถานการณ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.011203
+msgid "การจำลองแบบเชิงคณิตศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680214
+msgid "การตลาด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9151
+msgid "การท่องเที่ยวและการโรงแรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650166
+msgid "การนิเทศการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680216
+msgid "การบริหารการขนส่งระหว่างประเทศ หรือ การจัดการขนส่งระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.370106
+msgid "การบริหารการพยาบาล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610209
+msgid "การบริหารการพัฒนา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650165
+msgid "การบริหารการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610517
+msgid "การบริหารกิจการสื่อ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610206
+msgid "การบริหารงานท้องถิ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9161
+msgid "การบริหารงานยุติธรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610210
+msgid "การบริหารจัดการที่ดี หรือ ธรรมาภิบาล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610202
+msgid "การบริหารทรัพยากรมนุษย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610201
+msgid "การบริหารรัฐกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610203
+msgid "การบริหารองค์การ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610207
+msgid "การบริหารเปรียบเทียบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610805
+msgid "การบริหารและนโยบายสวัสดิการสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6801
+msgid "การบัญชี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680101
+msgid "การบัญชีการเงิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680103
+msgid "การบัญชีต้นทุน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680102
+msgid "การบัญชีบริหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610104
+msgid "การปกครองท้องถิ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610504
+msgid "การประชาสัมพันธ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.311102
+msgid "การประดิษฐ์ใบหน้าขากรรไกร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650162
+msgid "การประถมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010408
+msgid "การประมาณ และ การขยาย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5101
+msgid "การปรับปรุงพันธุ์พืช"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510401
+msgid "การปรับปรุงพันธุ์พืชสวน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5111
+msgid "การปรับปรุงพันธุ์สัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510202
+msgid "การผลิตพืชไร่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1503
+msgid "การผังเมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650177
+msgid "การฝึกหัดครู"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.370105
+msgid "การพยาบาลจิตเวชและสุขภาพจิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.370102
+msgid "การพยาบาลผู้ใหญ่และผู้สูงอายุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.370103
+msgid "การพยาบาลมารดา ทารก และการผดุงครรภ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350101
+msgid "การพยาบาลสาธารณสุข"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.370104
+msgid "การพยาบาลสุขภาพชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.370101
+msgid "การพยาบาลเด็กและวัยรุ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611007
+msgid "การพัฒนาชนบท"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611006
+msgid "การพัฒนาชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180604
+msgid "การพัฒนาซอฟต์แวร์ หรือ การพัฒนาระบบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9162
+msgid "การพัฒนาทรัพยากรมนุษย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.016603
+msgid "การพัฒนาผลิตภัณฑ์สิ่งทอ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180903
+msgid "การพัฒนาผลิตภัณฑ์อาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611005
+msgid "การพัฒนาสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650109
+msgid "การพัฒนาหลักสูตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.915103
+msgid "การพัฒนาแหล่งท่องเที่ยวและการขนส่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680106
+msgid "การภาษีอากร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650163
+msgid "การมัธยมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610706
+msgid "การย้ายถิ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610307
+msgid "การรวมกลุ่มทางเศรษฐกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.790102
+msgid "การล่ามศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650103
+msgid "การวัดและประเมินผลทางการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0108
+msgid "การวิจัยดําเนินการหรือกําหนดการเชิงคณิตศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650102
+msgid "การวิจัยทางการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680217
+msgid "การวิจัยธุรกิจและการวิเคราะห์เชิงปริมาณ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610705
+msgid "การวิจัยประชากรและสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650110
+msgid "การวิจัยและการพัฒนาหลักสูตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680210
+msgid "การวิเคราะห์ธุรกิจเชิงปริมาณ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611305
+msgid "การวิเคราะห์สถิติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0106
+msgid "การวิเคราะห์เชิงตัวเลข"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611109
+msgid "การวิเคราะห์เชิงปริมาณทางภูมิศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010410
+msgid "การวิเคราะห์เชิงฟังก์ชัน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650188
+msgid "การศึกษาต่อเนื่อง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650183
+msgid "การศึกษาทางไกล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650182
+msgid "การศึกษานอกระบบ หรือ การศึกษานอกโรงเรียน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650161
+msgid "การศึกษาปฐมวัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650181
+msgid "การศึกษาผู้ใหญ่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650184
+msgid "การศึกษาพิเศษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710101
+msgid ""
+"การศึกษาภาษาไทยในฐานะภาษาแม่ หรือ การศึกษาภาษาไทยตามแนวภาษาศาสตร์\n"
+"            หรือไวยากรณ์ไทย/หลักภาษาไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650187
+msgid "การศึกษาเปรียบเทียบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610709
+msgid "การสมรส"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650121
+msgid "การสอนคณิตศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810310
+msgid "การสอนดนตรี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650124
+msgid "การสอนภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650126
+msgid "การสอนภาษาฝรั่งเศส"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650125
+msgid "การสอนภาษาอังกฤษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650127
+msgid "การสอนภาษาไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650122
+msgid "การสอนวิทยาศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650123
+msgid "การสอนสังคมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680105
+msgid "การสอบบัญชี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514303
+msgid "การสำรวจดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610502
+msgid "การสื่อสาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610518
+msgid "การสื่อสารการตลาด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610516
+msgid "การสื่อสารการเมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610509
+msgid "การสื่อสารการแสดง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610515
+msgid "การสื่อสารชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610501
+msgid "การสื่อสารมวลชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916406
+msgid "การสื่อสารระหว่างวัฒนธรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610512
+msgid "การสื่อสารสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350105
+msgid "การสื่อสารและส่งเสริมสุขภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5131
+msgid "การส่งเสริมการเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610707
+msgid "การอนามัยการเจริญพันธุ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514304
+msgid "การอนุรักษ์ดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1502
+msgid "การออกแบบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150301
+msgid "การออกแบบชุมชนเมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150201
+msgid "การออกแบบนิเทศศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510402
+msgid "การออกแบบภูมิทัศน์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650191
+msgid "การออกแบบสื่อการเรียนรู้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150202
+msgid "การออกแบบอุตสาหกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810409
+msgid "การออกแบบเพื่อการแสดง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.915602
+msgid "การออกแบบและตัดเย็บเสื้อผ้า"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650179
+msgid "การอาชีวศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650180
+msgid "การอาชีวศึกษาและเทคนิคศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650164
+msgid "การอุดมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710106
+msgid "การอ่านจารึก หรือ ภาษาไทยสมัยเก่า"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.770101
+msgid "การเขียน การสร้างบท การแปลบทและการดัดแปลงบท"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680215
+msgid "การเงิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610305
+msgid "การเงินระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680218
+msgid "การเงินและตลาดหลักทรัพย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610710
+msgid "การเจ็บป่วยและตาย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611003
+msgid "การเปลี่ยนแปลงทางสังคมวัฒนธรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5501
+msgid "การเพาะเลี้ยงสัตว์น้ำ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014102
+msgid "การเพาะเลี้ยงเนื้อเยื่อ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610101
+msgid "การเมืองการปกครอง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610103
+msgid "การเมืองการปกครองเปรียบเทียบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610105
+msgid "การเมืองระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.540106
+msgid "การเมืองและนโยบายสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650104
+msgid "การแนะแนว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650105
+msgid "การแนะแนวและให้คำปรึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.790101
+msgid "การแปลศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7901
+msgid "การแปลและการล่าม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710202
+#: model:resource.academic.discipline,name:hr_employee_position_level.710302
+#: model:resource.academic.discipline,name:hr_employee_position_level.710402
+#: model:resource.academic.discipline,name:hr_employee_position_level.710502
+#: model:resource.academic.discipline,name:hr_employee_position_level.710602
+#: model:resource.academic.discipline,name:hr_employee_position_level.710702
+#: model:resource.academic.discipline,name:hr_employee_position_level.710802
+#: model:resource.academic.discipline,name:hr_employee_position_level.710902
+#: model:resource.academic.discipline,name:hr_employee_position_level.711002
+#: model:resource.academic.discipline,name:hr_employee_position_level.711102
+#: model:resource.academic.discipline,name:hr_employee_position_level.711302
+#: model:resource.academic.discipline,name:hr_employee_position_level.711402
+#: model:resource.academic.discipline,name:hr_employee_position_level.711502
+#: model:resource.academic.discipline,name:hr_employee_position_level.711602
+#: model:resource.academic.discipline,name:hr_employee_position_level.711702
+msgid "การแปลและล่าม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810412
+msgid "การแสดงละครประยุกต์ ละครเยาวชน ละครในการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810410
+msgid "การแสดงและกำกับการแสดง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610510
+msgid "การโฆษณา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3906
+msgid "กิจกรรมบำบัด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.410803
+msgid "กิณวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510604
+msgid "กีฎวิทยาสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5106
+msgid "กีฏวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2152
+msgid "กุมารศัลยศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2181
+msgid "กุมารเวชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110401
+msgid "ก่อสร้าง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0104
+msgid "คณิตศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.011201
+msgid "คณิตศาสตร์การเงิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0101
+msgid "คณิตศาสตร์ทั่วไป"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.011202
+#: model:resource.academic.discipline,name:hr_employee_position_level.611201
+msgid "คณิตศาสตร์ประกันภัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0112
+msgid "คณิตศาสตร์ประยุกต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0111
+#: model:resource.academic.discipline,name:hr_employee_position_level.650144
+msgid "คณิตศาสตร์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611304
+msgid "คณิตศาสตร์สถิติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710105
+#: model:resource.academic.discipline,name:hr_employee_position_level.710203
+#: model:resource.academic.discipline,name:hr_employee_position_level.710304
+#: model:resource.academic.discipline,name:hr_employee_position_level.720402
+#: model:resource.academic.discipline,name:hr_employee_position_level.730107
+msgid "คติชนวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.780105
+msgid "คริสตศาสน์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650174
+msgid "ครุศาสตร์อุตสาหกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650171
+msgid "ครุศาสตร์เกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650173
+msgid "ครุศาสตร์เครื่องกล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650175
+msgid "ครุศาสตร์เทคโนโลยี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650172
+msgid "ครุศาสตร์ไฟฟ้า"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650178
+msgid "ครุศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180904
+msgid "ความปลอดภัยทางอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3907
+msgid "ความผิดปกติของการสื่อความหมาย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180608
+msgid "ความมั่นคงของระบบคอมพิวเตอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610106
+msgid "ความสัมพันธ์ระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530301
+msgid "ความหลากหลายทางชีวภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514301
+msgid "ความอุดมสมบูรณ์ของดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9156
+msgid "คหกรรมศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650189
+msgid "คหกรรมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680225
+msgid "คอมพิวเตอร์ธุรกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650145
+msgid "คอมพิวเตอร์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810110
+msgid "คอมพิวเตอร์อาร์ต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810301
+msgid "คีตศิลป์ไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2187
+#: model:resource.academic.discipline,name:hr_employee_position_level.412107
+msgid "จักษุวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710204
+msgid "จารึกภาษาเขมร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610604
+msgid "จิตพฤติกรรมศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810101
+msgid "จิตรกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6104
+msgid "จิตวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610401
+msgid "จิตวิทยาการทดลอง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610413
+msgid "จิตวิทยาการปรึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610402
+#: model:resource.academic.discipline,name:hr_employee_position_level.610601
+#: model:resource.academic.discipline,name:hr_employee_position_level.650106
+msgid "จิตวิทยาการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610405
+msgid "จิตวิทยาการเรียนรู้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610412
+msgid "จิตวิทยาคลินิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610407
+msgid "จิตวิทยาชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610414
+msgid "จิตวิทยาทางปัญญา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610409
+msgid "จิตวิทยาผู้สูงอายุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610410
+msgid "จิตวิทยาพัฒนาการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610411
+msgid "จิตวิทยาสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.540103
+msgid "จิตวิทยาสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610415
+msgid "จิตวิทยาสุขภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610403
+msgid "จิตวิทยาองค์การ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610404
+msgid "จิตวิทยาอุตสาหกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610408
+msgid "จิตวิทยาเด็กพิเศษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2186
+msgid "จิตเวชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.218601
+msgid "จิตเวชศาสตร์เด็กและวัยรุ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7303
+#: model:resource.academic.discipline,name:hr_employee_position_level.9121
+msgid "จีนศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711503
+msgid "จีนศึกษา หรือ คติชนวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0146
+#: model:resource.academic.discipline,name:hr_employee_position_level.2102
+#: model:resource.academic.discipline,name:hr_employee_position_level.4108
+msgid "จุลชีววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510501
+msgid "จุลชีววิทยาการเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514302
+msgid "จุลินทรีย์ดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.730101
+#: model:resource.academic.discipline,name:hr_employee_position_level.730201
+#: model:resource.academic.discipline,name:hr_employee_position_level.730301
+msgid "ชาติพันธุ์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b06
+msgid "ชำนาญการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b07
+msgid "ชำนาญการพิเศษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b03
+msgid "ชำนาญงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b04
+msgid "ชำนาญงานพิเศษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0153
+msgid "ชีวฟิสิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0141
+msgid "ชีววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014101
+msgid "ชีววิทยาการอนุรักษ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3101
+msgid "ชีววิทยาช่องปาก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5503
+msgid "ชีววิทยาประมง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5303
+msgid "ชีววิทยาป่าไม้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0148
+msgid "ชีววิทยาระบบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2103
+msgid "ชีววิทยาโมเลกุล หรือ อณูชีววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611303
+msgid "ชีวสถิติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0181
+#: model:resource.academic.discipline,name:hr_employee_position_level.2512
+msgid "ชีวสารสนเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2119
+#: model:resource.academic.discipline,name:hr_employee_position_level.4103
+msgid "ชีวเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0138
+msgid "ชีวเคมี หรือ เคมีชีววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4104
+msgid "ชีวเวชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.251202
+msgid "ชีวเวชสารสนเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.730103
+#: model:resource.academic.discipline,name:hr_employee_position_level.730203
+#: model:resource.academic.discipline,name:hr_employee_position_level.730303
+msgid "ชุมชนศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7302
+#: model:resource.academic.discipline,name:hr_employee_position_level.9123
+msgid "ญี่ปุ่นศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711103
+msgid "ญี่ปุ่นศึกษา หรือ คติชนวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6703
+msgid "ฎหมายระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810309
+msgid "ดนตรีชาติพันธุ์วิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810308
+msgid "ดนตรีบำบัด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810306
+msgid "ดนตรีพื้นบ้าน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810307
+msgid "ดนตรีวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650152
+msgid "ดนตรีศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810303
+msgid "ดนตรีสากล หรือ ดุริยางคศิลป์ตะวันตก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810305
+msgid "ดนตรีสื่อผสม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810302
+msgid "ดนตรีไทย หรือ ดุริยางคศิลป์ไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810304
+msgid "ดนตรีไทยร่วมสมัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0176
+msgid "ดาราศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0154
+msgid "ดาราศาสตร์ฟิสิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810109
+msgid "ดิจิทัลอาร์ต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2140
+#: model:resource.academic.discipline,name:hr_employee_position_level.412103
+msgid "ตจวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0102
+msgid "ตรรกศาสตร์เชิงคณิตศาสตร์ และพื้นฐาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010301
+msgid "ทฤษฎีกราฟ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610806
+msgid "ทฤษฎีการสังคมสงเคราะห์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0110
+msgid "ทฤษฎีระบบหรือ ทฤษฎีการควบคุม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810117
+msgid "ทฤษฎีศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611004
+msgid "ทฤษฎีสังคมวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0109
+msgid "ทฤษฎีเกมส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3109
+msgid "ทันตกรรมจัดฟัน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3115
+msgid "ทันตกรรมทั่วไป"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3110
+msgid "ทันตกรรมบดเคี้ยวและความเจ็บปวดใบหน้า"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3111
+msgid "ทันตกรรมประดิษฐ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.310401
+#: model:resource.academic.discipline,name:hr_employee_position_level.311101
+msgid "ทันตกรรมรากเทียม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.311103
+#: model:resource.academic.discipline,name:hr_employee_position_level.311201
+msgid "ทันตกรรมสวยงาม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3108
+msgid "ทันตกรรมสำหรับเด็ก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3112
+msgid "ทันตกรรมหัตถการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3106
+msgid "ทันตวัสดุศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3114
+msgid "ทันตสาธารณสุข"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.310201
+#: model:resource.academic.discipline,name:hr_employee_position_level.310901
+#: model:resource.academic.discipline,name:hr_employee_position_level.311002
+msgid "ทันตเวชศาสตร์การนอน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3116
+msgid "ทันตแพทยศาสตร์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2513
+msgid "ทัศนมาตรศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0155
+msgid "ทัศนศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8101
+msgid "ทัศนศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0156
+msgid "ธรณีฟิสิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0172
+#: model:resource.academic.discipline,name:hr_employee_position_level.5141
+msgid "ธรณีวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680222
+msgid "ธุรกิจการเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650147
+msgid "ธุรกิจศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680221
+msgid "ธุรกิจอสังหาริมทรัพย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150302
+msgid "นครศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8102
+msgid "นฤมิตศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611011
+msgid "นวัตกรรมสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a05
+msgid "นักวิจัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.251103
+#: model:resource.academic.discipline,name:hr_employee_position_level.650192
+msgid "นันทนาการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8104
+msgid "นาฏศิลป์ หรือ ศิลปะการแสดง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810402
+msgid "นาฏศิลป์ตะวันออก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810404
+msgid "นาฏศิลป์พื้นบ้าน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810413
+msgid "นาฏศิลป์ร่วมสมัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650153
+msgid "นาฏศิลป์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810401
+msgid "นาฏศิลป์สากล หรือ นาฏศิลป์ตะวันตก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810403
+msgid "นาฏศิลป์ไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1811
+msgid "นาโนเทคโนโลยี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3117
+msgid "นิติทันตวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6707
+msgid "นิติปรัชญา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0186
+msgid "นิติวิทยาศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.670701
+msgid "นิติศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2188
+msgid "นิติเวชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810205
+msgid "นิทรรศการศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6105
+msgid "นิเทศศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610511
+msgid "นิเทศศาสตร์พัฒนาการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.513101
+msgid "นิเทศศาสตร์เกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0182
+#: model:resource.academic.discipline,name:hr_employee_position_level.1805
+msgid "นิเวศวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5133
+msgid "นิเวศวิทยาการเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530302
+msgid "นิเวศวิทยาป่าไม้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610205
+msgid "นโยบายสาธารณะ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6301
+msgid "บรรณารักษศาสตร์ หรือ สารสนเทศศึกษา หรือ สารสนเทศศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350102
+msgid "บริหารงานสาธารณสุข"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6802
+msgid "บริหารธุรกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680223
+msgid "บริหารธุรกิจและบริหารรัฐกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610208
+msgid "บริหารรัฐกิจและบริหารธุรกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330402
+msgid "บริหารเภสัชกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b05
+msgid "ปฏิบัติการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b02
+msgid "ปฏิบัติงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180606
+msgid "ปฏิสัมพันธ์ระหว่างมนุษย์และคอมพิวเตอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.017201
+#: model:resource.academic.discipline,name:hr_employee_position_level.5142
+msgid "ปฐพีวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5143
+msgid "ปฐพีศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2105
+#: model:resource.academic.discipline,name:hr_employee_position_level.350103
+#: model:resource.academic.discipline,name:hr_employee_position_level.4109
+msgid "ปรสิตวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610702
+msgid "ประชากรกับการพัฒนา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6107
+msgid "ประชากรศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610704
+msgid "ประชากรและสุขภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810102
+msgid "ประติมากรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8501
+msgid "ประยุกต์ศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7501
+msgid "ประวัติศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.750103
+msgid "ประวัติศาสตร์จีน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.750104
+msgid "ประวัติศาสตร์ญี่ปุ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.750105
+msgid "ประวัติศาสตร์ตะวันออกกลาง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.750107
+msgid "ประวัติศาสตร์ยุโรป"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8505
+msgid "ประวัติศาสตร์ศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.750102
+msgid "ประวัติศาสตร์เอเชียตะวันออกเฉียงใต้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.750106
+msgid "ประวัติศาสตร์โลกมุสลิม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.750101
+msgid "ประวัติศาสตร์ไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610416
+msgid "ประสาทจิตวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2136
+#: model:resource.academic.discipline,name:hr_employee_position_level.412105
+msgid "ประสาทวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2104
+msgid "ประสาทวิทยาศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2153
+msgid "ประสาทศัลยศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8001
+msgid "ปรัชญา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.800101
+msgid ""
+"ปรัชญาตะวันตก หรือ จริยศาสตร์ หรือ อภิปรัชญา หรือ ญาณวิทยา หรือ\n"
+"            สุนทรียศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.800102
+msgid ""
+"ปรัชญาตะวันออก หรือ พุทธปรัชญา หรือ จริยศาสตร์ หรือ อภิปรัชญา หรือ\n"
+"            ญาณวิทยา หรือ สุนทรียศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610102
+msgid "ปรัชญาและทฤษฎีการเมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3103
+msgid "ปริทันตวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0140
+msgid "ปิโตรเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5507
+msgid "ผลิตภัณฑ์ประมง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a06
+msgid "ผศ. นักวิจัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a02
+msgid "ผู้ช่วยศาสตราจารย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610708
+msgid "ผู้สูงอายุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710503
+msgid "ฝรั่งเศสศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4106
+msgid "พยาธิชีววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2106
+#: model:resource.academic.discipline,name:hr_employee_position_level.4107
+msgid "พยาธิวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.210601
+msgid "พยาธิวิทยากายวิภาค"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2107
+#: model:resource.academic.discipline,name:hr_employee_position_level.410701
+msgid "พยาธิวิทยาคลินิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3105
+msgid "พยาธิวิทยาช่องปาก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3701
+msgid "พยาบาลศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3702
+msgid "พยาบาลศาสตร์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0142
+msgid "พฤกษศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6106
+msgid "พฤติกรรมศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610605
+msgid "พฤติกรรมศาสตร์เพื่อการเปลี่ยนแปลงและการพัฒนา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.410201
+#: model:resource.academic.discipline,name:hr_employee_position_level.511401
+msgid "พฤติกรรมสัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.630102
+msgid "พฤติกรรมสารสนเทศของมนุษย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.251102
+#: model:resource.academic.discipline,name:hr_employee_position_level.650149
+msgid "พลศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180303
+msgid "พลังงานทดแทน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916403
+msgid "พหุวัฒนธรรมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650185
+msgid "พัฒนศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.513102
+msgid "พัฒนาการเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014504
+msgid "พันธุวิศวกรรมแบคทีเรีย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0147
+msgid "พันธุศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.210901
+msgid "พันธุศาสตร์ หรือ พันธุกรรมศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014703
+msgid "พันธุศาสตร์จุลินทรีย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014701
+msgid "พันธุศาสตร์พืช"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014702
+msgid "พันธุศาสตร์สัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2109
+msgid "พันธุเวชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916401
+msgid "พิพิธภัณฑ์ศึกษาและการจัดการมรดกวัฒนธรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2108
+#: model:resource.academic.discipline,name:hr_employee_position_level.410501
+msgid "พิษวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510601
+msgid "พิษวิทยาของแมลง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5304
+msgid "พิษวิทยาสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010401
+msgid "พีชคณิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5103
+msgid "พืชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5104
+msgid "พืชสวน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510204
+msgid "พืชอาหารสัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5102
+msgid "พืชไร่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b01
+msgid "พื้นฐาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711203
+#: model:resource.academic.discipline,name:hr_employee_position_level.780101
+msgid "พุทธศาสน์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010403
+msgid "ฟังก์ชันของตัวแปรเชิงซ้อน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010402
+msgid "ฟังก์ชันจริง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0151
+msgid "ฟิสิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514305
+msgid "ฟิสิกส์ของดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.015704
+msgid "ฟิสิกส์ควอนตัม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.015701
+msgid "ฟิสิกส์นิวเคลียร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.015702
+msgid "ฟิสิกส์พลาสมา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.015703
+msgid "ฟิสิกส์อนุภาค"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0157
+msgid "ฟิสิกส์เชิงทฤษฎี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0152
+msgid "ฟิสิกส์เชิงเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0158
+msgid "ฟิสิกส์เสียง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810112
+msgid "ภาพถ่าย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810103
+msgid "ภาพพิมพ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810111
+msgid "ภาพยนตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610513
+msgid "ภาพยนตร์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916402
+msgid "ภาพยนตร์ศึกษาและสื่อศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610505
+msgid "ภาพยนตร์และภาพถ่าย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412302
+msgid "ภาพวินิจฉัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680209
+msgid "ภาวะผู้นำและพฤติกรรมองค์กร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710103
+msgid "ภาษากับสังคม /วัฒนธรรมไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710305
+msgid "ภาษากับสังคม/วัฒนธรรมลาว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710206
+msgid "ภาษากับสังคม/วัฒนธรรมเขมร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7115
+msgid "ภาษาจีน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711501
+msgid "ภาษาจีนในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7111
+msgid "ภาษาญี่ปุ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711101
+msgid "ภาษาญี่ปุ่นในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710102
+msgid "ภาษาถิ่นไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7112
+#: model:resource.academic.discipline,name:hr_employee_position_level.711201
+msgid "ภาษาบาลีและสันสกฤต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7105
+msgid "ภาษาฝรั่งเศส"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710501
+msgid "ภาษาฝรั่งเศสในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7117
+msgid "ภาษามาเลย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711701
+msgid "ภาษามาเลย์ในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7109
+msgid "ภาษารัสเซีย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710901
+msgid "ภาษารัสเซียในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7103
+msgid "ภาษาลาว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710301
+msgid "ภาษาลาวในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7401
+msgid "ภาษาศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740107
+msgid "ภาษาศาสตร์คลังข้อมูล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740108
+msgid "ภาษาศาสตร์คอมพิวเตอร์ หรือ การบันทึกและอนุรักษ์ภาษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740106
+msgid "ภาษาศาสตร์จิตวิทยาและการรับรู้ภาษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740109
+msgid "ภาษาศาสตร์ชาติพันธุ์ หรือ ภาษาและวัฒนธรรมเพื่อการพัฒนา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740105
+msgid "ภาษาศาสตร์สังคม หรือ ภาษาถิ่น หรือ ภาษาศาสตร์ภาษาถิ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740104
+msgid "ภาษาศาสตร์เชิงประวัติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7107
+msgid "ภาษาสเปน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710701
+msgid "ภาษาสเปนในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7104
+msgid "ภาษาอังกฤษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710401
+msgid "ภาษาอังกฤษในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7116
+msgid "ภาษาอาหรับ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711601
+msgid "ภาษาอาหรับในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7108
+msgid "ภาษาอิตาเลียน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710801
+msgid "ภาษาอิตาเลียนในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7118
+msgid "ภาษาฮินดี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7114
+msgid "ภาษาเกาหลี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711401
+msgid "ภาษาเกาหลีในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7102
+msgid "ภาษาเขมร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710201
+msgid "ภาษาเขมรในฐานะภาษาต่างประเทศ หรือ ภาษาเขมรตามแนวภาษาศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7106
+msgid "ภาษาเยอรมัน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710601
+msgid "ภาษาเยอรมันในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7113
+msgid "ภาษาเวียดนาม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916405
+msgid "ภาษาและวัฒนธรรมเพื่อการพัฒนา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7110
+msgid "ภาษาโปรตุเกส"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711001
+msgid "ภาษาโปรตุเกสในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7101
+msgid "ภาษาไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710104
+msgid "ภาษาไทยในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014604
+#: model:resource.academic.discipline,name:hr_employee_position_level.2110
+#: model:resource.academic.discipline,name:hr_employee_position_level.4110
+msgid "ภูมิคุ้มกันวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810108
+msgid "ภูมิทัศนศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150303
+msgid "ภูมิภาคศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6111
+msgid "ภูมิศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611104
+msgid "ภูมิศาสตร์กายภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611103
+msgid "ภูมิศาสตร์การเมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611106
+msgid "ภูมิศาสตร์มนุษย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611101
+msgid "ภูมิศาสตร์เกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611102
+msgid "ภูมิศาสตร์เมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611105
+msgid "ภูมิศาสตร์เศรษฐกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150104
+msgid "ภูมิสถาปัตยกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611110
+msgid "ภูมิอากาศวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611001
+msgid "มนุษย์กับสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.210102
+msgid "มหกายวิภาคศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2172
+msgid "มะเร็งนรีเวชวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.410702
+#: model:resource.academic.discipline,name:hr_employee_position_level.412102
+msgid "มะเร็งวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810203
+msgid "มัณฑณศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0185
+msgid "มาตรวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6109
+#: model:resource.academic.discipline,name:hr_employee_position_level.730106
+msgid "มานุษยวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610902
+msgid "มานุษยวิทยากายภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610903
+msgid "มานุษยวิทยาประยุกต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610901
+msgid "มานุษยวิทยาวัฒนธรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711703
+msgid "มาเลย์ศึกษา หรือ คติชนวิทยา หรือ วรรณคดีมาเลย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9141
+msgid "มุสลิมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9103
+msgid "ยุโรปศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a07
+msgid "รศ. นักวิจัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a03
+msgid "รองศาสตราจารย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510201
+msgid "ระบบการปลูกพืช"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180501
+msgid "ระบบนิเวศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180607
+msgid "ระบบสารสนเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680104
+msgid "ระบบสารสนเทศทางการบัญชี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350201
+msgid "ระบบสุขภาพและการบริหารจัดการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112503
+msgid "ระบบอัตโนมัติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010406
+msgid "ระบบเชิงพลวัต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2111
+#: model:resource.academic.discipline,name:hr_employee_position_level.412502
+msgid "ระบาดวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.211101
+msgid "ระบาดวิทยาคลินิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610602
+msgid "ระบาดวิทยาสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.217701
+msgid "รังสีรักษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2177
+msgid "รังสีรักษาและเวชศาสตร์นิวเคลียร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2178
+msgid "รังสีร่วมรักษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3107
+msgid "รังสีวิทยาช่องปากและแม็กซิลโลเฟเชียล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.217601
+msgid "รังสีวิทยาวินิจฉัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2176
+msgid "รังสีวินิจฉัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3902
+msgid "รังสีเทคนิค"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6102
+msgid "รัฐประศาสนศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6101
+msgid "รัฐศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710903
+msgid "รัสเซียศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.770103
+msgid "ละครประยุกต์ ละครเยาวชน ละครในการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9105
+msgid "ลาตินอเมริกาศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5307
+msgid "วนผลิตภัณฑ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5305
+msgid "วนวัฒนวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.770102
+msgid "วรรณกรรมและการวิจารณ์ละคร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711504
+msgid "วรรณคดีจีน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711104
+msgid "วรรณคดีญี่ปุ่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.720101
+msgid "วรรณคดีตะวันตก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.720103
+msgid "วรรณคดีตะวันออก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711202
+msgid "วรรณคดีบาลี-สันสกฤต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7203
+#: model:resource.academic.discipline,name:hr_employee_position_level.720301
+msgid "วรรณคดีฝรั่งเศส"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710904
+msgid "วรรณคดีรัสเซีย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.720401
+msgid ""
+"วรรณคดีร่วมสมัย หรือ วรรณคดีท้องถิ่น หรือ วรรณคดีกับสังคม/วัฒนธรรมไทย\n"
+"            หรือ วรรณคดีและภาษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710303
+msgid "วรรณคดีลาว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.720105
+msgid "วรรณคดีวิจารณ์ วรรณคดีศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.720403
+msgid ""
+"วรรณคดีสมัยเก่า หรือ วรรณคดีท้องถิ่น หรือ วรรณคดีกับสังคม/วัฒนธรรมไทย\n"
+"            หรือ วรรณคดีและภาษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710703
+msgid "วรรณคดีสเปน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7202
+#: model:resource.academic.discipline,name:hr_employee_position_level.720201
+msgid "วรรณคดีอังกฤษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710804
+msgid "วรรณคดีอิตาเลียน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.720203
+msgid "วรรณคดีอเมริกัน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710205
+msgid "วรรณคดีเขมร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7201
+#: model:resource.academic.discipline,name:hr_employee_position_level.720202
+#: model:resource.academic.discipline,name:hr_employee_position_level.720302
+msgid "วรรณคดีเปรียบเทียบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710604
+msgid "วรรณคดีเยอรมัน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711004
+msgid "วรรณคดีโปรตุเกส"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7204
+msgid "วรรณคดีไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412104
+msgid "วักกะวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740103
+msgid ""
+"วัจนปฏิบัติศาสตร์และปริจเฉทวิเคราะห์ หรือ วัจนปฏิบัติศาสตร์และ หรือ\n"
+"            สัมพันธสารวิเคราะห์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916407
+msgid "วัฒนธรรมจีน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.730104
+#: model:resource.academic.discipline,name:hr_employee_position_level.9164
+msgid "วัฒนธรรมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916404
+msgid "วัฒนธรรมสุขภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0161
+msgid "วัสดุศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740102
+msgid "วากยสัมพันธ์และอรรถศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610507
+msgid "วาทวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610503
+msgid "วารสารศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5505
+msgid "วาริชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.680224
+msgid "วิทยาการการตัดสินใจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180605
+#: model:resource.academic.discipline,name:hr_employee_position_level.611306
+msgid "วิทยาการข้อมูล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180603
+msgid "วิทยาการคอมพิวเตอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0164
+msgid "วิทยาการคอมโพสิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6112
+#: model:resource.academic.discipline,name:hr_employee_position_level.611307
+msgid "วิทยาการประกันภัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0165
+msgid "วิทยาการพอลิเมอร์ หรือ วิทยาศาสตร์พอลิเมอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3908
+msgid "วิทยาการฟื้นฟูสมรรถภาพคนพิการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.016601
+msgid "วิทยาการสิ่งทอ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4124
+msgid "วิทยาการสืบพันธุ์สัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0163
+msgid "วิทยาการเซรามิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0166
+msgid "วิทยาการและเทคโนโลยีสิ่งทอ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2511
+msgid "วิทยาศาสตร์การกีฬา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0184
+#: model:resource.academic.discipline,name:hr_employee_position_level.5509
+msgid "วิทยาศาสตร์การทะเล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180901
+msgid "วิทยาศาสตร์การอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0107
+msgid "วิทยาศาสตร์คอมพิวเตอร์หรือวิทยาการคอมพิวเตอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530303
+msgid "วิทยาศาสตร์ชีวภาพป่าไม้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.181101
+msgid "วิทยาศาสตร์นาโน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650142
+msgid "วิทยาศาสตร์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0183
+#: model:resource.academic.discipline,name:hr_employee_position_level.5306
+msgid "วิทยาศาสตร์สิ่งแวดล้อม หรือ วิทยาการสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.018303
+#: model:resource.academic.discipline,name:hr_employee_position_level.350104
+msgid "วิทยาศาสตร์อนามัยสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1809
+msgid "วิทยาศาสตร์และเทคโนโลยีอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0171
+msgid "วิทยาศาสตร์โลก หรือ โลกศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.210101
+msgid "วิทยาฮีสโต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014501
+msgid "วิทยาเชื้อรา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2112
+msgid "วิทยาเอมบริโอ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3113
+msgid "วิทยาเอ็นโดดอนต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.015601
+msgid "วิทยาแผ่นดินไหว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610506
+msgid "วิทยุกระจายเสียงและวิทยุโทรทัศน์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610508
+msgid "วิธีวิทยาการวิจัยทางการสื่อสาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610406
+msgid "วิธีวิทยาการวิจัยทางจิตวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610701
+msgid "วิธีวิทยาการวิจัยทางประชากรศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610603
+msgid "วิธีวิทยาการวิจัยทางพฤติกรรมศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611010
+msgid "วิธีวิทยาการวิจัยทางสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110104
+msgid "วิศวกรรมกระบวนการเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110503
+msgid "วิศวกรรมการจัดการของเสีย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111502
+msgid "วิศวกรรมการจัดการข้อมูล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1112
+msgid "วิศวกรรมการทะเล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1111
+msgid "วิศวกรรมการบินและอวกาศ หรือ วิศวกรรมอากาศยาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1108
+msgid "วิศวกรรมการผลิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111602
+msgid "วิศวกรรมการสื่อสาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112002
+msgid "วิศวกรรมขนถ่ายวัสดุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110702
+msgid "วิศวกรรมขนส่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111702
+msgid "วิศวกรรมควบคุมอัตโนมัติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111704
+msgid "วิศวกรรมควบคุมและเครื่องมือวัด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1115
+msgid "วิศวกรรมคอมพิวเตอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1103
+msgid "วิศวกรรมชีวการแพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1102
+msgid "วิศวกรรมชีวภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1122
+msgid "วิศวกรรมชีวสารสนเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111501
+msgid "วิศวกรรมซอฟต์แวร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111101
+msgid "วิศวกรรมดาวเทียม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110601
+msgid "วิศวกรรมทรัพยากรธรณี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1106
+msgid "วิศวกรรมทรัพยากรธรณีและเหมืองแร่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110502
+msgid "วิศวกรรมทรัพยากรน้ำ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1124
+msgid "วิศวกรรมนิวเคลียร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110903
+msgid "วิศวกรรมบรรจุภัณฑ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110302
+msgid "วิศวกรรมประสาท"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110105
+msgid "วิศวกรรมปิโตรเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5308
+msgid "วิศวกรรมป่าไม้"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1123
+msgid "วิศวกรรมพลังงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112004
+msgid "วิศวกรรมพอลิเมอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1117
+msgid "วิศวกรรมมาตรวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111001
+msgid "วิศวกรรมยานยนต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1126
+msgid "วิศวกรรมระบบควบคุมและเครื่องมือวัด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1120
+msgid "วิศวกรรมวัสดุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112001
+msgid "วิศวกรรมวัสดุและกระบวนการผลิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110701
+msgid "วิศวกรรมสำรวจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1107
+msgid "วิศวกรรมสำรวจและขนส่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110703
+msgid "วิศวกรรมสำรวจและชนบท"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1121
+msgid "วิศวกรรมสิ่งทอ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1105
+msgid "วิศวกรรมสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180403
+msgid "วิศวกรรมสุขาภิบาล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110704
+msgid "วิศวกรรมสํารวจและสารสนเทศภูมิศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111803
+msgid "วิศวกรรมหลังการเก็บเกี่ยวและแปรสภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110303
+msgid "วิศวกรรมหัวใจและหลอดเลือด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1125
+msgid "วิศวกรรมหุ่นยนต์ หรือ วิทยาการหุ่นยนต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110304
+msgid "วิศวกรรมอวัยวะประดิษฐ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1119
+msgid "วิศวกรรมอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1114
+msgid "วิศวกรรมอิเล็กทรอนิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1109
+msgid "วิศวกรรมอุตสาหการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110901
+msgid "วิศวกรรมอุตสาหการและระบบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110902
+msgid "วิศวกรรมอุตสาหการและโลจิสติกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111801
+msgid "วิศวกรรมเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1118
+msgid "วิศวกรรมเกษตรและจักรกลเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111901
+msgid "วิศวกรรมเกษตรและอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1101
+msgid "วิศวกรรมเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110201
+msgid "วิศวกรรมเคมีและชีวภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1110
+msgid "วิศวกรรมเครื่องกล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111002
+msgid "วิศวกรรมเครื่องกลและการออกแบบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111003
+#: model:resource.academic.discipline,name:hr_employee_position_level.111802
+msgid "วิศวกรรมเครื่องจักรกลเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111703
+msgid "วิศวกรรมเครื่องมือ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111701
+msgid "วิศวกรรมเครื่องมือวัด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112005
+msgid "วิศวกรรมเซรามิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110301
+msgid "วิศวกรรมเนื้อเยื่อ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111201
+msgid "วิศวกรรมเรือ หรือ วิศวกรรมต่อเรือ หรือ วิศวกรรมเครื่องกลเรือ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112101
+msgid "วิศวกรรมเส้นใย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110602
+msgid "วิศวกรรมเหมืองแร่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111705
+msgid "วิศวกรรมแมคคาทรอนิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110801
+msgid "วิศวกรรมและการออกแบบการผลิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110402
+msgid "วิศวกรรมโครงสร้าง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111601
+msgid "วิศวกรรมโทรคมนาคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1116
+msgid "วิศวกรรมโทรคมนาคมและการสื่อสาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1104
+msgid "วิศวกรรมโยธา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110501
+msgid "วิศวกรรมโยธา - ชลประทาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110403
+msgid "วิศวกรรมโยธาและการบริหารการก่อสร้าง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110404
+msgid "วิศวกรรมโยธาและโครงสร้างพื้นฐาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112003
+msgid "วิศวกรรมโลหการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1113
+msgid "วิศวกรรมไฟฟ้า"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111302
+msgid "วิศวกรรมไฟฟ้ากำลัง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111301
+msgid "วิศวกรรมไฟฟ้าสื่อสาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2189
+#: model:resource.academic.discipline,name:hr_employee_position_level.412301
+msgid "วิสัญญีวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a08
+msgid "ศ. นักวิจัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4123
+msgid "ศัลยศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2151
+msgid "ศัลยศาสตร์ หรือ ศัลยศาสตร์ทั่วไป"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3104
+msgid "ศัลยศาสตร์ช่องปากและแม็กซิลโลเฟเชียล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2154
+msgid "ศัลยศาสตร์ตกแต่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215501
+msgid "ศัลยศาสตร์ทรวงอก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2155
+msgid "ศัลยศาสตร์ทรวงอกและหัวใจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215105
+msgid "ศัลยศาสตร์ปลูกถ่ายอวัยวะ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215103
+msgid "ศัลยศาสตร์มะเร็งวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2156
+msgid "ศัลยศาสตร์ยูโร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215601
+msgid "ศัลยศาสตร์ระบบทางเดินปัสสาวะ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2157
+msgid "ศัลยศาสตร์ลำไส้ใหญ่และทวารหนัก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215101
+msgid "ศัลยศาสตร์ศีรษะ คอ และเต้านม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2158
+msgid "ศัลยศาสตร์หลอดเลือด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215502
+msgid "ศัลยศาสตร์หัวใจและหลอดเลือด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215104
+msgid "ศัลยศาสตร์อุบัติเหตุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.215102
+msgid "ศัลยศาสตร์โรคตับและทางเดินน้ำดี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a04
+msgid "ศาสตราจารย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0103
+msgid "ศาสตร์เชิงการจัด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7801
+msgid "ศาสนา และเทววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.780104
+msgid "ศาสนาศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810106
+msgid "ศิลปการจัดวาง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.730105
+msgid "ศิลปวัฒนธรรมไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650151
+msgid "ศิลปศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810114
+msgid "ศิลปะการถ่ายภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7701
+#: model:resource.academic.discipline,name:hr_employee_position_level.810408
+msgid "ศิลปะการละคร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810406
+msgid "ศิลปะการแสดงข้ามสื่อ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810407
+msgid "ศิลปะการแสดงผสมสื่อ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810405
+msgid "ศิลปะการแสดงร่วมสมัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810115
+msgid "ศิลปะชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810113
+msgid "ศิลปะภาพถ่าย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810116
+msgid "ศิลปะวีดิทัศน์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810105
+msgid "ศิลปะสื่อผสม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810104
+msgid "ศิลปะไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850103
+#: model:resource.academic.discipline,name:hr_employee_position_level.915603
+msgid "ศิลป์ประดิษฐ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611009
+#: model:resource.academic.discipline,name:hr_employee_position_level.720104
+#: model:resource.academic.discipline,name:hr_employee_position_level.730108
+msgid "สตรีศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610711
+msgid "สตรีและเด็ก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150101
+msgid "สถาปัตยกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150105
+msgid "สถาปัตยกรรมผังเมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150103
+msgid "สถาปัตยกรรมภายใน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1501
+msgid "สถาปัตยกรรมศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150102
+msgid "สถาปัตยกรรมไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611301
+msgid "สถิติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650101
+msgid "สถิติ วิจัย การวัด และการประเมินผลทางการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611107
+msgid "สถิติทางภูมิศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611302
+msgid "สถิติประยุกต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6113
+msgid "สถิติศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010409
+msgid "สมการเชิงปริพันธุ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010407
+msgid "สมการเชิงผลต่าง และเชิงฟังก์ชัน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010405
+msgid "สมการเชิงอนุพันธุ์ย่อย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010404
+msgid "สมการเชิงอนุพันธุ์สามัญ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0173
+msgid "สมุทรศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.730109
+msgid "สยามคดีศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2117
+msgid "สรีรวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510203
+msgid "สรีรวิทยาการผลิตพืชไร่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610804
+msgid "สวัสดิการชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610803
+msgid "สวัสดิการสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611002
+msgid "สังคมกับพุทธศาสนา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6110
+msgid "สังคมวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611013
+msgid "สังคมวิทยาการคณนา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.540102
+msgid "สังคมวิทยาสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.540105
+msgid "สังคมศาสตร์สิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650141
+msgid "สังคมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610801
+msgid "สังคมสงเคราะห์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610808
+msgid "สังคมสงเคราะห์ทางการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610807
+msgid "สังคมสงเคราะห์ทางการแพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6108
+msgid "สังคมสงเคราะห์ศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610802
+msgid "สังคมสงเคราะห์ศาสตร์คลินิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4127
+#: model:resource.academic.discipline,name:hr_employee_position_level.5113
+msgid "สัตวบาล"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0143
+msgid "สัตววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5114
+msgid "สัตวศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4126
+msgid "สัตวแพทยศาสตร์ศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4125
+msgid "สัตวแพทย์สาธารณสุข"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.740101
+msgid "สัทศาสตร์และสัทวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916301
+msgid "สันติศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.211402
+msgid "สาธารณสุขชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3501
+msgid "สาธารณสุขศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611111
+msgid "สารสนเทศภูมิศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2514
+msgid "สารสนเทศสุขภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180601
+msgid "สารสนเทศและการสื่อสาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650186
+msgid "สารัตถศึกษาหรือพื้นฐานการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.916302
+msgid "สิทธิมนุษชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9163
+msgid "สิทธิมนุษยชนและสันติศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5401
+#: model:resource.academic.discipline,name:hr_employee_position_level.650143
+msgid "สิ่งแวดล้อมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180201
+msgid "สิ่งแวดล้อมสร้างสรรค์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1802
+msgid "สิ่งแวดล้อมสร้างสรรค์และเทคโนโลยี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610514
+msgid "สื่อใหม่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412501
+msgid "สุขศาสตร์การอาหารสัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.251101
+#: model:resource.academic.discipline,name:hr_employee_position_level.650148
+msgid "สุขศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2171
+msgid "สูติศาสตร์-นรีเวชวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710704
+msgid "สเปนและละตินอเมริกันศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412108
+msgid "หทัยวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650108
+msgid "หลักสูตรศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650107
+msgid "หลักสูตรและการสอน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810204
+msgid "หัตถศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112501
+msgid "หุ่นยนต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.112502
+msgid "หุ่นยนต์ทางการแพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350106
+msgid "อนามัยชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.211401
+#: model:resource.academic.discipline,name:hr_employee_position_level.3505
+msgid "อนามัยสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510602
+msgid "อนุกรมวิธานของแมลง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.550301
+msgid "อนุกรมวิธานสัตว์น้ำ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850404
+msgid "ออกแบบจัดสวน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8504
+msgid "ออกแบบตกแต่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850402
+msgid "ออกแบบตกแต่งภายนอก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850401
+msgid "ออกแบบตกแต่งภายใน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850403
+msgid "ออกแบบตกแต่งสถาปัตยกรรมภายใน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850301
+msgid "ออกแบบนิเทศศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850201
+msgid "ออกแบบผลิตภัณฑ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8503
+msgid "ออกแบบพาณิชยศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850304
+msgid "ออกแบบสื่อสาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850303
+msgid "ออกแบบสื่อโฆษณาภาพยนตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8502
+msgid "ออกแบบอุตสาหกรรมศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850205
+msgid "ออกแบบเครื่องประดับ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850202
+msgid "ออกแบบเครื่องเคลือบดินเผา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850203
+msgid "ออกแบบเซรามิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850302
+msgid "ออกแบบเลขศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850204
+msgid "ออกแบบแฟชั่น"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2166
+msgid "ออร์โธปิดิกส์ หรือ ศัลยศาสตร์ออร์โธปิดิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710403
+msgid "อังกฤษศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9104
+msgid "อัฟริกาศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.a01
+msgid "อาจารย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610211
+msgid "อาชญาวิทยาและการบริหารกระบวนการยุติธรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3504
+msgid "อาชีวอนามัยและความปลอดภัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2118
+msgid "อาชีวเวชศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.730102
+#: model:resource.academic.discipline,name:hr_employee_position_level.730202
+#: model:resource.academic.discipline,name:hr_employee_position_level.730302
+msgid "อาณาบริเวณศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2131
+msgid "อายุรศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4122
+msgid "อายุรศาสตร์ทางสัตวแพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412204
+msgid "อายุรศาสตร์สัตว์น้ำ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412203
+msgid "อายุรศาสตร์สัตว์ป่า สัตว์ต่างถิ่น และสัตว์สวนสัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412202
+msgid "อายุรศาสตร์สัตว์เลี้ยงเป็นอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412201
+msgid "อายุรศาสตร์สัตว์เลี้ยงเป็นเพื่อน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2135
+msgid "อายุรศาสตร์โรคติดเชื้อ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2139
+msgid "อายุรศาสตร์โรคมะเร็ง หรือ มะเร็งวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2133
+msgid "อายุรศาสตร์โรคระบบทางเดินอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2132
+msgid "อายุรศาสตร์โรคหัวใจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2134
+msgid "อายุรศาสตร์โรคไต หรือ วักกะวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9142
+msgid "อาหรับศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711603
+msgid "อาหรับศึกษา หรือ คติชนวิทยา หรือ วรรณคดีอาหรับ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330206
+msgid "อาหารเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.915601
+msgid "อาหารและโภชนาการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9102
+msgid "อาเซียนศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710803
+msgid "อิตาเลียนศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9126
+msgid "อินเดียศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.780102
+msgid "อิสลามศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650176
+msgid "อุตสาหกรรมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5132
+msgid "อุตสาหกรรมเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0175
+msgid "อุตุนิยมวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0174
+msgid "อุทกศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.530103
+msgid "อุทยาน นันทนาการและการท่องเที่ยว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9125
+msgid "อเมริกาศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5124
+msgid "เกษตรกลวิธาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5108
+msgid "เกษตรเชิงระบบ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650190
+msgid "เกษตรและสิ่งแวดล้อมศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9122
+msgid "เกาหลีศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711403
+msgid ""
+"เกาหลีศึกษา หรือ คติชนวิทยา หรือ วรรณคดีเกาหลี หรือ\n"
+"            ภาษากับสังคม/วัฒนธรรมเกาหลี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9124
+msgid "เขมรศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013103
+msgid "เคมีการแพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514308
+msgid "เคมีของดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013702
+msgid "เคมีควอนตัม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013701
+msgid "เคมีคอมพิวเตอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013105
+msgid "เคมีซุปราโมเลคิวลาร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0137
+msgid "เคมีทฤษฎี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013104
+msgid "เคมีนาโน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013703
+msgid "เคมีนิวเคลียร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013101
+msgid "เคมีผลิตภัณฑ์ธรรมชาติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110101
+msgid "เคมีวิศวกรรม หรือ วิศวกรรมเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0132
+msgid "เคมีวิเคราะห์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.013102
+msgid "เคมีสังเคราะห์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0136
+msgid "เคมีสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0133
+msgid "เคมีอนินทรีย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0131
+msgid "เคมีอินทรีย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0139
+#: model:resource.academic.discipline,name:hr_employee_position_level.110103
+msgid "เคมีอุตสาหกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0134
+msgid "เคมีเชิงฟิสิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.110102
+msgid "เคมีเทคนิค"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0135
+msgid "เคมีโลหอินทรีย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.850102
+msgid "เครื่องลงรัก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.150106
+msgid "เคหการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:hr.employee.position.level.relation,name:hr_employee_position_level.b08
+msgid "เชี่ยวชาญ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3901
+msgid "เทคนิคการเเพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1807
+msgid "เทคโนโลยีการจัดการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180703
+msgid "เทคโนโลยีการจัดการนวัตกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180401
+msgid "เทคโนโลยีการจัดการมลพิษ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5502
+msgid "เทคโนโลยีการประมง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5121
+msgid "เทคโนโลยีการผลิตสัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.181201
+msgid "เทคโนโลยีการพิมพ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.650146
+msgid "เทคโนโลยีการศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4128
+msgid "เทคโนโลยีการสัตวแพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014502
+msgid "เทคโนโลยีการหมัก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0145
+msgid "เทคโนโลยีชีวภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1801
+msgid "เทคโนโลยีชีวภาพ-"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014503
+msgid "เทคโนโลยีชีวภาพของแมลง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.512301
+msgid "เทคโนโลยีชีวภาพพืช"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.512302
+msgid "เทคโนโลยีชีวภาพสัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5504
+msgid "เทคโนโลยีชีวภาพสัตว์น้ำ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014505
+msgid "เทคโนโลยีชีวภาพอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5123
+msgid "เทคโนโลยีชีวภาพเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1812
+msgid "เทคโนโลยีทางภาพและการพิมพ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611108
+msgid "เทคโนโลยีทางภูมิศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1815
+msgid "เทคโนโลยีนิวเคลียร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1810
+msgid "เทคโนโลยีบรรจุภัณฑ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.181302
+msgid "เทคโนโลยีปิโตรเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.181301
+msgid "เทคโนโลยีปิโตรเลียม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1813
+msgid "เทคโนโลยีปิโตรเลียมและปิโตรเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1803
+msgid "เทคโนโลยีพลังงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180802
+msgid "เทคโนโลยีพลาสติก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5134
+msgid "เทคโนโลยีภูมิสารสนเทศทางการเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1808
+msgid "เทคโนโลยีวัสดุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.111303
+msgid "เทคโนโลยีสมาร์ตกริด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180404
+msgid "เทคโนโลยีสะอาด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1806
+msgid "เทคโนโลยีสารสนเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.513401
+msgid "เทคโนโลยีสารสนเทศการเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.016602
+msgid "เทคโนโลยีสิ่งทอ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1804
+msgid "เทคโนโลยีสิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5125
+msgid "เทคโนโลยีหลังการเก็บเกี่ยว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3904
+msgid "เทคโนโลยีหัวใจและทรวงอก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180202
+msgid "เทคโนโลยีอาคาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180902
+msgid "เทคโนโลยีอาหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180301
+msgid "เทคโนโลยีอุณหภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.1814
+msgid "เทคโนโลยีอุตสาหกรรมเกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180803
+msgid "เทคโนโลยีเซรามิกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.780103
+msgid "เทววิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810411
+msgid "เพลงและดนตรีเพื่อการแสดง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611008
+#: model:resource.academic.discipline,name:hr_employee_position_level.720102
+msgid "เพศสภาพศึกษา หรือ เพศสถานะศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330201
+msgid "เภสัชกรรม หรือ เภสัชการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3303
+msgid "เภสัชกรรมคลินิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330205
+msgid "เภสัชพฤกษศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.410502
+#: model:resource.academic.discipline,name:hr_employee_position_level.410703
+msgid "เภสัชพันธุศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2120
+#: model:resource.academic.discipline,name:hr_employee_position_level.3301
+#: model:resource.academic.discipline,name:hr_employee_position_level.4105
+msgid "เภสัชวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330207
+msgid "เภสัชศาสตร์ชีวภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330401
+msgid "เภสัชศาสตร์สังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3304
+msgid "เภสัชศาสตร์สังคมและการบริหาร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3302
+msgid "เภสัชศาสตร์และเทคโนโลยี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330202
+msgid "เภสัชอุตสาหกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330203
+msgid "เภสัชเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330204
+msgid "เภสัชเวท หรือ เภสัชวินิจฉัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.330403
+msgid "เภสัชเศรษฐศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.710603
+msgid "เยอรมันศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810201
+msgid "เรขศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010412
+msgid "เรขาคณิต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.310402
+msgid "เลเซอร์วิทยาทางทันตแพทยศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2196
+msgid "เวชบำบัดวิกฤต"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2144
+msgid "เวชพันธุศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2167
+msgid "เวชศาสตร์การกีฬา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.210701
+msgid "เวชศาสตร์การธนาคารเลือด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2173
+msgid "เวชศาสตร์การเจริญพันธุ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2113
+msgid "เวชศาสตร์ครอบครัว"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.412101
+msgid "เวชศาสตร์คลินิกฉุกเฉิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.4121
+msgid "เวชศาสตร์คลินิกทางสัตวแพทย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2195
+msgid "เวชศาสตร์ฉุกเฉิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.214501
+msgid "เวชศาสตร์ชะลอวัยและฟื้นฟูสภาพ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2114
+msgid "เวชศาสตร์ชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3102
+msgid "เวชศาสตร์ช่องปาก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.217702
+msgid "เวชศาสตร์นิวเคลียร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2115
+msgid "เวชศาสตร์ป้องกันคลินิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2145
+msgid "เวชศาสตร์ผู้สูงอายุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2168
+msgid "เวชศาสตร์ฟื้นฟู"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2174
+msgid "เวชศาสตร์มารดาและทารกในครรภ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.251201
+msgid "เวชสารสนเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711303
+msgid "เวียดนามศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711301
+msgid "เวียดนามในฐานะภาษาต่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610303
+msgid "เศรษฐมิติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.6103
+msgid "เศรษฐศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610308
+msgid "เศรษฐศาสตร์การคลัง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610314
+#: model:resource.academic.discipline,name:hr_employee_position_level.650150
+msgid "เศรษฐศาสตร์การศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610311
+msgid "เศรษฐศาสตร์การเงิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610107
+#: model:resource.academic.discipline,name:hr_employee_position_level.610424
+msgid "เศรษฐศาสตร์การเมือง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610423
+msgid "เศรษฐศาสตร์ขนส่ง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610418
+msgid "เศรษฐศาสตร์ทรัพยากรธรรมชาติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610313
+msgid "เศรษฐศาสตร์ทรัพยากรมนุษย์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610301
+msgid "เศรษฐศาสตร์ทฤษฎี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610419
+msgid "เศรษฐศาสตร์ที่ดิน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610426
+msgid "เศรษฐศาสตร์ธุรกิจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.611203
+msgid "เศรษฐศาสตร์ประกันภัย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610421
+#: model:resource.academic.discipline,name:hr_employee_position_level.610703
+msgid "เศรษฐศาสตร์ประชากร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610302
+msgid "เศรษฐศาสตร์ปริมาณวิเคราะห์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610422
+msgid "เศรษฐศาสตร์พฤติกรรมและเศรษฐศาสตร์เชิงทดลอง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610304
+msgid "เศรษฐศาสตร์ระหว่างประเทศ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610427
+msgid "เศรษฐศาสตร์สหกรณ์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3502
+#: model:resource.academic.discipline,name:hr_employee_position_level.610315
+msgid "เศรษฐศาสตร์สาธารณสุข"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610310
+msgid "เศรษฐศาสตร์สาธารณะ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.540101
+#: model:resource.academic.discipline,name:hr_employee_position_level.610417
+msgid "เศรษฐศาสตร์สิ่งแวดล้อม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610316
+msgid "เศรษฐศาสตร์สิ่งแวดล้อมและทรัพยากรธรรมชาติ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610425
+msgid "เศรษฐศาสตร์อุตสาหกรรม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610420
+msgid "เศรษฐศาสตร์เกษตร"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610312
+msgid "เศรษฐศาสตร์แรงงาน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180804
+msgid "เหมืองแร่และธรณีวิทยาเหมืองแร่"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014603
+msgid "เห็ดราวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9106
+msgid "เอเชียตะวันออกศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.9101
+msgid "เอเชียศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010411
+msgid "แคลคูลัสการแปรผันและการควบคุมเหมาะที่สุด หรือ การหาค่าเหมาะที่สุด"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014602
+#: model:resource.academic.discipline,name:hr_employee_position_level.410801
+msgid "แบคทีเรียวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2520
+msgid "แพทยศาสตรศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2503
+msgid "แพทย์แผนจีน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2504
+msgid "แพทย์แผนตะวันออก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2501
+msgid "แพทย์แผนไทย"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2502
+msgid "แพทย์แผนไทยประยุกต์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.810202
+#: model:resource.academic.discipline,name:hr_employee_position_level.850101
+msgid "แฟชั่นและสิ่งทอ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.010413
+msgid "แมนิโฟลด์ความน่าจะเป็น และระบบเชิงสุ่ม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.610809
+msgid "แรงงานและการพัฒนานโยบายสังคม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180602
+msgid "โทรคมนาคมและเครือข่ายคอมพิวเตอร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0105
+msgid "โทโพโลยี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7601
+msgid "โบราณคดี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.711003
+msgid "โปรตุเกสศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2191
+msgid "โภชนศาสตร์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.3503
+msgid "โภชนศาสตร์ หรือ โภชนาการ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5112
+msgid "โภชนศาสตร์สัตว์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.514306
+msgid "โภชนาการของพืช"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350301
+msgid "โภชนาการชุมชน"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350303
+msgid "โภชนาการผู้สูงอายุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350302
+msgid "โภชนาการวัยเด็ก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.350304
+msgid "โภชนาการเชิงทดลองและชีวเคมี"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2142
+msgid "โรคข้อและรูมาติสซั่ม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2138
+#: model:resource.academic.discipline,name:hr_employee_position_level.412106
+msgid "โรคต่อมไร้ท่อและเมตาบอลิสม"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.5105
+msgid "โรคพืชวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2143
+msgid "โรคภูมิแพ้และภูมิคุ้มกันทางคลินิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2141
+msgid "โรคระบบการหายใจ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.510603
+msgid "โรควิทยาของแมลง"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180701
+msgid "โลจิสติกส์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.180801
+msgid "โลหการและวัสดุ"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.0162
+msgid "โลหะวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2137
+msgid "โลหิตวิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.219002
+msgid "โสต นาสิก ลาริงซ์วิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.219001
+msgid "โสต ศอ นาสิก"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.2190
+msgid "โสต ศอ นาสิก ลาริงซ์วิทยา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.8103
+msgid "โสตศิลป์ หรือ คีตศิลป์ หรือ ดุริยางคศิลป์"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.7301
+msgid "ไทยศึกษา"
+msgstr ""
+
+#. module: hr_employee_position_level
+#: model:resource.academic.discipline,name:hr_employee_position_level.014601
+#: model:resource.academic.discipline,name:hr_employee_position_level.2116
+#: model:resource.academic.discipline,name:hr_employee_position_level.410802
+msgid "ไวรัสวิทยา"
+msgstr ""

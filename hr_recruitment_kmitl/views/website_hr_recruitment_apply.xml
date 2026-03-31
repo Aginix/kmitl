@@ -1,0 +1,260 @@
+<odoo>
+    <template id="kmitl_apply" inherit_id="website_hr_recruitment.apply">
+        <xpath expr="//span[@data-for='hr_recruitment_form']" position="attributes">
+            <attribute name="t-att-data-values">{
+                'department_id': job and job.department_id.id or '',
+                'job_id': job and job.id or '',
+                'partner_name': default.get('partner_name', ''),
+                'email_from': default.get('email_from', ''),
+                'partner_phone': default.get('partner_phone', ''),
+                'phone': default.get('partner_phone', ''),
+                'age': default.get('age', ''),
+                'applicant_title': default.get('applicant_title', ''),
+                'first_name': default.get('first_name', ''),
+                'middle_name': default.get('middle_name', ''),
+                'last_name': default.get('last_name', ''),
+                'first_name_en': default.get('first_name_en', ''),
+                'middle_name_en': default.get('middle_name_en', ''),
+                'last_name_en': default.get('last_name_en', ''),
+                'identification_id': default.get('identification_id', ''),
+                'gender': default.get('gender', ''),
+                'birthday': default.get('birthday', ''),
+                'nationality_id': default.get('nationality_id', ''),
+                'marital': default.get('marital', ''),
+                'spouse_prefix': default.get('spouse_prefix', ''),
+                'spouse_first_name': default.get('spouse_first_name', ''),
+                'spouse_middle_name': default.get('spouse_middle_name', ''),
+                'spouse_last_name': default.get('spouse_last_name', ''),
+                'address_street': default.get('address_street', ''),
+                'address_city': default.get('address_city', ''),
+                'address_state_id': default.get('address_state_id', ''),
+                'address_zip': default.get('address_zip', ''),
+                'address_country_id': default.get('address_country_id', ''),
+                'address_address': default.get('address_address', ''),
+                'current_address': default.get('current_address', ''),
+                'current_street': default.get('current_street', ''),
+                'current_city': default.get('current_city', ''),
+                'current_state_id': default.get('current_state_id', ''),
+                'current_zip': default.get('current_zip', ''),
+                'current_country_id': default.get('current_country_id', ''),
+                'emergency_contact_name': default.get('emergency_contact_name', ''),
+                'emergency_contact_relation': default.get('emergency_contact_relation', ''),
+                'emergency_contact_phone': default.get('emergency_contact_phone', ''),
+                'emergency_contact_email': default.get('emergency_contact_email', ''),
+                'congenital_disease': default.get('congenital_disease', ''),
+                'academic_standing_id': default.get('academic_standing_id', ''),
+                'academic_position_date': default.get('academic_position_date', ''),
+                'academic_position_institution': default.get('academic_position_institution', ''),
+                'has_ocsc_exam': default.get('has_ocsc_exam', ''),
+                'ocsc_exam_level': default.get('ocsc_exam_level', ''),
+                'ocsc_exam_date': default.get('ocsc_exam_date', ''),
+                'ocsc_exam_number': default.get('ocsc_exam_number', ''),
+                'foreign_language_skills': default.get('foreign_language_skills', ''),
+                'computer_skills': default.get('computer_skills', ''),
+                'other_abilities': default.get('other_abilities', ''),
+                'interests': default.get('interests', ''),
+                }</attribute>
+        </xpath>
+        <!-- header -->
+        <xpath expr="//h1" position="replace">
+            <div
+                class="bg-white rounded-3 p-4 mb-4 shadow-sm border-start border-4 border-primary"
+            >
+                <div class="fw-bold text-primary mb-2">
+                    ตำแหน่งที่ต้องการสมัคร
+                </div>
+                <div class="h5 fw-bold text-dark mb-3">
+                    <span t-if="job.name" t-field="job.name" />
+                </div>
+                <div
+                    t-if="job.department_id"
+                    class="d-flex align-items-center text-secondary"
+                >
+                    <i class="fa fa-building-o fa-fw fs-5 me-2" />
+                    <span t-field="job.department_id" />
+                </div>
+            </div>
+        </xpath>
+        <!-- Form -->
+        <xpath expr="//div[@id='jobs_section']" position="replace">
+            <div id="jobs_section" class="my-4">
+                <section id="forms">
+                    <form
+                        id="hr_recruitment_form"
+                        action="/website/form/"
+                        method="post"
+                        enctype="multipart/form-data"
+                        class="o_mark_required s_website_form"
+                        data-vcss="001"
+                        data-snippet="s_website_form"
+                        data-mark="*"
+                        data-model_name="hr.applicant"
+                        data-success-mode="redirect"
+                        data-success-page="/job-thank-you"
+                        hide-change-model="true"
+                        novalidate="novalidate"
+                    >
+                        <nav
+                            class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-12 flex-column flex-lg-row gap-1 mb-4"
+                            id="form-tabs"
+                            role="tablist"
+                        >
+                            <a
+                                class="nav-link active text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-personnel"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-user" />
+                                <span>ข้อมูลส่วนบุคคล</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-educations"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-graduation-cap" />
+                                <span>การศึกษา</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-exp"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-briefcase" />
+                                <span>ประสบการณ์</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-academic"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-university" />
+                                <span>ข้อมูลทางวิชาการ</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-skills"
+                                data-bs-toggle="tab"
+                                t-if="job.role == 'support'"
+                            >
+                                <i class="fa fa-star" />
+                                <span>ทักษะและความสนใจ</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-documents"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-file-text" />
+                                <span>เอกสาร</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-submit"
+                                id="nav-submit-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#nav-submit"
+                                role="tab"
+                                aria-controls="nav-submit"
+                            >
+                                <i class="fa fa-paper-plane" />
+                                <span>ส่งใบสมัคร</span>
+                            </a>
+                        </nav>
+                        <div class="card shadow-sm border-0 rounded-4">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="tab-content" id="nav-formTabContent">
+                                    <!-- Personnel -->
+                                    <div
+                                        class="tab-pane fade show active"
+                                        id="nav-personnel"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-personnel-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_personal"
+                                        />
+                                    </div>
+                                    <!-- Educations -->
+                                    <div
+                                        class="tab-pane fade show"
+                                        id="nav-educations"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-educations-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_education"
+                                        />
+                                    </div>
+                                    <!-- Experience -->
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-exp"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-exp-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_work_history"
+                                        />
+                                    </div>
+                                    <!-- Academic -->
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-academic"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-academic-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_academic"
+                                        />
+                                    </div>
+                                    <!-- Skills -->
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-skills"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-skills-tab"
+                                        tabindex="0"
+                                        t-if="job.role == 'support'"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_skills"
+                                        />
+                                    </div>
+                                    <!-- Document -->
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-documents"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-documents-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_documents"
+                                        />
+                                    </div>
+                                    <!-- Submit -->
+                                    <div
+                                        class="tab-pane fade"
+                                        id="nav-submit"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-submit-tab"
+                                        tabindex="0"
+                                    >
+                                        <t
+                                            t-call="hr_recruitment_kmitl.apply_tab_submit"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </xpath>
+    </template>
+</odoo>

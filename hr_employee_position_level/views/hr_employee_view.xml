@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_employee_view_form" model="ir.ui.view">
+        <field name="name">hr.employee.view.form.inherit.position_levels</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_ids']" position="before">
+                <group attrs="{'invisible':[('position_level_id', '=', False)]}">
+                    <field
+                        name="position_level_id"
+                        readonly="1"
+                        options="{'no_open': True}"
+                    />
+                </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Position Level" groups="hr.group_hr_user">
+                    <field name="position_level_ids" nolabel="1" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_employee_view_tree" model="ir.ui.view">
+        <field name="name">hr.employee.tree.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree" />
+        <field name="arch" type="xml">
+            <field name="job_id" position="before">
+                <field name="position_level" />
+            </field>
+        </field>
+    </record>
+
+    <record id="hr_kanban_view_employees" model="ir.ui.view">
+        <field name="name">hr.employee.kanban.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.hr_kanban_view_employees" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_title']/.." position="before">
+                <span
+                    t-if="record.position_level.raw_value"
+                    class="o_kanban_record_subtitle"
+                >
+                    <field name="position_level" />
+                </span>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_employee_filter" model="ir.ui.view">
+        <field name="name">Employees</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter" />
+        <field name="arch" type="xml">
+            <search>
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Position Level"
+                        name="position_level_relation_id"
+                        domain="[]"
+                        context="{'group_by': 'position_level_relation_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>
