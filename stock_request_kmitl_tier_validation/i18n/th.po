@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* stock_request_aginix_tier_validation
+# 	* stock_request_kmitl_tier_validation
 #
 msgid ""
 msgstr ""
@@ -17,137 +17,137 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.6\n"
 
-#. module: stock_request_aginix_tier_validation
-#: model_terms:ir.ui.view,arch_db:stock_request_aginix_tier_validation.view_stock_request_form
+#. module: stock_request_kmitl_tier_validation
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl_tier_validation.view_stock_request_form
 msgid "Approved"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__can_forward
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__can_forward
 msgid "Can Forward"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__can_request
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__can_request
 msgid "Can Request"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__can_review
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__can_review
 msgid "Can Review"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model_terms:ir.ui.view,arch_db:stock_request_aginix_tier_validation.view_stock_request_form
+#. module: stock_request_kmitl_tier_validation
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl_tier_validation.view_stock_request_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__has_approve_comment
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__has_approve_comment
 msgid "Has Approve Comment"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__has_comment
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__has_comment
 msgid "Has Comment"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__has_reject_comment
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__has_reject_comment
 msgid "Has Reject Comment"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__is_reevaluation_required
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__is_reevaluation_required
 msgid "Is Reevaluation Required"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__is_stock_request
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__is_stock_request
 msgid "Is Stock Request"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__need_validation
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__need_validation
 msgid "Need Validation"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__next_review
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__next_review
 msgid "Next Review"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__rejected
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__rejected
 msgid "Rejected"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__rejected_message
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__rejected_message
 msgid "Rejected Message"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model_terms:ir.ui.view,arch_db:stock_request_aginix_tier_validation.view_stock_request_form
+#. module: stock_request_kmitl_tier_validation
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl_tier_validation.view_stock_request_form
 msgid "Request Validation"
 msgstr "ส่งคำขออนุมัติ"
 
-#. module: stock_request_aginix_tier_validation
-#: model_terms:ir.ui.view,arch_db:stock_request_aginix_tier_validation.view_stock_request_form
+#. module: stock_request_kmitl_tier_validation
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl_tier_validation.view_stock_request_form
 msgid "Restart Validation"
 msgstr "เริ่มการขออนุมัติใหม่"
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__reviewer_ids
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__reviewer_ids
 msgid "Reviewers"
 msgstr "ผู้ตรวจสอบ"
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__show_request
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__show_request
 msgid "Show Request"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__show_restart
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__show_restart
 msgid "Show Restart"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model,name:stock_request_aginix_tier_validation.model_stock_request
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model,name:stock_request_kmitl_tier_validation.model_stock_request
 msgid "Stock Request"
 msgstr "คำขอเบิก-จ่ายพัสดุ"
 
-#. module: stock_request_aginix_tier_validation
-#: model:tier.definition,name:stock_request_aginix_tier_validation.stock_request_aginix_tier_definition
+#. module: stock_request_kmitl_tier_validation
+#: model:tier.definition,name:stock_request_kmitl_tier_validation.stock_request_kmitl_tier_definition
 msgid "Stock Request review"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model,name:stock_request_aginix_tier_validation.model_tier_definition
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model,name:stock_request_kmitl_tier_validation.model_tier_definition
 msgid "Tier Definition"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__to_validate_message
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__to_validate_message
 msgid "To Validate Message"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__validated
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__validated
 msgid "Validated"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__validated_message
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__validated_message
 msgid "Validated Message"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__validation_status
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__validation_status
 msgid "Validation Status"
 msgstr ""
 
-#. module: stock_request_aginix_tier_validation
-#: model:ir.model.fields,field_description:stock_request_aginix_tier_validation.field_stock_request__review_ids
+#. module: stock_request_kmitl_tier_validation
+#: model:ir.model.fields,field_description:stock_request_kmitl_tier_validation.field_stock_request__review_ids
 msgid "Validations"
 msgstr ""
