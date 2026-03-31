@@ -1,0 +1,1291 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* advance_payment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-31 08:02+0000\n"
+"PO-Revision-Date: 2026-03-31 08:02+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_return_wizard.py:0
+#, python-format
+msgid " Note: %(note)s"
+msgstr " หมายเหตุ: %(note)s"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid " Reason: %(r)s"
+msgstr " เหตุผล: %(r)s"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid ""
+"<strong>คำขอได้รับอนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+msgstr "<strong>คำขอได้รับอนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+"<strong>คำขอได้รับอนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "<strong>มีข้อผิดพลาดที่ต้องแก้ไข:</strong>"
+msgstr "<strong>มีข้อผิดพลาดที่ต้องแก้ไข:</strong>"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_close_confirm_form
+msgid "<strong>ยอดเงินคงเหลือ:</strong>"
+msgstr "<strong>ยอดเงินคงเหลือ:</strong>"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "<strong>เบิกจ่ายแล้ว</strong> — สัญญากำลังดำเนินการ"
+msgstr "<strong>เบิกจ่ายแล้ว</strong> — สัญญากำลังดำเนินการ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__action_type
+msgid "Action"
+msgstr "การดำเนินการ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_needaction
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_needaction
+msgid "Action Needed"
+msgstr "ต้องดำเนินการ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_ids
+msgid "Activities"
+msgstr "กิจกรรม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "รูปแบบข้อยกเว้นกิจกรรม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_state
+msgid "Activity State"
+msgstr "สถานะกิจกรรม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "ไอคอนประเภทกิจกรรม"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_account_payment__advance_payment_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__related_model_id
+#: model:ir.model.fields.selection,name:advance_payment.selection__exception_rule__model__advance_payment
+#: model:ir.module.category,name:advance_payment.module_category_advance_payment
+msgid "Advance Payment"
+msgstr "สัญญายืมเงิน"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_cancel_wizard
+msgid "Advance Payment Cancel/Reject Wizard"
+msgstr "ตัวช่วยยกเลิก/ส่งกลับสัญญายืมเงิน"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_exception_confirm
+msgid "Advance Payment Exception Confirm"
+msgstr "ยืนยันข้อยกเว้นสัญญายืมเงิน"
+
+#. module: advance_payment
+#: model:ir.actions.act_window,name:advance_payment.action_advance_payment_exception_confirm
+msgid "Advance Payment Exceptions"
+msgstr "ข้อยกเว้นสัญญายืมเงิน"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_loan_type
+msgid "Advance Payment Loan Type"
+msgstr "ประเภทเงินยืม"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_return_line
+msgid "Advance Payment Return Line"
+msgstr "รายการคืนเงินยืม"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_return_wizard
+msgid "Advance Payment Return Wizard"
+msgstr "ตัวช่วยคืนเงินยืม"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_usage_line
+msgid "Advance Payment Usage Line"
+msgstr "รายการใช้เงินยืม"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_usage_wizard
+msgid "Advance Payment Usage Wizard"
+msgstr "ตัวช่วยบันทึกการใช้เงินยืม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_exception_rule__advance_payment_ids
+msgid "Advance Payments"
+msgstr "สัญญายืมเงิน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__agreement_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__agreement_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__agreement_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__agreement_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__agreement_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__agreement_id
+msgid "Agreement"
+msgstr "สัญญา"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__name
+msgid "Agreement Number"
+msgstr "เลขที่สัญญา"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid ""
+"Agreement approved. Payment <a "
+"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> created "
+"for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b> via journal "
+"<b>%(journal)s</b>. ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+msgstr "สัญญาได้รับอนุมัติแล้ว รายการชำระเงิน <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> สร้างแล้วจำนวน <b>%(amount)s %(currency)s</b> ให้ <b>%(partner)s</b> ผ่านสมุดรายวัน <b>%(journal)s</b> ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+"อนุมัติสัญญาแล้ว สร้างการชำระเงิน <a "
+"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> "
+"จำนวน <b>%(amount)s %(currency)s</b> ให้ <b>%(partner)s</b> ผ่านสมุดรายวัน "
+"<b>%(journal)s</b> ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Agreement cancelled. Reason: %(reason)s"
+msgstr "ยกเลิกสัญญาแล้ว เหตุผล: %(reason)s"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid ""
+"Agreement closed. Amount used: <b>%(used)s %(currency)s</b>. Amount "
+"remaining: <b>%(remaining)s %(currency)s</b>."
+msgstr "ปิดสัญญาแล้ว ยอดใช้จ่าย: <b>%(used)s %(currency)s</b> ยอดคงเหลือ: <b>%(remaining)s %(currency)s</b>"
+"ปิดสัญญาแล้ว จำนวนเงินที่ใช้: <b>%(used)s %(currency)s</b> จำนวนเงิน"
+"คงเหลือ: <b>%(remaining)s %(currency)s</b>"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Agreement number '%(name)s' must be unique!"
+msgstr "เลขที่สัญญา '%(name)s' ต้องไม่ซ้ำกัน!"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Agreement reopened by <b>%(user)s</b>."
+msgstr "เปิดสัญญาอีกครั้งโดย <b>%(user)s</b>"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Agreement returned to draft. Reason: %(reason)s"
+msgstr "ส่งสัญญากลับเป็นฉบับร่าง เหตุผล: %(reason)s"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid ""
+"Agreement submitted for approval by <b>%(user)s</b>. Loan amount: "
+"<b>%(amount)s %(currency)s</b>.%(reason)s"
+msgstr "ส่งสัญญาเพื่อขออนุมัติโดย <b>%(user)s</b> จำนวนเงินยืม: <b>%(amount)s %(currency)s</b>%(reason)s"
+"ส่งสัญญาเพื่อขออนุมัติโดย <b>%(user)s</b> จำนวนเงินยืม: "
+"<b>%(amount)s %(currency)s</b>%(reason)s"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__amount
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__amount
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_usage_wizard.py:0
+#, python-format
+msgid "Amount (%(amount)s) exceeds remaining balance (%(remaining)s)."
+msgstr "จำนวนเงิน (%(amount)s) เกินยอมคงเหลือ (%(remaining)s)"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__amount_remaining
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__amount_remaining
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_remaining
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__amount_remaining
+msgid "Amount Remaining"
+msgstr "จำนวนเงินคงเหลือ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__amount_returned
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_returned
+msgid "Amount Returned"
+msgstr "จำนวนเงินที่คืนแล้ว"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__amount_used
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount_used
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__amount_used
+msgid "Amount Used"
+msgstr "จำนวนเงินที่ใช้แล้ว"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_usage_wizard.py:0
+#, python-format
+msgid "Amount must be greater than zero."
+msgstr "จำนวนเงินต้องมากกว่าศูนย์"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__analytic_distribution
+msgid "Analytic"
+msgstr "การวิเคราะห์"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr "ค้นหาการกระจายการวิเคราะห์"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__analytic_precision
+msgid "Analytic Precision"
+msgstr "ความแม่นยำการวิเคราะห์"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_exception_rule__model
+msgid "Apply on"
+msgstr "ใช้กับ"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__approved
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_attachment_count
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_attachment_count
+msgid "Attachment Count"
+msgstr "จำนวนเอกสารแนบ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__attachment_ids
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__attachment_ids
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__attachment_ids
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__attachment_ids
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_cancel_wizard__action_type__cancel
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__cancel
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Cannot modify a non-draft agreement."
+msgstr "ไม่สามารถแก้ไขสัญญาที่ไม่ใช่ฉบับร่างได้"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_advance_payment_close_confirm
+msgid "Confirm Close Agreement"
+msgstr "ยืนยันการปิดสัญญา"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__confirmed
+msgid "Confirmed"
+msgstr "ยืนยันแล้ว"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__create_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__create_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__currency_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__currency_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__currency_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__currency_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__currency_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__currency_id
+msgid "Currency"
+msgstr "สกุลเงิน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__date
+msgid "Date"
+msgstr "วันที่"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_approved
+msgid "Date Approved"
+msgstr "วันที่อนุมัติ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_closed
+msgid "Date Closed"
+msgstr "วันที่ปิดสัญญา"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__date_submitted
+msgid "Date Submitted"
+msgstr "วันที่ส่ง"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__department_id
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__display_name
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__done
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__draft
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__draft
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Draft"
+msgstr "ฉบับร่าง"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_exception_rule
+msgid "Exception Rule"
+msgstr "กฎข้อยกเว้น"
+
+#. module: advance_payment
+#: model:ir.actions.act_window,name:advance_payment.action_advance_payment_exception_rule
+#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_exception_rule
+msgid "Exception Rules"
+msgstr "กฎข้อยกเว้น"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__exception_ids
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Exceptions"
+msgstr "ข้อยกเว้น"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__exceptions_summary
+msgid "Exceptions Summary"
+msgstr "สรุปข้อยกเว้น"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__exception_ids
+msgid "Exceptions to resolve"
+msgstr "ข้อยกเว้นที่ต้องแก้ไข"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_follower_ids
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_follower_ids
+msgid "Followers"
+msgstr "ผู้ติดตาม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_partner_ids
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "ผู้ติดตาม (พาร์ทเนอร์)"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "ไอคอน Font awesome เช่น fa-tasks"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__has_message
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__has_message
+msgid "Has Message"
+msgstr "มีข้อความ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_exception_icon
+msgid "Icon"
+msgstr "ไอคอน"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "ไอคอนเพื่อระบุกิจกรรมข้อยกเว้น"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__message_needaction
+#: model:ir.model.fields,help:advance_payment.field_advance_payment_return_line__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "หากเลือก ข้อความใหม่ต้องการความสนใจจากคุณ"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__message_has_error
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__message_has_sms_error
+#: model:ir.model.fields,help:advance_payment.field_advance_payment_return_line__message_has_error
+#: model:ir.model.fields,help:advance_payment.field_advance_payment_return_line__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "หากเลือก ข้อความบางรายการมีข้อผิดพลาดในการส่ง"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__ignore_exception
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__ignore
+msgid "Ignore Exceptions"
+msgstr "ละเว้นข้อยกเว้น"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__in_progress
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "In Progress"
+msgstr "กำลังดำเนินการ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_is_follower
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_is_follower
+msgid "Is Follower"
+msgstr "เป็นผู้ติดตาม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line____last_update
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__write_uid
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตล่าสุดโดย"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_exception_confirm__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__write_date
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตล่าสุดเมื่อ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__loan_amount
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__loan_amount
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__loan_amount
+msgid "Loan Amount"
+msgstr "จำนวนเงินยืม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__loan_reason
+msgid "Loan Reason"
+msgstr "เหตุผลการยืม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__loan_type_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_loan_type__name
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Loan Type"
+msgstr "ประเภทเงินยืม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_main_attachment_id
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "เอกสารแนบหลัก"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__main_exception_id
+msgid "Main Exception"
+msgstr "ข้อยกเว้นหลัก"
+
+#. module: advance_payment
+#: model:res.groups,name:advance_payment.group_advance_payment_manager
+msgid "Manager"
+msgstr "ผู้จัดการ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_has_error
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_has_error
+msgid "Message Delivery error"
+msgstr "ข้อผิดพลาดในการส่งข้อความ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_ids
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_ids
+msgid "Messages"
+msgstr "ข้อความ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "กำหนดกิจกรรมของฉัน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "New"
+msgstr "ใหม่"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "กิจกรรมปฏิทินถัดไป"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "กำหนดกิจกรรมถัดไป"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_summary
+msgid "Next Activity Summary"
+msgstr "สรุปกิจกรรมถัดไป"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_type_id
+msgid "Next Activity Type"
+msgstr "ประเภทกิจกรรมถัดไป"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__note
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__note
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_line__note
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_usage_wizard__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_needaction_counter
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_needaction_counter
+msgid "Number of Actions"
+msgstr "จำนวนการดำเนินการ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_has_error_counter
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_has_error_counter
+msgid "Number of errors"
+msgstr "จำนวนข้อผิดพลาด"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__message_needaction_counter
+#: model:ir.model.fields,help:advance_payment.field_advance_payment_return_line__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "จำนวนข้อความที่ต้องดำเนินการ"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__message_has_error_counter
+#: model:ir.model.fields,help:advance_payment.field_advance_payment_return_line__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "จำนวนข้อความที่มีข้อผิดพลาดในการส่ง"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only closed agreements can be reopened."
+msgstr "เฉพาะสัญญาที่ปิดแล้วเท่านั้นที่สามารถเปิดใหม่ได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only draft agreements can be submitted."
+msgstr "เฉพาะสัญญาฉบับร่างเท่านั้นที่สามารถส่งได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment_return_line.py:0
+#, python-format
+msgid "Only draft return lines can be confirmed."
+msgstr "เฉพาะรายการคืนเงินที่เป็นฉบับร่างเท่านั้นที่สามารถยืนยันได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only in-progress agreements can be closed."
+msgstr "เฉพาะสัญญาที่กำลังดำเนินการเท่านั้นที่สามารถปิดได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_return_wizard.py:0
+#, python-format
+msgid "Only in-progress agreements can have a return request."
+msgstr "เฉพาะสัญญาที่กำลังดำเนินการเท่านั้นที่สามารถแจ้งคืนเงินได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only submitted agreements can be approved."
+msgstr "เฉพาะสัญญาที่ส่งแล้วเท่านั้นที่สามารถอนุมัติได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only submitted agreements can be rejected."
+msgstr "เฉพาะสัญญาที่ส่งแล้วเท่านั้นที่สามารถส่งกลับได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only submitted, approved, or in-progress agreements can be cancelled."
+msgstr "เฉพาะสัญญาที่ส่งแล้ว อนุมัติแล้ว หรือกำลังดำเนินการเท่านั้นที่สามารถยกเลิกได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only the requestor or a manager can submit this agreement."
+msgstr "เฉพาะผู้ยืมหรือผู้จัดการเท่านั้นที่สามารถส่งสัญญานี้ได้"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__paid
+msgid "Paid"
+msgstr "จ่ายแล้ว"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__requested_by_partner_id
+msgid "Partner-related data of the user"
+msgstr "ข้อมูลพาร์ทเนอร์ที่เกี่ยวข้องกับผู้ใช้งาน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__payment_id
+msgid "Payment"
+msgstr "การชำระเงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid ""
+"Payment <a "
+"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> has been"
+" confirmed. Funds of <b>%(amount)s %(currency)s</b> have been disbursed to "
+"<b>%(partner)s</b>. ขั้นตอนถัดไป: "
+"ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้"
+msgstr "รายการชำระเงิน <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> ได้รับการยืนยันแล้ว เบิกจ่ายเงิน <b>%(amount)s %(currency)s</b> ให้ <b>%(partner)s</b> แล้ว ขั้นตอนถัดไป: ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้"
+"การชำระเงิน <a "
+"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> ได้รับการ"
+"ยืนยันแล้ว เบิกจ่ายเงิน <b>%(amount)s %(currency)s</b> ให้ "
+"<b>%(partner)s</b> แล้ว ขั้นตอนถัดไป: "
+"ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__payment_count
+msgid "Payment Count"
+msgstr "จำนวนการชำระเงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Payment confirmed. Funds have been disbursed."
+msgstr "ยืนยันการชำระเงินแล้ว เบิกจ่ายเงินเรียบร้อย"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_account_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__payment_ids
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "Payments"
+msgstr "การชำระเงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_return_wizard.py:0
+#, python-format
+msgid "Please attach proof of bank transfer before confirming."
+msgstr "กรุณาแนบหลักฐานการโอนเงินก่อนยืนยัน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__attachment_ids
+msgid "Proof of Transfer"
+msgstr "หลักฐานการโอนเงิน"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__reference__purchase_request
+msgid "Purchase Request"
+msgstr "คำขอจัดซื้อ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__cancel_reason
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard__reason
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__reference
+msgid "Reference"
+msgstr "อ้างอิง"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_cancel_wizard__action_type__reject
+msgid "Reject"
+msgstr "ส่งกลับ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__requested_by
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Requested By"
+msgstr "ผู้ยืม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__requested_by_partner_id
+msgid "Requestor Partner"
+msgstr "พาร์ทเนอร์ผู้ยืม"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_user_id
+msgid "Responsible User"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_wizard__amount
+msgid "Return Amount"
+msgstr "จำนวนเงินคืน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__return_count
+msgid "Return Count"
+msgstr "จำนวนรายการคืนเงิน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__return_line_ids
+msgid "Return Lines"
+msgstr "รายการคืนเงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_return_wizard.py:0
+#, python-format
+msgid "Return amount (%(amount)s) exceeds remaining balance (%(remaining)s)."
+msgstr "จำนวนเงินคืน (%(amount)s) เกินยอดคงเหลือ (%(remaining)s)"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment_return_line.py:0
+#: code:addons/advance_payment/wizards/advance_payment_return_wizard.py:0
+#, python-format
+msgid "Return amount must be greater than zero."
+msgstr "จำนวนเงินคืนต้องมากกว่าศูนย์"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment_return_line.py:0
+#, python-format
+msgid ""
+"Return of <b>%(amount)s %(currency)s</b> confirmed. Payment <a "
+"href='/web#id=%(pid)s&amp;model=account.payment'><b>%(pname)s</b></a> "
+"created."
+msgstr "ยืนยันการคืนเงิน <b>%(amount)s %(currency)s</b> แล้ว สร้างการชำระเงิน <a "
+"href='/web#id=%(pid)s&amp;model=account.payment'><b>%(pname)s</b></a> "
+"เรียบร้อย"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_return_wizard.py:0
+#, python-format
+msgid ""
+"Return of <b>%(amount)s %(currency)s</b> submitted by "
+"<b>%(user)s</b>.%(note)s %(count)s attachment(s) uploaded as proof."
+msgstr "แจ้งคืนเงิน <b>%(amount)s %(currency)s</b> โดย <b>%(user)s</b>%(note)s แนบหลักฐาน %(count)s ไฟล์"
+"แจ้งคืนเงิน <b>%(amount)s %(currency)s</b> โดย "
+"<b>%(user)s</b>%(note)s แนบหลักฐาน %(count)s รายการ"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "Returns"
+msgstr "การคืนเงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment_return_line.py:0
+#, python-format
+msgid "Returns can only be confirmed for in-progress agreements."
+msgstr "การคืนเงินสามารถยืนยันได้เฉพาะสัญญาที่กำลังดำเนินการเท่านั้น"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_has_sms_error
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "ข้อผิดพลาดในการส่ง SMS"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "State"
+msgstr "สถานะ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__state
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr "สถานะตามกิจกรรม\nเลยกำหนด: เลยวันกำหนดแล้ว\nวันนี้: กิจกรรมวันนี้\nวางแผนไว้: กิจกรรมในอนาคต"
+"สถานะตามกิจกรรม\n"
+"เกินกำหนด: เลยวันครบกำหนดแล้ว\n"
+"วันนี้: วันที่กิจกรรมเป็นวันนี้\n"
+"วางแผน: กิจกรรมในอนาคต"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__submitted
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "Submitted"
+msgstr "ส่งแล้ว"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "ประเภทกิจกรรมข้อยกเว้นในระเบียน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__usage_line_ids
+msgid "Usage Records"
+msgstr "รายการใช้เงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/wizards/advance_payment_usage_wizard.py:0
+#, python-format
+msgid "Usage can only be recorded for in-progress agreements."
+msgstr "การบันทึกการใช้เงินทำได้เฉพาะสัญญาที่กำลังดำเนินการเท่านั้น"
+
+#. module: advance_payment
+#: model:res.groups,name:advance_payment.group_advance_payment_user
+msgid "User"
+msgstr "ผู้ใช้งาน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__website_message_ids
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__website_message_ids
+msgid "Website Messages"
+msgstr "ข้อความเว็บไซต์"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_advance_payment__website_message_ids
+#: model:ir.model.fields,help:advance_payment.field_advance_payment_return_line__website_message_ids
+msgid "Website communication history"
+msgstr "ประวัติการสื่อสารเว็บไซต์"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_cancel_wizard_form
+msgid "กรุณาระบุเหตุผล..."
+msgstr "กรุณาระบุเหตุผล..."
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__fund_analytic_id
+msgid "กองทุน"
+msgstr "กองทุน"
+
+#. module: advance_payment
+#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_config
+msgid "การกำหนดค่า"
+msgstr "การกำหนดค่า"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
+msgid "การชำระเงิน"
+msgstr "การชำระเงิน"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "ข้อมูลการยืม"
+msgstr "ข้อมูลการยืม"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "ข้อมูลผู้ยืม"
+msgstr "ข้อมูลผู้ยืม"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
+msgid "ข้อมูลสัญญา"
+msgstr "ข้อมูลสัญญา"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "คืนเงิน"
+msgstr "คืนเงิน"
+
+#. module: advance_payment
+#: model:exception.rule,name:advance_payment.excep_loan_amount_too_low
+msgid "จำนวนเงินยืมต่ำกว่าขั้นต่ำ"
+msgstr "จำนวนเงินยืมต่ำกว่าขั้นต่ำ"
+
+#. module: advance_payment
+#: model:exception.rule,description:advance_payment.excep_loan_amount_too_low
+msgid "จำนวนเงินยืมต้องมากกว่า 100 บาท"
+msgstr "จำนวนเงินยืมต้องมากกว่า 100 บาท"
+
+#. module: advance_payment
+#: model:exception.rule,description:advance_payment.excep_loan_amount_too_high
+msgid "จำนวนเงินยืมต้องไม่เกิน 50,000 บาท"
+msgstr "จำนวนเงินยืมต้องไม่เกิน 50,000 บาท"
+
+#. module: advance_payment
+#: model:exception.rule,name:advance_payment.excep_loan_amount_too_high
+msgid "จำนวนเงินยืมเกินวงเงิน"
+msgstr "จำนวนเงินยืมเกินวงเงิน"
+
+#. module: advance_payment
+#: model:kmitl.payment.type,name:advance_payment.payment_type_advance_payment_outbound
+msgid "จ่ายเงินยืม"
+msgstr "จ่ายเงินยืม"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__disbursement_state__paid
+msgid "จ่ายเงินแล้ว"
+msgstr "จ่ายเงินแล้ว"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__activity_analytic_id
+msgid "ด้าน/แผนงาน/กิจกรรม"
+msgstr "ด้าน/แผนงาน/กิจกรรม"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
+msgstr "ต้องการเปิดสัญญาอีกครั้งหรือไม่?"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__bank_id
+msgid "บัญชีธนาคาร"
+msgstr "บัญชีธนาคาร"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
+msgid "บันทึก"
+msgstr "บันทึก"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
+#, python-format
+msgid "บันทึกการใช้เงิน"
+msgstr "บันทึกการใช้เงิน"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_close_confirm_form
+msgid "บาท"
+msgstr "บาท"
+
+#. module: advance_payment
+#: model:ir.actions.act_window,name:advance_payment.action_advance_payment_loan_type
+#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_loan_type
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_loan_type_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_loan_type_list
+msgid "ประเภทเงินยืม"
+msgstr "ประเภทเงินยืม"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "ปิดสัญญา"
+msgstr "ปิดสัญญา"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "มิติทางบัญชี"
+msgstr "มิติทางบัญชี"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_cancel_wizard_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_close_confirm_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
+msgid "ยกเลิก"
+msgstr "ยกเลิก"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_cancel_wizard_form
+msgid "ยกเลิก/ส่งกลับสัญญา"
+msgstr "ยกเลิก/ส่งกลับสัญญา"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#, python-format
+msgid "ยกเลิกสัญญา"
+msgstr "ยกเลิกสัญญา"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_close_confirm_form
+msgid "ยอดเงินยังคืนไม่ครบ ต้องการปิดสัญญาหรือไม่?"
+msgstr "ยอดเงินยังคืนไม่ครบ ต้องการปิดสัญญาหรือไม่?"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_cancel_wizard_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
+msgid "ยืนยัน"
+msgstr "ยืนยัน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_close_confirm_form
+#, python-format
+msgid "ยืนยันการปิดสัญญา"
+msgstr "ยืนยันการปิดสัญญา"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_close_confirm_form
+msgid "ยืนยันปิดสัญญา"
+msgstr "ยืนยันปิดสัญญา"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__disbursement_state__pending
+msgid "รอดำเนินการ"
+msgstr "รอดำเนินการ"
+
+#. module: advance_payment
+#: model:kmitl.payment.type,name:advance_payment.payment_type_advance_payment_inbound
+msgid "รับคืนเงินยืม"
+msgstr "รับคืนเงินยืม"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: model:ir.actions.act_window,name:advance_payment.action_advance_payment_return_line
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_tree
+#, python-format
+msgid "รายการคืนเงิน"
+msgstr "รายการคืนเงิน"
+
+#. module: advance_payment
+#: model:ir.actions.act_window,name:advance_payment.action_advance_payment_usage_line
+#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_usage_line
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_line_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_line_list
+msgid "รายการบันทึกการใช้เงินยืม"
+msgstr "รายการบันทึกการใช้เงินยืม"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
+msgid "รายการใช้เงิน"
+msgstr "รายการใช้เงิน"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
+msgid "รายละเอียด"
+msgstr "รายละเอียด"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+msgid "รายละเอียดการคืนเงิน"
+msgstr "รายละเอียดการคืนเงิน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__disbursement_state
+msgid "สถานะการจ่ายเงิน"
+msgstr "สถานะการจ่ายเงิน"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+msgid "สรุปยอดเงิน"
+msgstr "สรุปยอดเงิน"
+
+#. module: advance_payment
+#: model:ir.actions.act_window,name:advance_payment.action_advance_payment
+#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_agreement
+#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_root
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_list
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
+msgid "สัญญายืมเงิน"
+msgstr "สัญญายืมเงิน"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#, python-format
+msgid "ส่งกลับแก้ไข"
+msgstr "ส่งกลับแก้ไข"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+msgid "ส่งคำขอคืนเงิน"
+msgstr "ส่งคำขอคืนเงิน"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "ส่งเพื่อขออนุมัติ"
+msgstr "ส่งเพื่อขออนุมัติ"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__department_analytic_id
+msgid "ส่วนงาน"
+msgstr "ส่วนงาน"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+msgid "หมายเหตุ"
+msgstr "หมายเหตุ"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+msgid "หมายเหตุเพิ่มเติม (ถ้ามี)"
+msgstr "หมายเหตุเพิ่มเติม (ถ้ามี)"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+msgid "หลักฐานการคืนเงิน"
+msgstr "หลักฐานการคืนเงิน"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "อนุมัติ"
+msgstr "อนุมัติ"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "เปิดสัญญาอีกครั้ง"
+msgstr "เปิดสัญญาอีกครั้ง"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+msgid "เหตุผล"
+msgstr "เหตุผล"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_line_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_usage_wizard_form
+msgid "เอกสารแนบ"
+msgstr "เอกสารแนบ"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
+#: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_wizard_form
+msgid "แจ้งคืนเงิน"
+msgstr "แจ้งคืนเงิน"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__source_analytic_id
+msgid "แหล่งเงิน"
+msgstr "แหล่งเงิน"
