@@ -161,6 +161,6 @@ class PurchaseRequestApproval(models.Model):
         wa._link_to_disbursement(
             disbursement,
             analytic_distribution=self.analytic_distribution or False,
-            fine_tax_ids=self.tax_ids.ids if hasattr(self, "tax_ids") else [],
+            fine_tax_ids=self.line_ids.tax_id.ids,
         )
         return disbursement

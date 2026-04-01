@@ -51,7 +51,7 @@ class PurchaseOrder(models.Model):
         wa._link_to_disbursement(
             disbursement,
             analytic_distribution=self.analytic_distribution or False,
-            fine_tax_ids=self.taxes_id.ids,
+            fine_tax_ids=self.order_line.tax_id.ids,
         )
         return disbursement
 
