@@ -10,5 +10,11 @@ class AccountAnalyticAccount(models.Model):
         column1="src_id",
         column2="department_id",
         string="Departments",
-        domain="[('plan_id', '=', %(account_analytic_kmitl.analytic_plan_departments)d)]",
+        domain=lambda self: [
+            (
+                "plan_id",
+                "=",
+                self.env.ref("account_analytic_kmitl.analytic_plan_departments").id,
+            )
+        ],
     )
