@@ -173,7 +173,7 @@
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.po_work_end + 1)"
+                                    t-esc="o.format_date_thai(o.po_work_end_next)"
                                 />
                                 ถึงวันที่
                                 <span
@@ -190,7 +190,7 @@
                                     และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
                                     <span
                                         class="ub"
-                                        t-esc="o.format_date_thai(o.po_work_end + 1)"
+                                        t-esc="o.format_date_thai(o.po_work_end_next)"
                                     />
                                     ถึงวันที่
                                     <!-- new Date Change -->

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
+
 from odoo import _, api, fields, models
 
 
@@ -48,6 +50,9 @@ class WorkAcceptance(models.Model):
     po_work_end = fields.Date(
         string="PO Work End",
         related="purchase_id.work_end",
+    )
+    po_work_end_next = fields.Date(
+        compute="_compute_po_work_end_next",
     )
 
     has_contract_change = fields.Boolean(
@@ -136,6 +141,13 @@ class WorkAcceptance(models.Model):
         for rec in self:
             rec.is_construction_contract = bool(
                 getattr(rec.purchase_id.contract_type_id, "is_construction", False)
+            )
+
+    @api.depends("po_work_end")
+    def _compute_po_work_end_next(self):
+        for rec in self:
+            rec.po_work_end_next = (
+                rec.po_work_end + timedelta(days=1) if rec.po_work_end else False
             )
 
     @api.depends("requested_delivery_date", "po_work_end")
