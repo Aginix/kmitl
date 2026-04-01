@@ -956,11 +956,6 @@ msgid "Analytic Dimensions"
 msgstr "มิติทางบัญชี"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__bill_amount_residual
-msgid "Amount Due"
-msgstr "ยอดค้างชำระ"
-
-#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Approve"
 msgstr "อนุมัติ"
@@ -982,11 +977,6 @@ msgstr "รอตั้งหนี้"
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Bill Posted"
 msgstr "ตั้งหนี้แล้ว"
-
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__bill_payment_state
-msgid "Bill Payment Status"
-msgstr "สถานะการชำระเงิน"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__department_analytic_id

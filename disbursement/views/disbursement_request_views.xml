@@ -38,7 +38,7 @@
                             string="Register Payment"
                             type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|', ('state', 'not in', ('bill_posted', 'payment_draft', 'payment_posted')), ('hide_register_payment_button', '=', True)]}"
+                            attrs="{'invisible': ['|', ('state', 'not in', ('bill_posted', 'payment_draft')), ('hide_register_payment_button', '=', True)]}"
                             groups="account.group_account_invoice"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel', 'bill_posted', 'payment_draft', 'payment_posted'))]}" groups="disbursement.group_disbursement_officer" />

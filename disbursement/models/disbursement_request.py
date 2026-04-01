@@ -156,15 +156,6 @@ class DisbursementRequest(models.Model):
         compute="_compute_payment_ids",
         string="Payment Count",
     )
-    bill_payment_state = fields.Selection(
-        related="bill_id.payment_state",
-        string="Bill Payment Status",
-    )
-    bill_amount_residual = fields.Monetary(
-        related="bill_id.amount_residual",
-        string="Amount Due",
-        currency_field="currency_id",
-    )
     hide_register_payment_button = fields.Boolean(
         compute="_compute_hide_register_payment_button",
     )
@@ -578,6 +569,7 @@ class DisbursementRequest(models.Model):
 
     def _update_state_from_pipeline(self):
         """Recompute state based on bill/payment status for records in pipeline."""
+        Payment = self.env["account.payment"]
         for rec in self:
             if rec.state not in rec.PIPELINE_STATES:
                 continue
@@ -590,28 +582,19 @@ class DisbursementRequest(models.Model):
                     body=_("Payment complete. Disbursement done."),
                     subtype_xmlid="mail.mt_note",
                 )
-            elif rec._get_pipeline_payments().filtered(
-                lambda p: p.state == "posted"
-            ):
+                continue
+            payments = bill._get_reconciled_payments()
+            payments |= Payment.search(
+                [("to_reconcile_payment_line_ids.move_id", "=", bill.id)]
+            )
+            if payments.filtered(lambda p: p.state == "posted"):
                 rec.state = "payment_posted"
-            elif rec._get_pipeline_payments():
+            elif payments:
                 rec.state = "payment_draft"
             elif bill.state == "posted":
                 rec.state = "bill_posted"
             else:
                 rec.state = "bill_draft"
-
-    def _get_pipeline_payments(self):
-        """Return payment records associated with this DR's bill."""
-        self.ensure_one()
-        Payment = self.env["account.payment"]
-        payments = Payment
-        if self.bill_id:
-            payments |= self.bill_id._get_reconciled_payments()
-            payments |= Payment.search(
-                [("to_reconcile_payment_line_ids.move_id", "=", self.bill_id.id)]
-            )
-        return payments
 
     @api.depends("partner_id", "company_id")
     def _compute_partner_bank_id(self):
@@ -887,7 +870,7 @@ class DisbursementRequest(models.Model):
                       "Reverse the bill first.")
                     % record.bill_id.name
                 )
-            if record.bill_id and record._get_pipeline_payments():
+            if record.bill_id and record.payment_ids:
                 raise UserError(
                     _("Cannot cancel: there are payments linked to bill %s. "
                       "Remove payments first.")
