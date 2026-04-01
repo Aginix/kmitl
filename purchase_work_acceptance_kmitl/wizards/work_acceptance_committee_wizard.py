@@ -110,7 +110,6 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
             ('other', 'Other'),
         ],
         string='Status',
-        required=True,
     )
 
     note = fields.Text(string='Note')
