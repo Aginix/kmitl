@@ -101,7 +101,7 @@ class BudgetAppropriationLine(models.Model):
     )
 
     deduct_analytic_id = fields.Many2one(
-        "account.analytic.account.public",
+        "account.analytic.account",
         compute="_compute_account_id",
         string="หักให้หน่วยงาน",
         compute_sudo=True,
