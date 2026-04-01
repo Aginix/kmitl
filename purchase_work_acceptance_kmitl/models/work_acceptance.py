@@ -161,7 +161,7 @@ class WorkAcceptance(models.Model):
         for rec in self:
             if rec.po_work_end and rec.date_receive:
                 rec.days_work_end_to_receive = (
-                    rec.date_receive - rec.po_work_end
+                    rec.date_receive.date() - rec.po_work_end
                 ).days + 1
             else:
                 rec.days_work_end_to_receive = 0
