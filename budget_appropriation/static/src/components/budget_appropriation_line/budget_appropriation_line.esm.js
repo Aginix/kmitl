@@ -24,6 +24,8 @@ export class BudgetAppropriationLineRenderer extends ListRenderer {
             title: "ยืนยันการลบรายการ",
             body: `คุณต้องการลบรายการ "${accountName}" จำนวนเงิน ${balanceFormatted} บาท ใช่หรือไม่?`,
             confirm: () => super.onDeleteRecord(record),
+            cancel: () => {},
+            cancelLabel: "ยกเลิก",
         });
     }
 }
