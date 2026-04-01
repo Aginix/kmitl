@@ -18,5 +18,5 @@ class PurchaseRequestLine(models.Model):
             "price_unit": self.price_unit,
             "account_id": account.id if account else False,
             "analytic_distribution": self.analytic_distribution,
-            "tax_ids": [Command.set(self.taxes_id.ids)],
+            "tax_ids": [Command.set(self.tax_id.ids)],
         }
