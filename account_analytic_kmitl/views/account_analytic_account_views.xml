@@ -7,9 +7,9 @@
         <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
-                <group string="Related Analytic Accounts">
+                <group string="Departments">
                     <field
-                        name="related_analytic_ids"
+                        name="department_analytic_ids"
                         widget="many2many_tags"
                         nolabel="1"
                     />
