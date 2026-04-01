@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- hr.employee.rank.nobility -->
+    <record model="hr.employee.rank.nobility" id="RN01">
+        <field name="name">หม่อมหลวง</field>
+        <field name="name_abbreviation">มล.</field>
+        <field name="name_en">Mom Luang</field>
+        <field name="name_abbreviation_en">M.L.</field>
+    </record>
+</odoo>

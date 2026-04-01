@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_employee_view_form" model="ir.ui.view">
+        <field name="name">hr.employee.view.form.inherit.education.history</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='personal_information']/group" position="after">
+                <div
+                    class="o_horizontal_separator mt-4 mb-3 text-uppercase fw-bolder small"
+                >
+                    Education History
+                </div>
+                <field name="education_history_ids" nolabel="1">
+                    <tree editable="buttom">
+                        <field
+                            name="university_id"
+                            options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                        />
+                        <field
+                            name="education_level_id"
+                            options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                            required='true'
+                        />
+                        <field
+                            name="faculty_id"
+                            options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                        />
+                        <field
+                            name="department_id"
+                            options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                        />
+                        <field
+                            name="program_id"
+                            options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                        />
+                        <field name="start_year" />
+                        <field name="graduation_year" />
+                    </tree>
+                </field>
+            </xpath>
+            <xpath expr="//field[@name='certificate']/.." position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_employee_filter" model="ir.ui.view">
+        <field name="name">Employees</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='group_category_ids']" position="after">
+                <filter
+                    string="Education Level"
+                    name="education_level_id"
+                    domain="[]"
+                    context="{'group_by': 'education_level_id'}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

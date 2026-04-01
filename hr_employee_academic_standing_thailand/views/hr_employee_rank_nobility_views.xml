@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- View hr.employee.rank.nobility View Tree -->
+    <record id="view_hr_employee_rank_nobility_tree" model="ir.ui.view">
+        <field name="name">view.hr.employee.rank.nobility.tree</field>
+        <field name="model">hr.employee.rank.nobility</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="name_abbreviation" />
+                <field name="name_en" />
+                <field name="name_abbreviation_en" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View hr.employee.rank.nobility form -->
+    <record id="view_hr_employee_rank_nobility_form" model="ir.ui.view">
+        <field name="name">view.hr.employee.rank.nobility.form</field>
+        <field name="model">hr.employee.rank.nobility</field>
+        <field name="arch" type="xml">
+            <form string="HR Employee Rank Nobility">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="name_abbreviation" />
+                        </group>
+                        <group>
+                            <field name="name_en" />
+                            <field name="name_abbreviation_en" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View hr.employee.rank.nobility search -->
+    <record id="view_hr_employee_rank_nobility_search" model="ir.ui.view">
+        <field name="name">view.hr.employee.rank.nobility.search</field>
+        <field name="model">hr.employee.rank.nobility</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action hr.employee.rank.nobility -->
+    <record id="action_hr_employee_rank_nobility" model="ir.actions.act_window">
+        <field name="name">HR Employee Rank Nobility</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.employee.rank.nobility</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Hr Employee Rank Nobility.
+            </p>
+        </field>
+    </record>
+
+</odoo>

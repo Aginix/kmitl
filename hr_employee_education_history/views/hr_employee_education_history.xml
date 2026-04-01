@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_employee_education_history_view_tree" model="ir.ui.view">
+        <field name="name">hr.employee.education.history.view.tree</field>
+        <field name="model">hr.employee.education.history</field>
+        <field name="arch" type="xml">
+            <tree edit="false" create="false">
+                <field name="employee_id" />
+                <field
+                    name="university_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                />
+                <field
+                    name="education_level_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                />
+                <field
+                    name="faculty_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                />
+                <field
+                    name="department_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                />
+                <field
+                    name="program_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True}"
+                />
+                <field name="start_year" />
+                <field name="graduation_year" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View hr.education.history search -->
+    <record id="view_hr_study_leave_search" model="ir.ui.view">
+        <field name="name">view.hr.education.history.search</field>
+        <field name="model">hr.employee.education.history</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id" />
+                <field name="education_level_id" />
+            </search>
+        </field>
+    </record>
+
+
+    <!-- Action hr.education.history -->
+    <record id="action_hr_education_history" model="ir.actions.act_window">
+        <field name="name">HR Education History</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.employee.education.history</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Hr Study Leave.
+            </p>
+        </field>
+    </record>
+</odoo>
