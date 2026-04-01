@@ -5,12 +5,20 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form"/>
         <field name="arch" type="xml">
-            <!-- Lock reference when it has a value (created from PR) -->
+            <!-- Lock fields when created from PR (reference has a value) -->
             <field name="reference" position="attributes">
                 <attribute name="attrs">{'readonly': [('reference', '!=', False)]}</attribute>
             </field>
-            <!-- Lock loan_type_id when reference has a value -->
             <field name="loan_type_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('reference', '!=', False)]}</attribute>
+            </field>
+            <field name="loan_amount" position="attributes">
+                <attribute name="attrs">{'readonly': [('reference', '!=', False)]}</attribute>
+            </field>
+            <field name="requested_by" position="attributes">
+                <attribute name="attrs">{'readonly': [('reference', '!=', False)]}</attribute>
+            </field>
+            <field name="department_id" position="attributes">
                 <attribute name="attrs">{'readonly': [('reference', '!=', False)]}</attribute>
             </field>
         </field>

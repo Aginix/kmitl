@@ -21,6 +21,20 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.advance_payment_count = 1 if rec.advance_payment_id else 0
 
+    def _prepare_advance_payment_vals(self):
+        """Prepare values for creating an advance payment from this PR."""
+        self.ensure_one()
+        loan_type = self.env.ref("advance_payment.loan_type_procurement")
+        return {
+            "requested_by": self.requested_by.id,
+            "department_id": self.department_id.id,
+            "reference": "purchase.request,%s" % self.id,
+            "loan_amount": self.get_estimated_cost_currency(),
+            "loan_type_id": loan_type.id,
+            "loan_reason": self.title or self.description or "",
+            "analytic_distribution": self.analytic_distribution,
+        }
+
     def action_create_advance_payment(self):
         """Create a draft advance payment agreement from this purchase request."""
         self.ensure_one()
@@ -31,18 +45,7 @@ class PurchaseRequest(models.Model):
         if self.advance_payment_id:
             raise UserError(_("An advance payment already exists for this purchase request."))
 
-        loan_type = self.env.ref("advance_payment.loan_type_procurement")
-        vals = {
-            "requested_by": self.requested_by.id,
-            "department_id": self.requested_by.employee_id.department_id.id
-            if self.requested_by.employee_id
-            else False,
-            "reference": "purchase.request,%s" % self.id,
-            "loan_amount": self.get_estimated_cost_currency(),
-            "loan_type_id": loan_type.id,
-            "loan_reason": self.title or self.description or "",
-            "analytic_distribution": self.analytic_distribution,
-        }
+        vals = self._prepare_advance_payment_vals()
         advance_payment = self.env["advance.payment"].create(vals)
         self.advance_payment_id = advance_payment.id
         self.message_post(
