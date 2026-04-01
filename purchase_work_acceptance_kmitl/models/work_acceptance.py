@@ -29,7 +29,7 @@ class WorkAcceptance(models.Model):
         compute="_compute_completeness",
         store=True,
     )
-    requested_delivery_date = fields.Date(
+    requested_delivery_date = fields.Datetime(
         string="Requested Delivery Date",
         tracking=True,
         readonly=True,
