@@ -131,7 +131,9 @@
                                 widget="selection" />
                         </group>
                         <group string="ข้อมูลการยืม">
-                            <field name="reference" />
+                            <field name="allow_manual_reference" invisible="1" />
+                            <field name="reference"
+                                attrs="{'readonly': [('allow_manual_reference', '=', False)]}" />
                             <field name="loan_type_id" widget="selection" />
                             <field name="loan_reason" />
                             <field name="currency_id" invisible="1" />

@@ -79,11 +79,24 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
+    allow_manual_reference = fields.Boolean(
+        compute="_compute_allow_manual_reference",
+    )
+
     reference = fields.Reference(
         selection=[("purchase.request", "Purchase Request")],
         string="Reference",
         states=READONLY_STATES,
     )
+
+    def _compute_allow_manual_reference(self):
+        allow = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.allow_manual_reference", default=False)
+        )
+        for rec in self:
+            rec.allow_manual_reference = allow
 
     loan_reason = fields.Text(
         string="Loan Reason",
