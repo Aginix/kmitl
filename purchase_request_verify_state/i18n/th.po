@@ -47,7 +47,7 @@ msgid "Config Settings"
 msgstr "ตั้งค่าการกำหนดค่า"
 
 #. module: purchase_request_verify_state
-#: model_terms:ir.ui.view,arch_db:purchase_request_verify_state.view_purchase_request_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_verify_state.view_purchase_request_verify_state_form
 msgid "Examine"
 msgstr "ยืนยันข้อมูล"
 
