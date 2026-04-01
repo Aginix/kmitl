@@ -12,7 +12,7 @@ class BudgetCommitment(models.Model):
 
     READONLY_STATES = {
         "reserved": [("readonly", True)],
-        "obligated": [("readonly", True)],
+        "partial": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }

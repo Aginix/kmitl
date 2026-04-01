@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="resource_academic_discipline_form_view">
+        <field name="name">resource.academic.discipline.form (in
+            resource_academic_discipline)</field>
+        <field name="model">resource.academic.discipline</field>
+        <field name="arch" type="xml">
+            <form>
+                <header />
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="code" />
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="resource_academic_discipline_search_view">
+        <field name="name">resource.academic.discipline.search (in
+            resource_academic_discipline)</field>
+        <field name="model">resource.academic.discipline</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="code" />
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="resource_academic_discipline_tree_view">
+        <field name="name">resource.academic.discipline.tree (in
+            resource_academic_discipline)</field>
+        <field name="model">resource.academic.discipline</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="code" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="resource_academic_discipline_act_window">
+        <field name="name">Discipline List</field>
+        <field name="res_model">resource.academic.discipline</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+    <record model="ir.ui.menu" id="resource_academic_discipline_menu">
+        <field name="name">Discipline List</field>
+        <field name="parent_id" ref="hr.menu_config_employee" />
+        <field name="action" ref="resource_academic_discipline_act_window" />
+        <field name="sequence" eval="21" />
+    </record>
+</odoo>

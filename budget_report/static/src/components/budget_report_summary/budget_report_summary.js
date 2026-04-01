@@ -261,7 +261,7 @@ export class BudgetReportSummary extends Component {
         const row = this._findRowByKey(rowKey);
         if (!row) return;
 
-        const domain = await this._buildCommitmentDomain(row, 'obligated');
+        const domain = await this._buildCommitmentDomain(row, 'partial');
 
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
@@ -270,7 +270,7 @@ export class BudgetReportSummary extends Component {
             views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
             domain: domain,
             context: {
-                search_default_state_obligated: 1,
+                search_default_partial: 1,
             },
             target: 'current',
         });

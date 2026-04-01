@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="budget_commitment_line_wizard_form" model="ir.ui.view">
+        <field name="name">budget.commitment.line.wizard.form</field>
+        <field name="model">budget.commitment.line.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Commitment Line">
+                <group>
+                    <field name="commitment_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="move_type" invisible="1"/>
+                    <field name="date"/>
+                    <field name="account_id"/>
+                    <field name="department_analytic_id"/>
+                    <field name="source_analytic_id"/>
+                    <field name="activity_analytic_id"/>
+                    <field name="fund_analytic_id"/>
+                    <field name="available_amount" widget="monetary"/>
+                    <field name="amount" widget="monetary"/>
+                    <field name="name" placeholder="รายละเอียดเพิ่มเติม..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object"
+                        class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_commitment_obligate_wizard" model="ir.actions.act_window">
+        <field name="name">ผูกพันงบประมาณ</field>
+        <field name="res_model">budget.commitment.line.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_move_type': 'obligate',
+        }</field>
+    </record>
+
+    <record id="action_commitment_consume_wizard" model="ir.actions.act_window">
+        <field name="name">ตัดงบประมาณ</field>
+        <field name="res_model">budget.commitment.line.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_move_type': 'consume',
+        }</field>
+    </record>
+
+</odoo>

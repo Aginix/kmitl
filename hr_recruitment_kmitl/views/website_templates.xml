@@ -1,0 +1,6 @@
+<odoo>
+    <!-- <template id="website.option_header_brand_logo" name="Header Brand Logo" active="False"></template> -->
+    <!-- <template id="kmitl_template_header" inherit_id="website.template_header_default" name="KMITL Template Header" active="True">
+
+    </template> -->
+</odoo>

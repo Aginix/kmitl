@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_hr_academic_standing"
+        name="Academic Standing"
+        parent="hr.menu_human_resources_configuration"
+        sequence="15"
+    />
+
+    <menuitem
+        id="menu_view_hr_employee_academic_standing"
+        name="Academic Standing List"
+        action="action_hr_employee_academic_standing"
+        parent="menu_hr_academic_standing"
+        sequence="1"
+    />
+
+    <menuitem
+        id="menu_view_resource_rank_agency"
+        name="Rank Agency List"
+        action="action_resource_rank_agency"
+        parent="menu_hr_academic_standing"
+        sequence="2"
+    />
+
+    <menuitem
+        id="menu_view_resource_rank"
+        name="Rank List"
+        action="action_resource_rank"
+        parent="menu_hr_academic_standing"
+        sequence="3"
+    />
+
+    <menuitem
+        id="menu_view_hr_employee_profession"
+        name="Profession List"
+        action="action_hr_employee_profession"
+        parent="menu_hr_academic_standing"
+        sequence="4"
+    />
+
+    <menuitem
+        id="menu_view_action_hr_employee_rank_nobility"
+        name="Rank Nobility List"
+        action="action_hr_employee_rank_nobility"
+        parent="menu_hr_academic_standing"
+        sequence="5"
+    />
+</odoo>

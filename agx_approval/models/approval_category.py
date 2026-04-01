@@ -58,6 +58,36 @@ class ApprovalCategory(models.Model):
         comodel_name="product.product",
     )
 
+    budget_account_id = fields.Many2one(
+        "budget.account",
+        string="Budget Account",
+        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+    )
+
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กิจกรรม",
+        domain=[("root_plan_id.code", "=", "activities")],
+    )
+
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        domain=[("root_plan_id.code", "=", "departments")],
+    )
+
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        domain=[("root_plan_id.code", "=", "funds")],
+    )
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        domain=[("root_plan_id.code", "=", "sources")],
+    )
+
     def create_request(self):
         self.ensure_one()
         # If category uses sequence, set next sequence as name

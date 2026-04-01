@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="office_order_menu_root"
+        name="Office Order"
+        web_icon="office_order,static/description/menuicon.png"
+    >
+        <menuitem id="office_orders_menu" name="Office Orders">
+            <menuitem id="office_order_menu_action" action="office_order_action" />
+        </menuitem>
+    </menuitem>
+</odoo>

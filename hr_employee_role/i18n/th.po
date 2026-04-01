@@ -1,0 +1,37 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_employee_role
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0-20230109\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-04-10 19:32+0000\n"
+"PO-Revision-Date: 2023-04-10 19:32+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: hr_employee_role
+#: model:ir.model.fields.selection,name:hr_employee_role.selection__hr_employee__role__academic
+msgid "Academic"
+msgstr "สายวิชาการ"
+
+#. module: hr_employee_role
+#: model:ir.model.fields,field_description:hr_employee_role.field_hr_employee__role
+#: model_terms:ir.ui.view,arch_db:hr_employee_role.view_employee_filter
+msgid "Role"
+msgstr "สายงาน"
+
+#. module: hr_employee_role
+#: model:ir.model.fields.selection,name:hr_employee_role.selection__hr_employee__role__support
+msgid "Support"
+msgstr "สายสนับสนุนวิชาการ"
+
+#. module: hr_employee_role
+#: model:ir.model,name:hr_employee_role.model_hr_employee
+msgid "hr.employee"
+msgstr "พนักงาน"

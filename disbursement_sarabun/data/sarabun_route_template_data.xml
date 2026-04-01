@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- Route Template for Disbursement Request -->
+    <record id="route_template_disbursement_request" model="sarabun.route.template">
+        <field name="name">Disbursement Request Head Approval</field>
+        <field name="description">Route disbursement request to head of department for approval</field>
+        <field name="sequence">10</field>
+        <field name="origin_model">disbursement.request</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Route Template Line: Head of department approves -->
+    <record id="route_template_line_dr_head_approve" model="sarabun.route.template.line">
+        <field name="template_id" ref="route_template_disbursement_request"/>
+        <field name="sequence">10</field>
+        <field name="routing_type">approve</field>
+        <field name="recipient_type">user</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+</odoo>
