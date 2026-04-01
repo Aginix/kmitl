@@ -36,6 +36,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
                     'approve_role': committee.approve_role,
                     'status': committee.status,
                     'note': committee.note,
+                    'is_done': bool(committee.status),
                 }))
             res['line_ids'] = lines
         return res
@@ -112,6 +113,11 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
 
     is_reason_editable = fields.Boolean(
         compute='_compute_is_reason_editable'
+    )
+
+    is_done = fields.Boolean(
+        string='Is Done',
+        default=False,
     )
 
     @api.onchange('status')
