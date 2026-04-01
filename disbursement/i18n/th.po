@@ -950,6 +950,7 @@ msgstr ""
 msgid "Net Total"
 msgstr "มูลค่าสุทธิ"
 
+#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_analytic_id
 msgid "Activity"
 msgstr "กิจกรรม"
