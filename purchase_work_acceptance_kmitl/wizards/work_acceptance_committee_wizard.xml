@@ -18,8 +18,8 @@
                         <field
                             name="status"
                             decoration-success="status == 'accept'"
-                            required="1"
                             attrs="{'readonly': [('is_done', '=', True)]}"
+                            class="o_required_modifier"
                         />
                         <field
                             name="reason"

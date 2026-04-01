@@ -43,7 +43,19 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
 
     def button_confirm(self):
         self.ensure_one()
+        # เช็คว่ากรรมการที่ยังไม่ done ต้องมี status ครบ
+        incomplete = self.line_ids.filtered(
+            lambda l: not l.is_done and not l.status
+        )
+        if incomplete:
+            names = ', '.join(incomplete.mapped('employee_name'))
+            raise ValidationError(
+                _("Please set status for: %s") % names
+            )
+
         for line in self.line_ids:
+            if line.is_done:
+                continue
             if line.reason:
                 reason_label = dict(
                     line._fields['reason'].selection
