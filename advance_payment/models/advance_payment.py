@@ -291,6 +291,12 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.return_count = len(rec.return_line_ids)
 
+    @api.constrains("loan_amount")
+    def _check_loan_amount_positive(self):
+        for rec in self:
+            if rec.loan_amount < 0:
+                raise ValidationError(_("Loan amount cannot be negative."))
+
     @api.constrains("name")
     def _check_name_unique(self):
         for rec in self:
