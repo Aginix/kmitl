@@ -36,6 +36,33 @@ class WorkAcceptance(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
+    # PO date snapshots (captured at WA creation, immune to PO edits)
+    po_date_order_date = fields.Date(
+        string="PO Contract Date",
+        readonly=True,
+        copy=False,
+    )
+    po_work_start = fields.Date(
+        string="PO Work Start",
+        readonly=True,
+        copy=False,
+    )
+    po_work_end = fields.Date(
+        string="PO Work End",
+        readonly=True,
+        copy=False,
+    )
+
+    has_contract_change = fields.Boolean(
+        compute="_compute_has_contract_change",
+    )
+    days_work_end_to_requested = fields.Integer(
+        compute="_compute_days_work_end_to_requested",
+    )
+    days_work_end_to_receive = fields.Integer(
+        compute="_compute_days_work_end_to_receive",
+    )
+
     # Late Fines
     late_days = fields.Integer(
         readonly=True,
@@ -113,6 +140,34 @@ class WorkAcceptance(models.Model):
             rec.is_construction_contract = bool(
                 getattr(rec.purchase_id.contract_type_id, "is_construction", False)
             )
+
+    @api.depends("requested_delivery_date", "po_work_end")
+    def _compute_has_contract_change(self):
+        for rec in self:
+            if rec.requested_delivery_date and rec.po_work_end:
+                rec.has_contract_change = rec.requested_delivery_date > rec.po_work_end
+            else:
+                rec.has_contract_change = False
+
+    @api.depends("po_work_end", "requested_delivery_date")
+    def _compute_days_work_end_to_requested(self):
+        for rec in self:
+            if rec.po_work_end and rec.requested_delivery_date:
+                rec.days_work_end_to_requested = (
+                    rec.requested_delivery_date - rec.po_work_end
+                ).days + 1
+            else:
+                rec.days_work_end_to_requested = 0
+
+    @api.depends("po_work_end", "date_receive")
+    def _compute_days_work_end_to_receive(self):
+        for rec in self:
+            if rec.po_work_end and rec.date_receive:
+                rec.days_work_end_to_receive = (
+                    rec.date_receive - rec.po_work_end
+                ).days + 1
+            else:
+                rec.days_work_end_to_receive = 0
 
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):

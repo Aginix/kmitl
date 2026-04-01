@@ -12,7 +12,7 @@
                     />
                     <t
                         t-set="final_amount"
-                        t-value="total_amount - (o.purchase_id.fines_late or 0.0)"
+                        t-value="total_amount - (o.fines_late or 0.0)"
                     />
                     <style>
                         * {
@@ -72,12 +72,12 @@
                             ลงวันที่
                             <span
                                 class="ub"
-                                t-esc="o.format_date_thai(o.purchase_id.date_order_date)"
+                                t-esc="o.format_date_thai(o.po_date_order_date)"
                             />
                             ผู้รับจ้างลงมือทำงานเมื่อวันที่
                             <span
                                 class="ub"
-                                t-esc="o.format_date_thai(o.purchase_id.work_start)"
+                                t-esc="o.format_date_thai(o.po_work_start)"
                             />
                             บัดนี้ได้ทำการส่งมอบงาน เรียบร้อยตามสัญญา
                         </div>
@@ -169,11 +169,11 @@
                                 class="ub"
                                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
                             />)
-                            <div t-if="o.late_days">
+                            <div t-if="o.has_contract_change" name="section_change">
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.purchase_id.work_end)"
+                                    t-esc="o.format_date_thai(o.po_work_end)"
                                 />
                                 ถึงวันที่
                                 <span
@@ -183,12 +183,12 @@
                                 เป็นเวลา
                                 <span
                                     class="ub"
-                                    t-out="o.purchase_id.contract_period_days or ''"
+                                    t-out="o.days_work_end_to_requested or ''"
                                 />
                                 วัน และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.purchase_id.work_end)"
+                                    t-esc="o.format_date_thai(o.po_work_end)"
                                 />
                                 ถึงวันที่
                                 <span
@@ -198,20 +198,20 @@
                                 เป็นเวลา
                                 <span
                                     class="ub"
-                                    t-out="o.purchase_id.contract_period_days or ''"
+                                    t-out="o.days_work_end_to_receive or ''"
                                 />
                                 วัน คงทำงานเกินกำหนดสัญญาไป
                                 <span
                                     class="ub"
-                                    t-out="o.purchase_id.late_days or '-'"
+                                    t-out="o.late_days or '-'"
                                 />
                                 วัน จะต้องเสียค่าปรับวันละ
                                 <span
                                     class="ub"
-                                    t-out="o.purchase_id.fines_rate or '-'"
+                                    t-out="o.fines_rate or '-'"
                                 />
                                 บาท (<t
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.purchase_id.fines_rate) if o.purchase_id.fines_rate else '-'"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_rate) if o.fines_rate else '-'"
                                 />) คงรับเงินงวดนี้เป็น
                                 <span
                                     class="ub"
