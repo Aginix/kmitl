@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_advance_payment_form" model="ir.ui.view">
+        <field name="name">advance.payment.form.operating_unit</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form"/>
+        <field name="arch" type="xml">
+            <field name="requested_by" position="before">
+                <field name="operating_unit_id" widget="selection"
+                    groups="operating_unit.group_multi_operating_unit"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_tree" model="ir.ui.view">
+        <field name="name">advance.payment.tree.operating_unit</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_list"/>
+        <field name="arch" type="xml">
+            <field name="requested_by" position="before">
+                <field name="operating_unit_id" optional="hide"
+                    groups="operating_unit.group_multi_operating_unit"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_search" model="ir.ui.view">
+        <field name="name">advance.payment.search.operating_unit</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_search"/>
+        <field name="arch" type="xml">
+            <filter name="group_requested_by" position="after">
+                <filter string="Operating Unit" name="group_operating_unit"
+                    domain="[]" context="{'group_by':'operating_unit_id'}"
+                    groups="operating_unit.group_multi_operating_unit"/>
+            </filter>
+        </field>
+    </record>
+</odoo>
