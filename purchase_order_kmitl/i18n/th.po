@@ -3129,3 +3129,40 @@ msgstr "เอกสารแนบ"
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 msgid "File Name"
 msgstr "ชื่อไฟล์"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
+msgid "use invoice plan"
+msgstr "แบ่งงวดงาน"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
+msgid "ข้อมูล"
+msgstr ""
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
+msgid "งวดงาน"
+msgstr ""
+
+#. module: purchase_order_kmitl
+#: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
+
+#. module: purchase_order_kmitl
+#: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__payment_type__loan
+msgid "Loan"
+msgstr "เงินยืม"
+
+#. module: purchase_order_kmitl
+#: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__payment_type__prepaid
+msgid "Prepaid"
+msgstr "สำรองจ่าย"
+
+#. module: purchase_order_kmitl
+#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__payment_type
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_search
+msgid "Payment Type"
+msgstr "ประเภทการเบิกจ่าย"
+

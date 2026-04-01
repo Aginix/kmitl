@@ -243,6 +243,19 @@ class ApprovalRequest(models.Model):
     def _onchange_category_id(self):
         self.line_ids = False
         self.description = self.category_id.default_description
+        if self.category_id:
+            self.budget_account_id = self.category_id.budget_account_id
+            distribution = {}
+            for field_name in (
+                "activity_analytic_id",
+                "department_analytic_id",
+                "fund_analytic_id",
+                "source_analytic_id",
+            ):
+                analytic = self.category_id[field_name]
+                if analytic:
+                    distribution[str(analytic.id)] = 100
+            self.analytic_distribution = distribution or False
 
     @api.onchange("owner_id")
     def _onchange_owner_id(self):
@@ -283,7 +296,7 @@ class ApprovalRequest(models.Model):
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all order lines"""
-        if self.analytic_distribution:
+        if self.analytic_distribution and self.line_ids and "analytic_distribution" in self.line_ids._fields:
             self.line_ids.update({"analytic_distribution": self.analytic_distribution})
 
     def _inverse_activity_analytic(self):
@@ -472,7 +485,7 @@ class ApprovalRequest(models.Model):
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
         
-    @api.depends("state")
+    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_is_budget_editable(self):
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
@@ -488,8 +501,8 @@ class ApprovalRequest(models.Model):
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
             if rec.state in ("to_verify") and (
-                rec.budget_commitment_id.state == "cancel"
-                or not rec.budget_commitment_id
+                not rec.budget_commitment_id
+                or rec.budget_commitment_id.state == "cancel"
             ):
                 rec.hide_reserve_budget_button = False
             else:

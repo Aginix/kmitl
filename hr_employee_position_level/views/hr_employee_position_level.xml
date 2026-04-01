@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_employee_position_level_view_tree" model="ir.ui.view">
+        <field name="name">hr.employee.position.level.view.tree</field>
+        <field name="model">hr.employee.position.level</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" default_order="level desc">
+                <field
+                    name="relation_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_open': True}"
+                    domain="[('role', '=', parent.role)]"
+                />
+                <field name="effective_date" />
+                <field
+                    name="discipline_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_open': True}"
+                />
+                <field
+                    name="subdiscipline_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_open': True}"
+                />
+                <field
+                    name="office_order_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_open': True}"
+                />
+                <field name="order_date" />
+                <field name="level" invisible="1" />
+            </tree>
+        </field>
+    </record>
+</odoo>

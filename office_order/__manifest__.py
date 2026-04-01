@@ -1,0 +1,19 @@
+{
+    "name": "Office Order",
+    "version": "16.0.1.0.1",
+    "summary": "Office Order management App",
+    "website": "https://github.com/aginix/kmitl-odoo",
+    "author": "Nopparut, Aginix Technologies",
+    "maintainers": ["nopparuts"],
+    "license": "LGPL-3",
+    "category": "",
+    "depends": ["base", "mail"],
+    "data": [
+        "views/office_order_views.xml",
+        "views/ir_attachment.xml",
+        "views/office_order_menu.xml",
+        "security/ir.model.access.csv",
+    ],
+    "auto_install": False,
+    "application": True,
+}

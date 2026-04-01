@@ -1,0 +1,332 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_employee_academic_standing_thailand
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-13 06:58+0000\n"
+"PO-Revision-Date: 2025-02-13 15:57+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.5\n"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__academic_standing_id
+#: model:ir.ui.menu,name:hr_employee_academic_standing_thailand.menu_hr_academic_standing
+msgid "Academic Standing"
+msgstr "ตำแหน่งทางวิชาการ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.ui.menu,name:hr_employee_academic_standing_thailand.menu_view_hr_employee_academic_standing
+msgid "Academic Standing List"
+msgstr "รายชื่อตำแหน่งทางวิชาการ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__academic_standing_title
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.hr_employee_view_form
+msgid "Academic Standing Title"
+msgstr "ตำแหน่งทางวิชาการ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__academic_standing_title_abbreviation
+msgid "Academic Standing Title Abbreviation"
+msgstr "ตัวย่อตำแหน่งทางวิชาการ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__academic_standing_title_abbreviation_en
+msgid "Academic Standing Title Abbreviation English"
+msgstr "ตัวย่อตำแหน่งทางวิชาการภาษาอังกฤษ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__academic_standing_title_en
+msgid "Academic Standing Title English"
+msgstr "ตำแหน่งทางวิชาการภาษาอังกฤษ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__create_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__create_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__create_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__create_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__create_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__create_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__create_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__create_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__display_name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__display_name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__display_name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__display_name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: hr_employee_academic_standing_thailand
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_academic_standing_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_profession_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_rank_nobility_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_resource_rank_agency_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_resource_rank_search
+msgid "Group By"
+msgstr "กลุ่มโดย"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.actions.act_window,name:hr_employee_academic_standing_thailand.action_hr_employee_academic_standing
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_academic_standing_form
+msgid "HR Employee Academic Standing"
+msgstr "ตำแหน่งทางวิชาการ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.actions.act_window,name:hr_employee_academic_standing_thailand.action_hr_employee_profession
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_profession_form
+msgid "HR Employee Profession"
+msgstr "วิชาชีพ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.actions.act_window,name:hr_employee_academic_standing_thailand.action_resource_rank
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_resource_rank_form
+msgid "HR Employee Rank"
+msgstr "ยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.actions.act_window,name:hr_employee_academic_standing_thailand.action_resource_rank_agency
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_resource_rank_agency_form
+msgid "HR Employee Rank Agency"
+msgstr "หน่วยของยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.actions.act_window,name:hr_employee_academic_standing_thailand.action_hr_employee_rank_nobility
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_rank_nobility_form
+msgid "HR Employee Rank Nobility"
+msgstr "ฐานันดรศักดิ์"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model,name:hr_employee_academic_standing_thailand.model_hr_employee_academic_standing
+msgid "HrEmployeeAcademicStanding"
+msgstr "ตำแหน่งทางวิชาการ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model,name:hr_employee_academic_standing_thailand.model_hr_employee_profession
+msgid "HrEmployeeProfession"
+msgstr "วิชาชีพ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model,name:hr_employee_academic_standing_thailand.model_hr_employee_rank_nobility
+msgid "HrEmployeeRankNobility"
+msgstr "ฐานันดรศักดิ์"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__id
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__id
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__id
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__id
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__id
+msgid "ID"
+msgstr ""
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model,name:hr_employee_academic_standing_thailand.model_hr_employee
+msgid "Inheritted Hr Employee"
+msgstr "พนักงาน"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing____last_update
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession____last_update
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility____last_update
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank____last_update
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__write_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__write_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__write_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__write_uid
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__write_uid
+msgid "Last Updated by"
+msgstr "อัพเดทครั้งล่าสุดโดย"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__write_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__write_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__write_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__write_date
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__write_date
+msgid "Last Updated on"
+msgstr "อัพเดทครั้งล่าสุดเมื่อ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__name
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__name
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_academic_standing_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_profession_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_hr_employee_rank_nobility_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_resource_rank_agency_search
+#: model_terms:ir.ui.view,arch_db:hr_employee_academic_standing_thailand.view_resource_rank_search
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__name_abbreviation
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__name_abbreviation
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__name_abbreviation
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__name_abbreviation
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank_agency__name_abbreviation
+msgid "Name Abbreviation"
+msgstr "ชื่อย่อ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__name_abbreviation_en
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__name_abbreviation_en
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__name_abbreviation_en
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__name_abbreviation_en
+msgid "Name Abbreviation English"
+msgstr "ชื่อย่อภาษาอังกฤษ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_academic_standing__name_en
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_profession__name_en
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee_rank_nobility__name_en
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__name_en
+msgid "Name English"
+msgstr "ชื่อภาษาอังกฤษ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name_abbreviation:hr_employee_academic_standing_thailand.pol
+msgid "POL"
+msgstr "ตร."
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name:hr_employee_academic_standing_thailand.pol
+msgid "Police"
+msgstr "ตำรวจ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__profession_id
+msgid "Profession"
+msgstr "วิชาชีพ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.ui.menu,name:hr_employee_academic_standing_thailand.menu_view_hr_employee_profession
+msgid "Profession List"
+msgstr "รายชื่อวิชาชีพ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name_abbreviation:hr_employee_academic_standing_thailand.rta
+msgid "RTA"
+msgstr "ทบ."
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name_abbreviation:hr_employee_academic_standing_thailand.rtaf
+msgid "RTAF"
+msgstr "ทอ."
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name_abbreviation:hr_employee_academic_standing_thailand.rtn
+msgid "RTN"
+msgstr "ทร."
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__rank_id
+msgid "Rank"
+msgstr "ยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__rank_agency_id
+msgid "Rank Agency"
+msgstr "หน่วยของยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.ui.menu,name:hr_employee_academic_standing_thailand.menu_view_resource_rank_agency
+msgid "Rank Agency List"
+msgstr "รายชื่อหน่วยของยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.ui.menu,name:hr_employee_academic_standing_thailand.menu_view_resource_rank
+msgid "Rank List"
+msgstr "รายชื่อยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_hr_employee__rank_nobility_id
+msgid "Rank Nobility"
+msgstr "ฐานันดรศักดิ์"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.ui.menu,name:hr_employee_academic_standing_thailand.menu_view_action_hr_employee_rank_nobility
+msgid "Rank Nobility List"
+msgstr "รายชื่อฐานันดรศักดิ์"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model,name:hr_employee_academic_standing_thailand.model_resource_rank
+msgid "ResourceRank"
+msgstr "ทรัพยากรยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model,name:hr_employee_academic_standing_thailand.model_resource_rank_agency
+msgid "ResourceRankAgency"
+msgstr "ทรัพยากรหน่วยของยศ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name:hr_employee_academic_standing_thailand.rtaf
+msgid "Royal Thai Air Force"
+msgstr "กองทัพอากาศไทย"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name:hr_employee_academic_standing_thailand.rta
+msgid "Royal Thai Army"
+msgstr "กองทัพบกไทย"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:resource.rank.agency,name:hr_employee_academic_standing_thailand.rtn
+msgid "Royal Thai Navy"
+msgstr "กองทัพเรือไทย"
+
+#. module: hr_employee_academic_standing_thailand
+#: model:ir.model.fields,field_description:hr_employee_academic_standing_thailand.field_resource_rank__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: hr_employee_academic_standing_thailand
+#: model_terms:ir.actions.act_window,help:hr_employee_academic_standing_thailand.action_hr_employee_academic_standing
+msgid ""
+"There is no examples click here to add new Hr Employee Academic Standing."
+msgstr ""
+
+#. module: hr_employee_academic_standing_thailand
+#: model_terms:ir.actions.act_window,help:hr_employee_academic_standing_thailand.action_hr_employee_profession
+msgid "There is no examples click here to add new Hr Employee Profession."
+msgstr ""
+
+#. module: hr_employee_academic_standing_thailand
+#: model_terms:ir.actions.act_window,help:hr_employee_academic_standing_thailand.action_hr_employee_rank_nobility
+msgid "There is no examples click here to add new Hr Employee Rank Nobility."
+msgstr ""
+
+#. module: hr_employee_academic_standing_thailand
+#: model_terms:ir.actions.act_window,help:hr_employee_academic_standing_thailand.action_resource_rank_agency
+msgid "There is no examples click here to add new Resource Rank Agency."
+msgstr ""
+
+#. module: hr_employee_academic_standing_thailand
+#: model_terms:ir.actions.act_window,help:hr_employee_academic_standing_thailand.action_resource_rank
+msgid "There is no examples click here to add new Resource Rank."
+msgstr ""
