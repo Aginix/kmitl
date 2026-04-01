@@ -43,7 +43,7 @@
                             <p>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
                         </div>
                         <div class="row">
-                            <div class="col-8" />
+                            <div class="col-9" />
                             <div class="col">
                                 <div>เลขที่ <span t-esc="o.name" /></div>
                             </div>
@@ -219,9 +219,7 @@
                                 ผู้รับพัสดุ/เจ้าหน้าที่พัสดุ
                             </div>
                             <div class="mt-2">
-                                (<span
-                                    t-esc="o.work_acceptance_committee_ids[0].name"
-                                />)
+                                (<span t-esc="o.responsible_id.name" />)
                             </div>
                         </div>
                     </div>
@@ -251,12 +249,12 @@
                                 ได้ดำเนินการตรวจสอบแล้วถูกต้องตามสัญญา/ข้อตกลงตั้งแต่วันที่
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.date_receive)"
+                                    t-esc="o.format_date_thai(o.date_contract_complete)"
                                 />
                                 และได้ตรวจรับพัสดุเรียบร้อยแล้ว ตั้งแต่วันที่
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.date_receive)"
+                                    t-esc="o.format_date_thai(o.date_work_handover)"
                                 />
                                 ผู้ขาย/ผู้รับจ้างควรได้รับเงินตามสัญญา ข้อ 1. เป็นเงิน
                                 <span
@@ -272,17 +270,17 @@
                                 ) เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.purchase_id.work_start)"
+                                    t-esc="o.format_date_thai(o.po_work_end +1)"
                                 />
                                 ถึงวันที่
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.purchase_id.work_end)"
+                                    t-esc="o.format_date_thai(o.requested_delivery_date)"
                                 />
                                 เป็นเวลา
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.contract_period_days"
+                                    t-esc="o.purchase_id.late_days"
                                 />
                                 วัน คงส่งมอบของล่าช้าเกินกำหนดสัญญา/ข้อตกลงไป
                                 <span
@@ -292,23 +290,25 @@
                                 วัน จะต้องเสียค่าปรับ วันละ
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.fines_late"
+                                    t-esc="o.purchase_id.fines_rate"
                                 />
-                                บาท (..……-….....) รวมเป็นเงิน
+                                บาท (<t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.purchase_id.fines_rate)"
+                                />) รวมเป็นเงิน
                                 <span
                                     class="text-decoration-underline fw-bolder"
                                     t-esc="o.purchase_id.fines_late"
                                 />
-                                บาท (…...…-....….) คงได้รับเงินงวดนี้ เป็นเงิน
+                                บาท (<t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.purchase_id.fines_late)"
+                                />) คงได้รับเงินงวดนี้ เป็นเงิน
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    t-esc="'{0:,.2f}'.format(o.fines_total)"
                                 />
                                 บาท (
                                 <t
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
-    sum(o.wa_line_ids.mapped('price_subtotal'))
-)"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_total)"
                                 />
                                 )
                             </div>

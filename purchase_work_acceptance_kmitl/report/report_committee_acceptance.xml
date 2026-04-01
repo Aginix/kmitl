@@ -173,7 +173,7 @@
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.po_work_end)"
+                                    t-esc="o.format_date_thai(o.po_work_end + 1)"
                                 />
                                 ถึงวันที่
                                 <span
@@ -185,31 +185,27 @@
                                     class="ub"
                                     t-out="o.days_work_end_to_requested or ''"
                                 />
-                                วัน และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
-                                <span
-                                    class="ub"
-                                    t-esc="o.format_date_thai(o.po_work_end)"
-                                />
-                                ถึงวันที่
-                                <span
-                                    class="ub"
-                                    t-esc="o.format_date_thai(o.date_receive)"
-                                />
-                                เป็นเวลา
-                                <span
-                                    class="ub"
-                                    t-out="o.days_work_end_to_receive or ''"
-                                />
-                                วัน คงทำงานเกินกำหนดสัญญาไป
-                                <span
-                                    class="ub"
-                                    t-out="o.late_days or '-'"
-                                />
+                                วัน
+                                <span name="section_over_time">
+                                    และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
+                                    <span
+                                        class="ub"
+                                        t-esc="o.format_date_thai(o.po_work_end + 1)"
+                                    />
+                                    ถึงวันที่
+                                    <!-- new Date Change -->
+                                    <span
+                                        class="ub"
+                                        t-esc="o.format_date_thai(o.date_receive)"
+                                    />
+                                    เป็นเวลา
+                                    <span class="ub" t-out="o.late_days or '-'" />
+                                    วัน
+                                </span>
+                                คงทำงานเกินกำหนดสัญญาไป
+                                <span class="ub" t-out="o.late_days or '-'" />
                                 วัน จะต้องเสียค่าปรับวันละ
-                                <span
-                                    class="ub"
-                                    t-out="o.fines_rate or '-'"
-                                />
+                                <span class="ub" t-out="o.fines_rate or '-'" />
                                 บาท (<t
                                     t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_rate) if o.fines_rate else '-'"
                                 />) คงรับเงินงวดนี้เป็น

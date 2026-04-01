@@ -356,7 +356,6 @@
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page
                     string="วันที่ดำเนินงาน"
-                    attrs="{'invisible': [('is_construction_contract', '=', False)]}"
                 >
                     <group>
                         <field name="date_committee_received" />
