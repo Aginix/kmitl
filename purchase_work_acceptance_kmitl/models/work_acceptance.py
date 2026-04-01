@@ -39,18 +39,15 @@ class WorkAcceptance(models.Model):
     # PO date snapshots (captured at WA creation, immune to PO edits)
     po_date_order_date = fields.Date(
         string="PO Contract Date",
-        readonly=True,
         copy=False,
     )
     po_work_start = fields.Date(
         string="PO Work Start",
-        readonly=True,
         copy=False,
     )
     po_work_end = fields.Date(
         string="PO Work End",
-        readonly=True,
-        copy=False,
+        related="purchase_id.work_end",
     )
 
     has_contract_change = fields.Boolean(
@@ -133,7 +130,7 @@ class WorkAcceptance(models.Model):
             "Wrong Fines Amount, it must be positive!",
         ),
     ]
-    
+
     @api.depends("purchase_id")
     def _compute_is_construction_contract(self):
         for rec in self:
@@ -212,7 +209,7 @@ class WorkAcceptance(models.Model):
             "target": "current",
             "context": self.env.context,
         }
-    
+
     # Late Fines
     @api.onchange("late_days")
     def _onchange_late_days_negative(self):
@@ -230,7 +227,7 @@ class WorkAcceptance(models.Model):
     def _onchange_fines_rate(self):
         if self.fines_rate < 0:
             self.fines_rate = 0
-    
+
     @api.depends("late_days", "fines_rate")
     def _compute_fines_late(self):
         for rec in self:
