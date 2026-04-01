@@ -121,7 +121,9 @@ class BudgetAppropriationLine(models.Model):
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
-        domain=[("root_plan_id.code", "=", "activities")],
+        domain="[('root_plan_id.code', '=', 'activities'),"
+        " '|', ('department_analytic_ids', '=', False),"
+        " ('department_analytic_ids', 'in', [department_analytic_id])]",
         tracking=True,
         auto_join=True,
     )
