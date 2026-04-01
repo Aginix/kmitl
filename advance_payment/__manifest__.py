@@ -32,6 +32,7 @@
         "views/account_payment_views.xml",
         "views/advance_payment_menus.xml",
         "views/exception_rule_views.xml",
+        "views/res_config_settings_views.xml",
     ],
     "application": True,
     "installable": True,

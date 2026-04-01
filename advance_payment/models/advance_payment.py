@@ -363,14 +363,29 @@ class AdvancePayment(models.Model):
                 body = _("Payment confirmed. Funds have been disbursed.")
             rec.message_post(body=body, subtype_xmlid="mail.mt_note")
 
+    def _check_submit_permission(self):
+        """Check if the current user is allowed to submit."""
+        strict = self.env["ir.config_parameter"].sudo().get_param(
+            "advance_payment.strict_submit", default=False
+        )
+        is_admin = self.env.user.has_group("base.group_system")
+        is_manager = self.env.user.has_group(
+            "advance_payment.group_advance_payment_manager"
+        )
+        for rec in self:
+            if rec.requested_by == self.env.user or is_admin:
+                continue
+            if not strict and is_manager:
+                continue
+            raise UserError(
+                _("Only the requestor or a manager can submit this agreement.")
+                if not strict
+                else _("Only the requestor or an admin can submit this agreement.")
+            )
+
     def action_submit(self):
         """Submit the agreement for approval (ส่งเพื่อขออนุมัติ)."""
-        if not self.env.user.has_group("advance_payment.group_advance_payment_manager"):
-            for rec in self:
-                if rec.requested_by != self.env.user:
-                    raise UserError(
-                        _("Only the requestor or a manager can submit this agreement.")
-                    )
+        self._check_submit_permission()
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft agreements can be submitted."))
