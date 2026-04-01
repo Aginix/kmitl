@@ -63,7 +63,7 @@ msgstr ""
 #. module: purchase_work_acceptance_disbursement
 #: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_disbursement_request__fines_total
 msgid "Fined Total"
-msgstr "มูลค่าหลังหักค่าปรับ"
+msgstr "ตัดออก"
 
 #. module: purchase_work_acceptance_disbursement
 #: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_disbursement_request__fines_late
@@ -135,4 +135,4 @@ msgstr ""
 #. module: purchase_work_acceptance_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_disbursement.view_disbursement_request_form_inherit_wa
 msgid "Value Before Tax"
-msgstr "มูลค่าก่อนภาษี"
+msgstr "มูลค่าก่อนภาษีหลังหักค่าปรับ (ถ้ามี)"
