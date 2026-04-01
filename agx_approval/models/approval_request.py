@@ -244,6 +244,8 @@ class ApprovalRequest(models.Model):
         self.line_ids = False
         self.description = self.category_id.default_description
         if self.category_id:
+            if self.category_id.budget_account_id:
+                self.budget_account_id = self.category_id.budget_account_id
             distribution = {}
             for field_name in (
                 "activity_analytic_id",

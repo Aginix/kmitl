@@ -58,6 +58,12 @@ class ApprovalCategory(models.Model):
         comodel_name="product.product",
     )
 
+    budget_account_id = fields.Many2one(
+        "budget.account",
+        string="Budget Account",
+        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+    )
+
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
