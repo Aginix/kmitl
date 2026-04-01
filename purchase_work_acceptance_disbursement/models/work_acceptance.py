@@ -41,7 +41,7 @@ class WorkAcceptance(models.Model):
                     ) % (wa.purchase_id.name, blocking[0].name)
                 )
             
-    def _link_to_disbursement(self, disbursement, analytic_distribution=False):
+    def _link_to_disbursement(self, disbursement, analytic_distribution=False, fine_tax_ids=None):
         self.ensure_one()
         self.write({"disbursement_request_id": disbursement.id})
 
@@ -66,6 +66,7 @@ class WorkAcceptance(models.Model):
                         "price_unit": -self.fines_late,
                         "account_id": fine_account.id,
                         "analytic_distribution": analytic_distribution or False,
+                        "tax_ids": [Command.set(fine_tax_ids or [])],
                     })
                 ]
             })
