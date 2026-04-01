@@ -357,11 +357,13 @@
                 <page
                     string="วันที่ดำเนินงาน"
                 >
-                    <group>
+                <group>
+                     <group>
                         <field name="date_committee_received" />
                         <field name="date_contract_complete" />
                         <field name="date_work_handover" />
                     </group>
+                </group>
                 </page>
             </xpath>
             <xpath expr="//form/sheet/notebook" position="before">

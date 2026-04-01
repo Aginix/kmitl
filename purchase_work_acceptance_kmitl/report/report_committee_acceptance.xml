@@ -183,7 +183,7 @@
                                 เป็นเวลา
                                 <span class="ub" t-out="o.late_days or '-'" />
                                 วัน
-                                <span t-if="o.purchase_id.po_work_end != o.po_work_end_original" name="section_over_time">
+                                <span t-if="o.purchase_id.work_end != o.po_work_end_original" name="section_over_time">
                                     และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
                                     <span
                                         class="ub"
