@@ -39,5 +39,5 @@ class PurchaseOrder(models.Model):
         result["context"]["default_fines_rate"] = self.fines_rate
         result["context"]["default_po_date_order_date"] = self.date_order_date
         result["context"]["default_po_work_start"] = self.work_start
-
+        result["context"]["default_po_work_end_original"] = self.work_end
         return result

@@ -54,6 +54,9 @@ class WorkAcceptance(models.Model):
     po_work_end_next = fields.Date(
         compute="_compute_po_work_end_next",
     )
+    po_work_end_original = fields.Date(
+        string="PO Work End Original",
+    )
 
     has_contract_change = fields.Boolean(
         compute="_compute_has_contract_change",
@@ -150,11 +153,11 @@ class WorkAcceptance(models.Model):
                 rec.po_work_end + timedelta(days=1) if rec.po_work_end else False
             )
 
-    @api.depends("requested_delivery_date", "po_work_end")
+    @api.depends("requested_delivery_date", "po_work_end_next")
     def _compute_has_contract_change(self):
         for rec in self:
-            if rec.requested_delivery_date and rec.po_work_end:
-                rec.has_contract_change = rec.requested_delivery_date > rec.po_work_end
+            if rec.requested_delivery_date and rec.po_work_end_next:
+                rec.has_contract_change = rec.requested_delivery_date > rec.po_work_end_next
             else:
                 rec.has_contract_change = False
 

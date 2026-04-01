@@ -181,12 +181,9 @@
                                     t-esc="o.format_date_thai(o.requested_delivery_date)"
                                 />
                                 เป็นเวลา
-                                <span
-                                    class="ub"
-                                    t-out="o.days_work_end_to_requested or ''"
-                                />
+                                <span class="ub" t-out="o.late_days or '-'" />
                                 วัน
-                                <span name="section_over_time">
+                                <span t-if="o.purchase_id.po_work_end != o.po_work_end_original" name="section_over_time">
                                     และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
                                     <span
                                         class="ub"
@@ -196,7 +193,7 @@
                                     <!-- new Date Change -->
                                     <span
                                         class="ub"
-                                        t-esc="o.format_date_thai(o.date_receive)"
+                                        t-esc="o.format_date_thai(o.po_work_end)"
                                     />
                                     เป็นเวลา
                                     <span class="ub" t-out="o.late_days or '-'" />
