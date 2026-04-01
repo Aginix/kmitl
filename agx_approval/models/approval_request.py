@@ -244,8 +244,7 @@ class ApprovalRequest(models.Model):
         self.line_ids = False
         self.description = self.category_id.default_description
         if self.category_id:
-            if self.category_id.budget_account_id:
-                self.budget_account_id = self.category_id.budget_account_id
+            self.budget_account_id = self.category_id.budget_account_id
             distribution = {}
             for field_name in (
                 "activity_analytic_id",
@@ -256,8 +255,7 @@ class ApprovalRequest(models.Model):
                 analytic = self.category_id[field_name]
                 if analytic:
                     distribution[str(analytic.id)] = 100
-            if distribution:
-                self.analytic_distribution = distribution
+            self.analytic_distribution = distribution or False
 
     @api.onchange("owner_id")
     def _onchange_owner_id(self):
@@ -487,7 +485,7 @@ class ApprovalRequest(models.Model):
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
         
-    @api.depends("state")
+    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_is_budget_editable(self):
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
@@ -503,8 +501,8 @@ class ApprovalRequest(models.Model):
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
             if rec.state in ("to_verify") and (
-                rec.budget_commitment_id.state == "cancel"
-                or not rec.budget_commitment_id
+                not rec.budget_commitment_id
+                or rec.budget_commitment_id.state == "cancel"
             ):
                 rec.hide_reserve_budget_button = False
             else:
