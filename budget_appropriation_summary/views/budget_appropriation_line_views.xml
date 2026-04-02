@@ -9,6 +9,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='balance']" position="after">
                 <field name="is_recurrent" />
+                <field name="is_ma" />
+                <field name="is_investment" />
             </xpath>
         </field>
     </record>
