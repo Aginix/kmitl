@@ -40,10 +40,41 @@
                         <button
                             type="button"
                             class="btn btn-success"
-                            t-on-click="onExport"
+                            t-on-click="() => this.onExport()"
                             title="ส่งออก PDF">
                             <i class="fa fa-file-pdf-o"/> ส่งออก PDF
                         </button>
+                        <button
+                            type="button"
+                            class="btn btn-success dropdown-toggle dropdown-toggle-split"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-header">ตัวเลือกการพิมพ์</li>
+                            <li><hr class="dropdown-divider"/></li>
+                            <li>
+                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.onExport({showNote: true})">
+                                    แสดงหมายเหตุ
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.onExport({showNote: false})">
+                                    ไม่แสดงหมายเหตุ
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"/></li>
+                            <li>
+                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.onExport({showItemized: true})">
+                                    แสดงแจกแจงรหัสงบประมาณ
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.onExport({showNote: true, showItemized: true})">
+                                    แสดงหมายเหตุ + แจกแจง
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </t>
