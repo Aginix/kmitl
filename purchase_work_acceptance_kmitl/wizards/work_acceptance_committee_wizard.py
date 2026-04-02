@@ -48,7 +48,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
             lambda l: not l.is_done and not l.status
         )
         if incomplete:
-            raise ValidationError(_("Please fill in all the inspection results."))
+            raise UserError(_("Please fill in all the inspection results."))
 
         for line in self.line_ids:
             if line.is_done:

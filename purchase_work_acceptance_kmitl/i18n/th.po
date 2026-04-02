@@ -1571,3 +1571,10 @@ msgstr "หลักฐานการตรวจรับ"
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
 msgid "File Name"
 msgstr "ไฟล์แนบ"
+
+#. module: purchase_work_acceptance_kmitl
+#. odoo-python
+#: code:addons/purchase_work_acceptance_kmitl/wizards/work_acceptance_committee_wizard.py:0
+#, python-format
+msgid "Please fill in all the inspection results."
+msgstr "กรุณากรอกผลการตรวจรับให้ครบ"
