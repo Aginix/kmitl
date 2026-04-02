@@ -169,7 +169,7 @@
                                 class="ub"
                                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
                             />)
-                            <div t-if="o.is_delivery_late and not o.is_work_end_extended" name="section_change">
+                            <div t-if="o.is_delivery_late or o.is_work_end_extended" name="section_change">
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
