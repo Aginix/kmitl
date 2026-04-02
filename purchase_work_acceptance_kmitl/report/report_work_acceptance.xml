@@ -272,7 +272,7 @@
                                     เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่
                                     <span
                                         class="text-decoration-underline fw-bolder"
-                                        t-esc="o.format_date_thai(o.po_work_end_next)"
+                                        t-esc="o.format_date_thai(o.date_due)"
                                     />
                                     ถึงวันที่
                                     <span
@@ -282,7 +282,7 @@
                                     เป็นเวลา
                                     <span
                                         class="text-decoration-underline fw-bolder"
-                                        t-esc="o.purchase_id.late_days"
+                                        t-esc="(o.requested_delivery_date - o.date_due.date()).days"
                                     />
                                     วัน
                                 </span>
