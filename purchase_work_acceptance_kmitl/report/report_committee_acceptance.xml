@@ -183,7 +183,10 @@
                                 เป็นเวลา
                                 <span class="ub" t-out="o.late_days or '-'" />
                                 วัน
-                                <span t-if="o.purchase_id.work_end != o.po_work_end_original" name="section_over_time">
+                                <span
+                                    t-if="o.purchase_id.work_end != o.po_work_end_original"
+                                    name="section_over_time"
+                                >
                                     และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
                                     <span
                                         class="ub"
@@ -216,7 +219,6 @@
                                 />)
                             </div>
                         </div>
-
                         <!-- Signatures: chairman -->
                         <t
                             t-foreach="o.work_acceptance_committee_ids.filtered(lambda c: c.approve_role == 'chairman')"
@@ -228,38 +230,54 @@
                                 </div>
                             </div>
                         </t>
-
-                        <!-- Signatures: committee -->
-                        <t
-                            t-foreach="o.work_acceptance_committee_ids.filtered(lambda c: c.approve_role == 'committee')"
-                            t-as="member"
-                        >
-                            <div class="row mt-4">
-                                <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />) กรรมการ
+                        <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                            <t t-if="line.approve_role != 'secretary'">
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span t-field="line.approve_role" />
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </t>
                         </t>
-
-                        <!-- Signatures: secretary -->
-                        <t
-                            t-foreach="o.work_acceptance_committee_ids.filtered(lambda c: c.approve_role == 'secretary')"
-                            t-as="member"
-                        >
-                            <div class="row mt-4">
-                                <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />) กรรมการและเลขานุการ
+                        <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                            <t t-if="line.approve_role == 'secretary'">
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span t-field="line.approve_role" />
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </t>
                         </t>
-
                         <!-- Signatures: supervisor -->
-                        <t t-foreach="o.purchase_id.work_supervisor_ids" t-as="member">
-                            <div class="row mt-4">
-                                <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />) ผู้ควบคุมงาน
+                        <t t-foreach="o.purchase_id.work_supervisor_ids" t-as="line">
+                            <t>
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span>ผู้ควบคุมงาน</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </t>
                         </t>
                     </div>
                 </t>
