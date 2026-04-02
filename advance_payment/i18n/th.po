@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-31 08:02+0000\n"
-"PO-Revision-Date: 2026-03-31 08:02+0000\n"
+"POT-Creation-Date: 2026-04-02 09:19+0000\n"
+"PO-Revision-Date: 2026-04-02 09:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -23,18 +23,12 @@ msgid " Note: %(note)s"
 msgstr " หมายเหตุ: %(note)s"
 
 #. module: advance_payment
-#. odoo-python
-#: code:addons/advance_payment/models/advance_payment.py:0
-#, python-format
-msgid " Reason: %(r)s"
-msgstr " เหตุผล: %(r)s"
-
-#. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
 msgid ""
 "<strong>คำขอได้รับอนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการเบิกจ่าย"
-msgstr "<strong>คำขอได้รับอนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการเบิกจ่าย"
-"<strong>คำขอได้รับอนุมัติแล้ว</strong> — รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+msgstr ""
+"<strong>คำขอได้รับอนุมัติแล้ว</strong> — "
+"รอฝ่ายการเงินดำเนินการเบิกจ่าย"
 
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
@@ -165,10 +159,10 @@ msgid ""
 "href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> created "
 "for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b> via journal "
 "<b>%(journal)s</b>. ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย"
-msgstr "สัญญาได้รับอนุมัติแล้ว รายการชำระเงิน <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> สร้างแล้วจำนวน <b>%(amount)s %(currency)s</b> ให้ <b>%(partner)s</b> ผ่านสมุดรายวัน <b>%(journal)s</b> ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย"
+msgstr ""
 "อนุมัติสัญญาแล้ว สร้างการชำระเงิน <a "
-"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> "
-"จำนวน <b>%(amount)s %(currency)s</b> ให้ <b>%(partner)s</b> ผ่านสมุดรายวัน "
+"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> จำนวน "
+"<b>%(amount)s %(currency)s</b> ให้ <b>%(partner)s</b> ผ่านสมุดรายวัน "
 "<b>%(journal)s</b> ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย"
 
 #. module: advance_payment
@@ -185,9 +179,9 @@ msgstr "ยกเลิกสัญญาแล้ว เหตุผล: %(reas
 msgid ""
 "Agreement closed. Amount used: <b>%(used)s %(currency)s</b>. Amount "
 "remaining: <b>%(remaining)s %(currency)s</b>."
-msgstr "ปิดสัญญาแล้ว ยอดใช้จ่าย: <b>%(used)s %(currency)s</b> ยอดคงเหลือ: <b>%(remaining)s %(currency)s</b>"
-"ปิดสัญญาแล้ว จำนวนเงินที่ใช้: <b>%(used)s %(currency)s</b> จำนวนเงิน"
-"คงเหลือ: <b>%(remaining)s %(currency)s</b>"
+msgstr ""
+"ปิดสัญญาแล้ว จำนวนเงินที่ใช้: <b>%(used)s %(currency)s</b> จำนวนเงินคงเหลือ: "
+"<b>%(remaining)s %(currency)s</b>"
 
 #. module: advance_payment
 #. odoo-python
@@ -217,9 +211,14 @@ msgstr "ส่งสัญญากลับเป็นฉบับร่าง
 msgid ""
 "Agreement submitted for approval by <b>%(user)s</b>. Loan amount: "
 "<b>%(amount)s %(currency)s</b>.%(reason)s"
-msgstr "ส่งสัญญาเพื่อขออนุมัติโดย <b>%(user)s</b> จำนวนเงินยืม: <b>%(amount)s %(currency)s</b>%(reason)s"
-"ส่งสัญญาเพื่อขออนุมัติโดย <b>%(user)s</b> จำนวนเงินยืม: "
-"<b>%(amount)s %(currency)s</b>%(reason)s"
+msgstr ""
+"ส่งสัญญาเพื่อขออนุมัติโดย <b>%(user)s</b> จำนวนเงินยืม: <b>%(amount)s "
+"%(currency)s</b>%(reason)s"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_res_config_settings__advance_payment_allow_manual_reference
+msgid "Allow Manual Reference"
+msgstr "อนุญาตให้ระบุเอกสารอ้างอิงเอง"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_return_line__amount
@@ -320,6 +319,11 @@ msgstr "ยกเลิกแล้ว"
 #, python-format
 msgid "Cannot modify a non-draft agreement."
 msgstr "ไม่สามารถแก้ไขสัญญาที่ไม่ใช่ฉบับร่างได้"
+
+#. module: advance_payment
+#: model:ir.model,name:advance_payment.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
 
 #. module: advance_payment
 #: model:ir.model,name:advance_payment.model_advance_payment_close_confirm
@@ -531,6 +535,11 @@ msgid "Is Follower"
 msgstr "เป็นผู้ติดตาม"
 
 #. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_advance_payment__is_reference_readonly
+msgid "Is Reference Readonly"
+msgstr "เอกสารอ้างอิงอ่านอย่างเดียว"
+
+#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment____last_update
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_cancel_wizard____last_update
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment_close_confirm____last_update
@@ -587,6 +596,13 @@ msgstr "เหตุผลการยืม"
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
 msgid "Loan Type"
 msgstr "ประเภทเงินยืม"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Loan amount cannot be negative."
+msgstr "จำนวนเงินยืมต้องไม่ติดลบ"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__message_main_attachment_id
@@ -683,6 +699,11 @@ msgid "Number of messages with delivery error"
 msgstr "จำนวนข้อความที่มีข้อผิดพลาดในการส่ง"
 
 #. module: advance_payment
+#: model:res.groups,name:advance_payment.group_advance_payment_officer
+msgid "Officer"
+msgstr "เจ้าหน้าที่"
+
+#. module: advance_payment
 #. odoo-python
 #: code:addons/advance_payment/models/advance_payment.py:0
 #, python-format
@@ -737,7 +758,9 @@ msgstr "เฉพาะสัญญาที่ส่งแล้วเท่า
 #: code:addons/advance_payment/models/advance_payment.py:0
 #, python-format
 msgid "Only submitted, approved, or in-progress agreements can be cancelled."
-msgstr "เฉพาะสัญญาที่ส่งแล้ว อนุมัติแล้ว หรือกำลังดำเนินการเท่านั้นที่สามารถยกเลิกได้"
+msgstr ""
+"เฉพาะสัญญาที่ส่งแล้ว อนุมัติแล้ว "
+"หรือกำลังดำเนินการเท่านั้นที่สามารถยกเลิกได้"
 
 #. module: advance_payment
 #. odoo-python
@@ -745,6 +768,13 @@ msgstr "เฉพาะสัญญาที่ส่งแล้ว อนุ�
 #, python-format
 msgid "Only the requestor or a manager can submit this agreement."
 msgstr "เฉพาะผู้ยืมหรือผู้จัดการเท่านั้นที่สามารถส่งสัญญานี้ได้"
+
+#. module: advance_payment
+#. odoo-python
+#: code:addons/advance_payment/models/advance_payment.py:0
+#, python-format
+msgid "Only the requestor or an admin can submit this agreement."
+msgstr "เฉพาะผู้ยืมหรือ Admin เท่านั้นที่สามารถส่งสัญญานี้ได้"
 
 #. module: advance_payment
 #: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__paid
@@ -771,10 +801,10 @@ msgid ""
 " confirmed. Funds of <b>%(amount)s %(currency)s</b> have been disbursed to "
 "<b>%(partner)s</b>. ขั้นตอนถัดไป: "
 "ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้"
-msgstr "รายการชำระเงิน <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> ได้รับการยืนยันแล้ว เบิกจ่ายเงิน <b>%(amount)s %(currency)s</b> ให้ <b>%(partner)s</b> แล้ว ขั้นตอนถัดไป: ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้"
+msgstr ""
 "การชำระเงิน <a "
-"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> ได้รับการ"
-"ยืนยันแล้ว เบิกจ่ายเงิน <b>%(amount)s %(currency)s</b> ให้ "
+"href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a> "
+"ได้รับการยืนยันแล้ว เบิกจ่ายเงิน <b>%(amount)s %(currency)s</b> ให้ "
 "<b>%(partner)s</b> แล้ว ขั้นตอนถัดไป: "
 "ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้"
 
@@ -884,7 +914,8 @@ msgid ""
 "Return of <b>%(amount)s %(currency)s</b> confirmed. Payment <a "
 "href='/web#id=%(pid)s&amp;model=account.payment'><b>%(pname)s</b></a> "
 "created."
-msgstr "ยืนยันการคืนเงิน <b>%(amount)s %(currency)s</b> แล้ว สร้างการชำระเงิน <a "
+msgstr ""
+"ยืนยันการคืนเงิน <b>%(amount)s %(currency)s</b> แล้ว สร้างการชำระเงิน <a "
 "href='/web#id=%(pid)s&amp;model=account.payment'><b>%(pname)s</b></a> "
 "เรียบร้อย"
 
@@ -895,9 +926,9 @@ msgstr "ยืนยันการคืนเงิน <b>%(amount)s %(currenc
 msgid ""
 "Return of <b>%(amount)s %(currency)s</b> submitted by "
 "<b>%(user)s</b>.%(note)s %(count)s attachment(s) uploaded as proof."
-msgstr "แจ้งคืนเงิน <b>%(amount)s %(currency)s</b> โดย <b>%(user)s</b>%(note)s แนบหลักฐาน %(count)s ไฟล์"
-"แจ้งคืนเงิน <b>%(amount)s %(currency)s</b> โดย "
-"<b>%(user)s</b>%(note)s แนบหลักฐาน %(count)s รายการ"
+msgstr ""
+"แจ้งคืนเงิน <b>%(amount)s %(currency)s</b> โดย <b>%(user)s</b>%(note)s "
+"แนบหลักฐาน %(count)s รายการ"
 
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
@@ -935,11 +966,16 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
-msgstr "สถานะตามกิจกรรม\nเลยกำหนด: เลยวันกำหนดแล้ว\nวันนี้: กิจกรรมวันนี้\nวางแผนไว้: กิจกรรมในอนาคต"
+msgstr ""
 "สถานะตามกิจกรรม\n"
 "เกินกำหนด: เลยวันครบกำหนดแล้ว\n"
 "วันนี้: วันที่กิจกรรมเป็นวันนี้\n"
 "วางแผน: กิจกรรมในอนาคต"
+
+#. module: advance_payment
+#: model:ir.model.fields,field_description:advance_payment.field_res_config_settings__advance_payment_strict_submit
+msgid "Strict Submit Mode"
+msgstr "โหมดส่งขออนุมัติแบบเข้มงวด"
 
 #. module: advance_payment
 #: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment__state__submitted
@@ -982,6 +1018,21 @@ msgid "Website communication history"
 msgstr "ประวัติการสื่อสารเว็บไซต์"
 
 #. module: advance_payment
+#: model:exception.rule,description:advance_payment.excep_missing_bank_account
+msgid "กรุณาระบุบัญชีธนาคารก่อนส่งขออนุมัติ"
+msgstr "กรุณาระบุบัญชีธนาคารก่อนส่งขออนุมัติ"
+
+#. module: advance_payment
+#: model:exception.rule,description:advance_payment.excep_missing_analytic
+msgid "กรุณาระบุส่วนงาน แหล่งเงิน กองทุน และด้าน/แผนงาน/กิจกรรม ให้ครบถ้วน"
+msgstr "กรุณาระบุส่วนงาน แหล่งเงิน กองทุน และด้าน/แผนงาน/กิจกรรม ให้ครบถ้วน"
+
+#. module: advance_payment
+#: model:exception.rule,description:advance_payment.excep_missing_department
+msgid "กรุณาระบุหน่วยงานก่อนส่งขออนุมัติ"
+msgstr "กรุณาระบุหน่วยงานก่อนส่งขออนุมัติ"
+
+#. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_cancel_wizard_form
 msgid "กรุณาระบุเหตุผล..."
 msgstr "กรุณาระบุเหตุผล..."
@@ -1000,6 +1051,16 @@ msgstr "การกำหนดค่า"
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_return_line_form
 msgid "การชำระเงิน"
 msgstr "การชำระเงิน"
+
+#. module: advance_payment
+#: model:ir.ui.menu,name:advance_payment.menu_advance_payment_settings
+msgid "การตั้งค่า"
+msgstr "การตั้งค่า"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.res_config_settings_view_form_advance_payment
+msgid "การส่งขออนุมัติ"
+msgstr "การส่งขออนุมัติ"
 
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
@@ -1025,13 +1086,13 @@ msgstr "คืนเงิน"
 
 #. module: advance_payment
 #: model:exception.rule,name:advance_payment.excep_loan_amount_too_low
-msgid "จำนวนเงินยืมต่ำกว่าขั้นต่ำ"
-msgstr "จำนวนเงินยืมต่ำกว่าขั้นต่ำ"
+msgid "จำนวนเงินยืมต้องมากกว่า 0"
+msgstr "จำนวนเงินยืมต้องมากกว่า 0"
 
 #. module: advance_payment
 #: model:exception.rule,description:advance_payment.excep_loan_amount_too_low
-msgid "จำนวนเงินยืมต้องมากกว่า 100 บาท"
-msgstr "จำนวนเงินยืมต้องมากกว่า 100 บาท"
+msgid "จำนวนเงินยืมต้องมากกว่า 0 บาท"
+msgstr "จำนวนเงินยืมต้องมากกว่า 0 บาท"
 
 #. module: advance_payment
 #: model:exception.rule,description:advance_payment.excep_loan_amount_too_high
@@ -1094,6 +1155,11 @@ msgstr "บาท"
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_loan_type_list
 msgid "ประเภทเงินยืม"
 msgstr "ประเภทเงินยืม"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.res_config_settings_view_form_advance_payment
+msgid "ปัจจุบัน: ผู้ยืม, ผู้จัดการ หรือ Admin สามารถส่งขออนุมัติได้"
+msgstr "ปัจจุบัน: ผู้ยืม, ผู้จัดการ หรือ Admin สามารถส่งขออนุมัติได้"
 
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
@@ -1211,6 +1277,7 @@ msgstr "สรุปยอดเงิน"
 #: model:ir.actions.act_window,name:advance_payment.action_advance_payment
 #: model:ir.ui.menu,name:advance_payment.menu_advance_payment_agreement
 #: model:ir.ui.menu,name:advance_payment.menu_advance_payment_root
+#: model_terms:ir.ui.view,arch_db:advance_payment.res_config_settings_view_form_advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_list
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_search
@@ -1257,6 +1324,11 @@ msgid "หลักฐานการคืนเงิน"
 msgstr "หลักฐานการคืนเงิน"
 
 #. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.res_config_settings_view_form_advance_payment
+msgid "อนุญาตให้ผู้ใช้ระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา"
+msgstr "อนุญาตให้ผู้ใช้ระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา"
+
+#. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
 msgid "อนุมัติ"
 msgstr "อนุมัติ"
@@ -1265,6 +1337,31 @@ msgstr "อนุมัติ"
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
 msgid "เปิดสัญญาอีกครั้ง"
 msgstr "เปิดสัญญาอีกครั้ง"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_res_config_settings__advance_payment_allow_manual_reference
+msgid ""
+"เมื่อเปิด ผู้ใช้สามารถระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา "
+"หากปิด จะระบุได้เฉพาะจากระบบเท่านั้น (เช่น สร้างจากใบขอซื้อ)"
+msgstr ""
+"เมื่อเปิด ผู้ใช้สามารถระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา "
+"หากปิด จะระบุได้เฉพาะจากระบบเท่านั้น (เช่น สร้างจากใบขอซื้อ)"
+
+#. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.res_config_settings_view_form_advance_payment
+msgid ""
+"เมื่อเปิดโหมดนี้ เฉพาะผู้ยืมหรือ Admin เท่านั้นที่สามารถส่งขออนุมัติได้"
+msgstr ""
+"เมื่อเปิดโหมดนี้ เฉพาะผู้ยืมหรือ Admin เท่านั้นที่สามารถส่งขออนุมัติได้"
+
+#. module: advance_payment
+#: model:ir.model.fields,help:advance_payment.field_res_config_settings__advance_payment_strict_submit
+msgid ""
+"เมื่อเปิดโหมดนี้ เฉพาะผู้ยืมหรือ Admin เท่านั้นที่สามารถส่งขออนุมัติได้ "
+"หากปิด ผู้ยืม, ผู้จัดการ หรือ Admin สามารถส่งขออนุมัติได้"
+msgstr ""
+"เมื่อเปิดโหมดนี้ เฉพาะผู้ยืมหรือ Admin เท่านั้นที่สามารถส่งขออนุมัติได้ "
+"หากปิด ผู้ยืม, ผู้จัดการ หรือ Admin สามารถส่งขออนุมัติได้"
 
 #. module: advance_payment
 #: model_terms:ir.ui.view,arch_db:advance_payment.view_advance_payment_form
@@ -1286,6 +1383,26 @@ msgid "แจ้งคืนเงิน"
 msgstr "แจ้งคืนเงิน"
 
 #. module: advance_payment
+#: model_terms:ir.ui.view,arch_db:advance_payment.res_config_settings_view_form_advance_payment
+msgid "แบบฟอร์ม"
+msgstr "แบบฟอร์ม"
+
+#. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__source_analytic_id
 msgid "แหล่งเงิน"
 msgstr "แหล่งเงิน"
+
+#. module: advance_payment
+#: model:exception.rule,name:advance_payment.excep_missing_bank_account
+msgid "ไม่ได้ระบุบัญชีธนาคาร"
+msgstr "ไม่ได้ระบุบัญชีธนาคาร"
+
+#. module: advance_payment
+#: model:exception.rule,name:advance_payment.excep_missing_analytic
+msgid "ไม่ได้ระบุมิติทางบัญชีครบถ้วน"
+msgstr "ไม่ได้ระบุมิติทางบัญชีครบถ้วน"
+
+#. module: advance_payment
+#: model:exception.rule,name:advance_payment.excep_missing_department
+msgid "ไม่ได้ระบุหน่วยงาน"
+msgstr "ไม่ได้ระบุหน่วยงาน"
