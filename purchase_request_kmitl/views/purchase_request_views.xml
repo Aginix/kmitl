@@ -136,8 +136,8 @@
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify</attribute>
-                <attribute name="groups" />
+                <attribute name="states">to_verify,rejected</attribute>
+                <attribute name="groups"></attribute>
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">

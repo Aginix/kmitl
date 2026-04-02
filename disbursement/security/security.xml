@@ -14,11 +14,18 @@
             <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
         </record>
 
-        <!-- Officer Group (inherits from User) -->
+        <!-- Head Group (inherits from User) -->
+        <record id="group_disbursement_head" model="res.groups">
+            <field name="name">Disbursement Head</field>
+            <field name="category_id" ref="disbursement.module_category_disbursement"/>
+            <field name="implied_ids" eval="[(4, ref('group_disbursement_user'))]"/>
+        </record>
+
+        <!-- Officer Group (inherits from Head) -->
         <record id="group_disbursement_officer" model="res.groups">
             <field name="name">Disbursement Officer</field>
             <field name="category_id" ref="disbursement.module_category_disbursement"/>
-            <field name="implied_ids" eval="[(4, ref('group_disbursement_user'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_disbursement_head'))]"/>
         </record>
 
         <!-- Manager Group (inherits from Officer) -->
