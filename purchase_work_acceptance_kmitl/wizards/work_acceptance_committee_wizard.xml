@@ -21,6 +21,7 @@
                             attrs="{'readonly': [('is_done', '=', True)]}"
                             class="o_required_modifier"
                             required="1"
+                            force_save="1"
                         />
                         <field
                             name="reason"
