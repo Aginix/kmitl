@@ -122,17 +122,6 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    payment_type = fields.Selection(
-        selection=[
-            ("direct", "Direct paid"),
-            ("loan", "Loan"),
-            ("prepaid", "Prepaid")
-        ],
-        tracking=True,
-        string="Payment Type",
-        states=READONLY_STATES,
-    )
-
     bill_id = fields.Many2one(
         comodel_name="account.move",
         string="Vendor Bill",

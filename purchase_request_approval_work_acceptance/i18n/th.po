@@ -33,7 +33,7 @@ msgstr ""
 #. module: purchase_request_approval_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_work_acceptance.view_purchase_request_approval_form
 msgid "Create Work Acceptance"
-msgstr "สร้างการตรวจรับ"
+msgstr "สร้างใบตรวจรับ"
 
 #. module: purchase_request_approval_work_acceptance
 #. odoo-python
