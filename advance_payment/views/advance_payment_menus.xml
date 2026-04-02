@@ -24,16 +24,16 @@
         sequence="100"
         groups="base.group_system"/>
 
+    <menuitem id="menu_advance_payment_settings"
+        name="การตั้งค่า"
+        parent="menu_advance_payment_config"
+        action="base_setup.action_general_configuration"
+        sequence="1"/>
+
     <menuitem id="menu_advance_payment_loan_type"
         name="ประเภทเงินยืม"
         parent="menu_advance_payment_config"
         action="action_advance_payment_loan_type"
         sequence="10"/>
-
-    <menuitem id="menu_advance_payment_settings"
-        name="การตั้งค่า"
-        parent="menu_advance_payment_config"
-        action="base_setup.action_general_configuration"
-        sequence="99"/>
 
 </odoo>
