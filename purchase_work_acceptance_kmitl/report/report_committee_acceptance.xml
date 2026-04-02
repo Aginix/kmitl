@@ -130,7 +130,7 @@
                                 ตามหนังสือส่งงานของผู้รับจ้างลงวันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.requested_delivery_date)"
+                                    t-esc="o.format_date_thai(fields.Datetime.context_timestamp(o, o.requested_delivery_date))"
                                 />
                             </div>
                             <div>
@@ -178,7 +178,7 @@
                                 ถึงวันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.requested_delivery_date)"
+                                    t-esc="o.format_date_thai(fields.Datetime.context_timestamp(o, o.requested_delivery_date))"
                                 />
                                 เป็นเวลา
                                 <span class="ub" t-out="o.late_days or '-'" />
