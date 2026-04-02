@@ -89,6 +89,10 @@ class AdvancePayment(models.Model):
         compute="_compute_is_reference_readonly",
     )
 
+    is_locked_by_reference = fields.Boolean(
+        compute="_compute_is_locked_by_reference",
+    )
+
     reference = fields.Reference(
         selection=[("purchase.request", "Purchase Request")],
         string="Reference",
@@ -110,6 +114,18 @@ class AdvancePayment(models.Model):
     def _compute_is_reference_readonly(self):
         for rec in self:
             rec.is_reference_readonly = rec._is_reference_readonly()
+
+    def _is_locked_by_reference(self):
+        """Return True if fields should be locked because the record was
+        created from a reference document (e.g. purchase request).
+        Override this method in bridge modules to lock fields."""
+        self.ensure_one()
+        return False
+
+    @api.depends("reference")
+    def _compute_is_locked_by_reference(self):
+        for rec in self:
+            rec.is_locked_by_reference = rec._is_locked_by_reference()
 
     loan_reason = fields.Text(
         string="Loan Reason",

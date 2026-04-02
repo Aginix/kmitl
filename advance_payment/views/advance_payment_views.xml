@@ -121,10 +121,12 @@
                     <group>
                         <group string="ข้อมูลผู้ยืม">
                             <field name="requested_by"
+                                attrs="{'readonly': [('is_locked_by_reference', '=', True)]}"
                                 groups="advance_payment.group_advance_payment_manager" />
                             <field name="requested_by" readonly="1"
                                 groups="!advance_payment.group_advance_payment_manager" />
-                            <field name="department_id" />
+                            <field name="department_id"
+                                attrs="{'readonly': [('is_locked_by_reference', '=', True)]}" />
                             <field name="requested_by_partner_id" invisible="1" />
                             <field name="bank_id"
                                 domain="[('partner_id', '=', requested_by_partner_id)]"
@@ -132,12 +134,15 @@
                         </group>
                         <group string="ข้อมูลการยืม">
                             <field name="is_reference_readonly" invisible="1" />
+                            <field name="is_locked_by_reference" invisible="1" />
                             <field name="reference"
                                 attrs="{'readonly': [('is_reference_readonly', '=', True)]}" />
-                            <field name="loan_type_id" widget="selection" />
+                            <field name="loan_type_id" widget="selection"
+                                attrs="{'readonly': [('is_locked_by_reference', '=', True)]}" />
                             <field name="loan_reason" />
                             <field name="currency_id" invisible="1" />
-                            <field name="loan_amount" />
+                            <field name="loan_amount"
+                                attrs="{'readonly': [('is_locked_by_reference', '=', True)]}" />
                         </group>
                     </group>
                     <group string="มิติทางบัญชี">
