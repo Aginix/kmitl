@@ -318,15 +318,15 @@ class BudgetAppropriationCompilation(models.Model):
     social_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
 
     @api.depends(
-        "revenue_appropriation_ids.treasury_replenishment_amount",
-        "revenue_appropriation_ids.deducted_reserve_amount",
-        "revenue_appropriation_ids.maintenance_amount",
-        "revenue_appropriation_ids.capital_budget_amount",
-        "revenue_appropriation_ids.recurrent_budget_amount",
-        "revenue_appropriation_ids.external_funding_amount",
+        "expense_appropriation_ids.treasury_replenishment_amount",
+        "expense_appropriation_ids.deducted_reserve_amount",
+        "expense_appropriation_ids.maintenance_amount",
+        "expense_appropriation_ids.capital_budget_amount",
+        "expense_appropriation_ids.recurrent_budget_amount",
+        "expense_appropriation_ids.external_funding_amount",
+        "expense_appropriation_ids.code_0702000002",
+        "expense_appropriation_ids.code_0702000003",
         "revenue_appropriation_ids.amount_net",
-        "revenue_appropriation_ids.code_0702000002",
-        "revenue_appropriation_ids.code_0702000003",
     )
     def _compute_totals(self):
         for record in self:

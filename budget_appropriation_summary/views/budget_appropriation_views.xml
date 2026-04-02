@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_budget_appropriation_form_summary" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form.summary</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='line_ids']" position="after">
+                <page name="recurrent_lines" string="งบประจำ"
+                      attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                    <field name="recurrent_line_ids" readonly="1" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="id" />
+                            <field name="account_id" string="รหัสงบประมาณ" />
+                            <field name="activity_analytic_id" string="กิจกรรม" />
+                            <field name="fund_analytic_id" string="กองทุน" />
+                            <field name="balance" string="จำนวนเงิน" sum="รวม" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="ma_lines" string="งบค่าดูแลและบำรุงรักษา"
+                      attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                    <field name="ma_line_ids" readonly="1" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="id" />
+                            <field name="account_id" string="รหัสงบประมาณ" />
+                            <field name="activity_analytic_id" string="กิจกรรม" />
+                            <field name="fund_analytic_id" string="กองทุน" />
+                            <field name="balance" string="จำนวนเงิน" sum="รวม" />
+                        </tree>
+                    </field>
+                </page>
+                <page name="investment_lines" string="งบลงทุน"
+                      attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                    <field name="investment_line_ids" readonly="1" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="id" />
+                            <field name="account_id" string="รหัสงบประมาณ" />
+                            <field name="activity_analytic_id" string="กิจกรรม" />
+                            <field name="fund_analytic_id" string="กองทุน" />
+                            <field name="balance" string="จำนวนเงิน" sum="รวม" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

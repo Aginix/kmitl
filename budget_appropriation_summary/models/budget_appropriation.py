@@ -66,28 +66,37 @@ class BudgetAppropriation(models.Model):
         compute="_compute_totals",
     )
 
+    recurrent_line_ids = fields.One2many(
+        "budget.appropriation.line",
+        compute="_compute_flag_line_ids",
+        store=False,
+        readonly=True,
+    )
+    ma_line_ids = fields.One2many(
+        "budget.appropriation.line",
+        compute="_compute_flag_line_ids",
+        store=False,
+        readonly=True,
+    )
+    investment_line_ids = fields.One2many(
+        "budget.appropriation.line",
+        compute="_compute_flag_line_ids",
+        store=False,
+        readonly=True,
+    )
+
+    @api.depends("line_ids.is_recurrent", "line_ids.is_ma", "line_ids.is_investment")
+    def _compute_flag_line_ids(self):
+        for record in self:
+            record.recurrent_line_ids = record.line_ids.filtered("is_recurrent")
+            record.ma_line_ids = record.line_ids.filtered("is_ma")
+            record.investment_line_ids = record.line_ids.filtered("is_investment")
+
     # ชดใช้เงินคงคลัง
     TREASURY_REPLENISHMENT_CODES = ["0702000001", "5108000038"]
     DEDUCTED_RESERVE_CODES = ["0702000002", "0702000003"]
 
-    # งบลงทุน
-    CAPITAL_BUDGET_CODES = [
-        "5411000001",
-        "5411000002",
-        "5411000003",
-        "5411000009",
-        "5104030207",
-        "5104030208",
-        "5104030209",
-    ]
-
-    # ค่าดูแลและบำรุงรักษา
-    MAINTENANCE_CODES = ["5104010204", "5104010205", "5104010206"]
-
-    # งบประจำ
-    RECURRENT_BUDGET_CODES = ["5104010203"]
-
-    @api.depends("line_ids.code", "line_ids.balance")
+    @api.depends("line_ids.code", "line_ids.balance", "line_ids.is_recurrent", "line_ids.is_ma", "line_ids.is_investment")
     def _compute_totals(self):
         for record in self:
             line_ids = record.line_ids
@@ -102,14 +111,10 @@ class BudgetAppropriation(models.Model):
                 ).mapped("balance")
             )
             record.maintenance_amount = sum(
-                line_ids.filtered(
-                    lambda x: x.account_id.code in self.MAINTENANCE_CODES
-                ).mapped("balance")
+                line_ids.filtered(lambda x: x.is_ma).mapped("balance")
             )
             record.capital_budget_amount = sum(
-                line_ids.filtered(
-                    lambda x: x.account_id.code in self.CAPITAL_BUDGET_CODES
-                ).mapped("balance")
+                line_ids.filtered(lambda x: x.is_investment).mapped("balance")
             )
             record.recurrent_budget_amount = sum(
                 line_ids.filtered(lambda x: x.is_recurrent).mapped("balance")
