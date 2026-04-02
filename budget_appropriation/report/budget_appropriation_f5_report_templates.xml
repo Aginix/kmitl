@@ -198,7 +198,7 @@
                 </div>
 
                 <!-- Main Table -->
-                <table class="report-table table" style="border-spacing:0px 4px;">
+                <table class="report-table table table-borderless" style="border-spacing:0px 4px;">
                     <thead>
                         <tr>
                             <th style="vertical-align: bottom; text-align: left;" class="items-column" rowspan="2">
