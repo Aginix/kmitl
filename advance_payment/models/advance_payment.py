@@ -106,6 +106,7 @@ class AdvancePayment(models.Model):
         )
         return not allow
 
+    @api.depends("state", "reference")
     def _compute_is_reference_readonly(self):
         for rec in self:
             rec.is_reference_readonly = rec._is_reference_readonly()
