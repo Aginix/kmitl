@@ -93,8 +93,8 @@ class AdvancePayment(models.Model):
         allow = (
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("advance_payment.allow_manual_reference", default=False)
-        )
+            .get_param("advance_payment.allow_manual_reference", default="False")
+        ) == "True"
         for rec in self:
             rec.allow_manual_reference = allow
 
