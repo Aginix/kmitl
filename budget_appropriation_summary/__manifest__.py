@@ -12,6 +12,7 @@
         "security/ir.model.access.csv",
         "views/budget_appropriation_compilation_views.xml",
         "views/budget_appropriation_line_views.xml",
+        "views/budget_appropriation_views.xml",
         "views/budget_appropriation_master_summary_views.xml",
         "views/menu.xml",
         "views/wizard_master_summary_done_views.xml",

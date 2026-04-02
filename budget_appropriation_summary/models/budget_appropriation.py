@@ -66,6 +66,32 @@ class BudgetAppropriation(models.Model):
         compute="_compute_totals",
     )
 
+    recurrent_line_ids = fields.One2many(
+        "budget.appropriation.line",
+        compute="_compute_flag_line_ids",
+        store=False,
+        readonly=True,
+    )
+    ma_line_ids = fields.One2many(
+        "budget.appropriation.line",
+        compute="_compute_flag_line_ids",
+        store=False,
+        readonly=True,
+    )
+    investment_line_ids = fields.One2many(
+        "budget.appropriation.line",
+        compute="_compute_flag_line_ids",
+        store=False,
+        readonly=True,
+    )
+
+    @api.depends("line_ids.is_recurrent", "line_ids.is_ma", "line_ids.is_investment")
+    def _compute_flag_line_ids(self):
+        for record in self:
+            record.recurrent_line_ids = record.line_ids.filtered("is_recurrent")
+            record.ma_line_ids = record.line_ids.filtered("is_ma")
+            record.investment_line_ids = record.line_ids.filtered("is_investment")
+
     # ชดใช้เงินคงคลัง
     TREASURY_REPLENISHMENT_CODES = ["0702000001", "5108000038"]
     DEDUCTED_RESERVE_CODES = ["0702000002", "0702000003"]
