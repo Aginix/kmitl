@@ -341,7 +341,7 @@
             </xpath>
 
             <xpath expr="//field[@name='date_receive']" position="after">
-                <field name="requested_delivery_date" required="1" />
+                <field name="requested_delivery_date" required="1" widget="date"/>
             </xpath>
 
             <xpath expr="//field[@name='date_due']" position="attributes">
