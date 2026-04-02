@@ -137,11 +137,12 @@ export class BudgetAppropriationF5Preview extends Component {
             report_type: 'qweb-pdf',
             report_name: 'budget_appropriation.report_budget_appropriation_f5',
             report_file: 'budget_appropriation.report_budget_appropriation_f5',
-            data: { show_note: showNote },
+            data: null,
             context: {
                 active_ids: [appropriationId],
                 active_id: appropriationId,
                 active_model: 'budget.appropriation',
+                show_note: showNote,
             },
         });
     }

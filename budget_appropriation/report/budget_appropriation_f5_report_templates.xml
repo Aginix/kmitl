@@ -170,6 +170,7 @@
             <div class="page budget-appropriation-f5-report">
                 <t t-set="report_obj" t-value="o.env['budget.appropriation.f5.report']"/>
                 <t t-set="data" t-value="report_obj.get_f5_data(o.id)"/>
+                <t t-set="show_note" t-value="o.env.context.get('show_note', True)"/>
                 <div class="report-header">
                     <div class="document-ref">
                         <div>F5-P-วง-003</div>
