@@ -101,9 +101,11 @@ def _process_sarabun_approve(env, origin_record, admin_user, department):
     # Send document
     doc.action_send()
 
-    # Approve as admin
-    recipient = doc.recipient_ids.filtered(lambda r: r.state == "new")
-    role = env.ref("agx_sarabun.role_system_admin")
+    # Approve as admin (must switch to admin user since post_init runs as SUPERUSER_ID)
+    admin_env = env(user=admin_user)
+    doc_as_admin = doc.with_env(admin_env)
+    recipient = doc_as_admin.recipient_ids.filtered(lambda r: r.state == "new")
+    role = admin_env.ref("agx_sarabun.role_system_admin")
     recipient.action_do_approve(signed_as_role_id=role.id)
 
     _logger.info(
