@@ -43,12 +43,22 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
 
     def button_confirm(self):
         self.ensure_one()
-        # เช็คว่ากรรมการที่ยังไม่ done ต้องมี status ครบ
         incomplete = self.line_ids.filtered(
             lambda l: not l.is_done and not l.status
         )
+
         if incomplete:
-            raise UserError(_("Please fill in all the inspection results."))
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Please fill in all the inspection results.'),
+                    'message': _('Please fill in all the inspection results.'),
+                    'type': 'warning',
+                    'sticky': False,
+                    'next': {'type': 'ir.actions.act_window_close'},
+                },
+            }
 
         for line in self.line_ids:
             if line.is_done:
