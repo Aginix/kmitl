@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import str2bool
 
 
 class AdvancePayment(models.Model):
@@ -12,7 +13,12 @@ class AdvancePayment(models.Model):
 
     _name = "advance.payment"
     _description = "Advance Payment"
-    _inherit = ["mail.thread", "mail.activity.mixin", "base.exception", "analytic.mixin"]
+    _inherit = [
+        "mail.thread",
+        "mail.activity.mixin",
+        "base.exception",
+        "analytic.mixin",
+    ]
     _order = "main_exception_id asc, name desc, id desc"
 
     _PROTECTED_FIELDS = {
@@ -90,11 +96,11 @@ class AdvancePayment(models.Model):
     )
 
     def _compute_allow_manual_reference(self):
-        allow = (
+        allow = str2bool(
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("advance_payment.allow_manual_reference", default="False")
-        ) == "True"
+            .get_param("advance_payment.allow_manual_reference", default=False)
+        )
         for rec in self:
             rec.allow_manual_reference = allow
 
@@ -342,9 +348,7 @@ class AdvancePayment(models.Model):
 
     @api.model
     def _get_popup_action(self):
-        return self.env.ref(
-            "advance_payment.action_advance_payment_exception_confirm"
-        )
+        return self.env.ref("advance_payment.action_advance_payment_exception_confirm")
 
     @api.constrains("ignore_exception", "loan_amount", "state")
     def advance_payment_check_exception(self):
@@ -384,8 +388,10 @@ class AdvancePayment(models.Model):
 
     def _check_submit_permission(self):
         """Check if the current user is allowed to submit."""
-        strict = self.env["ir.config_parameter"].sudo().get_param(
-            "advance_payment.strict_submit", default=False
+        strict = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("advance_payment.strict_submit", default=False)
         )
         is_admin = self.env.user.has_group("base.group_system")
         is_manager = self.env.user.has_group(
@@ -421,7 +427,11 @@ class AdvancePayment(models.Model):
                     user=rec.requested_by.name,
                     amount=rec.loan_amount,
                     currency=rec.currency_id.name,
-                    reason=_(" Reason: %(r)s", r=rec.loan_reason) if rec.loan_reason else "",
+                    reason=(
+                        _(" Reason: %(r)s", r=rec.loan_reason)
+                        if rec.loan_reason
+                        else ""
+                    ),
                 ),
                 subtype_xmlid="mail.mt_note",
             )
@@ -431,7 +441,9 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "submitted":
                 raise UserError(_("Only submitted agreements can be approved."))
-        payment_type = self.env.ref("advance_payment.payment_type_advance_payment_outbound")
+        payment_type = self.env.ref(
+            "advance_payment.payment_type_advance_payment_outbound"
+        )
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
         payments = self.env["account.payment"].create(vals_list)
         self.write(
@@ -503,7 +515,9 @@ class AdvancePayment(models.Model):
             rec.date_closed = False
             rec.state = "in_progress"
             rec.message_post(
-                body=_("Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name),
+                body=_(
+                    "Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name
+                ),
                 subtype_xmlid="mail.mt_note",
             )
 
@@ -551,7 +565,9 @@ class AdvancePayment(models.Model):
         self.ensure_one()
         if self.state not in ("submitted", "approved", "in_progress"):
             raise UserError(
-                _("Only submitted, approved, or in-progress agreements can be cancelled.")
+                _(
+                    "Only submitted, approved, or in-progress agreements can be cancelled."
+                )
             )
         self._cancel_payments()
         self.write(
