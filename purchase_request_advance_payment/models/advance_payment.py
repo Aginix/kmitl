@@ -4,6 +4,13 @@ from odoo import _, models
 class AdvancePayment(models.Model):
     _inherit = "advance.payment"
 
+    def _is_reference_readonly(self):
+        """Also lock reference when it already has a value (created from PR)."""
+        result = super()._is_reference_readonly()
+        if not result and self.reference:
+            return True
+        return result
+
     def action_start(self, payment=None):
         """Override to cross-post disbursement message to linked purchase request."""
         res = super().action_start(payment=payment)

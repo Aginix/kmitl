@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import str2bool
 
 
 class AdvancePayment(models.Model):
@@ -84,8 +85,8 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
-    allow_manual_reference = fields.Boolean(
-        compute="_compute_allow_manual_reference",
+    is_reference_readonly = fields.Boolean(
+        compute="_compute_is_reference_readonly",
     )
 
     reference = fields.Reference(
@@ -94,15 +95,20 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
-    def _compute_allow_manual_reference(self):
-        param = (
+    def _is_reference_readonly(self):
+        """Return True if the reference field should be readonly.
+        Override this method to add additional readonly conditions."""
+        self.ensure_one()
+        allow = str2bool(
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("advance_payment.allow_manual_reference")
+            .get_param("advance_payment.allow_manual_reference", default=False)
         )
-        allow = param == "True"
+        return not allow
+
+    def _compute_is_reference_readonly(self):
         for rec in self:
-            rec.allow_manual_reference = allow
+            rec.is_reference_readonly = rec._is_reference_readonly()
 
     loan_reason = fields.Text(
         string="Loan Reason",
