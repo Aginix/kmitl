@@ -18,3 +18,17 @@ class AccountAnalyticAccount(models.Model):
             )
         ],
     )
+    fund_analytic_ids = fields.Many2many(
+        comodel_name="account.analytic.account",
+        relation="account_analytic_fund_rel",
+        column1="src_id",
+        column2="fund_id",
+        string="Funds",
+        domain=lambda self: [
+            (
+                "plan_id",
+                "=",
+                self.env.ref("account_analytic_kmitl.analytic_plan_funds").id,
+            )
+        ],
+    )

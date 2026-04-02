@@ -7,12 +7,20 @@
         <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
-                <group string="Departments">
+                <group string="Related Analytic Accounts">
                     <field
                         name="department_analytic_ids"
                         widget="many2many_tags"
                         nolabel="1"
                         colspan="2"
+                        attrs="{'invisible': [('plan_id', '=', %(account_analytic_kmitl.analytic_plan_departments)d)]}"
+                    />
+                    <field
+                        name="fund_analytic_ids"
+                        widget="many2many_tags"
+                        nolabel="1"
+                        colspan="2"
+                        attrs="{'invisible': [('plan_id', '=', %(account_analytic_kmitl.analytic_plan_funds)d)]}"
                     />
                 </group>
             </xpath>
