@@ -1,6 +1,6 @@
 {
     "name": "KMITL Account Analytic",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "summary": """ KMITL Account Analytic""",
     "category": "KMITL/Accounting",
     "author": "Aginix Technologies",
@@ -13,6 +13,7 @@
     "data": [
         "data/account.analytic.plan.xml",
         "data/account.analytic.account.xml",
+        "views/account_analytic_account_views.xml",
     ],
     "auto_install": False,
     "license": "AGPL-3",

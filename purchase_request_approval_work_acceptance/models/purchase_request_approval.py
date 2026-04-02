@@ -11,6 +11,19 @@ class PurchaseRequestApproval(models.Model):
     wa_line_ids = fields.One2many(comodel_name="work.acceptance.line", inverse_name="approval_line_id", string="WA Lines", readonly=True)
     wa_accepted = fields.Boolean(string="WA Accepted", compute="_compute_wa_accepted", search="_search_wa_accepted")
 
+    pending_wa_count = fields.Integer(
+        compute="_compute_pending_wa_count",
+    )
+
+    @api.depends("wa_ids.state", "wa_ids.is_disbursed")
+    def _compute_pending_wa_count(self):
+        for approval in self:
+            approval.pending_wa_count = self.env["work.acceptance"].search_count([
+                ("approval_id", "=", approval.id),
+                ("is_disbursed", "=", False),
+                ("state", "=", "accept"),
+            ])
+
     @api.depends("wa_line_ids")
     def _compute_wa_ids(self):
         for request in self:
@@ -127,3 +140,27 @@ class PurchaseRequestApproval(models.Model):
         invoice_vals = super()._prepare_invoice()
         invoice_vals["wa_id"] = self.env.context.get("wa_id")
         return invoice_vals
+    
+    def _get_pending_wa(self):
+        """คืน WA ใบเดียวที่ accept แล้วและยังไม่ถูก disburse"""
+        self.ensure_one()
+        return self.env["work.acceptance"].search([
+            ("approval_id", "=", self.id),
+            ("state", "=", "accept"),
+            ("is_disbursed", "=", False),
+        ], order="date_accept asc", limit=1)
+
+    def _create_disbursement_request(self):
+        wa = self._get_pending_wa()
+        if not wa:
+            raise UserError(
+                _("No accepted Work Acceptance pending disbursement for PA '%s'.")
+                % self.name
+            )
+        disbursement = super()._create_disbursement_request()
+        wa._link_to_disbursement(
+            disbursement,
+            analytic_distribution=self.analytic_distribution or False,
+            fine_tax_ids=self.line_ids.tax_id.ids,
+        )
+        return disbursement

@@ -56,7 +56,6 @@ class PurchaseOrder(models.Model):
                 for line in self.order_line
             ],
             "ref": self.name,
-            "payment_type": self.payment_type,
         }
 
     def action_disbursement_request(self):

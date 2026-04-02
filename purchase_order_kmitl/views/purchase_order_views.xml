@@ -7,7 +7,18 @@
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
             <field name="partner_id" position="before">
-                <field name="account_fiscal_year_id" widget="selection" required="1" />
+                <field
+                    name="account_fiscal_year_id"
+                    widget="selection"
+                    required="1"
+                    invisible="1"
+                />
+            </field>
+            <xpath expr="//group/group[1]" position="inside">
+                <field name="payment_type" required="1" invisible="1" />
+            </xpath>
+            <field name="partner_id" position="attributes">
+                <attribute name="invisible">1</attribute>
             </field>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button
@@ -110,20 +121,46 @@
         </field>
     </record>
 
-    <record id="view_purchase_order_form_inherit" model="ir.ui.view">
-        <field name="name">view.purchase.order.form.inherit</field>
+    <!-- View purchase.order form: invoice plan + information section -->
+    <record id="view_purchase_order_form_invoice_plan" model="ir.ui.view">
+        <field name="name">view.purchase.order.form(Invoice Plan)</field>
         <field name="model">purchase.order</field>
-        <field
-            name="inherit_id"
-            ref="purchase_requisition.purchase_order_form_inherit"
-        />
+        <field name="inherit_id" ref="purchase_invoice_plan.purchase_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='alternative_pos']" position="attributes">
+            <xpath expr="//field[@name='use_invoice_plan']/.." position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//button[@name='remove_invoice_plan']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', '|', ('state', '!=', 'draft'), ('invoice_plan_ids', '=', []), ('invoice_count', '>', 0)]}</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook" position="before">
+                <group string="ข้อมูล" name="information_section">
+                    <group>
+                        <field
+                            name="account_fiscal_year_id"
+                            widget="selection"
+                            readonly="1"
+                        />
+                        <field
+                            name="partner_id"
+                            readonly="1"
+                            widget="res_partner_many2one"
+                            context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
+                        />
+                        <field name="department_id" readonly="1" />
+                        <field name="payment_type" readonly="1" />
+                    </group>
+                </group>
 
-            <xpath expr="//field[@name='requisition_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
+                <field name="invoice_count" invisible="1" />
+
+                <group
+                    string="งวดงาน"
+                    name="invoice_plan_section"
+                    attrs="{'readonly': [('invoice_count', '>', 0)]}"
+                >
+                    <field name="use_invoice_plan" string="use invoice plan" />
+                </group>
             </xpath>
         </field>
     </record>
@@ -132,11 +169,59 @@
     <record id="view_purchase_order_tree" model="ir.ui.view">
         <field name="name">view.purchase.order.tree</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_tree" />
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
         <field name="arch" type="xml">
-            <field name="name" position="before">
-                <field name="account_fiscal_year_id" optional="show" />
+            <!-- Add contract fields before partner_id -->
+            <field name="partner_id" position="before">
+                <field name="contract_number" optional="show" />
+                <field name="contract_name" />
+                <field name="contract_type_id" />
             </field>
+
+            <!-- Add work_start after partner_id -->
+            <field name="partner_id" position="after">
+                <field name="work_start" optional="show" />
+            </field>
+
+            <!-- Add work_end_display after amount_total -->
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="work_end_display" />
+            </xpath>
+
+            <!-- Show invoice_status -->
+            <xpath expr="//field[@name='invoice_status']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+
+            <!-- Add payment_type after invoice_status -->
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="payment_type" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_search" model="ir.ui.view">
+        <field name="name">purchase.order.list.select</field>
+        <field name="model">purchase.order</field>
+        <field name="priority">30</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="before">
+                <field name="payment_type" />
+            </field>
+            <xpath expr="//group" position="inside">
+                <filter
+                    string="Vendor"
+                    name="partner_id"
+                    context="{'group_by': 'partner_id'}"
+                />
+                <filter
+                    string="Payment Type"
+                    name="payment_type"
+                    domain="[]"
+                    context="{'group_by': 'payment_type'}"
+                />
+            </xpath>
         </field>
     </record>
 </odoo>
