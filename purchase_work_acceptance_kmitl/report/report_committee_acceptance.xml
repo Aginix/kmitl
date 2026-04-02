@@ -220,16 +220,6 @@
                             </div>
                         </div>
                         <!-- Signatures: chairman -->
-                        <t
-                            t-foreach="o.work_acceptance_committee_ids.filtered(lambda c: c.approve_role == 'chairman')"
-                            t-as="member"
-                        >
-                            <div class="row mt-5">
-                                <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />) ประธานกรรมการ
-                                </div>
-                            </div>
-                        </t>
                         <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
                             <t t-if="line.approve_role != 'secretary'">
                                 <div class="row mt-5">
