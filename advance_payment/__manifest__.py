@@ -6,6 +6,7 @@
     "category": "KMITL",
     "depends": [
         "mail",
+        "base_setup",
         "l10n_th_base_sequence",
         "hr",
         "purchase_request",
