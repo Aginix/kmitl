@@ -115,10 +115,12 @@
                         <group string="ข้อมูลโครงการ">
                             <field
                                 name="project_category_id"
+                                widget="selection"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                             <field
                                 name="project_type_id"
+                                widget="radio"
                                 domain="[('category_id', '=', project_category_id)]"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
@@ -135,12 +137,7 @@
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                             <field
-                                name="faculty_id"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
-                            />
-                            <field
                                 name="department_id"
-                                domain="[('parent_id', '=', faculty_id)]"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                             <field
@@ -376,7 +373,7 @@
                 <field name="project_type_id" optional="show"/>
                 <field name="partner_id"/>
                 <field name="leader_id" optional="show"/>
-                <field name="faculty_id"/>
+                <field name="department_id"/>
                 <field name="project_value" sum="รวม"/>
                 <field name="total_received_amount" sum="รวม" optional="show"/>
                 <field name="state" widget="badge"
@@ -420,7 +417,7 @@
                     <filter name="group_category" string="ประเภทโครงการ" context="{'group_by': 'project_category_id'}"/>
                     <filter name="group_type" string="ประเภทย่อย" context="{'group_by': 'project_type_id'}"/>
                     <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}"/>
-                    <filter name="group_faculty" string="คณะ" context="{'group_by': 'faculty_id'}"/>
+                    <filter name="group_department" string="หน่วยงาน" context="{'group_by': 'department_id'}"/>
                     <filter name="group_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}"/>
                 </group>
             </search>

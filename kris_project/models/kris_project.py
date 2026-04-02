@@ -112,15 +112,9 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    faculty_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="คณะ/หน่วยงาน",
-        tracking=True,
-        states=READONLY_STATES,
-    )
     department_id = fields.Many2one(
         comodel_name="hr.department",
-        string="ภาควิชา/สาขา",
+        string="หน่วยงาน",
         tracking=True,
         states=READONLY_STATES,
     )
@@ -374,11 +368,6 @@ class KrisProject(models.Model):
             and self.project_type_id.category_id != self.project_category_id
         ):
             self.project_type_id = False
-
-    @api.onchange("faculty_id")
-    def _onchange_faculty_id(self):
-        if self.department_id and self.department_id.parent_id != self.faculty_id:
-            self.department_id = False
 
     @api.model_create_multi
     def create(self, vals_list):

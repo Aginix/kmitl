@@ -125,16 +125,18 @@ class KrisProjectDashboard(models.Model):
             lambda: {"central": 0.0, "faculty_dept": 0.0, "kris": 0.0}
         )
         for project in projects:
-            faculty_name = (
-                project.faculty_id.name if project.faculty_id else _("(ไม่ระบุ)")
+            department_name = (
+                project.department_id.complete_name
+                if project.department_id
+                else _("(ไม่ระบุ)")
             )
             for line in project.allocation_line_ids:
                 if line.name == "ส่วนกลาง":
-                    heatmap_data[faculty_name]["central"] += line.actual_amount
+                    heatmap_data[department_name]["central"] += line.actual_amount
                 elif line.name in ("คณะ/ส่วนงาน", "ภาค/หน่วยงาน"):
-                    heatmap_data[faculty_name]["faculty_dept"] += line.actual_amount
+                    heatmap_data[department_name]["faculty_dept"] += line.actual_amount
                 elif line.name == "KRIS":
-                    heatmap_data[faculty_name]["kris"] += line.actual_amount
+                    heatmap_data[department_name]["kris"] += line.actual_amount
 
         heatmap_rows = [
             {
