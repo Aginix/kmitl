@@ -471,7 +471,7 @@ msgstr ""
 #: model:ir.model.fields,help:purchase_work_acceptance_kmitl.field_purchase_order__wa_tier_validation
 #: model:ir.model.fields,help:purchase_work_acceptance_kmitl.field_work_acceptance__wa_tier_validation
 msgid ""
-"If checked, WA created will be approved by committee by tier valiation.Each committee will be notified (by email or "
+"If checked, WA created will be approved by committee by tier validation.Each committee will be notified (by email or "
 "inbox) to approve WA.\n"
 "If not checked, WA will be approved by paper outside Odoo, and the result of WA will be filled in by procurement officer"
 msgstr ""

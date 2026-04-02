@@ -48,10 +48,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
             lambda l: not l.is_done and not l.status
         )
         if incomplete:
-            names = ', '.join(incomplete.mapped('employee_name'))
-            raise ValidationError(
-                _("Please set status for: %s") % names
-            )
+            raise ValidationError(_("Please fill in all the inspection results."))
 
         for line in self.line_ids:
             if line.is_done:
@@ -142,4 +139,3 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
             rec.is_reason_editable = (
                 rec.status == 'other' and not rec.note
             )
-
