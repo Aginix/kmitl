@@ -154,8 +154,19 @@ class AccountMove(models.Model):
             if analytic_accounts:
                 self.analytic_distribution = analytic_accounts
 
+    def _inverse_analytic_distribution(self):
+        """Propagate analytic distribution to convenience fields and lines."""
+        super()._inverse_analytic_distribution()
+        for move in self:
+            if move.analytic_distribution:
+                move.line_ids.write(
+                    {"analytic_distribution": move.analytic_distribution}
+                )
+
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
-        """When analytic_distribution changes, propagate to all move lines."""
+        """When change analytic distribution, propagate to all move lines."""
         if self.analytic_distribution:
-            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
+            self.line_ids.update(
+                {"analytic_distribution": self.analytic_distribution}
+            )
