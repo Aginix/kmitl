@@ -29,7 +29,7 @@ class WorkAcceptance(models.Model):
         compute="_compute_completeness",
         store=True,
     )
-    requested_delivery_date = fields.Date(
+    requested_delivery_date = fields.Datetime(
         string="Requested Delivery Date",
         tracking=True,
         readonly=True,
@@ -134,11 +134,11 @@ class WorkAcceptance(models.Model):
         if self.late_days < 0:
             self.late_days = 0
 
-    @api.onchange("date_receive", "date_due")
+    @api.onchange("requested_delivery_date", "date_due")
     def _onchange_late_days(self):
         late_days = 0
-        if self.date_receive and self.date_due:
-            late_days = (self.date_receive - self.date_due).days
+        if self.requested_delivery_date and self.date_due:
+            late_days = (self.requested_delivery_date - self.date_due).days
         self.late_days = late_days > 0 and late_days or 0
 
     @api.onchange("fines_rate")
