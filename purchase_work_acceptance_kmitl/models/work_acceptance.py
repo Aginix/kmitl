@@ -169,9 +169,11 @@ class WorkAcceptance(models.Model):
     @api.depends("date_due")
     def _compute_current_work_end(self):
         for rec in self:
-            rec.current_work_end = (
-                rec.date_due + timedelta(days=1) if rec.date_due else False
-            )
+            if rec.date_due:
+                due_local = fields.Datetime.context_timestamp(rec, rec.date_due)
+                rec.current_work_end = (due_local + timedelta(days=1)).date()
+            else:
+                rec.current_work_end = False
 
     @api.depends("po_work_end", "requested_delivery_date")
     def _compute_days_work_end_to_requested(self):
