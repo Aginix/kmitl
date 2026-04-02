@@ -278,7 +278,7 @@
                                     ถึงวันที่
                                     <span
                                         class="text-decoration-underline fw-bolder"
-                                        t-esc="o.format_date_thai(fields.Datetime.context_timestamp(o, o.requested_delivery_date))"
+                                        t-esc="o.format_date_thai(o.requested_delivery_date)"
                                     />
                                     เป็นเวลา
                                     <span
