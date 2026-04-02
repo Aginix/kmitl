@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_budget_appropriation_f5_print_wizard_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.f5.print.wizard.form</field>
+        <field name="model">budget.appropriation.f5.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="พิมพ์ F5">
+                <group>
+                    <field name="show_note" />
+                </group>
+                <footer>
+                    <button name="action_print" string="พิมพ์" type="object" class="btn-primary" />
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Open wizard from Print menu -->
+    <record id="action_budget_appropriation_f5_print_wizard" model="ir.actions.act_window">
+        <field name="name">พิมพ์ F5</field>
+        <field name="res_model">budget.appropriation.f5.print.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_budget_appropriation" />
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
