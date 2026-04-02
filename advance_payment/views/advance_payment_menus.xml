@@ -30,4 +30,10 @@
         action="action_advance_payment_loan_type"
         sequence="10"/>
 
+    <menuitem id="menu_advance_payment_settings"
+        name="การตั้งค่า"
+        parent="menu_advance_payment_config"
+        action="base.action_general_configuration"
+        sequence="99"/>
+
 </odoo>
