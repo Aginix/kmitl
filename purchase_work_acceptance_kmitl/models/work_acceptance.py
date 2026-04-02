@@ -142,7 +142,7 @@ class WorkAcceptance(models.Model):
                 getattr(rec.purchase_id.contract_type_id, "is_construction", False)
             )
 
-    @api.depends("po_work_end")
+    @api.depends("date_due")
     def _compute_current_work_end(self):
         for rec in self:
             rec.current_work_end = (

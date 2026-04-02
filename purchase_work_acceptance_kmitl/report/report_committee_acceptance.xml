@@ -211,11 +211,11 @@
                                 />) คงรับเงินงวดนี้เป็น
                                 <span
                                     class="ub"
-                                    t-esc="'{0:,.2f}'.format(o.final_amount)"
+                                    t-esc="'{0:,.2f}'.format(final_amount)"
                                 />
                                 บาท (<span
                                     class="ub"
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.final_amount)"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(final_amount)"
                                 />)
                             </div>
                         </div>
