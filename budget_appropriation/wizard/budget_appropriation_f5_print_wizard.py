@@ -15,7 +15,6 @@ class BudgetAppropriationF5PrintWizard(models.TransientModel):
             self.env.ref(
                 "budget_appropriation.action_report_budget_appropriation_f5"
             )
-            .with_context(show_note=self.show_note)
             .sudo()
-            .report_action(appropriations)
+            .report_action(appropriations, data={"show_note": self.show_note})
         )
