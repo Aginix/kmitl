@@ -1,6 +1,5 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.misc import str2bool
 
 
 class AdvancePayment(models.Model):
@@ -96,11 +95,12 @@ class AdvancePayment(models.Model):
     )
 
     def _compute_allow_manual_reference(self):
-        allow = str2bool(
+        param = (
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("advance_payment.allow_manual_reference", default=False)
+            .get_param("advance_payment.allow_manual_reference")
         )
+        allow = param == "True"
         for rec in self:
             rec.allow_manual_reference = allow
 
