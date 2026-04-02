@@ -26,8 +26,8 @@
                         }
                         .sig-line {
                             display: inline-block;
-                            width: 220px;
-                            border-bottom: 1px solid #000;
+                            width: 200px;
+                            border-bottom: 1px dotted #000;
                         }
                         .ub {
                             text-decoration: underline;
@@ -169,7 +169,7 @@
                                 class="ub"
                                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
                             />)
-                            <div t-if="o.has_contract_change" name="section_change">
+                            <div t-if="o.requested_delivery_date and o.date_due and o.requested_delivery_date > o.date_due.date()" name="section_change">
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
