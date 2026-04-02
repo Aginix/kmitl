@@ -93,7 +93,7 @@
                                 เป็นเงินจำนวน
                                 <span
                                     class="ub"
-                                    t-esc="'{0:,.0f}'.format(total_amount)"
+                                    t-esc="'{0:,.2f}'.format(total_amount)"
                                 />
                                 บาท (<span
                                     class="ub"
@@ -164,16 +164,16 @@
                                 t-out="o.installment_id.installment or ''"
                             />
                             ตามสัญญาจ้าง เป็นจำนวนเงินรวม
-                            <span class="ub" t-esc="'{0:,.0f}'.format(total_amount)" />
+                            <span class="ub" t-esc="'{0:,.2f}'.format(total_amount)" />
                             บาท (<span
                                 class="ub"
                                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
                             />)
-                            <div t-if="o.requested_delivery_date and o.date_due and o.requested_delivery_date.date() > o.date_due.date()" name="section_change">
+                            <div t-if="o.requested_delivery_date.date() > o.date_due.date()" name="section_change">
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.po_work_end_next)"
+                                    t-esc="o.format_date_thai(o.current_work_end)"
                                 />
                                 ถึงวันที่
                                 <span
@@ -184,13 +184,13 @@
                                 <span class="ub" t-out="o.late_days or '-'" />
                                 วัน
                                 <span
-                                    t-if="o.po_work_end_original and o.purchase_id.work_end and o.purchase_id.work_end != o.po_work_end_original"
+                                    t-if="o.purchase_id.work_end != o.po_work_end_original"
                                     name="section_over_time"
                                 >
                                     และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
                                     <span
                                         class="ub"
-                                        t-esc="o.format_date_thai(o.po_work_end_next)"
+                                        t-esc="o.format_date_thai(o.current_work_end)"
                                     />
                                     ถึงวันที่
                                     <!-- new Date Change -->
@@ -205,17 +205,17 @@
                                 คงทำงานเกินกำหนดสัญญาไป
                                 <span class="ub" t-out="o.late_days or '-'" />
                                 วัน จะต้องเสียค่าปรับวันละ
-                                <span class="ub" t-out="o.fines_rate or '-'" />
+                                <span class="ub" t-esc="'{0:,.2f}'.format(o.fines_rate)" />
                                 บาท (<t
                                     t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_rate) if o.fines_rate else '-'"
                                 />) คงรับเงินงวดนี้เป็น
                                 <span
                                     class="ub"
-                                    t-esc="'{0:,.0f}'.format(final_amount)"
+                                    t-esc="'{0:,.2f}'.format(o.final_amount)"
                                 />
                                 บาท (<span
                                     class="ub"
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(final_amount)"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.final_amount)"
                                 />)
                             </div>
                         </div>

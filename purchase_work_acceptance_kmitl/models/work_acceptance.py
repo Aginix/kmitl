@@ -51,8 +51,8 @@ class WorkAcceptance(models.Model):
         string="PO Work End",
         related="purchase_id.work_end",
     )
-    po_work_end_next = fields.Date(
-        compute="_compute_po_work_end_next",
+    current_work_end = fields.Date(
+        compute="_compute_current_work_end",
     )
     po_work_end_original = fields.Date(
         string="PO Work End Original",
@@ -143,10 +143,10 @@ class WorkAcceptance(models.Model):
             )
 
     @api.depends("po_work_end")
-    def _compute_po_work_end_next(self):
+    def _compute_current_work_end(self):
         for rec in self:
-            rec.po_work_end_next = (
-                rec.po_work_end + timedelta(days=1) if rec.po_work_end else False
+            rec.current_work_end = (
+                rec.date_due + timedelta(days=1) if rec.date_due else False
             )
 
     @api.depends("po_work_end", "requested_delivery_date")

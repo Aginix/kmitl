@@ -268,11 +268,12 @@
 )"
                                 />
                                 )
+                                ในการนี้ผู้รับจ้างทำงาน
                                 <span t-if="o.requested_delivery_date and o.date_due and o.requested_delivery_date.date() > o.date_due.date()" name="over_time_contract">
                                     เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่
                                     <span
                                         class="text-decoration-underline fw-bolder"
-                                        t-esc="o.format_date_thai(o.date_due)"
+                                        t-esc="o.format_date_thai(o.current_work_end)"
                                     />
                                     ถึงวันที่
                                     <span
@@ -294,17 +295,17 @@
                                 วัน จะต้องเสียค่าปรับ วันละ
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.fines_rate"
+                                    t-esc="'{0:,.2f}'.format(o.fines_rate)"
                                 />
                                 บาท (<t
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.purchase_id.fines_rate)"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_rate)"
                                 />) รวมเป็นเงิน
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.fines_late"
+                                    t-esc="'{0:,.2f}'.format(o.fines_late)"
                                 />
                                 บาท (<t
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.purchase_id.fines_late)"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_late)"
                                 />) คงได้รับเงินงวดนี้ เป็นเงิน
                                 <span
                                     class="text-decoration-underline fw-bolder"
