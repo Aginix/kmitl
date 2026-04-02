@@ -65,12 +65,6 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col">
-                                ประเภทการจ่าย                                <span class="ms-2" t-field="o.payment_type"/>
-                            </div>
-                        </div>
-
                         <!-- Financial Dimensions (Budget Module) -->
                         <div class="my-5" />
 
