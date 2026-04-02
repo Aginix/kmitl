@@ -204,7 +204,7 @@
                         <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
                         <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
-                        <field name="deduct_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" attrs="{'invisible': [('deduct', '!=', True)]}" />
+                        <field name="deduct_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" attrs="{'invisible': [('deduct', '!=', True)], 'required': [('deduct', '=', True)]}" />
                         <field name="balance" required="1" />
                     </group>
                     <notebook>
