@@ -4,7 +4,7 @@
         <field name="name">budget.appropriation.f5.print.wizard.form</field>
         <field name="model">budget.appropriation.f5.print.wizard</field>
         <field name="arch" type="xml">
-            <form string="พิมพ์ F5">
+            <form string="พิมพ์ประมาณการรายจ่าย F5">
                 <group>
                     <field name="show_note" />
                 </group>
@@ -18,7 +18,7 @@
 
     <!-- Open wizard from Print menu -->
     <record id="action_budget_appropriation_f5_print_wizard" model="ir.actions.act_window">
-        <field name="name">พิมพ์ F5</field>
+        <field name="name">พิมพ์ประมาณการรายจ่าย F5</field>
         <field name="res_model">budget.appropriation.f5.print.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
