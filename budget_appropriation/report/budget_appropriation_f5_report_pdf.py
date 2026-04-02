@@ -10,9 +10,13 @@ class BudgetAppropriationF5ReportPdf(models.AbstractModel):
         if not docids:
             docids = self.env.context.get("active_ids", [])
         show_note = data.get("show_note", True) if isinstance(data, dict) else True
+        show_itemized = (
+            data.get("show_itemized", False) if isinstance(data, dict) else False
+        )
         return {
             "doc_ids": docids,
             "doc_model": "budget.appropriation",
             "docs": self.env["budget.appropriation"].browse(docids),
             "show_note": show_note,
+            "show_itemized": show_itemized,
         }

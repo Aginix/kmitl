@@ -6,6 +6,7 @@ class BudgetAppropriationF5PrintWizard(models.TransientModel):
     _description = "F5 Print Options"
 
     show_note = fields.Boolean(string="แสดงหมายเหตุ", default=True)
+    show_itemized = fields.Boolean(string="แสดงแจกแจงรหัสงบประมาณ", default=False)
 
     def action_print(self):
         self.ensure_one()
@@ -16,5 +17,11 @@ class BudgetAppropriationF5PrintWizard(models.TransientModel):
                 "budget_appropriation.action_report_budget_appropriation_f5"
             )
             .sudo()
-            .report_action(appropriations, data={"show_note": self.show_note})
+            .report_action(
+                appropriations,
+                data={
+                    "show_note": self.show_note,
+                    "show_itemized": self.show_itemized,
+                },
+            )
         )

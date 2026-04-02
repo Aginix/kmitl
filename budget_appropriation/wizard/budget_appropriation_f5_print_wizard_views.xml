@@ -7,6 +7,7 @@
             <form string="พิมพ์ประมาณการรายจ่าย F5">
                 <group>
                     <field name="show_note" />
+                    <field name="show_itemized" />
                 </group>
                 <footer>
                     <button name="action_print" string="พิมพ์" type="object" class="btn-primary" />

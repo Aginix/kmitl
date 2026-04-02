@@ -123,7 +123,7 @@ export class BudgetAppropriationF5Preview extends Component {
         this.state.expandedNodes.clear();
     }
 
-    onExport(showNote = true) {
+    onExport(options = {}) {
         // Export to PDF using the QWeb report
         const appropriationId = this.activeId;
         if (!appropriationId) {
@@ -131,13 +131,15 @@ export class BudgetAppropriationF5Preview extends Component {
             return;
         }
 
+        const { showNote = true, showItemized = false } = options;
+
         // Trigger the PDF report action
         this.actionService.doAction({
             type: 'ir.actions.report',
             report_type: 'qweb-pdf',
             report_name: 'budget_appropriation.report_budget_appropriation_f5',
             report_file: 'budget_appropriation.report_budget_appropriation_f5',
-            data: { show_note: showNote },
+            data: { show_note: showNote, show_itemized: showItemized },
             context: {
                 active_ids: [appropriationId],
                 active_id: appropriationId,
