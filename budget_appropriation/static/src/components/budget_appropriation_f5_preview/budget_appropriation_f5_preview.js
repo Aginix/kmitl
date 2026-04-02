@@ -123,7 +123,7 @@ export class BudgetAppropriationF5Preview extends Component {
         this.state.expandedNodes.clear();
     }
 
-    onExport() {
+    onExport(showNote = true) {
         // Export to PDF using the QWeb report
         const appropriationId = this.activeId;
         if (!appropriationId) {
@@ -137,7 +137,7 @@ export class BudgetAppropriationF5Preview extends Component {
             report_type: 'qweb-pdf',
             report_name: 'budget_appropriation.report_budget_appropriation_f5',
             report_file: 'budget_appropriation.report_budget_appropriation_f5',
-            data: null,
+            data: { show_note: showNote },
             context: {
                 active_ids: [appropriationId],
                 active_id: appropriationId,
