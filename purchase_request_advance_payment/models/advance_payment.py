@@ -11,13 +11,6 @@ class AdvancePayment(models.Model):
             return True
         return result
 
-    def _is_locked_by_reference(self):
-        """Lock fields when the advance payment was created from a PR."""
-        result = super()._is_locked_by_reference()
-        if not result and self.reference:
-            return True
-        return result
-
     def action_start(self, payment=None):
         """Override to cross-post disbursement message to linked purchase request."""
         res = super().action_start(payment=payment)
