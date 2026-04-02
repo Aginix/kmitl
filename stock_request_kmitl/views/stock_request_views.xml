@@ -62,8 +62,7 @@
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="submitted"
-                        groups="stock_request_kmitl.group_stock_request_admin"
+                        states="submitted,approved"
                     />
                     <button
                         name="action_reset"

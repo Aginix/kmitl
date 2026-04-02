@@ -48,16 +48,15 @@
                         groups="stock_request_kmitl.group_stock_request_approver"
                         attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', '!=', 'validated')]}"/>
             </xpath>
-            <xpath expr="//button[@name='action_cancel']" position="replace">
+            <!-- <xpath expr="//button[@name='action_cancel']" position="replace">
                 <button
                     name="action_cancel"
                     string="Cancel"
                     type="object"
-                    states="submitted"
-                    groups="stock_request_kmitl.group_stock_request_approver"
+                    states="submitted,approved"
                     attrs="{'invisible': [('state', '!=', 'submitted'), ('validation_status', '!=', 'rejected')]}"
                 />
-            </xpath>
+            </xpath> -->
         </field>
     </record>
 
