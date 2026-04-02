@@ -97,8 +97,6 @@ def _process_sarabun_approve(env, origin_record, admin_user, department):
 
     # Set required fields
     doc.recipient = "ผู้บริหาร"
-    if not doc.sender_department_id:
-        doc.sender_department_id = department.id
 
     # Send document
     doc.action_send()
