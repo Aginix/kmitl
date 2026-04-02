@@ -170,3 +170,11 @@ class AccountMove(models.Model):
             self.line_ids.update(
                 {"analytic_distribution": self.analytic_distribution}
             )
+
+    @api.onchange("line_ids")
+    def _onchange_line_ids_analytic_distribution(self):
+        """Auto-fill analytic distribution on new lines from header."""
+        if self.analytic_distribution:
+            for line in self.line_ids:
+                if not line.analytic_distribution:
+                    line.analytic_distribution = self.analytic_distribution
