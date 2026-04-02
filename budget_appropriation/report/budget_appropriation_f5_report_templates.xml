@@ -239,12 +239,8 @@
                                 <t t-out="node.get('name', '')"/>
                             </div>
                             <t t-if="show_note">
-                                <div t-if="node.get('description')" class="account-description">
-                                    <t t-out="node.get('description', '')"/>
-                                </div>
-                                <div t-if="node.get('note')" class="account-description">
-                                    <t t-out="node.get('note', '')"/>
-                                </div>
+                                <div t-if="node.get('description')" class="account-description" t-out="node.get('description', '')"/>
+                                <div t-if="node.get('note')" class="account-description" t-out="node.get('note', '')"/>
                             </t>
                         </t>
                         <t t-else="">
