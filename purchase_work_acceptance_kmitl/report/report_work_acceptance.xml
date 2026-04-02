@@ -268,7 +268,7 @@
 )"
                                 />
                                 )
-                                <span t-if="o.requested_delivery_date and o.date_due and o.requested_delivery_date > o.date_due.date()" name="over_time_contract">
+                                <span t-if="o.requested_delivery_date and o.date_due and o.requested_delivery_date.date() > o.date_due.date()" name="over_time_contract">
                                     เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่
                                     <span
                                         class="text-decoration-underline fw-bolder"
