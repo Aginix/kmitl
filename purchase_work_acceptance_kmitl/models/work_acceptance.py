@@ -102,6 +102,12 @@ class WorkAcceptance(models.Model):
     is_construction_contract = fields.Boolean(
         compute="_compute_is_construction_contract",
     )
+    is_delivery_late = fields.Boolean(
+        compute="_compute_is_delivery_late",
+    )
+    is_work_end_extended = fields.Boolean(
+        compute="_compute_is_work_end_extended",
+    )
     date_committee_received = fields.Date(
         string="วันที่คณะกรรมการได้รับเอกสาร",
         readonly=True,
@@ -134,6 +140,24 @@ class WorkAcceptance(models.Model):
             "Wrong Fines Amount, it must be positive!",
         ),
     ]
+
+    @api.depends("purchase_id.work_end", "po_work_end_original")
+    def _compute_is_work_end_extended(self):
+        for rec in self:
+            rec.is_work_end_extended = bool(
+                rec.purchase_id.work_end
+                and rec.po_work_end_original
+                and rec.purchase_id.work_end != rec.po_work_end_original
+            )
+
+    @api.depends("requested_delivery_date", "date_due")
+    def _compute_is_delivery_late(self):
+        for rec in self:
+            rec.is_delivery_late = bool(
+                rec.requested_delivery_date
+                and rec.date_due
+                and rec.requested_delivery_date > rec.date_due
+            )
 
     @api.depends("purchase_id")
     def _compute_is_construction_contract(self):
