@@ -196,7 +196,7 @@
                                     <!-- new Date Change -->
                                     <span
                                         class="ub"
-                                        t-esc="o.format_date_thai(o.po_work_end)"
+                                        t-esc="o.format_date_thai(o.date_due)"
                                     />
                                     เป็นเวลา
                                     <span class="ub" t-out="o.late_days or '-'" />

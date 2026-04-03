@@ -41,9 +41,17 @@ class WorkAcceptance(models.Model):
     # convert from Datetime to Date
     date_due = fields.Date(
         string="Due Date",
+        related="purchase_id.work_end",
+        required=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
     date_receive = fields.Date(
         string="Received Date",
+        default=lambda self: self._default_start_date(),
+        required=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
 
     # PO date snapshots (captured at WA creation, immune to PO edits)
@@ -55,27 +63,18 @@ class WorkAcceptance(models.Model):
         string="PO Work Start",
         copy=False,
     )
-    po_work_end = fields.Date(
-        string="PO Work End",
-        related="purchase_id.work_end",
-    )
     current_work_end = fields.Date(
         compute="_compute_current_work_end",
     )
     po_work_end_original = fields.Date(
         string="PO Work End Original",
     )
-    days_work_end_to_requested = fields.Integer(
-        compute="_compute_days_work_end_to_requested",
-    )
-    days_work_end_to_receive = fields.Integer(
-        compute="_compute_days_work_end_to_receive",
-    )
 
     # Late Fines
     late_days = fields.Integer(
-        readonly=True,
-        states={"draft": [("readonly", False)]},
+        compute="_compute_late_days",
+        store=True,
+        readonly=False,
         tracking=True,
         help="Late day(s) from Received Date - Due Date",
     )
@@ -149,6 +148,9 @@ class WorkAcceptance(models.Model):
         ),
     ]
 
+    def _default_start_date(self):
+        return fields.Date.today()
+
     @api.depends("purchase_id.work_end", "po_work_end_original")
     def _compute_is_work_end_extended(self):
         for rec in self:
@@ -178,30 +180,9 @@ class WorkAcceptance(models.Model):
     def _compute_current_work_end(self):
         for rec in self:
             if rec.date_due:
-                due_local = fields.Datetime.context_timestamp(rec, rec.date_due)
-                rec.current_work_end = (due_local + timedelta(days=1)).date()
+                rec.current_work_end = rec.date_due + timedelta(days=1)
             else:
                 rec.current_work_end = False
-
-    @api.depends("po_work_end", "requested_delivery_date")
-    def _compute_days_work_end_to_requested(self):
-        for rec in self:
-            if rec.po_work_end and rec.requested_delivery_date:
-                rec.days_work_end_to_requested = (
-                    rec.requested_delivery_date - rec.po_work_end
-                ).days + 1
-            else:
-                rec.days_work_end_to_requested = 0
-
-    @api.depends("po_work_end", "date_receive")
-    def _compute_days_work_end_to_receive(self):
-        for rec in self:
-            if rec.po_work_end and rec.date_receive:
-                rec.days_work_end_to_receive = (
-                    rec.date_receive.date() - rec.po_work_end
-                ).days + 1
-            else:
-                rec.days_work_end_to_receive = 0
 
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
@@ -253,12 +234,13 @@ class WorkAcceptance(models.Model):
         if self.late_days < 0:
             self.late_days = 0
 
-    @api.onchange("requested_delivery_date", "date_due")
-    def _onchange_late_days(self):
-        late_days = 0
-        if self.requested_delivery_date and self.date_due:
-            late_days = (self.requested_delivery_date - self.date_due).days
-        self.late_days = late_days > 0 and late_days or 0
+    @api.depends("requested_delivery_date", "date_due")
+    def _compute_late_days(self):
+        for rec in self:
+            late_days = 0
+            if rec.requested_delivery_date and rec.date_due:
+                late_days = (rec.requested_delivery_date - rec.date_due).days
+            rec.late_days = late_days if late_days > 0 else 0
 
     @api.onchange("fines_rate")
     def _onchange_fines_rate(self):
@@ -280,3 +262,12 @@ class WorkAcceptance(models.Model):
     def _compute_price_subtotal(self):
         for rec in self:
             rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
+
+
+class WorkAcceptanceLine(models.Model):
+    _inherit = "work.acceptance.line"
+
+    date_due = fields.Date(related="wa_id.date_due", string="Due Date", readonly=True)
+    date_receive = fields.Date(
+        related="wa_id.date_receive", string="Received Date", readonly=True
+    )

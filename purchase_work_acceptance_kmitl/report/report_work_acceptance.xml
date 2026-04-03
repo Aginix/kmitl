@@ -283,14 +283,14 @@
                                     เป็นเวลา
                                     <span
                                         class="text-decoration-underline fw-bolder"
-                                        t-esc="(o.requested_delivery_date.date() - o.current_work_end.date()).days"
+                                        t-esc="(o.requested_delivery_date - o.date_due).days"
                                     />
                                     วัน
                                 </span>
                                 คงส่งมอบของล่าช้าเกินกำหนดสัญญา/ข้อตกลงไป
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.late_days"
+                                    t-esc="o.late_days"
                                 />
                                 วัน จะต้องเสียค่าปรับ วันละ
                                 <span
