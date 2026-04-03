@@ -199,7 +199,7 @@
                                         t-esc="o.format_date_thai(o.date_due)"
                                     />
                                     เป็นเวลา
-                                    <span class="ub" t-esc="(o.date_due - o.requested_delivery_date + datetime.timedelta(days=1)).days" />
+                                    <span class="ub" t-esc="(o.date_due - o.po_work_end_original).days" />
                                     วัน
                                 </span>
                                 คงทำงานเกินกำหนดสัญญาไป
