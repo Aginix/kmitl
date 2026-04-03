@@ -701,6 +701,202 @@ class BudgetAppropriationCompilation(models.Model):
             "total_management": total_management,
         }
 
+    _F23W_IMPACT_TYPES = [
+        ("education", "1) ด้านการศึกษา (Education)"),
+        ("academic", "2) ด้านการวิจัย (Academic)"),
+        ("industrial", "3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)"),
+        ("social", "4) ด้านสังคม (Social)"),
+    ]
+
+    def get_f23w_paged_data(self):
+        """Prepare F23W report rows split into pages for controlled breaks.
+
+        Returns a list of pages, each page is a list of row dicts with a
+        ``type`` key that tells the QWeb template how to render it.
+        """
+        self.ensure_one()
+        first_page_cap = 30
+        other_page_cap = 38
+        min_last_page = 5
+
+        # Pre-compute impact data and grand totals
+        impact_data = []
+        for itype, ilabel in self._F23W_IMPACT_TYPES:
+            data = self.get_impact_line_hierarchy(itype)
+            impact_data.append((itype, ilabel, data))
+
+        grand_okr = sum(d[2].get("total_project_okr", 0) for d in impact_data)
+        grand_mgmt = sum(d[2].get("total_management", 0) for d in impact_data)
+        grand_total = grand_okr + grand_mgmt
+        variable_pct = (
+            (grand_total * 100 / self.revenue_net) if self.revenue_net else 0
+        )
+
+        rows = []
+
+        # --- Section 1: Fixed expenses ---
+        rows.append({"type": "fixed_header"})
+        rows.append({"type": "data", "label": "1. หักสำรองจ่าย"})
+        rows.append({
+            "type": "data",
+            "label": "1.1 สำรองจ่ายร้อยละ 15",
+            "amount": self.code_0702000002,
+            "indent": True,
+        })
+        rows.append({
+            "type": "data",
+            "label": "1.2 สำรองจ่ายเกินกว่าร้อยละ 15",
+            "amount": self.code_0702000003,
+            "indent": True,
+        })
+        rows.append({
+            "type": "data",
+            "label": "2. ชดใช้เงินคงคลัง (ถ้ามี)",
+            "amount": self.treasury_replenishment_amount,
+        })
+        rows.append({
+            "type": "data_multiline",
+            "label": "3. ค่าดูแลและบำรุงรักษา",
+            "label2": "(Preventive Maintenance บำรุงรักษาเชิงป้องกัน)",
+            "amount": self.maintenance_amount,
+            "height": 2,
+        })
+        rows.append({
+            "type": "data",
+            "label": "4. งบลงทุน",
+            "amount": self.capital_budget_amount,
+        })
+        rows.append({
+            "type": "data",
+            "label": "5. งบประจำ",
+            "amount": self.recurrent_budget_amount,
+        })
+        rows.append({
+            "type": "data",
+            "label": "6. เงินสนับสนุนจากหน่วยงานภายนอก",
+            "amount": self.external_funding_amount,
+        })
+        rows.append({
+            "type": "fixed_total",
+            "pct": self.fixed_expense_percentage,
+            "amount": self.fixed_expense_total,
+        })
+
+        # --- Section 2: Impact types ---
+        rows.append({"type": "spacer"})
+        rows.append({
+            "type": "impact_section_header",
+            "pct": variable_pct,
+            "amount": grand_total,
+        })
+        rows.append({"type": "impact_column_header"})
+
+        for _itype, ilabel, idata in impact_data:
+            i_okr = idata.get("total_project_okr", 0)
+            i_mgmt = idata.get("total_management", 0)
+            i_total = i_okr + i_mgmt
+            group = f"impact_{_itype}"
+            rows.append({
+                "type": "impact_type_header",
+                "group": group,
+                "label": ilabel,
+                "pct": (i_total * 100 / grand_total) if grand_total else 0,
+                "okr_pct": (i_okr * 100 / grand_total) if grand_total else 0,
+                "mgmt_pct": (i_mgmt * 100 / grand_total) if grand_total else 0,
+                "amount": i_total,
+            })
+            for row in idata.get("rows", []):
+                rows.append({
+                    "type": "impact_row",
+                    "group": group,
+                    "name": row.get("name", ""),
+                    "level": row.get("level", 0),
+                    "okr_amount": row.get("project_okr_amount", 0),
+                    "mgmt_amount": row.get("management_amount", 0),
+                })
+            rows.append({"type": "spacer"})
+
+        # --- Section 3: Grand totals ---
+        okr_pct = (grand_okr * 100 / grand_total) if grand_total else 0
+        mgmt_pct = (grand_mgmt * 100 / grand_total) if grand_total else 0
+        rows.append({
+            "type": "sub_totals",
+            "group": "totals",
+            "okr_pct": okr_pct,
+            "mgmt_pct": mgmt_pct,
+        })
+        rows.append({
+            "type": "grand_total_line",
+            "group": "totals",
+            "okr_amount": grand_okr,
+            "mgmt_amount": grand_mgmt,
+            "amount": grand_total,
+        })
+        rows.append({
+            "type": "grand_total",
+            "group": "totals",
+            "amount": self.fixed_expense_total + grand_total,
+        })
+
+        return self._split_rows_into_pages(
+            rows, first_page_cap, other_page_cap, min_last_page
+        )
+
+    @staticmethod
+    def _split_rows_into_pages(rows, first_cap, page_cap, min_last):
+        """Split rows into pages, keeping grouped rows together.
+
+        Rows with the same ``group`` key are treated as an indivisible block
+        and will not be split across pages (unless the block itself is larger
+        than a full page).
+        """
+
+        def _block_height(block):
+            return sum(r.get("height", 1) for r in block)
+
+        # Build blocks: contiguous rows sharing a group stay together.
+        blocks = []
+        for row in rows:
+            group = row.get("group")
+            if group and blocks and blocks[-1][0].get("group") == group:
+                blocks[-1].append(row)
+            else:
+                blocks.append([row])
+
+        pages = []
+        remaining = list(blocks)
+        cap = first_cap
+        while remaining:
+            page_blocks = []
+            units = 0
+            while remaining:
+                bh = _block_height(remaining[0])
+                if units + bh <= cap:
+                    page_blocks.append(remaining.pop(0))
+                    units += bh
+                elif not page_blocks:
+                    # Block larger than a full page; add anyway to progress.
+                    page_blocks.append(remaining.pop(0))
+                    break
+                else:
+                    break
+            # Ensure last page has enough content by giving back blocks.
+            if remaining:
+                remaining_units = sum(_block_height(b) for b in remaining)
+                if remaining_units < min_last:
+                    give_back_target = min_last - remaining_units
+                    given = 0
+                    while len(page_blocks) > 1 and given < give_back_target:
+                        block = page_blocks.pop()
+                        remaining.insert(0, block)
+                        given += _block_height(block)
+            if page_blocks:
+                pages.append(
+                    [row for block in page_blocks for row in block]
+                )
+            cap = page_cap
+        return pages
+
     def action_open_f23w_report(self):
         """Open F23W report in a new browser tab as HTML."""
         self.ensure_one()
