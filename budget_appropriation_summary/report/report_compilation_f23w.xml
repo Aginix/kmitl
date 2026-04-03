@@ -31,39 +31,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                     พิมพ์รายงาน
                 </button>
-                <script>
-                    (function () {
-                        function addPageBreaks() {
-                            var page = document.querySelector('.page');
-                            if (!page) return;
-                            var ruler = document.createElement('div');
-                            ruler.style.cssText = 'position:absolute;visibility:hidden;height:297mm;width:0;';
-                            document.body.appendChild(ruler);
-                            var ph = ruler.offsetHeight;
-                            document.body.removeChild(ruler);
-                            page.querySelectorAll('.page-break-line').forEach(function (e) { e.remove(); });
-                            var total = page.scrollHeight;
-                            for (var y = ph; y &lt; total; y += ph) {
-                                var line = document.createElement('div');
-                                line.className = 'page-break-line';
-                                line.style.top = y + 'px';
-                                var label = document.createElement('span');
-                                label.className = 'page-break-label';
-                                label.textContent = 'ตำแหน่งตัดหน้า';
-                                line.appendChild(label);
-                                page.appendChild(line);
-                            }
-                        }
-                        if (document.readyState === 'loading') {
-                            document.addEventListener('DOMContentLoaded', addPageBreaks);
-                        } else {
-                            addPageBreaks();
-                        }
-                        window.addEventListener('resize', addPageBreaks);
-                    })();
-                </script>
             </t>
-            <div class="page budget-compilation-f23w-report" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else 'false'">
+            <div class="page budget-compilation-f23w-report">
                 <div class="report-header">
                     <h4 class="pb-2">สรุปงบประมาณรายจ่าย</h4>
                     <h4 class="pb-2">
@@ -172,7 +141,7 @@
                             <t t-set="grand_mgmt" t-value="sum(d.get('total_management', 0) for d in all_impacts)" />
                             <t t-set="grand_total" t-value="grand_okr + grand_mgmt" />
                             <t t-set="variable_pct" t-value="(grand_total * 100 / o.revenue_net) if o.revenue_net else 0" />
-                            <tr><td colspan="5"  /></tr>
+                            <tr><td colspan="5" class="pt-4" /></tr>
                             <tr class="fw-bold">
                                 <td>(2) การจัดสรรด้านต่าง ๆ ดังนี้</td>
                                 <td class="text-center">ร้อยละ <t t-out="'{:,.2f}'.format(variable_pct)" /></td>
@@ -247,7 +216,7 @@
                                     </tr>
                                 </t>
                                 <tr>
-                                    <td colspan="5" style="height: 32pt; />
+                                    <td colspan="5" class="pt-4" />
                                 </tr>
                             </t>
                             <!-- Sub-totals row -->
@@ -301,31 +270,29 @@
                     position: relative;
                     width: 210mm;
                     min-height: 297mm;
-                    background: white !important;
+                    background-color: white !important;
+                    background-image: repeating-linear-gradient(
+                        to bottom,
+                        transparent,
+                        transparent calc(297mm - 1px),
+                        rgba(239, 68, 68, 0.35) calc(297mm - 1px),
+                        rgba(239, 68, 68, 0.35) 297mm
+                    ) !important;
                     margin: 40px auto;
                     padding: 15mm !important;
                     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
                     box-sizing: border-box;
                     border-radius: 2px;
                 }
-
-                .page-break-line {
+                .page::after {
+                    content: 'ตำแหน่งตัดหน้า';
                     position: absolute;
-                    left: -20px;
-                    right: -20px;
-                    height: 0;
-                    border-top: 1px dashed rgba(239, 68, 68, 0.45);
-                    pointer-events: none;
-                    z-index: 100;
-                }
-                .page-break-label {
-                    position: absolute;
-                    right: 0;
-                    top: -14px;
+                    top: calc(297mm - 10px);
+                    right: -90px;
                     font-size: 10px;
                     color: rgba(239, 68, 68, 0.6);
                     font-family: 'TH SarabunPSK', 'Sarabun', sans-serif;
-                    white-space: nowrap;
+                    pointer-events: none;
                 }
 
                 .f23w-print-btn {
@@ -368,9 +335,10 @@
                         padding: 15mm !important;
                         box-shadow: none;
                         border-radius: 0;
+                        background-image: none !important;
                     }
-                    .page-break-line {
-                        display: none !important;
+                    .page::after {
+                        display: none;
                     }
                     .f23w-print-btn {
                         display: none !important;
