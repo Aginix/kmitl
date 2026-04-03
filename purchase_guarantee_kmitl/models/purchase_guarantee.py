@@ -21,6 +21,11 @@ class PurchaseGuarantee(models.Model):
     document_ref = fields.Char(tracking=True)
     date_return = fields.Date(tracking=True)
     amount_returned = fields.Monetary(tracking=True)
+    is_no_expiry = fields.Boolean(
+        string="No Expiry",
+        store=False,
+        compute="_compute_is_no_expiry",
+    )
     date_due_guarantee = fields.Date(tracking=True)
     note = fields.Text(tracking=True)
     active = fields.Boolean(tracking=True)
@@ -54,6 +59,16 @@ class PurchaseGuarantee(models.Model):
         store=False,
         help="True if reference is purchase.order",
     )
+
+    @api.depends("date_due_guarantee")
+    def _compute_is_no_expiry(self):
+        for rec in self:
+            rec.is_no_expiry = not rec.date_due_guarantee
+
+    @api.onchange("is_no_expiry")
+    def _onchange_is_no_expiry(self):
+        if self.is_no_expiry:
+            self.date_due_guarantee = False
 
     @api.depends("state")
     def _compute_is_editable(self):
