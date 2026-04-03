@@ -31,9 +31,8 @@ class TestNameSearchOUFilter(TransactionCase):
             }
         )
 
-        cls.plan = Plan.search([("code", "=", "departments")], limit=1)
-        if not cls.plan:
-            cls.plan = Plan.create({"name": "Departments", "code": "departments"})
+        # Dedicated test plan to avoid limit issues with existing records
+        cls.plan = Plan.create({"name": "Test OU Filter", "code": "test_ou_filter"})
 
         # Analytic accounts: one per OU, one shared (no OU)
         cls.acc_ou_a = Account.create(
