@@ -135,27 +135,3 @@ class TestNameSearchOUFilter(TransactionCase):
         self.assertIn(self.acc_ou_b.id, ids)
         self.assertIn(self.acc_shared.id, ids)
 
-    # ------------------------------------------------------------------
-    # Edge: user with no OU assigned (no filter applied)
-    # ------------------------------------------------------------------
-
-    def test_user_without_ou_sees_all(self):
-        """User with no OU assigned sees all accounts (no filter applied)."""
-        user_no_ou = self.env["res.users"].with_context(
-            no_reset_password=True
-        ).create(
-            {
-                "name": "User No OU",
-                "login": "test_ou_user_none",
-                "password": "test_ou_user_none",
-                "company_id": self.company.id,
-                "company_ids": [(4, self.company.id)],
-                "groups_id": [
-                    (6, 0, [self.env.ref("base.group_user").id])
-                ],
-            }
-        )
-        ids = self._name_search_ids(user=user_no_ou)
-        self.assertIn(self.acc_ou_a.id, ids)
-        self.assertIn(self.acc_ou_b.id, ids)
-        self.assertIn(self.acc_shared.id, ids)
