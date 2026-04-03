@@ -286,6 +286,8 @@ class PurchaseRequestApproval(models.Model):
         self.ensure_one()
         vals = super()._prepare_sarabun_document_vals()
         vals["subject"] = self.title or self.name
+        if self.requesting_department_id:
+            vals["sender_department_id"] = self.requesting_department_id.id
         return vals
 
     def action_submit_to_sarabun(self):

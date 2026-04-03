@@ -23,6 +23,8 @@
         "purchase_request_budget",
         "purchase_request_price_tax_included",
         "purchase_request_approval_kmitl",
+        "purchase_request_approval",
+        "purchase_request_sarabun",
         "operating_unit_kmitl",
         "analytic_operating_unit",
         "account_analytic_kmitl",
