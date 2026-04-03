@@ -88,47 +88,79 @@ class TestNameSearchOUFilter(TransactionCase):
             }
         )
 
-    def _name_search_ids(self, user=None, context=None):
-        """Return ids from name_search as the given user."""
+    def _get_env(self, user=None, context=None):
         env = self.env
         if user:
             env = env(user=user)
         if context:
             env = env(context=dict(env.context, **context))
-        results = env["account.analytic.account"].name_search(
-            "", args=[("plan_id", "=", self.plan.id)]
-        )
+        return env
+
+    def _name_search_ids(self, user=None, context=None):
+        """Return ids from name_search as the given user."""
+        results = self._get_env(user, context)[
+            "account.analytic.account"
+        ].name_search("", args=[("plan_id", "=", self.plan.id)])
         return [r[0] for r in results]
 
+    def _web_search_read_ids(self, user=None, context=None):
+        """Return ids from web_search_read as the given user."""
+        result = self._get_env(user, context)[
+            "account.analytic.account"
+        ].web_search_read(
+            domain=[("plan_id", "=", self.plan.id)],
+            fields=["name"],
+        )
+        return [r["id"] for r in result["records"]]
+
     # ------------------------------------------------------------------
-    # Default: filter by user's OU
+    # _name_search: autocomplete dropdown
     # ------------------------------------------------------------------
 
-    def test_user_sees_own_ou_and_shared(self):
+    def test_name_search_filters_by_ou(self):
         """Regular user sees only their OU's accounts + shared accounts."""
         ids = self._name_search_ids(user=self.user_a)
         self.assertIn(self.acc_ou_a.id, ids)
         self.assertIn(self.acc_shared.id, ids)
         self.assertNotIn(self.acc_ou_b.id, ids)
 
-    # ------------------------------------------------------------------
-    # Bypass: group "Access all OUs' analytics"
-    # ------------------------------------------------------------------
-
-    def test_group_bypass_sees_all(self):
+    def test_name_search_group_bypass(self):
         """User with group_all_ou_analytic sees all accounts."""
         ids = self._name_search_ids(user=self.user_all)
         self.assertIn(self.acc_ou_a.id, ids)
         self.assertIn(self.acc_ou_b.id, ids)
         self.assertIn(self.acc_shared.id, ids)
 
-    # ------------------------------------------------------------------
-    # Bypass: context key all_analytic_ou
-    # ------------------------------------------------------------------
-
-    def test_context_bypass_sees_all(self):
+    def test_name_search_context_bypass(self):
         """Regular user with context all_analytic_ou=True sees all accounts."""
         ids = self._name_search_ids(
+            user=self.user_a, context={"all_analytic_ou": True}
+        )
+        self.assertIn(self.acc_ou_a.id, ids)
+        self.assertIn(self.acc_ou_b.id, ids)
+        self.assertIn(self.acc_shared.id, ids)
+
+    # ------------------------------------------------------------------
+    # web_search_read: "Search More..." dialog
+    # ------------------------------------------------------------------
+
+    def test_web_search_read_filters_by_ou(self):
+        """Regular user's Search More dialog shows only their OU + shared."""
+        ids = self._web_search_read_ids(user=self.user_a)
+        self.assertIn(self.acc_ou_a.id, ids)
+        self.assertIn(self.acc_shared.id, ids)
+        self.assertNotIn(self.acc_ou_b.id, ids)
+
+    def test_web_search_read_group_bypass(self):
+        """User with group sees all in Search More dialog."""
+        ids = self._web_search_read_ids(user=self.user_all)
+        self.assertIn(self.acc_ou_a.id, ids)
+        self.assertIn(self.acc_ou_b.id, ids)
+        self.assertIn(self.acc_shared.id, ids)
+
+    def test_web_search_read_context_bypass(self):
+        """Context all_analytic_ou bypasses filter in Search More dialog."""
+        ids = self._web_search_read_ids(
             user=self.user_a, context={"all_analytic_ou": True}
         )
         self.assertIn(self.acc_ou_a.id, ids)
