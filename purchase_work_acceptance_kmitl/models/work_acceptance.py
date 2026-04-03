@@ -68,6 +68,7 @@ class WorkAcceptance(models.Model):
     )
     po_work_end_original = fields.Date(
         string="PO Work End Original",
+        related='purchase_id.work_end_original',
     )
 
     # Late Fines
