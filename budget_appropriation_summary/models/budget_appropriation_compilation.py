@@ -357,14 +357,15 @@ class BudgetAppropriationCompilation(models.Model):
             record.code_0702000003 = sum(
                 record.expense_appropriation_ids.mapped("code_0702000003")
             )
-            record.fixed_expense_total = record.revenue_net - (
-                record.treasury_replenishment_amount
-                + record.deducted_reserve_amount
-                + record.maintenance_amount
-                + record.capital_budget_amount
-                + record.recurrent_budget_amount
-                + record.external_funding_amount
-            )
+            record.fixed_expense_total = sum([
+                record.treasury_replenishment_amount,
+                record.deducted_reserve_amount,
+                record.maintenance_amount,
+                record.capital_budget_amount,
+                record.recurrent_budget_amount,
+                record.external_funding_amount
+            ])
+
             record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net if record.revenue_net else 0.0
 
     BUDGET_SUMMARY_FIELDS = [
