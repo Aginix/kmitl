@@ -31,11 +31,19 @@ class WorkAcceptance(models.Model):
         compute="_compute_completeness",
         store=True,
     )
-    requested_delivery_date = fields.Datetime(
+    requested_delivery_date = fields.Date(
         string="Requested Delivery Date",
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+    )
+
+    # convert from Datetime to Date
+    date_due = fields.Date(
+        string="Due Date",
+    )
+    date_receive = fields.Date(
+        string="Received Date",
     )
 
     # PO date snapshots (captured at WA creation, immune to PO edits)

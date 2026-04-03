@@ -283,7 +283,7 @@
                                     เป็นเวลา
                                     <span
                                         class="text-decoration-underline fw-bolder"
-                                        t-esc="(o.requested_delivery_date.date() - o.date_due.date()).days"
+                                        t-esc="(o.requested_delivery_date.date() - o.current_work_end.date()).days"
                                     />
                                     วัน
                                 </span>
