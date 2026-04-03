@@ -151,13 +151,22 @@ class WorkAcceptance(models.Model):
     def _default_start_date(self):
         return fields.Date.today()
 
-    @api.depends("purchase_id.work_end", "po_work_end_original")
+    @api.depends(
+        "purchase_id.work_end",
+        "purchase_id.change_ids.change_field_ids.field_id",
+        "po_work_end_original",
+    )
     def _compute_is_work_end_extended(self):
+        work_end_fields = {"work_start", "contract_period_days"}
         for rec in self:
-            rec.is_work_end_extended = bool(
-                rec.purchase_id.work_end
-                and rec.po_work_end_original
-                and rec.purchase_id.work_end != rec.po_work_end_original
+            has_work_end_change = any(
+                cf.field_id.name in work_end_fields
+                for change in rec.purchase_id.change_ids
+                for cf in change.change_field_ids
+            )
+            rec.is_work_end_extended = (
+                has_work_end_change
+                or rec.purchase_id.work_end > rec.po_work_end_original
             )
 
     @api.depends("requested_delivery_date", "date_due")
