@@ -25,6 +25,7 @@ class PurchaseGuarantee(models.Model):
         string="No Expiry",
         store=False,
         compute="_compute_is_no_expiry",
+        inverse="_inverse_is_no_expiry",
     )
     date_due_guarantee = fields.Date(tracking=True)
     note = fields.Text(tracking=True)
@@ -65,10 +66,10 @@ class PurchaseGuarantee(models.Model):
         for rec in self:
             rec.is_no_expiry = not rec.date_due_guarantee
 
-    @api.onchange("is_no_expiry")
-    def _onchange_is_no_expiry(self):
-        if self.is_no_expiry:
-            self.date_due_guarantee = False
+    def _inverse_is_no_expiry(self):
+        for rec in self:
+            if rec.is_no_expiry:
+                rec.date_due_guarantee = False
 
     @api.depends("state")
     def _compute_is_editable(self):
