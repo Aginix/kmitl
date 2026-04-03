@@ -10,6 +10,22 @@ class PurchaseOrder(models.Model):
         compute="_compute_pending_wa_count",
     )
 
+    wa_fines_total = fields.Monetary(
+        string="Amount disbursed",
+        compute="_compute_wa_fines_total",
+        currency_field="currency_id",
+    )
+
+    @api.depends("wa_ids.state", "wa_ids.is_disbursed", "wa_ids.fines_late")
+    def _compute_wa_fines_total(self):
+        for order in self:
+            was = self.env["work.acceptance"].search([
+                ("purchase_id", "=", order.id),
+                ("state", "=", "accept"),
+                ("is_disbursed", "=", True),
+            ])
+            order.wa_fines_total = sum(was.mapped("fines_late"))
+
     @api.depends("wa_ids.state", "wa_ids.is_disbursed")
     def _compute_pending_wa_count(self):
         for order in self:

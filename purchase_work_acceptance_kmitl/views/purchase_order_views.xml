@@ -17,9 +17,6 @@
             <xpath expr="//field[@name='order_line']/tree//field[@name='qty_invoiced']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//field[@name='tax_totals']" position="after">
-                <field name="wa_fines_total"/>
-            </xpath>
         </field>
     </record>
 </odoo>
