@@ -267,14 +267,32 @@
                 }
 
                 .page {
+                    position: relative;
                     width: 210mm;
                     min-height: 297mm;
-                    background: white !important;
+                    background-color: white !important;
+                    background-image: repeating-linear-gradient(
+                        to bottom,
+                        transparent,
+                        transparent calc(297mm - 1px),
+                        rgba(239, 68, 68, 0.35) calc(297mm - 1px),
+                        rgba(239, 68, 68, 0.35) 297mm
+                    ) !important;
                     margin: 40px auto;
                     padding: 15mm !important;
                     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
                     box-sizing: border-box;
                     border-radius: 2px;
+                }
+                .page::after {
+                    content: 'ตำแหน่งตัดหน้า';
+                    position: absolute;
+                    top: calc(297mm - 10px);
+                    right: -90px;
+                    font-size: 10px;
+                    color: rgba(239, 68, 68, 0.6);
+                    font-family: 'TH SarabunPSK', 'Sarabun', sans-serif;
+                    pointer-events: none;
                 }
 
                 .f23w-print-btn {
@@ -299,17 +317,28 @@
                     background: #5a3a52;
                 }
 
+                @page {
+                    margin: 0;
+                    size: A4;
+                }
+
                 @media print {
                     html, body {
                         background: white !important;
+                        margin: 0;
+                        padding: 0;
                     }
                     .page {
                         width: auto;
                         min-height: auto;
                         margin: 0;
-                        padding: 0 !important;
+                        padding: 15mm !important;
                         box-shadow: none;
                         border-radius: 0;
+                        background-image: none !important;
+                    }
+                    .page::after {
+                        display: none;
                     }
                     .f23w-print-btn {
                         display: none !important;
