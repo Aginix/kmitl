@@ -1,7 +1,7 @@
 # Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class PurchaseOrder(models.Model):
@@ -15,6 +15,22 @@ class PurchaseOrder(models.Model):
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
+
+    wa_fines_total = fields.Monetary(
+        string="Amount disbursed",
+        compute="_compute_wa_fines_total",
+        currency_field="currency_id",
+    )
+
+    @api.depends("wa_ids.state", "wa_ids.is_disbursed", "wa_ids.fines_late")
+    def _compute_wa_fines_total(self):
+        for order in self:
+            was = self.env["work.acceptance"].search([
+                ("purchase_id", "=", order.id),
+                ("state", "=", "accept"),
+                ("is_disbursed", "=", True),
+            ])
+            order.wa_fines_total = sum(was.mapped("fines_late"))
 
     def _prepare_committee_line(self, line):
         return {
