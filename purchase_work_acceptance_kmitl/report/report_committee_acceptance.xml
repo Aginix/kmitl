@@ -173,7 +173,7 @@
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
-                                    t-esc="o.format_date_thai(o.current_work_end)"
+                                    t-esc="o.format_date_thai(o.po_work_end_original + datetime.timedelta(days=1))"
                                 />
                                 ถึงวันที่
                                 <span
@@ -181,7 +181,7 @@
                                     t-esc="o.format_date_thai(o.requested_delivery_date)"
                                 />
                                 เป็นเวลา
-                                <span class="ub" t-out="o.late_days or '-'" />
+                                <span class="ub" t-esc="(o.requested_delivery_date - o.po_work_end_original).days" />
                                 วัน
                                 <span
                                     t-if="o.is_work_end_extended"
@@ -190,7 +190,7 @@
                                     และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
                                     <span
                                         class="ub"
-                                        t-esc="o.format_date_thai(o.current_work_end)"
+                                        t-esc="o.format_date_thai(o.po_work_end_original + datetime.timedelta(days=1))"
                                     />
                                     ถึงวันที่
                                     <!-- new Date Change -->
@@ -199,11 +199,11 @@
                                         t-esc="o.format_date_thai(o.date_due)"
                                     />
                                     เป็นเวลา
-                                    <span class="ub" t-out="o.late_days or '-'" />
+                                    <span class="ub" t-esc="(o.date_due - (o.po_work_end_original + datetime.timedelta(days=1))).days" />
                                     วัน
                                 </span>
                                 คงทำงานเกินกำหนดสัญญาไป
-                                <span class="ub" t-out="o.late_days or '-'" />
+                                <span class="ub" t-esc="o.late_days" />
                                 วัน จะต้องเสียค่าปรับวันละ
                                 <span class="ub" t-esc="'{0:,.2f}'.format(o.fines_rate)" />
                                 บาท (<t
