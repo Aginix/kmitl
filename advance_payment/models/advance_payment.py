@@ -85,8 +85,12 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
-    is_reference_readonly = fields.Boolean(
-        compute="_compute_is_reference_readonly",
+    is_reference_visible = fields.Boolean(
+        compute="_compute_reference_state",
+    )
+
+    is_locked_by_reference = fields.Boolean(
+        compute="_compute_reference_state",
     )
 
     reference = fields.Reference(
@@ -95,21 +99,34 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
-    def _is_reference_readonly(self):
-        """Return True if the reference field should be readonly.
-        Override this method to add additional readonly conditions."""
-        self.ensure_one()
+    @api.depends("reference", "loan_type_id.reference_model")
+    def _compute_reference_state(self):
         allow = str2bool(
             self.env["ir.config_parameter"]
             .sudo()
             .get_param("advance_payment.allow_manual_reference", default=False)
         )
-        return not allow
-
-    @api.depends("state", "reference")
-    def _compute_is_reference_readonly(self):
         for rec in self:
-            rec.is_reference_readonly = rec._is_reference_readonly()
+            has_ref_model = bool(rec.loan_type_id.reference_model)
+            rec.is_reference_visible = has_ref_model or allow
+            rec.is_locked_by_reference = bool(rec.reference)
+
+    @api.onchange("loan_type_id")
+    def _onchange_loan_type_id(self):
+        if self.loan_type_id and not self.loan_type_id.reference_model:
+            self.reference = False
+
+    @api.onchange("reference")
+    def _onchange_reference(self):
+        if self.reference:
+            vals = self._prepare_vals_from_reference()
+            if vals:
+                self.update(vals)
+
+    def _prepare_vals_from_reference(self):
+        """Return dict of field values to auto-fill from the reference document.
+        Override in bridge modules to provide model-specific values."""
+        return {}
 
     loan_reason = fields.Text(
         string="Loan Reason",
@@ -122,6 +139,7 @@ class AdvancePayment(models.Model):
         string="Loan Type",
         required=True,
         states=READONLY_STATES,
+        domain="[('reference_model', '=', False)]",
     )
 
     loan_amount = fields.Monetary(

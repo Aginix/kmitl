@@ -6,6 +6,7 @@
         </record>
         <record id="loan_type_procurement" model="advance.payment.loan.type">
             <field name="name">จัดซื้อจัดจ้างพัสดุ</field>
+            <field name="reference_model">purchase.request</field>
         </record>
         <record id="loan_type_speaker" model="advance.payment.loan.type">
             <field name="name">ค่าวิทยากร</field>

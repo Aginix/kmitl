@@ -10,3 +10,8 @@ class AdvancePaymentLoanType(models.Model):
 
     name = fields.Char(string="Loan Type", required=True)
     active = fields.Boolean(default=True)
+    reference_model = fields.Char(
+        string="Reference Model",
+        help="If set, this loan type requires a reference document of this model. "
+        "Leave empty for standalone loan types.",
+    )

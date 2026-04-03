@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree string="ประเภทเงินยืม" editable="bottom">
                 <field name="name"/>
+                <field name="reference_model"/>
                 <field name="active"/>
             </tree>
         </field>
@@ -19,6 +20,7 @@
                 <sheet>
                     <group>
                         <field name="name"/>
+                        <field name="reference_model"/>
                         <field name="active"/>
                     </group>
                 </sheet>
