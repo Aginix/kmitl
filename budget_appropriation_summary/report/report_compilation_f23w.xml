@@ -32,7 +32,7 @@
                     พิมพ์รายงาน
                 </button>
             </t>
-            <div class="page budget-compilation-f23w-report">
+            <div class="page budget-compilation-f23w-report" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
                 <div class="report-header">
                     <h4 class="pb-2">สรุปงบประมาณรายจ่าย</h4>
                     <h4 class="pb-2">
@@ -293,6 +293,10 @@
                     color: rgba(239, 68, 68, 0.6);
                     font-family: 'TH SarabunPSK', 'Sarabun', sans-serif;
                     pointer-events: none;
+                }
+
+                [contenteditable]:focus {
+                    outline: none;
                 }
 
                 .f23w-print-btn {
