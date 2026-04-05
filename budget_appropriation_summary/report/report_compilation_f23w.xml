@@ -144,11 +144,11 @@
                                             ร้อยละ
                                             <t t-out="'{:,.2f}'.format(row['pct'])" />
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" style="width: 70pt;">
                                             ร้อยละ
                                             <t t-out="'{:,.2f}'.format(row['okr_pct'])" />
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" style="width: 70pt;">
                                             ร้อยละ
                                             <t t-out="'{:,.2f}'.format(row['mgmt_pct'])" />
                                         </td>
@@ -295,7 +295,8 @@
                 }
 
                 @page {
-                    margin: 0;
+                    margin: 0 !important;
+                    padding: 8mm !important;
                     size: A4;
                 }
 
@@ -308,8 +309,8 @@
                     .page {
                         width: auto;
                         min-height: auto;
-                        margin: 0;
-                        padding: 15mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
                         box-shadow: none;
                         border-radius: 0;
                         background-image: none !important;
