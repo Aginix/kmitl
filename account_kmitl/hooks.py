@@ -58,6 +58,21 @@ def _create_journals(env, company):
         if not existing:
             Journal.create(data)
 
+    # Set payment_account_id on bank journal payment method lines
+    payment_account = get_account("1112210004")
+    if payment_account:
+        bank_journals = Journal.search(
+            [
+                ("company_id", "=", company.id),
+                ("code", "in", ("PV", "RV")),
+            ]
+        )
+        payment_method_lines = (
+            bank_journals.inbound_payment_method_line_ids
+            + bank_journals.outbound_payment_method_line_ids
+        )
+        payment_method_lines.payment_account_id = payment_account
+
 
 def _deactivate_default_journals(env, company):
     """Deactivate all non-KMITL journals created by the chart of accounts loader."""
