@@ -59,6 +59,18 @@ def _create_journals(env, company):
             Journal.create(data)
 
 
+def _deactivate_default_journals(env, company):
+    """Deactivate all non-KMITL journals created by the chart of accounts loader."""
+    kmitl_codes = ("JV", "PV", "RV", "SV", "UV")
+    journals_to_deactivate = env["account.journal"].search(
+        [
+            ("company_id", "=", company.id),
+            ("code", "not in", kmitl_codes),
+        ]
+    )
+    journals_to_deactivate.write({"active": False})
+
+
 def _create_withholding_taxes(env, company):
     """Create KMITL withholding tax records after chart of accounts is loaded."""
     Account = env["account.account"]
@@ -105,4 +117,5 @@ def post_init_hook(cr, registry):
     company = env.ref("base.main_company")
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
+    _deactivate_default_journals(env, company)
     _create_withholding_taxes(env, company)
