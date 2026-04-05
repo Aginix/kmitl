@@ -141,7 +141,7 @@
                             <t t-set="grand_mgmt" t-value="sum(d.get('total_management', 0) for d in all_impacts)" />
                             <t t-set="grand_total" t-value="grand_okr + grand_mgmt" />
                             <t t-set="variable_pct" t-value="(grand_total * 100 / o.revenue_net) if o.revenue_net else 0" />
-                            <tr><td colspan="5" class="pt-4" /></tr>
+                            <tr><td colspan="5" style="height: 24pt;" /></tr>
                             <tr class="fw-bold">
                                 <td>(2) การจัดสรรด้านต่าง ๆ ดังนี้</td>
                                 <td class="text-center">ร้อยละ <t t-out="'{:,.2f}'.format(variable_pct)" /></td>
@@ -216,7 +216,7 @@
                                     </tr>
                                 </t>
                                 <tr>
-                                    <td colspan="5" class="pt-4" />
+                                    <td colspan="5" style="height: 24pt;" />
                                 </tr>
                             </t>
                             <!-- Sub-totals row -->
