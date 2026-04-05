@@ -4,22 +4,6 @@ from odoo import _, models
 class AdvancePayment(models.Model):
     _inherit = "advance.payment"
 
-    def _prepare_vals_from_reference(self):
-        """Auto-fill fields from linked purchase request."""
-        vals = super()._prepare_vals_from_reference()
-        if self.reference and self.reference._name == "purchase.request":
-            pr = self.reference
-            vals.update(
-                {
-                    "requested_by": pr.requested_by.id,
-                    "department_id": pr.department_id.id,
-                    "loan_amount": pr.get_estimated_cost_currency(),
-                    "loan_reason": pr.title or pr.description or "",
-                    "analytic_distribution": pr.analytic_distribution,
-                }
-            )
-        return vals
-
     def action_start(self, payment=None):
         """Override to cross-post disbursement message to linked purchase request."""
         res = super().action_start(payment=payment)
