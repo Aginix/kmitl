@@ -33,7 +33,8 @@
                 </button>
             </t>
             <div class="page budget-compilation-f23w-report" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
-                <div class="report-header">
+                <div class="report-header" contenteditable="false">
+                    <div class="f23w-page-label">F23-W-วง-002</div>
                     <h4 class="pb-2">สรุปงบประมาณรายจ่าย</h4>
                     <h4 class="pb-2">
                         ประจำปีงบประมาณ พ.ศ.
@@ -46,7 +47,7 @@
                 <div class="report-body">
                     <table class="table table-sm table-borderless">
                         <tbody>
-                            <tr class="fw-bold">
+                            <tr class="fw-bold" contenteditable="false">
                                 <td class="text-start" colspan="4">
                                     <t t-out="o.department_analytic_id.name" />
                                     มีรายได้ทุกประเภทรวมกัน (หลังจากหัก 35% แล้ว)
@@ -75,7 +76,7 @@
                                                 <t t-out="row['label']" />
                                             </t>
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" contenteditable="false">
                                             <t t-if="'amount' in row">
                                                 <t t-out="'{:,.0f}'.format(row['amount'])" />
                                                 บาท
@@ -91,7 +92,7 @@
                                             <br />
                                             <t t-out="row['label2']" />
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" contenteditable="false">
                                             <t t-out="'{:,.0f}'.format(row['amount'])" />
                                             บาท
                                         </td>
@@ -104,7 +105,7 @@
                                         <td class="text-center">ร้อยละ <t t-out="'{:,.2f}'.format(row['pct'])" /></td>
                                         <td />
                                         <td />
-                                        <td class="text-end" style="border-bottom: 3px double #000; border-top: 1px solid #000;">
+                                        <td class="text-end" style="border-bottom: 3px double #000; border-top: 1px solid #000;" contenteditable="false">
                                             <t t-out="'{:,.0f}'.format(row['amount'])" />
                                             บาท
                                         </td>
@@ -121,7 +122,7 @@
                                         <td class="text-center">ร้อยละ <t t-out="'{:,.2f}'.format(row['pct'])" /></td>
                                         <td />
                                         <td />
-                                        <td class="text-end">
+                                        <td class="text-end" contenteditable="false">
                                             <t t-out="'{:,.0f} บาท'.format(row['amount'])" />
                                         </td>
                                     </tr>
@@ -152,7 +153,7 @@
                                             ร้อยละ
                                             <t t-out="'{:,.2f}'.format(row['mgmt_pct'])" />
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" contenteditable="false">
                                             <t t-out="'{:,.0f} บาท'.format(row['amount'])" />
                                         </td>
                                     </tr>
@@ -165,17 +166,17 @@
                                                 <t t-out="row.get('name', '')" />
                                             </div>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" contenteditable="false">
                                             <t t-if="row.get('okr_amount', 0) != 0">
                                                 <t t-out="'{:,.0f}'.format(row['okr_amount'])" />
                                             </t>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" contenteditable="false">
                                             <t t-if="row.get('mgmt_amount', 0) != 0">
                                                 <t t-out="'{:,.0f}'.format(row['mgmt_amount'])" />
                                             </t>
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" contenteditable="false">
                                             <t t-set="row_total" t-value="row.get('okr_amount', 0) + row.get('mgmt_amount', 0)" />
                                             <t t-if="row_total != 0">
                                                 <t t-out="'{:,.0f} บาท'.format(row_total)" />
@@ -200,13 +201,13 @@
                                 <t t-elif="row.get('type') == 'grand_total_line'">
                                     <tr class="fw-bold">
                                         <td colspan="2">รวมจัดสรรทุกด้านร้อยละ 100</td>
-                                        <td class="text-center">
+                                        <td class="text-center" contenteditable="false">
                                             <t t-out="'{:,.0f}'.format(row['okr_amount'])" />
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" contenteditable="false">
                                             <t t-out="'{:,.0f}'.format(row['mgmt_amount'])" />
                                         </td>
-                                        <td class="text-end" style="border-bottom: 1px solid #000;">
+                                        <td class="text-end" style="border-bottom: 1px solid #000;" contenteditable="false">
                                             <t t-out="'{:,.0f}'.format(row['amount'])" />
                                             บาท
                                         </td>
@@ -216,7 +217,7 @@
                                 <t t-elif="row.get('type') == 'grand_total'">
                                     <tr class="fw-bold">
                                         <td colspan="4">รวมประมาณการรายจ่ายทั้งสิ้น (1)+(2)</td>
-                                        <td class="text-end" style="border-bottom: 3px double #000;">
+                                        <td class="text-end" style="border-bottom: 3px double #000;" contenteditable="false">
                                             <t t-out="'{:,.0f}'.format(row['amount'])" />
                                             บาท
                                         </td>
@@ -272,6 +273,15 @@
                     outline: none;
                 }
 
+                .f23w-page-label {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    font-size: 10pt;
+                    color: #333;
+                    pointer-events: none;
+                }
+
                 .f23w-print-btn {
                     position: fixed;
                     top: 20px;
@@ -318,8 +328,16 @@
                     .page::after {
                         display: none;
                     }
+                    .f23w-page-label {
+                        position: fixed;
+                        top: 5mm;
+                        right: 5mm;
+                    }
                     .f23w-print-btn {
                         display: none !important;
+                    }
+                    *[contenteditable="false"] {
+                        cursor: not-allowed;
                     }
                 }</style>
         </t>
@@ -355,9 +373,11 @@
             }
 
             .report-header {
+                position: relative;
                 text-align: center;
                 padding: 5px 0;
                 margin-bottom: 20px;
+                cursor: not-allowed;
             }</style>
     </template>
     <!-- Main report template -->
