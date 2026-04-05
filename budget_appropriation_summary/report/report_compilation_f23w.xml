@@ -336,10 +336,12 @@
                     .f23w-print-btn {
                         display: none !important;
                     }
-                    *[contenteditable="false"] {
-                        cursor: not-allowed;
-                    }
-                }</style>
+                }
+
+                *[contenteditable="false"] {
+                    cursor: not-allowed;
+                }
+            </style>
         </t>
         <t t-else="">
             <style>
