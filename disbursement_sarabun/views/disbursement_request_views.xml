@@ -12,7 +12,7 @@
             </xpath>
 
             <!-- Submit to Sarabun button: visible when submitted and no active Sarabun -->
-            <xpath expr="//button[@name='action_send']" position="before">
+            <xpath expr="//button[@name='action_sign']" position="before">
                 <button name="action_submit_to_sarabun"
                         string="Submit to Sarabun"
                         type="object"
@@ -22,7 +22,7 @@
             </xpath>
 
             <!-- Hide Send button when disbursement_sarabun is installed -->
-            <xpath expr="//button[@name='action_send']" position="attributes">
+            <xpath expr="//button[@name='action_sign']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
