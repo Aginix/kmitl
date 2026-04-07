@@ -6,7 +6,7 @@
         <field name="name">Guarantee Expire</field>
         <field name="res_model">purchase.guarantee</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('date_due_guarantee', '&lt;', (context_today() + relativedelta(days=30)))]</field>
+        <field name="domain">['|', ('date_due_guarantee', '&lt;', (context_today() + relativedelta(days=30))), ('date_due_guarantee', '=', False)]</field>
         <field name="context">{}</field>
     </record>
 

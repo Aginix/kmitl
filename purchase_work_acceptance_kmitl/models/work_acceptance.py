@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
 from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -62,6 +61,13 @@ class WorkAcceptance(models.Model):
         string="Due Date",
         compute="_compute_date_due",
         store=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+    date_receive = fields.Date(
+        string="Received Date",
+        default=lambda self: self._default_start_date(),
+        required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
@@ -132,9 +138,6 @@ class WorkAcceptance(models.Model):
     is_delivery_late = fields.Boolean(
         compute="_compute_is_delivery_late",
     )
-    is_work_end_extended = fields.Boolean(
-        compute="_compute_is_work_end_extended",
-    )
     date_committee_received = fields.Date(
         string="วันที่คณะกรรมการได้รับเอกสาร",
         readonly=True,
@@ -170,30 +173,6 @@ class WorkAcceptance(models.Model):
 
     def _default_start_date(self):
         return fields.Date.today()
-
-    @api.depends("purchase_id.work_end", "state")
-    def _compute_date_due(self):
-        for rec in self:
-            if rec.state != "accept":
-                rec.date_due = rec.purchase_id.work_end
-
-    @api.depends(
-        "purchase_id.work_end",
-        "purchase_id.change_ids.change_field_ids.field_id",
-        "po_work_end_original",
-    )
-    def _compute_is_work_end_extended(self):
-        work_end_fields = {"work_start", "contract_period_days"}
-        for rec in self:
-            has_work_end_change = any(
-                cf.field_id.name in work_end_fields
-                for change in rec.purchase_id.change_ids
-                for cf in change.change_field_ids
-            )
-            rec.is_work_end_extended = (
-                has_work_end_change
-                or rec.purchase_id.work_end > rec.po_work_end_original
-            )
 
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
@@ -266,7 +245,7 @@ class WorkAcceptance(models.Model):
             and self._can_auto_accept()
         ):
             self.with_context(skip_committee_wizard=True).button_accept()
-    
+
     def _validate_tier(self, reviews):
         res = super()._validate_tier(reviews)
         if (
@@ -303,7 +282,7 @@ class WorkAcceptance(models.Model):
                 return rec._action_open_committee_wizard()
 
         return super().button_accept(force=force)
-    
+
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
         for rec in self:
@@ -382,7 +361,7 @@ class WorkAcceptance(models.Model):
     def _compute_price_subtotal(self):
         for rec in self:
             rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
-    
+
     def _action_open_committee_wizard(self):
         self.ensure_one()
         return {

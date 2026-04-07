@@ -51,9 +51,9 @@ class DisbursementRequest(models.Model):
         for rec in self:
             rec.wa_count = len(rec.wa_ids)
 
-    def action_validate(self):
+    def action_sign(self):
         """Override: mark WA as disbursed เมื่อ submitted → unlock สร้าง WA ใหม่ได้"""
-        res = super().action_validate()
+        res = super().action_sign()
         for rec in self:
             if rec.wa_ids:
                 rec.wa_ids.write({"is_disbursed": True})
