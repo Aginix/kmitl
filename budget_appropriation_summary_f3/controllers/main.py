@@ -24,7 +24,11 @@ class BudgetCompilationF3Controller(http.Controller):
             html = (
                 request.env["ir.actions.report"]
                 .with_context(html_preview=True)
-                ._render_qweb_html(report.id, [record.id])[0]
+                ._render_qweb_html(
+                    report.id,
+                    [record.id],
+                    data={"title": f"{record.name} - F3"},
+                )[0]
             )
             return request.make_response(
                 html,
