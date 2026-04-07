@@ -115,8 +115,8 @@ class AccountMove(models.Model):
             payment = move.payment_id
             if payment and payment.payment_type == "outbound":
                 move._check_analytic_distribution_complete()
-        res = super()._post(soft=soft)
         self._auto_fill_tax_invoice()
+        res = super()._post(soft=soft)
         return res
 
     def _auto_fill_tax_invoice(self):
@@ -126,7 +126,9 @@ class AccountMove(models.Model):
                 continue
             for tax_inv in move.tax_invoice_ids:
                 if not tax_inv.tax_invoice_number:
-                    tax_inv.tax_invoice_number = move.ref or move.name
+                    ref = move.ref or (move.name if move.name != "/" else False)
+                    if ref:
+                        tax_inv.tax_invoice_number = ref
                 if not tax_inv.tax_invoice_date:
                     tax_inv.tax_invoice_date = move.date
 
