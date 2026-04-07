@@ -41,8 +41,8 @@ class WorkAcceptance(models.Model):
     # convert from Datetime to Date
     date_due = fields.Date(
         string="Due Date",
-        related="purchase_id.work_end",
-        required=True,
+        compute="_compute_date_due",
+        store=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
@@ -151,6 +151,12 @@ class WorkAcceptance(models.Model):
 
     def _default_start_date(self):
         return fields.Date.today()
+
+    @api.depends("purchase_id.work_end", "state")
+    def _compute_date_due(self):
+        for rec in self:
+            if rec.state != "accept":
+                rec.date_due = rec.purchase_id.work_end
 
     @api.depends(
         "purchase_id.work_end",
