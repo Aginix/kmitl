@@ -33,6 +33,10 @@ class BudgetAppropriationCompilation(models.Model):
         is_budget_source = self.source_analytic_id.code in BUDGET_SOURCE_CODES
         revenue_rows = self._get_f3_revenue_rows()
         revenue_total = sum(r["amount"] for r in revenue_rows)
+        revenue_deduct = sum(
+            a.amount_deduct for a in self.revenue_appropriation_ids
+        )
+        revenue_net = revenue_total - revenue_deduct
         expenditure_rows = self._get_f3_expenditure_rows()
         expenditure_total = sum(
             r["amount"] for r in expenditure_rows if r["level"] == 0
@@ -41,6 +45,8 @@ class BudgetAppropriationCompilation(models.Model):
             "is_budget_source": is_budget_source,
             "revenue_rows": revenue_rows,
             "revenue_total": revenue_total,
+            "revenue_deduct": revenue_deduct,
+            "revenue_net": revenue_net,
             "expenditure_rows": expenditure_rows,
             "expenditure_total": expenditure_total,
         }

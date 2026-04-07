@@ -110,11 +110,39 @@
                                 <td class="text-end">
                                     <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_total'])" />
                                 </td>
-                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                <td class="text-end">
                                     <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_total'])" />
                                 </td>
-                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                <td class="text-end">
                                     <t t-out="'{:,.0f}'.format(f3['revenue_total'])" />
+                                </td>
+                            </tr>
+                            <!-- Revenue deduct -->
+                            <t t-if="f3['revenue_deduct']">
+                                <tr style="font-weight: bold;">
+                                    <td>หัก</td>
+                                    <td class="text-end">
+                                        <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_deduct'])" />
+                                    </td>
+                                    <td class="text-end" style="border-bottom: solid 1px #000;">
+                                        <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_deduct'])" />
+                                    </td>
+                                    <td class="text-end" style="border-bottom: solid 1px #000;">
+                                        <t t-out="'{:,.0f}'.format(f3['revenue_deduct'])" />
+                                    </td>
+                                </tr>
+                            </t>
+                            <!-- Revenue net -->
+                            <tr style="font-weight: bold;">
+                                <td>รายรับสุทธิ</td>
+                                <td class="text-end">
+                                    <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_net'])" />
+                                </td>
+                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                    <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_net'])" />
+                                </td>
+                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                    <t t-out="'{:,.0f}'.format(f3['revenue_net'])" />
                                 </td>
                             </tr>
                             <tr style="height: 32pt;">
