@@ -110,12 +110,15 @@
                                 <td class="text-end">
                                     <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_total'])" />
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end" style="border-bottom: double 3px #000;">
                                     <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_total'])" />
                                 </td>
                                 <td class="text-end" style="border-bottom: double 3px #000;">
                                     <t t-out="'{:,.0f}'.format(f3['revenue_total'])" />
                                 </td>
+                            </tr>
+                            <tr style="height: 32pt;">
+                                <td colspan="4" />
                             </tr>
 
                             <!-- ===== รายจ่าย ===== -->
@@ -200,7 +203,7 @@
                                 <td class="text-end">
                                     <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['expenditure_total'])" />
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end" style="border-bottom: double 3px #000;">
                                     <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['expenditure_total'])" />
                                 </td>
                                 <td class="text-end" style="border-bottom: double 3px #000;">
