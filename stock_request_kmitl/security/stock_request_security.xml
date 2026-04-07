@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_stock_request" model="ir.module.category">
+        <field name="name">Stock Request</field>
+        <field name="description">Security category for Stock Request Security</field>
+        <field name="parent_id" ref="base.module_category_inventory_inventory"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- SR Officer: ผู้ใช้งานที่สามารถเบิกวัสดุได้ -->
+    <record id="group_stock_request_officer" model="res.groups">
+        <field name="name">SR Officer</field>
+        <field name="category_id" ref="module_category_stock_request"/>
+        <field name="comment">ผู้ใช้งานที่สามารถสร้างและส่งใบขอเบิกวัสดุได้</field>
+    </record>
+
+    <!-- SR Department Approver: ผู้มีอำนาจอนุมัติใบเบิกวัสดุประจำหน่วยงาน -->
+    <record id="group_stock_request_dept_approver" model="res.groups">
+        <field name="name">SR Department Approver</field>
+        <field name="category_id" ref="module_category_stock_request"/>
+        <field name="implied_ids" eval="[(4, ref('group_stock_request_officer'))]"/>
+        <field name="comment">ผู้มีอำนาจอนุมัติใบเบิกวัสดุประจำหน่วยงาน</field>
+    </record>
+
+    <!-- SR Stock Approver: คนอนุมัติให้จ่ายพัสดุ / คนคุมคลัง -->
+    <record id="group_stock_request_approver" model="res.groups">
+        <field name="name">SR Stock Approver</field>
+        <field name="category_id" ref="module_category_stock_request"/>
+        <field name="implied_ids" eval="[(4, ref('group_stock_request_dept_approver'))]"/>
+        <field name="comment">ผู้มีสิทธิ์อนุมัติการจ่ายวัสดุและสร้างใบจ่ายวัสดุ (คนคุมคลัง)</field>
+    </record>
+
+    <!-- SR Admin -->
+    <record id="group_stock_request_admin" model="res.groups">
+        <field name="name">SR Admin</field>
+        <field name="category_id" ref="module_category_stock_request"/>
+        <field name="implied_ids" eval="[(4, ref('group_stock_request_approver'))]"/>
+        <field name="comment">ผู้ดูแลระบบการเบิกวัสดุ มีสิทธิ์ทุกอย่าง</field>
+    </record>
+
+    <!-- ir rule -->
+    <!-- Officer: เห็นแค่ของตัวเอง -->
+    <record id="stock_request_rule" model="ir.rule">
+        <field name="name">Stock Request Officer: Own Documents Only</field>
+        <field name="model_id" ref="model_stock_request"/>
+        <field name="groups" eval="[(6, 0, [ref('group_stock_request_officer')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+        <field name="domain_force">
+            ['|',
+                ('user_id',      '=', user.id),
+                ('requested_by', '=', user.partner_id.id)
+            ]
+        </field>
+    </record>
+
+    <record id="stock_request_line_rule" model="ir.rule">
+        <field name="name">Stock Request Line Officer: Own Documents Only</field>
+        <field name="model_id" ref="model_stock_request_line"/>
+        <field name="groups" eval="[(6, 0, [ref('group_stock_request_officer')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+        <field name="domain_force">
+            ['|',
+                ('request_id.user_id',      '=', user.id),
+                ('request_id.requested_by', '=', user.partner_id.id)
+            ]
+        </field>
+    </record>
+
+    <!-- Dept Approver: เห็นทุก document ใน OU เดียวกัน -->
+    <record id="stock_request_dept_approver_rule" model="ir.rule">
+        <field name="name">Stock Request Dept Approver: Same OU Documents</field>
+        <field name="model_id" ref="model_stock_request"/>
+        <field name="groups" eval="[(6, 0, [ref('group_stock_request_dept_approver')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+        <field name="domain_force">
+            ['|', ('operating_unit_id', '=', False),
+                ('operating_unit_id', 'in', user.operating_unit_ids.ids)]
+        </field>
+    </record>
+
+    <record id="stock_request_line_dept_approver_rule" model="ir.rule">
+        <field name="name">Stock Request Line Dept Approver: Same OU Documents</field>
+        <field name="model_id" ref="model_stock_request_line"/>
+        <field name="groups" eval="[(6, 0, [ref('group_stock_request_dept_approver')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+        <field name="domain_force">
+            ['|', ('operating_unit_id', '=', False),
+                ('operating_unit_id', 'in', user.operating_unit_ids.ids)]
+        </field>
+    </record>
+
+    <!-- Stock Approver และ Admin: เห็นทุก document (domain ว่าง = ไม่จำกัด) -->
+    <record id="stock_request_approver_rule" model="ir.rule">
+        <field name="name">Stock Request Approver: All Documents</field>
+        <field name="model_id" ref="model_stock_request"/>
+        <field name="groups" eval="[(6, 0, [ref('group_stock_request_approver')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="stock_request_approver_line_rule" model="ir.rule">
+        <field name="name">Stock Request Line Approver: All Documents</field>
+        <field name="model_id" ref="model_stock_request_line"/>
+        <field name="groups" eval="[(6, 0, [ref('group_stock_request_approver')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- ==================== OPERATING UNIT RULES ==================== -->
+
+    <!-- Operating unit access all group -->
+    <record id="group_all_ou_stock_request" model="res.groups">
+        <field name="name">Access all OUs' stock request</field>
+        <field name="category_id" ref="operating_unit.module_operating_units"/>
+    </record>
+
+    <record id="ir_rule_stock_request_allowed_operating_units" model="ir.rule">
+        <field name="name">Stock Request: Allowed Operating Units</field>
+        <field name="model_id" ref="model_stock_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+            ['|', '|', '|',
+                ('operating_unit_id',  '=',   False),
+                ('operating_unit_id',  'in',  user.operating_unit_ids.ids),
+                ('user_id',            '=',   user.id),
+                ('requested_by',       '=',   user.partner_id.id)
+            ]
+        </field>
+        <field name="perm_read"   eval="True"/>
+        <field name="perm_write"  eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="ir_rule_stock_request_line_allowed_operating_units" model="ir.rule">
+        <field name="name">Stock Request Line: Allowed Operating Units</field>
+        <field name="model_id" ref="model_stock_request_line"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+            ['|', '|', '|',
+                ('operating_unit_id',        '=',  False),
+                ('operating_unit_id',        'in', user.operating_unit_ids.ids),
+                ('request_id.user_id',       '=',  user.id),
+                ('request_id.requested_by',  '=',  user.partner_id.id)
+            ]
+        </field>
+        <field name="perm_read"   eval="True"/>
+        <field name="perm_write"  eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="ir_rule_stock_request_all_ou_access" model="ir.rule">
+        <field name="name">Stock Request: Access All OUs</field>
+        <field name="model_id" ref="model_stock_request"/>
+        <field name="groups" eval="[(6, 0, [ref('group_all_ou_stock_request')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="ir_rule_stock_request_line_all_ou_access" model="ir.rule">
+        <field name="name">Stock Request Line: Access All OUs</field>
+        <field name="model_id" ref="model_stock_request_line"/>
+        <field name="groups" eval="[(6, 0, [ref('group_all_ou_stock_request')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    
+</odoo>

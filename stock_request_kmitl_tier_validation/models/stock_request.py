@@ -16,12 +16,7 @@ class StockRequest(models.Model):
     _tier_validation_manual_config = False
 
     is_stock_request = fields.Boolean(compute="_compute_is_stock_request")
-    show_request = fields.Boolean(
-        compute='_compute_show_buttons'
-    )
-    show_restart = fields.Boolean(
-        compute='_compute_show_buttons'
-    )
+
     can_request = fields.Boolean(compute="_compute_can_request")
 
     @api.model
@@ -52,26 +47,13 @@ class StockRequest(models.Model):
             return new_node
         return etree.Element("div")
     
-    @api.depends("requested_by")
+    @api.depends("requested_by", "user_id")
     def _compute_can_request(self):
         current_user = self.env.user
         is_admin = current_user.has_group("base.group_erp_manager")
         for rec in self:
-            own_by_me = rec.requested_by.id == current_user.id
+            own_by_me = (
+                rec.requested_by.id == current_user.partner_id.id or
+                rec.user_id.id == current_user.id
+            )
             rec.can_request = own_by_me or is_admin
-    
-    @api.depends('need_validation', 'validation_status', 'rejected', 'state', 'can_request')
-    def _compute_show_buttons(self):
-        for record in self:
-            record.show_request = (
-                record.need_validation or
-                record.validation_status == 'pending' or
-                record.rejected or
-                record.state != 'submitted' or
-                not record.can_request
-            )
-            record.show_restart = (
-                not record.need_validation or
-                record.validation_status != 'pending' or
-                not record.can_request
-            )

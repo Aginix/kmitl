@@ -40,7 +40,7 @@
                         string="Approved"
                         type="object"
                         states="submitted"
-                        groups="stock_request_aginix.group_stock_request_approver"
+                        groups="stock_request_kmitl.group_stock_request_dept_approver"
                     />
                     <button
                         name="action_create_picking"
@@ -48,7 +48,7 @@
                         string="Create Picking"
                         class="btn-primary"
                         attrs="{'invisible': ['|', ('picking_id', '!=', False), ('state', '!=', 'approved')]}"
-                        groups="stock.group_stock_user"
+                        groups="stock_request_kmitl.group_stock_request_approver"
                     />
                     <field name="picking_id" invisible="1" />
                     <button
@@ -56,20 +56,26 @@
                         string="Done"
                         type="object"
                         states="approved"
-                        groups="stock.group_stock_user"
+                        groups="stock_request_kmitl.group_stock_request_admin"
                     />
                     <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="submitted"
-                        groups="stock.group_stock_user"
+                        states="submitted,approved"
                     />
                     <button
                         name="action_reset"
                         string="Reset"
                         type="object"
                         states="cancel"
+                    />
+                    <button
+                        name="action_rejected"
+                        string="Reject"
+                        type="object"
+                        states="approved"
+                        groups="stock_request_kmitl.group_stock_request_approver"
                     />
                     <field
                         name="state"
@@ -112,6 +118,7 @@
                             <field name="location_id" readonly="1" />
                             <field name="location_dest_id" readonly="1" />
                             <field name="user_id" />
+                            <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                         </group>
                         <group name="right">
                             <field name="request_date" attrs="{'readonly': [('is_editable','=', False)]}"/>

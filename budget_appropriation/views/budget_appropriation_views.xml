@@ -108,7 +108,7 @@
                                         <field name="fund_analytic_id" options='{"no_open": True}' optional="show" />
                                         <field name="source_analytic_id" invisible="1" />
                                         <field name="account_id" options='{"no_open": True}' />
-                                        <field name="deduct_analytic_id" />
+                                        <field name="deduct_analytic_id" context="{'all_analytic_ou': True}" />
                                         <field name="balance" />
                                         <field name="note" invisible="1" />
                                     </tree>
@@ -206,7 +206,7 @@
                         <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
                         <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
-                        <field name="deduct_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" attrs="{'invisible': [('deduct', '!=', True)], 'required': [('deduct', '=', True)]}" />
+                        <field name="deduct_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" attrs="{'invisible': [('deduct', '!=', True)], 'required': [('deduct', '=', True)]}" context="{'all_analytic_ou': True}" />
                         <field name="balance" required="1" />
                     </group>
                     <notebook>

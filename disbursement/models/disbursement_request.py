@@ -769,11 +769,11 @@ class DisbursementRequest(models.Model):
             record.state = "submitted"
         return True
 
-    def action_send(self):
+    def action_sign(self):
         """Head of department signs and sends to inspector"""
         for record in self:
             if record.state != "submitted":
-                raise UserError(_("Only submitted requests can be sent."))
+                raise UserError(_("Only submitted requests can be signed."))
             record.state = "signed"
         return True
 
