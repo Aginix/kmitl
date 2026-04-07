@@ -130,7 +130,7 @@
                             <t t-foreach="f3['expenditure_rows']" t-as="row">
                                 <!-- Level 0: ประเภทงบประมาณ -->
                                 <t t-if="row['level'] == 0 and not row_first">
-                                    <tr style="height: 24pt;">
+                                    <tr style="height: 16pt;">
                                         <td colspan="4" />
                                     </tr>
                                 </t>
