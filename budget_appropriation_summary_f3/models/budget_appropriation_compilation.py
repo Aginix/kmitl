@@ -43,30 +43,39 @@ class BudgetAppropriationCompilation(models.Model):
         }
 
     def _get_f3_revenue_rows(self):
-        """Revenue summary grouped by top-level budget account."""
+        """Revenue summary grouped by top-level budget account, excluding หักโอน (code 99000)."""
         lines = self.revenue_appropriation_ids.mapped("line_ids")
         if not lines:
             return []
 
         BudgetAccount = self.env["budget.account"]
+
+        # Exclude หักโอน (code 99000) and all its descendants
+        transfer_account = BudgetAccount.search(
+            [("code", "=", "99000"), ("budget_type", "=", "revenue")], limit=1
+        )
+        excluded_ids = set()
+        if transfer_account:
+            excluded_ids = set(
+                BudgetAccount.search(
+                    [("parent_path", "like", f"{transfer_account.parent_path}%")]
+                ).ids
+            )
+
         account_totals = {}
-        excluded_root_ids = set()
 
         for line in lines:
+            if line.account_id.id in excluded_ids:
+                continue
+
             account = line.account_id
             if account.parent_path:
                 root_id = int(account.parent_path.strip("/").split("/")[0])
             else:
                 root_id = account.id
 
-            if root_id in excluded_root_ids:
-                continue
-
             if root_id not in account_totals:
                 root = BudgetAccount.browse(root_id)
-                if root.code == "99000":
-                    excluded_root_ids.add(root_id)
-                    continue
                 account_totals[root_id] = {
                     "name": root.name,
                     "code": root.code or "",
