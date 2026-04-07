@@ -42,7 +42,7 @@
             <div class="page budget-compilation-f3-report"
                 t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
                 <div class="report-header" contenteditable="false">
-                    <h4 class="pb-2">สรุปประมาณรายรับ - รายจ่าย</h4>
+                    <h4 class="pb-2">สรุปประมาณการรายรับ - รายจ่าย</h4>
                     <h4 class="pb-2"> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
                     </h4>
                     <h4 class="pb-2">
