@@ -70,18 +70,20 @@
                         />
                         <button
                             name="action_open_f23w_report"
-                            string="ดูรายงาน F23"
+                            string="รายงาน F23"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-file-text-o"
+                            attrs="{'invisible': [('use_f23', '=', False)]}"
                         />
-                        <button
+                        <!-- <button
                             name="action_print_f23w_report"
                             string="พิมพ์ F23"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                        />
+                            attrs="{'invisible': [('use_f23', '=', False)]}"
+                        /> -->
                     </div>
                     <group>
                         <group>
