@@ -69,6 +69,14 @@
                             attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
                         />
                         <button
+                            name="action_open_f3w_f6w_report"
+                            string="รายงาน F3W/F6W"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                            attrs="{'invisible': [('master_summary_id', '=', False)]}"
+                        />
+                        <button
                             name="action_open_f23w_report"
                             string="รายงาน F23"
                             type="object"

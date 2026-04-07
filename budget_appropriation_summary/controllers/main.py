@@ -778,7 +778,20 @@ class BudgetAppropriationSummaryController(http.Controller):
             "f23w": "budget_appropriation_summary.action_report_compilation_f23w",
         }
 
-        report_ref = report_map.get(report_name)
+        # Reports that belong to master summary, rendered via master_summary_id
+        master_summary_report_map = {
+            "f3w_f6w": "budget_appropriation_summary.action_report_f3w_f6w_revenue",
+        }
+
+        if report_name in master_summary_report_map:
+            render_record = record.master_summary_id
+            if not render_record:
+                return request.redirect("/web")
+            report_ref = master_summary_report_map[report_name]
+        else:
+            render_record = record
+            report_ref = report_map.get(report_name)
+
         if not report_ref:
             return request.redirect("/web")
 
@@ -790,7 +803,7 @@ class BudgetAppropriationSummaryController(http.Controller):
             )
             html = report_env._render_qweb_html(
                 report.id,
-                [record.id],
+                [render_record.id],
                 data={"title": f"{record.name} - {report_name.upper()}"},
             )[0]
             return request.make_response(
@@ -802,7 +815,7 @@ class BudgetAppropriationSummaryController(http.Controller):
             )
         elif report_type == "pdf":
             pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
-                report.id, [record.id]
+                report.id, [render_record.id]
             )
             pdfhttpheaders = [
                 ("Content-Type", "application/pdf"),

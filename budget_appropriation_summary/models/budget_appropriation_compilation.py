@@ -831,6 +831,15 @@ class BudgetAppropriationCompilation(models.Model):
 
         return rows
 
+    def action_open_f3w_f6w_report(self):
+        """Open F3W/F6W revenue report in a new browser tab as HTML."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/budget_appropriation_summary/compilation/{self.id}/f3w_f6w/html",
+            "target": "new",
+        }
+
     def action_open_f23w_report(self):
         """Open F23W report in a new browser tab as HTML."""
         self.ensure_one()
