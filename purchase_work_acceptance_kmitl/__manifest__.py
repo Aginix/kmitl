@@ -22,6 +22,7 @@
         "security/ir.model.access.csv",
         "data/server_action.xml",
         "data/tier.definition.csv",
+        "wizards/work_acceptance_committee_wizard.xml",
         "report/paperformat.xml",
         "report/report_work_acceptance.xml",
         "report/report_committee_acceptance.xml",

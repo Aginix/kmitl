@@ -3,8 +3,8 @@
     <menuitem
         id="menu_stock_request_root"
         name="Stock Requests"
-        groups="stock_request_aginix.group_stock_request_user,stock_request_aginix.group_stock_request_approver"
-        web_icon="stock_request_aginix,static/description/logo.png"
+        groups="stock_request_kmitl.group_stock_request_officer"
+        web_icon="stock_request_kmitl,static/description/logo.png"
         sequence="100"
     />
     <menuitem
@@ -13,7 +13,7 @@
         parent="menu_stock_request_root"
     />
     <menuitem
-        id="menu_stock_request_aginix"
+        id="menu_stock_request_kmitl"
         name="Requests"
         parent="menu_stock_request_root_root"
         action="action_stock_request"

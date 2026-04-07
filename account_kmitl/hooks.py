@@ -58,6 +58,33 @@ def _create_journals(env, company):
         if not existing:
             Journal.create(data)
 
+    # Set payment_account_id on bank journal payment method lines
+    payment_account = get_account("1112210004")
+    if payment_account:
+        bank_journals = Journal.search(
+            [
+                ("company_id", "=", company.id),
+                ("code", "in", ("PV", "RV")),
+            ]
+        )
+        payment_method_lines = (
+            bank_journals.inbound_payment_method_line_ids
+            + bank_journals.outbound_payment_method_line_ids
+        )
+        payment_method_lines.payment_account_id = payment_account
+
+
+def _deactivate_default_journals(env, company):
+    """Deactivate all non-KMITL journals created by the chart of accounts loader."""
+    kmitl_codes = ("JV", "PV", "RV", "SV", "UV")
+    journals_to_deactivate = env["account.journal"].search(
+        [
+            ("company_id", "=", company.id),
+            ("code", "not in", kmitl_codes),
+        ]
+    )
+    journals_to_deactivate.write({"active": False})
+
 
 def _create_withholding_taxes(env, company):
     """Create KMITL withholding tax records after chart of accounts is loaded."""
@@ -105,4 +132,5 @@ def post_init_hook(cr, registry):
     company = env.ref("base.main_company")
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
+    _deactivate_default_journals(env, company)
     _create_withholding_taxes(env, company)
