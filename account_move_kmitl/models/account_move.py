@@ -155,3 +155,35 @@ class AccountMove(models.Model):
                 self.source_analytic_id = commitment.source_analytic_id
             if analytic_accounts:
                 self.analytic_distribution = analytic_accounts
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        moves = super().create(vals_list)
+        for move in moves:
+            if move.analytic_distribution:
+                lines_without = move.line_ids.filtered(
+                    lambda l: not l.analytic_distribution
+                )
+                if lines_without:
+                    lines_without.write(
+                        {"analytic_distribution": move.analytic_distribution}
+                    )
+        return moves
+
+    def _inverse_analytic_distribution(self):
+        """Propagate analytic distribution to convenience fields and lines."""
+        super()._inverse_analytic_distribution()
+        for move in self:
+            if move.analytic_distribution:
+                move.line_ids.write(
+                    {"analytic_distribution": move.analytic_distribution}
+                )
+
+    @api.onchange("analytic_distribution")
+    def _onchange_analytic_distribution(self):
+        """When change analytic distribution, propagate to all move lines."""
+        if self.analytic_distribution:
+            self.line_ids.update(
+                {"analytic_distribution": self.analytic_distribution}
+            )
+
