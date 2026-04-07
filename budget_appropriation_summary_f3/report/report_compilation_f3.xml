@@ -129,6 +129,11 @@
                             </tr>
                             <t t-foreach="f3['expenditure_rows']" t-as="row">
                                 <!-- Level 0: ประเภทงบประมาณ -->
+                                <t t-if="row['level'] == 0 and not row_first">
+                                    <tr style="height: 24pt;">
+                                        <td colspan="4" />
+                                    </tr>
+                                </t>
                                 <t t-if="row['level'] == 0">
                                     <tr style="font-weight: bold;">
                                         <td>
