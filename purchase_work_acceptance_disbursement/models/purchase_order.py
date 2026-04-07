@@ -80,7 +80,7 @@ class PurchaseOrder(models.Model):
     def _compute_hide_create_disbursement_request_button(self):
         for order in self:
             has_unfinished_disbursement = any(
-                d.state not in ("validated", "cancel")
+                d.state in ("draft", "submitted")
                 for d in order.disbursement_request_ids
             )
             order.hide_create_disbursement_request_button = (
