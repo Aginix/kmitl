@@ -26,13 +26,13 @@
     <template id="report_compilation_f23w_document">
         <t t-call="web.basic_layout">
             <t t-call="budget_appropriation_summary.report_compilation_f23w_styles" />
-            <t t-if="o.env.context.get('html_preview', False)">
-                <button class="f23w-print-btn" onclick="window.print()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                    พิมพ์รายงาน
-                </button>
-            </t>
             <div class="page budget-compilation-f23w-report" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+                <t t-if="o.env.context.get('html_preview', False)">
+                    <button class="f23w-print-btn" onclick="window.print()" contenteditable="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        พิมพ์รายงาน
+                    </button>
+                </t>
                 <div class="report-header" contenteditable="false">
                     <h4 class="pb-2">สรุปงบประมาณรายจ่าย</h4>
                     <h4 class="pb-2">
@@ -282,7 +282,7 @@
                 }
 
                 .f23w-print-btn {
-                    position: fixed;
+                    position: absolute;
                     top: 20px;
                     right: 20px;
                     z-index: 1000;
