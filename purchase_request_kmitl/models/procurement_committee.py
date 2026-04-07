@@ -101,7 +101,7 @@ class ProcurementCommittee(models.Model):
                 raise ValidationError(
                     _(
                         "Employee %s cannot appear in multiple committees "
-                        "except TOR and Price Determine committees.",
+                        "except TOR and Evaluation committees.",
                         rec.employee_id.name,
                     )
                 )
