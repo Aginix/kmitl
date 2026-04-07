@@ -40,3 +40,12 @@ class StockPicking(models.Model):
             'res_id': self.stock_request_id[0].id,
             'target': 'current',
         }
+
+    def button_validate(self):
+        res = super().button_validate()
+        for picking in self:
+            if picking.state == 'done' and picking.stock_request_id:
+                picking.stock_request_id.filtered(
+                    lambda r: r.state == 'approved'
+                ).action_done()
+        return res
