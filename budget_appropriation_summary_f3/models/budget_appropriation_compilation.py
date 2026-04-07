@@ -50,6 +50,7 @@ class BudgetAppropriationCompilation(models.Model):
 
         BudgetAccount = self.env["budget.account"]
         account_totals = {}
+        excluded_root_ids = set()
 
         for line in lines:
             account = line.account_id
@@ -58,8 +59,14 @@ class BudgetAppropriationCompilation(models.Model):
             else:
                 root_id = account.id
 
+            if root_id in excluded_root_ids:
+                continue
+
             if root_id not in account_totals:
                 root = BudgetAccount.browse(root_id)
+                if root.code == "99000":
+                    excluded_root_ids.add(root_id)
+                    continue
                 account_totals[root_id] = {
                     "name": root.name,
                     "code": root.code or "",
