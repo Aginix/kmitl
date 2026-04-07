@@ -64,7 +64,7 @@ class DisbursementRequest(models.Model):
         )
         for record in self:
             if record.state == "submitted":
-                record.state = "signed"
+                record.action_sign()
                 record.message_post(
                     body=_("Approved by head via Sarabun: %s") % document.name,
                     subtype_xmlid="mail.mt_note",

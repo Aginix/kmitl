@@ -10,6 +10,22 @@ class PurchaseOrder(models.Model):
         compute="_compute_pending_wa_count",
     )
 
+    wa_fines_total = fields.Monetary(
+        string="Amount disbursed",
+        compute="_compute_wa_fines_total",
+        currency_field="currency_id",
+    )
+
+    @api.depends("wa_ids.state", "wa_ids.is_disbursed", "wa_ids.fines_total")
+    def _compute_wa_fines_total(self):
+        for order in self:
+            was = self.env["work.acceptance"].search([
+                ("purchase_id", "=", order.id),
+                ("state", "=", "accept"),
+                ("is_disbursed", "=", True),
+            ])
+            order.wa_fines_total = sum(was.mapped("fines_total"))
+
     @api.depends("wa_ids.state", "wa_ids.is_disbursed")
     def _compute_pending_wa_count(self):
         for order in self:
@@ -64,7 +80,7 @@ class PurchaseOrder(models.Model):
     def _compute_hide_create_disbursement_request_button(self):
         for order in self:
             has_unfinished_disbursement = any(
-                d.state not in ("validated", "cancel")
+                d.state in ("draft", "submitted")
                 for d in order.disbursement_request_ids
             )
             order.hide_create_disbursement_request_button = (
