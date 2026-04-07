@@ -56,7 +56,6 @@ class PurchaseOrder(models.Model):
                 for line in self.order_line
             ],
             "ref": self.name,
-            "payment_type": self.payment_type,
         }
 
     def action_disbursement_request(self):
@@ -83,15 +82,114 @@ class PurchaseOrder(models.Model):
             ) % {"link": dr_link, "name": disbursement_request.name},
             subtype_xmlid="mail.mt_note",
         )
-        # Log in Disbursement chatter
+        # Log in Disbursement chatter with full upstream chain
         po_link = "/web#id=%d&model=purchase.order&view_type=form" % self.id
-        disbursement_request.message_post(
-            body=_(
-                'Created from Purchase Order <a href="%(link)s" target="_blank">%(name)s</a>.'
-            ) % {"link": po_link, "name": self.name},
-            subtype_xmlid="mail.mt_note",
-        )
+        body = _(
+            'Created from Purchase Order <a href="%(link)s" target="_blank">%(name)s</a>.'
+        ) % {"link": po_link, "name": self.name}
+        purchase_requests = self._get_related_purchase_requests()
+        if purchase_requests and "request_approval_ids" in purchase_requests._fields:
+            purchase_approvals = purchase_requests.mapped("request_approval_ids")
+        else:
+            purchase_approvals = []
+        items = []
+        for pa in purchase_approvals:
+            items.append(
+                _('Purchase Request Approval: <a href="%(link)s" target="_blank">%(name)s</a>')
+                % {"link": pa._get_record_url(), "name": pa.name}
+            )
+        for pr in purchase_requests:
+            items.append(
+                _('Purchase Request: <a href="%(link)s" target="_blank">%(name)s</a>')
+                % {"link": pr._get_record_url(), "name": pr.name}
+            )
+        if items:
+            body += "<ul>" + "".join("<li>%s</li>" % item for item in items) + "</ul>"
+        disbursement_request.message_post(body=body, subtype_xmlid="mail.mt_note")
+        self._post_message_to_purchase_requests(disbursement_request, purchase_requests)
+        self._post_message_to_purchase_request_approvals(disbursement_request, purchase_approvals)
+        self._copy_attachments_to_disbursement_request(disbursement_request)
         return disbursement_request
+
+    def _copy_attachments_to_disbursement_request(self, disbursement_request):
+        """Copy all attachments from this PO to the given disbursement request."""
+        attachments = self.env["ir.attachment"].search([
+            ("res_model", "=", "purchase.order"),
+            ("res_id", "=", self.id),
+        ])
+        if attachments:
+            self.env["ir.attachment"].create([
+                {
+                    "name": att.name,
+                    "datas": att.datas,
+                    "res_model": "disbursement.request",
+                    "res_id": disbursement_request.id,
+                    "type": att.type,
+                    "mimetype": att.mimetype,
+                    "description": _("From PO: %s", self.name),
+                }
+                for att in attachments
+            ])
+
+    def _get_related_purchase_requests(self):
+        """Return purchase.request records linked to this PO via order lines."""
+        if "purchase.request" not in self.env:
+            return self.env["purchase.request"]
+        purchase_requests = self.env["purchase.request"]
+        for line in self.order_line:
+            if hasattr(line, "purchase_request_lines"):
+                purchase_requests |= line.purchase_request_lines.mapped("request_id")
+        return purchase_requests
+
+    def _post_message_to_purchase_requests(self, disbursement_request, purchase_requests=None):
+        """Post to related purchase.request(s) if PO was created from PR."""
+        if purchase_requests is None:
+            purchase_requests = self._get_related_purchase_requests()
+        if not purchase_requests:
+            return
+        dr_link = (
+            "/web#id=%d&model=disbursement.request&view_type=form"
+            % disbursement_request.id
+        )
+        for pr in purchase_requests:
+            pr.message_post(
+                body=_(
+                    'Disbursement Request <a href="%(link)s" target="_blank">'
+                    "%(name)s</a> has been created from Purchase Order"
+                    " %(po_name)s."
+                )
+                % {
+                    "link": dr_link,
+                    "name": disbursement_request.name,
+                    "po_name": self.name,
+                },
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def _post_message_to_purchase_request_approvals(self, disbursement_request, purchase_approvals):
+        """Post to related purchase.request.approval(s) with DR and PO references."""
+        if not purchase_approvals:
+            return
+        dr_link = (
+            "/web#id=%d&model=disbursement.request&view_type=form"
+            % disbursement_request.id
+        )
+        po_link = "/web#id=%d&model=purchase.order&view_type=form" % self.id
+        for pa in purchase_approvals:
+            pa.message_post(
+                body=_(
+                    'Disbursement Request <a href="%(dr_link)s" target="_blank">%(dr_name)s</a>'
+                    ' has been created from Purchase Order'
+                    ' <a href="%(po_link)s" target="_blank">%(po_name)s</a>.'
+                )
+                % {
+                    "dr_link": dr_link,
+                    "dr_name": disbursement_request.name,
+                    "po_link": po_link,
+                    "po_name": self.name,
+                },
+                subtype_xmlid="mail.mt_note",
+            )
 
     def action_view_disbursement_request(self):
         self.ensure_one()

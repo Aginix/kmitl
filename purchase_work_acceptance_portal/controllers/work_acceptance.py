@@ -1,12 +1,10 @@
 from werkzeug.utils import redirect
 
-from odoo import api, http
-from odoo.exceptions import AccessError, MissingError, ValidationError
+from odoo import http
+from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
 from odoo.addons.portal.controllers import portal
-from odoo.addons.portal.controllers.mail import _message_post_helper
-from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class WorkAcceptance(portal.CustomerPortal):
@@ -88,7 +86,7 @@ class WorkAcceptance(portal.CustomerPortal):
             pending_reviews.write({"comment": comment_text})
             work_acceptance.with_user(committee_user)._validate_tier(pending_reviews)
             work_acceptance._update_counter({"review_deleted": True})
-            committee.write({"status": "not_accept", "note": comment_text})
+            committee.write({"status": "other", "note": comment_text})
 
         return redirect(f"/wa/view/{work_acceptance.id}?access_token={work_acceptance.access_token}&committee_token={committee.access_token}")
 

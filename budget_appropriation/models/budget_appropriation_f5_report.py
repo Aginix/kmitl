@@ -47,6 +47,10 @@ class BudgetAppropriationF5Report(models.TransientModel):
         # Build hierarchy: Activities → Funds → Budget Accounts → Lines
         hierarchy = self._build_hierarchy(lines)
 
+        # Merge duplicate accounts when not itemized
+        if not options.get("show_itemized", False):
+            hierarchy = self._merge_duplicate_accounts(hierarchy)
+
         # Calculate totals
         amount_total = sum(line.balance for line in lines)
 
@@ -182,6 +186,46 @@ class BudgetAppropriationF5Report(models.TransientModel):
 
         # Export to Odoo-compatible format
         return BudgetTreeExporter.to_odoo_hierarchy(tree)
+
+    def _merge_duplicate_accounts(self, nodes):
+        """Merge sibling account nodes with the same id (same budget account)."""
+        if not nodes:
+            return nodes
+
+        merged = []
+        seen = {}
+
+        for node in nodes:
+            key = (node.get("type"), node.get("id"))
+
+            if node.get("type") == "account" and key in seen:
+                existing = merged[seen[key]]
+                existing["amount"] = existing.get("amount", 0) + node.get("amount", 0)
+                existing["amount_total"] = (
+                    existing.get("amount_total", 0) + node.get("amount_total", 0)
+                )
+                for field in ("description", "note"):
+                    if node.get(field):
+                        if existing.get(field):
+                            existing[field] += "\n" + node[field]
+                        else:
+                            existing[field] = node[field]
+                if node.get("children"):
+                    existing.setdefault("children", [])
+                    existing["children"].extend(node["children"])
+                    existing["children"] = self._merge_duplicate_accounts(
+                        existing["children"]
+                    )
+            else:
+                seen[key] = len(merged)
+                new_node = dict(node)
+                if new_node.get("children"):
+                    new_node["children"] = self._merge_duplicate_accounts(
+                        new_node["children"]
+                    )
+                merged.append(new_node)
+
+        return merged
 
     def _get_complete_name_without_codes(self, record):
         """Get complete name without codes - helper method for appropriation data"""

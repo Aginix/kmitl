@@ -100,7 +100,7 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state in ("to_approve") and (
+            if rec.state in ("to_verify", "to_approve") and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
@@ -286,7 +286,7 @@ class PurchaseRequest(models.Model):
                         "product_id": product_id.id,
                         "name": product_id.display_name,
                         "product_uom_id": product_id.uom_id.id,
-                        "price_unit": self.procurement_plan_id.total_price or default_price,
+                        "price_unit": getattr(self, 'procurement_plan_id', False) and self.procurement_plan_id.total_price or default_price,
                         "product_qty": 1.0,
                     }
                 )

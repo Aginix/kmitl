@@ -216,12 +216,20 @@
                                             <tr t-att-data-row-id="line['code'] or line['name']"
                                                 t-att-data-row-indent="line['indent']"
                                                 t-att-data-row-amount="line['amount_total']"
-                                                t-att-data-has-children="'1' if line.get('has_children') else '0'">
+                                                t-att-data-has-children="'1' if line.get('has_children') else '0'"
+                                                t-att-data-line-ids="','.join(str(i) for i in line.get('line_ids', []))">
                                                 <td>
                                                     <div t-attf-style="padding-left: #{16 * line['indent']}px;">
                                                         <span t-attf-class="{{'fw-bolder' if line['indent'] == 0 else ''}}">
                                                             <t t-out="line['name']" />
                                                         </span>
+                                                        <t t-if="line.get('line_ids')">
+                                                            <span class="budget-line-ids text-black-50 ms-1" style="font-size: 0.75em;">
+                                                                <t t-foreach="line['line_ids']" t-as="lid">
+                                                                    <span class="badge text-bg-light border me-1">#<t t-out="lid" /></span>
+                                                                </t>
+                                                            </span>
+                                                        </t>
 
                                                         <div t-if="line['note'] or line.get('description')" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px;">
                                                             <div t-if="line['note']" style="white-space: pre-wrap;" t-out="line['note']"></div>
@@ -269,6 +277,10 @@
                             return row.cells[0].querySelector('.budget-note-content');
                         }
 
+                        function getLineIdsContainer(row) {
+                            return row.cells[0].querySelector('.budget-line-ids');
+                        }
+
                         function applyMerge(tbody) {
                             // Reset: restore originals and show all rows
                             Array.from(tbody.rows).forEach(function (row) {
@@ -281,6 +293,11 @@
                                 if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
                                     nc.innerHTML = nc.dataset.originalNotes;
                                     delete nc.dataset.originalNotes;
+                                }
+                                var lc = getLineIdsContainer(row);
+                                if (lc &amp;&amp; lc.dataset.originalIds !== undefined) {
+                                    lc.innerHTML = lc.dataset.originalIds;
+                                    delete lc.dataset.originalIds;
                                 }
                             });
 
@@ -329,6 +346,22 @@
                                         });
                                     }
 
+                                    // Aggregate line IDs from dupes
+                                    var lc = getLineIdsContainer(row);
+                                    if (lc) {
+                                        if (lc.dataset.originalIds === undefined) {
+                                            lc.dataset.originalIds = lc.innerHTML;
+                                        }
+                                        dupes.forEach(function (d) {
+                                            var dlc = getLineIdsContainer(d);
+                                            if (dlc) {
+                                                Array.from(dlc.children).forEach(function (child) {
+                                                    lc.appendChild(child.cloneNode(true));
+                                                });
+                                            }
+                                        });
+                                    }
+
                                     dupes.forEach(function (d) { d.style.display = 'none'; });
                                     i += dupes.length;
                                 }
@@ -346,6 +379,11 @@
                                 if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
                                     nc.innerHTML = nc.dataset.originalNotes;
                                     delete nc.dataset.originalNotes;
+                                }
+                                var lc = getLineIdsContainer(row);
+                                if (lc &amp;&amp; lc.dataset.originalIds !== undefined) {
+                                    lc.innerHTML = lc.dataset.originalIds;
+                                    delete lc.dataset.originalIds;
                                 }
                             });
                         }
@@ -433,12 +471,20 @@
                                     <tr t-att-data-row-id="line['code'] or line['name']"
                                         t-att-data-row-indent="line['indent']"
                                         t-att-data-row-amount="line['amount_total']"
-                                        t-att-data-has-children="'1' if line.get('has_children') else '0'">
+                                        t-att-data-has-children="'1' if line.get('has_children') else '0'"
+                                        t-att-data-line-ids="','.join(str(i) for i in line.get('line_ids', []))">
                                         <td>
                                             <div t-attf-style="padding-left: #{16 * line['indent']}px;">
                                                 <span t-attf-class="{{'fw-bolder' if line['indent'] == 0 else ''}}">
                                                     <t t-out="line['name']" />
                                                 </span>
+                                                <t t-if="line.get('line_ids')">
+                                                    <span class="budget-line-ids text-black-50 ms-1" style="font-size: 0.75em;">
+                                                        <t t-foreach="line['line_ids']" t-as="lid">
+                                                            <span class="badge text-bg-light border me-1">#<t t-out="lid" /></span>
+                                                        </t>
+                                                    </span>
+                                                </t>
 
                                                 <div t-if="line['note'] or line.get('description')" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px;">
                                                     <div t-if="line['note']" style="white-space: pre-wrap;" t-out="line['note']"></div>
@@ -484,6 +530,10 @@
                             return row.cells[0].querySelector('.budget-note-content');
                         }
 
+                        function getLineIdsContainer(row) {
+                            return row.cells[0].querySelector('.budget-line-ids');
+                        }
+
                         function applyMerge(tbody) {
                             Array.from(tbody.rows).forEach(function (row) {
                                 row.style.display = '';
@@ -495,6 +545,11 @@
                                 if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
                                     nc.innerHTML = nc.dataset.originalNotes;
                                     delete nc.dataset.originalNotes;
+                                }
+                                var lc = getLineIdsContainer(row);
+                                if (lc &amp;&amp; lc.dataset.originalIds !== undefined) {
+                                    lc.innerHTML = lc.dataset.originalIds;
+                                    delete lc.dataset.originalIds;
                                 }
                             });
 
@@ -542,6 +597,22 @@
                                         });
                                     }
 
+                                    // Aggregate line IDs from dupes
+                                    var lc = getLineIdsContainer(row);
+                                    if (lc) {
+                                        if (lc.dataset.originalIds === undefined) {
+                                            lc.dataset.originalIds = lc.innerHTML;
+                                        }
+                                        dupes.forEach(function (d) {
+                                            var dlc = getLineIdsContainer(d);
+                                            if (dlc) {
+                                                Array.from(dlc.children).forEach(function (child) {
+                                                    lc.appendChild(child.cloneNode(true));
+                                                });
+                                            }
+                                        });
+                                    }
+
                                     dupes.forEach(function (d) { d.style.display = 'none'; });
                                     i += dupes.length;
                                 }
@@ -559,6 +630,11 @@
                                 if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
                                     nc.innerHTML = nc.dataset.originalNotes;
                                     delete nc.dataset.originalNotes;
+                                }
+                                var lc = getLineIdsContainer(row);
+                                if (lc &amp;&amp; lc.dataset.originalIds !== undefined) {
+                                    lc.innerHTML = lc.dataset.originalIds;
+                                    delete lc.dataset.originalIds;
                                 }
                             });
                         }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name"
+            >view.purchase.request.approval.form(PA work Acceptance)</field
+        >
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="wa_count" invisible="1" />
+                <button
+                    name="action_view_wa"
+                    type="object"
+                    context="{'create_wa': True}"
+                    string="Create Work Acceptance"
+                    class="btn-primary"
+                    attrs="{
+                        'invisible': [
+                            '|','|',
+                            ('wa_count', '&gt;', 0),
+                            ('use_purchase_order', '=', True),
+                            ('state', '!=', 'approved')
+                        ]
+                    }"
+                />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    type="object"
+                    name="action_view_wa"
+                    class="oe_stat_button"
+                    icon="fa-clipboard"
+                    attrs="{'invisible':[('wa_ids','=',[])]}"
+                    groups="purchase.group_purchase_user"
+                >
+                    <field name="wa_count" widget="statinfo" string="WA" />
+                    <field name="wa_ids" invisible="1" />
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_disbursement_form" model="ir.ui.view">
+        <field name="name">view.form(Approval Disbursement) Inherit</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval_disbursement.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_disbursement_request']" position="before">
+                <field name="pending_wa_count" invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='action_disbursement_request']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', '|', '|', ('use_purchase_order', '=', True), ('disbursement_request_count', '&gt;', 0), ('state', 'not in', ['approved']), ('pending_wa_count', '=', 0)]}
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

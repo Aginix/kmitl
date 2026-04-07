@@ -67,9 +67,10 @@ class BudgetReportSummary(models.AbstractModel):
             move_line_domain,
             order="date desc",
         )
-        # Build domain for commitment_lines with department filter
+        # Build domain for commitment lines (ledger entries) with department filter
         commitment_domain = [
-            ("state", "in", ["reserved", "obligated"]),
+            ("state", "=", "posted"),
+            ("commitment_id.state", "in", ["reserved", "partial", "done"]),
             ("account_fiscal_year_id", "=", fiscal_year.id),
             ("source_analytic_id", "=", source_analytic.id),
         ]
@@ -77,7 +78,7 @@ class BudgetReportSummary(models.AbstractModel):
         if department_ids:
             commitment_domain.append(("department_analytic_id", "in", all_dept_ids))
 
-        commitment_lines = self.env["budget.commitment"].search(
+        commitment_lines = self.env["budget.commitment.line"].search(
             commitment_domain,
             order="date desc",
         )
@@ -302,7 +303,7 @@ class BudgetReportSummary(models.AbstractModel):
 
         has_commitments = self.env["budget.commitment"].search_count([
             ("department_analytic_id", "=", department.id),
-            ("state", "in", ["reserved", "obligated"]),
+            ("state", "in", ["reserved", "partial"]),
         ], limit=1)
 
         return bool(has_moves or has_commitments)
@@ -358,7 +359,7 @@ class BudgetReportSummary(models.AbstractModel):
         ])
         commitments = self.env["budget.commitment"].search([
             ('activity_analytic_id', 'in', activity_children),
-            ('state', 'in', ['reserved', 'obligated']),
+            ('state', 'in', ['reserved', 'partial']),
         ])
 
         account_ids = set()
@@ -379,7 +380,7 @@ class BudgetReportSummary(models.AbstractModel):
         ]
         domain_commitment = [
             ('fund_analytic_id', 'in', fund_children),
-            ('state', 'in', ['reserved', 'obligated']),
+            ('state', 'in', ['reserved', 'partial']),
         ]
 
         # If parent activity is specified, also filter by activity

@@ -44,6 +44,8 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         vals = super()._prepare_sarabun_document_vals()
         vals["subject"] = self.title
+        if self.department_id:
+            vals["sender_department_id"] = self.department_id.id
         return vals
 
     def _on_sarabun_completed(self, document):

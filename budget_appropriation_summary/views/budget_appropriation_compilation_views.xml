@@ -70,18 +70,20 @@
                         />
                         <button
                             name="action_open_f23w_report"
-                            string="ดูรายงาน F23"
+                            string="รายงาน F23"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-file-text-o"
+                            attrs="{'invisible': [('use_f23', '=', False)]}"
                         />
-                        <button
+                        <!-- <button
                             name="action_print_f23w_report"
                             string="พิมพ์ F23"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                        />
+                            attrs="{'invisible': [('use_f23', '=', False)]}"
+                        /> -->
                     </div>
                     <group>
                         <group>
@@ -104,6 +106,7 @@
                             <field name="master_summary_id" />
                             <field name="amount_revenue_total" />
                             <field name="amount_expense_total" />
+
                         </group>
                     </group>
                     <notebook>
@@ -116,11 +119,14 @@
                                     '|',
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
+                                    '|',
+                                        ('department_analytic_id', '=', department_analytic_id),
+                                        ('department_analytic_id.parent_id', '=', department_analytic_id),
                                 ]"
                                 attrs="{'readonly': ['|', '|', ('account_fiscal_year_id', '=', False), ('source_analytic_id', '=', False), ('department_analytic_id', '=', False)]}"
                                 context="{'can_edit': False}"
                             >
-                                <tree decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" default_order="department_analytic_id, id">
+                                <tree decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" default_order="department_analytic_id, id" limit="1000">
                                     <field name="state" widget="badge" decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" />
                                     <field name="name" />
                                     <field name="date" invisible="1" />
@@ -141,10 +147,13 @@
                                     '|',
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
+                                    '|',
+                                        ('department_analytic_id', '=', department_analytic_id),
+                                        ('department_analytic_id.parent_id', '=', department_analytic_id),
                                 ]"
                                 attrs="{'readonly': ['|', '|', ('account_fiscal_year_id', '=', False), ('source_analytic_id', '=', False), ('department_analytic_id', '=', False)]}"
                             >
-                                <tree decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" default_order="department_analytic_id, id">
+                                <tree decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" default_order="department_analytic_id, id" limit="1000">
                                     <field name="state" widget="badge" decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" />
                                     <field name="name" />
                                     <field name="date" invisible="1" />
@@ -153,6 +162,15 @@
                                     <field name="amount_net" sum="รวม" />
                                 </tree>
                             </field>
+                            <group class="oe_subtotal_footer oe_right" string="สรุปตามประเภทงบ">
+                              <field name="reserve_fund_amount" />
+                              <field name="personnel_expense_amount" />
+                              <field name="operating_expense_amount" />
+                              <field name="capital_expenditure_amount" />
+                              <field name="subsidy_amount" />
+                              <field name="other_expenditure_amount" />
+                              <field style="text-decoration-line: underline; text-decoration-style: double;" name="amount_expense_total" />
+                            </group>
                         </page>
                         <page string="รายงาน F23-W" name="f23w_report" attrs="{'invisible': [('use_f23', '=', False)]}">
                             <style>
@@ -167,8 +185,8 @@
                                     <field name="code_0702000002" />
                                     <field name="code_0702000003" />
                                     <field name="treasury_replenishment_amount" help="คำนวณจากรหัสงบประมาณ (0702000001, 5108000038)" />
-                                    <field name="maintenance_amount" help="คำนวณจากรหัสงบประมาณ (5104010204, 5104010205, 5104010206)" />
-                                    <field name="capital_budget_amount" help="คำนวณจากรหัสงบประมาณ (5411000001, 5411000002, 5411000003, 5411000009, 5104030207, 5104030208, 5104030209)" />
+                                    <field name="maintenance_amount" help="คำนวณจากรายการที่ติ๊กเลือก เป็นงบค่าดูแลและบำรุงรักษา" />
+                                    <field name="capital_budget_amount" help="คำนวณจากรายการที่ติ๊กเลือก เป็นงบลงทุน" />
                                     <field name="recurrent_budget_amount" />
                                     <field name="external_funding_amount" />
                                 </group>
@@ -367,6 +385,7 @@
                     />
                 </group>
                 <searchpanel>
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
                     <field name="department_analytic_id" icon="fa-users" select="multi" limit="0" />
                 </searchpanel>
             </search>
@@ -378,7 +397,7 @@
         <field name="name">รวมเล่มหน่วยงาน</field>
         <field name="res_model">budget.appropriation.compilation</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'search_default_current_fiscal_year': 1, 'search_default_group_by_source': 1}</field>
+        <field name="context">{'search_default_group_by_source': 1}</field>
         <field
             name="search_view_id"
             ref="view_budget_appropriation_compilation_search"

@@ -8,7 +8,7 @@
             <xpath expr="//notebook/page[@name='expense_appropriations']" position="after">
                 <page name="procurement_plan_summary" string="สรุปแผนจัดซื้อจัดจ้าง">
                     <field name="procurement_plan_line_ids" readonly="1" nolabel="1">
-                        <tree create="false" edit="false" delete="false">
+                        <tree create="false" edit="false" delete="false" limit="1000">
                             <field name="appropriation_id" string="ใบจัดสรรงบประมาณ" optional="hide" />
                             <field name="description" string="ชื่อรายการ" />
                             <field name="account_id" string="รหัสงบประมาณ" />

@@ -1,11 +1,43 @@
-# -*- coding: utf-8 -*-
+# Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
+
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 
 class ProcurementCommittee(models.Model):
-    _inherit = 'procurement.committee'
+    _name = "procurement.committee"
+    _description = "Procurement Committee"
 
+    request_id = fields.Many2one(
+        comodel_name="purchase.request",
+        string="Purchase Request",
+        ondelete="cascade",
+        index=True,
+    )
+    employee_id = fields.Many2one(
+        comodel_name="hr.employee",
+        string="Employee",
+        ondelete="restrict",
+        index=True,
+    )
+    name = fields.Char(
+        string="Committee Name",
+        compute="_compute_default_name",
+        store=True,
+        readonly=False,
+        required=True,
+        index=True,
+    )
+    department_id = fields.Many2one(
+        related="employee_id.department_id",
+    )
+    email = fields.Char(
+        related="employee_id.work_email",
+    )
+    phone = fields.Char(
+        related="employee_id.work_phone",
+    )
     mobile_phone = fields.Char(
         string="Mobile Phone",
         related="employee_id.mobile_phone",
@@ -13,7 +45,9 @@ class ProcurementCommittee(models.Model):
         readonly=True,
     )
     committee_type = fields.Selection(
-        selection_add=[
+        selection=[
+            ("procurement", "Procurement Committee"),
+            ("work_acceptance", "Work Acceptance Committee"),
             ("tor_committee", "TOR Committee"),
             ("price_determine", "Price Determine Committee"),
             ("evaluation", "Evaluation Committee"),
@@ -21,13 +55,21 @@ class ProcurementCommittee(models.Model):
         ],
     )
     approve_role = fields.Selection(
-        selection_add=[
+        selection=[
+            ("chairman", "Chairman"),
+            ("committee", "Committee"),
             ("secretary", "Secretary"),
         ],
+        string="Role",
         required=True,
-        ondelete={'chairman': 'set default', 'committee': 'set default', 'secretary': 'set default'},
+        ondelete={
+            "chairman": "set default",
+            "committee": "set default",
+            "secretary": "set default",
+        },
         default="committee",
     )
+    note = fields.Text()
 
     _sql_constraints = [
         (
@@ -37,16 +79,23 @@ class ProcurementCommittee(models.Model):
         ),
     ]
 
+    @api.depends("employee_id")
+    def _compute_default_name(self):
+        for rec in self:
+            rec.name = rec.employee_id.display_name if rec.employee_id else ""
+
     @api.constrains("employee_id", "request_id", "committee_type")
     def _check_committee_cross_type_unique(self):
         allowed_overlap = {"tor_committee", "price_determine", "work_supervisor"}
         for rec in self:
             if not rec.employee_id or not rec.request_id:
                 continue
-            same_committees = self.env["procurement.committee"].search([
-                ("employee_id", "=", rec.employee_id.id),
-                ("request_id", "=", rec.request_id.id),
-            ])
+            same_committees = self.env["procurement.committee"].search(
+                [
+                    ("employee_id", "=", rec.employee_id.id),
+                    ("request_id", "=", rec.request_id.id),
+                ]
+            )
             types = set(same_committees.mapped("committee_type"))
             if len(types) > 1 and not types.issubset(allowed_overlap):
                 raise ValidationError(

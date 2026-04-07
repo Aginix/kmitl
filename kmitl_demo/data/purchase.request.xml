@@ -13,7 +13,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="payment_type">direct</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_008" />
@@ -103,7 +103,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="payment_type">loan</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_008" />
@@ -193,7 +193,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_014" />
@@ -276,7 +276,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="payment_type">loan</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_014" />
@@ -359,7 +359,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="payment_type">direct</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_006" />
@@ -454,7 +454,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_general"
+            ref="purchase_request_kmitl.procurement_general"
         />
         <field name="payment_type">prepaid</field>
         <field name="requested_by" ref="kmitl_demo.user_demo_006" />
@@ -549,7 +549,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_bidding"
+            ref="purchase_request_kmitl.procurement_bidding"
         />
         <field name="is_egp" eval="True" />
         <field name="payment_type">direct</field>
@@ -639,7 +639,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_bidding"
+            ref="purchase_request_kmitl.procurement_bidding"
         />
         <field name="is_egp" eval="True" />
         <field name="payment_type">loan</field>
@@ -729,7 +729,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_bidding"
+            ref="purchase_request_kmitl.procurement_bidding"
         />
         <field name="is_egp" eval="True" />
         <field name="payment_type">prepaid</field>
@@ -822,7 +822,7 @@
         />
         <field
             name="procurement_method_id"
-            ref="l10n_th_gov_purchase_request.procurement_bidding"
+            ref="purchase_request_kmitl.procurement_bidding"
         />
         <field name="is_egp" eval="True" />
         <field name="payment_type">loan</field>
