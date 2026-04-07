@@ -154,6 +154,20 @@ class AccountMove(models.Model):
             if analytic_accounts:
                 self.analytic_distribution = analytic_accounts
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        moves = super().create(vals_list)
+        for move in moves:
+            if move.analytic_distribution:
+                lines_without = move.line_ids.filtered(
+                    lambda l: not l.analytic_distribution
+                )
+                if lines_without:
+                    lines_without.write(
+                        {"analytic_distribution": move.analytic_distribution}
+                    )
+        return moves
+
     def _inverse_analytic_distribution(self):
         """Propagate analytic distribution to convenience fields and lines."""
         super()._inverse_analytic_distribution()
