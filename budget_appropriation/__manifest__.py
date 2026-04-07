@@ -28,6 +28,7 @@
         "views/templates.xml",
         "report/budget_appropriation_f4_report_templates.xml",
         "report/budget_appropriation_f5_report_templates.xml",
+        "wizard/budget_appropriation_f5_print_wizard_views.xml",
     ],
     "assets": {
         "web.assets_backend": [

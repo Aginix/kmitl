@@ -19,6 +19,22 @@
               <field name="qty_available" readonly="1" attrs="{'column_invisible': [('parent.picking_type_code', '!=', 'outgoing')]}"/>
             </xpath>
 
+            <xpath expr="//button[@name='do_print_picking']" position="attributes">
+              <attribute name="groups">base.group_no_one</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_open_label_type']" position="attributes">
+              <attribute name="groups">base.group_no_one</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_scrap']" position="attributes">
+              <attribute name="groups">base.group_no_one</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_toggle_is_locked']" position="attributes">
+              <attribute name="groups">base.group_no_one</attribute>
+            </xpath>
+
             <xpath expr="//notebook" position="inside">
               <page string="Valuation Layers">
                 <field name="stock_valuation_layer_ids" readonly="1">

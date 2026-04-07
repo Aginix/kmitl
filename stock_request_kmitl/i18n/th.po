@@ -1,0 +1,475 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_request_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 03:58+0000\n"
+"PO-Revision-Date: 2025-11-19 11:12+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "<span class=\"o_stat_text\">Picking</span>"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_picking_form
+msgid "<span class=\"o_stat_text\">Stock Request</span>"
+msgstr "ใบเบิก-จ่ายพัสดุ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields.selection,name:stock_request_kmitl.selection__stock_request__state__approved
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Approved"
+msgstr "คำขอได้รับอนุมัติแล้ว"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields.selection,name:stock_request_kmitl.selection__stock_request__state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิก"
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Create Picking"
+msgstr "สร้างการจ่ายวัสดุ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__create_uid
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__create_date
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__display_name
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields.selection,name:stock_request_kmitl.selection__stock_request__state__done
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields.selection,name:stock_request_kmitl.selection__stock_request__state__draft
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__location_id
+msgid "From Location"
+msgstr "จากตำแหน่งที่ตั้ง"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_picking__has_stock_request
+msgid "Has Stock Request"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__id
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__id
+msgid "ID"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__message_has_error
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request____last_update
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__write_uid
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__write_date
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__request_line_ids
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Lines"
+msgstr "การปฎิบัติการ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: stock_request_kmitl
+#. odoo-python
+#: code:addons/stock_request_kmitl/models/stock_request.py:0
+#, python-format
+msgid "New"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: stock_request_kmitl
+#. odoo-python
+#: code:addons/stock_request_kmitl/models/stock_request.py:0
+#, python-format
+msgid "No Picking found."
+msgstr ""
+
+#. module: stock_request_kmitl
+#. odoo-python
+#: code:addons/stock_request_kmitl/models/stock_picking.py:0
+#, python-format
+msgid "No Stock Request linked."
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: stock_request_kmitl
+#. odoo-python
+#: code:addons/stock_request_kmitl/models/stock_request.py:0
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__picking_id
+#, python-format
+msgid "Picking"
+msgstr "การรับ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__picking_type_id
+msgid "Picking Type"
+msgstr "ประเภทการดำเนินการ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__quantity
+msgid "Quantity"
+msgstr "จำนวน"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__qty_done
+msgid "Quantity Done"
+msgstr "จำนวนที่รับเสร็จสิ้น"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__name
+msgid "Reference"
+msgstr "รหัสใบเบิก-จ่ายพัสดุ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__request_id
+msgid "Request"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__request_date
+msgid "Request Date"
+msgstr "วันที่สร้างใบเบิก"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__requested_by
+msgid "Requested By"
+msgstr "ผู้รับพัสดุ"
+
+#. module: stock_request_kmitl
+#: model:ir.ui.menu,name:stock_request_kmitl.menu_stock_request_kmitl
+msgid "Requests"
+msgstr "คำขอเบิก-จ่ายพัสดุ"
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Reset"
+msgstr "รีเซ็ท"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.module.category,description:stock_request_kmitl.category_stock_request_security
+msgid "Security category for Stock Request Security"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: stock_request_kmitl
+#. odoo-python
+#: code:addons/stock_request_kmitl/models/stock_picking.py:0
+#: model:ir.actions.act_window,name:stock_request_kmitl.action_stock_request
+#: model:ir.model,name:stock_request_kmitl.model_stock_request
+#: model:ir.module.category,name:stock_request_kmitl.category_stock_request_security
+#: model:ir.ui.menu,name:stock_request_kmitl.menu_stock_request_root_root
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+#, python-format
+msgid "Stock Request"
+msgstr "คำขอเบิก-จ่ายพัสดุ"
+
+#. module: stock_request_kmitl
+#: model:ir.model,name:stock_request_kmitl.model_stock_request_line
+msgid "Stock Request Line"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:res.groups,name:stock_request_kmitl.group_stock_request_manager
+msgid "Stock Request Manager"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:res.groups,name:stock_request_kmitl.group_stock_request_approver
+msgid "Stock Request User : All Documents"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:res.groups,name:stock_request_kmitl.group_stock_request_user
+msgid "Stock Request User : Own Documents Only"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_picking__stock_request_id
+#: model:ir.ui.menu,name:stock_request_kmitl.menu_stock_request_root
+msgid "Stock Requests"
+msgstr "คำขอเบิก-จ่ายพัสดุ"
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Stock request"
+msgstr "รหัสใบเบิก-จ่ายพัสดุ"
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Submit"
+msgstr "ส่งคำขอ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields.selection,name:stock_request_kmitl.selection__stock_request__state__submitted
+msgid "Submitted"
+msgstr "ส่งคำขอ"
+
+#. module: stock_request_kmitl
+#: model_terms:ir.actions.act_window,help:stock_request_kmitl.action_stock_request
+msgid "There is no examples click here to add new Stock Request."
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__location_dest_id
+msgid "To Location"
+msgstr "ที่ตั้งปลายทาง"
+
+#. module: stock_request_kmitl
+#: model:ir.model,name:stock_request_kmitl.model_stock_picking
+msgid "Transfer"
+msgstr "โอน"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__product_uom_id
+msgid "UoM"
+msgstr "หน่วยนับ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__user_id
+msgid "User"
+msgstr "ผู้สร้างคำขอ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,help:stock_request_kmitl.field_stock_request__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__total_price
+msgid "Total Price"
+msgstr "ราคารวม"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields,field_description:stock_request_kmitl.field_stock_request_line__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: stock_request_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_request_kmitl.view_stock_request_form
+msgid "Reject"
+msgstr "ปฏิเสธ"
+
+#. module: stock_request_kmitl
+#: model:ir.model.fields.selection,name:stock_request_kmitl.selection__stock_request__state__rejected
+msgid "Rejected"
+msgstr "ปฏิเสธคำขอ"

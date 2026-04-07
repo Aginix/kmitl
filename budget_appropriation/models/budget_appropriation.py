@@ -476,14 +476,14 @@ class BudgetAppropriation(models.Model):
 
     def print_f5_pdf(self):
         self.ensure_one()
-
-        data = self.env["budget.appropriation.f5.report"].get_f5_data(self.id)
-
-        return (
-            self.env.ref("budget_appropriation.action_report_budget_appropriation_f5")
-            .sudo()
-            .report_action(self, data=data)  # required to propagate context
-        )
+        return {
+            "name": "พิมพ์ F5",
+            "type": "ir.actions.act_window",
+            "res_model": "budget.appropriation.f5.print.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"active_ids": self.ids, "active_model": self._name},
+        }
 
     def open_record_url(self):
         """Open portal preview URL in new tab."""

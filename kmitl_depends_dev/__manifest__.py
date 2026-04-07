@@ -15,7 +15,7 @@
                 'budget_analytic_account', 'budget_appropriation_operating_unit',
                 'budget_appropriation_report',
                 'budget_operating_unit_access_all', 'budget_report',
-                'hr_department_code_tracking', 'stock_picking_kmitl', 'stock_request_aginix_tier_validation', 'i18n_th_stock_inventory',
+                'hr_department_code_tracking', 'stock_picking_kmitl', 'stock_request_kmitl_tier_validation', 'i18n_th_stock_inventory',
                 'i18n_th_tier_validation', 'l10n_th_bank_payment_export_format', 'operating_unit_kmitl', 'partner_type_aginix',
                 'partner_vat_required', 'stock_scrap_attachment', 'stock_scrap_hide_location_id', 'stock_scrap_origin_readonly_done',
                 'purchase_order_hide_create_bill_button', 'purchase_order_procurement_committee',
