@@ -108,6 +108,7 @@
                         font-weight: 400;
                         font-size: 11px;
                         line-height: 1.50;
+                        white-space: pre-line;
                     }
 
                     .amount-cell {
@@ -169,7 +170,7 @@
 
             <div class="page budget-appropriation-f5-report">
                 <t t-set="report_obj" t-value="o.env['budget.appropriation.f5.report']"/>
-                <t t-set="data" t-value="report_obj.get_f5_data(o.id)"/>
+                <t t-set="data" t-value="report_obj.get_f5_data(o.id, {'show_itemized': show_itemized})"/>
                 <div class="report-header">
                     <div class="document-ref">
                         <div>F5-P-วง-003</div>
@@ -197,7 +198,7 @@
                 </div>
 
                 <!-- Main Table -->
-                <table class="report-table table" style="border-spacing:0px 4px;">
+                <table class="report-table table table-borderless" style="border-spacing:0px 4px;">
                     <thead>
                         <tr>
                             <th style="vertical-align: bottom; text-align: left;" class="items-column" rowspan="2">
@@ -237,10 +238,10 @@
                             <div class="account-content">
                                 <t t-out="node.get('name', '')"/>
                             </div>
-                            <div t-if="node.get('description')" class="account-description">
-                                <t t-out="node.get('description', '')"/>
-                            </div>
-
+                            <t t-if="show_note">
+                                <div t-if="node.get('description')" class="account-description" t-out="node.get('description', '')"/>
+                                <div t-if="node.get('note')" class="account-description" t-out="node.get('note', '')"/>
+                            </t>
                         </t>
                         <t t-else="">
                             <span class="node-content" t-out="node.get('name', '')"/>

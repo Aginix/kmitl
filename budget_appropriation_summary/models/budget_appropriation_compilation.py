@@ -318,15 +318,15 @@ class BudgetAppropriationCompilation(models.Model):
     social_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
 
     @api.depends(
-        "revenue_appropriation_ids.treasury_replenishment_amount",
-        "revenue_appropriation_ids.deducted_reserve_amount",
-        "revenue_appropriation_ids.maintenance_amount",
-        "revenue_appropriation_ids.capital_budget_amount",
-        "revenue_appropriation_ids.recurrent_budget_amount",
-        "revenue_appropriation_ids.external_funding_amount",
+        "expense_appropriation_ids.treasury_replenishment_amount",
+        "expense_appropriation_ids.deducted_reserve_amount",
+        "expense_appropriation_ids.maintenance_amount",
+        "expense_appropriation_ids.capital_budget_amount",
+        "expense_appropriation_ids.recurrent_budget_amount",
+        "expense_appropriation_ids.external_funding_amount",
+        "expense_appropriation_ids.code_0702000002",
+        "expense_appropriation_ids.code_0702000003",
         "revenue_appropriation_ids.amount_net",
-        "revenue_appropriation_ids.code_0702000002",
-        "revenue_appropriation_ids.code_0702000003",
     )
     def _compute_totals(self):
         for record in self:
@@ -357,14 +357,15 @@ class BudgetAppropriationCompilation(models.Model):
             record.code_0702000003 = sum(
                 record.expense_appropriation_ids.mapped("code_0702000003")
             )
-            record.fixed_expense_total = record.revenue_net - (
-                record.treasury_replenishment_amount
-                + record.deducted_reserve_amount
-                + record.maintenance_amount
-                + record.capital_budget_amount
-                + record.recurrent_budget_amount
-                + record.external_funding_amount
-            )
+            record.fixed_expense_total = sum([
+                record.treasury_replenishment_amount,
+                record.deducted_reserve_amount,
+                record.maintenance_amount,
+                record.capital_budget_amount,
+                record.recurrent_budget_amount,
+                record.external_funding_amount
+            ])
+
             record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net if record.revenue_net else 0.0
 
     BUDGET_SUMMARY_FIELDS = [

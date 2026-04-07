@@ -553,6 +553,7 @@ class BudgetTreeExporter:
                 'line_count': node.metadata.get('line_count', 0),
                 'description': node.metadata.get('description', ''),
                 'note': node.metadata.get('note', ''),
+                'line_ids': node.metadata.get('line_ids', []),
             })
 
             if node.node_type == 'activity' and node.level == 1:
