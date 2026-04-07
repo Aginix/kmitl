@@ -10,6 +10,11 @@ class WorkAcceptance(models.Model):
         compute="_compute_is_work_end_extended",
     )
 
+    @api.depends(
+        "purchase_id.work_end",
+        "purchase_id.change_ids.change_field_ids.field_id",
+        "po_work_end_original",
+    )
     def _compute_is_work_end_extended(self):
         work_end_fields = {"work_start", "contract_period_days"}
         for rec in self:

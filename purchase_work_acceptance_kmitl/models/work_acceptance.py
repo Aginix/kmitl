@@ -167,12 +167,6 @@ class WorkAcceptance(models.Model):
     def _default_start_date(self):
         return fields.Date.today()
 
-    @api.depends(
-        "purchase_id.work_end",
-        "purchase_id.change_ids.change_field_ids.field_id",
-        "po_work_end_original",
-    )
-
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
         for rec in self:
