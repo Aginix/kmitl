@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
+from datetime import timedelta
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -48,17 +49,51 @@ class WorkAcceptance(models.Model):
         compute="_compute_completeness",
         store=True,
     )
-    requested_delivery_date = fields.Datetime(
+    requested_delivery_date = fields.Date(
         string="Requested Delivery Date",
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
 
-    # Late Fines
-    late_days = fields.Integer(
+    # convert from Datetime to Date
+    date_due = fields.Date(
+        string="Due Date",
+        related="purchase_id.work_end",
+        required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+    )
+    date_receive = fields.Date(
+        string="Received Date",
+        default=lambda self: self._default_start_date(),
+        required=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
+    # PO date snapshots (captured at WA creation, immune to PO edits)
+    po_date_order_date = fields.Date(
+        string="PO Contract Date",
+        copy=False,
+    )
+    po_work_start = fields.Date(
+        string="PO Work Start",
+        copy=False,
+    )
+    current_work_end = fields.Date(
+        compute="_compute_current_work_end",
+    )
+    po_work_end_original = fields.Date(
+        string="PO Work End Original",
+        related='purchase_id.work_end_original',
+    )
+
+    # Late Fines
+    late_days = fields.Integer(
+        compute="_compute_late_days",
+        store=True,
+        readonly=False,
         tracking=True,
         help="Late day(s) from Received Date - Due Date",
     )
@@ -89,6 +124,32 @@ class WorkAcceptance(models.Model):
         store=True,
     )
 
+    # Construction contract dates
+    is_construction_contract = fields.Boolean(
+        compute="_compute_is_construction_contract",
+    )
+    is_delivery_late = fields.Boolean(
+        compute="_compute_is_delivery_late",
+    )
+    date_committee_received = fields.Date(
+        string="วันที่คณะกรรมการได้รับเอกสาร",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+    )
+    date_contract_complete = fields.Date(
+        string="วันที่เสร็จถูกต้องตามสัญญา",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+    )
+    date_work_handover = fields.Date(
+        string="วันที่รับมอบงานแล้ว",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+    )
+
     _sql_constraints = [
         ("late_days", "CHECK (late_days>=0)", "Wrong Late Days, it must be positive!"),
         (
@@ -103,39 +164,32 @@ class WorkAcceptance(models.Model):
         ),
     ]
 
-    # Late Fines
-    @api.onchange("late_days")
-    def _onchange_late_days_negative(self):
-        if self.late_days < 0:
-            self.late_days = 0
+    def _default_start_date(self):
+        return fields.Date.today()
 
-    @api.onchange("requested_delivery_date", "date_due")
-    def _onchange_late_days(self):
-        late_days = 0
-        if self.requested_delivery_date and self.date_due:
-            late_days = (self.requested_delivery_date - self.date_due).days
-        self.late_days = late_days > 0 and late_days or 0
-
-    @api.onchange("fines_rate")
-    def _onchange_fines_rate(self):
-        if self.fines_rate < 0:
-            self.fines_rate = 0
-    
-    @api.depends("late_days", "fines_rate")
-    def _compute_fines_late(self):
+    @api.depends("requested_delivery_date", "date_due")
+    def _compute_is_delivery_late(self):
         for rec in self:
-            rec.fines_late = rec.late_days * rec.fines_rate
+            rec.is_delivery_late = bool(
+                rec.requested_delivery_date
+                and rec.date_due
+                and rec.requested_delivery_date > rec.date_due
+            )
 
-    @api.depends("price_subtotal", "fines_late")
-    def _compute_fines_total(self):
+    @api.depends("purchase_id")
+    def _compute_is_construction_contract(self):
         for rec in self:
-            result = rec.price_subtotal - rec.fines_late
-            rec.fines_total = max(result, 0)
+            rec.is_construction_contract = bool(
+                getattr(rec.purchase_id.contract_type_id, "is_construction", False)
+            )
 
-    @api.depends("wa_line_ids", "wa_line_ids.price_subtotal")
-    def _compute_price_subtotal(self):
+    @api.depends("date_due")
+    def _compute_current_work_end(self):
         for rec in self:
-            rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
+            if rec.date_due:
+                rec.current_work_end = rec.date_due + timedelta(days=1)
+            else:
+                rec.current_work_end = False
 
     def _can_auto_accept(self):
         return True
@@ -184,7 +238,7 @@ class WorkAcceptance(models.Model):
             and self._can_auto_accept()
         ):
             self.with_context(skip_committee_wizard=True).button_accept()
-    
+
     def _validate_tier(self, reviews):
         res = super()._validate_tier(reviews)
         if (
@@ -221,7 +275,7 @@ class WorkAcceptance(models.Model):
                 return rec._action_open_committee_wizard()
 
         return super().button_accept(force=force)
-    
+
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
         for rec in self:
@@ -265,7 +319,42 @@ class WorkAcceptance(models.Model):
             "target": "current",
             "context": self.env.context,
         }
-      
+
+    # Late Fines
+    @api.onchange("late_days")
+    def _onchange_late_days_negative(self):
+        if self.late_days < 0:
+            self.late_days = 0
+
+    @api.depends("requested_delivery_date", "date_due")
+    def _compute_late_days(self):
+        for rec in self:
+            late_days = 0
+            if rec.requested_delivery_date and rec.date_due:
+                late_days = (rec.requested_delivery_date - rec.date_due).days
+            rec.late_days = late_days if late_days > 0 else 0
+
+    @api.onchange("fines_rate")
+    def _onchange_fines_rate(self):
+        if self.fines_rate < 0:
+            self.fines_rate = 0
+
+    @api.depends("late_days", "fines_rate")
+    def _compute_fines_late(self):
+        for rec in self:
+            rec.fines_late = rec.late_days * rec.fines_rate
+
+    @api.depends("price_subtotal", "fines_late")
+    def _compute_fines_total(self):
+        for rec in self:
+            result = rec.price_subtotal - rec.fines_late
+            rec.fines_total = max(result, 0)
+
+    @api.depends("wa_line_ids", "wa_line_ids.price_subtotal")
+    def _compute_price_subtotal(self):
+        for rec in self:
+            rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
+
     def _action_open_committee_wizard(self):
         self.ensure_one()
         return {
@@ -278,3 +367,12 @@ class WorkAcceptance(models.Model):
                 'default_wa_id': self.id,
             },
         }
+
+
+class WorkAcceptanceLine(models.Model):
+    _inherit = "work.acceptance.line"
+
+    date_due = fields.Date(related="wa_id.date_due", string="Due Date", readonly=True)
+    date_receive = fields.Date(
+        related="wa_id.date_receive", string="Received Date", readonly=True
+    )
