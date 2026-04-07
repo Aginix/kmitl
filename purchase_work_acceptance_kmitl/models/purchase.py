@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
     wa_tier_validation = fields.Boolean(
         string="Paperless WA",
         default=True,
-        help="If checked, WA created will be approved by committee by tier valiation."
+        help="If checked, WA created will be approved by committee by tier validation."
         "Each committee will be notified (by email or inbox) to approve WA.\n"
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
