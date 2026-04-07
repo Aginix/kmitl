@@ -9,6 +9,9 @@ _logger = logging.getLogger(__name__)
 # Source codes classified as government budget (เงินงบประมาณ)
 BUDGET_SOURCE_CODES = ("1", "3", "5")
 
+# Top-level revenue account codes in display order
+REVENUE_CODES = ["r49000", "43300", "43400", "43500", "43700"]
+
 # Top-level expense account codes in display order
 EXPENSE_LEVEL0_CODES = ["51000", "52000", "53000", "54000", "55000", "07020"]
 
@@ -30,6 +33,10 @@ class BudgetAppropriationCompilation(models.Model):
         is_budget_source = self.source_analytic_id.code in BUDGET_SOURCE_CODES
         revenue_rows = self._get_f3_revenue_rows()
         revenue_total = sum(r["amount"] for r in revenue_rows)
+        revenue_deduct = sum(
+            a.amount_deduct for a in self.revenue_appropriation_ids
+        )
+        revenue_net = revenue_total - revenue_deduct
         expenditure_rows = self._get_f3_expenditure_rows()
         expenditure_total = sum(
             r["amount"] for r in expenditure_rows if r["level"] == 0
@@ -38,36 +45,55 @@ class BudgetAppropriationCompilation(models.Model):
             "is_budget_source": is_budget_source,
             "revenue_rows": revenue_rows,
             "revenue_total": revenue_total,
+            "revenue_deduct": revenue_deduct,
+            "revenue_net": revenue_net,
             "expenditure_rows": expenditure_rows,
             "expenditure_total": expenditure_total,
         }
 
     def _get_f3_revenue_rows(self):
-        """Revenue summary grouped by top-level budget account."""
+        """Revenue summary grouped by top-level budget account.
+
+        Only includes accounts matching REVENUE_CODES, displayed in that order.
+        """
         lines = self.revenue_appropriation_ids.mapped("line_ids")
         if not lines:
             return []
 
         BudgetAccount = self.env["budget.account"]
+
+        # Pre-fetch the fixed top-level accounts in one query
+        top_accounts = BudgetAccount.search(
+            [("code", "in", REVENUE_CODES)]
+        )
+        # Map every descendant to its top-level account
+        root_map = {}
+        for top in top_accounts:
+            for desc in BudgetAccount.search(
+                [("parent_path", "=like", f"{top.parent_path}%")]
+            ):
+                root_map[desc.id] = top
+
+        # Aggregate line balances by top-level account
         account_totals = {}
-
         for line in lines:
-            account = line.account_id
-            if account.parent_path:
-                root_id = int(account.parent_path.strip("/").split("/")[0])
-            else:
-                root_id = account.id
-
-            if root_id not in account_totals:
-                root = BudgetAccount.browse(root_id)
-                account_totals[root_id] = {
-                    "name": root.name,
-                    "code": root.code or "",
+            top = root_map.get(line.account_id.id)
+            if not top:
+                continue
+            if top.code not in account_totals:
+                account_totals[top.code] = {
+                    "name": top.name,
+                    "code": top.code,
                     "amount": 0.0,
                 }
-            account_totals[root_id]["amount"] += line.balance
+            account_totals[top.code]["amount"] += line.balance
 
-        return sorted(account_totals.values(), key=lambda r: r["code"])
+        # Return in the fixed display order
+        return [
+            account_totals[code]
+            for code in REVENUE_CODES
+            if code in account_totals
+        ]
 
     def _get_f3_expenditure_rows(self):
         """Expenditure summary with 4-level hierarchy.
