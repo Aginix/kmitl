@@ -1,6 +1,0 @@
-id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_stock_request_user,stock_request_user,model_stock_request,stock_request_aginix.group_stock_request_user,1,1,1,1
-access_stock_move_user,stock.move user,stock.model_stock_move,stock_request_aginix.group_stock_request_user,1,0,0,0
-access_stock_move_line_user,stock.move.line user,stock.model_stock_move_line,stock_request_aginix.group_stock_request_user,1,0,0,0
-access_stock_request_line_user,stock_request_line_user,model_stock_request_line,stock_request_aginix.group_stock_request_user,1,1,1,1
-access_stock_valuation_layer,access_stock_valuation_layer,stock_account.model_stock_valuation_layer,stock_request_aginix.group_stock_request_user,1,0,0,0

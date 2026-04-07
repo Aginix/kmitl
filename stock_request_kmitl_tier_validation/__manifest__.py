@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase work acceptance cancel restriction',
+    'name': 'Stock Request KMITL Tier Validation',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase work acceptance cancel restriction Summary """,
+    'summary': """ Stock Request KMITL Tier Validation Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_work_acceptance_kmitl'],
+    'depends': ['stock_request_kmitl', 'base_tier_validation'],
     "data": [
-        "views/work_acceptance_views.xml"
+        "data/tier_definition.xml",
+        "views/stock_request_views.xml",
     ],
     'installable': True,
     'auto_install': False,

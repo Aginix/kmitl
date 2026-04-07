@@ -2,12 +2,23 @@
 from datetime import timedelta
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
+
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class WorkAcceptance(models.Model):
     _name = "work.acceptance"
     _inherit = ["work.acceptance", "thai.date.mixin"]
     _tier_validation_manual_config = True  # We need more buttons
+    _state_from = ["in_review"]
+    _state_to = ["accept"]
+
+    state = fields.Selection(
+        selection_add=[("in_review", "In Review"), ("accept",)]
+    )
 
     wa_tier_validation = fields.Boolean(
         string="Paperless WA",
@@ -15,11 +26,19 @@ class WorkAcceptance(models.Model):
         default=True,
         states={"draft": [("readonly", False)]},
         tracking=True,
-        help="If checked, WA created will be approved by committee by tier valiation."
+        help="If checked, WA created will be approved by committee by tier validation."
         "Each committee will be notified (by email or inbox) to approve WA.\n"
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
+    attachment_ids = fields.One2many(
+        "ir.attachment",
+        "res_id",
+        string="Document Attachments",
+        domain=[("res_model", "=", "work.acceptance")],
+        tracking=True,
+    )
+
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",
         inverse_name="wa_id",
@@ -200,6 +219,91 @@ class WorkAcceptance(models.Model):
             else:
                 rec.current_work_end = False
 
+    def _can_auto_accept(self):
+        return True
+
+    def _get_under_validation_allowed_fields(self):
+        fields = super()._get_under_validation_allowed_fields()
+        return fields + ["state"]
+
+    def request_validation(self):
+        self.write({"state": "in_review"})
+        return super().request_validation()
+
+    def button_review(self):
+        self.write({"state": "in_review"})
+
+    def _check_state_conditions(self, vals):
+        if self.env.context.get('skip_committee_wizard'):
+            return False
+        return super()._check_state_conditions(vals)
+
+    def _rejected_tier(self, tiers=False):
+        self.ensure_one()
+        tier_reviews = tiers or self.review_ids
+        user_reviews = tier_reviews.filtered(
+            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+        )
+        # Set approved แทน rejected เพื่อไม่ให้ WA ถูก set rejected = True
+        user_reviews.write({
+            'status': 'approved',
+            'done_by': self.env.user.id,
+            'reviewed_date': fields.Datetime.now(),
+        })
+        for review in user_reviews:
+            if review.definition_id.rejected_server_action_id:
+                review.definition_id.rejected_server_action_id\
+                    .with_context(
+                        active_id=self.id,
+                        active_model=self._name,
+                    ).sudo().run()
+        self._update_counter({'review_deleted': True})
+
+        if (
+            self.state == 'in_review'
+            and self.completeness == 100
+            and not self.env.context.get('skip_committee_wizard')
+            and self._can_auto_accept()
+        ):
+            self.with_context(skip_committee_wizard=True).button_accept()
+    
+    def _validate_tier(self, reviews):
+        res = super()._validate_tier(reviews)
+        if (
+            self.state == 'in_review'
+            and self.completeness == 100
+            and not self.env.context.get('skip_committee_wizard')
+            and self._can_auto_accept()
+        ):
+            self.with_context(skip_committee_wizard=True).button_accept()
+        return res
+
+    def button_accept(self, force=False):
+        for rec in self:
+            if not rec.wa_tier_validation and not rec.attachment_ids:
+                raise UserError(
+                    _("กรุณาแนบหลักฐานการตรวจรับ")
+                )
+
+        if self.env.context.get('skip_committee_wizard'):
+            self.mapped('review_ids').unlink()
+            self._unlink_zero_quantity()
+            date_accept = force or fields.Datetime.now()
+            self.with_context(
+                skip_validation_check=True
+            ).write({
+                'state': 'accept',
+                'date_accept': date_accept,
+            })
+            return True
+
+        for rec in self:
+            committees = rec.work_acceptance_committee_ids
+            if committees and rec.completeness < 100:
+                return rec._action_open_committee_wizard()
+
+        return super().button_accept(force=force)
+    
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
         for rec in self:
@@ -212,7 +316,7 @@ class WorkAcceptance(models.Model):
     @api.model
     def _get_under_validation_exceptions(self):
         res = super()._get_under_validation_exceptions()
-        res.extend(["work_acceptance_committee_ids"])
+        res.extend(["work_acceptance_committee_ids", 'state', 'date_accept'])
         return res
 
     def _clear_data_committee(self):
@@ -278,7 +382,19 @@ class WorkAcceptance(models.Model):
     def _compute_price_subtotal(self):
         for rec in self:
             rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
-
+    
+    def _action_open_committee_wizard(self):
+        self.ensure_one()
+        return {
+            'name': _('Work Acceptance Wizard'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'work.acceptance.committee.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_wa_id': self.id,
+            },
+        }
 
 class WorkAcceptanceLine(models.Model):
     _inherit = "work.acceptance.line"

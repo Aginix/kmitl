@@ -26,6 +26,7 @@ class StockRequest(models.Model):
             ('submitted', "Submitted"),
             ("approved", "Approved"),
             ("done", "Done"),
+            ("rejected", "Rejected"),
             ("cancel", "Cancelled"),
         ],
         string="Status",
@@ -39,14 +40,12 @@ class StockRequest(models.Model):
         'stock.picking.type',
         string="Picking Type",
         required=True,
-        default=lambda self: self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1),
         tracking=True
     )
     location_id = fields.Many2one(
         'stock.location',
         string='From Location',
         required=True,
-        default=lambda self: self.env['stock.location'].search([('complete_name', '=', 'WH/Stock')], limit=1),
         tracking=True
     )
     location_dest_id = fields.Many2one(
@@ -87,13 +86,65 @@ class StockRequest(models.Model):
         compute="_compute_is_editable",
         store=False
     )
+    operating_unit_id = fields.Many2one(
+        "operating.unit",
+        string="Operating Unit",
+        tracking=True,
+        default=lambda self: self.env["res.users"].operating_unit_default_get(
+            self.env.user.id
+        ),
+    )
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        operating_unit = self.env["res.users"].operating_unit_default_get(
+            self.env.user.id
+        )
+        picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+            # ('warehouse_id.operating_unit_id', '=', operating_unit.id),
+        ], limit=1)
+        if picking_type:
+            res['picking_type_id'] = picking_type.id
+        if operating_unit:
+            location = self.env['stock.location'].search([
+                ('operating_unit_id', '=', operating_unit.id)
+            ], limit=1)
+            if location:
+                res['location_id'] = location.id
+        return res
+    
+    def _get_location_for_ou(self, operating_unit_id):
+        return self.env['stock.location'].search([
+            ('operating_unit_id', '=', operating_unit_id)
+        ], limit=1)
+
+    @api.onchange('operating_unit_id')
+    def _onchange_operating_unit_id(self):
+        if self.operating_unit_id:
+            self.location_id = self._get_location_for_ou(self.operating_unit_id.id)
+        else:
+            self.location_id = False
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name') in (False, _('New')):
                 vals['name'] = _('New')
+
+            if vals.get('operating_unit_id'):
+                location = self._get_location_for_ou(vals['operating_unit_id'])
+                if location:
+                    vals['location_id'] = location.id
         return super().create(vals_list)
+    
+    def write(self, vals):
+        if vals.get('operating_unit_id'):
+            location = self._get_location_for_ou(vals['operating_unit_id'])
+            if location:
+                vals['location_id'] = location.id
+        return super().write(vals)
 
     def action_submitted(self):
         for rec in self:
@@ -112,6 +163,9 @@ class StockRequest(models.Model):
 
     def action_reset(self):
         self.state = 'draft'
+
+    def action_rejected(self):
+        self.state = 'rejected'
 
     def _prepare_picking_vals(self):
         self.ensure_one()
@@ -230,6 +284,12 @@ class StockRequestLine(models.Model):
         string='Total Price',
         compute='_compute_total_price_from_valuation',
         store=False
+    )
+
+    operating_unit_id = fields.Many2one(
+        comodel_name="operating.unit",
+        related="request_id.operating_unit_id",
+        string="Operating Unit",
     )
 
     @api.depends('request_id.picking_id.move_ids_without_package')
