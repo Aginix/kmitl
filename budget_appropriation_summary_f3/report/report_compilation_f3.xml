@@ -27,20 +27,20 @@
         <t t-call="web.basic_layout">
             <t t-call="budget_appropriation_summary_f3.report_compilation_f3_styles" />
             <t t-set="f3" t-value="o.get_f3_report_data()" />
-            <t t-if="o.env.context.get('html_preview', False)">
-                <button class="f3-print-btn" onclick="window.print()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 6 2 18 2 18 9" />
-                        <path
-                            d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                        <rect x="6" y="14" width="12" height="8" />
-                    </svg>
-                    พิมพ์รายงาน </button>
-            </t>
             <div class="page budget-compilation-f3-report"
                 t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+                <t t-if="o.env.context.get('html_preview', False)">
+                    <button class="f3-print-btn" onclick="window.print()" contenteditable="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 6 2 18 2 18 9" />
+                            <path
+                                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                        พิมพ์รายงาน </button>
+                </t>
                 <div class="report-header" contenteditable="false">
                     <h4 class="pb-2">สรุปประมาณการรายรับ - รายจ่าย</h4>
                     <h4 class="pb-2"> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
@@ -142,10 +142,10 @@
                                         <td class="text-end">
                                             <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" style="border-bottom: solid 1px #000;">
                                             <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" style="border-bottom: solid 1px #000;">
                                             <t t-out="'{:,.0f}'.format(row['amount'])" />
                                         </td>
                                     </tr>
@@ -159,10 +159,10 @@
                                         <td class="text-end">
                                             <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" style="border-bottom: solid 1px #202020;">
                                             <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-end" style="border-bottom: solid 1px #202020;">
                                             <t t-out="'{:,.0f}'.format(row['amount'])" />
                                         </td>
                                     </tr>
@@ -274,7 +274,7 @@
                 }
 
                 .f3-print-btn {
-                position: fixed;
+                position: absolute;
                 top: 20px;
                 right: 20px;
                 z-index: 1000;
