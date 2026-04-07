@@ -554,8 +554,8 @@ msgstr "สามารถทำการ ยืนยัน คำขอเบ�
 #. odoo-python
 #: code:addons/disbursement/models/disbursement_request.py:0
 #, python-format
-msgid "Only submitted requests can be sent."
-msgstr "สามารถส่งได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ส่งแล้ว\" เท่านั้น"
+msgid "Only submitted requests can be signed."
+msgstr "สามารถลงนามได้เฉพาะคำขอเบิกที่อยู่ในสถานะ \"ส่งแล้ว\" เท่านั้น"
 
 #. module: disbursement
 #. odoo-python
@@ -1059,8 +1059,8 @@ msgstr "บันทึกการจ่ายเงิน"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Send"
-msgstr "ส่งให้หมวดตรวจ"
+msgid "Sign"
+msgstr "ลงนาม"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__signed
