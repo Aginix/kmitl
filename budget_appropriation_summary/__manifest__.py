@@ -5,7 +5,7 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["budget_appropriation", "web"],
+    "depends": ["budget_appropriation", "web", "l10n_th_fonts"],
     "data": [
         "data/dashboard_action.xml",
         "data/paper_format.xml",
