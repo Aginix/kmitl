@@ -16,7 +16,6 @@
         'thai_date_utils',
         'l10n_th_amount_to_text',
         'purchase_kmitl',
-        'purchase_order_change',
     ],
     "data": [
         "security/ir.model.access.csv",
