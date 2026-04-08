@@ -6,6 +6,7 @@
             <field name="sequence">20</field>
             <field name="user_id" ref="base.public_user" />
             <field name="theme_id" ref="base.module_theme_kmitl" />
+            <field name="auth_signup_uninvited">b2c</field>
             <field name="homepage_url">/jobs</field>
             <field
                 name="logo"
