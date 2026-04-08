@@ -9,7 +9,6 @@
     "depends": [
         "field_management",
         "purchase_order_kmitl",
-        "purchase_order_payment_type",
         "purchase_budget",
     ],
     "data": [

@@ -37,16 +37,6 @@
         </record>
 
         <record
-            id="readonly_management_fields_purchase_order_payment_type"
-            model="readonly.management.fields"
-        >
-            <field name="management_id" ref="readonly_management_purchase_order"/>
-            <field name="field_id" ref="purchase_order_payment_type.field_purchase_order__payment_type"/>
-            <field name="domain">[('state', 'in', ['purchase', 'done', 'cancel'])]</field>
-            <field name="force_readonly" eval="False"/>
-        </record>
-
-        <record
             id="readonly_management_fields_purchase_order_budget_account_id"
             model="readonly.management.fields"
         >
