@@ -53,5 +53,6 @@
     "application": False,
     "installable": True,
     "auto_install": False,
+    "post_init_hook": "create_job_website_and_menu",
     "license": "LGPL-3",
 }
