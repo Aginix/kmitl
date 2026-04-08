@@ -137,6 +137,7 @@ class WorkAcceptance(models.Model):
     )
     is_delivery_late = fields.Boolean(
         compute="_compute_is_delivery_late",
+        store=True,
     )
     date_committee_received = fields.Date(
         string="วันที่คณะกรรมการได้รับเอกสาร",
@@ -174,35 +175,19 @@ class WorkAcceptance(models.Model):
     def _default_start_date(self):
         return fields.Date.today()
 
-    def _generate_acceptance_reports(self):
-        """Pre-generate and cache acceptance report PDFs at accept time."""
-        for report_name in [
-            "purchase_work_acceptance_kmitl.report_work_acceptance",
-            "purchase_work_acceptance_kmitl.report_committee_acceptance",
-        ]:
-            self.env["ir.actions.report"]._render_qweb_pdf(
-                report_name, self.ids
-            )
-
-    def _delete_cached_reports(self):
-        """Remove cached report PDFs so they regenerate on next acceptance."""
-        for report_name in [
-            "purchase_work_acceptance_kmitl.report_work_acceptance",
-            "purchase_work_acceptance_kmitl.report_committee_acceptance",
-        ]:
-            report = self.env["ir.actions.report"]._get_report_from_name(
-                report_name
-            )
-            if not report or not report.attachment:
-                continue
-            for rec in self:
-                attachment = report.retrieve_attachment(rec)
-                if attachment:
-                    attachment.unlink()
-
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
-        for rec in self:
+        accepted = self.filtered(lambda r: r.state == 'accept')
+        if accepted:
+            self.env.cr.execute(
+                "SELECT id, is_delivery_late FROM work_acceptance"
+                " WHERE id = ANY(%s)",
+                [list(accepted.ids)],
+            )
+            stored = dict(self.env.cr.fetchall())
+            for rec in accepted:
+                rec.is_delivery_late = stored.get(rec.id, False)
+        for rec in (self - accepted):
             rec.is_delivery_late = bool(
                 rec.requested_delivery_date
                 and rec.date_due
@@ -404,6 +389,7 @@ class WorkAcceptance(models.Model):
                 'default_wa_id': self.id,
             },
         }
+
 
 class WorkAcceptanceLine(models.Model):
     _inherit = "work.acceptance.line"

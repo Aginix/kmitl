@@ -8,6 +8,5 @@
         <field name="report_name">purchase_work_acceptance_kmitl.report_committee_acceptance</field>
         <field name="paperformat_id" ref="paperformat_purchase_work_acceptance_report" />
         <field name="report_file">purchase_work_acceptance_kmitl.report_committee_acceptance</field>
-        <field name="attachment">'ใบตรวจรับงานก่อสร้าง - %s.pdf' % object.name if object.state == 'accept' else False</field>
     </record>
 </odoo>
