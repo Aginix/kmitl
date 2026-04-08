@@ -122,6 +122,10 @@
             <xpath expr="//div[hasclass('oe_title')]" position="before">
                 <h2>ใบสั่งซื้อ/จ้าง</h2>
             </xpath>
+
+            <xpath expr="//span[@class='o_form_label']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 
