@@ -285,7 +285,6 @@ class WorkAcceptance(models.Model):
                 'state': 'accept',
                 'date_accept': date_accept,
             })
-            self._generate_acceptance_reports()
             return True
 
         for rec in self:
@@ -294,7 +293,6 @@ class WorkAcceptance(models.Model):
                 return rec._action_open_committee_wizard()
 
         result = super().button_accept(force=force)
-        self._generate_acceptance_reports()
         return result
 
     @api.depends("work_acceptance_committee_ids.status")
@@ -322,7 +320,6 @@ class WorkAcceptance(models.Model):
         )
 
     def button_draft(self):
-        self._delete_cached_reports()
         self._clear_data_committee()
         return super().button_draft()
 
