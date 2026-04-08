@@ -283,8 +283,11 @@
                             <div class="oe_kanban_content">
                                 <div class="o_kanban_record_top mb-0">
                                     <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title">
-                                            <field name="department_analytic_id" />
+                                        <strong class="o_kanban_record_title fs-5">
+                                          <div>
+                                            ปีงบประมาณ <field name="account_fiscal_year_id"/>
+                                          </div>
+                                          <field name="department_analytic_id"/>
                                         </strong>
                                     </div>
                                     <field
