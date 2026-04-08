@@ -174,6 +174,32 @@ class WorkAcceptance(models.Model):
     def _default_start_date(self):
         return fields.Date.today()
 
+    def _generate_acceptance_reports(self):
+        """Pre-generate and cache acceptance report PDFs at accept time."""
+        for report_name in [
+            "purchase_work_acceptance_kmitl.report_work_acceptance",
+            "purchase_work_acceptance_kmitl.report_committee_acceptance",
+        ]:
+            self.env["ir.actions.report"]._render_qweb_pdf(
+                report_name, self.ids
+            )
+
+    def _delete_cached_reports(self):
+        """Remove cached report PDFs so they regenerate on next acceptance."""
+        for report_name in [
+            "purchase_work_acceptance_kmitl.report_work_acceptance",
+            "purchase_work_acceptance_kmitl.report_committee_acceptance",
+        ]:
+            report = self.env["ir.actions.report"]._get_report_from_name(
+                report_name
+            )
+            if not report or not report.attachment:
+                continue
+            for rec in self:
+                attachment = report.retrieve_attachment(rec)
+                if attachment:
+                    attachment.unlink()
+
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
         for rec in self:
@@ -274,6 +300,7 @@ class WorkAcceptance(models.Model):
                 'state': 'accept',
                 'date_accept': date_accept,
             })
+            self._generate_acceptance_reports()
             return True
 
         for rec in self:
@@ -281,7 +308,9 @@ class WorkAcceptance(models.Model):
             if committees and rec.completeness < 100:
                 return rec._action_open_committee_wizard()
 
-        return super().button_accept(force=force)
+        result = super().button_accept(force=force)
+        self._generate_acceptance_reports()
+        return result
 
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
@@ -308,6 +337,7 @@ class WorkAcceptance(models.Model):
         )
 
     def button_draft(self):
+        self._delete_cached_reports()
         self._clear_data_committee()
         return super().button_draft()
 
