@@ -41,12 +41,12 @@
                         </svg>
                         พิมพ์รายงาน </button>
                 </t>
-                <div class="report-header" contenteditable="false">
-                    <h4 class="pb-2">สรุปประมาณการรายรับ - รายจ่าย</h4>
-                    <h4 class="pb-2"> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
+                <div class="report-header mb-2" contenteditable="false">
+                    <h4>สรุปประมาณการรายรับ - รายจ่าย</h4>
+                    <h4> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
                     </h4>
-                    <h4 class="pb-2">
-                        <t t-out="o.department_analytic_id.name" />
+                    <h4>
+                        <t t-out="o.department_analytic_id.complete_name.replace(' / ', ' ')" />
                     </h4>
                 </div>
                 <div class="report-body">
@@ -364,7 +364,7 @@
         <t t-else="">
             <style>
                 * {
-                line-height: 1.4;
+                line-height: 0.975;
                 }
             </style>
         </t>
@@ -376,26 +376,25 @@
             }
 
             .budget-compilation-f3-report {
-            font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
-            font-size: 10pt;
+                font-family: 'THSarabun', Arial, sans-serif;
+                line-height: 0.975;
+                font-size: 15pt;
             }
 
             .budget-compilation-f3-report h3 {
-            margin: 0;
-            font-size: 14pt;
-            font-weight: 600;
+                margin: 0;
+                font-weight: bold;
             }
 
             .budget-compilation-f3-report h4 {
-            margin: 0;
-            font-size: 12pt;
-            font-weight: normal;
+                margin: 0;
+                font-weight: bold;
             }
 
             .report-header {
-            position: relative;
-            text-align: center;
-            cursor: not-allowed;
+                position: relative;
+                text-align: center;
+                cursor: not-allowed;
             }</style>
     </template>
     <!-- Main report template -->

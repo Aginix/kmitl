@@ -33,14 +33,14 @@
                         พิมพ์รายงาน
                     </button>
                 </t>
-                <div class="report-header" contenteditable="false">
-                    <h4 class="pb-2">สรุปงบประมาณรายจ่าย</h4>
-                    <h4 class="pb-2">
+                <div class="report-header mb-2" contenteditable="false">
+                    <h4>สรุปงบประมาณรายจ่าย</h4>
+                    <h4>
                         ประจำปีงบประมาณ พ.ศ.
                         <t t-out="o.account_fiscal_year_id.name" />
                     </h4>
-                    <h4 class="pb-2">
-                        <t t-out="o.department_analytic_id.name" />
+                    <h4>
+                        <t t-out="o.department_analytic_id.complete_name.replace(' / ', ' ')" />
                     </h4>
                 </div>
                 <div class="report-body">
@@ -344,7 +344,7 @@
         <t t-else="">
             <style>
                 * {
-                    line-height: 1.4;
+                    line-height: 0.975;
                 }
             </style>
         </t>
@@ -356,20 +356,19 @@
             }
 
             .budget-compilation-f23w-report {
-                font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
-                font-size: 10pt;
+                font-family: 'THSarabun', Arial, sans-serif;
+                line-height: 0.975;
+                font-size: 15pt;
             }
 
             .budget-compilation-f23w-report h3 {
                 margin: 0;
-                font-size: 14pt;
-                font-weight: 600;
+                font-weight: bold;
             }
 
             .budget-compilation-f23w-report h4 {
                 margin: 0;
-                font-size: 12pt;
-                font-weight: normal;
+                font-weight: bold;
             }
 
             .report-header {
