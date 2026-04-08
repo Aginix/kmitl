@@ -259,7 +259,7 @@
                     color: white;
                     border: none;
                     border-radius: 4px;
-                    font-size: 14px;
+                    font-size: 16pt;
                     cursor: pointer;
                     font-family: 'THSarabun', Arial, sans-serif;
                     display: flex;
