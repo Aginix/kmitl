@@ -116,6 +116,7 @@
                                 domain="[
                                     ('account_fiscal_year_id', '=', account_fiscal_year_id),
                                     ('budget_type', '=', 'revenue'),
+                                    ('state', '!=', 'cancel'),
                                     '|',
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
@@ -144,6 +145,7 @@
                                 domain="[
                                     ('account_fiscal_year_id', '=', account_fiscal_year_id),
                                     ('budget_type', '=', 'expense'),
+                                    ('state', '!=', 'cancel'),
                                     '|',
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
@@ -388,8 +390,8 @@
                     />
                 </group>
                 <searchpanel>
-                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
-                    <field name="department_analytic_id" icon="fa-users" select="multi" limit="0" />
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" order="date_from desc" />
+                    <field name="department_analytic_id" icon="fa-users" limit="0" order="code asc" />
                 </searchpanel>
             </search>
         </field>
