@@ -124,6 +124,16 @@
                 </attribute>
             </xpath>
 
+            <!-- No expiry checkbox + due date attrs -->
+            <xpath expr="//field[@name='date_due_guarantee']" position="before">
+                <field name="is_no_expiry" />
+            </xpath>
+            <xpath expr="//field[@name='date_due_guarantee']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': [('is_no_expiry', '=', True)], 'required': [('is_no_expiry', '=', False)], 'readonly': [('is_editable', '=', False)]}
+                </attribute>
+            </xpath>
+
             <!-- Hide analytic field -->
             <xpath expr="//field[@name='analytic_distribution']" position="attributes">
                 <attribute name="groups">base.group_no_one</attribute>

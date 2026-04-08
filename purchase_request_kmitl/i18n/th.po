@@ -562,12 +562,12 @@ msgstr "พนักงาน"
 #: code:addons/purchase_request_kmitl/models/procurement_committee.py:0
 #, python-format
 msgid ""
-"Employee %s cannot appear in multiple committees except TOR and Price "
-"Determine committees."
+"Employee %s cannot appear in multiple committees except TOR and Evaluation "
+"committees."
 msgstr ""
 "คณะกรรมการ %s "
-"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการกำหนดราคากลางและคณะกรรมการกำหนดคุณลักษณะเฉพาะร่าง"
-" ขอบเขตงาน"
+"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงานและคณะกรรมการ"
+" พิจารณาผล"
 
 #. module: purchase_request
 #. odoo-python

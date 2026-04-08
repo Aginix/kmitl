@@ -21,6 +21,7 @@ HelperText.supportedTypes = ["many2one"];
 HelperText.props = {
     ...Many2OneField.props,
     helperText: {type: String, optional: true},
+    "*": true,
 };
 
 HelperText.extractProps = ({attrs, field}) => {

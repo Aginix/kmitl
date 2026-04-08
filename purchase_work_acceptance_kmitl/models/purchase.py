@@ -10,11 +10,23 @@ class PurchaseOrder(models.Model):
     wa_tier_validation = fields.Boolean(
         string="Paperless WA",
         default=True,
-        help="If checked, WA created will be approved by committee by tier valiation."
+        help="If checked, WA created will be approved by committee by tier validation."
         "Each committee will be notified (by email or inbox) to approve WA.\n"
         "If not checked, WA will be approved by paper outside Odoo, "
         "and the result of WA will be filled in by procurement officer",
     )
+
+    work_end_original = fields.Date(
+        string="Original Work End Date",
+        copy=False,
+    )
+
+    def button_confirm_manual(self):
+        result = super().button_confirm_manual()
+        for record in self:
+            if not record.work_end_original:
+                record.work_end_original = record.work_end
+        return result
 
     def _prepare_committee_line(self, line):
         return {
@@ -37,4 +49,6 @@ class PurchaseOrder(models.Model):
         result["context"]["default_wa_tier_validation"] = self.wa_tier_validation
         result["context"]["default_late_days"] = self.late_days
         result["context"]["default_fines_rate"] = self.fines_rate
+        result["context"]["default_po_date_order_date"] = self.date_order_date
+        result["context"]["default_po_work_start"] = self.work_start
         return result

@@ -125,7 +125,7 @@
 
             <xpath expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']" position="attributes">
                 <attribute name="states"/>
-                <attribute name="attrs">{'invisible':[('hide_create_po_button', '=', True)]}</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <button name="button_rejected" position="attributes">
@@ -136,8 +136,8 @@
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify</attribute>
-                <attribute name="groups" />
+                <attribute name="states">to_verify,rejected</attribute>
+                <attribute name="groups"></attribute>
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">

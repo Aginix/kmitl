@@ -183,8 +183,16 @@ class TreeNode:
 
         # Add children if requested
         if include_children and self.children:
-            # Sort children by code (simple alphabetical for non-root levels)
-            sorted_children = sorted(self.children, key=lambda c: c.code)
+            if self.node_type == 'activity' and self.level == 1:
+                # Second tier activity: priority sort (09, 06 first)
+                priority_codes = ['09', '06']
+                sorted_children = sorted(self.children, key=lambda c: (
+                    (priority_codes.index(c.code[:2]), c.code)
+                    if len(c.code) >= 2 and c.code[:2] in priority_codes
+                    else (len(priority_codes), c.code)
+                ))
+            else:
+                sorted_children = sorted(self.children, key=lambda c: c.code)
             data['children'] = [
                 child.to_dict(include_children=True)
                 for child in sorted_children
@@ -545,9 +553,18 @@ class BudgetTreeExporter:
                 'line_count': node.metadata.get('line_count', 0),
                 'description': node.metadata.get('description', ''),
                 'note': node.metadata.get('note', ''),
+                'line_ids': node.metadata.get('line_ids', []),
             })
 
-            sorted_children = sorted(node.children, key=lambda c: c.code)
+            if node.node_type == 'activity' and node.level == 1:
+                priority_codes = ['09', '06']
+                sorted_children = sorted(node.children, key=lambda c: (
+                    (priority_codes.index(c.code[:2]), c.code)
+                    if len(c.code) >= 2 and c.code[:2] in priority_codes
+                    else (len(priority_codes), c.code)
+                ))
+            else:
+                sorted_children = sorted(node.children, key=lambda c: c.code)
             for child in sorted_children:
                 if node.node_type == 'account':
                     traverse(child, indent + 1)

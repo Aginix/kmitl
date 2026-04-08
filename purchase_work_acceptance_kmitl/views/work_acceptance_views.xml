@@ -38,21 +38,33 @@
             ref="purchase_work_acceptance.view_work_acceptance_form"
         />
         <field name="arch" type="xml">
-            <field name="company_id" position="before">
+            <xpath expr="//field[@name='partner_id']" position="before">
                 <field name="wa_tier_validation" />
-            </field>
+            </xpath>
             <xpath expr="//header/button[@name='button_draft']" position="attributes">
                 <attribute name="groups">purchase.group_purchase_user</attribute>
             </xpath>
             <xpath expr="//header/button[@name='button_cancel']" position="attributes">
+                <attribute name="states">draft,in_review</attribute>
                 <attribute name="groups">purchase.group_purchase_user</attribute>
+                <attribute name="confirm">Are you sure you want to Cancel?</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='button_cancel']" position="after">
+                <button
+                    name="button_cancel"
+                    type="object"
+                    states="accept"
+                    string="Cancel"
+                    groups="purchase.group_purchase_manager"
+                    confirm="Are you sure you want to Cancel?"
+                />
             </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page string="Committee">
                         <field
                             name="work_acceptance_committee_ids"
                             nolabel="1"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            readonly="1"
                         >
                             <tree editable="bottom">
                                 <field
@@ -83,6 +95,29 @@
                                 />
                             </tree>
                         </field>
+                </page>
+                <page name="document" string="Attachment"
+                      attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
+                    <field name="attachment_ids"
+                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                           context="{'default_res_model': 'work.acceptance'}">
+                        <tree default_order="sequence">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name" string="File Name" required="1"/>
+                            <field name="description"/>
+                        </tree>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <field name="res_model" invisible="1" readonly="0"/>
+                                    <field name="res_id" invisible="1" readonly="0"/>
+                                    <field name="name" required="1" invisible="1"/>
+                                    <field name="datas" filename="name" required="1"/>
+                                    <field name="description" placeholder="Description"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
                 </page>
             </xpath>
         </field>
@@ -143,7 +178,7 @@
                  <button
                     name="request_validation"
                     string="Request Validation"
-                    attrs="{'invisible': ['|','|',('need_validation', '!=', True),('rejected','=',True),('state', 'not in', ['draft'])]}"
+                    attrs="{'invisible': ['|', ('wa_tier_validation', '!=', True), ('state', 'not in', ['draft'])]}"
                     type="object"
                     groups="purchase.group_purchase_user"
                 />
@@ -163,7 +198,7 @@
                     class="alert alert-warning"
                     role="alert"
                     attrs="{'invisible': ['|', '|', '|',
-                     ('validated', '=', True), ('state', 'not in', ['draft']),
+                     ('validated', '=', True), ('state', 'not in', ['in_review']),
                      ('rejected', '=', True), ('review_ids', '=', [])]}"
                     style="margin-bottom:0px;"
                 >
@@ -183,26 +218,25 @@
                         <button
                             name="reject_tier"
                             string="Not Accept"
-                            attrs="{'invisible': [('can_review', '=', False)]}"
+                            attrs="{'invisible': True}"
                             type="object"
                             class="btn-icon btn-danger"
                             icon="fa-thumbs-down"
                         />
                         <button
-                            name="validate_tier"
+                            name="reject_tier"
                             string="Other"
-                            attrs="{'invisible': True}"
+                            attrs="{'invisible': [('can_review', '=', False)]}"
                             type="object"
                             class="btn-icon btn-warning"
                             icon="fa-arrow-circle-right"
-                            context="{'validate_as_other': True, 'default_comment': 'ไม่เข้าร่วมเพราะ...'}"
                         />
                     </p>
                 </div>
                 <div
                     class="alert alert-success"
                     role="alert"
-                    attrs="{'invisible': ['|', '|', ('validated', '!=', True), ('state', 'not in', ['draft']), ('review_ids', '=', [])]}"
+                    attrs="{'invisible': ['|', '|', ('validated', '!=', True), ('state', 'not in', ['in_review']), ('review_ids', '=', [])]}"
                     style="margin-bottom:0px;"
                 >
                     <p>
@@ -215,7 +249,7 @@
                 <div
                     class="alert alert-danger"
                     role="alert"
-                    attrs="{'invisible': ['|', '|', ('rejected', '!=', True), ('state', 'not in', ['draft']), ('review_ids', '=', [])]}"
+                    attrs="{'invisible': ['|', '|', ('rejected', '!=', True), ('state', 'not in', ['in_review']), ('review_ids', '=', [])]}"
                     style="margin-bottom:0px;"
                 >
                     <p>
@@ -275,6 +309,21 @@
             ref="purchase_work_acceptance.view_work_acceptance_form"
         />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">draft,in_review,accept</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_accept']" position="attributes">
+                <attribute name="states"></attribute>
+                <attribute name="attrs">
+                    {'invisible': ['&amp;',
+                        ('state', '!=', 'in_review'),
+                        '|', ('state', '!=', 'draft'), ('wa_tier_validation', '=', True)
+                    ]}
+                </attribute>
+                <attribute name="groups">purchase.group_purchase_user</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute name="optional">show</attribute>
             </xpath>
@@ -292,7 +341,7 @@
             </xpath>
 
             <xpath expr="//field[@name='date_receive']" position="after">
-                <field name="requested_delivery_date" required="1" />
+                <field name="requested_delivery_date" required="1" widget="date"/>
             </xpath>
 
             <xpath expr="//field[@name='date_due']" position="attributes">
@@ -343,6 +392,31 @@
                     </div>
                     <field name="fines_total" nolabel="1"/>
                 </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Construction contract: วันที่ดำเนินงาน tab -->
+    <record id="view_work_acceptance_form_construction_dates" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form.construction.dates</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="view_work_acceptance_form_gov" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page
+                    string="วันที่ดำเนินงาน"
+                >
+                <group>
+                     <group>
+                        <field name="date_committee_received" />
+                        <field name="date_contract_complete" />
+                        <field name="date_work_handover" />
+                    </group>
+                </group>
+                </page>
+            </xpath>
+            <xpath expr="//form/sheet/notebook" position="before">
+                <field name="is_construction_contract" invisible="1" />
             </xpath>
         </field>
     </record>

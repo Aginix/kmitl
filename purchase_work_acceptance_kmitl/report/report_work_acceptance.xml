@@ -1,0 +1,358 @@
+<odoo>
+    <template id="report_work_acceptance">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="currency" t-value="o.currency_id" />
+                    <style>
+                        * {
+                            font-family: "THSarabunNew", Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        p,
+                        span,
+                        div {
+                            font-size: 16pt;
+                            line-height: 1.2;
+                        }
+                        .sig-line {
+                            display: inline-block;
+                            width: 200px;
+                            border-bottom: 1px dotted #000;
+                        }
+                    </style>
+
+                    <!-- PAGE 1: ใบตรวจรับพัสดุ -->
+                    <div class="page">
+                        <div style="position: absolute; top: 0px; right: 0px">
+                            แบบ พ.36
+                        </div>
+                        <div class="text-center">
+                            <img
+                                t-if="o.purchase_id.request_id.company_id.logo"
+                                t-att-src="image_data_uri(o.purchase_id.request_id.company_id.logo)"
+                                style="max-height: 110px"
+                                alt="Logo"
+                            />
+                        </div>
+                        <div class="mt-3 mb-2 text-center">
+                            <h3 class="fw-bolder" style="line-height: 1.575">
+                                ใบตรวจรับพัสดุ
+                            </h3>
+                            <p>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-9" />
+                            <div class="col">
+                                <div>เลขที่ <span t-esc="o.name" /></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-9" />
+                            <div class="col">
+                                <div class="col">
+                                    อ้างอิง <span t-esc="o.purchase_id.name" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                ได้รับของจาก
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-out="o.purchase_id.partner_id.name"
+                                />
+                            </div>
+                            <div class="col">
+                                วันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.date_receive)"
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ตาม
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-field="o.purchase_id.contract_type_id"
+                                />
+                                เลขที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-out="o.purchase_id.contract_number"
+                                />
+                                ลงวันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.purchase_id.date_order_date)"
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ตามใบส่งมอบงาน ลงวันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.requested_delivery_date)"
+                                />
+                                ดังรายการต่อไปนี้
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered table-sm mb-4">
+                            <thead>
+                                <tr>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 5%; text-align: center"
+                                    >
+                                        ลำดับที่
+                                    </th>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 35%; text-align: center"
+                                    >
+                                        รายการ
+                                    </th>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 10%; text-align: center"
+                                    >
+                                        หน่วยนับ
+                                    </th>
+                                    <th
+                                        colspan="3"
+                                        style="width: 35%; text-align: center"
+                                    >
+                                        จำนวนหน่วย
+                                    </th>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 15%; text-align: center"
+                                    >
+                                        เป็นเงิน
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: center">
+                                        ตามใบสั่งซื้อ/จ้าง
+                                    </th>
+                                    <th style="text-align: center">ตามใบส่งของ</th>
+                                    <th style="text-align: center">ตามที่รับจริง</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="row_no" t-value="1" />
+                                <t t-foreach="o.wa_line_ids" t-as="line">
+                                    <tr>
+                                        <td
+                                            class="text-center"
+                                            style="width: 8%"
+                                            t-out="row_no"
+                                        />
+                                        <td t-out="line.name" />
+                                        <td class="text-center">
+                                            <span t-field="line.product_uom" />
+                                        </td>
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.purchase_line_id.product_qty)"
+                                        />
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.product_qty)"
+                                        />
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.product_qty)"
+                                        />
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.price_subtotal)"
+                                        />
+                                    </tr>
+                                    <t t-set="row_no" t-value="row_no + 1" />
+                                </t>
+                                <tr>
+                                    <td
+                                        colspan="5"
+                                        rowspan="3"
+                                        class="text-center align-middle"
+                                    >
+                                        (
+                                        <t
+                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
+    sum(o.wa_line_ids.mapped('price_subtotal'))
+)"
+                                        />
+                                        )
+                                    </td>
+                                    <td class="text-center">รวมเป็นเงิน</td>
+                                    <td
+                                        class="text-end"
+                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    />
+                                </tr>
+                                <tr>
+                                    <td class="text-center">ภาษีมูลค่าเพิ่ม</td>
+                                    <td
+                                        class="text-end"
+                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    />
+                                </tr>
+                                <tr>
+                                    <td class="text-center">รวมเป็นเงินทั้งสิ้น</td>
+                                    <td
+                                        class="text-end"
+                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    />
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-3 text-center">
+                            <div style="white-space: nowrap">
+                                ลงชื่อ
+                                <span class="sig-line"></span>
+                                ผู้รับพัสดุ/เจ้าหน้าที่พัสดุ
+                            </div>
+                            <div class="mt-2">
+                                (<span t-esc="o.responsible_id.name" />)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 3: ส่วนบันทึกคณะกรรมการตรวจรับพัสดุ -->
+                    <div class="page" style="page-break-before: always">
+                        <div style="position: absolute; top: 0px; right: 0px">
+                            แบบ พ.36
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col">ส่วนบันทึกคณะกรรมการตรวจรับพัสดุ</div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">เรียน อธิการบดี</div>
+                        </div>
+                        <div class="row mt-2 mb-5">
+                            <div class="col">
+                                คณะกรรมการตรวจรับพัสดุได้พร้อมกันตรวจรับพัสดุซึ่ง
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-out="o.purchase_id.partner_id.name"
+                                />
+                                / (ผู้ขาย) ได้ส่งมอบพัสดุ ให้แก่
+                                สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง (ผู้ซื้อ)
+                                ตามข้อตกลงและสัญญาจ้างข้างต้น เป็นที่เรียบร้อยแล้ว
+                                โดยการนี้
+                                ได้ดำเนินการตรวจสอบแล้วถูกต้องตามสัญญา/ข้อตกลงตั้งแต่วันที่
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-esc="o.format_date_thai(o.date_contract_complete)"
+                                />
+                                และได้ตรวจรับพัสดุเรียบร้อยแล้ว ตั้งแต่วันที่
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-esc="o.format_date_thai(o.date_work_handover)"
+                                />
+                                ผู้ขาย/ผู้รับจ้างควรได้รับเงินตามสัญญา ข้อ 1. เป็นเงิน
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                />
+                                บาท (
+                                <t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
+    sum(o.wa_line_ids.mapped('price_subtotal'))
+)"
+                                />
+                                )
+                                ในการนี้ผู้รับจ้างทำงาน
+                                <span t-if="o.is_delivery_late" name="over_time_contract">
+                                    เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่
+                                    <span
+                                        class="text-decoration-underline fw-bolder"
+                                        t-esc="o.format_date_thai(o.current_work_end)"
+                                    />
+                                    ถึงวันที่
+                                    <span
+                                        class="text-decoration-underline fw-bolder"
+                                        t-esc="o.format_date_thai(o.requested_delivery_date)"
+                                    />
+                                    เป็นเวลา
+                                    <span
+                                        class="text-decoration-underline fw-bolder"
+                                        t-esc="(o.requested_delivery_date - o.date_due).days"
+                                    />
+                                    วัน
+                                </span>
+                                คงส่งมอบของล่าช้าเกินกำหนดสัญญา/ข้อตกลงไป
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-esc="o.late_days"
+                                />
+                                วัน จะต้องเสียค่าปรับ วันละ
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-esc="'{0:,.2f}'.format(o.fines_rate)"
+                                />
+                                บาท (<t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_rate)"
+                                />) รวมเป็นเงิน
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-esc="'{0:,.2f}'.format(o.fines_late)"
+                                />
+                                บาท (<t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_late)"
+                                />) คงได้รับเงินงวดนี้ เป็นเงิน
+                                <span
+                                    class="text-decoration-underline fw-bolder"
+                                    t-esc="'{0:,.2f}'.format(o.fines_total)"
+                                />
+                                บาท (
+                                <t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_total)"
+                                />
+                                )
+                            </div>
+                        </div>
+                        <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                            <t t-if="line.approve_role != 'secretary'">
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span t-field="line.approve_role" />
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                            <t t-if="line.approve_role == 'secretary'">
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span t-field="line.approve_role" />
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

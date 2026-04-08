@@ -1,0 +1,48 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_approval_operating_unit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-01 05:59+0000\n"
+"PO-Revision-Date: 2025-12-01 13:01+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: purchase_request_approval_operating_unit
+#: model:res.groups,name:purchase_request_approval_operating_unit.group_all_ou_purchase_request_approval
+msgid "Access all OUs' purchase request approval"
+msgstr ""
+
+#. module: purchase_request_approval_operating_unit
+#: model:ir.model.fields,field_description:purchase_request_approval_operating_unit.field_purchase_request_approval__operating_unit_id
+msgid "Operating Unit (OU)"
+msgstr "หน่วยงาน (OU)"
+
+#. module: purchase_request_approval_operating_unit
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_operating_unit.view_purchase_request_approval_form
+msgid "Other Information"
+msgstr "ข้อมูลอื่น ๆ"
+
+#. module: purchase_request_approval_operating_unit
+#: model:ir.model,name:purchase_request_approval_operating_unit.model_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_approval_operating_unit
+#: model:ir.model,name:purchase_request_approval_operating_unit.model_purchase_request_approval
+msgid "Purchase Request Approval"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_approval_operating_unit
+#: model:ir.model.fields,field_description:purchase_request_approval_operating_unit.field_purchase_request_approval__requesting_operating_unit_id
+msgid "Requesting Operating Unit"
+msgstr "หน่วยงานผู้ขอ (OU)"

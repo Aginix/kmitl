@@ -10,6 +10,11 @@ class PurchaseContractType(models.Model):
 
     name = fields.Char(tracking=True, required=True)
     active = fields.Boolean(tracking=True, default=True)
+    is_construction = fields.Boolean(
+        string="สัญญาจ้างก่อสร้าง",
+        tracking=True,
+        help="หากติ๊ก จะแสดงแท็บ 'วันที่ดำเนินงาน' ใน Work Acceptance",
+    )
     purchase_ids = fields.One2many(
         comodel_name="purchase.order",
         inverse_name="contract_type_id",

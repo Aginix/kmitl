@@ -318,15 +318,15 @@ class BudgetAppropriationCompilation(models.Model):
     social_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
 
     @api.depends(
-        "revenue_appropriation_ids.treasury_replenishment_amount",
-        "revenue_appropriation_ids.deducted_reserve_amount",
-        "revenue_appropriation_ids.maintenance_amount",
-        "revenue_appropriation_ids.capital_budget_amount",
-        "revenue_appropriation_ids.recurrent_budget_amount",
-        "revenue_appropriation_ids.external_funding_amount",
+        "expense_appropriation_ids.treasury_replenishment_amount",
+        "expense_appropriation_ids.deducted_reserve_amount",
+        "expense_appropriation_ids.maintenance_amount",
+        "expense_appropriation_ids.capital_budget_amount",
+        "expense_appropriation_ids.recurrent_budget_amount",
+        "expense_appropriation_ids.external_funding_amount",
+        "expense_appropriation_ids.code_0702000002",
+        "expense_appropriation_ids.code_0702000003",
         "revenue_appropriation_ids.amount_net",
-        "revenue_appropriation_ids.code_0702000002",
-        "revenue_appropriation_ids.code_0702000003",
     )
     def _compute_totals(self):
         for record in self:
@@ -357,14 +357,15 @@ class BudgetAppropriationCompilation(models.Model):
             record.code_0702000003 = sum(
                 record.expense_appropriation_ids.mapped("code_0702000003")
             )
-            record.fixed_expense_total = record.revenue_net - (
-                record.treasury_replenishment_amount
-                + record.deducted_reserve_amount
-                + record.maintenance_amount
-                + record.capital_budget_amount
-                + record.recurrent_budget_amount
-                + record.external_funding_amount
-            )
+            record.fixed_expense_total = sum([
+                record.treasury_replenishment_amount,
+                record.deducted_reserve_amount,
+                record.maintenance_amount,
+                record.capital_budget_amount,
+                record.recurrent_budget_amount,
+                record.external_funding_amount
+            ])
+
             record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net if record.revenue_net else 0.0
 
     BUDGET_SUMMARY_FIELDS = [
@@ -700,6 +701,135 @@ class BudgetAppropriationCompilation(models.Model):
             "total_project_okr": total_project_okr,
             "total_management": total_management,
         }
+
+    _F23W_IMPACT_TYPES = [
+        ("education", "1) ด้านการศึกษา (Education)"),
+        ("academic", "2) ด้านการวิจัย (Academic)"),
+        ("industrial", "3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)"),
+        ("social", "4) ด้านสังคม (Social)"),
+    ]
+
+    def get_f23w_report_data(self):
+        """Prepare F23W report rows for QWeb rendering.
+
+        Returns a flat list of row dicts with a ``type`` key that tells
+        the QWeb template how to render each row.
+        """
+        self.ensure_one()
+
+        # Pre-compute impact data and grand totals
+        impact_data = []
+        for itype, ilabel in self._F23W_IMPACT_TYPES:
+            data = self.get_impact_line_hierarchy(itype)
+            impact_data.append((itype, ilabel, data))
+
+        grand_okr = sum(d[2].get("total_project_okr", 0) for d in impact_data)
+        grand_mgmt = sum(d[2].get("total_management", 0) for d in impact_data)
+        grand_total = grand_okr + grand_mgmt
+        variable_pct = (
+            (grand_total * 100 / self.revenue_net) if self.revenue_net else 0
+        )
+
+        rows = []
+
+        # --- Section 1: Fixed expenses ---
+        rows.append({"type": "fixed_header"})
+        rows.append({"type": "data", "label": "1. หักสำรองจ่าย"})
+        rows.append({
+            "type": "data",
+            "label": "1.1 สำรองจ่ายร้อยละ 15",
+            "amount": self.code_0702000002,
+            "indent": True,
+        })
+        rows.append({
+            "type": "data",
+            "label": "1.2 สำรองจ่ายเกินกว่าร้อยละ 15",
+            "amount": self.code_0702000003,
+            "indent": True,
+        })
+        rows.append({
+            "type": "data",
+            "label": "2. ชดใช้เงินคงคลัง (ถ้ามี)",
+            "amount": self.treasury_replenishment_amount,
+        })
+        rows.append({
+            "type": "data_multiline",
+            "label": "3. ค่าดูแลและบำรุงรักษา",
+            "label2": "(Preventive Maintenance บำรุงรักษาเชิงป้องกัน)",
+            "amount": self.maintenance_amount,
+        })
+        rows.append({
+            "type": "data",
+            "label": "4. งบลงทุน",
+            "amount": self.capital_budget_amount,
+        })
+        rows.append({
+            "type": "data",
+            "label": "5. งบประจำ",
+            "amount": self.recurrent_budget_amount,
+        })
+        rows.append({
+            "type": "data",
+            "label": "6. เงินสนับสนุนจากหน่วยงานภายนอก",
+            "amount": self.external_funding_amount,
+        })
+        rows.append({
+            "type": "fixed_total",
+            "pct": self.fixed_expense_percentage,
+            "amount": self.fixed_expense_total,
+        })
+
+        # --- Section 2: Impact types ---
+        rows.append({"type": "spacer"})
+        rows.append({
+            "type": "impact_section_header",
+            "pct": variable_pct,
+            "amount": grand_total,
+        })
+        rows.append({"type": "impact_column_header"})
+
+        for _itype, ilabel, idata in impact_data:
+            i_okr = idata.get("total_project_okr", 0)
+            i_mgmt = idata.get("total_management", 0)
+            i_total = i_okr + i_mgmt
+            rows.append({
+                "type": "impact_type_header",
+                "label": ilabel,
+                "pct": (i_total * 100 / grand_total) if grand_total else 0,
+                "okr_pct": (i_okr * 100 / grand_total) if grand_total else 0,
+                "mgmt_pct": (i_mgmt * 100 / grand_total) if grand_total else 0,
+                "amount": i_total,
+            })
+            for row in idata.get("rows", []):
+                rows.append({
+                    "type": "impact_row",
+                    "name": row.get("name", ""),
+                    "level": row.get("level", 0),
+                    "okr_amount": row.get("project_okr_amount", 0),
+                    "mgmt_amount": row.get("management_amount", 0),
+                })
+            rows.append({"type": "spacer"})
+
+        # --- Section 3: Grand totals ---
+        okr_pct = (grand_okr * 100 / grand_total) if grand_total else 0
+        mgmt_pct = (grand_mgmt * 100 / grand_total) if grand_total else 0
+        rows.append({
+            "type": "sub_totals",
+            "okr_pct": okr_pct,
+            "mgmt_pct": mgmt_pct,
+        })
+        rows.append({
+            "type": "grand_total_line",
+            "okr_amount": grand_okr,
+            "mgmt_amount": grand_mgmt,
+            "amount": grand_total,
+        })
+        rows.append({
+            "type": "grand_total",
+            "amount": self.fixed_expense_total + grand_total,
+        })
+
+        return rows
 
     def action_open_f23w_report(self):
         """Open F23W report in a new browser tab as HTML."""

@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paper Format -->
+    <record id="paperformat_compilation_f3" model="report.paperformat">
+        <field name="name">Budget Compilation F3P Portrait</field>
+        <field name="default" eval="False" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="dpi">90</field>
+    </record>
+    <!-- Report Action -->
+    <record id="action_report_compilation_f3" model="ir.actions.report">
+        <field name="name">รายงาน F3</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_summary_f3.report_compilation_f3</field>
+        <field name="report_file">budget_appropriation_summary_f3.report_compilation_f3</field>
+        <field name="paperformat_id" ref="paperformat_compilation_f3" />
+        <field name="binding_type">report</field>
+    </record>
+    <!-- F3 Document Template -->
+    <template id="report_compilation_f3_document">
+        <t t-call="web.basic_layout">
+            <t t-call="budget_appropriation_summary_f3.report_compilation_f3_styles" />
+            <t t-set="f3" t-value="o.get_f3_report_data()" />
+            <div class="page budget-compilation-f3-report"
+                t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+                <t t-if="o.env.context.get('html_preview', False)">
+                    <button class="f3-print-btn" onclick="window.print()" contenteditable="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 6 2 18 2 18 9" />
+                            <path
+                                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                        พิมพ์รายงาน </button>
+                </t>
+                <div class="report-header" contenteditable="false">
+                    <h4 class="pb-2">สรุปประมาณการรายรับ - รายจ่าย</h4>
+                    <h4 class="pb-2"> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
+                    </h4>
+                    <h4 class="pb-2">
+                        <t t-out="o.department_analytic_id.name" />
+                    </h4>
+                </div>
+                <div class="report-body">
+                    <table class="table table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th />
+                                <th class="text-center" colspan="3">
+                                    แหล่งเงิน (หน่วย: บาท)
+                                </th>
+                            </tr>
+                            <tr>
+                                <th />
+                                <th style="width: 85pt;" class="text-center">
+                                    <small>เงินงบประมาณ</small>
+                                </th>
+                                <th style="width: 85pt;" class="text-center">
+                                    <small>เงินรายได้</small>
+                                </th>
+                                <th style="width: 85pt;" class="text-center">
+                                    <small>รวมทั้งสิ้น</small>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- ===== รายรับ ===== -->
+                            <tr style="font-weight: bold">
+                                <td colspan="4">
+                                    รายรับ :-
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    1. เงินงบประมาณที่รัฐบาลจัดสรรให้
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    2. เงินรายได้สถาบันฯ
+                                </td>
+                            </tr>
+                            <t t-foreach="f3['revenue_rows']" t-as="row">
+                                <tr>
+                                    <td style="padding-left: 20pt;">
+                                        - <t t-out="row['name']" />
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-out="'{:,.0f}'.format(row['amount'])" />
+                                    </td>
+                                </tr>
+                            </t>
+                            <!-- Revenue total -->
+                            <tr style="font-weight: bold; border-top: 1px solid #000;">
+                                <td>รวมรายรับ</td>
+                                <td class="text-end">
+                                    <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_total'])" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_total'])" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(f3['revenue_total'])" />
+                                </td>
+                            </tr>
+                            <!-- Revenue deduct -->
+                            <t t-if="f3['revenue_deduct']">
+                                <tr style="font-weight: bold;">
+                                    <td>หัก</td>
+                                    <td class="text-end">
+                                        <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_deduct'])" />
+                                    </td>
+                                    <td class="text-end" style="border-bottom: solid 1px #000;">
+                                        <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_deduct'])" />
+                                    </td>
+                                    <td class="text-end" style="border-bottom: solid 1px #000;">
+                                        <t t-out="'{:,.0f}'.format(f3['revenue_deduct'])" />
+                                    </td>
+                                </tr>
+                            </t>
+                            <!-- Revenue net -->
+                            <tr style="font-weight: bold;">
+                                <td>รายรับสุทธิ</td>
+                                <td class="text-end">
+                                    <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_net'])" />
+                                </td>
+                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                    <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['revenue_net'])" />
+                                </td>
+                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                    <t t-out="'{:,.0f}'.format(f3['revenue_net'])" />
+                                </td>
+                            </tr>
+                            <tr style="height: 32pt;">
+                                <td colspan="4" />
+                            </tr>
+
+                            <!-- ===== รายจ่าย ===== -->
+                            <tr style="font-weight: bold">
+                                <td colspan="4">
+                                    รายจ่าย :-
+                                </td>
+                            </tr>
+                            <t t-foreach="f3['expenditure_rows']" t-as="row">
+                                <!-- Level 0: ประเภทงบประมาณ -->
+                                <t t-if="row['level'] == 0 and not row_first">
+                                    <tr style="height: 16pt;">
+                                        <td colspan="4" />
+                                    </tr>
+                                </t>
+                                <t t-if="row['level'] == 0">
+                                    <tr style="font-weight: bold;">
+                                        <td>
+                                            <t t-out="row['prefix']" /> <t t-out="row['name']" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end" style="border-bottom: solid 1px #000;">
+                                            <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end" style="border-bottom: solid 1px #000;">
+                                            <t t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Level 1: หมวดหมู่ค่าใช้จ่าย -->
+                                <t t-if="row['level'] == 1">
+                                    <tr>
+                                        <td style="padding-left: 15pt;">
+                                            <t t-out="row['prefix']" /> <t t-out="row['name']" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end" style="border-bottom: solid 1px #202020;">
+                                            <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end" style="border-bottom: solid 1px #202020;">
+                                            <t t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Level 2: แผนงาน -->
+                                <t t-if="row['level'] == 2">
+                                    <tr>
+                                        <td style="padding-left: 30pt;">
+                                            <t t-out="row['prefix']" /> <t t-out="row['name']" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Level 3: กองทุน -->
+                                <t t-if="row['level'] == 3">
+                                    <tr>
+                                        <td style="padding-left: 45pt;">
+                                            <t t-out="row['prefix']" /> <t t-out="row['name']" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-out="'{:,.0f}'.format(row['amount'])" />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <!-- Expenditure total -->
+                            <tr style="font-weight: bold; border-top: 1px solid #000;">
+                                <td>รวมรายจ่าย</td>
+                                <td class="text-end">
+                                    <t t-if="f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['expenditure_total'])" />
+                                </td>
+                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                    <t t-if="not f3['is_budget_source']" t-out="'{:,.0f}'.format(f3['expenditure_total'])" />
+                                </td>
+                                <td class="text-end" style="border-bottom: double 3px #000;">
+                                    <t t-out="'{:,.0f}'.format(f3['expenditure_total'])" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+    <!-- Styles template -->
+    <template id="report_compilation_f3_styles">
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-if="is_html_preview">
+            <style>html, body {
+                background: #e8e8e8 !important;
+                margin: 0;
+                padding: 0;
+                }
+
+                .page {
+                position: relative;
+                width: 210mm;
+                min-height: 297mm;
+                background-color: white !important;
+                background-image: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent calc(274mm - 1px),
+                rgba(239, 68, 68, 0.35) calc(274mm - 1px),
+                rgba(239, 68, 68, 0.35) 274mm
+                ) !important;
+                margin: 40px auto;
+                padding: 25mm 8mm !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+                box-sizing: border-box;
+                border-radius: 2px;
+                }
+                .page::after {
+                content: 'ตำแหน่งตัดหน้า';
+                position: absolute;
+                top: calc(274mm - 10px);
+                right: -90px;
+                font-size: 10px;
+                color: rgba(239, 68, 68, 0.6);
+                font-family: 'TH SarabunPSK', 'Sarabun', sans-serif;
+                pointer-events: none;
+                }
+
+                [contenteditable]:focus {
+                outline: none;
+                }
+
+                .f3-page-label {
+                position: absolute;
+                top: 0;
+                right: 0;
+                font-size: 10pt;
+                color: #333;
+                pointer-events: none;
+                }
+
+                .f3-print-btn {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                padding: 8px 20px;
+                background: #714B67;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+                cursor: pointer;
+                font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                }
+                .f3-print-btn:hover {
+                background: #5a3a52;
+                }
+
+                @media print {
+                html, body {
+                background: white !important;
+                margin: 0;
+                padding: 0;
+                }
+                .page {
+                width: auto;
+                min-height: auto;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none;
+                border-radius: 0;
+                background-image: none !important;
+                }
+                .page::after {
+                display: none;
+                }
+                @page {
+                margin: 0 !important;
+                padding: 24mm 8mm !important;
+                size: A4;
+                }
+                .f3-page-label {
+                position: fixed;
+                top: 5mm;
+                right: 5mm;
+                }
+                .f3-print-btn {
+                display: none !important;
+                }
+                }
+
+                *[contenteditable="false"] {
+                cursor: not-allowed;
+                }
+            </style>
+        </t>
+        <t t-else="">
+            <style>
+                * {
+                line-height: 1.4;
+                }
+            </style>
+        </t>
+        <style>.page {
+            page-break-after: always;
+            }
+            .page:last-child {
+            page-break-after: auto;
+            }
+
+            .budget-compilation-f3-report {
+            font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+            font-size: 10pt;
+            }
+
+            .budget-compilation-f3-report h3 {
+            margin: 0;
+            font-size: 14pt;
+            font-weight: 600;
+            }
+
+            .budget-compilation-f3-report h4 {
+            margin: 0;
+            font-size: 12pt;
+            font-weight: normal;
+            }
+
+            .report-header {
+            position: relative;
+            text-align: center;
+            cursor: not-allowed;
+            }</style>
+    </template>
+    <!-- Main report template -->
+    <template id="report_compilation_f3">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="budget_appropriation_summary_f3.report_compilation_f3_document" />
+            </t>
+        </t>
+    </template>
+</odoo>

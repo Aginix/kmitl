@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_committee_acceptance">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="currency" t-value="o.currency_id" />
+                    <t
+                        t-set="total_amount"
+                        t-value="sum(o.wa_line_ids.mapped('price_subtotal'))"
+                    />
+                    <t
+                        t-set="final_amount"
+                        t-value="total_amount - (o.fines_late or 0.0)"
+                    />
+                    <style>
+                        * {
+                            font-family: "THSarabunNew", Arial, sans-serif;
+                        }
+                        p,
+                        span,
+                        div {
+                            font-size: 16pt;
+                            line-height: 1.4;
+                        }
+                        .sig-line {
+                            display: inline-block;
+                            width: 200px;
+                            border-bottom: 1px dotted #000;
+                        }
+                        .ub {
+                            text-decoration: underline;
+                            font-weight: bold;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="text-center fw-bolder" style="font-size: 17pt">
+                            สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                        </div>
+                        <div
+                            class="text-center fw-bolder text-decoration-underline"
+                            style="font-size: 17pt"
+                        >
+                            ใบตรวจการรับพัสดุ
+                        </div>
+
+                        <!-- Main paragraph -->
+                        <div class="mt-2" style="text-align: justify">
+                            คณะกรรมการตรวจรับพัสดุได้พร้อมกันการตรวจรับพัสดุ ซึ่ง
+                            <span class="ub" t-out="o.purchase_id.partner_id.name" />
+                            ผู้รับจ้างทำงาน
+                            <t t-foreach="o.wa_line_ids" t-as="line">
+                                <span class="ub" t-out="line.name" /><t
+                                    t-if="not line_last"
+                                >
+                                    และ
+                                </t>
+                            </t>
+                            จำนวน 1 รายการ ตาม
+                            <span
+                                class="ub"
+                                t-out="o.purchase_id.contract_type_id.name or 'สัญญาจ้าง'"
+                            />
+                            เลขที่
+                            <span
+                                class="ub"
+                                t-out="o.purchase_id.contract_number or ''"
+                            />
+                            ลงวันที่
+                            <span
+                                class="ub"
+                                t-esc="o.format_date_thai(o.po_date_order_date)"
+                            />
+                            ผู้รับจ้างลงมือทำงานเมื่อวันที่
+                            <span
+                                class="ub"
+                                t-esc="o.format_date_thai(o.po_work_start)"
+                            />
+                            บัดนี้ได้ทำการส่งมอบงาน เรียบร้อยตามสัญญา
+                        </div>
+
+                        <!-- Installment & amount -->
+                        <div t-if="o.installment_id">
+                            <div class="ms-5" style="text-align: justify">
+                                งวดที่
+                                <span
+                                    class="ub"
+                                    t-out="o.installment_id.installment or ''"
+                                />
+                                เป็นเงินจำนวน
+                                <span
+                                    class="ub"
+                                    t-esc="'{0:,.2f}'.format(total_amount)"
+                                />
+                                บาท (<span
+                                    class="ub"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
+                                />) เมื่อผู้รับจ้างได้ปฏิบัติงาน ดังนี้
+                            </div>
+
+                            <!-- Work items -->
+                            <div class="ms-5">
+                                <div>รายละเอียดงวดงาน</div>
+                                <t t-if="o.installment_id.deliverables">
+                                    <t
+                                        t-foreach="(o.installment_id.deliverables or '').split('\n')"
+                                        t-as="item"
+                                    >
+                                        <div class="ms-5" t-if="item.strip()">
+                                            เนื้องาน <span t-out="item.strip()" />
+                                        </div>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <t t-foreach="o.wa_line_ids" t-as="line">
+                                        <div class="ms-5">
+                                            เนื้องาน <span t-out="line.name" />
+                                        </div>
+                                    </t>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Date section -->
+                        <div class="ms-5 mt-2">
+                            <div>
+                                ตามหนังสือส่งงานของผู้รับจ้างลงวันที่
+                                <span
+                                    class="ub"
+                                    t-esc="o.format_date_thai(o.requested_delivery_date)"
+                                />
+                            </div>
+                            <div>
+                                คณะกรรมการ ได้รับหนังสือส่งมอบงาน ลงวันที่
+                                <span
+                                    class="ub"
+                                    t-esc="o.format_date_thai(o.date_committee_received)"
+                                />
+                            </div>
+                            <div>
+                                เสร็จถูกต้องตามสัญญา ตั้งแต่วันที่
+                                <span
+                                    class="ub"
+                                    t-esc="o.format_date_thai(o.date_contract_complete)"
+                                />
+                            </div>
+                            <div>
+                                และได้รับมอบงานแล้ว ตั้งแต่วันที่
+                                <span
+                                    class="ub"
+                                    t-esc="o.format_date_thai(o.date_work_handover)"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Payment & fine paragraph -->
+                        <div name='payment_section' class="mt-2" style="text-align: justify">
+                            ผู้รับจ้างควรได้รับเงินงวดที่
+                            <span
+                                class="ub"
+                                t-out="o.installment_id.installment or ''"
+                            />
+                            ตามสัญญาจ้าง เป็นจำนวนเงินรวม
+                            <span class="ub" t-esc="'{0:,.2f}'.format(total_amount)" />
+                            บาท (<span
+                                class="ub"
+                                t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
+                            />)
+                        </div>
+                        <!-- Signatures: chairman -->
+                        <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                            <t t-if="line.approve_role != 'secretary'">
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span t-field="line.approve_role" />
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                            <t t-if="line.approve_role == 'secretary'">
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span t-field="line.approve_role" />
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        <!-- Signatures: supervisor -->
+                        <t t-foreach="o.purchase_id.work_supervisor_ids" t-as="line">
+                            <t>
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
+                                        <div style="white-space: nowrap">
+                                            (ลงชื่อ)
+                                            <span class="sig-line"></span>
+                                            <span>ผู้ควบคุมงาน</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            (<span t-esc="line.name" />)
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

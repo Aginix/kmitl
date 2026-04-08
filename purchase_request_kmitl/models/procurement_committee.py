@@ -86,7 +86,7 @@ class ProcurementCommittee(models.Model):
 
     @api.constrains("employee_id", "request_id", "committee_type")
     def _check_committee_cross_type_unique(self):
-        allowed_overlap = {"tor_committee", "price_determine", "work_supervisor"}
+        allowed_overlap = {"tor_committee", "evaluation" , "work_supervisor"}
         for rec in self:
             if not rec.employee_id or not rec.request_id:
                 continue
@@ -101,7 +101,7 @@ class ProcurementCommittee(models.Model):
                 raise ValidationError(
                     _(
                         "Employee %s cannot appear in multiple committees "
-                        "except TOR and Price Determine committees.",
+                        "except TOR and Evaluation committees.",
                         rec.employee_id.name,
                     )
                 )

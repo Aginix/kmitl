@@ -46,9 +46,14 @@ class WorkAcceptanceCommittee(models.Model):
             ("chairman", "Chairman"),
             ("committee", "Committee"),
             ("secretary", "Secretary"),
+            ("supervisor", "Supervisor"),
         ],
-        string="Role",
-        required=True,
+        ondelete={
+            'chairman': 'set default',
+            'committee': 'set default',
+            'secretary': 'set default',
+            'supervisor': 'set default',
+        },
         default="committee",
     )
     status = fields.Selection(
