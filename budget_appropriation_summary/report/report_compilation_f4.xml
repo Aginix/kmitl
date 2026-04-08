@@ -261,7 +261,7 @@
                     border-radius: 4px;
                     font-size: 14px;
                     cursor: pointer;
-                    font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+                    font-family: 'THSarabun', Arial, sans-serif;
                     display: flex;
                     align-items: center;
                     gap: 6px;

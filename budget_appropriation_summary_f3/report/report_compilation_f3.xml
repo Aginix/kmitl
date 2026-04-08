@@ -284,7 +284,7 @@
                     right: -90px;
                     font-size: 10px;
                     color: rgba(239, 68, 68, 0.6);
-                    font-family: 'TH SarabunPSK', 'Sarabun', sans-serif;
+                    font-family: 'THSarabun', 'Sarabun', sans-serif;
                     pointer-events: none;
                 }
 
@@ -313,7 +313,7 @@
                     border-radius: 4px;
                     font-size: 14px;
                     cursor: pointer;
-                    font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+                    font-family: 'THSarabun', 'Sarabun', Arial, sans-serif;
                     display: flex;
                     align-items: center;
                     gap: 6px;
