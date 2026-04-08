@@ -2,6 +2,7 @@
 # This file contains the translation of the following modules:
 # 	* purchase_order_kmitl
 # 	* purchase
+#   * purchase_no_rfq
 #
 msgid ""
 msgstr ""
@@ -3368,3 +3369,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
 msgid "งวดงาน"
 msgstr ""
+
+#. module: purchase_no_rfq
+#: model_terms:ir.ui.view,arch_db:purchase_no_rfq.purchase_order_form
+msgid ""
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not "
+"in',('draft','sent'))]}\">Purchase Order </span>"
+msgstr ""
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not "
+"in',('draft','sent'))]}\">เลขที่ </span>"
