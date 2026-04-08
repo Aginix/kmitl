@@ -125,6 +125,9 @@
 .bg-accent-light {
   background-color: var(--accent-light) !important;
 }
+.bg-info-light {
+  background-color: var(--info-light) !important;
+}
 .bg-danger-light {
   background-color: var(--danger-light) !important;
 }
@@ -146,6 +149,9 @@
 }
 .text-info {
   color: var(--info) !important;
+}
+.text-warning {
+  color: var(--warning) !important;
 }
 .text-success {
   color: var(--success) !important;

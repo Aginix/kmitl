@@ -33,6 +33,8 @@
         "views/website_hr_recruitment_apply_tabs.xml",
         "views/website_hr_recruitment_apply.xml",
         "views/portal_application_detail_tabs.xml",
+        "views/portal_onboarding_templates.xml",
+        "views/portal_onboarding_tabs.xml",
     ],
     "assets": {
         "web.assets_frontend": [
