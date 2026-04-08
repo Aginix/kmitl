@@ -118,6 +118,10 @@
                     </field>
                 </page>
             </xpath>
+
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <h2>ใบสั่งซื้อ/จ้าง</h2>
+            </xpath>
         </field>
     </record>
 
