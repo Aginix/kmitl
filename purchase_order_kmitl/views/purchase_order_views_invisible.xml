@@ -71,10 +71,10 @@
     </record>
 
     <!-- Hide label from purchase_no_rfq -->
-    <record id="view_purchase_order_form_invisible_exception" model="ir.ui.view">
+    <record id="view_purchase_order_no_rfq_form_invisible" model="ir.ui.view">
         <field name="name">view.purchase.order.form(Hide label)</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase_exception.view_order_form" />
+        <field name="inherit_id" ref="purchase_no_rfq.purchase_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//span[@class='o_form_label']" position="attributes">
                 <attribute name="invisible">1</attribute>
