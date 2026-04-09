@@ -348,4 +348,127 @@
     <menuitem id="menu_budget_appropriation_revenue" name="งบประมาณรายรับ" parent="menu_budget_appropriation_root" action="action_budget_appropriation_revenue" sequence="15" />
 
     <menuitem id="menu_budget_appropriation_line" name="รายการการจัดสรรงบประมาณ" parent="menu_budget_appropriation_root" action="action_budget_appropriation_line" sequence="20" />
+
+    <!-- ============================================================ -->
+    <!-- Deduct Overview (รายการหักโอน) - Budget Manager only          -->
+    <!-- ============================================================ -->
+
+    <!-- Tree view -->
+    <record id="view_budget_appropriation_line_deduct_tree" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.deduct.tree</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false">
+                <field name="appropriation_id" widget="many2onebutton" />
+                <field name="date" />
+                <field name="account_id" />
+                <field name="department_analytic_id" string="หน่วยงาน"  />
+                <field name="deduct_analytic_id" string="หักโอนให้" />
+                <field name="activity_analytic_id" optional="hide" />
+                <field name="fund_analytic_id" optional="hide" />
+                <field name="source_analytic_id" optional="hide" />
+                <field name="balance" sum="Total" />
+                <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-warning="parent_state == 'review'" decoration-success="parent_state == 'posted'" />
+                <field name="note" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Pivot view -->
+    <record id="view_budget_appropriation_line_deduct_pivot" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.deduct.pivot</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <pivot string="รายการหักโอน">
+                <field name="account_id" type="row" />
+                <field name="deduct_analytic_id" type="row" />
+                <field name="balance" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph view -->
+    <record id="view_budget_appropriation_line_deduct_graph" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.deduct.graph</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <graph string="รายการหักโอน" type="bar">
+                <field name="account_id" />
+                <field name="balance" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_budget_appropriation_line_deduct_search" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.deduct.search</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <search string="รายการหักโอน">
+                <field name="appropriation_id" />
+                <field name="account_id" />
+                <field name="deduct_analytic_id" />
+                <field name="department_analytic_id" />
+                <separator />
+                <filter name="active" string="ที่ใช้งาน" domain="[('parent_state', 'not in', ['draft', 'cancel'])]" />
+                <separator />
+                <filter name="review" string="รอตรวจสอบ" domain="[('parent_state', '=', 'review')]" />
+                <filter name="posted" string="อนุมัติแล้ว" domain="[('parent_state', '=', 'posted')]" />
+                <separator />
+                <group expand="0" string="Group By">
+                    <filter name="group_by_deduct_analytic" string="ส่วนงานที่หักโอน" context="{'group_by': 'deduct_analytic_id'}" />
+                    <filter name="group_by_account" string="รายการ" context="{'group_by': 'account_id'}" />
+                    <filter name="group_by_appropriation" string="เลขที่จัดสรร" context="{'group_by': 'appropriation_id'}" />
+                    <filter name="group_by_department" string="ส่วนงาน" context="{'group_by': 'department_analytic_id'}" />
+                    <filter name="group_by_state" string="สถานะ" context="{'group_by': 'parent_state'}" />
+                    <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}" />
+                </group>
+                <searchpanel>
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_budget_appropriation_line_deduct" model="ir.actions.act_window">
+        <field name="name">รายการหักโอน</field>
+        <field name="res_model">budget.appropriation.line</field>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="domain">[('deduct', '=', True)]</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="search_view_id" ref="view_budget_appropriation_line_deduct_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ไม่พบรายการหักโอน
+            </p>
+            <p>
+                รายการหักโอนจะปรากฏที่นี่เมื่อมีการจัดสรรงบประมาณรายรับที่มีรายการหัก
+            </p>
+        </field>
+    </record>
+
+    <!-- Link specific views to action -->
+    <record id="action_budget_appropriation_line_deduct_view_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1" />
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_budget_appropriation_line_deduct_tree" />
+        <field name="act_window_id" ref="action_budget_appropriation_line_deduct" />
+    </record>
+    <record id="action_budget_appropriation_line_deduct_view_pivot" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2" />
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_budget_appropriation_line_deduct_pivot" />
+        <field name="act_window_id" ref="action_budget_appropriation_line_deduct" />
+    </record>
+    <record id="action_budget_appropriation_line_deduct_view_graph" model="ir.actions.act_window.view">
+        <field name="sequence" eval="3" />
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_budget_appropriation_line_deduct_graph" />
+        <field name="act_window_id" ref="action_budget_appropriation_line_deduct" />
+    </record>
+
+    <!-- Menu item (budget manager only) -->
+    <menuitem id="menu_budget_appropriation_line_deduct" name="รายการหักโอน" parent="menu_budget_appropriation_root" action="action_budget_appropriation_line_deduct" sequence="25" groups="budget.group_budget_manager" />
+
 </odoo>
