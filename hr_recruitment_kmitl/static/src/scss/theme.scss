@@ -362,10 +362,11 @@ body {
 }
 
 .upload-section {
-    border: 2px dashed var(--primary);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+  border: 2px dashed var(--primary);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
-
 
 .custom-file-input::file-selector-button {
   background-color: var(--primary);
@@ -392,4 +393,13 @@ body {
 .custom-file-input:hover::file-selector-button,
 .custom-file-input:hover::-webkit-file-upload-button {
   background-color: var(--primary-dark);
+}
+
+.icon-box {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
 }

@@ -28,8 +28,8 @@
                     <div class="card shadow-sm border-0 rounded-4 p-4">
                         <!-- Header -->
                         <div class="d-flex align-items-start mb-4">
-                            <div class="bg-primary-light rounded-3 p-2 me-3">
-                                <i class="fa fa-file-text-o text-primary fs-4"></i>
+                            <div class="icon-box bg-primary-light text-primary me-3">
+                                <i class="fa fa-file-text-o fs-5"></i>
                             </div>
                             <div>
                                 <h4 class="fw-bold text-dark mb-1">รายงานตัวเข้าปฏิบัติงาน</h4>
@@ -61,7 +61,7 @@
                                                 <i class="fa fa-building-o me-1"></i>
                                                 คณะวิศวกรรมศาสตร์
                                             </div>
-                                            <div class="text-primary small mt-1">
+                                            <div class="text-secondary small mt-1">
                                                 <i class="fa fa-calendar-check-o me-1"></i>
                                                 ผ่านการคัดเลือกเมื่อ: 20 ก.พ. 2569
                                             </div>
@@ -76,6 +76,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Empty State Pending Case -->
+                            <!-- <div class="card border-0 bg-light rounded-4 mb-3">
+                                <div class="card-body p-4 text-center">
+                                    <div class="icon-box bg-white text-primary mx-auto mb-3">
+                                        <i class="fa fa-inbox fs-5"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">ไม่มีรายการที่ต้องรายงานตัว</h6>
+                                    <p class="text-secondary small mb-0">
+                                        เมื่อมีตำแหน่งที่ผ่านการคัดเลือกและต้องดำเนินการ ระบบจะแสดงรายการที่หน้านี้
+                                    </p>
+                                </div>
+                            </div> -->
                         </section>
                         <!-- Completed Section -->
                         <section>
@@ -83,7 +95,7 @@
                                 <i class="fa fa-check-square-o me-2"></i>
                                 ประวัติการรายงานตัว (เสร็จสิ้น)
                             </h6>
-                            <div class="card border-light bg-light-subtle rounded-4 mb-3 opacity-75">
+                            <div class="card border-secondary rounded-4 mb-3">
                                 <div class="card-body p-4">
                                     <div class="row align-items-center g-3">
                                         <div class="col-auto">
@@ -102,7 +114,7 @@
                                             </div>
                                             <div class="text-secondary small mt-1">
                                                 <i class="fa fa-send-o me-1"></i>
-                                                ข้อมูลถูกส่งเข้า HRIS แล้วเมื่อ: 22 ก.พ. 2569
+                                                ข้อมูลถูกส่งเข้าระบบแล้วเมื่อ: 22 ก.พ. 2569
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-auto">
@@ -115,6 +127,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Empty State Completed Case -->
+                            <!-- <div class="card border-0 bg-light rounded-4 mb-3">
+                                <div class="card-body p-4 text-center">
+                                    <div class="icon-box bg-white text-success mx-auto mb-3">
+                                        <i class="fa fa-folder-open-o fs-5"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">ยังไม่มีประวัติการรายงานตัว</h6>
+                                    <p class="text-secondary small mb-0">
+                                        เมื่อท่านส่งข้อมูลรายงานตัวเรียบร้อยแล้ว ระบบจะแสดงประวัติไว้ในส่วนนี้
+                                    </p>
+                                </div>
+                            </div> -->
                         </section>
                     </div>
                 </div>
@@ -125,73 +149,128 @@
     <template id="portal_my_onboarding_detail" name="My Onboarding Detail">
         <t t-call="website.layout">
             <div id="wrap" class="pb-5">
-                <nav class="container py-3">
-                    <div class="d-flex align-items-center small text-secondary">
-                        <a href="/my/onboarding" class="text-secondary text-decoration-none">
-                            <i class="fa fa-chevron-left me-1" style="font-size: 0.7rem;"></i>
-                            รายการรายงานตัว
+                <!-- Header (Previous: Breadcrumb) -->
+                <div class="bg-white py-3">
+                    <div class="container d-flex align-items-center text-secondary gap-2">
+                        <a href="/my/onboarding"
+                            class="text-secondary text-decoration-none d-flex align-items-center small">
+                            <i class="fa fa-arrow-left me-2"></i>
+                            รายงานตัวเข้าปฏิบัติงาน
                         </a>
-                        <span class="mx-2">/</span>
-                        <span class="fw-bold text-dark">
-                            เจ้าหน้าที่บริหารงานทั่วไป
+
+                        <span class="text-secondary">/</span>
+
+                        <span class="text-dark fw-bold">
+                            เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
                         </span>
                     </div>
-                </nav>
+                </div>
                 <div class="container py-4">
-                    <!-- Summary -->
-                    <div class="card shadow-sm border-0 rounded-4 mb-4">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-                                <div>
-                                    <h4 class="fw-bold text-dark mb-2">
-                                        เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
-                                    </h4>
-                                    <div class="text-secondary mb-1">
-                                        <i class="fa fa-building-o me-1"></i>
-                                        คณะวิศวกรรมศาสตร์
-                                    </div>
-                                    <div class="text-secondary small">
-                                        <i class="fa fa-calendar-check-o me-1"></i>
-                                        วันที่ผ่านการคัดเลือก: 20 ก.พ. 2569
-                                    </div>
+                    <!-- Header -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
+                        <div class="card-body p-4 position-relative">
+                            <div class="position-absolute start-0 top-0 bottom-0 bg-success" style="width: 6px;"></div>
+                            <div class="d-flex flex-column gap-3">
+
+                                <!-- Status -->
+                                <div class="text-success small fw-bold">
+                                    ส่งข้อมูลรายงานตัวเรียบร้อยแล้ว
                                 </div>
-                                <div>
-                                    <span class="badge rounded-pill text-bg-primary px-3 py-2">
-                                        รอรายงานตัว
+
+                                <!-- Title -->
+                                <h4 class="fw-bold text-dark m-0">
+                                    เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
+                                </h4>
+
+                                <!-- Meta -->
+                                <div class="d-flex flex-column gap-1 text-secondary">
+
+                                    <div>
+                                        <i class="fa fa-building-o me-1"></i>
+                                        <span>คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</span>
+                                    </div>
+
+                                    <div class="small">
+                                        <i class="fa fa-calendar-check-o me-1"></i>
+                                        ผ่านการคัดเลือกเมื่อ: 20 ก.พ. 2569
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Lock Notice -->
+                            <div
+                                class="d-flex justify-content-between align-items-center flex-wrap gap-3 rounded-4 px-4 py-3 mt-3 rounded-12 bg-secondary-light">
+
+                                <div class="d-flex align-items-center text-secondary small">
+                                    <i class="fa fa-lock me-2"></i>
+                                    <span>
+                                        ข้อมูลรายงานตัวนี้ถูกส่งแล้ว ไม่สามารถแก้ไขข้อมูลได้
                                     </span>
                                 </div>
+
+                                <a href="#" class="text-primary text-decoration small">
+                                    <i class="fa fa-external-link me-1"></i>
+                                    ดูประกาศตำแหน่งงานต้นฉบับ
+                                </a>
+
                             </div>
                         </div>
                     </div>
-                    <!-- Detail -->
-                    <div class="card shadow-sm border-0 rounded-4">
-                        <div class="card-body p-4">
-                            <h6 class="fw-bold text-dark mb-3">รายละเอียด</h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="text-secondary small">ตำแหน่ง</div>
-                                    <div class="fw-bold text-dark">
-                                        เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-secondary small">หน่วยงาน</div>
-                                    <div class="fw-bold text-dark">คณะวิศวกรรมศาสตร์</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-secondary small">สถานะรายงานตัว</div>
-                                    <div class="fw-bold text-dark">รอรายงานตัว</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-secondary small">วันที่เริ่มปฏิบัติงาน</div>
-                                    <div class="fw-bold text-dark">1 มี.ค. 2569</div>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <a href="/my/onboarding/form/1" class="btn btn-primary rounded-pill px-4">
-                                    ทำรายการรายงานตัว
-                                </a>
-                            </div>
+                    <!-- Tabs -->
+                    <nav class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-12 flex-column flex-lg-row gap-1 mb-4"
+                        id="view-tabs" role="tablist">
+                        <a class="nav-link active text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-personal-view" data-bs-toggle="tab">
+                            <i class="fa fa-user"></i>
+                            <span>ข้อมูลส่วนบุคคล</span>
+                        </a>
+                        <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-education-view" data-bs-toggle="tab">
+                            <i class="fa fa-graduation-cap"></i>
+                            <span>การศึกษา</span>
+                        </a>
+                        <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-decoration-view" data-bs-toggle="tab">
+                            <i class="fa fa-certificate"></i>
+                            <span>เครื่องราชอิสริยาภรณ์</span>
+                        </a>
+                        <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-work-view" data-bs-toggle="tab">
+                            <i class="fa fa-briefcase"></i>
+                            <span>ข้อมูลการปฏิบัติงาน</span>
+                        </a>
+                        <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-benefit-view" data-bs-toggle="tab">
+                            <i class="fa fa-money"></i>
+                            <span>สวัสดิการและกองทุน</span>
+                        </a>
+                        <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-confirm-view" data-bs-toggle="tab">
+                            <i class="fa fa-check-square-o"></i>
+                            <span>ตรวจสอบประวัติและยืนยันตัวตน</span>
+                        </a>
+                    </nav>
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="nav-personal-view" role="tabpanel">
+                            <t t-call="hr_recruitment_kmitl.onboarding_tab_personal_view" />
+                        </div>
+                        <div class="tab-pane fade" id="nav-education-view" role="tabpanel">
+                            <t t-call="hr_recruitment_kmitl.onboarding_tab_education_view" />
+                        </div>
+                        <div class="tab-pane fade" id="nav-decoration-view" role="tabpanel">
+                            <t t-call="hr_recruitment_kmitl.onboarding_tab_decoration_view" />
+                        </div>
+                        <div class="tab-pane fade" id="nav-work-view" role="tabpanel">
+                            <t t-call="hr_recruitment_kmitl.onboarding_tab_work_view" />
+                        </div>
+                        <div class="tab-pane fade" id="nav-benefit-view" role="tabpanel">
+                            <t t-call="hr_recruitment_kmitl.onboarding_tab_benefit_view" />
+                        </div>
+                        <div class="tab-pane fade" id="nav-confirm-view" role="tabpanel">
+                            <t t-call="hr_recruitment_kmitl.onboarding_tab_confirm_view" />
                         </div>
                     </div>
                 </div>
@@ -202,39 +281,42 @@
     <template id="portal_my_onboarding_form" name="My Onboarding Form">
         <t t-call="website.layout">
             <div id="wrap" class="pb-5">
-                <nav class="container py-3">
-                    <div class="d-flex align-items-center small text-secondary">
-                        <a href="/my/onboarding" class="text-secondary text-decoration-none">
-                            <i class="fa fa-chevron-left me-1" style="font-size: 0.7rem;"></i>
-                            รายการรายงานตัว
+                <!-- Header (Previous: Breadcrumb) -->
+                <div class="bg-white py-3">
+                    <div class="container d-flex align-items-center text-secondary gap-2">
+                        <a href="/my/onboarding"
+                            class="text-secondary text-decoration-none d-flex align-items-center small">
+                            <i class="fa fa-arrow-left me-2"></i>
+                            รายงานตัวเข้าปฏิบัติงาน
                         </a>
-                        <span class="mx-2">/</span>
-                        <span class="fw-bold text-dark">ฟอร์มรายงานตัว</span>
+
+                        <span class="text-secondary">/</span>
+
+                        <span class="text-dark fw-bold">
+                            ฟอร์มรายงานตัว
+                        </span>
                     </div>
-                </nav>
+                </div>
                 <div class="container py-4">
                     <!-- Header -->
                     <div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
                         <div class="card-body p-4 position-relative">
                             <div class="position-absolute start-0 top-0 bottom-0 bg-primary" style="width: 6px;"></div>
-                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-                                <div>
-                                    <div class="text-primary small fw-bold mb-2">
-                                        ตำแหน่งที่กำลังรายงานตัว
-                                    </div>
-                                    <h4 class="fw-bold text-dark mb-2">
-                                        เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
-                                    </h4>
-                                    <div class="text-secondary mb-1">
-                                        <i class="fa fa-building-o me-1"></i>
-                                        <span>คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</span>
-                                    </div>
+                            <div class="d-flex flex-column gap-1">
+
+                                <div class="text-primary small fw-bold">
+                                    ตำแหน่งที่กำลังรายงานตัว
                                 </div>
-                                <div class="d-flex flex-column align-items-start align-items-md-end gap-2">
-                                    <span class="badge rounded-pill text-bg-primary px-3 py-2">
-                                        รอรายงานตัว
-                                    </span>
+
+                                <h4 class="fw-bold text-dark m-0">
+                                    เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
+                                </h4>
+
+                                <div class="text-secondary small d-flex align-items-center">
+                                    <i class="fa fa-building-o me-1"></i>
+                                    <span>คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</span>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -242,37 +324,31 @@
                         <!-- Tabs Navigation -->
                         <nav class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-4 flex-column flex-lg-row gap-1 mb-4"
                             id="form-tabs" role="tablist">
-
                             <a class="nav-link active text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
                                 href="#nav-personal" data-bs-toggle="tab">
                                 <i class="fa fa-user"></i>
                                 <span>ข้อมูลส่วนบุคคล</span>
                             </a>
-
                             <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
                                 href="#nav-education" data-bs-toggle="tab">
                                 <i class="fa fa-graduation-cap"></i>
                                 <span>การศึกษา</span>
                             </a>
-
                             <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
                                 href="#nav-decoration" data-bs-toggle="tab">
                                 <i class="fa fa-certificate"></i>
                                 <span>เครื่องราชอิสริยาภรณ์</span>
                             </a>
-
                             <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
                                 href="#nav-work" data-bs-toggle="tab">
                                 <i class="fa fa-briefcase"></i>
                                 <span>ข้อมูลการปฏิบัติงาน</span>
                             </a>
-
                             <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
                                 href="#nav-benefit" data-bs-toggle="tab">
                                 <i class="fa fa-money"></i>
                                 <span>สวัสดิการและกองทุน</span>
                             </a>
-
                             <a class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
                                 href="#nav-confirm" data-bs-toggle="tab">
                                 <i class="fa fa-check-square-o"></i>
