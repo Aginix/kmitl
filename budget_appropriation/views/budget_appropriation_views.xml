@@ -362,8 +362,8 @@
                 <field name="appropriation_id" widget="many2onebutton" />
                 <field name="date" />
                 <field name="account_id" />
-                <field name="deduct_analytic_id" string="ส่วนงานที่หักโอน" />
-                <field name="department_analytic_id" />
+                <field name="department_analytic_id" string="หน่วยงาน"  />
+                <field name="deduct_analytic_id" string="หักโอนให้" />
                 <field name="activity_analytic_id" optional="hide" />
                 <field name="fund_analytic_id" optional="hide" />
                 <field name="source_analytic_id" optional="hide" />
