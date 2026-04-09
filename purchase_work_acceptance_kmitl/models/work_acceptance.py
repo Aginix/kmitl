@@ -59,7 +59,14 @@ class WorkAcceptance(models.Model):
     # convert from Datetime to Date
     date_due = fields.Date(
         string="Due Date",
-        related="purchase_id.work_end",
+        compute="_compute_date_due",
+        store=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+    date_receive = fields.Date(
+        string="Received Date",
+        default=lambda self: self._default_start_date(),
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
@@ -130,6 +137,7 @@ class WorkAcceptance(models.Model):
     )
     is_delivery_late = fields.Boolean(
         compute="_compute_is_delivery_late",
+        store=True,
     )
     date_committee_received = fields.Date(
         string="วันที่คณะกรรมการได้รับเอกสาร",
@@ -169,7 +177,17 @@ class WorkAcceptance(models.Model):
 
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
-        for rec in self:
+        accepted = self.filtered(lambda r: r.state == 'accept')
+        if accepted:
+            self.env.cr.execute(
+                "SELECT id, is_delivery_late FROM work_acceptance"
+                " WHERE id = ANY(%s)",
+                [list(accepted.ids)],
+            )
+            stored = dict(self.env.cr.fetchall())
+            for rec in accepted:
+                rec.is_delivery_late = stored.get(rec.id, False)
+        for rec in (self - accepted):
             rec.is_delivery_late = bool(
                 rec.requested_delivery_date
                 and rec.date_due
@@ -274,7 +292,8 @@ class WorkAcceptance(models.Model):
             if committees and rec.completeness < 100:
                 return rec._action_open_committee_wizard()
 
-        return super().button_accept(force=force)
+        result = super().button_accept(force=force)
+        return result
 
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
