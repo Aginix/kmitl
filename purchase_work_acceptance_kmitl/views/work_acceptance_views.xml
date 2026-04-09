@@ -396,6 +396,51 @@
         </field>
     </record>
 
+    <!-- Construction contract: วันที่ดำเนินงาน tab -->
+    <record id="view_work_acceptance_form_construction_dates" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form.construction.dates</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="view_work_acceptance_form_gov" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page
+                    string="วันที่ดำเนินงาน"
+                >
+                <group>
+                     <group>
+                        <field name="date_committee_received" />
+                        <field name="date_contract_complete" />
+                        <field name="date_work_handover" />
+                    </group>
+                </group>
+                </page>
+            </xpath>
+            <xpath expr="//form/sheet/notebook" position="before">
+                <field name="is_construction_contract" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_work_acceptance_notebook_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form</field>
+        <field name="model">work.acceptance</field>
+        <field
+            name="inherit_id"
+            ref="view_work_acceptance_form_gov"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='wa_tier_validation']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='work_acceptance_committee_ids']"
+                position="attributes"
+            >
+                <attribute name="readonly">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <record id="view_purchase_work_acceptance_inherit_view_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.exception.inherit.view.tree</field>
         <field name="model">work.acceptance</field>

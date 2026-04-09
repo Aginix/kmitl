@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from odoo import models
+from odoo import fields as odoo_fields, models
 
 MONTHS_TH = [
     "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
@@ -21,6 +21,8 @@ class ThaiDateMixin(models.AbstractModel):
                 dt = datetime.fromisoformat(dt)
             except Exception:
                 return dt
+        if isinstance(dt, datetime) and not dt.tzinfo:
+            dt = odoo_fields.Datetime.context_timestamp(self, dt)
         day = dt.day
         month = MONTHS_TH[dt.month]
         year = dt.year + 543

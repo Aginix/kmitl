@@ -1,5 +1,5 @@
 <odoo>
-    <template id="report_purchase_work_acceptance">
+    <template id="report_work_acceptance">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
@@ -43,9 +43,9 @@
                             <p>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
                         </div>
                         <div class="row">
-                            <div class="col-8" />
+                            <div class="col-9" />
                             <div class="col">
-                                <div>เลขที่ อว. <span t-esc="o.name" /></div>
+                                <div>เลขที่ <span t-esc="o.name" /></div>
                             </div>
                         </div>
                         <div class="row">
@@ -74,16 +74,12 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                ตามใบสั่งซื้อเลขที่ เลขที่
+                                ตาม
                                 <span
                                     class="ms-2 fw-bolder text-decoration-underline"
-                                    t-out="o.purchase_id.name"
+                                    t-field="o.purchase_id.contract_type_id"
                                 />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                ตาม สัญญาซื้อขาย เลขที่
+                                เลขที่
                                 <span
                                     class="ms-2 fw-bolder text-decoration-underline"
                                     t-out="o.purchase_id.contract_number"
@@ -97,7 +93,7 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                ลงวันที่
+                                ตามใบส่งมอบงาน ลงวันที่
                                 <span
                                     class="ms-2 fw-bolder text-decoration-underline"
                                     t-esc="o.format_date_thai(o.requested_delivery_date)"
@@ -223,9 +219,7 @@
                                 ผู้รับพัสดุ/เจ้าหน้าที่พัสดุ
                             </div>
                             <div class="mt-2">
-                                (<span
-                                    t-esc="o.work_acceptance_committee_ids[0].name"
-                                />)
+                                (<span t-esc="o.responsible_id.name" />)
                             </div>
                         </div>
                     </div>
@@ -255,12 +249,12 @@
                                 ได้ดำเนินการตรวจสอบแล้วถูกต้องตามสัญญา/ข้อตกลงตั้งแต่วันที่
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.date_receive)"
+                                    t-esc="o.format_date_thai(o.date_contract_complete)"
                                 />
                                 และได้ตรวจรับพัสดุเรียบร้อยแล้ว ตั้งแต่วันที่
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.date_receive)"
+                                    t-esc="o.format_date_thai(o.date_work_handover)"
                                 />
                                 ผู้ขาย/ผู้รับจ้างควรได้รับเงินตามสัญญา ข้อ 1. เป็นเงิน
                                 <span
@@ -273,46 +267,53 @@
     sum(o.wa_line_ids.mapped('price_subtotal'))
 )"
                                 />
-                                ) เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่
+                                )
+                                ในการนี้ผู้รับจ้างทำงาน
+                                <span t-if="o.is_delivery_late" name="over_time_contract">
+                                    เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่
+                                    <span
+                                        class="text-decoration-underline fw-bolder"
+                                        t-esc="o.format_date_thai(o.current_work_end)"
+                                    />
+                                    ถึงวันที่
+                                    <span
+                                        class="text-decoration-underline fw-bolder"
+                                        t-esc="o.format_date_thai(o.requested_delivery_date)"
+                                    />
+                                    เป็นเวลา
+                                    <span
+                                        class="text-decoration-underline fw-bolder"
+                                        t-esc="(o.requested_delivery_date - o.date_due).days"
+                                    />
+                                    วัน
+                                </span>
+                                คงส่งมอบของล่าช้าเกินกำหนดสัญญา/ข้อตกลงไป
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.purchase_id.work_start)"
-                                />
-                                ถึงวันที่
-                                <span
-                                    class="text-decoration-underline fw-bolder"
-                                    t-esc="o.format_date_thai(o.purchase_id.work_end)"
-                                />
-                                เป็นเวลา
-                                <span
-                                    class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.contract_period_days"
-                                />
-                                วัน คงส่งมอบของล่าช้าเกินกำหนดสัญญา/ข้อตกลงไป
-                                <span
-                                    class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.late_days"
+                                    t-esc="o.late_days"
                                 />
                                 วัน จะต้องเสียค่าปรับ วันละ
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.fines_late"
+                                    t-esc="'{0:,.2f}'.format(o.fines_rate)"
                                 />
-                                บาท (..……-….....) รวมเป็นเงิน
+                                บาท (<t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_rate)"
+                                />) รวมเป็นเงิน
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="o.purchase_id.fines_late"
+                                    t-esc="'{0:,.2f}'.format(o.fines_late)"
                                 />
-                                บาท (…...…-....….) คงได้รับเงินงวดนี้ เป็นเงิน
+                                บาท (<t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_late)"
+                                />) คงได้รับเงินงวดนี้ เป็นเงิน
                                 <span
                                     class="text-decoration-underline fw-bolder"
-                                    t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    t-esc="'{0:,.2f}'.format(o.fines_total)"
                                 />
                                 บาท (
                                 <t
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
-    sum(o.wa_line_ids.mapped('price_subtotal'))
-)"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.fines_total)"
                                 />
                                 )
                             </div>
@@ -349,120 +350,6 @@
                                 </div>
                             </t>
                         </t>
-                    </div>
-
-                    <!-- PAGE 4: กรรมการและเลขานุการ + ส่วนบันทึกงานพัสดุ -->
-                    <div class="page" style="page-break-before: always">
-                        <div style="position: absolute; top: 0px; right: 0px">
-                            แบบ พ.36
-                        </div>
-                        <hr class="mt-5" />
-                        <div class="row mt-3">
-                            <div class="col fw-bolder">ส่วนบันทึกงานพัสดุ</div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col ms-5">
-                                ด้วยสำนักงานพัสดุ สำนักงานอธิการบดี
-                                มีความประสงค์ขอเบิกเงินรายได้ ประจำปี 2568
-                                ตามรายละเอียดดังต่อไปนี้
-                            </div>
-                        </div>
-                        <table class="table table-borderless table-sm">
-                            <tbody>
-                                <tr>
-                                    <td style="width: 60%">
-                                        สำนักบริหารข้อมูลดิจิทัลฯ
-                                    </td>
-                                    <td>รหัสสำนักงาน</td>
-                                    <td>09</td>
-                                </tr>
-                                <tr>
-                                    <td>กองทุนสินทรัพย์ถาวร</td>
-                                    <td>รหัสกองทุน</td>
-                                    <td>0600</td>
-                                </tr>
-                                <tr>
-                                    <td>แผนงาน จัดการศึกษาอุดมศึกษา</td>
-                                    <td>รหัสแผนงาน</td>
-                                    <td>09007</td>
-                                </tr>
-                                <tr>
-                                    <td>งาน - กิจกรรมหลัก งานสนับสนุนการจัดการศึกษา</td>
-                                    <td>รหัส - กิจกรรมหลัก</td>
-                                    <td>0101</td>
-                                </tr>
-                                <tr>
-                                    <td>- กิจกรรมรอง บริการคอมพิวเตอร์ทางวิชาการ</td>
-                                    <td>- กิจกรรมรอง</td>
-                                    <td>13</td>
-                                </tr>
-                                <tr>
-                                    <td>- กิจกรรมย่อย งานด้านบริการคอมพิวเตอร์</td>
-                                    <td>- กิจกรรมย่อย</td>
-                                    <td>134</td>
-                                </tr>
-                                <tr>
-                                    <td>งบรายจ่าย งบลงทุน</td>
-                                    <td>รหัสงบรายจ่าย</td>
-                                    <td>53000</td>
-                                </tr>
-                                <tr>
-                                    <td>ค่าใช้จ่ายงบลงทุน</td>
-                                    <td>รหัสประเภทรายจ่าย</td>
-                                    <td>53100</td>
-                                </tr>
-                                <tr>
-                                    <td>ครุภัณฑ์</td>
-                                    <td>รหัส</td>
-                                    <td>5412000000</td>
-                                </tr>
-                                <tr>
-                                    <td>ค่าครุภัณฑ์คอมพิวเตอร์</td>
-                                    <td>รหัส</td>
-                                    <td>5412000003</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            <div class="col">
-                                จำนวนเงิน
-                                <span
-                                    class="ms-2 fw-bolder text-decoration-underline"
-                                    t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
-                                />
-                                บาท (
-                                <t
-                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
-    sum(o.wa_line_ids.mapped('price_subtotal'))
-)"
-                                />)
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col ms-5">
-                                จึงเรียนมาเพื่อทราบรายงานการตรวจรับพัสดุของคณะกรรมการและเห็นควรแจ้งหน่วยงานที่เกี่ยวข้องเพื่อดำเนินการต่อไป
-                            </div>
-                        </div>
-                        <div class="row mt-5">
-                            <div class="col-9 offset-3 text-center">
-                                ลงชื่อ
-                                <span class="sig-line"></span>
-                                ผู้อำนวยการสำนักงานพัสดุ
-                                <div class="mt-2">(นางสาวกรองทิพย์ สกุนตศรี)</div>
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-9 offset-3 text-center fw-bolder">
-                                ทราบ/ดำเนินการเสนอ
-                            </div>
-                        </div>
-                        <div class="row mt-5">
-                            <div class="col-9 offset-3 text-center">
-                                <div>(รองศาสตราจารย์ไพฑูรย์ พิมดี)</div>
-                                <div>รองอธิการบดีฝ่ายพัสดุ ปฏิบัติการแทน</div>
-                                <div>อธิการบดี</div>
-                            </div>
-                        </div>
                     </div>
                 </t>
             </t>
