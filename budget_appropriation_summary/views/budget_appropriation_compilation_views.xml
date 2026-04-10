@@ -20,12 +20,14 @@
                         string="เสร็จสิ้น"
                         type="object"
                         class="btn-primary"
+                        groups="budget.group_budget_manager"
                         attrs="{'invisible': [('state', '!=', 'confirmed')]}"
                     />
                     <button
                         name="action_draft"
                         string="กลับไปร่าง"
                         type="object"
+                        groups="budget.group_budget_manager"
                         attrs="{'invisible': [('state', '=', 'draft')]}"
                     />
                     <field

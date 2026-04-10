@@ -8,8 +8,8 @@
         </field>
         <field name="name">budget appropriation from allowed operating units</field>
         <field name="global" eval="True" />
-        <field eval="0" name="perm_unlink" />
-        <field eval="0" name="perm_write" />
+        <field eval="1" name="perm_unlink" />
+        <field eval="1" name="perm_write" />
         <field eval="1" name="perm_read" />
         <field eval="0" name="perm_create" />
     </record>
@@ -22,8 +22,8 @@
         </field>
         <field name="name">budget appropriation line from allowed operating units</field>
         <field name="global" eval="True" />
-        <field eval="0" name="perm_unlink" />
-        <field eval="0" name="perm_write" />
+        <field eval="1" name="perm_unlink" />
+        <field eval="1" name="perm_write" />
         <field eval="1" name="perm_read" />
         <field eval="0" name="perm_create" />
     </record>

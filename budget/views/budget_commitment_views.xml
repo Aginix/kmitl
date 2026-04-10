@@ -39,12 +39,15 @@
                         type="object" class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_reserve" string="Reserve Budget" type="object"
+                        groups="budget.group_budget_commitment"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_obligate" string="ผูกพัน" type="object"
                         class="oe_highlight"
+                        groups="budget.group_budget_commitment"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
                     <button name="action_consume" string="ตัดงบ" type="object"
                         class="oe_highlight"
+                        groups="budget.group_budget_commitment"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
                     <button name="action_return_leftover" string="ส่งคืนเงินเหลือจ่าย"
                         type="object"

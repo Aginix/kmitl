@@ -215,6 +215,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             "ref": ref,
             "description": description or "",
             "user_id": self.env.user.id,
+            "is_auto_created": True,
             "line_ids": [(0, 0, line_vals)],
         }
 

@@ -378,6 +378,7 @@ class BudgetMixin(models.AbstractModel):
             'account_fiscal_year_id': self._get_fiscal_year_id(),
             'company_id': self.company_id.id,
             'currency_id': self.currency_id.id,
+            'is_auto_created': True,
         }
 
     def _prepare_default_budget_lines(self):

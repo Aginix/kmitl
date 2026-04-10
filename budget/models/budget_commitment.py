@@ -227,6 +227,13 @@ class BudgetCommitment(models.Model):
         store=True,
     )
     notes = fields.Text(string="Notes")
+    is_auto_created = fields.Boolean(
+        string="Auto Created",
+        default=False,
+        readonly=True,
+        copy=False,
+        help="Automatically created from upstream process (PR, PO, etc.)",
+    )
 
     # Ledger lines
     line_ids = fields.One2many(
@@ -370,8 +377,18 @@ class BudgetCommitment(models.Model):
 
     # --- Workflow Methods ---
 
+    def _check_commitment_group(self):
+        """Check that the user has the budget commitment group."""
+        if not self.env.user.has_group("budget.group_budget_commitment"):
+            raise UserError(
+                _("You do not have permission to perform budget commitment operations.")
+            )
+
     def action_reserve(self):
         """Draft -> Reserved: validate reserve lines exist"""
+        manual = self.filtered(lambda r: not r.is_auto_created)
+        if manual:
+            manual._check_commitment_group()
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft commitments can be reserved."))
@@ -422,6 +439,7 @@ class BudgetCommitment(models.Model):
     def action_obligate(self):
         """Open wizard to add an obligate line."""
         self.ensure_one()
+        self._check_commitment_group()
         if self.state not in ("reserved", "partial"):
             raise UserError(
                 _("Can only obligate in reserved or in-progress state.")
@@ -441,6 +459,7 @@ class BudgetCommitment(models.Model):
     def action_consume(self):
         """Open wizard to add a consume line."""
         self.ensure_one()
+        self._check_commitment_group()
         if self.state not in ("reserved", "partial"):
             raise UserError(
                 _("Can only consume in reserved or in-progress state.")
