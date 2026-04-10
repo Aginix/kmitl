@@ -1361,213 +1361,242 @@
         </div>
     </template>
     <template id="onboarding_tab_benefit_view" name="Onboarding Tab Benefit View">
-        <div class="card shadow-sm border-0 rounded-4 mb-4">
-            <div class="card-body p-4 p-md-5">
-                <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                    <t t-set="title">5. สวัสดิการ กองทุน และแบบฟอร์ม</t>
-                </t>
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body p-4 p-md-5">
+            <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                <t t-set="title">5. สวัสดิการ กองทุน และแบบฟอร์ม</t>
+            </t>
 
-                <!-- Group Health Insurance -->
-                <div class="card border rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fa fa-heartbeat text-primary me-2"></i>
-                            ประกันสุขภาพกลุ่ม Group Health Insurance
-                        </h6>
+            <!-- Group Health Insurance -->
+            <div class="card border rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="fa fa-heartbeat text-primary me-2"></i>
+                        ประกันสุขภาพกลุ่ม Group Health Insurance
+                    </h6>
 
-                        <ol class="text-secondary small ps-3 mb-3">
-                            <li>
-                                สำหรับพนักงานสถาบันเงินงบประมาณ และพนักงานสถาบันเงินรายได้
-                                สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน คู่สมรส และบุตรไม่เกิน 3 คน
-                            </li>
-                            <li>
-                                สำหรับพนักงานสถาบันประเภทพิเศษ
-                                สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน
-                            </li>
-                        </ol>
+                    <ol class="text-secondary small ps-3 mb-3">
+                        <li>
+                            สำหรับพนักงานสถาบันเงินงบประมาณ และพนักงานสถาบันเงินรายได้
+                            สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน คู่สมรส และบุตรไม่เกิน 3 คน
+                        </li>
+                        <li>
+                            สำหรับพนักงานสถาบันประเภทพิเศษ
+                            สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน
+                        </li>
+                    </ol>
 
-                        <div class="mb-4">
-                            <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
-                            <div class="d-flex flex-column gap-2">
-                                <a href="#" class="text-decoration-underline">
-                                    ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม Form
-                                </a>
-                                <a href="#" class="text-decoration-underline">
-                                    ดาวน์โหลดหนังสือให้ความยินยอม (PDPA)
-                                </a>
-                            </div>
+                    <div class="mb-4">
+                        <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#" class="text-decoration-underline">
+                                ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม Form
+                            </a>
+                            <a href="#" class="text-decoration-underline">
+                                ดาวน์โหลดหนังสือให้ความยินยอม (PDPA)
+                            </a>
                         </div>
+                    </div>
 
-                        <h6 class="fw-bold text-dark mb-2">เอกสารของตัวพนักงาน</h6>
+                    <h6 class="fw-bold text-dark mb-2">เอกสารของตัวพนักงาน</h6>
+                    <p class="text-secondary small mb-3">
+                        แนบใบสมัครที่ลงนามแล้ว สำเนาบัตรประชาชน ทะเบียนบ้าน และเอกสารที่เกี่ยวข้อง
+                    </p>
+
+                    <div class="d-flex flex-column gap-2">
+                        <!-- mock list -->
+                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                            <t t-set="filename">ใบสมัครประกันสุขภาพ.pdf</t>
+                            <t t-set="download_url">#</t>
+                            <t t-set="attachment_id">1</t>
+                        </t>
+                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                            <t t-set="filename">สำเนาบัตรประชาชน.jpg</t>
+                            <t t-set="download_url">#</t>
+                            <t t-set="attachment_id">2</t>
+                        </t>
+                    </div>
+
+                    <div class="border-top pt-4 mt-4">
+                        <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
                         <p class="text-secondary small mb-3">
-                            รวมใบสมัครที่ลงนามแล้ว และเอกสารประกอบของผู้สมัคร เช่น สำเนาบัตรประชาชน สำเนาทะเบียนบ้าน
-                            เป็น <strong>1 ไฟล์ PDF</strong>
+                            กรณีประสงค์เพิ่มสิทธิ์ / ซื้อประกันสุขภาพให้คู่สมรสหรือบุตร
+                            ให้แนบเอกสารที่เกี่ยวข้อง เช่น สำเนาบัตรประชาชนคู่สมรส ทะเบียนสมรส สูติบัตรบุตร
+                            หากไม่มีคู่สมรสหรือบุตร สามารถเว้นว่างได้
                         </p>
 
-                        <t t-call="hr_recruitment_kmitl.application_document_item">
-                            <t t-set="label">เอกสารของตัวพนักงาน</t>
-                            <t t-set="filename" t-value="'health_employee_bundle_file.pdf'" />
-                            <t t-set="download_url" t-value="False" />
-                        </t>
-
-                        <div class="border-top pt-4 mt-4">
-                            <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
-                            <p class="text-secondary small mb-3">
-                                กรณีประสงค์เพิ่มสิทธิ์ / ซื้อประกันสุขภาพให้คู่สมรสหรือบุตร
-                                ให้รวมเอกสารที่เกี่ยวข้อง เช่น สำเนาบัตรประชาชนคู่สมรส ทะเบียนสมรส สูติบัตรบุตร
-                                เป็น <strong>1 ไฟล์ PDF</strong><br />
-                                หากไม่มีคู่สมรสหรือบุตร สามารถเว้นว่างได้
-                            </p>
-
-                            <t t-call="hr_recruitment_kmitl.application_document_item">
-                                <t t-set="label">เอกสารของครอบครัว</t>
-                                <t t-set="filename" t-value="'health_family_bundle_file.pdf'" />
-                                <t t-set="download_url" t-value="False" />
+                        <div class="d-flex flex-column gap-2">
+                            <!-- mock list -->
+                            <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                <t t-set="filename">ทะเบียนสมรส.pdf</t>
+                                <t t-set="download_url">#</t>
+                                <t t-set="attachment_id">3</t>
+                            </t>
+                            <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                <t t-set="filename">สูติบัตรบุตร.pdf</t>
+                                <t t-set="download_url">#</t>
+                                <t t-set="attachment_id">4</t>
                             </t>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Group Accident Insurance -->
-                <div class="card border rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold text-dark mb-1">
-                            <i class="fa fa-shield text-success me-2"></i>
-                            ประกันอุบัติเหตุกลุ่ม Group Accident Insurance
-                        </h6>
-                        <p class="text-secondary small mb-3">
-                            รับประกันโดย บริษัท ทิพยประกันภัย จำกัด (มหาชน)
-                        </p>
-
-                        <ol class="text-secondary small ps-3 mb-3">
-                            <li>
-                                กรุณาดาวน์โหลดแบบฟอร์มใบสมัครประกันอุบัติเหตุกลุ่ม และกรอกข้อมูลให้ครบถ้วนก่อนลงนาม
-                            </li>
-                            <li>
-                                หากประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับครอบครัว
-                                สามารถแนบเอกสารของครอบครัวเพิ่มเติมได้
-                            </li>
-                        </ol>
-
-                        <div class="mb-4">
-                            <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
-                            <div class="d-flex flex-column gap-2">
-                                <a href="#" class="text-decoration-underline">
-                                    ดาวน์โหลดใบสมัครประกันอุบัติเหตุกลุ่ม (Thai)
-                                </a>
-                                <a href="#" class="text-decoration-underline">
-                                    Download group accident application form (English)
-                                </a>
-                            </div>
-                        </div>
-
-                        <h6 class="fw-bold text-dark mb-2">เอกสารของผู้สมัคร</h6>
-                        <p class="text-secondary small mb-3">
-                            กรุณากรอกแบบฟอร์มใบสมัครประกันอุบัติเหตุกลุ่มให้ครบถ้วนและลงนามก่อนอัปโหลด
-                            โดยให้รวมใบคำขอเอาประกันของพนักงานและสำเนาบัตรประชาชนเป็นไฟล์เดียว
-                        </p>
-
-                        <t t-call="hr_recruitment_kmitl.application_document_item">
-                            <t t-set="label">ใบคำขอเอาประกันของพนักงาน</t>
-                            <t t-set="filename" t-value="'accident_employee_bundle_file.pdf'" />
-                            <t t-set="download_url" t-value="False" />
-                        </t>
-
-                        <div class="border-top pt-4 mt-4">
-                            <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
-                            <p class="text-secondary small mb-3">
-                                กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา หรือคู่สมรส/บุตร
-                                ให้รวมแบบฟอร์มของครอบครัว และเอกสารประกอบ เช่น สำเนาบัตรประชาชน และทะเบียนบ้าน
-                                เป็นไฟล์เดียว หากไม่มี สามารถเว้นว่างได้
-                            </p>
-
-                            <t t-call="hr_recruitment_kmitl.application_document_item">
-                                <t t-set="label">เอกสารของครอบครัว</t>
-                                <t t-set="filename" t-value="'accident_family_bundle_file.pdf'" />
-                                <t t-set="download_url" t-value="False" />
-                            </t>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Provident Fund -->
-                <div class="card border rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fa fa-money text-primary me-2"></i>
-                            กองทุนสำรองเลี้ยงชีพ Provident Fund TMBAM M Choice
-                        </h6>
-                        <ul class="text-secondary small ps-3 mb-3">
-                            <li>หักจากเงินเดือนเลือกได้ 3%-15% (เปลี่ยนยอดหักได้ปีละ 1 ครั้ง) สถาบันสมทบให้ 8%</li>
-                            <li>มีโยบายการลงทุนสามารถเปลี่ยนได้ทุกวันหลังจากได้รับ USERNAME</li>
-                            <li>ส่วนแบ่งของประโยชน์ที่สถาบันจ่ายเรียบร้อย สามารถระบุได้ โดยให้สัดส่วนรวมกันได้ 100%</li>
-                        </ul>
-                        <div class="mb-3">
-                            <a href="#" class="text-decoration-underline">
-                                ดาวน์โหลดใบสมัครสมาชิกกองทุนสำรองเลี้ยงชีพ TMBAM M Choice
-                            </a>
-                        </div>
-                        <t t-call="hr_recruitment_kmitl.application_document_item">
-                            <t t-set="label">ใบสมัครกองทุนสำรองเลี้ยงชีพ</t>
-                            <t t-set="filename" t-value="'provident_fund.pdf'" />
-                            <t t-set="download_url" t-value="False" />
-                        </t>
-                    </div>
-                </div>
-
-                <!-- Declaration of Beneficiary -->
-                <div class="card border rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fa fa-file-text-o text-primary me-2"></i>
-                            การแสดงเจตนาระบุตัวผู้รับเงินชดเชย Declaration of Beneficiary
-                        </h6>
-                        <p class="text-secondary small mb-3">
-                            ให้ระบุตัวผู้มีสิทธิที่จะได้รับเงินชดเชย กรณีถึงแก่กรรม และแนบสำเนาบัตรประชาชน + ทะเบียนบ้าน
-                            ของผู้รับชดเชย
-                        </p>
-                        <div class="mb-3">
-                            <a href="#" class="text-decoration-underline">
-                                ดาวน์โหลด หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย Form
-                            </a>
-                        </div>
-                        <t t-call="hr_recruitment_kmitl.application_document_item">
-                            <t t-set="label">หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย</t>
-                            <t t-set="filename" t-value="'beneficiary.pdf'" />
-                            <t t-set="download_url" t-value="False" />
-                        </t>
-                    </div>
-                </div>
-
-                <!-- Letter of Consent -->
-                <div class="card border rounded-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold mb-3">
-                            <i class="fa fa-search text-primary me-2"></i>
-                            ยินยอมให้ตรวจสอบคุณวุฒิ LETTER OF CONSENT
-                        </h6>
-                        <p class="text-secondary small mb-3">
-                            ดาวน์โหลด หนังสือยินยอมให้ตรวจสอบคุณวุฒิ (คุณวุฒิสูงสุด) และกรอกรายละเอียดให้เรียบร้อย
-                            สแกนกลับมาพร้อมบัตรประชาชน
-                        </p>
-                        <div class="d-flex flex-wrap gap-3 mb-3">
-                            <a href="#" class="text-decoration-underline">
-                                Click here Letter
-                            </a>
-                            <a href="#" class="text-decoration-underline">
-                                or Graduated from CU Click here CU form
-                            </a>
-                        </div>
-                        <t t-call="hr_recruitment_kmitl.application_document_item">
-                            <t t-set="label">Letter of Consent</t>
-                            <t t-set="filename" t-value="'consent.pdf'" />
-                            <t t-set="download_url" t-value="False" />
-                        </t>
                     </div>
                 </div>
             </div>
+
+            <!-- Group Accident Insurance -->
+            <div class="card border rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-dark mb-1">
+                        <i class="fa fa-shield text-success me-2"></i>
+                        ประกันอุบัติเหตุกลุ่ม Group Accident Insurance
+                    </h6>
+                    <p class="text-secondary small mb-3">
+                        รับประกันโดย บริษัท ทิพยประกันภัย จำกัด (มหาชน)
+                    </p>
+
+                    <ol class="text-secondary small ps-3 mb-3">
+                        <li>
+                            กรุณาดาวน์โหลดแบบฟอร์มใบสมัครประกันอุบัติเหตุกลุ่ม และกรอกข้อมูลให้ครบถ้วนก่อนลงนาม
+                        </li>
+                        <li>
+                            หากประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับครอบครัว
+                            สามารถแนบเอกสารของครอบครัวเพิ่มเติมได้
+                        </li>
+                    </ol>
+
+                    <div class="mb-4">
+                        <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#" class="text-decoration-underline">
+                                ดาวน์โหลดใบสมัครประกันอุบัติเหตุกลุ่ม (Thai)
+                            </a>
+                            <a href="#" class="text-decoration-underline">
+                                Download group accident application form (English)
+                            </a>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-dark mb-2">เอกสารของผู้สมัคร</h6>
+                    <p class="text-secondary small mb-3">
+                        แนบใบคำขอเอาประกันของพนักงานที่กรอกครบถ้วนและลงนามแล้ว พร้อมสำเนาบัตรประชาชน
+                    </p>
+
+                    <div class="d-flex flex-column gap-2">
+                        <!-- mock list -->
+                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                            <t t-set="filename">ใบคำขอเอาประกันของพนักงาน.pdf</t>
+                            <t t-set="download_url">#</t>
+                            <t t-set="attachment_id">11</t>
+                        </t>
+                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                            <t t-set="filename">สำเนาบัตรประชาชนผู้สมัคร.jpg</t>
+                            <t t-set="download_url">#</t>
+                            <t t-set="attachment_id">12</t>
+                        </t>
+                    </div>
+
+                    <div class="border-top pt-4 mt-4">
+                        <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
+                        <p class="text-secondary small mb-3">
+                            กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา หรือคู่สมรส/บุตร
+                            ให้แนบแบบฟอร์มของครอบครัว และเอกสารประกอบ เช่น สำเนาบัตรประชาชน และทะเบียนบ้าน
+                            หากไม่มี สามารถเว้นว่างได้
+                        </p>
+
+                        <div class="d-flex flex-column gap-2">
+                            <!-- mock list -->
+                            <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                <t t-set="filename">ใบคำขอเอาประกันของบิดา.pdf</t>
+                                <t t-set="download_url">#</t>
+                                <t t-set="attachment_id">21</t>
+                            </t>
+                            <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                <t t-set="filename">ทะเบียนบ้านครอบครัว.jpg</t>
+                                <t t-set="download_url">#</t>
+                                <t t-set="attachment_id">22</t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provident Fund -->
+            <div class="card border rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="fa fa-money text-primary me-2"></i>
+                        กองทุนสำรองเลี้ยงชีพ Provident Fund TMBAM M Choice
+                    </h6>
+                    <ul class="text-secondary small ps-3 mb-3">
+                        <li>หักจากเงินเดือนเลือกได้ 3%-15% (เปลี่ยนยอดหักได้ปีละ 1 ครั้ง) สถาบันสมทบให้ 8%</li>
+                        <li>มีโยบายการลงทุนสามารถเปลี่ยนได้ทุกวันหลังจากได้รับ USERNAME</li>
+                        <li>ส่วนแบ่งของประโยชน์ที่สถาบันจ่ายเรียบร้อย สามารถระบุได้ โดยให้สัดส่วนรวมกันได้ 100%</li>
+                    </ul>
+                    <div class="mb-3">
+                        <a href="#" class="text-decoration-underline">
+                            ดาวน์โหลดใบสมัครสมาชิกกองทุนสำรองเลี้ยงชีพ TMBAM M Choice
+                        </a>
+                    </div>
+                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                        <t t-set="label">ใบสมัครกองทุนสำรองเลี้ยงชีพ</t>
+                        <t t-set="filename" t-value="'provident_fund.pdf'" />
+                        <t t-set="download_url" t-value="False" />
+                    </t>
+                </div>
+            </div>
+
+            <!-- Declaration of Beneficiary -->
+            <div class="card border rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="fa fa-file-text-o text-primary me-2"></i>
+                        การแสดงเจตนาระบุตัวผู้รับเงินชดเชย Declaration of Beneficiary
+                    </h6>
+                    <p class="text-secondary small mb-3">
+                        ให้ระบุตัวผู้มีสิทธิที่จะได้รับเงินชดเชย กรณีถึงแก่กรรม และแนบสำเนาบัตรประชาชน + ทะเบียนบ้าน
+                        ของผู้รับชดเชย
+                    </p>
+                    <div class="mb-3">
+                        <a href="#" class="text-decoration-underline">
+                            ดาวน์โหลด หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย Form
+                        </a>
+                    </div>
+                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                        <t t-set="label">หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย</t>
+                        <t t-set="filename" t-value="'beneficiary.pdf'" />
+                        <t t-set="download_url" t-value="False" />
+                    </t>
+                </div>
+            </div>
+
+            <!-- Letter of Consent -->
+            <div class="card border rounded-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="fa fa-search text-primary me-2"></i>
+                        ยินยอมให้ตรวจสอบคุณวุฒิ LETTER OF CONSENT
+                    </h6>
+                    <p class="text-secondary small mb-3">
+                        ดาวน์โหลด หนังสือยินยอมให้ตรวจสอบคุณวุฒิ (คุณวุฒิสูงสุด) และกรอกรายละเอียดให้เรียบร้อย
+                        สแกนกลับมาพร้อมบัตรประชาชน
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 mb-3">
+                        <a href="#" class="text-decoration-underline">
+                            Click here Letter
+                        </a>
+                        <a href="#" class="text-decoration-underline">
+                            or Graduated from CU Click here CU form
+                        </a>
+                    </div>
+                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                        <t t-set="label">Letter of Consent</t>
+                        <t t-set="filename" t-value="'consent.pdf'" />
+                        <t t-set="download_url" t-value="False" />
+                    </t>
+                </div>
+            </div>
         </div>
-    </template>
+    </div>
+</template>
     <template id="onboarding_tab_confirm_view" name="Onboarding Tab Confirm View">
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">

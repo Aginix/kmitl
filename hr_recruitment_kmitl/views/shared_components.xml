@@ -137,6 +137,27 @@
 
         </div>
     </template>
+    <template id="document_uploaded_view_list_item">
+        <div class="d-flex align-items-center gap-3 p-3 border rounded-3 bg-white">
+            <div
+                class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon">
+                <i class="fa fa-file-text-o text-secondary" />
+            </div>
+
+            <div class="flex-grow-1">
+                <div class="small text-success">
+                    <i class="fa fa-check-circle me-1" />
+                    <a t-if="download_url" t-att-href="download_url" class="text-success text-decoration-underline"
+                        target="_blank">
+                        <t t-esc="filename" />
+                    </a>
+                    <t t-else="">
+                        <t t-esc="filename" />
+                    </t>
+                </div>
+            </div>
+        </div>
+    </template>
     <template id="document_multi_upload_item">
         <div class="js-multi-file-upload-wrapper">
             <label class="form-label fw-semibold small d-block mb-2">
