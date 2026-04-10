@@ -476,56 +476,72 @@
                             <i class="fa fa-heartbeat text-primary me-2"></i>
                             ประกันสุขภาพกลุ่ม Group Health Insurance
                         </h6>
+
                         <ol class="text-secondary small ps-3 mb-3">
-                            <li>สำหรับพนักงานสถาบันเงินงบประมาณ และพนักงานสถาบันเงินรายได้
-                                สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน คู่สมรส และบุตรไม่เกิน 3 คน</li>
-                            <li>สำหรับพนักงานสถาบันประเภทพิเศษ สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน</li>
+                            <li>
+                                สำหรับพนักงานสถาบันเงินงบประมาณ และพนักงานสถาบันเงินรายได้
+                                สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน คู่สมรส และบุตรไม่เกิน 3 คน
+                            </li>
+                            <li>
+                                สำหรับพนักงานสถาบันประเภทพิเศษ
+                                สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน
+                            </li>
                         </ol>
+
                         <div class="mb-4">
                             <div class="small text-muted mb-2">ดาวน์โหลดแบบฟอร์มเพื่อลงนาม</div>
                             <div class="d-flex flex-column gap-2">
                                 <a href="#" class="text-decoration-underline">
-                                    ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม Form
+                                    ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม
                                 </a>
                                 <a href="#" class="text-decoration-underline">
                                     ดาวน์โหลดหนังสือให้ความยินยอม (PDPA)
                                 </a>
                             </div>
                         </div>
+
                         <div class="mb-4">
-                            <h6 class="fw-bold text-dark mb-2">เอกสารของตัวพนักงาน</h6>
-                            <p class="text-secondary small mb-3">
-                                รวมใบสมัครที่ลงนามแล้ว และเอกสารประกอบของผู้สมัคร เช่น สำเนาบัตรประชาชน สำเนาทะเบียนบ้าน
-                                เป็น
-                                <strong>1 ไฟล์ PDF</strong>
-                            </p>
-                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                <t t-set="name">health_employee_bundle_file</t>
-                                <t t-set="label">อัปโหลดเอกสารของตัวพนักงาน</t>
-                                <t t-set="description">ไฟล์ PDF 1 ไฟล์</t>
+                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
+                                <t t-set="name">health_employee_files</t>
+                                <t t-set="label">เอกสารของตัวพนักงาน</t>
+                                <t t-set="description">แนบใบสมัครที่ลงนามแล้ว สำเนาบัตรประชาชน ทะเบียนบ้าน
+                                    และเอกสารที่เกี่ยวข้อง</t>
                                 <t t-set="required" t-value="True" />
-                                <t t-set="existing_filename" t-value="False" />
-                                <t t-set="download_url" t-value="False" />
+                                <t t-set="files" t-value="False" />
                             </t>
+
+                            <div class="d-flex flex-column gap-2 mt-3">
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                                    <t t-set="filename">ใบสมัครประกันสุขภาพ.pdf</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">1</t>
+                                </t>
+
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                                    <t t-set="filename">สำเนาบัตรประชาชน.jpg</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">2</t>
+                                </t>
+                            </div>
                         </div>
+
                         <div class="border-top pt-4">
-                            <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
-                            <p class="text-secondary small mb-3">
-                                กรณีประสงค์เพิ่มสิทธิ์ / ซื้อประกันสุขภาพให้คู่สมรสหรือบุตร
-                                ให้รวมเอกสารที่เกี่ยวข้อง เช่น สำเนาบัตรประชาชนคู่สมรส ทะเบียนสมรส สูติบัตรบุตร
-                                เป็น
-                                <strong>1 ไฟล์ PDF</strong>
-                                <br />
-                                หากไม่มีคู่สมรสหรือบุตร สามารถเว้นว่างได้
-                            </p>
-                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                <t t-set="name">health_family_bundle_file</t>
-                                <t t-set="label">อัปโหลดเอกสารของครอบครัว</t>
-                                <t t-set="description">ไฟล์ PDF 1 ไฟล์ (ถ้ามี)</t>
+                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
+                                <t t-set="name">health_family_files</t>
+                                <t t-set="label">เอกสารของครอบครัว</t>
+                                <t t-set="description">แนบเอกสารของคู่สมรสหรือบุตร เช่น บัตรประชาชน ทะเบียนสมรส สูติบัตร
+                                </t>
                                 <t t-set="required" t-value="False" />
-                                <t t-set="existing_filename" t-value="False" />
-                                <t t-set="download_url" t-value="False" />
+                                <t t-set="files" t-value="False" />
                             </t>
+
+                            <div class="d-flex flex-column gap-2 mt-3">
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                                    <t t-set="filename">ทะเบียนสมรส.pdf</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">3</t>
+                                </t>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -555,44 +571,56 @@
                             </a>
                         </div>
 
-                        <h6 class="fw-bold text-dark mb-3">เอกสารของผู้สมัคร</h6>
-                        <p class="text-secondary small mb-3">
-                            กรุณากรอกแบบฟอร์มใบสมัครประกันอุบัติเหตุกลุ่มให้ครบถ้วนและลงนามก่อนอัปโหลด
-                            โดยให้รวมใบคำขอเอาประกันของพนักงานและสำเนาบัตรประชาชนเป็นไฟล์เดียว
-                        </p>
-
                         <div class="mb-4">
-                            <div class="col-md-6 mb-3">
-                                <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                    <t t-set="name">accident_employee_bundle_file</t>
-                                    <t t-set="label">ใบคำขอเอาประกันของพนักงาน</t>
-                                    <t t-set="description">ไฟล์ PDF 1 ไฟล์</t>
-                                    <t t-set="required" t-value="True" />
-                                    <t t-set="existing_filename" t-value="False" />
-                                    <t t-set="download_url" t-value="False" />
+                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
+                                <t t-set="name">accident_employee_files</t>
+                                <t t-set="label">เอกสารของผู้สมัคร</t>
+                                <t t-set="description">แนบใบคำขอเอาประกันของพนักงานที่กรอกครบถ้วนและลงนามแล้ว
+                                    พร้อมสำเนาบัตรประชาชน</t>
+                                <t t-set="required" t-value="True" />
+                                <t t-set="files" t-value="False" />
+                            </t>
+
+                            <!-- mock list -->
+                            <div class="d-flex flex-column gap-2 mt-3">
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                                    <t t-set="filename">ใบคำขอเอาประกันของพนักงาน.pdf</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">11</t>
+                                </t>
+
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                                    <t t-set="filename">สำเนาบัตรประชาชนผู้สมัคร.jpg</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">12</t>
                                 </t>
                             </div>
                         </div>
 
                         <div class="border-top pt-4">
-                            <h6 class="fw-bold text-dark mb-3 mt-2">เอกสารของครอบครัว</h6>
-                            <p class="text-secondary small mb-3">
-                                กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา หรือคู่สมรส/บุตร
-                                ให้รวมแบบฟอร์มของครอบครัว และเอกสารประกอบ เช่น สำเนาบัตรประชาชน และทะเบียนบ้าน
-                                เป็นไฟล์เดียว หากไม่มี สามารถเว้นว่างได้
-                            </p>
+                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
+                                <t t-set="name">accident_family_files</t>
+                                <t t-set="label">เอกสารของครอบครัว</t>
+                                <t t-set="description">กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา
+                                    หรือคู่สมรส/บุตร ให้แนบแบบฟอร์มของครอบครัว และเอกสารประกอบ เช่น สำเนาบัตรประชาชน
+                                    และทะเบียนบ้าน</t>
+                                <t t-set="required" t-value="False" />
+                                <t t-set="files" t-value="False" />
+                            </t>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                        <t t-set="name">accident_family_bundle_file</t>
-                                        <t t-set="label">เอกสารของครอบครัว</t>
-                                        <t t-set="description">ไฟล์ PDF 1 ไฟล์ (ถ้ามี)</t>
-                                        <t t-set="required" t-value="False" />
-                                        <t t-set="existing_filename" t-value="False" />
-                                        <t t-set="download_url" t-value="False" />
-                                    </t>
-                                </div>
+                            <!-- mock list -->
+                            <div class="d-flex flex-column gap-2 mt-3">
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                                    <t t-set="filename">ใบคำขอเอาประกันของบิดา.pdf</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">21</t>
+                                </t>
+
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                                    <t t-set="filename">ทะเบียนบ้านครอบครัว.jpg</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">22</t>
+                                </t>
                             </div>
                         </div>
                     </div>
