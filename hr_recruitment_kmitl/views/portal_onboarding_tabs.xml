@@ -69,22 +69,31 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">วัน/เดือน/ปี เกิด (Birthday)</t>
                             <t t-set="value">13/09/2530</t>
                         </t>
                     </div>
-                    <div class="col-lg-2 mb-3">
+
+                    <div class="col-lg-3 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">อายุ (Age)</t>
                             <t t-set="value">34</t>
                         </t>
                     </div>
-                    <div class="col-lg-4 mb-3">
+
+                    <div class="col-lg-3 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">เพศ (Gender)</t>
                             <t t-set="value">ชาย</t>
+                        </t>
+                    </div>
+
+                    <div class="col-lg-3 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">หมู่เลือด (Blood Type)</t>
+                            <t t-set="value">A</t>
                         </t>
                     </div>
                 </div>
@@ -159,37 +168,6 @@
                         </t>
                     </div>
                 </div>
-                <!--
-            <div class="row">
-                <div class="col-lg-2 mb-3">
-                    <t t-call="hr_recruitment_kmitl.input_readonly_field">
-                        <t t-set="label">คำนำหน้า (Title)</t>
-                        <t t-set="value">นางสาว</t>
-                    </t>
-                </div>
-
-                <div class="col-lg-4 mb-3">
-                    <t t-call="hr_recruitment_kmitl.input_readonly_field">
-                        <t t-set="label">ชื่อจริง (First Name)</t>
-                        <t t-set="value">ทดสอบ</t>
-                    </t>
-                </div>
-
-                <div class="col-lg-3 mb-3">
-                    <t t-call="hr_recruitment_kmitl.input_readonly_field">
-                        <t t-set="label">ชื่อกลาง (Middle Name)</t>
-                        <t t-set="value">-</t>
-                    </t>
-                </div>
-
-                <div class="col-lg-3 mb-3">
-                    <t t-call="hr_recruitment_kmitl.input_readonly_field">
-                        <t t-set="label">นามสกุล (Last Name)</t>
-                        <t t-set="value">ทดสอบ</t>
-                    </t>
-                </div>
-            </div>
-            -->
             </div>
         </div>
         <!-- ผู้ติดต่อฉุกเฉิน -->
@@ -236,6 +214,113 @@
                     <t t-set="label">Congenital Disease / โรคประจำตัว</t>
                     <t t-set="value">ไม่มี</t>
                 </t>
+            </div>
+        </div>
+    </template>
+    <template id="onboarding_tab_family" name="Onboarding Tab Family">
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                    <t t-set="title">3.ข้อมูลครอบครัว (Family)</t>
+                    <t t-set="description">กรอกข้อมูลสมาชิกในครอบครัวเพิ่มเติมเพื่อใช้ประกอบการรายงานตัว</t>
+                </t>
+
+                <!-- Family Member 1 -->
+                <div class="card border rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark mb-0">สมาชิกครอบครัวคนที่ 1</h6>
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill">
+                                <i class="fa fa-trash me-1"></i>
+                                ลบ
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">ความสัมพันธ์</label>
+                                <select name="family_relation_1" class="form-select">
+                                    <option value="">เลือกความสัมพันธ์</option>
+                                    <option value="father">บิดา</option>
+                                    <option value="mother">มารดา</option>
+                                    <option value="spouse">คู่สมรส</option>
+                                    <option value="child">บุตร</option>
+                                    <option value="other">อื่น ๆ</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">เลขบัตรประชาชน</label>
+                                <input type="text" name="family_identification_id_1" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">คำนำหน้า</label>
+                                <select name="family_prefix_1" class="form-select">
+                                    <option value="">เลือกคำนำหน้า</option>
+                                    <option value="mr">นาย</option>
+                                    <option value="mrs">นาง</option>
+                                    <option value="ms">นางสาว</option>
+                                    <option value="dr">ดร.</option>
+                                    <option value="other">อื่น ๆ</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">ชื่อ</label>
+                                <input type="text" name="family_firstname_1" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">ชื่อกลาง</label>
+                                <input type="text" name="family_middlename_1" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">นามสกุล</label>
+                                <input type="text" name="family_lastname_1" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">วันเกิด</label>
+                                <input type="date" name="family_dob_1" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">อาชีพ</label>
+                                <input type="text" name="family_occupation_1" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">เบอร์โทรศัพท์</label>
+                                <input type="text" name="family_phone_1" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="col-form-label">สถานะภาพ</label>
+                                <select name="family_status_1" class="form-select">
+                                    <option value="">เลือกสถานะภาพ</option>
+                                    <option value="alive">มีชีวิต</option>
+                                    <option value="deceased">เสียชีวิต</option>
+                                    <option value="divorced">หย่าร้าง</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-primary rounded-pill px-4">
+                        <i class="fa fa-plus me-2"></i>
+                        เพิ่มสมาชิกครอบครัว
+                    </button>
+                </div>
             </div>
         </div>
     </template>
@@ -321,20 +406,30 @@
             <div class="card-body p-4 p-md-5">
                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                     <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                        <t t-set="title">3. เครื่องราชอิสริยาภรณ์ (Royal Decorations)</t>
+                        <t t-set="title">4. เครื่องราชอิสริยาภรณ์ (Royal Decorations)</t>
                     </t>
-                    <span class="badge rounded-pill bg-warning-light text-warning px-3 py-2">
+                    <span class="badge rounded-pill bg-warning text-warning px-3 py-2">
                         Thai Only ไม่มีข้ามได้
                     </span>
                 </div>
                 <div class="row">
-                    <div class="mb-3 col-12">
+
+                    <div class="mb-3 col-lg-6">
                         <label class="col-form-label" for="royal_decoration_name">
-                            ชั้นตราเครื่องราชอิสริยาภรณ์ที่ได้รับล่าสุด
+                            ชื่อเครื่องราชอิสริยาภรณ์ที่ได้รับ
                         </label>
                         <input type="text" id="royal_decoration_name" name="royal_decoration_name" class="form-control"
-                            placeholder="เช่น ทวีติยาภรณ์ช้างเผือก" />
+                            placeholder="เช่น เครื่องราชอิสริยาภรณ์ช้างเผือก" />
                     </div>
+
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label" for="royal_decoration_level">
+                            ขั้น
+                        </label>
+                        <input type="text" id="royal_decoration_level" name="royal_decoration_level"
+                            class="form-control" placeholder="เช่น ทวีติยาภรณ์" />
+                    </div>
+
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label" for="royal_decoration_year">
                             ปี พ.ศ. ที่ได้รับ
@@ -342,6 +437,7 @@
                         <input type="number" id="royal_decoration_year" name="royal_decoration_year"
                             class="form-control" min="2400" max="2600" placeholder="เช่น 2566" />
                     </div>
+
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label" for="royal_decoration_agency">
                             รับจากหน่วยงาน
@@ -349,13 +445,13 @@
                         <input type="text" id="royal_decoration_agency" name="royal_decoration_agency"
                             class="form-control" placeholder="เช่น สำนักนายกรัฐมนตรี" />
                     </div>
+
                     <div class="mb-3 col-12">
                         <t t-call="hr_recruitment_kmitl.document_upload_item">
                             <t t-set="name">royal_decoration_proof</t>
                             <t t-set="label">
                                 กรุณาแนบสำเนาราชกิจจานุเบกษา เผยแพร่ประกาศสำนักนายกรัฐมนตรี เรื่อง พระราชทานเครื่องราชฯ
-                                ประจำปี...
-                                ที่ได้รับ / หรือข้อมูลแสดงหลักฐาน จากระบบทะเบียนฐานันดรดอนออนไลน์
+                                ประจำปี... ที่ได้รับ / หรือข้อมูลแสดงหลักฐาน จากระบบทะเบียนฐานันดรดอนออนไลน์
                             </t>
                             <t t-set="description">ไฟล์ PDF หรือรูปภาพ</t>
                             <t t-set="required" t-value="False" />
@@ -363,6 +459,7 @@
                             <t t-set="download_url" t-value="False" />
                         </t>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -372,7 +469,7 @@
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                    <t t-set="title">4. รายงานตัวเข้าปฏิบัติงาน (Report Duty at KMITL)</t>
+                    <t t-set="title">5. รายงานตัวเข้าปฏิบัติงาน (Report Duty at KMITL)</t>
                     <t t-set="description">ข้อมูลส่วนนี้ดึงจากข้อมูลที่ใช้สมัครและแสดงผลแบบอ่านอย่างเดียว</t>
                 </t>
                 <div class="row">
@@ -397,6 +494,58 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body p-4 p-md-5">
+
+                <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                    <t t-set="title">ตำแหน่งทางวิชาการ (Academic Position)</t>
+                    <t t-set="description">
+                        ข้อมูลนี้ดึงมาจากข้อมูลที่เคยบันทึกไว้และไม่สามารถแก้ไขได้
+                    </t>
+                </t>
+
+                <!-- Row 1: Academic Position -->
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">ตำแหน่งทางวิชาการ (Academic Position)</t>
+                            <t t-set="value">ศาสตราจารย์</t>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Row 2: Date + Institution -->
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">แต่งตั้งเมื่อ (Appointed Date)</t>
+                            <t t-set="value">01/01/2565</t>
+                        </t>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">สถาบันที่ได้รับ (Institution)</t>
+                            <t t-set="value">
+                                สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                            </t>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Row 3: Document -->
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <t t-call="hr_recruitment_kmitl.application_document_item">
+                            <t t-set="label">สำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ</t>
+                            <t t-set="filename" t-value="'academic_position_order.pdf'" />
+                            <t t-set="download_url" t-value="False" />
+                        </t>
+                    </div>
+                </div>
+
             </div>
         </div>
         <!-- Starting Date -->
@@ -466,7 +615,7 @@
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                    <t t-set="title">5. สวัสดิการและกองทุน</t>
+                    <t t-set="title">6. สวัสดิการและกองทุน</t>
                     <t t-set="description">กรุณาดาวน์โหลดแบบฟอร์มที่เกี่ยวข้อง และอัปโหลดเอกสารประกอบให้ครบถ้วน</t>
                 </t>
                 <!-- Group Health Insurance -->
@@ -726,7 +875,7 @@
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                    <t t-set="title">6. ตรวจสอบประวัติ อัปโหลดเอกสารหลักฐาน ข้อมูลเพิ่มเติม และยืนยัน</t>
+                    <t t-set="title">7. ตรวจสอบประวัติ อัปโหลดเอกสารหลักฐาน ข้อมูลเพิ่มเติม และยืนยัน</t>
                     <t t-set="description">กรุณากรอกข้อมูลให้ครบถ้วน อัปโหลดเอกสารที่จำเป็น
                         และยืนยันข้อมูลก่อนส่งแบบฟอร์ม</t>
                 </t>
@@ -952,6 +1101,7 @@
             </div>
         </div>
     </template>
+    <!-- View Page -->
     <template id="onboarding_tab_personal_view" name="Onboarding Tab Personal View">
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
@@ -1019,22 +1169,31 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">วัน/เดือน/ปี เกิด (Birthday)</t>
-                            <t t-set="value">1 ม.ค. 2540</t>
+                            <t t-set="value">13/09/2530</t>
                         </t>
                     </div>
-                    <div class="col-lg-2 mb-3">
+
+                    <div class="col-lg-3 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">อายุ (Age)</t>
-                            <t t-set="value">29</t>
+                            <t t-set="value">34</t>
                         </t>
                     </div>
-                    <div class="col-lg-4 mb-3">
+
+                    <div class="col-lg-3 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">เพศ (Gender)</t>
                             <t t-set="value">ชาย</t>
+                        </t>
+                    </div>
+
+                    <div class="col-lg-3 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">หมู่เลือด (Blood Type)</t>
+                            <t t-set="value">A</t>
                         </t>
                     </div>
                 </div>
@@ -1164,6 +1323,83 @@
             </div>
         </div>
     </template>
+    <template id="onboarding_tab_family_view" name="Onboarding Tab Family View">
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                    <t t-set="title">3. ข้อมูลครอบครัว (Family)</t>
+                    <t t-set="description">สรุปข้อมูลสมาชิกในครอบครัวที่ใช้ประกอบการรายงานตัว</t>
+                </t>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th style="min-width: 160px;">ความสัมพันธ์</th>
+                                <th style="min-width: 180px;">เลขบัตรประชาชน</th>
+                                <th style="min-width: 120px;">คำนำหน้า</th>
+                                <th style="min-width: 160px;">ชื่อ</th>
+                                <th style="min-width: 160px;">ชื่อกลาง</th>
+                                <th style="min-width: 160px;">นามสกุล</th>
+                                <th style="min-width: 140px;">วันเกิด</th>
+                                <th style="min-width: 160px;">อาชีพ</th>
+                                <th style="min-width: 160px;">เบอร์โทรศัพท์</th>
+                                <th style="min-width: 140px;">สถานะภาพ</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>บิดา</td>
+                                <td>1100000000001</td>
+                                <td>นาย</td>
+                                <td>สมชาย</td>
+                                <td>-</td>
+                                <td>ใจดี</td>
+                                <td>01/01/2505</td>
+                                <td>ข้าราชการบำนาญ</td>
+                                <td>0812345678</td>
+                                <td>มีชีวิต</td>
+                            </tr>
+
+                            <tr>
+                                <td>มารดา</td>
+                                <td>1100000000002</td>
+                                <td>นาง</td>
+                                <td>สมหญิง</td>
+                                <td>-</td>
+                                <td>ใจดี</td>
+                                <td>15/05/2508</td>
+                                <td>ค้าขาย</td>
+                                <td>0899999999</td>
+                                <td>มีชีวิต</td>
+                            </tr>
+
+                            <tr>
+                                <td>คู่สมรส</td>
+                                <td>1100000000003</td>
+                                <td>นางสาว</td>
+                                <td>สุดา</td>
+                                <td>-</td>
+                                <td>รักดี</td>
+                                <td>10/10/2535</td>
+                                <td>พนักงานบริษัท</td>
+                                <td>0866666666</td>
+                                <td>หย่าร้าง</td>
+                            </tr>
+                            <!-- Empty State -->
+                            <!-- <tr>
+                                <td colspan="10" class="text-center text-secondary py-4">
+                                    ยังไม่มีข้อมูลครอบครัว
+                                </td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </template>
     <template id="onboarding_tab_education_view" name="Onboarding Tab Education View">
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
@@ -1243,48 +1479,62 @@
     <template id="onboarding_tab_decoration_view" name="Onboarding Tab Decoration View">
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
+
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                    <t t-set="title">3. เครื่องราชอิสริยาภรณ์ (Royal Decorations)</t>
+                    <t t-set="title">4. เครื่องราชอิสริยาภรณ์ (Royal Decorations)</t>
                     <t t-set="description">ข้อมูลเครื่องราชอิสริยาภรณ์ที่ได้รับล่าสุด</t>
                 </t>
+
                 <div class="row">
-                    <div class="col-12 mb-3">
+
+                    <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
-                            <t t-set="label">ชั้นตราเครื่องราชอิสริยาภรณ์ที่ได้รับล่าสุด</t>
-                            <t t-set="value">ทวีติยาภรณ์ช้างเผือก</t>
+                            <t t-set="label">ชื่อเครื่องราชอิสริยาภรณ์ที่ได้รับ</t>
+                            <t t-set="value">เครื่องราชอิสริยาภรณ์ช้างเผือก</t>
                         </t>
                     </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">ขั้น</t>
+                            <t t-set="value">ทวีติยาภรณ์</t>
+                        </t>
+                    </div>
+
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ปี พ.ศ. ที่ได้รับ</t>
                             <t t-set="value">2566</t>
                         </t>
                     </div>
+
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">รับจากหน่วยงาน</t>
                             <t t-set="value">สำนักนายกรัฐมนตรี</t>
                         </t>
                     </div>
+
                     <div class="col-12 mb-3">
                         <t t-call="hr_recruitment_kmitl.application_document_item">
-                            <t t-set="label">
-                                สำเนาราชกิจจานุเบกษา / ประกาศ / เอกสารหลักฐาน
-                            </t>
+                            <t t-set="label">สำเนาราชกิจจานุเบกษา / ประกาศ / เอกสารหลักฐาน</t>
                             <t t-set="filename" t-value="'royal_decoration.pdf'" />
                             <t t-set="download_url" t-value="False" />
                         </t>
                     </div>
+
                 </div>
+
             </div>
         </div>
     </template>
+
     <template id="onboarding_tab_work_view" name="Onboarding Tab Work View">
         <!-- Report Duty -->
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                    <t t-set="title">4. รายงานตัวเข้าปฏิบัติงาน (Report Duty at KMITL)</t>
+                    <t t-set="title">5. รายงานตัวเข้าปฏิบัติงาน (Report Duty at KMITL)</t>
                     <t t-set="description">ข้อมูลส่วนนี้ดึงจากข้อมูลที่ใช้สมัครและข้อมูลที่ท่านยืนยันในขั้นตอนรายงานตัว
                     </t>
                 </t>
@@ -1316,6 +1566,58 @@
                         </t>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body p-4 p-md-5">
+
+                <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                    <t t-set="title">ตำแหน่งทางวิชาการ (Academic Position)</t>
+                    <t t-set="description">
+                        ข้อมูลนี้ดึงมาจากข้อมูลที่เคยบันทึกไว้และไม่สามารถแก้ไขได้
+                    </t>
+                </t>
+
+                <!-- Row 1: Academic Position -->
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">ตำแหน่งทางวิชาการ (Academic Position)</t>
+                            <t t-set="value">ศาสตราจารย์</t>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Row 2: Date + Institution -->
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">แต่งตั้งเมื่อ (Appointed Date)</t>
+                            <t t-set="value">01/01/2565</t>
+                        </t>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <t t-call="hr_recruitment_kmitl.input_readonly_field">
+                            <t t-set="label">สถาบันที่ได้รับ (Institution)</t>
+                            <t t-set="value">
+                                สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                            </t>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Row 3: Document -->
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <t t-call="hr_recruitment_kmitl.application_document_item">
+                            <t t-set="label">สำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ</t>
+                            <t t-set="filename" t-value="'academic_position_order.pdf'" />
+                            <t t-set="download_url" t-value="False" />
+                        </t>
+                    </div>
+                </div>
+
             </div>
         </div>
         <!-- Starting Date -->
@@ -1361,247 +1663,247 @@
         </div>
     </template>
     <template id="onboarding_tab_benefit_view" name="Onboarding Tab Benefit View">
-    <div class="card shadow-sm border-0 rounded-4 mb-4">
-        <div class="card-body p-4 p-md-5">
-            <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                <t t-set="title">5. สวัสดิการ กองทุน และแบบฟอร์ม</t>
-            </t>
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                    <t t-set="title">6. สวัสดิการ กองทุน และแบบฟอร์ม</t>
+                </t>
 
-            <!-- Group Health Insurance -->
-            <div class="card border rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">
-                        <i class="fa fa-heartbeat text-primary me-2"></i>
-                        ประกันสุขภาพกลุ่ม Group Health Insurance
-                    </h6>
+                <!-- Group Health Insurance -->
+                <div class="card border rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fa fa-heartbeat text-primary me-2"></i>
+                            ประกันสุขภาพกลุ่ม Group Health Insurance
+                        </h6>
 
-                    <ol class="text-secondary small ps-3 mb-3">
-                        <li>
-                            สำหรับพนักงานสถาบันเงินงบประมาณ และพนักงานสถาบันเงินรายได้
-                            สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน คู่สมรส และบุตรไม่เกิน 3 คน
-                        </li>
-                        <li>
-                            สำหรับพนักงานสถาบันประเภทพิเศษ
-                            สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน
-                        </li>
-                    </ol>
+                        <ol class="text-secondary small ps-3 mb-3">
+                            <li>
+                                สำหรับพนักงานสถาบันเงินงบประมาณ และพนักงานสถาบันเงินรายได้
+                                สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน คู่สมรส และบุตรไม่เกิน 3 คน
+                            </li>
+                            <li>
+                                สำหรับพนักงานสถาบันประเภทพิเศษ
+                                สถาบันจัดสรรประกันสุขภาพกลุ่มให้กับตัวพนักงาน
+                            </li>
+                        </ol>
 
-                    <div class="mb-4">
-                        <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
-                        <div class="d-flex flex-column gap-2">
-                            <a href="#" class="text-decoration-underline">
-                                ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม Form
-                            </a>
-                            <a href="#" class="text-decoration-underline">
-                                ดาวน์โหลดหนังสือให้ความยินยอม (PDPA)
-                            </a>
+                        <div class="mb-4">
+                            <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
+                            <div class="d-flex flex-column gap-2">
+                                <a href="#" class="text-decoration-underline">
+                                    ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม Form
+                                </a>
+                                <a href="#" class="text-decoration-underline">
+                                    ดาวน์โหลดหนังสือให้ความยินยอม (PDPA)
+                                </a>
+                            </div>
                         </div>
-                    </div>
 
-                    <h6 class="fw-bold text-dark mb-2">เอกสารของตัวพนักงาน</h6>
-                    <p class="text-secondary small mb-3">
-                        แนบใบสมัครที่ลงนามแล้ว สำเนาบัตรประชาชน ทะเบียนบ้าน และเอกสารที่เกี่ยวข้อง
-                    </p>
-
-                    <div class="d-flex flex-column gap-2">
-                        <!-- mock list -->
-                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                            <t t-set="filename">ใบสมัครประกันสุขภาพ.pdf</t>
-                            <t t-set="download_url">#</t>
-                            <t t-set="attachment_id">1</t>
-                        </t>
-                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                            <t t-set="filename">สำเนาบัตรประชาชน.jpg</t>
-                            <t t-set="download_url">#</t>
-                            <t t-set="attachment_id">2</t>
-                        </t>
-                    </div>
-
-                    <div class="border-top pt-4 mt-4">
-                        <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
+                        <h6 class="fw-bold text-dark mb-2">เอกสารของตัวพนักงาน</h6>
                         <p class="text-secondary small mb-3">
-                            กรณีประสงค์เพิ่มสิทธิ์ / ซื้อประกันสุขภาพให้คู่สมรสหรือบุตร
-                            ให้แนบเอกสารที่เกี่ยวข้อง เช่น สำเนาบัตรประชาชนคู่สมรส ทะเบียนสมรส สูติบัตรบุตร
-                            หากไม่มีคู่สมรสหรือบุตร สามารถเว้นว่างได้
+                            แนบใบสมัครที่ลงนามแล้ว สำเนาบัตรประชาชน ทะเบียนบ้าน และเอกสารที่เกี่ยวข้อง
                         </p>
 
                         <div class="d-flex flex-column gap-2">
                             <!-- mock list -->
                             <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                <t t-set="filename">ทะเบียนสมรส.pdf</t>
+                                <t t-set="filename">ใบสมัครประกันสุขภาพ.pdf</t>
                                 <t t-set="download_url">#</t>
-                                <t t-set="attachment_id">3</t>
+                                <t t-set="attachment_id">1</t>
                             </t>
                             <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                <t t-set="filename">สูติบัตรบุตร.pdf</t>
+                                <t t-set="filename">สำเนาบัตรประชาชน.jpg</t>
                                 <t t-set="download_url">#</t>
-                                <t t-set="attachment_id">4</t>
+                                <t t-set="attachment_id">2</t>
                             </t>
+                        </div>
+
+                        <div class="border-top pt-4 mt-4">
+                            <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
+                            <p class="text-secondary small mb-3">
+                                กรณีประสงค์เพิ่มสิทธิ์ / ซื้อประกันสุขภาพให้คู่สมรสหรือบุตร
+                                ให้แนบเอกสารที่เกี่ยวข้อง เช่น สำเนาบัตรประชาชนคู่สมรส ทะเบียนสมรส สูติบัตรบุตร
+                                หากไม่มีคู่สมรสหรือบุตร สามารถเว้นว่างได้
+                            </p>
+
+                            <div class="d-flex flex-column gap-2">
+                                <!-- mock list -->
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                    <t t-set="filename">ทะเบียนสมรส.pdf</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">3</t>
+                                </t>
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                    <t t-set="filename">สูติบัตรบุตร.pdf</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">4</t>
+                                </t>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Group Accident Insurance -->
-            <div class="card border rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold text-dark mb-1">
-                        <i class="fa fa-shield text-success me-2"></i>
-                        ประกันอุบัติเหตุกลุ่ม Group Accident Insurance
-                    </h6>
-                    <p class="text-secondary small mb-3">
-                        รับประกันโดย บริษัท ทิพยประกันภัย จำกัด (มหาชน)
-                    </p>
-
-                    <ol class="text-secondary small ps-3 mb-3">
-                        <li>
-                            กรุณาดาวน์โหลดแบบฟอร์มใบสมัครประกันอุบัติเหตุกลุ่ม และกรอกข้อมูลให้ครบถ้วนก่อนลงนาม
-                        </li>
-                        <li>
-                            หากประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับครอบครัว
-                            สามารถแนบเอกสารของครอบครัวเพิ่มเติมได้
-                        </li>
-                    </ol>
-
-                    <div class="mb-4">
-                        <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
-                        <div class="d-flex flex-column gap-2">
-                            <a href="#" class="text-decoration-underline">
-                                ดาวน์โหลดใบสมัครประกันอุบัติเหตุกลุ่ม (Thai)
-                            </a>
-                            <a href="#" class="text-decoration-underline">
-                                Download group accident application form (English)
-                            </a>
-                        </div>
-                    </div>
-
-                    <h6 class="fw-bold text-dark mb-2">เอกสารของผู้สมัคร</h6>
-                    <p class="text-secondary small mb-3">
-                        แนบใบคำขอเอาประกันของพนักงานที่กรอกครบถ้วนและลงนามแล้ว พร้อมสำเนาบัตรประชาชน
-                    </p>
-
-                    <div class="d-flex flex-column gap-2">
-                        <!-- mock list -->
-                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                            <t t-set="filename">ใบคำขอเอาประกันของพนักงาน.pdf</t>
-                            <t t-set="download_url">#</t>
-                            <t t-set="attachment_id">11</t>
-                        </t>
-                        <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                            <t t-set="filename">สำเนาบัตรประชาชนผู้สมัคร.jpg</t>
-                            <t t-set="download_url">#</t>
-                            <t t-set="attachment_id">12</t>
-                        </t>
-                    </div>
-
-                    <div class="border-top pt-4 mt-4">
-                        <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
+                <!-- Group Accident Insurance -->
+                <div class="card border rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-dark mb-1">
+                            <i class="fa fa-shield text-success me-2"></i>
+                            ประกันอุบัติเหตุกลุ่ม Group Accident Insurance
+                        </h6>
                         <p class="text-secondary small mb-3">
-                            กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา หรือคู่สมรส/บุตร
-                            ให้แนบแบบฟอร์มของครอบครัว และเอกสารประกอบ เช่น สำเนาบัตรประชาชน และทะเบียนบ้าน
-                            หากไม่มี สามารถเว้นว่างได้
+                            รับประกันโดย บริษัท ทิพยประกันภัย จำกัด (มหาชน)
+                        </p>
+
+                        <ol class="text-secondary small ps-3 mb-3">
+                            <li>
+                                กรุณาดาวน์โหลดแบบฟอร์มใบสมัครประกันอุบัติเหตุกลุ่ม และกรอกข้อมูลให้ครบถ้วนก่อนลงนาม
+                            </li>
+                            <li>
+                                หากประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับครอบครัว
+                                สามารถแนบเอกสารของครอบครัวเพิ่มเติมได้
+                            </li>
+                        </ol>
+
+                        <div class="mb-4">
+                            <div class="small text-muted mb-2">แบบฟอร์มที่เกี่ยวข้อง</div>
+                            <div class="d-flex flex-column gap-2">
+                                <a href="#" class="text-decoration-underline">
+                                    ดาวน์โหลดใบสมัครประกันอุบัติเหตุกลุ่ม (Thai)
+                                </a>
+                                <a href="#" class="text-decoration-underline">
+                                    Download group accident application form (English)
+                                </a>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold text-dark mb-2">เอกสารของผู้สมัคร</h6>
+                        <p class="text-secondary small mb-3">
+                            แนบใบคำขอเอาประกันของพนักงานที่กรอกครบถ้วนและลงนามแล้ว พร้อมสำเนาบัตรประชาชน
                         </p>
 
                         <div class="d-flex flex-column gap-2">
                             <!-- mock list -->
                             <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                <t t-set="filename">ใบคำขอเอาประกันของบิดา.pdf</t>
+                                <t t-set="filename">ใบคำขอเอาประกันของพนักงาน.pdf</t>
                                 <t t-set="download_url">#</t>
-                                <t t-set="attachment_id">21</t>
+                                <t t-set="attachment_id">11</t>
                             </t>
                             <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                <t t-set="filename">ทะเบียนบ้านครอบครัว.jpg</t>
+                                <t t-set="filename">สำเนาบัตรประชาชนผู้สมัคร.jpg</t>
                                 <t t-set="download_url">#</t>
-                                <t t-set="attachment_id">22</t>
+                                <t t-set="attachment_id">12</t>
                             </t>
+                        </div>
+
+                        <div class="border-top pt-4 mt-4">
+                            <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
+                            <p class="text-secondary small mb-3">
+                                กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา หรือคู่สมรส/บุตร
+                                ให้แนบแบบฟอร์มของครอบครัว และเอกสารประกอบ เช่น สำเนาบัตรประชาชน และทะเบียนบ้าน
+                                หากไม่มี สามารถเว้นว่างได้
+                            </p>
+
+                            <div class="d-flex flex-column gap-2">
+                                <!-- mock list -->
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                    <t t-set="filename">ใบคำขอเอาประกันของบิดา.pdf</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">21</t>
+                                </t>
+                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
+                                    <t t-set="filename">ทะเบียนบ้านครอบครัว.jpg</t>
+                                    <t t-set="download_url">#</t>
+                                    <t t-set="attachment_id">22</t>
+                                </t>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Provident Fund -->
-            <div class="card border rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">
-                        <i class="fa fa-money text-primary me-2"></i>
-                        กองทุนสำรองเลี้ยงชีพ Provident Fund TMBAM M Choice
-                    </h6>
-                    <ul class="text-secondary small ps-3 mb-3">
-                        <li>หักจากเงินเดือนเลือกได้ 3%-15% (เปลี่ยนยอดหักได้ปีละ 1 ครั้ง) สถาบันสมทบให้ 8%</li>
-                        <li>มีโยบายการลงทุนสามารถเปลี่ยนได้ทุกวันหลังจากได้รับ USERNAME</li>
-                        <li>ส่วนแบ่งของประโยชน์ที่สถาบันจ่ายเรียบร้อย สามารถระบุได้ โดยให้สัดส่วนรวมกันได้ 100%</li>
-                    </ul>
-                    <div class="mb-3">
-                        <a href="#" class="text-decoration-underline">
-                            ดาวน์โหลดใบสมัครสมาชิกกองทุนสำรองเลี้ยงชีพ TMBAM M Choice
-                        </a>
+                <!-- Provident Fund -->
+                <div class="card border rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fa fa-money text-primary me-2"></i>
+                            กองทุนสำรองเลี้ยงชีพ Provident Fund TMBAM M Choice
+                        </h6>
+                        <ul class="text-secondary small ps-3 mb-3">
+                            <li>หักจากเงินเดือนเลือกได้ 3%-15% (เปลี่ยนยอดหักได้ปีละ 1 ครั้ง) สถาบันสมทบให้ 8%</li>
+                            <li>มีโยบายการลงทุนสามารถเปลี่ยนได้ทุกวันหลังจากได้รับ USERNAME</li>
+                            <li>ส่วนแบ่งของประโยชน์ที่สถาบันจ่ายเรียบร้อย สามารถระบุได้ โดยให้สัดส่วนรวมกันได้ 100%</li>
+                        </ul>
+                        <div class="mb-3">
+                            <a href="#" class="text-decoration-underline">
+                                ดาวน์โหลดใบสมัครสมาชิกกองทุนสำรองเลี้ยงชีพ TMBAM M Choice
+                            </a>
+                        </div>
+                        <t t-call="hr_recruitment_kmitl.application_document_item">
+                            <t t-set="label">ใบสมัครกองทุนสำรองเลี้ยงชีพ</t>
+                            <t t-set="filename" t-value="'provident_fund.pdf'" />
+                            <t t-set="download_url" t-value="False" />
+                        </t>
                     </div>
-                    <t t-call="hr_recruitment_kmitl.application_document_item">
-                        <t t-set="label">ใบสมัครกองทุนสำรองเลี้ยงชีพ</t>
-                        <t t-set="filename" t-value="'provident_fund.pdf'" />
-                        <t t-set="download_url" t-value="False" />
-                    </t>
                 </div>
-            </div>
 
-            <!-- Declaration of Beneficiary -->
-            <div class="card border rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">
-                        <i class="fa fa-file-text-o text-primary me-2"></i>
-                        การแสดงเจตนาระบุตัวผู้รับเงินชดเชย Declaration of Beneficiary
-                    </h6>
-                    <p class="text-secondary small mb-3">
-                        ให้ระบุตัวผู้มีสิทธิที่จะได้รับเงินชดเชย กรณีถึงแก่กรรม และแนบสำเนาบัตรประชาชน + ทะเบียนบ้าน
-                        ของผู้รับชดเชย
-                    </p>
-                    <div class="mb-3">
-                        <a href="#" class="text-decoration-underline">
-                            ดาวน์โหลด หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย Form
-                        </a>
+                <!-- Declaration of Beneficiary -->
+                <div class="card border rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fa fa-file-text-o text-primary me-2"></i>
+                            การแสดงเจตนาระบุตัวผู้รับเงินชดเชย Declaration of Beneficiary
+                        </h6>
+                        <p class="text-secondary small mb-3">
+                            ให้ระบุตัวผู้มีสิทธิที่จะได้รับเงินชดเชย กรณีถึงแก่กรรม และแนบสำเนาบัตรประชาชน + ทะเบียนบ้าน
+                            ของผู้รับชดเชย
+                        </p>
+                        <div class="mb-3">
+                            <a href="#" class="text-decoration-underline">
+                                ดาวน์โหลด หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย Form
+                            </a>
+                        </div>
+                        <t t-call="hr_recruitment_kmitl.application_document_item">
+                            <t t-set="label">หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย</t>
+                            <t t-set="filename" t-value="'beneficiary.pdf'" />
+                            <t t-set="download_url" t-value="False" />
+                        </t>
                     </div>
-                    <t t-call="hr_recruitment_kmitl.application_document_item">
-                        <t t-set="label">หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย</t>
-                        <t t-set="filename" t-value="'beneficiary.pdf'" />
-                        <t t-set="download_url" t-value="False" />
-                    </t>
                 </div>
-            </div>
 
-            <!-- Letter of Consent -->
-            <div class="card border rounded-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">
-                        <i class="fa fa-search text-primary me-2"></i>
-                        ยินยอมให้ตรวจสอบคุณวุฒิ LETTER OF CONSENT
-                    </h6>
-                    <p class="text-secondary small mb-3">
-                        ดาวน์โหลด หนังสือยินยอมให้ตรวจสอบคุณวุฒิ (คุณวุฒิสูงสุด) และกรอกรายละเอียดให้เรียบร้อย
-                        สแกนกลับมาพร้อมบัตรประชาชน
-                    </p>
-                    <div class="d-flex flex-wrap gap-3 mb-3">
-                        <a href="#" class="text-decoration-underline">
-                            Click here Letter
-                        </a>
-                        <a href="#" class="text-decoration-underline">
-                            or Graduated from CU Click here CU form
-                        </a>
+                <!-- Letter of Consent -->
+                <div class="card border rounded-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fa fa-search text-primary me-2"></i>
+                            ยินยอมให้ตรวจสอบคุณวุฒิ LETTER OF CONSENT
+                        </h6>
+                        <p class="text-secondary small mb-3">
+                            ดาวน์โหลด หนังสือยินยอมให้ตรวจสอบคุณวุฒิ (คุณวุฒิสูงสุด) และกรอกรายละเอียดให้เรียบร้อย
+                            สแกนกลับมาพร้อมบัตรประชาชน
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 mb-3">
+                            <a href="#" class="text-decoration-underline">
+                                Click here Letter
+                            </a>
+                            <a href="#" class="text-decoration-underline">
+                                or Graduated from CU Click here CU form
+                            </a>
+                        </div>
+                        <t t-call="hr_recruitment_kmitl.application_document_item">
+                            <t t-set="label">Letter of Consent</t>
+                            <t t-set="filename" t-value="'consent.pdf'" />
+                            <t t-set="download_url" t-value="False" />
+                        </t>
                     </div>
-                    <t t-call="hr_recruitment_kmitl.application_document_item">
-                        <t t-set="label">Letter of Consent</t>
-                        <t t-set="filename" t-value="'consent.pdf'" />
-                        <t t-set="download_url" t-value="False" />
-                    </t>
                 </div>
             </div>
         </div>
-    </div>
-</template>
+    </template>
     <template id="onboarding_tab_confirm_view" name="Onboarding Tab Confirm View">
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                    <t t-set="title">6. ตรวจสอบประวัติและยืนยันตัวตน</t>
+                    <t t-set="title">7. ตรวจสอบประวัติและยืนยันตัวตน</t>
                     <t t-set="description">สรุปข้อมูลที่ท่านยืนยันและเอกสารหลักฐานที่ใช้ในการรายงานตัว</t>
                 </t>
                 <!-- Background Check -->
