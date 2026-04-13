@@ -590,13 +590,48 @@ class BudgetAppropriationCompilation(models.Model):
             "target": "new",
         }
 
+    def get_f5_expense_data_with_options(self, options=None):
+        """Generate F5 expense data with display options.
+
+        Args:
+            options: dict with keys:
+                - show_itemized (bool): show individual budget code lines
+        """
+        self.ensure_one()
+        if options is None:
+            options = {}
+        F5Model = self.env["budget.appropriation.f5.report"]
+        if not self.expense_appropriation_ids:
+            return {}
+        apps = self.expense_appropriation_ids
+        show_itemized = options.get("show_itemized", False)
+        f5_options = {"show_itemized": show_itemized}
+        if len(apps) == 1:
+            data = {"details": [F5Model.get_f5_data(apps.id, f5_options)]}
+        else:
+            dept_name = (self.department_analytic_id.complete_name or "").replace(
+                " / ", " "
+            )
+            f5_options["department_name"] = f"{dept_name} (ภาพรวม)"
+            overview = F5Model.get_f5_data(apps.ids, f5_options)
+            details = []
+            detail_options = {"show_itemized": show_itemized}
+            for app in apps.sorted(lambda a: a.department_analytic_id.code or ""):
+                details.append(F5Model.get_f5_data(app.id, detail_options))
+            data = {"overview": overview, "details": details}
+        if not show_itemized:
+            data = self._merge_f5_last_level_nodes(data)
+        return data
+
     def action_open_f5_report(self):
-        """Open F5 expense report in a new browser tab as HTML."""
+        """Open wizard for F5 expense report options."""
         self.ensure_one()
         return {
-            "type": "ir.actions.act_url",
-            "url": f"/budget_appropriation_summary/compilation/{self.id}/f5/html",
+            "type": "ir.actions.act_window",
+            "res_model": "budget.appropriation.compilation.f5.print.wizard",
+            "view_mode": "form",
             "target": "new",
+            "context": {"active_id": self.id},
         }
 
     def action_print_f4_report(self):
@@ -607,11 +642,15 @@ class BudgetAppropriationCompilation(models.Model):
         ).report_action(self)
 
     def action_print_f5_report(self):
-        """Print F5 expense report as PDF."""
+        """Open wizard for F5 expense report options."""
         self.ensure_one()
-        return self.env.ref(
-            "budget_appropriation_summary.action_report_compilation_f5"
-        ).report_action(self)
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "budget.appropriation.compilation.f5.print.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"active_id": self.id},
+        }
 
     def get_impact_line_hierarchy(self, impact_type=None, min_level=3):
         """Build flattened hierarchy from impact lines for F23W report display.

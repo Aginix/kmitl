@@ -16,6 +16,7 @@
         "views/budget_appropriation_master_summary_views.xml",
         "views/menu.xml",
         "views/wizard_master_summary_done_views.xml",
+        "wizard/compilation_f5_print_wizard_views.xml",
         "report/report_common.xml",
         "report/report_compilation_f23w.xml",
         "report/report_compilation_f4.xml",
