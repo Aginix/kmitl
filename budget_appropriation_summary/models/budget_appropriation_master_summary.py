@@ -307,7 +307,7 @@ class BudgetAppropriationMasterSummary(models.Model):
         self.write({"state": "draft"})
 
     def action_open_report(self):
-        """Open the report in a new browser tab as HTML."""
+        """Open the combined report in a new browser tab as HTML."""
         self.ensure_one()
         return {
             "type": "ir.actions.act_url",
@@ -320,3 +320,63 @@ class BudgetAppropriationMasterSummary(models.Model):
         return self.env.ref(
             "budget_appropriation_summary.action_report_master_summary"
         ).report_action(self)
+
+    # --- Individual report actions ---
+
+    REPORT_MAP = {
+        "f2": "action_report_f2_revenue",
+        "f4p": "action_report_f4p_revenue",
+        "f4w": "action_report_f4w_revenue",
+        "f3w_f6w": "action_report_f3w_f6w_revenue",
+        "f5p": "action_report_f5p_expense",
+        "f5w": "action_report_f5w_expense",
+        "f7w": "action_report_f7w_expense",
+        "f8w": "action_report_f8w_expense",
+        "f9w": "action_report_f9w_expense",
+        "f10w": "action_report_f10w_expense",
+        "f11w": "action_report_f11w_expense",
+    }
+
+    def _action_open_individual_report(self, report_name):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": (
+                f"/budget_appropriation_summary/{self.id}"
+                f"/report/{report_name}/html"
+            ),
+            "target": "new",
+        }
+
+    def action_open_f2_report(self):
+        return self._action_open_individual_report("f2")
+
+    def action_open_f4p_report(self):
+        return self._action_open_individual_report("f4p")
+
+    def action_open_f4w_report(self):
+        return self._action_open_individual_report("f4w")
+
+    def action_open_f3w_f6w_report(self):
+        return self._action_open_individual_report("f3w_f6w")
+
+    def action_open_f5p_report(self):
+        return self._action_open_individual_report("f5p")
+
+    def action_open_f5w_report(self):
+        return self._action_open_individual_report("f5w")
+
+    def action_open_f7w_report(self):
+        return self._action_open_individual_report("f7w")
+
+    def action_open_f8w_report(self):
+        return self._action_open_individual_report("f8w")
+
+    def action_open_f9w_report(self):
+        return self._action_open_individual_report("f9w")
+
+    def action_open_f10w_report(self):
+        return self._action_open_individual_report("f10w")
+
+    def action_open_f11w_report(self):
+        return self._action_open_individual_report("f11w")

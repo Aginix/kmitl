@@ -47,6 +47,87 @@
                     />
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Revenue Reports -->
+                        <button
+                            name="action_open_f2_report"
+                            string="F2 รายรับตามประเภท"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f4p_report"
+                            string="F4-P รายรับตามหน่วยงาน"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f4w_report"
+                            string="F4-W เปรียบเทียบรายรับ"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f3w_f6w_report"
+                            string="F3W/F6W รายรับ-รายจ่าย"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <!-- Expense Reports -->
+                        <button
+                            name="action_open_f5p_report"
+                            string="F5-P รายจ่ายตามหน่วยงาน"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f5w_report"
+                            string="F5-W รายจ่ายตามกิจกรรม"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f7w_report"
+                            string="F7-W เปรียบเทียบรายจ่าย"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f8w_report"
+                            string="F8-W เปรียบเทียบรายจ่าย"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f9w_report"
+                            string="F9-W สัดส่วนรายจ่าย"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f10w_report"
+                            string="F10-W รายจ่ายตามแผนงาน"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                        <button
+                            name="action_open_f11w_report"
+                            string="F11-W รายจ่ายตามกองทุน"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
+                    </div>
                     <group>
                         <group>
                             <field name="name" readonly="1" />
