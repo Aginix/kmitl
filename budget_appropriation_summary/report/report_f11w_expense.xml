@@ -23,7 +23,7 @@
                 border-bottom: 0;
             }
         </style>
-        <div class="page f11w">
+        <div class="page f11w" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_council_header" />
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
                 <div>

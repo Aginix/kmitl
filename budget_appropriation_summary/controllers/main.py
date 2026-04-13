@@ -794,7 +794,10 @@ class BudgetAppropriationSummaryController(http.Controller):
         report = request.env.ref(report_ref)
 
         if report_type == "html":
-            html = request.env["ir.actions.report"]._render_qweb_html(
+            report_env = request.env["ir.actions.report"].with_context(
+                html_preview=True
+            )
+            html = report_env._render_qweb_html(
                 report.id,
                 [record.id],
                 data={"title": f"{record.name} - {report_name.upper()}"},
