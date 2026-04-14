@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_compilation_f5_print_wizard_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.compilation.f5.print.wizard.form</field>
+        <field name="model">budget.appropriation.compilation.f5.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="พิมพ์ประมาณการรายจ่าย F5">
+                <group>
+                    <field name="show_note" />
+                    <field name="show_itemized" />
+                </group>
+                <footer>
+                    <button name="action_preview" string="ดูตัวอย่าง" type="object" class="btn-secondary" />
+                    <button name="action_print" string="พิมพ์ PDF" type="object" class="btn-primary" />
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_compilation_f5_print_wizard" model="ir.actions.act_window">
+        <field name="name">พิมพ์ประมาณการรายจ่าย F5</field>
+        <field name="res_model">budget.appropriation.compilation.f5.print.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

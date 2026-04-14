@@ -34,7 +34,7 @@
         <t t-call="web.basic_layout">
             <t t-call="budget_appropriation_summary.report_compilation_f5_styles" />
 
-            <t t-set="all_data" t-value="o.f5_expense_data" />
+            <t t-set="all_data" t-value="o.get_f5_expense_data_with_options({'show_itemized': show_itemized})" />
 
             <t t-if="all_data and not all_data.get('error')">
                 <!-- Overview report -->
@@ -153,7 +153,10 @@
                 <td t-att-style="'padding-left: ' + str(12 * (node.get('indent', 0) + 1)) + 'pt;'">
                   <div t-if="node.get('type') == 'account'" class="account-content" t-out="node.get('name', '').strip()"/>
                   <span t-else="" class="node-content fw-bold" t-out="node.get('name', '')"/>
-                  <div t-if="node.get('note')" class="account-note" t-out="node.get('note', '').replace('\n', '\n')"/>
+                  <t t-if="show_note">
+                      <div t-if="node.get('description')" class="account-note" t-out="node.get('description', '')"/>
+                      <div t-if="node.get('note')" class="account-note" t-out="node.get('note', '')"/>
+                  </t>
                 </td>
                 <td class="code-cell text-end" contenteditable="false">
                     <span class="code-content me-1" t-out="node.get('code', '')" />
