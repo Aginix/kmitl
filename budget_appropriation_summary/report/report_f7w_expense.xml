@@ -145,7 +145,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
-                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
                     <t t-call="budget_appropriation_summary.report_common_styles" />
                     <t t-call="budget_appropriation_summary.report_preview_styles" />
                     <t t-call="budget_appropriation_summary.report_f7w_expense_content" />
