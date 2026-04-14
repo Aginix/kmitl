@@ -120,7 +120,7 @@
                 </t>
                 <!-- Deduct Lines Table -->
                 <t t-if="data.get('deduct_hierarchy')">
-                    <tr style="height: 32pt;">
+                    <tr style="height: 24pt;">
                       <td/>
                     </tr>
                     <tr class="fw-bold">
@@ -212,7 +212,7 @@
                     box-sizing: border-box;
                     border-radius: 2px;
                 }
-                * {
+                *, span {
                   line-height: 1.145;
                 }
 
