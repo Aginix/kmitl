@@ -11,6 +11,7 @@
             }
         </style>
         <div class="page f3w_f6w" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+            <t t-call="budget_appropriation_summary.report_print_button" />
             <t t-call="budget_appropriation_summary.report_council_header" />
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
                 <div>
@@ -113,6 +114,7 @@
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                     <t t-call="budget_appropriation_summary.report_common_styles" />
+                    <t t-call="budget_appropriation_summary.report_preview_styles" />
                     <t t-call="budget_appropriation_summary.report_f3w_f6w_revenue_content" />
                 </t>
             </t>

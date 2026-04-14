@@ -14,7 +14,8 @@
                 border-right: 1pt solid #000 !important;
             }
         </style>
-        <div class="page f9w" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+        <div class="page f9w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+            <t t-call="budget_appropriation_summary.report_print_button" />
             <t t-call="budget_appropriation_summary.report_council_header" />
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
                 <div>
@@ -98,6 +99,8 @@
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                     <t t-call="budget_appropriation_summary.report_common_styles" />
+                    <t t-set="is_landscape" t-value="True" />
+                    <t t-call="budget_appropriation_summary.report_preview_styles" />
                     <t t-call="budget_appropriation_summary.report_f9w_expense_content" />
                 </t>
             </t>

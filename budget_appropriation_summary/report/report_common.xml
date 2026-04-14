@@ -29,6 +29,104 @@
         </style>
     </template>
 
+    <!-- Preview styles for A4 paper page effect (set is_landscape before calling) -->
+    <template id="report_preview_styles">
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-if="is_html_preview">
+            <style>
+                html, body {
+                    background: #e8e8e8 !important;
+                    margin: 0;
+                    padding: 0;
+                }
+                .page {
+                    position: relative;
+                    background-color: white !important;
+                    margin: 40px auto;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+                    box-sizing: border-box;
+                    border-radius: 2px;
+                }
+                .page.landscape {
+                    width: 297mm;
+                    min-height: 210mm;
+                    padding: 8mm 15mm !important;
+                }
+                .page:not(.landscape) {
+                    width: 210mm;
+                    min-height: 297mm;
+                    padding: 25mm 8mm !important;
+                }
+                * {
+                    line-height: 1.145;
+                }
+                [contenteditable]:focus {
+                    outline: none;
+                }
+                *[contenteditable="false"] {
+                    cursor: not-allowed;
+                }
+                .print-btn {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1000;
+                    padding: 8px 20px;
+                    background: #714B67;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 16pt;
+                    cursor: pointer;
+                    font-family: 'THSarabun', Arial, sans-serif;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                }
+                .print-btn:hover {
+                    background: #5a3a52;
+                }
+                @media print {
+                    html, body {
+                        background: white !important;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .page {
+                        width: auto;
+                        min-height: auto;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none;
+                        border-radius: 0;
+                    }
+                    @page {
+                        margin: 0 !important;
+                        padding: 24mm 8mm !important;
+                        size: A4;
+                    }
+                    .page.landscape {
+                        padding: 0 !important;
+                    }
+                    .print-btn {
+                        display: none !important;
+                    }
+                }
+            </style>
+        </t>
+    </template>
+
+    <!-- Print button (call inside .page div, only shown in html_preview) -->
+    <template id="report_print_button">
+        <t t-if="o.env.context.get('html_preview', False)">
+            <button class="print-btn" onclick="window.print()" contenteditable="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                พิมพ์รายงาน
+            </button>
+        </t>
+    </template>
+
     <!-- Council meeting header template (reusable) -->
     <template id="report_council_header">
         <t t-set="show_council_header" t-value="o.env.context.get('show_council_header', False)" />
