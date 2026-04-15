@@ -529,11 +529,12 @@
                                         <label class="col-form-label" for="congenital_disease">Congenital
                                             Disease /
                                             โรคประจำตัว</label>
-                                        <textarea name="congenital_disease" class="form-control"
-                                            rows="3">
-                                            <t
-                                                t-esc="profile.congenital_disease or ''"
-                                            />
+                                        <textarea
+                                            name="congenital_disease"
+                                            class="form-control"
+                                            rows="3"
+                                        >
+                                            <t t-esc="profile.congenital_disease or ''" />
                                         </textarea>
                                     </div>
                                 </div>
@@ -990,22 +991,24 @@
                                         Language
                                         Skills /
                                         ทักษะภาษาต่างประเทศ</label>
-                                    <textarea name="foreign_language_skills" class="form-control"
-                                        rows="3">
-                                        <t
-                                            t-esc="profile.foreign_language_skills or ''"
-                                        />
+                                    <textarea
+                                        name="foreign_language_skills"
+                                        class="form-control"
+                                        rows="3"
+                                    >
+                                        <t t-esc="profile.foreign_language_skills or ''" />
                                     </textarea>
                                     <div class="mb-3">
                                         <label class="col-form-label" for="computer_skills">Computer
                                             Skills
                                             /
                                             ทักษะคอมพิวเตอร์</label>
-                                        <textarea name="computer_skills" class="form-control"
-                                            rows="3">
-                                            <t
-                                                t-esc="profile.computer_skills or ''"
-                                            />
+                                        <textarea
+                                            name="computer_skills"
+                                            class="form-control"
+                                            rows="3"
+                                        >
+                                            <t t-esc="profile.computer_skills or ''" />
                                         </textarea>
                                     </div>
                                     <div class="mb-3">
@@ -1013,20 +1016,23 @@
                                             Abilities
                                             /
                                             ความสามารถอื่นๆ</label>
-                                        <textarea name="other_abilities" class="form-control"
-                                            rows="3">
-                                            <t
-                                                t-esc="profile.other_abilities or ''"
-                                            />
+                                        <textarea
+                                            name="other_abilities"
+                                            class="form-control"
+                                            rows="3"
+                                        >
+                                            <t t-esc="profile.other_abilities or ''" />
                                         </textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label class="col-form-label" for="interests">Interests /
                                             ความสนใจ</label>
-                                        <textarea name="interests" class="form-control" rows="3">
-                                            <t
-                                                t-esc="profile.interests or ''"
-                                            />
+                                        <textarea
+                                            name="interests"
+                                            class="form-control"
+                                            rows="3"
+                                        >
+                                            <t t-esc="profile.interests or ''" />
                                         </textarea>
                                     </div>
                                 </div>
