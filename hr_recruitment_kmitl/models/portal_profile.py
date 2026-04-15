@@ -165,6 +165,8 @@ class PortalProfile(models.Model):
     english_score_filename = fields.Char()
     other_documents_file = fields.Binary(string="Other Documents", attachment=True)
     other_documents_filename = fields.Char()
+    photo_file = fields.Binary(string="Photo", attachment=True)
+    photo_filename = fields.Char()
 
     # Skills & interests
     foreign_language_skills = fields.Text()

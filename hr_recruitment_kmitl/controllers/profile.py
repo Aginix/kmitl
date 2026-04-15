@@ -159,6 +159,7 @@ class PortalProfile(CustomerPortal):
             self._save_education_history(profile, post)
             self._save_work_history(profile, request.httprequest.form)
             for doc_name, field_name in [
+                ("doc_photo", "photo"),
                 ("doc_ocsc_proof", "ocsc_exam"),
                 ("doc_academic_position", "academic_position"),
                 ("doc_resume", "resume"),
@@ -182,6 +183,12 @@ class PortalProfile(CustomerPortal):
                                 f"{field_name}_filename": uploaded.filename,
                             }
                         )
+            if post.get("delete_doc_photo") == "1":
+                partner.sudo().write({"image_1920": False})
+            else:
+                uploaded_photo = request.httprequest.files.get("doc_photo")
+                if uploaded_photo and uploaded_photo.filename:
+                    partner.sudo().write({"image_1920": profile.photo_file})
             return request.redirect("/my/profile")
 
         values = self._prepare_profile_render_values(partner, profile)
