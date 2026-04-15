@@ -1129,6 +1129,11 @@
         <!-- Validation: required documents -->
         <input
             type="hidden"
+            data-required-label="รูปถ่าย"
+            t-att-value="profile.photo_filename or ''"
+        />
+        <input
+            type="hidden"
             data-required-label="สำเนาบัตรประจำตัวประชาชน"
             t-att-value="profile.id_card_filename or ''"
         />
@@ -1138,6 +1143,15 @@
             t-att-value="profile.household_registration_filename or ''"
         />
         <div class="d-flex flex-column gap-3">
+            <!-- Photo -->
+            <t t-call="hr_recruitment_kmitl.application_document_item">
+                <t t-set="label">รูปถ่าย (Photo)</t>
+                <t t-set="filename" t-value="profile.photo_filename" />
+                <t
+                    t-set="download_url"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=photo_file&amp;filename_field=photo_filename&amp;download=true' % profile.id if profile.photo_filename else False"
+                />
+            </t>
             <!-- ID Card -->
             <t t-call="hr_recruitment_kmitl.application_document_item">
                 <t t-set="label">สำเนาบัตรประจำตัวประชาชน</t>
