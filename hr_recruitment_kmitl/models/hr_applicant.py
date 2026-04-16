@@ -287,8 +287,6 @@ class HrApplicant(models.Model):
         # Common required: education, work history, documents
         if not profile.education_history_ids:
             missing.append("ประวัติการศึกษา")
-        if not profile.work_history_ids:
-            missing.append("ประสบการณ์การทำงาน")
         if not profile.id_card_file:
             missing.append("สำเนาบัตรประจำตัวประชาชน")
         if not profile.household_registration_file:
@@ -410,17 +408,17 @@ class HrApplicant(models.Model):
             vals["resume_filename"] = profile.resume_filename
         if profile.military_certificate_file:
             vals["military_certificate_file"] = profile.military_certificate_file
-            vals[
-                "military_certificate_filename"
-            ] = profile.military_certificate_filename
+            vals["military_certificate_filename"] = (
+                profile.military_certificate_filename
+            )
         if profile.id_card_file:
             vals["id_card_file"] = profile.id_card_file
             vals["id_card_filename"] = profile.id_card_filename
         if profile.household_registration_file:
             vals["household_registration_file"] = profile.household_registration_file
-            vals[
-                "household_registration_filename"
-            ] = profile.household_registration_filename
+            vals["household_registration_filename"] = (
+                profile.household_registration_filename
+            )
         if profile.work_certificate_file:
             vals["work_certificate_file"] = profile.work_certificate_file
             vals["work_certificate_filename"] = profile.work_certificate_filename
