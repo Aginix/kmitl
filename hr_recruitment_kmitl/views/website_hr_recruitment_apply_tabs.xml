@@ -194,7 +194,9 @@
                         rows="4"
                         readonly="readonly"
                         required=""
-                    ><t t-esc="default.get('address_address') or ''" /></textarea>
+                    >
+                        <t t-esc="default.get('address_address') or ''" />
+                    </textarea>
                 </div>
                 <label
                     class="col-form-label col-sm-auto s_website_form_label mb-2 mt-3"
@@ -210,14 +212,17 @@
                         name="current_address_from"
                         readonly="readonly"
                         required=""
-                    ><t t-esc="default.get('current_address') or ''" /></textarea>
+                    >
+                        <t t-esc="default.get('current_address') or ''" />
+                    </textarea>
                 </div>
             </div>
             <hr class="my-4" />
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
                 <span
                     class="section-indicator bg-primary"
-                /> บุคคลที่ติดต่อได้ในกรณีเร่งด่วน </h5>
+                /> บุคคลที่ติดต่อได้ในกรณีเร่งด่วน
+            </h5>
             <div
                 class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
                 data-type="char"
@@ -316,7 +321,8 @@
             </div>
             <hr class="my-4" />
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
-                <span class="section-indicator bg-primary" /> ข้อมูลสุขภาพ </h5>
+                <span class="section-indicator bg-primary" /> ข้อมูลสุขภาพ
+            </h5>
             <div
                 class="col-12 mb-0 py-2 s_website_form_field"
                 data-type="char"
@@ -533,9 +539,11 @@
                                     <t
                                         t-call="hr_recruitment_kmitl.application_document_item"
                                     >
-                                        <t t-set="label">ใบรับรอง (Certificate)<span
+                                        <t t-set="label">ใบรับรอง (Certificate)
+                                            <span
                                                 class="s_website_form_mark"
-                                            > *</span></t>
+                                            > *</span>
+                                        </t>
                                         <t
                                             t-set="filename"
                                             t-value="edu_rec.certificate_filename"
@@ -552,9 +560,11 @@
                                     >
                                         <t
                                             t-set="label"
-                                        >ผลการเรียนรายวิชา (Transcript)<span
+                                        >ผลการเรียนรายวิชา (Transcript)
+                                            <span
                                                 class="s_website_form_mark"
-                                            > *</span></t>
+                                            > *</span>
+                                        </t>
                                         <t
                                             t-set="filename"
                                             t-value="edu_rec.transcript_filename"
@@ -599,7 +609,8 @@
             <t t-foreach="work_history_ids" t-as="work">
                 <div class="card border-secondary rounded-4 mb-3 shadow-none">
                     <div class="card-body p-4">
-                        <h6 class="fw-bold text-dark mb-4"> ประสบการณ์การทำงานที่ <t
+                        <h6 class="fw-bold text-dark mb-4"> ประสบการณ์การทำงานที่
+                            <t
                                 t-esc="work_index + 1"
                             />
                         </h6>
@@ -773,7 +784,8 @@
                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
                     <i
                         class="fa fa-university text-primary"
-                    /> ตำแหน่งทางวิชาการ (Academic Position) </h6>
+                    /> ตำแหน่งทางวิชาการ (Academic Position)
+                </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
@@ -834,7 +846,6 @@
                         />
                     </div>
                 </div>
-
                 <t t-call="hr_recruitment_kmitl.application_document_item">
                     <t
                         t-set="label"
@@ -847,7 +858,6 @@
                 </t>
             </div>
         </div>
-
         <!-- สอบ ก.พ. -->
         <div
             class="card border-secondary rounded-4 mb-3 shadow-none"
@@ -857,7 +867,8 @@
                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
                     <i
                         class="fa fa-certificate text-primary"
-                    /> การสอบ ก.พ. (OCSC Exam) </h6>
+                    /> การสอบ ก.พ. (OCSC Exam)
+                </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
@@ -895,7 +906,6 @@
                         />
                     </div>
                 </div>
-
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
@@ -937,7 +947,6 @@
                         />
                     </div>
                 </div>
-
                 <t t-call="hr_recruitment_kmitl.application_document_item">
                     <t t-set="label">หลักฐานการสอบ ก.พ. (OCSC Exam Proof)</t>
                     <t t-set="filename" t-value="profile.ocsc_exam_filename" />
@@ -948,7 +957,6 @@
                 </t>
             </div>
         </div>
-
         <t
             t-set="english_test_type_map"
             t-value="{'toefl_paper': 'TOEFL (Paper-Based)', 'toefl_computer': 'TOEFL (Computer-Based)', 'toefl_internet': 'TOEFL (Internet-Based)', 'ielts': 'IELTS', 'cutep': 'CU-TEP', 'kmitl_tep': 'KMITL-TEP'}"
@@ -977,7 +985,8 @@
                 <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
                     <i
                         class="fa fa-language text-primary"
-                    /> ผลสอบภาษาอังกฤษ (English Test Result) </h6>
+                    /> ผลสอบภาษาอังกฤษ (English Test Result)
+                </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label
@@ -1226,7 +1235,8 @@
                     class="d-flex align-items-center fw-bold text-danger mb-2 submit-section-title"
                 >
                     <i class="fa fa-exclamation-triangle me-2" /> คำเตือน:
-                    ไม่อนุญาตให้แก้ไขใบสมัครหลังส่ง </div>
+                    ไม่อนุญาตให้แก้ไขใบสมัครหลังส่ง
+                </div>
                 <ul class="text-dark mb-0 submit-section-list">
                     <li class="mb-2">
                         เมื่อกดยืนยันส่งใบสมัครแล้ว ท่านจะไม่สามารถแก้ไขข้อมูลใด ๆ
@@ -1244,63 +1254,67 @@
             </div>
         </div>
         <!-- Attachments -->
-        <div class="card border-secondary bg-secondary shadow-none rounded-12 mb-4">
+        <div class="card upload-section bg-primary-light rounded-12 mb-4">
             <div class="card-body p-4">
-                <div class="d-flex align-items-center gap-2 fw-bold text-dark mb-3">
-                    <i class="fa fa-paperclip text-primary fs-4" />
-                    <p class="mb-0 fw-bold">เอกสารแนบ (Attachments)</p>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="fa fa-paperclip text-primary fs-5"></i>
+                    <h6 class="mb-0 fw-bold text-dark">เอกสารแนบ (Attachments)</h6>
                 </div>
                 <div class="row g-3">
                     <!-- Exam Fee -->
                     <div class="col-md-6">
                         <div
-                            class="s_website_form_field mb-0"
-                            data-type="binary"
-                            data-name="Field"
-                        >
+                    class="s_website_form_field mb-0"
+                    data-type="binary"
+                    data-name="exam_fee_file"
+                >
                             <label
-                                class="col-form-label s_website_form_label fw-semibold"
-                                for="exam_fee_file"
-                            >
-                                <span
-                                    class="s_website_form_label_content"
-                                >ค่าธรรมเนียมการสอบ (Exam Fee
-                                    Receipt)</span>
+                        for="exam_fee_file"
+                        class="form-label s_website_form_label fw-semibold mb-1"
+                    >
+                                <span class="s_website_form_label_content">
+                            ค่าธรรมเนียมการสอบ (Exam Fee Receipt)
+                        </span>
                             </label>
                             <input
-                                id="exam_fee_file"
-                                type="file"
-                                class="form-control s_website_form_input"
-                                name="exam_fee_file"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                data-required-label="ค่าธรรมเนียมการสอบ"
-                            />
+                        id="exam_fee_file"
+                        type="file"
+                        name="exam_fee_file"
+                        class="form-control s_website_form_input custom-file-input"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        data-required-label="ค่าธรรมเนียมการสอบ"
+                    />
+                            <div class="form-text">
+                        รองรับ PDF, JPG, PNG ขนาดไม่เกิน 5MB
+                    </div>
                         </div>
                     </div>
                     <!-- Medical Certificate -->
                     <div class="col-md-6">
                         <div
-                            class="s_website_form_field mb-0"
-                            data-type="binary"
-                            data-name="Field"
-                        >
+                    class="s_website_form_field mb-0"
+                    data-type="binary"
+                    data-name="medical_certificate_file"
+                >
                             <label
-                                class="col-form-label s_website_form_label fw-semibold"
-                                for="medical_certificate_file"
-                            >
-                                <span
-                                    class="s_website_form_label_content"
-                                >ใบรับรองแพทย์ (Medical
-                                    Certificate)</span>
+                        for="medical_certificate_file"
+                        class="form-label s_website_form_label fw-semibold mb-1"
+                    >
+                                <span class="s_website_form_label_content">
+                            ใบรับรองแพทย์ (Medical Certificate)
+                        </span>
                             </label>
                             <input
-                                id="medical_certificate_file"
-                                type="file"
-                                class="form-control s_website_form_input"
-                                name="medical_certificate_file"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                data-required-label="ใบรับรองแพทย์"
-                            />
+                        id="medical_certificate_file"
+                        type="file"
+                        name="medical_certificate_file"
+                        class="form-control s_website_form_input custom-file-input"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        data-required-label="ใบรับรองแพทย์"
+                    />
+                            <div class="form-text">
+                        รองรับ PDF, JPG, PNG ขนาดไม่เกิน 5MB
+                    </div>
                         </div>
                     </div>
                 </div>
@@ -1309,12 +1323,10 @@
         <!-- Certification -->
         <div class="card border-secondary bg-secondary shadow-none rounded-12 mb-4">
             <div class="card-body p-4">
-
                 <div class="d-flex align-items-center gap-2 fw-bold text-dark mb-3">
                     <i class="fa fa-check-square-o text-success fs-4" />
                     <p class="mb-0 fw-bold">การรับรองข้อมูล</p>
                 </div>
-
                 <div class="form-check mb-0">
                     <input
                         class="form-check-input"
@@ -1334,7 +1346,6 @@
                         ข้าพเจ้ายินยอมสละสิทธิ์การสมัครงาน
                         โดยไม่ต้องจ่ายเงินชดเชยหรือค่าเสียหายใด ๆ ทั้งสิ้น
                     </label>
-
                     <div class="text-dark mt-2">
                         I certify that all information in this application is true and that I fully
                         meet the
@@ -1345,20 +1356,17 @@
                         waive my right to apply for the job without any compensation or damages.
                     </div>
                 </div>
-
             </div>
         </div>
         <!-- PDPA -->
         <div class="card border-secondary bg-secondary rounded-4 mb-4 shadow-none">
             <div class="card-body p-4">
-
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <i class="fa fa-shield text-info fs-5" />
                     <p class="mb-0 fw-bold text-dark">
                         ข้อตกลง PDPA (พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล)
                     </p>
                 </div>
-
                 <div class="text-dark mb-4">
                     <p class="mb-2">
                         ข้าพเจ้ายินยอมให้สถาบันฯ ใช้และเปิดเผยข้อมูลส่วนบุคคล
@@ -1368,7 +1376,6 @@
                         หรือกฎหมาย/ระเบียบข้อบังคับอื่น ๆ
                         ที่เกี่ยวข้อง รวมถึงยินยอมให้ตรวจสอบความถูกต้องในรายละเอียดใบสมัครงาน
                     </p>
-
                     <p class="mb-0 text-dark">
                         I agree that the institute may use and disclose personal information,
                         including collecting the
@@ -1382,7 +1389,6 @@
                         application details.
                     </p>
                 </div>
-
                 <div class="d-flex flex-wrap gap-4">
                     <div class="form-check mb-0">
                         <input
@@ -1396,7 +1402,6 @@
                             ยินยอม (Agreed)
                         </label>
                     </div>
-
                     <div class="form-check mb-0">
                         <input
                             class="form-check-input"
@@ -1410,7 +1415,6 @@
                         </label>
                     </div>
                 </div>
-
             </div>
         </div>
         <!-- Submit -->
@@ -1422,7 +1426,8 @@
                 type="submit"
                 class="btn btn-primary px-5 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center s_website_form_send"
             >
-                <i class="fa fa-paper-plane-o me-2" /> ส่งใบสมัคร </button>
+                <i class="fa fa-paper-plane-o me-2" /> ส่งใบสมัคร
+            </button>
         </div>
         <div id="s_website_form_result" class="mt-3" />
     </template>

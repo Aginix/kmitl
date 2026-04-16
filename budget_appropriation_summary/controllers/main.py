@@ -784,6 +784,12 @@ class BudgetAppropriationSummaryController(http.Controller):
 
         report = request.env.ref(report_ref)
 
+        # Parse F5 display options from query params
+        data = {"title": f"{record.name} - {report_name.upper()}"}
+        if report_name == "f5":
+            data["show_note"] = kw.get("show_note", "1") != "0"
+            data["show_itemized"] = kw.get("show_itemized", "0") == "1"
+
         if report_type == "html":
             report_env = request.env["ir.actions.report"].with_context(
                 html_preview=True
@@ -791,7 +797,7 @@ class BudgetAppropriationSummaryController(http.Controller):
             html = report_env._render_qweb_html(
                 report.id,
                 [record.id],
-                data={"title": f"{record.name} - {report_name.upper()}"},
+                data=data,
             )[0]
             return request.make_response(
                 html,
@@ -802,7 +808,7 @@ class BudgetAppropriationSummaryController(http.Controller):
             )
         elif report_type == "pdf":
             pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
-                report.id, [record.id]
+                report.id, [record.id], data=data
             )
             pdfhttpheaders = [
                 ("Content-Type", "application/pdf"),

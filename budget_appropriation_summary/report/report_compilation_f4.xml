@@ -73,96 +73,89 @@
 
     <!-- Reusable F4 content (renders a single data dict) -->
     <template id="report_compilation_f4_content">
+        <t t-if="o.env.context.get('html_preview', False)">
+            <button class="f4-print-btn" onclick="window.print()" contenteditable="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                พิมพ์รายงาน
+            </button>
+        </t>
         <div class="report-header">
             <div class="document-ref">
                 <div>F4-P-วง-003</div>
             </div>
 
             <div class="institution-info">
-                <h3 t-out="data.get('source', '')" />
-                <h3>ประมาณการรายรับ <t t-out="data.get('fiscal_year', '')" /></h3>
+                <h3 t-out="data.get('source', '')"/>
+                <h3>ประมาณการรายรับ <span t-out="data.get('fiscal_year', '')"/></h3>
                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
-                <h3 t-out="data.get('department', '')" />
-                <div style="margin: 0 auto;">
-                    <table class="table-borderless" border="0" style="margin: 0 auto;">
-                        <tbody>
-                            <tr>
-                                <td align="right">วงเงิน</td>
-                                <td align="right">
-                                    <t
-                                        t-out="'{:,}'.format(int(data.get('amount_net', 0)))"
-                                    />
-                                </td>
-                                <td>บาท</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h3 t-out="data.get('department', '')"/>
+            </div>
+            <div style="margin: 0 auto; margin-top: 10pt !important; width: 128pt;">
+                <table class="table-borderless" border="0" style="margin: 0 auto;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 32pt;" class="text-end">วงเงิน</td>
+                            <td style="width: 84pt;" class="text-center text-decoration-underline">
+                                <t t-out="'{:,}'.format(int(data.get('amount_net', 0)))"/>
+                            </td>
+                            <td>บาท</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <!-- Revenue Lines Table -->
-        <table
-            class="report-table table table-sm table-borderless"
-            style="margin-top: 30px;"
-        >
-            <thead>
-                <tr>
+        <table class="report-table table table-sm table-borderless" style="margin-top: 30px;" contenteditable="true">
+            <tbody>
+                <tr class="fw-bold">
                     <th style="text-align: left;" class="items-column">รายการ</th>
-                    <th
-                        style="text-align: right; padding-right: 10px;"
-                        class="code-column"
-                    >รหัส</th>
+                    <th style="text-align: right; padding-right: 10px;" class="code-column">รหัส</th>
                     <th style="text-align: right;" class="amount-column">งบประมาณ</th>
                 </tr>
-            </thead>
-            <tbody>
                 <t t-if="data.get('hierarchy')">
                     <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
-                        <t t-set="nodes" t-value="data['hierarchy']" />
+                        <t t-set="nodes" t-value="data['hierarchy']"/>
                     </t>
                 </t>
-            </tbody>
-        </table>
-
-        <!-- Deduct Lines Table -->
-        <t t-if="data.get('deduct_hierarchy')">
-            <table
-                class="report-table table table-sm table-borderless"
-                style="margin-top: 30px;"
-            >
-                <tbody>
+                <!-- Deduct Lines Table -->
+                <t t-if="data.get('deduct_hierarchy')">
+                    <tr style="height: 24pt;">
+                      <td/>
+                    </tr>
+                    <tr class="fw-bold">
+                      <td colspan="3">
+                        รายการหักโอน
+                      </td>
+                    </tr>
                     <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
-                        <t t-set="nodes" t-value="data['deduct_hierarchy']" />
+                        <t t-set="nodes" t-value="data['deduct_hierarchy']"/>
                     </t>
-                </tbody>
-            </table>
-        </t>
-
-        <!-- Totals -->
-        <table class="table table-sm table-borderless">
-            <tbody>
-                <tr>
-                    <td style="width: 60%" />
-                    <th style="text-align: right;">รายรับรวม</th>
-                    <td style="text-align: right;">
-                        <t t-out="'{:,}'.format(int(data.get('amount_total', 0)))" />
+                </t>
+                <!-- Total Lines -->
+                <tr class="fw-bold">
+                    <td/>
+                    <td style="text-align: right;">รายรับรวม</td>
+                    <td style="text-align: right;" contenteditable="false">
+                        <t t-out="'{:,}'.format(int(data.get('amount_total', 0)))"/>
                     </td>
                 </tr>
-                <tr t-if="data.get('amount_deduct', 0) != 0">
-                    <td style="width: 60%" />
-                    <th style="text-align: right;">หัก</th>
-                    <td style="text-align: right; text-decoration-line: underline;">
-                        <t t-out="'{:,}'.format(int(data.get('amount_deduct', 0)))" />
+                <tr class="fw-bold" t-if="data.get('amount_deduct', 0) != 0">
+                    <td/>
+                    <td style="text-align: right;">หัก</td>
+                    <td style="text-align: right;" contenteditable="false">
+                      <div style="border-bottom: solid 2px #000;">
+                        <t t-out="'{:,}'.format(int(data.get('amount_deduct', 0)))"/>
+                      </div>
                     </td>
                 </tr>
-                <tr>
-                    <td style="width: 60%" />
-                    <th style="text-align: right;">รายรับสุทธิ</th>
-                    <td
-                        style="text-align: right; text-decoration-line: underline; text-decoration-style: double;"
-                    >
-                        <t t-out="'{:,}'.format(int(data.get('amount_net', 0)))" />
+                <tr class="fw-bold">
+                    <td/>
+                    <td style="text-align: right;">รายรับสุทธิ</td>
+                    <td style="text-align: right;" contenteditable="false">
+                      <div style="border-bottom: double 6px #000;">
+                        <t t-out="'{:,}'.format(int(data.get('amount_net', 0)))"/>
+                      </div>
                     </td>
                 </tr>
             </tbody>
@@ -173,38 +166,18 @@
     <template id="report_compilation_f4_rows">
         <t t-foreach="nodes" t-as="node">
             <tr class="hierarchy-row">
-                <td>
-                    <div
-                        t-att-style="'margin-left: ' + str(12 * (node.get('indent', 0) + 1)) + 'px;'"
-                    >
-                        <t t-if="node.get('type') == 'account'">
-                            <div class="account-content">
-                                <t t-out="node.get('name', '')" />
-                            </div>
-                            <!-- <div
-                                t-if="node.get('description')"
-                                class="account-description"
-                            >
-                                <t t-out="node.get('description', '')" />
-                            </div> -->
-                            <div
-                                t-if="node.get('note')"
-                                class="account-note"
-                            >
-                                <t t-out="node.get('note', '').strip()" />
-                            </div>
-                        </t>
-                        <t t-else="">
-                            <span class="node-content" t-out="node.get('name', '')" />
-                        </t>
-                    </div>
+                <td t-att-style="'padding-left: ' + str(12 * (node.get('indent', 0) + 1)) + 'pt;'">
+                  <div t-if="node.get('type') == 'account'" class="account-content" t-out="node.get('name', '').strip()"/>
+                  <span t-else="" class="node-content fw-bold" t-out="node.get('name', '')"/>
+                  <div t-if="node.get('note')" class="account-note" t-out="node.get('note', '').replace('\n', '\n')"/>
+
                 </td>
-                <td class="code-cell">
-                    <span class="code-content" t-out="node.get('code', '')" />
+                <td class="code-cell text-end" contenteditable="false">
+                    <span class="code-content" t-out="node.get('code', '')"/>
                 </td>
-                <td class="amount-cell">
+                <td class="amount-cell" contenteditable="false">
                     <t t-if="node.get('amount_total', 0) != 0">
-                        <span t-out="'{:,}'.format(int(node.get('amount_total', 0)))" />
+                        <span t-out="'{:,}'.format(int(node.get('amount_total', 0)))"/>
                     </t>
                 </td>
             </tr>
@@ -212,7 +185,7 @@
             <!-- Recursive call for children -->
             <t t-if="node.get('children')">
                 <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
-                    <t t-set="nodes" t-value="node.get('children', [])" />
+                    <t t-set="nodes" t-value="node.get('children', [])"/>
                 </t>
             </t>
         </t>
@@ -220,20 +193,86 @@
 
     <!-- Styles template -->
     <template id="report_compilation_f4_styles">
-        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)"/>
         <t t-if="is_html_preview">
             <style>
                 html, body {
-                    background: #e0e0e0 !important;
+                    background: #e8e8e8 !important;
+                    margin: 0;
+                    padding: 0;
                 }
                 .page {
+                    position: relative;
                     width: 210mm;
                     min-height: 297mm;
-                    background: white !important;
-                    margin: 20px auto;
-                    padding: 15mm !important;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    background-color: white !important;
+                    margin: 40px auto;
+                    padding: 25mm 8mm !important;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
                     box-sizing: border-box;
+                    border-radius: 2px;
+                }
+                *, span {
+                  line-height: 1.145;
+                }
+
+                @media print {
+                    html, body {
+                        background: white !important;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .page {
+                        width: auto;
+                        min-height: auto;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none;
+                        border-radius: 0;
+                        background-image: none !important;
+                    }
+                    .page::after {
+                        display: none;
+                    }
+                    @page {
+                        margin: 0 !important;
+                        padding: 24mm 8mm !important;
+                        size: A4;
+                    }
+                    .f4-page-label {
+                        position: fixed;
+                        top: 5mm;
+                        right: 5mm;
+                    }
+                    .f4-print-btn {
+                        display: none !important;
+                    }
+                }
+
+                .f4-print-btn {
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1000;
+                    padding: 8px 20px;
+                    background: #714B67;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 16pt;
+                    cursor: pointer;
+                    font-family: 'THSarabun', Arial, sans-serif;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                }
+                .f4-print-btn:hover {
+                    background: #5a3a52;
+                }
+
+                *[contenteditable="false"] {
+                    cursor: not-allowed;
                 }
             </style>
         </t>
@@ -246,8 +285,8 @@
             }
 
             .budget-compilation-f4-report {
-                font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
-                font-size: 8pt;
+                font-family: 'THSarabun', Arial, sans-serif;
+                font-size: 16pt;
                 margin-left: auto;
                 margin-right: auto;
                 margin-top: 0;
@@ -256,22 +295,19 @@
 
             .budget-compilation-f4-report h3 {
                 margin: 0;
-                font-size: 10pt;
-                font-weight: 600;
-                line-height: 1.875;
+                font-size: 18pt;
+                font-weight: bold;
+                line-height: 0.975;
             }
 
             .report-header {
                 text-align: center;
-                padding: 5px 0;
-                margin-bottom: 10px;
+                margin-bottom: 12pt;
             }
 
             .document-ref {
                 float: right;
-                font-size: 9pt;
                 text-align: right;
-                margin-bottom: 10px;
             }
 
             .institution-info {
@@ -280,13 +316,10 @@
 
             .institution-info h4 {
                 margin: 0;
-                font-size: 11pt;
-                font-weight: normal;
             }
 
             .report-table {
                 width: 100%;
-                font-size: 9pt;
             }
 
             .report-table th {
@@ -294,56 +327,31 @@
                 padding: 0px 6px;
             }
 
-            .report-table .items-column {
-                width: 60%;
-            }
-
             .report-table .code-column {
-                width: 20%;
+                width: 72pt;
             }
 
             .report-table .amount-column {
-                width: 20%;
+                width: 120pt;
             }
 
             .hierarchy-row td {
-                padding-left: 6px;
-                padding-right: 6px;
-                padding-top: 1px;
-                padding-bottom: 1px;
-            }
-
-            .account-content {
-                font-weight: 500;
-                line-height: 1.50;
-            }
-
-            .node-content {
-                font-weight: bold;
-            }
-
-            .account-description {
-                margin-left: 16px;
-                font-weight: 400;
-                font-size: 11px;
-                line-height: 1.50;
+                padding-left: 4pt;
+                padding-right: 4pt;
+                padding-top: 0;
+                padding-bottom: 0;
             }
 
             .account-note {
-                margin-left: 16px;
-                font-weight: 400;
-                font-size: 11px;
-                line-height: 1.50;
+                margin-left: 16pt;
+                font-size: 15pt;
                 white-space: pre-wrap;
+                word-wrap: break-word;
             }
 
             .amount-cell {
                 text-align: right;
                 font-variant-numeric: tabular-nums;
-            }
-
-            .code-cell {
-                text-align: right;
             }
 
             .code-content {

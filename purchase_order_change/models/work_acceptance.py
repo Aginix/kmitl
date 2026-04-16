@@ -8,6 +8,7 @@ class WorkAcceptance(models.Model):
 
     is_work_end_extended = fields.Boolean(
         compute="_compute_is_work_end_extended",
+        store=True,
     )
 
     @api.depends(
@@ -16,8 +17,18 @@ class WorkAcceptance(models.Model):
         "po_work_end_original",
     )
     def _compute_is_work_end_extended(self):
+        accepted = self.filtered(lambda r: r.state == 'accept')
+        if accepted:
+            self.env.cr.execute(
+                "SELECT id, is_work_end_extended FROM work_acceptance"
+                " WHERE id = ANY(%s)",
+                [list(accepted.ids)],
+            )
+            stored = dict(self.env.cr.fetchall())
+            for rec in accepted:
+                rec.is_work_end_extended = stored.get(rec.id, False)
         work_end_fields = {"work_start", "contract_period_days"}
-        for rec in self:
+        for rec in (self - accepted):
             has_work_end_change = any(
                 cf.field_id.name in work_end_fields
                 for change in rec.purchase_id.change_ids

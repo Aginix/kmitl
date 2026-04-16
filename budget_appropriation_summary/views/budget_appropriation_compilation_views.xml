@@ -54,18 +54,10 @@
                         />
                         <button
                             name="action_open_f5_report"
-                            string="ดูรายงาน F5"
+                            string="รายงาน F5"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-file-text-o"
-                            attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
-                        />
-                        <button
-                            name="action_print_f5_report"
-                            string="พิมพ์ F5"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-print"
                             attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
                         />
                         <button
@@ -116,6 +108,7 @@
                                 domain="[
                                     ('account_fiscal_year_id', '=', account_fiscal_year_id),
                                     ('budget_type', '=', 'revenue'),
+                                    ('state', '!=', 'cancel'),
                                     '|',
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
@@ -144,6 +137,7 @@
                                 domain="[
                                     ('account_fiscal_year_id', '=', account_fiscal_year_id),
                                     ('budget_type', '=', 'expense'),
+                                    ('state', '!=', 'cancel'),
                                     '|',
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
@@ -283,8 +277,11 @@
                             <div class="oe_kanban_content">
                                 <div class="o_kanban_record_top mb-0">
                                     <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title">
-                                            <field name="department_analytic_id" />
+                                        <strong class="o_kanban_record_title fs-5">
+                                          <div>
+                                            ปีงบประมาณ <field name="account_fiscal_year_id"/>
+                                          </div>
+                                          <field name="department_analytic_id"/>
                                         </strong>
                                     </div>
                                     <field
@@ -385,8 +382,8 @@
                     />
                 </group>
                 <searchpanel>
-                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
-                    <field name="department_analytic_id" icon="fa-users" select="multi" limit="0" />
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" order="date_from desc" />
+                    <field name="department_analytic_id" icon="fa-users" limit="0" order="code asc" />
                 </searchpanel>
             </search>
         </field>
