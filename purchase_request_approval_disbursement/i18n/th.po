@@ -150,5 +150,5 @@ msgstr "ตรวจสอบแล้ว"
 
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
-msgid "แบบรายงานคำขอซื้อ/จ้าง (พจ.1)"
-msgstr "Purchase Request Approval Form"
+msgid "Purchase Request Approval Form"
+msgstr "แบบรายงานคำขอซื้อ/จ้าง (พจ.1)"
