@@ -120,7 +120,7 @@
             </xpath>
 
             <xpath expr="//div[hasclass('oe_title')]" position="before">
-                <h2>สัญญา/ใบสั่งซื้อ/จ้าง</h2>
+                <h2>Purchase Order Form</h2>
             </xpath>
 
             <!-- hide label -->

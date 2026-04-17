@@ -3378,3 +3378,8 @@ msgid ""
 msgstr ""
 "<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not "
 "in',('draft','sent'))]}\">เลขที่ </span>"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Purchase Order Form"
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
