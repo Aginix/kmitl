@@ -26,6 +26,10 @@
             .table-sm > :not(caption) > * > * {
                 padding: 0.065rem 0.15rem;
             }
+            h3 {
+                font-size: 18pt;
+                margin-bottom: 0;
+            }
         </style>
     </template>
 

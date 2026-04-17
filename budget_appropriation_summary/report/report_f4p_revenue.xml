@@ -11,11 +11,11 @@
             <t t-call="budget_appropriation_summary.report_print_button" />
             <t t-call="budget_appropriation_summary.report_council_header" />
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
-                <div>
+                <h3>
                     สรุปประมาณการรายรับ ประจําปีงบประมาณ
                     <t t-esc="o.account_fiscal_year_id.name" />
-                </div>
-                <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+                </h3>
+                <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
             </div>
             <div>
                 <table class="table table-sm table-borderless">
