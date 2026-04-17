@@ -4,7 +4,7 @@
     <template id="report_common_styles">
         <style>
             * {
-                font-family: "THSarabunNew", Arial, sans-serif;
+                font-family: 'THSarabun', Arial, sans-serif;
                 --bs-body-font-size: 15pt;
             }
             p,
