@@ -90,30 +90,41 @@
                 @media print {
                     html, body {
                         background: white !important;
-                        margin: 0;
-                        padding: 0;
+                        margin: 0 !important;
+                        padding: 0 !important;
                     }
                     .page {
-                        width: auto;
-                        min-height: auto;
+                        width: 100% !important;
+                        min-height: auto !important;
                         margin: 0 !important;
-                        padding: 0 !important;
-                        box-shadow: none;
-                        border-radius: 0;
+                        box-shadow: none !important;
+                        border-radius: 0 !important;
+                        page-break-after: always;
                     }
-                    @page {
-                        margin: 0 !important;
-                        padding: 24mm 8mm !important;
-                        size: A4;
-                    }
-                    .page.landscape {
-                        padding: 0 !important;
+                    .page:last-child {
+                        page-break-after: auto;
                     }
                     .print-btn {
                         display: none !important;
                     }
                 }
             </style>
+            <t t-if="is_landscape">
+                <style>
+                    @media print {
+                        @page { size: A4 landscape; margin: 0; }
+                        .page.landscape { padding: 8mm 15mm !important; }
+                    }
+                </style>
+            </t>
+            <t t-else="">
+                <style>
+                    @media print {
+                        @page { size: A4 portrait; margin: 0; }
+                        .page:not(.landscape) { padding: 15mm 8mm !important; }
+                    }
+                </style>
+            </t>
         </t>
     </template>
 
