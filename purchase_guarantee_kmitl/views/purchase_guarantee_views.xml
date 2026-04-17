@@ -94,7 +94,7 @@
 
             <!-- Add form name -->
             <xpath expr="//div[@class='oe_button_box']" position="after">
-                <h2>แบบบันทึกข้อมูลหลักประกัน</h2>
+                <h2>Purchase Guarantee Form</h2>
             </xpath>
 
             <!-- Lock: readonly attrs on fields -->

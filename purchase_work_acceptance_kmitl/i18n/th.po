@@ -1578,3 +1578,8 @@ msgstr "ไฟล์แนบ"
 #, python-format
 msgid "Please fill in all the inspection results."
 msgstr "กรุณากรอกผลการตรวจรับให้ครบ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
+msgid "Work Acceptance Form"
+msgstr "ใบตรวจรับ"
