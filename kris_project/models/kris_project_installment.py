@@ -12,7 +12,7 @@ class KrisProjectInstallment(models.Model):
 
     project_id = fields.Many2one(
         comodel_name="kris.project",
-        string="โครงการ",
+        string="Project",
         required=True,
         ondelete="cascade",
         index=True,
@@ -22,44 +22,44 @@ class KrisProjectInstallment(models.Model):
         default=10,
     )
     name = fields.Char(
-        string="งวดงาน",
+        string="Installment",
         required=True,
     )
     amount = fields.Monetary(
-        string="จำนวนเงินที่ได้รับ",
+        string="Amount Receive",
     )
     due_date = fields.Date(
-        string="วันครบกำหนด",
+        string="Date Due",
     )
     state = fields.Selection(
         selection=[
             ("pending", "รอรับเงิน"),
             ("received", "รับเงินแล้ว"),
         ],
-        string="สถานะ",
+        string="State",
         default="pending",
     )
     deduction_guarantee = fields.Monetary(
-        string="หักเงินประกันผลงาน",
+        string="Guarantee Deduction",
     )
     deduction_advance = fields.Monetary(
-        string="หักเงินล่วงหน้า",
+        string="Advance Deduction",
     )
     received_from_employer = fields.Monetary(
-        string="รับเงินงวดจากผู้ว่าจ้าง",
+        string="Received From Client",
         compute="_compute_received_from_employer",
         store=True,
     )
     maintenance_fee = fields.Monetary(
-        string="ค่าบำรุงสถาบัน",
+        string="Maintenance Fee",
         compute="_compute_maintenance_fee",
         store=True,
     )
     extra_deduction = fields.Monetary(
-        string="หักค่าอื่น ๆ",
+        string="Extra Deduction",
     )
     amount_net = fields.Monetary(
-        string="จำนวนเงินที่ใช้ได้",
+        string="Net Amount",
         compute="_compute_amount_net",
         store=True,
     )

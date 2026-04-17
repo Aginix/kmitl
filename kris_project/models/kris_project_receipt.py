@@ -13,24 +13,24 @@ class KrisProjectReceipt(models.Model):
 
     project_id = fields.Many2one(
         comodel_name="kris.project",
-        string="โครงการ",
+        string="Project",
         required=True,
         ondelete="cascade",
         index=True,
     )
     installment_id = fields.Many2one(
         comodel_name="kris.project.installment",
-        string="งวดที่",
+        string="Installment Number",
         domain="[('project_id', '=', project_id)]",
         ondelete="set null",
     )
     name = fields.Char(
-        string="เลขที่ใบเสร็จ",
+        string="Receipt Number",
         required=True,
         tracking=True,
     )
     date = fields.Date(
-        string="วันที่รับเงิน",
+        string="Receipt Date",
         required=True,
         tracking=True,
     )
@@ -40,11 +40,11 @@ class KrisProjectReceipt(models.Model):
         tracking=True,
     )
     amount = fields.Monetary(
-        string="จำนวนเงิน",
+        string="Amount",
         tracking=True,
     )
     net_amount = fields.Monetary(
-        string="ยอดรับสุทธิ",
+        string="Net Amount",
         compute="_compute_net_amount",
         store=True,
     )
@@ -54,7 +54,7 @@ class KrisProjectReceipt(models.Model):
         string="การจัดสรร",
     )
     note = fields.Text(
-        string="หมายเหตุ",
+        string="Note",
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",

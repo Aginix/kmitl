@@ -55,40 +55,40 @@ class KrisProject(models.Model):
     _rec_name = "name"
 
     name = fields.Char(
-        string="เลขที่เอกสาร",
+        string="Project Number",
         copy=False,
         tracking=True,
         index="trigram",
         default=lambda self: _("New"),
     )
     project_name = fields.Char(
-        string="ชื่อโครงการ",
+        string="Project Name",
         required=True,
         tracking=True,
         states=READONLY_STATES,
     )
     project_category_id = fields.Many2one(
         comodel_name="kris.project.category",
-        string="ประเภทโครงการ",
+        string="Project Category",
         required=True,
         tracking=True,
         states=READONLY_STATES,
     )
     project_type_id = fields.Many2one(
         comodel_name="kris.project.type",
-        string="ประเภทย่อย",
+        string="Project Type",
         required=True,
         tracking=True,
         states=READONLY_STATES,
     )
     state = fields.Selection(
         selection=[
-            ("draft", "ร่าง"),
-            ("confirmed", "ยืนยัน"),
-            ("done", "เสร็จสิ้น"),
-            ("cancel", "ยกเลิก"),
+            ("draft", "Draft"),
+            ("confirmed", "Confirm"),
+            ("done", "Done"),
+            ("cancel", "Cancel"),
         ],
-        string="สถานะ",
+        string="State",
         default="draft",
         readonly=True,
         copy=False,
@@ -96,46 +96,46 @@ class KrisProject(models.Model):
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
-        string="ผู้ว่าจ้าง",
+        string="Client",
         tracking=True,
         states=READONLY_STATES,
     )
     client_org_type = fields.Selection(
         selection=CLIENT_ORG_TYPE_SELECTION,
-        string="ประเภทองค์กรผู้ว่าจ้าง",
+        string="Client Organization",
         tracking=True,
         states=READONLY_STATES,
     )
     leader_id = fields.Many2one(
         comodel_name="hr.employee",
-        string="หัวหน้าโครงการ",
+        string="Project Leader",
         tracking=True,
         states=READONLY_STATES,
     )
     department_id = fields.Many2one(
         comodel_name="hr.department",
-        string="หน่วยงาน",
+        string="Department",
         tracking=True,
         states=READONLY_STATES,
     )
     # --- Financial fields ---
     project_value = fields.Monetary(
-        string="มูลค่างาน",
+        string="Project Value",
         tracking=True,
         states=READONLY_STATES,
     )
     equipment_cost = fields.Monetary(
-        string="ค่าครุภัณฑ์",
+        string="Equipment Cost",
         tracking=True,
         states=READONLY_STATES,
     )
     operating_expense = fields.Monetary(
-        string="ค่าดำเนินการ",
+        string="Operating Expense",
         tracking=True,
         states=READONLY_STATES,
     )
     allocatable_value = fields.Monetary(
-        string="มูลค่าที่จัดสรรได้",
+        string="Allocatable Value",
         compute="_compute_allocatable_value",
         store=True,
     )
@@ -144,7 +144,7 @@ class KrisProject(models.Model):
             ("tiered", "ขั้นบันได"),
             ("custom", "กำหนดเอง"),
         ],
-        string="วิธีคิดค่าบำรุง",
+        string="Maintenance Deduction Type",
         default="tiered",
         required=True,
         tracking=True,
@@ -157,7 +157,7 @@ class KrisProject(models.Model):
         states=READONLY_STATES,
     )
     maintenance_deduction_amount = fields.Monetary(
-        string="มูลค่าหักค่าบำรุง",
+        string="Maintenance Deduction",
         compute="_compute_maintenance_deduction_amount",
         store=True,
     )
@@ -169,34 +169,34 @@ class KrisProject(models.Model):
     )
     # --- Contract fields ---
     contract_number = fields.Char(
-        string="เลขที่สัญญา",
+        string="Contract Number",
         tracking=True,
         states=READONLY_STATES,
     )
     date_contract_start = fields.Date(
-        string="วันที่เริ่มต้นสัญญา",
+        string="Date Start",
         tracking=True,
         states=READONLY_STATES,
     )
     date_contract_end = fields.Date(
-        string="วันที่สิ้นสุดสัญญา",
+        string="Date End",
         tracking=True,
         states=READONLY_STATES,
     )
     project_duration = fields.Integer(
-        string="ระยะเวลาโครงการ (วัน)",
+        string="Duration (Day)",
         compute="_compute_project_duration",
         store=True,
     )
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal Year",
         tracking=True,
         states=READONLY_STATES,
     )
     user_id = fields.Many2one(
         comodel_name="res.users",
-        string="เจ้าหน้าที่ KRIS",
+        string="Responsible",
         default=lambda self: self.env.user,
         tracking=True,
         states=READONLY_STATES,
@@ -205,12 +205,12 @@ class KrisProject(models.Model):
     installment_ids = fields.One2many(
         comodel_name="kris.project.installment",
         inverse_name="project_id",
-        string="งวดงาน",
+        string="Installment",
     )
     receipt_ids = fields.One2many(
         comodel_name="kris.project.receipt",
         inverse_name="project_id",
-        string="รายรับ",
+        string="Revenue",
     )
     allocation_line_ids = fields.One2many(
         comodel_name="kris.project.allocation.line",
@@ -222,26 +222,26 @@ class KrisProject(models.Model):
         relation="kris_project_attachment_rel",
         column1="project_id",
         column2="attachment_id",
-        string="เอกสารแนบ",
+        string="Attachment",
     )
     # --- Computed totals ---
     total_installment_amount = fields.Monetary(
-        string="มูลค่าตามงวด (รวม)",
+        string="Total Installment Amount",
         compute="_compute_totals",
         store=True,
     )
     total_received_amount = fields.Monetary(
-        string="รับเงินแล้ว (รวม)",
+        string="Total Amount Received",
         compute="_compute_totals",
         store=True,
     )
     total_net_received = fields.Monetary(
-        string="ยอดรับสุทธิรวม",
+        string="Total Net Received",
         compute="_compute_totals",
         store=True,
     )
     revenue_remaining = fields.Monetary(
-        string="คงเหลือ",
+        string="Revenue Remaining",
         compute="_compute_totals",
         store=True,
     )
@@ -259,7 +259,7 @@ class KrisProject(models.Model):
         readonly=True,
     )
     note = fields.Text(
-        string="หมายเหตุ",
+        string="Note",
         tracking=True,
     )
     # --- Warning flags ---
@@ -392,7 +392,7 @@ class KrisProject(models.Model):
     def action_add_installment(self):
         self.ensure_one()
         return {
-            "name": "เพิ่มงวดงาน",
+            "name": "Add Installment",
             "type": "ir.actions.act_window",
             "res_model": "kris.project.installment",
             "view_mode": "form",

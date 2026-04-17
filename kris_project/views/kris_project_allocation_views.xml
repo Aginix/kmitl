@@ -69,7 +69,7 @@
                         <tree editable="bottom">
                             <field name="sequence" widget="handle"/>
                             <field name="item_id"/>
-                            <field name="allocation_pct" string="% จัดสรร"/>
+                            <field name="allocation_pct" string="Allocation %"/>
                         </tree>
                     </field>
                 </sheet>

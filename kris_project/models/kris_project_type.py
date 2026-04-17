@@ -17,7 +17,7 @@ class KrisProjectCategory(models.Model):
     type_ids = fields.One2many(
         comodel_name="kris.project.type",
         inverse_name="category_id",
-        string="ประเภทย่อย",
+        string="Project Type",
     )
     active = fields.Boolean(
         string="Active",
@@ -31,7 +31,7 @@ class KrisProjectType(models.Model):
     _order = "category_id, sequence, id"
 
     name = fields.Char(
-        string="ประเภทย่อย",
+        string="Project Type",
         required=True,
     )
     category_id = fields.Many2one(

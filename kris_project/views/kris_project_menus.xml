@@ -22,7 +22,7 @@
     <!-- Projects menu -->
     <menuitem
         id="menu_kris_project_list"
-        name="โครงการ"
+        name="Project"
         parent="menu_kris_project_root"
         action="action_kris_project"
         sequence="10"
@@ -40,7 +40,7 @@
 
     <menuitem
         id="menu_kris_project_category"
-        name="ประเภทโครงการ"
+        name="Project Category"
         parent="menu_kris_project_config"
         action="action_kris_project_category"
         sequence="10"

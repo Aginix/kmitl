@@ -8,7 +8,7 @@ class KrisProjectReceiptAllocation(models.Model):
 
     receipt_id = fields.Many2one(
         comodel_name="kris.project.receipt",
-        string="รายรับ",
+        string="Revenue",
         required=True,
         ondelete="cascade",
         index=True,
@@ -19,7 +19,7 @@ class KrisProjectReceiptAllocation(models.Model):
         required=True,
         ondelete="cascade",
     )
-    amount = fields.Monetary(string="จำนวนเงิน")
+    amount = fields.Monetary(string="Amount")
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="receipt_id.currency_id",

@@ -9,7 +9,7 @@
         <field name="name">kris.project.installment.form</field>
         <field name="model">kris.project.installment</field>
         <field name="arch" type="xml">
-            <form string="งวดงาน">
+            <form string="Installment">
                 <field name="currency_id" invisible="1"/>
                 <group>
                     <group string="ข้อมูลงวด">
@@ -35,7 +35,7 @@
                 <field name="allocation_ids">
                     <tree editable="bottom" create="0" delete="0">
                         <field name="allocation_line_id" invisible="1"/>
-                        <field name="name" readonly="1" string="ผู้รับจัดสรร"/>
+                        <field name="name" readonly="1" string="Allocator"/>
                         <field name="estimated_amount" readonly="1"/>
                         <field name="allocated_amount" readonly="1"/>
                         <field name="remaining_amount" readonly="1"/>
@@ -59,27 +59,27 @@
                 <header>
                     <button
                         name="action_confirm"
-                        string="ยืนยัน"
+                        string="Confirm"
                         type="object"
                         class="btn-primary"
                         states="draft"
                     />
                     <button
                         name="action_done"
-                        string="เสร็จสิ้น"
+                        string="Done"
                         type="object"
                         class="btn-primary"
                         states="confirmed"
                     />
                     <button
                         name="action_cancel"
-                        string="ยกเลิก"
+                        string="Cancel"
                         type="object"
                         states="draft,confirmed"
                     />
                     <button
                         name="action_draft"
-                        string="รีเซ็ตเป็นร่าง"
+                        string="Reset to Draft"
                         type="object"
                         states="cancel"
                     />
@@ -91,7 +91,7 @@
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
                     attrs="{'invisible': [('exceptions_summary', '=', False)]}">
-                    <p><strong>มีข้อควรระวัง:</strong></p>
+                    <p><strong>Exception:</strong></p>
                     <field name="exceptions_summary"/>
                 </div>
                 <sheet>
@@ -105,7 +105,7 @@
                         <h2>
                             <field
                                 name="project_name"
-                                placeholder="ชื่อโครงการ..."
+                                placeholder="Project Name..."
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                         </h2>
@@ -171,7 +171,7 @@
                     </group>
                     <notebook>
                         <!-- Tab 1: มูลค่าและงวดงาน -->
-                        <page string="มูลค่าและงวดงาน" name="financials">
+                        <page string="Financials" name="financials">
                             <group>
                                 <group string="1. มูลค่าโครงการ">
                                     <field
@@ -209,7 +209,7 @@
                                 <group>
                                     <field name="maintenance_deduction_amount"
                                         readonly="1"
-                                        string="มูลค่าหักค่าบำรุงที่นำมาจัดสรร"
+                                        string="Maintenance Deduction Value"
                                     />
                                 </group>
                             </group>
@@ -221,11 +221,11 @@
                                     nolabel="1"
                                     class="d-inline-block me-2"
                                     style="min-width: 250px;"
-                                    placeholder="เลือกแม่แบบ..."
+                                    placeholder="Choose Template..."
                                 />
                                 <button
                                     name="action_apply_allocation_template"
-                                    string="นำแม่แบบมาใช้"
+                                    string="Template"
                                     type="object"
                                     class="btn-secondary"
                                 />
@@ -233,7 +233,7 @@
                             <div class="alert alert-danger mb-2" role="alert"
                                 attrs="{'invisible': [('warn_allocation_mismatch', '=', False)]}"
                             >
-                                ผลรวมจัดสรรรายได้ไม่เท่ากับมูลค่าหักค่าบำรุง กรุณาตรวจสอบการจัดสรร
+                                The total allocated revenue does not equal the value minus maintenance fees. กรุณาตรวจสอบการจัดสรร
                             </div>
                             <field
                                 name="allocation_line_ids"
@@ -242,7 +242,7 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="item_id"/>
-                                    <field name="allocation_pct" string="% จัดสรร" readonly="1" sum="รวม"/>
+                                    <field name="allocation_pct" string="Allocation %" readonly="1" sum="รวม"/>
                                     <field name="estimated_amount" sum="รวม"/>
                                     <field name="actual_amount" readonly="1" sum="รวม"/>
                                     <field name="currency_id" invisible="1"/>
@@ -252,19 +252,19 @@
                             <div class="alert alert-danger mb-2" role="alert"
                                 attrs="{'invisible': [('warn_installment_total_mismatch', '=', False)]}"
                             >
-                                ผลรวมจำนวนเงินที่ได้รับในงวดงานไม่เท่ากับมูลค่างาน กรุณาตรวจสอบงวดงาน
+                                The sum of the amounts received in each payment installment does not equal the project value. Please check the payment installments.
                             </div>
                             <div class="alert alert-danger mb-2" role="alert"
                                 attrs="{'invisible': [('warn_installment_maintenance_mismatch', '=', False)]}"
                             >
-                                ผลรวมค่าบำรุงสถาบันในงวดงานไม่เท่ากับมูลค่าหักค่าบำรุง กรุณาตรวจสอบการจัดสรรในแต่ละงวด
+                                The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees. Please check the allocation for each period.
                             </div>
                             <div class="mb-3"
                                 attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                             >
                                 <button
                                     name="action_add_installment"
-                                    string="เพิ่มงวด"
+                                    string="Add Installment"
                                     type="object"
                                     class="btn-secondary"
                                 />
@@ -297,7 +297,7 @@
                         </page>
 
                         <!-- Tab 2: รายรับ -->
-                        <page string="รายรับ" name="receipts">
+                        <page string="Revenue" name="receipts">
                             <group>
                                 <group>
                                     <field name="total_received_amount" readonly="1"/>
@@ -311,7 +311,7 @@
                             >
                                 <button
                                     name="action_add_receipt"
-                                    string="เพิ่มรายรับ"
+                                    string="Add Revenue"
                                     type="object"
                                     class="btn-secondary"
                                 />
@@ -335,17 +335,17 @@
                         </page>
 
                         <!-- Tab 3: เอกสารแนบ -->
-                        <page string="เอกสารแนบ" name="attachments">
+                        <page string="Attachment" name="attachments">
                             <field
                                 name="attachment_ids"
                                 widget="many2many_binary"
-                                string="ไฟล์แนบ"
+                                string="File"
                             />
                         </page>
 
                         <!-- Tab 4: หมายเหตุ -->
-                        <page string="หมายเหตุ" name="notes">
-                            <field name="note" placeholder="หมายเหตุ..." nolabel="1"/>
+                        <page string="Note" name="notes">
+                            <field name="note" placeholder="Note..." nolabel="1"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -395,8 +395,8 @@
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" string="เลขที่เอกสาร"/>
-                <field name="project_name" string="ชื่อโครงการ"/>
+                <field name="name" string="Project Number"/>
+                <field name="project_name" string="Project Name"/>
                 <field name="partner_id"/>
                 <field name="leader_id"/>
                 <field name="project_category_id"/>
@@ -409,16 +409,16 @@
                 <separator/>
                 <filter
                     name="my_projects"
-                    string="โครงการของฉัน"
+                    string="My Project"
                     domain="[('user_id', '=', uid)]"
                 />
                 <!-- Group By -->
                 <group expand="0" string="จัดกลุ่มตาม">
-                    <filter name="group_category" string="ประเภทโครงการ" context="{'group_by': 'project_category_id'}"/>
-                    <filter name="group_type" string="ประเภทย่อย" context="{'group_by': 'project_type_id'}"/>
-                    <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}"/>
-                    <filter name="group_department" string="หน่วยงาน" context="{'group_by': 'department_id'}"/>
-                    <filter name="group_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter name="group_category" string="Project Category" context="{'group_by': 'project_category_id'}"/>
+                    <filter name="group_type" string="Project Type" context="{'group_by': 'project_type_id'}"/>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_fiscal_year" string="Fiscal Year" context="{'group_by': 'account_fiscal_year_id'}"/>
                 </group>
             </search>
         </field>

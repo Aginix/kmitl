@@ -13,7 +13,7 @@ class KrisProjectAllocationLine(models.Model):
 
     project_id = fields.Many2one(
         comodel_name="kris.project",
-        string="โครงการ",
+        string="Project",
         required=True,
         ondelete="cascade",
         index=True,
@@ -24,26 +24,26 @@ class KrisProjectAllocationLine(models.Model):
     )
     item_id = fields.Many2one(
         comodel_name="kris.project.allocation.item",
-        string="ผู้รับจัดสรร",
+        string="Allocator",
         required=True,
     )
     name = fields.Char(
-        string="ผู้รับจัดสรร",
+        string="Allocator",
         related="item_id.name",
         store=True,
         readonly=True,
     )
     allocation_pct = fields.Float(
-        string="% จัดสรร",
+        string="Allocation %",
         digits=(5, 2),
         compute="_compute_allocation_pct",
         store=True,
     )
     estimated_amount = fields.Monetary(
-        string="ประมาณการ (บาท)",
+        string="Estimated Amount (Baht)",
     )
     actual_amount = fields.Monetary(
-        string="รับจริง (บาท)",
+        string="Actual Amount (Baht)",
         compute="_compute_actual_amount",
         store=True,
     )

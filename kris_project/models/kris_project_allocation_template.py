@@ -20,7 +20,7 @@ class KrisProjectAllocationTemplate(models.Model):
     _description = "KRIS Allocation Template"
     _order = "name"
 
-    name = fields.Char(string="ชื่อแม่แบบ", required=True)
+    name = fields.Char(string="Template Name", required=True)
     line_ids = fields.One2many(
         comodel_name="kris.project.allocation.template.line",
         inverse_name="template_id",
@@ -42,8 +42,8 @@ class KrisProjectAllocationTemplateLine(models.Model):
     )
     item_id = fields.Many2one(
         comodel_name="kris.project.allocation.item",
-        string="ผู้รับจัดสรร",
+        string="Allocator",
         required=True,
     )
     sequence = fields.Integer(string="ลำดับ", default=10)
-    allocation_pct = fields.Float(string="% จัดสรร", digits=(5, 2))
+    allocation_pct = fields.Float(string="Allocation %", digits=(5, 2))

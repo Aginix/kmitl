@@ -7,7 +7,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
 
     project_id = fields.Many2one(
         comodel_name="kris.project",
-        string="โครงการ",
+        string="Project",
         required=True,
         readonly=True,
     )
@@ -18,16 +18,16 @@ class KrisProjectReceiptWizard(models.TransientModel):
     )
     installment_id = fields.Many2one(
         comodel_name="kris.project.installment",
-        string="งวดที่",
+        string="Installment Number",
         domain="[('id', 'in', available_installment_ids)]",
         ondelete="set null",
     )
     name = fields.Char(
-        string="เลขที่ใบเสร็จ",
+        string="Receipt Number",
         required=True,
     )
     date = fields.Date(
-        string="วันที่รับเงิน",
+        string="Receipt Date",
         required=True,
         default=fields.Date.context_today,
     )
@@ -36,10 +36,10 @@ class KrisProjectReceiptWizard(models.TransientModel):
         default=0.0,
     )
     amount = fields.Monetary(
-        string="จำนวนเงิน",
+        string="Amount",
     )
     net_amount = fields.Monetary(
-        string="ยอดรับสุทธิ",
+        string="Net Amount",
         compute="_compute_net_amount",
     )
     allocation_ids = fields.One2many(
@@ -48,7 +48,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
         string="การจัดสรร",
     )
     note = fields.Text(
-        string="หมายเหตุ",
+        string="Note",
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
@@ -136,10 +136,10 @@ class KrisProjectReceiptWizardLine(models.TransientModel):
     )
     name = fields.Char(
         related="allocation_line_id.name",
-        string="ผู้รับจัดสรร",
+        string="Allocator",
         readonly=True,
     )
-    amount = fields.Monetary(string="จำนวนเงิน")
+    amount = fields.Monetary(string="Amount")
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="wizard_id.currency_id",

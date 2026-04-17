@@ -8,7 +8,7 @@ class KrisProjectInstallmentAllocation(models.Model):
 
     installment_id = fields.Many2one(
         comodel_name="kris.project.installment",
-        string="งวดงาน",
+        string="Installment",
         required=True,
         ondelete="cascade",
         index=True,
@@ -21,12 +21,12 @@ class KrisProjectInstallmentAllocation(models.Model):
     )
     name = fields.Char(
         related="allocation_line_id.name",
-        string="ผู้รับจัดสรร",
+        string="Allocator",
         readonly=True,
     )
     estimated_amount = fields.Monetary(
         related="allocation_line_id.estimated_amount",
-        string="ประมาณการ (บาท)",
+        string="Estimated Amount (Baht)",
         readonly=True,
     )
     allocated_amount = fields.Monetary(
@@ -39,7 +39,7 @@ class KrisProjectInstallmentAllocation(models.Model):
         compute="_compute_allocated_amount",
         readonly=True,
     )
-    amount = fields.Monetary(string="จำนวนเงิน")
+    amount = fields.Monetary(string="Amount")
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="installment_id.currency_id",

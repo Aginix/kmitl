@@ -15,7 +15,7 @@
                         <field name="name"/>
                         <field name="sequence"/>
                     </group>
-                    <separator string="ประเภทย่อย"/>
+                    <separator string="Project Type"/>
                     <field name="type_ids">
                         <tree editable="bottom">
                             <field name="sequence" widget="handle"/>
@@ -40,7 +40,7 @@
     </record>
 
     <record id="action_kris_project_category" model="ir.actions.act_window">
-        <field name="name">ประเภทโครงการ</field>
+        <field name="name">Project Category</field>
         <field name="res_model">kris.project.category</field>
         <field name="view_mode">tree,form</field>
     </record>
