@@ -96,11 +96,19 @@
                         background: white !important;
                         margin: 0 !important;
                         padding: 0 !important;
+                        width: auto !important;
+                        height: auto !important;
+                    }
+                    .article, main, header, footer, .o_report_layout_standard {
+                        margin: 0 !important;
+                        padding: 0 !important;
                     }
                     .page {
-                        width: 100% !important;
+                        width: auto !important;
                         min-height: auto !important;
+                        max-width: none !important;
                         margin: 0 !important;
+                        padding: 0 !important;
                         box-shadow: none !important;
                         border-radius: 0 !important;
                         page-break-after: always;
@@ -116,16 +124,14 @@
             <t t-if="is_landscape">
                 <style>
                     @media print {
-                        @page { size: A4 landscape; margin: 0; }
-                        .page.landscape { padding: 8mm 15mm !important; }
+                        @page { size: A4 landscape; margin: 8mm 15mm; }
                     }
                 </style>
             </t>
             <t t-else="">
                 <style>
                     @media print {
-                        @page { size: A4 portrait; margin: 0; }
-                        .page:not(.landscape) { padding: 15mm 8mm !important; }
+                        @page { size: A4 portrait; margin: 15mm 8mm; }
                     }
                 </style>
             </t>
