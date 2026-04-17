@@ -19,7 +19,7 @@ class KrisProjectAllocationLine(models.Model):
         index=True,
     )
     sequence = fields.Integer(
-        string="ลำดับ",
+        string="Sequence",
         default=10,
     )
     item_id = fields.Many2one(
@@ -50,12 +50,12 @@ class KrisProjectAllocationLine(models.Model):
     installment_allocation_ids = fields.One2many(
         comodel_name="kris.project.installment.allocation",
         inverse_name="allocation_line_id",
-        string="การจัดสรรตามงวด",
+        string="Installment allocation",
     )
     receipt_allocation_ids = fields.One2many(
         comodel_name="kris.project.receipt.allocation",
         inverse_name="allocation_line_id",
-        string="การจัดสรรตามรายรับ",
+        string="Allocation based on revenue.",
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",

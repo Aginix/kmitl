@@ -15,7 +15,7 @@ class KrisProjectReceiptAllocation(models.Model):
     )
     allocation_line_id = fields.Many2one(
         comodel_name="kris.project.allocation.line",
-        string="การจัดสรร",
+        string="Allocation",
         required=True,
         ondelete="cascade",
     )

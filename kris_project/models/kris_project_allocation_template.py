@@ -10,9 +10,9 @@ class KrisProjectAllocationItem(models.Model):
     _description = "KRIS Allocation Item"
     _order = "sequence, id"
 
-    name = fields.Char(string="ชื่อ", required=True)
-    sequence = fields.Integer(string="ลำดับ", default=10)
-    active = fields.Boolean(string="ใช้งาน", default=True)
+    name = fields.Char(string="Name", required=True)
+    sequence = fields.Integer(string="Sequence", default=10)
+    active = fields.Boolean(string="Active", default=True)
 
 
 class KrisProjectAllocationTemplate(models.Model):
@@ -26,7 +26,7 @@ class KrisProjectAllocationTemplate(models.Model):
         inverse_name="template_id",
         string="รายการ",
     )
-    active = fields.Boolean(string="ใช้งาน", default=True)
+    active = fields.Boolean(string="Active", default=True)
 
 
 class KrisProjectAllocationTemplateLine(models.Model):
@@ -45,5 +45,5 @@ class KrisProjectAllocationTemplateLine(models.Model):
         string="Allocator",
         required=True,
     )
-    sequence = fields.Integer(string="ลำดับ", default=10)
+    sequence = fields.Integer(string="Sequence", default=10)
     allocation_pct = fields.Float(string="Allocation %", digits=(5, 2))

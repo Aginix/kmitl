@@ -18,7 +18,7 @@ class KrisProjectInstallment(models.Model):
         index=True,
     )
     sequence = fields.Integer(
-        string="ลำดับ",
+        string="Sequence",
         default=10,
     )
     name = fields.Char(
@@ -66,7 +66,7 @@ class KrisProjectInstallment(models.Model):
     allocation_ids = fields.One2many(
         comodel_name="kris.project.installment.allocation",
         inverse_name="installment_id",
-        string="การจัดสรร",
+        string="Allocation",
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",

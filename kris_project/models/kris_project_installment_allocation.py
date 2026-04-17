@@ -15,7 +15,7 @@ class KrisProjectInstallmentAllocation(models.Model):
     )
     allocation_line_id = fields.Many2one(
         comodel_name="kris.project.allocation.line",
-        string="การจัดสรร",
+        string="Allocation",
         required=True,
         ondelete="cascade",
     )
@@ -30,12 +30,12 @@ class KrisProjectInstallmentAllocation(models.Model):
         readonly=True,
     )
     allocated_amount = fields.Monetary(
-        string="จัดสรรแล้ว",
+        string="Allocated Amount",
         compute="_compute_allocated_amount",
         readonly=True,
     )
     remaining_amount = fields.Monetary(
-        string="ยอดคงเหลือที่จัดสรรได้",
+        string="Remaining Amount",
         compute="_compute_allocated_amount",
         readonly=True,
     )

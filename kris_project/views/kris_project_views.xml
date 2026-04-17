@@ -12,7 +12,7 @@
             <form string="Installment">
                 <field name="currency_id" invisible="1"/>
                 <group>
-                    <group string="ข้อมูลงวด">
+                    <group string="Installment Infomation">
                         <field name="project_id" readonly="1"/>
                         <field name="name"/>
                         <field name="due_date"/>
@@ -21,7 +21,7 @@
                             decoration-success="state == 'received'"
                         />
                     </group>
-                    <group string="การเงิน">
+                    <group string="Finance">
                         <field name="amount"/>
                         <field name="deduction_guarantee"/>
                         <field name="deduction_advance"/>
@@ -31,7 +31,7 @@
                         <field name="amount_net" readonly="1"/>
                     </group>
                 </group>
-                <separator string="การจัดสรรตามงวด"/>
+                <separator string="Installment allocation"/>
                 <field name="allocation_ids">
                     <tree editable="bottom" create="0" delete="0">
                         <field name="allocation_line_id" invisible="1"/>
@@ -173,7 +173,7 @@
                         <!-- Tab 1: มูลค่าและงวดงาน -->
                         <page string="Financials" name="financials">
                             <group>
-                                <group string="1. มูลค่าโครงการ">
+                                <group string="1. Project Value">
                                     <field
                                         name="project_value"
                                         attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
@@ -187,7 +187,7 @@
                                         attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                                     />
                                 </group>
-                                <group string="การจัดสรร">
+                                <group string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
                                         name="maintenance_deduction_type"
@@ -204,7 +204,7 @@
                                     <field name="maintenance_deduction_amount" readonly="1"/>
                                 </group>
                             </group>
-                            <separator string="2. จัดสรรรายได้" name="allocation_separator" />
+                            <separator string="2. Allocate Income" name="allocation_separator" />
                             <group>
                                 <group>
                                     <field name="maintenance_deduction_amount"
@@ -248,7 +248,7 @@
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
-                            <separator string="3. งวดงานตามสัญญา" name="installment_separator" />
+                            <separator string="3. Contract payment installments" name="installment_separator" />
                             <div class="alert alert-danger mb-2" role="alert"
                                 attrs="{'invisible': [('warn_installment_total_mismatch', '=', False)]}"
                             >
@@ -305,7 +305,7 @@
                                     <field name="revenue_remaining" readonly="1"/>
                                 </group>
                             </group>
-                            <separator string="บันทึกรายรับ"/>
+                            <separator string="Revenue Record"/>
                             <div class="mb-3"
                                 attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                             >
@@ -402,10 +402,10 @@
                 <field name="project_category_id"/>
                 <field name="project_type_id"/>
                 <separator/>
-                <filter name="draft" string="ร่าง" domain="[('state', '=', 'draft')]"/>
-                <filter name="confirmed" string="ยืนยัน" domain="[('state', '=', 'confirmed')]"/>
-                <filter name="done" string="เสร็จสิ้น" domain="[('state', '=', 'done')]"/>
-                <filter name="cancel" string="ยกเลิก" domain="[('state', '=', 'cancel')]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirm" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="cancel" string="Cancel" domain="[('state', '=', 'cancel')]"/>
                 <separator/>
                 <filter
                     name="my_projects"
@@ -438,7 +438,7 @@
     </record>
 
     <record id="action_kris_project" model="ir.actions.act_window">
-        <field name="name">โครงการ KRIS</field>
+        <field name="name">KRIS Project</field>
         <field name="res_model">kris.project</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_kris_project_search"/>

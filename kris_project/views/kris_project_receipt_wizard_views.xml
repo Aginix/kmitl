@@ -5,7 +5,7 @@
         <field name="name">kris.project.receipt.wizard.form</field>
         <field name="model">kris.project.receipt.wizard</field>
         <field name="arch" type="xml">
-            <form string="บันทึกรายรับ">
+            <form string="Revenue Record">
                 <field name="currency_id" invisible="1"/>
                 <field name="available_installment_ids" invisible="1"/>
                 <group>
@@ -21,7 +21,7 @@
                     <field name="net_amount" readonly="1"/>
                     <field name="note"/>
                 </group>
-                <separator string="การจัดสรรตามรายรับ"/>
+                <separator string="Allocation based on revenue."/>
                 <field name="allocation_ids">
                     <tree editable="bottom" create="0" delete="0">
                         <field name="allocation_line_id" invisible="1"/>
@@ -33,11 +33,11 @@
                 <footer>
                     <button
                         name="action_save"
-                        string="บันทึก"
+                        string="Save"
                         type="object"
                         class="btn-primary"
                     />
-                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>

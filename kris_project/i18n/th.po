@@ -44,18 +44,18 @@ msgstr ""
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "1. มูลค่าโครงการ"
-msgstr ""
+msgid "1. Project Value"
+msgstr "1. มูลค่าโครงการ"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "2. จัดสรรรายได้"
-msgstr ""
+msgid "2. Allocate Income"
+msgstr "2. จัดสรรรายได้"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "3. งวดงานตามสัญญา"
-msgstr ""
+msgid "3. Contract payment installments"
+msgstr "3. งวดงานตามสัญญา"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -603,20 +603,20 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__allocation_ids
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__allocation_line_id
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "การจัดสรร"
-msgstr ""
+msgid "Allocation"
+msgstr "การจัดสรร"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__installment_allocation_ids
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
-msgid "การจัดสรรตามงวด"
-msgstr ""
+msgid "Installment allocation"
+msgstr "การจัดสรรตามงวด"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__receipt_allocation_ids
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
-msgid "การจัดสรรตามรายรับ"
-msgstr ""
+msgid "Allocation based on revenue."
+msgstr "การจัดสรรตามรายรับ"
 
 #. module: kris_project
 #. odoo-javascript
@@ -632,13 +632,13 @@ msgstr ""
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
-msgid "การเงิน"
-msgstr ""
+msgid "Finance"
+msgstr "การเงิน"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__maintenance_deduction_type__custom
-msgid "กำหนดเอง"
-msgstr ""
+msgid "Custom"
+msgstr "กำหนดเอง"
 
 #. module: kris_project
 #. odoo-javascript
@@ -649,13 +649,13 @@ msgstr ""
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__maintenance_deduction_type__tiered
-msgid "ขั้นบันได"
-msgstr ""
+msgid "Tiered"
+msgstr "ขั้นบันได"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
-msgid "ข้อมูลงวด"
-msgstr ""
+msgid "Installment Infomation"
+msgstr "ข้อมูลงวด"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -730,8 +730,8 @@ msgstr ""
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__allocated_amount
-msgid "จัดสรรแล้ว"
-msgstr ""
+msgid "Allocated Amount"
+msgstr "จัดสรรแล้ว"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__amount
@@ -754,8 +754,8 @@ msgstr "จำนวนเงินที่ได้รับ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_item__name
-msgid "ชื่อ"
-msgstr ""
+msgid "Name"
+msgstr "ชื่อ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template__name
@@ -775,8 +775,8 @@ msgstr "ชื่อโครงการ..."
 
 #. module: kris_project
 #: model:ir.ui.menu,name:kris_project.menu_kris_project_config
-msgid "ตั้งค่า"
-msgstr ""
+msgid "Configuration"
+msgstr "ตั้งค่า"
 
 #. module: kris_project
 #. odoo-javascript
@@ -806,8 +806,8 @@ msgstr ""
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
-msgid "บันทึก"
-msgstr ""
+msgid "Save"
+msgstr "บันทึก"
 
 #. module: kris_project
 #: model_terms:ir.actions.act_window,help:kris_project.action_kris_project
@@ -817,8 +817,8 @@ msgstr ""
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
-msgid "บันทึกรายรับ"
-msgstr ""
+msgid "Revenue Record"
+msgstr "บันทึกรายรับ"
 
 #. module: kris_project
 #. odoo-javascript
@@ -947,8 +947,8 @@ msgstr "มีรายรับอยู่"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__equipment_cost_in_installment
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__equipment_cost_in_installment
-msgid "มูลค่าครุภัณฑ์ในงวด"
-msgstr ""
+msgid "Equipment Cost in Installment"
+msgstr "มูลค่าครุภัณฑ์ในงวด"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__project_value
@@ -1007,8 +1007,8 @@ msgstr "ยกเลิก"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__remaining_amount
-msgid "ยอดคงเหลือที่จัดสรรได้"
-msgstr ""
+msgid "Remaining Amount"
+msgstr "ยอดคงเหลือที่จัดสรรได้"
 
 #. module: kris_project
 #: model:exception.rule,name:kris_project.kris_excep_installment_total_mismatch
@@ -1067,8 +1067,8 @@ msgstr "ระยะเวลาโครงการ (วัน)"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__state_enterprise
-msgid "รัฐวิสาหกิจ"
-msgstr ""
+msgid "State Enterprise"
+msgstr "รัฐวิสาหกิจ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__actual_amount
@@ -1106,8 +1106,8 @@ msgstr ""
 #. module: kris_project
 #: model:ir.actions.act_window,name:kris_project.action_kris_project_allocation_item
 #: model:ir.ui.menu,name:kris_project.menu_kris_project_allocation_item
-msgid "รายการปันส่วน"
-msgstr ""
+msgid "Allocation Item"
+msgstr "รายการปันส่วน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__receipt_ids
@@ -1155,8 +1155,8 @@ msgstr "ร่าง"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_category__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__sequence
-msgid "ลำดับ"
-msgstr ""
+msgid "Sequence"
+msgstr "ลำดับ"
 
 #. module: kris_project
 #. odoo-javascript
@@ -1256,8 +1256,8 @@ msgstr "หน่วยงาน"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__government
-msgid "หน่วยงานรัฐ"
-msgstr ""
+msgid "Government"
+msgstr "หน่วยงานรัฐ"
 
 #. module: kris_project
 #. odoo-javascript
@@ -1265,8 +1265,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_category__name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__category_id
 #, python-format
-msgid "หมวดหมู่"
-msgstr ""
+msgid "Category"
+msgstr "หมวดหมู่"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__note
@@ -1303,8 +1303,8 @@ msgstr "หัวหน้าโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__other
-msgid "อื่นๆ"
-msgstr ""
+msgid "Other"
+msgstr "อื่นๆ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__user_id
@@ -1352,8 +1352,8 @@ msgstr "เสร็จสิ้น"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__private
-msgid "เอกชน"
-msgstr ""
+msgid "Private"
+msgstr "เอกชน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__attachment_ids
@@ -1374,8 +1374,8 @@ msgstr ""
 #. module: kris_project
 #: model:ir.actions.act_window,name:kris_project.action_kris_project_allocation_template
 #: model:ir.ui.menu,name:kris_project.menu_kris_project_allocation_template
-msgid "แม่แบบการปันส่วน"
-msgstr ""
+msgid "Allocation Template"
+msgstr "แม่แบบการปันส่วน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__project_id
@@ -1388,8 +1388,8 @@ msgstr "โครงการ"
 
 #. module: kris_project
 #: model:ir.actions.act_window,name:kris_project.action_kris_project
-msgid "โครงการ KRIS"
-msgstr ""
+msgid "KRIS Project"
+msgstr "โครงการ KRIS"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
@@ -1404,8 +1404,8 @@ msgstr "โครงการนี้มีรายรับที่บัน
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_item__active
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template__active
-msgid "ใช้งาน"
-msgstr ""
+msgid "Active"
+msgstr "ใช้งาน"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form

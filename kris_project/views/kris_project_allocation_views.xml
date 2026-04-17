@@ -34,7 +34,7 @@
     </record>
 
     <record id="action_kris_project_allocation_item" model="ir.actions.act_window">
-        <field name="name">รายการปันส่วน</field>
+        <field name="name">Allocation Item</field>
         <field name="res_model">kris.project.allocation.item</field>
         <field name="view_mode">tree,form</field>
     </record>
@@ -78,7 +78,7 @@
     </record>
 
     <record id="action_kris_project_allocation_template" model="ir.actions.act_window">
-        <field name="name">แม่แบบการปันส่วน</field>
+        <field name="name">Allocation Template</field>
         <field name="res_model">kris.project.allocation.template</field>
         <field name="view_mode">tree,form</field>
     </record>

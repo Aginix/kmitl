@@ -32,7 +32,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
         default=fields.Date.context_today,
     )
     equipment_cost_in_installment = fields.Monetary(
-        string="มูลค่าครุภัณฑ์ในงวด",
+        string="Equipment Cost in Installment",
         default=0.0,
     )
     amount = fields.Monetary(
@@ -45,7 +45,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
     allocation_ids = fields.One2many(
         comodel_name="kris.project.receipt.wizard.line",
         inverse_name="wizard_id",
-        string="การจัดสรร",
+        string="Allocation",
     )
     note = fields.Text(
         string="Note",
@@ -131,7 +131,7 @@ class KrisProjectReceiptWizardLine(models.TransientModel):
     )
     allocation_line_id = fields.Many2one(
         comodel_name="kris.project.allocation.line",
-        string="การจัดสรร",
+        string="Allocation",
         required=True,
     )
     name = fields.Char(

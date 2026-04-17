@@ -7,11 +7,11 @@ class KrisProjectCategory(models.Model):
     _order = "sequence, id"
 
     name = fields.Char(
-        string="หมวดหมู่",
+        string="Category",
         required=True,
     )
     sequence = fields.Integer(
-        string="ลำดับ",
+        string="Sequence",
         default=10,
     )
     type_ids = fields.One2many(
@@ -36,12 +36,12 @@ class KrisProjectType(models.Model):
     )
     category_id = fields.Many2one(
         comodel_name="kris.project.category",
-        string="หมวดหมู่",
+        string="Category",
         required=True,
         ondelete="restrict",
     )
     sequence = fields.Integer(
-        string="ลำดับ",
+        string="Sequence",
         default=10,
     )
     active = fields.Boolean(

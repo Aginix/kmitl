@@ -35,7 +35,7 @@ class KrisProjectReceipt(models.Model):
         tracking=True,
     )
     equipment_cost_in_installment = fields.Monetary(
-        string="มูลค่าครุภัณฑ์ในงวด",
+        string="Equipment Cost in Installment",
         default=0.0,
         tracking=True,
     )
@@ -51,7 +51,7 @@ class KrisProjectReceipt(models.Model):
     allocation_ids = fields.One2many(
         comodel_name="kris.project.receipt.allocation",
         inverse_name="receipt_id",
-        string="การจัดสรร",
+        string="Allocation",
     )
     note = fields.Text(
         string="Note",

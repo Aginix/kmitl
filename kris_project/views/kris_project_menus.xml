@@ -32,7 +32,7 @@
     <!-- Configuration menu -->
     <menuitem
         id="menu_kris_project_config"
-        name="ตั้งค่า"
+        name="Configuration"
         parent="menu_kris_project_root"
         sequence="100"
         groups="kris_project.group_kris_project_manager"
@@ -49,7 +49,7 @@
 
     <menuitem
         id="menu_kris_project_allocation_item"
-        name="รายการปันส่วน"
+        name="Allocation Item"
         parent="menu_kris_project_config"
         action="action_kris_project_allocation_item"
         sequence="20"
@@ -58,7 +58,7 @@
 
     <menuitem
         id="menu_kris_project_allocation_template"
-        name="แม่แบบการปันส่วน"
+        name="Allocation Template"
         parent="menu_kris_project_config"
         action="action_kris_project_allocation_template"
         sequence="30"

@@ -13,10 +13,10 @@ READONLY_STATES = {
 }
 
 CLIENT_ORG_TYPE_SELECTION = [
-    ("government", "หน่วยงานรัฐ"),
-    ("state_enterprise", "รัฐวิสาหกิจ"),
-    ("private", "เอกชน"),
-    ("other", "อื่นๆ"),
+    ("government", "Government"),
+    ("state_enterprise", "State Enterprise"),
+    ("private", "Private"),
+    ("other", "Other"),
 ]
 
 # Progressive (tiered) deduction brackets: (upper_limit, rate)
@@ -141,8 +141,8 @@ class KrisProject(models.Model):
     )
     maintenance_deduction_type = fields.Selection(
         selection=[
-            ("tiered", "ขั้นบันได"),
-            ("custom", "กำหนดเอง"),
+            ("tiered", "Tiered"),
+            ("custom", "Custom"),
         ],
         string="Maintenance Deduction Type",
         default="tiered",
@@ -381,7 +381,7 @@ class KrisProject(models.Model):
     def action_add_receipt(self):
         self.ensure_one()
         return {
-            "name": "บันทึกรายรับ",
+            "name": "Revenue Record",
             "type": "ir.actions.act_window",
             "res_model": "kris.project.receipt.wizard",
             "view_mode": "form",
