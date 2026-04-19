@@ -16,11 +16,14 @@
             .table tbody .revenue .border-bottom {
                 border-bottom: 1pt solid #000 !important;
             }
+            h3 {
+              font-weight: bold;
+            }
         </style>
         <div class="page landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
             <t t-call="budget_appropriation_summary.report_council_header"/>
-            <div class="text-center" style="font-weight: bold">
+            <div class="text-center">
                 <h3>สรุปเปรียบเทียบประมาณการรายรับ</h3>
                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                 <h3>จําแนกตามประเภท</h3>

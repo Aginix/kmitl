@@ -6,24 +6,27 @@
             .f4-p table tbody.category tr:last-child td {
                 padding-bottom: 12pt;
             }
+            table.table td {
+                vertical-align: middle;
+            }
         </style>
         <div class="page f4-p" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
-            <t t-call="budget_appropriation_summary.report_print_button" />
-            <t t-call="budget_appropriation_summary.report_council_header" />
-            <div class="text-center mt-5 mb-3" style="font-weight: bold">
-                <h3>
+            <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_council_header"/>
+            <div class="text-center mb-3">
+                <h3 class="fw-bold">
                     สรุปประมาณการรายรับ ประจําปีงบประมาณ
-                    <t t-esc="o.account_fiscal_year_id.name" />
+                    <t t-esc="o.account_fiscal_year_id.name"/>
                 </h3>
-                <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
+                <h3 class="fw-bold">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
             </div>
             <div>
                 <table class="table table-sm table-borderless">
                     <thead>
                         <tr>
-                            <th style="width: 60%" />
-                            <th style="width: 20%" />
-                            <th style="width: 20%" />
+                            <th/>
+                            <th style="width: 86pt"/>
+                            <th style="width: 102pt !important"/>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,61 +37,52 @@
                         </tr>
                         <tr style="font-weight: bold">
                             <td class="ps-3" colspan="2">1. รายรับจากรัฐบาล</td>
-                            <td class="text-end">0 บาท</td>
+                            <td class="text-end" contenteditable="false">0 บาท</td>
                         </tr>
                         <tr style="font-weight: bold">
                             <td class="ps-3" colspan="2">2. เงินรายได้</td>
-                            <td class="text-end">
-                                <t t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['total_amount'])" />
-                                บาท
+                            <td class="text-end" contenteditable="false">
+                                <t t-out="'{0:,.2f} บาท'.format(o.f4p_revenue_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
-                    </tbody>
-                    <t t-set="row_no" t-value="1" />
-                    <t t-foreach="o.f4p_revenue_data['categories']" t-as="row">
-                        <tbody class="category">
+                        <t t-set="row_no" t-value="1"/>
+                        <t t-foreach="o.f4p_revenue_data['categories']" t-as="row">
                             <tr>
-                                <td class="ps-4" colspan="3">
-                                    <strong>
-                                        <u>
-                                            2.<t t-esc="row_no" />
-                                            <t t-esc="row['name']" />
-                                        </u>
-                                    </strong>
+                                <td class="ps-4 fw-bold" colspan="3">
+                                  <t t-esc="'2.{} {}'.format(row_no, row['name'])"/>
                                 </td>
                             </tr>
                             <t t-foreach="row['departments']" t-as="dept">
                                 <tr class="department">
                                     <td class="ps-5">
-                                        - <t t-esc="dept['name']" />
+                                        <t t-esc="'- {}'.format(dept['name'])"/>
                                     </td>
-                                    <td class="text-end">
-                                        <t t-out="'{0:,.2f}'.format(dept['amount'])" />
+                                    <td class="text-end" contenteditable="false">
+                                        <t t-out="'{0:,.2f}'.format(dept['amount'])"/>
                                     </td>
-                                    <td />
+                                    <td/>
                                 </tr>
                             </t>
                             <tr>
                                 <td class="text-end">รวม</td>
-                                <td class="text-end">
-                                    <strong>
-                                        <u><t t-out="'{0:,.2f}'.format(row['amount'])" /></u>
-                                    </strong>
+                                <td class="text-end fw-bold" style="border-bottom: 1px solid black;" contenteditable="false">
+                                    <t t-out="'{0:,.2f}'.format(row['amount'])"/>
                                 </td>
-                                <td />
+                                <td/>
                             </tr>
-                        </tbody>
-                        <t t-set="row_no" t-value="row_no + 1" />
-                    </t>
-                    <tbody>
+                            <tr>
+                              <td style="height: 20pt;"/>
+                            </tr>
+                          <t t-set="row_no" t-value="row_no + 1"/>
+                        </t>
                         <tr>
-                            <td class="text-end">
-                                <strong>รวมรายรับทั้งสิ้น</strong>
+                            <td class="text-end fw-bold">
+                                รวมรายรับทั้งสิ้น
                             </td>
-                            <td class="text-end" style="text-decoration: underline; text-decoration-style: double; font-weight: bold;">
-                                <t t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['total_amount'])" />
+                            <td class="text-end fw-bold" style="border-bottom: 3px double black;" contenteditable="false">
+                                <t t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['total_amount'])"/>
                             </td>
-                            <td />
+                            <td/>
                         </tr>
                     </tbody>
                 </table>

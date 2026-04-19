@@ -35,7 +35,7 @@
 
     <!-- Preview styles for A4 paper page effect (set is_landscape before calling) -->
     <template id="report_preview_styles">
-        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)"/>
         <t t-if="is_html_preview">
             <style>
                 html, body {
@@ -104,7 +104,7 @@
                         padding: 0 !important;
                     }
                     .page {
-                        width: auto !important;
+                        width: 100% !important;
                         min-height: auto !important;
                         max-width: none !important;
                         margin: 0 !important;
@@ -112,6 +112,9 @@
                         box-shadow: none !important;
                         border-radius: 0 !important;
                         page-break-after: always;
+                    }
+                    .page.landscape {
+                      width: 297mm !important;
                     }
                     .page:last-child {
                         page-break-after: auto;
@@ -124,14 +127,22 @@
             <t t-if="is_landscape">
                 <style>
                     @media print {
-                        @page { size: A4 landscape; margin: 8mm 15mm; }
+                        @page {
+                          size: A4 landscape;
+                          margin: 8mm 15mm;
+                          padding: 24mm 0mm !important;
+                        }
                     }
                 </style>
             </t>
             <t t-else="">
                 <style>
                     @media print {
-                        @page { size: A4 portrait; margin: 15mm 8mm; }
+                        @page {
+                          size: A4 portrait;
+                          margin: 0 !important;
+                          padding: 14mm 8mm !important;
+                        }
                     }
                 </style>
             </t>
