@@ -64,7 +64,7 @@
                         <field name="name"/>
                         <field name="active"/>
                     </group>
-                    <separator string="รายการ"/>
+                    <separator string="List"/>
                     <field name="line_ids">
                         <tree editable="bottom">
                             <field name="sequence" widget="handle"/>

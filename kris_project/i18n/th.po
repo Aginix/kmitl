@@ -592,8 +592,8 @@ msgstr "กรุณากำหนดงวดงานอย่างน้อ
 #. odoo-python
 #: code:addons/kris_project/models/kris_project.py:0
 #, python-format
-msgid "กรุณาเลือกแม่แบบการจัดสรรก่อน"
-msgstr ""
+msgid "Please select an allocation template first."
+msgstr "กรุณาเลือกแม่แบบการจัดสรรก่อน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__allocation_ids
@@ -659,13 +659,13 @@ msgstr "ข้อมูลงวด"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "ข้อมูลสัญญา"
-msgstr ""
+msgid "Contract Information"
+msgstr "ข้อมูลสัญญา"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "ข้อมูลโครงการ"
-msgstr ""
+msgid "Project Information"
+msgstr "ข้อมูลโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__revenue_remaining
@@ -1100,8 +1100,8 @@ msgstr "รับเงินแล้ว (รวม)"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template__line_ids
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_allocation_template_form
-msgid "รายการ"
-msgstr ""
+msgid "List"
+msgstr "รายการ"
 
 #. module: kris_project
 #: model:ir.actions.act_window,name:kris_project.action_kris_project_allocation_item
@@ -1167,8 +1167,8 @@ msgstr ""
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "วัน"
-msgstr ""
+msgid "Day"
+msgstr "วัน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__due_date
@@ -1231,22 +1231,22 @@ msgstr ""
 #. odoo-python
 #: code:addons/kris_project/models/kris_project_exception.py:0
 #, python-format
-msgid "สามารถปิดได้เฉพาะโครงการที่ยืนยันแล้วเท่านั้น"
-msgstr ""
+msgid "Only confirmed projects can be closed."
+msgstr "สามารถปิดได้เฉพาะโครงการที่ยืนยันแล้วเท่านั้น"
 
 #. module: kris_project
 #. odoo-python
 #: code:addons/kris_project/models/kris_project_exception.py:0
 #, python-format
-msgid "สามารถยืนยันได้เฉพาะโครงการที่อยู่ในสถานะร่างเท่านั้น"
-msgstr ""
+msgid "Only projects that are in draft status can be confirmed."
+msgstr "สามารถยืนยันได้เฉพาะโครงการที่อยู่ในสถานะร่างเท่านั้น"
 
 #. module: kris_project
 #. odoo-python
 #: code:addons/kris_project/models/kris_project_exception.py:0
 #, python-format
-msgid "สามารถรีเซ็ตได้เฉพาะโครงการที่ถูกยกเลิกเท่านั้น"
-msgstr ""
+msgid "Only canceled projects can be reset."
+msgstr "สามารถรีเซ็ตได้เฉพาะโครงการที่ถูกยกเลิกเท่านั้น"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__department_id
@@ -1421,5 +1421,5 @@ msgstr "ไม่มีงวดงาน"
 #. odoo-python
 #: code:addons/kris_project/models/kris_project_exception.py:0
 #, python-format
-msgid "ไม่สามารถยกเลิกโครงการที่เสร็จสิ้นแล้วได้"
-msgstr ""
+msgid "Completed projects cannot be canceled."
+msgstr "ไม่สามารถยกเลิกโครงการที่เสร็จสิ้นแล้วได้"

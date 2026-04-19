@@ -404,7 +404,7 @@ class KrisProject(models.Model):
         """Apply the selected allocation template to create allocation lines."""
         self.ensure_one()
         if not self.allocation_template_id:
-            raise UserError(_("กรุณาเลือกแม่แบบการจัดสรรก่อน"))
+            raise UserError(_("Please select an allocation template first."))
         base_amount = self.maintenance_deduction_amount
         self.allocation_line_ids.unlink()
         self.allocation_line_ids = [

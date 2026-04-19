@@ -32,7 +32,7 @@ class KrisProject(models.Model):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(
-                    _("สามารถยืนยันได้เฉพาะโครงการที่อยู่ในสถานะร่างเท่านั้น")
+                    _("Only projects that are in draft status can be confirmed.")
                 )
         if self.detect_exceptions() and not self.ignore_exception:
             return self.with_context(
@@ -44,7 +44,7 @@ class KrisProject(models.Model):
         for rec in self:
             if rec.state != "confirmed":
                 raise UserError(
-                    _("สามารถปิดได้เฉพาะโครงการที่ยืนยันแล้วเท่านั้น")
+                    _("Only confirmed projects can be closed.")
                 )
         if self.detect_exceptions() and not self.ignore_exception:
             return self.with_context(
@@ -56,7 +56,7 @@ class KrisProject(models.Model):
         for rec in self:
             if rec.state == "done":
                 raise UserError(
-                    _("ไม่สามารถยกเลิกโครงการที่เสร็จสิ้นแล้วได้")
+                    _("Completed projects cannot be canceled.")
                 )
         if self.detect_exceptions() and not self.ignore_exception:
             return self.with_context(
@@ -68,7 +68,7 @@ class KrisProject(models.Model):
         for rec in self:
             if rec.state != "cancel":
                 raise UserError(
-                    _("สามารถรีเซ็ตได้เฉพาะโครงการที่ถูกยกเลิกเท่านั้น")
+                    _("Only canceled projects can be reset.")
                 )
         self.write({
             "state": "draft",

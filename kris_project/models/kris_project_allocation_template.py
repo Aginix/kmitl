@@ -24,7 +24,7 @@ class KrisProjectAllocationTemplate(models.Model):
     line_ids = fields.One2many(
         comodel_name="kris.project.allocation.template.line",
         inverse_name="template_id",
-        string="รายการ",
+        string="List",
     )
     active = fields.Boolean(string="Active", default=True)
 

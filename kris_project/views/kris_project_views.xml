@@ -112,7 +112,7 @@
                     </div>
                     <field name="currency_id" invisible="1"/>
                     <group>
-                        <group string="ข้อมูลโครงการ">
+                        <group string="Project Information">
                             <field
                                 name="project_category_id"
                                 widget="selection"
@@ -146,7 +146,7 @@
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                         </group>
-                        <group string="ข้อมูลสัญญา">
+                        <group string="Contract Information">
                             <field
                                 name="contract_number"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
@@ -161,7 +161,7 @@
                             />
                             <label for="project_duration"/>
                             <div>
-                                <field name="project_duration" class="oe_inline"/> วัน
+                                <field name="project_duration" class="oe_inline"/> Day 
                             </div>
                             <field
                                 name="account_fiscal_year_id"
