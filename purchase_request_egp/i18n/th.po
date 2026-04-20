@@ -97,3 +97,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request_egp.field_purchase_request__egp_project_id
 msgid "เลขที่โครงการ e-GP"
 msgstr ""
+
+#. module: purchase_request_egp
+#: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form
+msgid "Reject"
+msgstr "ตีกลับ"
