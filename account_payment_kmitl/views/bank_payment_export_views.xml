@@ -8,9 +8,10 @@
         <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_form"/>
         <field name="arch" type="xml">
 
-            <!-- Add fiscal year field to right_header group -->
+            <!-- Add fiscal year and payment batch fields to right_header group -->
             <xpath expr="//group[@name='right_header']" position="inside">
                 <field name="account_fiscal_year_id" readonly="1"/>
+                <field name="payment_batch_id" readonly="1"/>
             </xpath>
 
         </field>
@@ -39,6 +40,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='total_amount']" position="after">
                 <field name="account_fiscal_year_id" optional="show"/>
+                <field name="payment_batch_id" optional="hide"/>
             </xpath>
         </field>
     </record>
@@ -54,6 +56,11 @@
                     string="Fiscal Year"
                     name="group_by_fiscal_year"
                     context="{'group_by': 'account_fiscal_year_id'}"
+                />
+                <filter
+                    string="Payment Batch"
+                    name="group_by_payment_batch"
+                    context="{'group_by': 'payment_batch_id'}"
                 />
             </xpath>
         </field>

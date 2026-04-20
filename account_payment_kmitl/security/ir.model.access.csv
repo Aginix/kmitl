@@ -3,3 +3,6 @@ access_kmitl_payment_type_all,kmitl.payment.type.all,model_kmitl_payment_type,ba
 access_kmitl_payment_type_manager,kmitl.payment.type.manager,model_kmitl_payment_type,account.group_account_manager,1,1,1,1
 access_account_payment_budget_user,account.payment budget user,account.model_account_payment,budget.group_budget_user,1,0,0,0
 access_account_payment_budget_manager,account.payment budget manager,account.model_account_payment,budget.group_budget_manager,1,1,1,0
+access_payment_batch_user,payment.batch.user,model_payment_batch,base.group_user,1,0,0,0
+access_payment_batch_officer,payment.batch.officer,model_payment_batch,group_payment_batch_officer,1,1,1,0
+access_payment_batch_manager,payment.batch.manager,model_payment_batch,group_payment_batch_manager,1,1,1,1

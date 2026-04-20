@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form View -->
+    <record id="payment_batch_view_form" model="ir.ui.view">
+        <field name="name">payment.batch.form</field>
+        <field name="model">payment.batch</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_submit"
+                        string="Submit"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        groups="account_payment_kmitl.group_payment_batch_officer"
+                    />
+                    <button
+                        name="action_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        attrs="{'invisible': [('state', 'not in', ['cancel', 'submitted'])]}"
+                        groups="account_payment_kmitl.group_payment_batch_officer"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        attrs="{'invisible': [('state', 'not in', ['draft', 'submitted', 'approved'])]}"
+                        groups="account_payment_kmitl.group_payment_batch_officer"
+                        confirm="Are you sure you want to cancel this payment batch?"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,submitted,approved,done"
+                    />
+                </header>
+
+                <!-- Tier validation fields and alerts -->
+                <field name="need_validation" invisible="1"/>
+                <field name="validated" invisible="1"/>
+                <field name="rejected" invisible="1"/>
+                <field name="can_review" invisible="1"/>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': ['|', '|', '|',
+                        ('validated', '=', True),
+                        ('state', '!=', 'submitted'),
+                        ('rejected', '=', True),
+                        ('review_ids', '=', [])]}"
+                    style="margin-bottom:0px;"
+                >
+                    <p>
+                        <i class="fa fa-info-circle"/>
+                        รอการอนุมัติ
+                        <button
+                            name="validate_tier"
+                            string="Approve"
+                            attrs="{'invisible': [('can_review', '=', False)]}"
+                            type="object"
+                            class="oe_inline oe_button btn-success"
+                            icon="fa-thumbs-up"
+                        />
+                        <button
+                            name="reject_tier"
+                            string="Reject"
+                            attrs="{'invisible': [('can_review', '=', False)]}"
+                            type="object"
+                            class="oe_inline oe_button btn-danger"
+                            icon="fa-thumbs-down"
+                        />
+                    </p>
+                </div>
+                <div
+                    class="alert alert-success"
+                    role="alert"
+                    attrs="{'invisible': ['|', '|',
+                        ('validated', '!=', True),
+                        ('state', '!=', 'submitted'),
+                        ('review_ids', '=', [])]}"
+                    style="margin-bottom:0px;"
+                >
+                    <p><i class="fa fa-thumbs-up"/> อนุมัติแล้ว</p>
+                </div>
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    attrs="{'invisible': ['|', '|',
+                        ('rejected', '!=', True),
+                        ('state', '!=', 'submitted'),
+                        ('review_ids', '=', [])]}"
+                    style="margin-bottom:0px;"
+                >
+                    <p><i class="fa fa-thumbs-down"/> ไม่อนุมัติ</p>
+                </div>
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="left_header">
+                            <field name="description" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="date"/>
+                            <field name="account_fiscal_year_id" readonly="1"/>
+                        </group>
+                        <group name="right_header">
+                            <field name="total_amount"/>
+                            <field name="export_count"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Bank Payment Exports" name="exports">
+                            <field
+                                name="bank_payment_export_ids"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            >
+                                <tree editable="bottom" create="1" delete="1">
+                                    <field name="name" readonly="1"/>
+                                    <field name="bank" readonly="1"/>
+                                    <field name="template_id" readonly="1"/>
+                                    <field name="effective_date" readonly="1"/>
+                                    <field name="total_amount" sum="Total"/>
+                                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'confirm'" decoration-success="state == 'done'" decoration-danger="state in ('cancel', 'reject')"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Tier validation reviews -->
+                <field
+                    name="review_ids"
+                    widget="tier_validation"
+                    attrs="{'invisible': [('review_ids', '=', [])]}"
+                />
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="payment_batch_view_tree" model="ir.ui.view">
+        <field name="name">payment.batch.tree</field>
+        <field name="model">payment.batch</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="description"/>
+                <field name="date"/>
+                <field name="total_amount" sum="Total"/>
+                <field name="export_count"/>
+                <field name="account_fiscal_year_id" optional="show"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'submitted'"
+                    decoration-success="state in ('approved', 'done')"
+                    decoration-danger="state == 'cancel'"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="payment_batch_view_search" model="ir.ui.view">
+        <field name="name">payment.batch.search</field>
+        <field name="model">payment.batch</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="description"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="Approved" name="filter_approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Fiscal Year" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter string="Date" name="group_by_date" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_payment_batch" model="ir.actions.act_window">
+        <field name="name">รอบการจ่ายเงิน</field>
+        <field name="res_model">payment.batch</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                สร้างรอบการจ่ายเงินใหม่
+            </p>
+        </field>
+    </record>
+
+</odoo>

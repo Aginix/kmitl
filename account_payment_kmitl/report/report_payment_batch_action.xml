@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_payment_batch" model="ir.actions.report">
+        <field name="name">รายงานรอบการจ่ายเงิน</field>
+        <field name="model">payment.batch</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">account_payment_kmitl.report_payment_batch</field>
+        <field name="report_file">account_payment_kmitl.report_payment_batch</field>
+        <field name="binding_model_id" ref="model_payment_batch"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_bank_payment_export_report"/>
+    </record>
+
+</odoo>

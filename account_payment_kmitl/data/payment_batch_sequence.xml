@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="seq_payment_batch" model="ir.sequence">
+        <field name="name">Payment Batch</field>
+        <field name="code">payment.batch</field>
+        <field name="prefix">PB/%(range_year)s/</field>
+        <field name="padding">3</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="implementation">no_gap</field>
+        <field name="use_date_range">True</field>
+    </record>
+
+</odoo>

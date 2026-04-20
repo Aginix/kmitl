@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_payment_batch">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
+                    <t t-set="currency" t-value="o.currency_id"/>
+
+                    <style>
+                        * {
+                            font-family: "THSarabunNew", Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        p, span, div {
+                            font-size: 16pt;
+                            line-height: 1.2;
+                        }
+                        .section-header {
+                            background-color: #f0f0f0;
+                            padding: 4px 8px;
+                            font-weight: bold;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <!-- Company Logo -->
+                        <div style="position: absolute; top: 0px; left: 0px">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo"/>
+                        </div>
+
+                        <div class="oe_structure"/>
+                        <div style="height: 1px"/>
+
+                        <div class="page-header mt-5 mb-5">
+                            <h3 class="text-center fw-bolder" style="line-height: 1.575">
+                                รายงานรอบการจ่ายเงิน
+                            </h3>
+                        </div>
+
+                        <div class="my-5"/>
+
+                        <!-- Document Information -->
+                        <div class="row pt-8">
+                            <div class="col-8">
+                                เลขที่ <span class="ms-2 fw-normal" t-out="o.name"/>
+                            </div>
+                            <div class="col">
+                                วันที่ <span class="ms-2 fw-normal" t-field="o.date"/>
+                            </div>
+                        </div>
+
+                        <div class="row" t-if="o.description">
+                            <div class="col">
+                                รายละเอียด <span class="ms-2" t-out="o.description"/>
+                            </div>
+                        </div>
+
+                        <div class="row" t-if="o.account_fiscal_year_id">
+                            <div class="col">
+                                ปีงบประมาณ <span class="ms-2" t-out="o.account_fiscal_year_id.name"/>
+                            </div>
+                        </div>
+
+                        <div class="my-4"/>
+
+                        <!-- Per-Bank Sections -->
+                        <t t-set="grand_row_no" t-value="1"/>
+                        <t t-foreach="o.bank_payment_export_ids.filtered(lambda e: e.state != 'cancel')" t-as="export">
+
+                            <!-- Bank Section Header -->
+                            <div class="section-header my-2">
+                                <t t-out="export.template_id.name or dict(export._fields['bank'].selection).get(export.bank, '')"/>
+                                <span class="ms-2">(<t t-out="export.name"/>)</span>
+                            </div>
+
+                            <table class="table table-bordered table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="width: 5%">ลำดับ</th>
+                                        <th class="text-center" style="width: 15%">เลขที่รายการ</th>
+                                        <th class="text-center" style="width: 25%">ผู้รับเงิน</th>
+                                        <th class="text-center" style="width: 20%">ธนาคาร/เลขที่บัญชี</th>
+                                        <th class="text-center" style="width: 20%">บัญชีงบประมาณ</th>
+                                        <th class="text-end" style="width: 15%">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="line_no" t-value="1"/>
+                                    <t t-foreach="export.export_line_ids.filtered(lambda l: l.state != 'reject')" t-as="line">
+                                        <tr>
+                                            <td class="text-center" t-out="line_no"/>
+                                            <td t-out="line.payment_id.name"/>
+                                            <td t-out="line.payment_partner_id.name"/>
+                                            <td>
+                                                <t t-if="line.payment_partner_bank_id">
+                                                    <span t-out="line.payment_partner_bank_id.bank_id.name"/>
+                                                    <br/>
+                                                    <span t-out="line.payment_partner_bank_id.acc_number"/>
+                                                </t>
+                                            </td>
+                                            <td t-out="line.payment_id.budget_account_id.display_name or ''"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(line.payment_amount)"/>
+                                        </tr>
+                                        <t t-set="line_no" t-value="line_no + 1"/>
+                                        <t t-set="grand_row_no" t-value="grand_row_no + 1"/>
+                                    </t>
+
+                                    <!-- Bank Subtotal -->
+                                    <tr class="fw-bold">
+                                        <td colspan="5" class="text-center">
+                                            รวม <t t-out="export.template_id.name or dict(export._fields['bank'].selection).get(export.bank, '')"/>
+                                        </td>
+                                        <td class="text-end" t-out="'{0:,.2f}'.format(export.total_amount)"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <div class="my-3"/>
+
+                        <!-- Grand Total -->
+                        <table class="table table-bordered table-sm mb-4">
+                            <tr class="fw-bold" style="font-size: 18pt">
+                                <td class="text-center" style="width: 50%">
+                                    (<t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.total_amount)"/>)
+                                </td>
+                                <td class="text-center" style="width: 35%">รวมทั้งสิ้น</td>
+                                <td class="text-end" style="width: 15%" t-out="'{0:,.2f}'.format(o.total_amount)"/>
+                            </tr>
+                        </table>
+
+                        <!-- Summary by Dimension -->
+                        <t t-set="all_payments" t-value="o.bank_payment_export_ids.filtered(lambda e: e.state != 'cancel').mapped('export_line_ids').filtered(lambda l: l.state != 'reject').mapped('payment_id')"/>
+
+                        <!-- Summary by Budget Account -->
+                        <t t-set="budget_accounts" t-value="all_payments.mapped('budget_account_id')"/>
+                        <t t-if="budget_accounts">
+                            <div class="section-header my-2">สรุปตามบัญชีงบประมาณ</div>
+                            <table class="table table-bordered table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>บัญชีงบประมาณ</th>
+                                        <th class="text-end" style="width: 20%">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="budget_accounts" t-as="ba">
+                                        <tr>
+                                            <td t-out="ba.display_name"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(sum(all_payments.filtered(lambda p: p.budget_account_id == ba).mapped('amount')))"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Summary by Department -->
+                        <t t-set="departments" t-value="all_payments.mapped('department_analytic_id')"/>
+                        <t t-if="departments">
+                            <div class="section-header my-2">สรุปตามส่วนงาน</div>
+                            <table class="table table-bordered table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>ส่วนงาน</th>
+                                        <th class="text-end" style="width: 20%">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="departments" t-as="dept">
+                                        <tr>
+                                            <td t-out="dept.display_name"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(sum(all_payments.filtered(lambda p: p.department_analytic_id == dept).mapped('amount')))"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Summary by Fund -->
+                        <t t-set="funds" t-value="all_payments.mapped('fund_analytic_id')"/>
+                        <t t-if="funds">
+                            <div class="section-header my-2">สรุปตามกองทุน</div>
+                            <table class="table table-bordered table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>กองทุน</th>
+                                        <th class="text-end" style="width: 20%">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="funds" t-as="fund">
+                                        <tr>
+                                            <td t-out="fund.display_name"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(sum(all_payments.filtered(lambda p: p.fund_analytic_id == fund).mapped('amount')))"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Summary by Source -->
+                        <t t-set="sources" t-value="all_payments.mapped('source_analytic_id')"/>
+                        <t t-if="sources">
+                            <div class="section-header my-2">สรุปตามแหล่งเงิน</div>
+                            <table class="table table-bordered table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>แหล่งเงิน</th>
+                                        <th class="text-end" style="width: 20%">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="sources" t-as="source">
+                                        <tr>
+                                            <td t-out="source.display_name"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(sum(all_payments.filtered(lambda p: p.source_analytic_id == source).mapped('amount')))"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Summary by Activity -->
+                        <t t-set="activities" t-value="all_payments.mapped('activity_analytic_id')"/>
+                        <t t-if="activities">
+                            <div class="section-header my-2">สรุปตามด้าน/แผนงาน/กิจกรรม</div>
+                            <table class="table table-bordered table-sm mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>ด้าน/แผนงาน/กิจกรรม</th>
+                                        <th class="text-end" style="width: 20%">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="activities" t-as="activity">
+                                        <tr>
+                                            <td t-out="activity.display_name"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(sum(all_payments.filtered(lambda p: p.activity_analytic_id == activity).mapped('amount')))"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <div class="my-4"/>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-4 text-center">
+                                <div class="my-5">
+                                    <div>ลงชื่อ ........................................</div>
+                                    <div class="my-2">
+                                        (<span t-out="o.create_uid.name"/>)
+                                    </div>
+                                    <div class="fw-bold">ผู้จัดทำ</div>
+                                    <div class="mt-2">
+                                        วันที่ ......../......../.........
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="my-5">
+                                    <div>ลงชื่อ ........................................</div>
+                                    <div class="my-2">
+                                        ( .......................................... )
+                                    </div>
+                                    <div class="fw-bold">ผู้ตรวจสอบ</div>
+                                    <div class="mt-2">
+                                        วันที่ ......../......../.........
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="my-5">
+                                    <div>ลงชื่อ ........................................</div>
+                                    <div class="my-2">
+                                        ( .......................................... )
+                                    </div>
+                                    <div class="fw-bold">ผู้อนุมัติ</div>
+                                    <div class="mt-2">
+                                        วันที่ ......../......../.........
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
