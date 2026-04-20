@@ -1195,6 +1195,7 @@ msgstr "วันที่สิ้นสุดสัญญา"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__date_contract_start
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 msgid "Date Start"
 msgstr "วันที่เริ่มต้นสัญญา"
 
@@ -1273,7 +1274,7 @@ msgstr "หมวดหมู่"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__note
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "์Note"
+msgid "Note"
 msgstr "หมายเหตุ"
 
 #. module: kris_project
