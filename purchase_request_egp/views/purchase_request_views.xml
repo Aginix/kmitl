@@ -56,7 +56,7 @@
                 />
                 <!-- Add reject button on state approved when EGP -->
                 <button
-                    name="button_rejected"
+                    name="button_rejected_egp"
                     attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'approved')]}"
                     string="Reject"
                     type="object"

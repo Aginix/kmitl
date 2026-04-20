@@ -104,3 +104,6 @@ class PurchaseRequest(models.Model):
         res = super().button_draft()
         self.write({"egp_status": False})
         return res
+
+    def button_rejected_egp(self):
+        return self.button_rejected()

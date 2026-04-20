@@ -30,7 +30,7 @@ class PurchaseRequestApproval(models.Model):
         comodel_name="purchase.request",
         string="Purchase Request",
         required=True,
-        # readonly=True,
+        readonly=True,
         ondelete="cascade",
         index=True,
         check_company=True,
@@ -122,14 +122,6 @@ class PurchaseRequestApproval(models.Model):
     def button_draft(self):
         return self.write({"state": "draft"})
 
-    # reject in PR aswell
-    def button_rejected(self):
-        for rec in self:
-            rec.state = "rejected"
-            if rec.request_id:
-                rec.request_id.button_rejected()
-        return True
-
     def button_to_approve(self):
         for rec in self:
             rec.state = "to_approve"
@@ -204,6 +196,8 @@ class PurchaseRequestApproval(models.Model):
             )
             rec.request_id.message_post(body=message, message_type="comment")
             rec.write({"state": "rejected"})
+            if rec.request_id:
+                rec.request_id.button_rejected()
 
     def copy(self, default=None):
         default = dict(default or {})
