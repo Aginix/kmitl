@@ -257,7 +257,7 @@ def _process_sarabun_approve(env, origin_record, admin_user, department):
 
 def _create_pr_with_line(env, case, admin_user, fiscal_year, budget_account,
                          dept, department, operating_unit, admin_employee,
-                         supervisor_employee):
+                         supervisor_employee, wa_committee_employees=None):
     """Create a purchase request with line and committees."""
     activity = env.ref(case["activity"])
     fund = env.ref(case["fund"])
@@ -311,6 +311,19 @@ def _create_pr_with_line(env, case, admin_user, fiscal_year, budget_account,
             "phone": admin_employee.work_phone or "",
         }
     )
+
+    # Work acceptance committee members
+    for emp in wa_committee_employees or []:
+        env["procurement.committee"].create(
+            {
+                "request_id": pr.id,
+                "employee_id": emp.id,
+                "committee_type": "work_acceptance",
+                "approve_role": "committee",
+                "name": emp.name,
+                "phone": emp.work_phone or "",
+            }
+        )
 
     # Work supervisor: separate employee (constraint forbids same as work_acceptance)
     env["procurement.committee"].create(
@@ -403,6 +416,14 @@ def _create_e2e_purchase_demo(env):
     # Separate employee for work_supervisor (constraint forbids same as work_acceptance)
     supervisor_employee = env.ref("kmitl_demo.employee_demo_008")
 
+    # Work acceptance committee members (คณะกรรมการตรวจรับพัสดุ)
+    wa_committee_employees = (
+        env.ref("kmitl_demo.employee_demo_012")   # ชนิดา
+        + env.ref("kmitl_demo.employee_demo_011")  # พิชัย
+        + env.ref("kmitl_demo.employee_demo_020")  # ปิยะนุช
+        + env.ref("kmitl_demo.employee_demo_018")  # สุดารัตน์
+    )
+
     # Create budget appropriations for each financial dimension group
     for activity_ref, fund_ref, source_ref, amount in BUDGET_GROUPS:
         _create_budget_appropriation(
@@ -429,6 +450,7 @@ def _create_e2e_purchase_demo(env):
             operating_unit=operating_unit,
             admin_employee=admin_employee,
             supervisor_employee=supervisor_employee,
+            wa_committee_employees=wa_committee_employees,
         )
 
         if pr.is_egp:
