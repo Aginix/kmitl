@@ -10,14 +10,6 @@
                     <t t-set="skip_orientation_page" t-value="True" />
                     <t t-call="budget_appropriation_summary.report_preview_styles" />
 
-                    <t t-if="o.env.context.get('html_preview', False)">
-                        <a t-attf-href="/budget_appropriation_summary/#{o.id}/pdf"
-                           target="_blank" class="print-btn" contenteditable="false">
-                            <t t-call="budget_appropriation_summary.report_print_icon" />
-                            พิมพ์รายงาน PDF
-                        </a>
-                    </t>
-
                     <!-- F2 Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามประเภท -->
                     <t t-call="budget_appropriation_summary.report_f2_revenue_content" />
 
