@@ -16,7 +16,7 @@
             <div>
                 <table class="table table-sm table-borderless">
                     <thead>
-                        <tr>
+                        <tr style="height:0; visibility:collapse; line-height:0;">
                             <th style="width: auto;"/>
                             <th style="width: 96pt;"/>
                             <th style="width: 96pt;"/>
