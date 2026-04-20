@@ -30,7 +30,7 @@ class PurchaseRequestApproval(models.Model):
         comodel_name="purchase.request",
         string="Purchase Request",
         required=True,
-        readonly=True,
+        # readonly=True,
         ondelete="cascade",
         index=True,
         check_company=True,
