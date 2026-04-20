@@ -755,9 +755,7 @@ class BudgetAppropriationSummaryController(http.Controller):
                 ],
             )
         elif report_type == "pdf":
-            pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
-                report.id, [record.id]
-            )
+            pdf_content = record._get_merged_pdf()
             pdfhttpheaders = [
                 ("Content-Type", "application/pdf"),
                 ("Content-Length", len(pdf_content)),

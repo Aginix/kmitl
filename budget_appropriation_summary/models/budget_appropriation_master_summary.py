@@ -1,5 +1,8 @@
+import base64
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools.pdf import merge_pdf
 
 
 class BudgetAppropriationMasterSummary(models.Model):
@@ -315,11 +318,52 @@ class BudgetAppropriationMasterSummary(models.Model):
             "target": "new",
         }
 
+    PRINT_REPORT_ORDER = [
+        "action_report_f2_revenue",
+        "action_report_f4p_revenue",
+        "action_report_f4w_revenue",
+        "action_report_f3w_f6w_revenue",
+        "action_report_f7w_expense",
+        "action_report_f5p_expense",
+        "action_report_f5w_expense",
+        "action_report_f8w_expense",
+        "action_report_f9w_expense",
+        "action_report_f11w_expense",
+        "action_report_f10w_expense",
+    ]
+
+    def _get_merged_pdf(self):
+        """Render each sub-report with its own paperformat and merge into one PDF.
+
+        Using merge_pdf preserves each report's orientation (portrait/landscape)
+        and starts every sub-report on a new page.
+        """
+        self.ensure_one()
+        pdfs = []
+        for ref in self.PRINT_REPORT_ORDER:
+            report = self.env.ref(f"budget_appropriation_summary.{ref}")
+            pdf_content, _ = report._render_qweb_pdf(report.id, self.ids)
+            pdfs.append(pdf_content)
+        return merge_pdf(pdfs)
+
     def action_print_report(self):
         self.ensure_one()
-        return self.env.ref(
-            "budget_appropriation_summary.action_report_master_summary"
-        ).report_action(self)
+        merged = self._get_merged_pdf()
+        attachment = self.env["ir.attachment"].create(
+            {
+                "name": f"{self.name or 'master-summary'}.pdf",
+                "type": "binary",
+                "datas": base64.b64encode(merged),
+                "res_model": self._name,
+                "res_id": self.id,
+                "mimetype": "application/pdf",
+            }
+        )
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/web/content/{attachment.id}?download=false",
+            "target": "new",
+        }
 
     # --- Individual report actions ---
 
