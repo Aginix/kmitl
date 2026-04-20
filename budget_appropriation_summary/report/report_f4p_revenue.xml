@@ -13,13 +13,14 @@
         <div class="page f4-p" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
             <t t-call="budget_appropriation_summary.report_council_header"/>
-            <div class="text-center mb-3">
+            <div class="text-center">
                 <h3 class="fw-bold">
                     สรุปประมาณการรายรับ ประจําปีงบประมาณ
                     <t t-esc="o.account_fiscal_year_id.name"/>
                 </h3>
                 <h3 class="fw-bold">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
             </div>
+            <div style="height: 24pt;"/>
             <div>
                 <table class="table table-sm table-borderless">
                     <thead>

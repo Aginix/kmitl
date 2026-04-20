@@ -3,77 +3,84 @@
     <!-- Partial template for F11-W content (reusable) -->
     <template id="report_f11w_expense_content">
         <style>
-            .f11w table {
-                font-size: 9pt;
-            }
-            .f11w table .column-name {
-                font-size: 8pt;
-            }
-            .f11w th, .f11w td {
-                padding: 2px 3px;
+            p,
+            span,
+            div {
+                font-size: 7.5pt;
+                line-height: 1.1;
             }
             .table {
                 border-color: #000 !important;
             }
-            .table > :not(:first-child) {
+            .table &gt; :not(:first-child) {
                 border-top: 0;
             }
             .table tbody td, .table tbody tr {
                 border-top: 0;
                 border-bottom: 0;
             }
+            h3 {
+              font-weight: bold;
+            }
         </style>
         <div class="page f11w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
-            <t t-call="budget_appropriation_summary.report_print_button" />
-            <t t-call="budget_appropriation_summary.report_council_header" />
-            <div class="text-center mt-5 mb-3" style="font-weight: bold">
+            <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_council_header"/>
+            <div class="text-center">
                 <h3>
-                    สรุปสัดส่วนประมาณการรายจ่าย ปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
+                    สรุปสัดส่วนประมาณการรายจ่าย ปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/>
                 </h3>
                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                 <h3>จําแนกตามหน่วยงานและกองทุน</h3>
             </div>
+            <div style="height: 24pt;"/>
             <div>
                 <table class="table table-sm table-bordered">
                     <thead>
+                        <tr style="height:0; visibility:collapse; line-height:0;">
+                            <th style="width: 80pt;"/>
+                            <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
+                                <th style="width: 30pt;"/>
+                                <th style="width: 18pt;"/>
+                            </t>
+                            <th style="width: 50pt;"/>
+                        </tr>
                         <tr>
                             <th class="text-center" rowspan="2" style="width: 10%;">หน่วยงาน</th>
                             <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
-                                <th class="text-center column-name" colspan="2"><t t-out="column['name']" /></th>
+                                <th class="text-center column-name" colspan="2"><t t-out="column['name']"/></th>
                             </t>
                             <th class="text-center" rowspan="2">รวมทุกกองทุน</th>
                         </tr>
                         <tr>
                             <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
                                 <th class="text-center">เงินรายได้</th>
-                                <th class="text-center" style="20pt;">%</th>
+                                <th class="text-center">%</th>
                             </t>
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="row_no" t-value="1" />
+                        <t t-set="row_no" t-value="1"/>
                         <t t-foreach="o.f11w_expense_data['departments']" t-as="department">
                             <tr>
                                 <td class="">
-                                    <t t-out="department['name']" />
+                                    <t t-out="department['name']"/>
                                 </td>
                                 <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
                                     <td class="text-end">
-                                        <t t-out="'{0:,.2f}'.format(department['columns'][column['code']]['amount'])" />
+                                        <t t-out="'{0:,.0f}'.format(department['columns'][column['code']]['amount'])"/>
                                     </td>
                                     <td class="text-center">
-                                        <t t-set="col_total" t-value="o.f11w_expense_data['column_totals'][column['code']]['amount']" />
-                                        <t t-set="pct" t-value="(department['columns'][column['code']]['amount'] / col_total * 100) if col_total else 0" />
-                                        <t t-out="'{0:.2f}'.format(pct)" />
+                                        <t t-set="col_total" t-value="o.f11w_expense_data['column_totals'][column['code']]['amount']"/>
+                                        <t t-set="pct" t-value="(department['columns'][column['code']]['amount'] / col_total * 100) if col_total else 0"/>
+                                        <t t-out="'{0:,.2f}'.format(pct)"/>
                                     </td>
                                 </t>
-                                <td class="text-end">
-                                    <strong>
-                                        <t t-out="'{0:,.2f}'.format(department['total']['amount'])" />
-                                    </strong>
+                                <td class="text-end fw-bold">
+                                      <t t-out="'{0:,.0f}'.format(department['total']['amount'])"/>
                                 </td>
                             </tr>
-                            <t t-set="row_no" t-value="row_no + 1" />
+                            <t t-set="row_no" t-value="row_no + 1"/>
                         </t>
                     </tbody>
                     <tfoot>
@@ -83,14 +90,14 @@
                             </td>
                             <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
                                 <td class="text-end">
-                                    <t t-out="'{0:,.2f}'.format(o.f11w_expense_data['column_totals'][column['code']]['amount'])" />
+                                    <t t-out="'{0:,.0f}'.format(o.f11w_expense_data['column_totals'][column['code']]['amount'])"/>
                                 </td>
                                 <td class="text-center">
                                     100.00
                                 </td>
                             </t>
                             <td class="text-end">
-                                <t t-out="'{0:,.2f}'.format(o.f11w_expense_data['summary']['total_amount'])" />
+                                <t t-out="'{0:,.0f}'.format(o.f11w_expense_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
                     </tfoot>
