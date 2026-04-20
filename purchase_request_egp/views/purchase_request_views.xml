@@ -54,6 +54,14 @@
                     attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}"
                     class="btn-primary"
                 />
+                <!-- Add reject button on state approved when EGP -->
+                <button
+                    name="button_rejected"
+                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'approved')]}"
+                    string="Reject"
+                    type="object"
+                    groups="purchase_request.group_purchase_request_manager"
+                />
             </xpath>
             <xpath expr="//button[@type='action']" position="after">
                 <field name="show_egp_create_purchase_order_button" invisible="1" />

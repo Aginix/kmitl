@@ -122,11 +122,12 @@ class PurchaseRequestApproval(models.Model):
     def button_draft(self):
         return self.write({"state": "draft"})
 
+    # reject in PR aswell
     def button_rejected(self):
         for rec in self:
             rec.state = "rejected"
             if rec.request_id:
-                rec.request_id.state = "rejected"
+                rec.request_id.button_rejected()
         return True
 
     def button_to_approve(self):
