@@ -342,16 +342,26 @@ class BudgetAppropriationMasterSummary(models.Model):
         pdfs = []
         for ref in self.PRINT_REPORT_ORDER:
             report = self.env.ref(f"budget_appropriation_summary.{ref}")
-            pdf_content, _ = report._render_qweb_pdf(report.id, self.ids)
+            pdf_content, __ = report._render_qweb_pdf(report.id, self.ids)
             pdfs.append(pdf_content)
         return merge_pdf(pdfs)
+
+    def _get_pdf_filename(self):
+        """Return an ASCII-safe PDF filename so it survives HTTP transport."""
+        self.ensure_one()
+        parts = [
+            self.source_analytic_id.code or "",
+            self.account_fiscal_year_id.name or "",
+        ]
+        slug = "-".join(p for p in parts if p) or str(self.id)
+        return f"budget-summary-{slug}.pdf"
 
     def action_print_report(self):
         self.ensure_one()
         merged = self._get_merged_pdf()
         attachment = self.env["ir.attachment"].create(
             {
-                "name": f"{self.name or 'master-summary'}.pdf",
+                "name": self._get_pdf_filename(),
                 "type": "binary",
                 "datas": base64.b64encode(merged),
                 "res_model": self._name,

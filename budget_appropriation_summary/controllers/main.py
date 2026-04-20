@@ -761,7 +761,7 @@ class BudgetAppropriationSummaryController(http.Controller):
                 ("Content-Length", len(pdf_content)),
                 (
                     "Content-Disposition",
-                    f'inline; filename="{record.name}.pdf"',
+                    f'inline; filename="{record._get_pdf_filename()}"',
                 ),
             ]
             return request.make_response(pdf_content, headers=pdfhttpheaders)
