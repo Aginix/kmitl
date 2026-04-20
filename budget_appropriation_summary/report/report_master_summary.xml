@@ -5,8 +5,18 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
-                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
                     <t t-call="budget_appropriation_summary.report_common_styles" />
+                    <t t-set="skip_orientation_page" t-value="True" />
+                    <t t-call="budget_appropriation_summary.report_preview_styles" />
+
+                    <t t-if="o.env.context.get('html_preview', False)">
+                        <a t-attf-href="/budget_appropriation_summary/#{o.id}/pdf"
+                           target="_blank" class="print-btn" contenteditable="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                            พิมพ์รายงาน PDF
+                        </a>
+                    </t>
 
                     <!-- F2 Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามประเภท -->
                     <t t-call="budget_appropriation_summary.report_f2_revenue_content" />
