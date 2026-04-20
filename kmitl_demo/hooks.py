@@ -398,7 +398,7 @@ def _run_egp_flow(env, pr, admin_user, department):
 
 
 def _create_e2e_purchase_demo(env):
-    """Create 10 end-to-end PR → PO demo records."""
+    """Create 10 end-to-end PR → PO demo records"""
     _logger.info("Creating end-to-end purchase demo data (10 cases)...")
 
     # Resolve shared references
