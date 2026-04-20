@@ -71,22 +71,22 @@
                                 <td class="fw-bold text-decoration-underline">
                                     <t t-esc="'{}. {}'.format(row_no, row['name'])"/>
                                 </td>
-                                <td class="text-end fw-bold border-bottom border-black">
+                                <td class="text-end fw-bold border-bottom border-black" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(row['compare_amount'])"/>
                                 </td>
-                                <td class="text-end fw-bold border-bottom border-black">
+                                <td class="text-end fw-bold border-bottom border-black" contenteditable="false">
                                     100.0
                                 </td>
-                                <td class="text-end fw-bold border-bottom border-black">
+                                <td class="text-end fw-bold border-bottom border-black" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(row['amount'])"/>
                                 </td>
-                                <td class="text-end fw-bold border-bottom border-black">
+                                <td class="text-end fw-bold border-bottom border-black" contenteditable="false">
                                     100.0
                                 </td>
-                                <td class="text-end fw-bold border-bottom border-black">
+                                <td class="text-end fw-bold border-bottom border-black" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(row['diff_amount'])"/>
                                 </td>
-                                <td class="text-end fw-bold border-bottom border-black">
+                                <td class="text-end fw-bold border-bottom border-black" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(row['diff_percentage'])"/>
                                 </td>
                             </tr>
@@ -95,22 +95,22 @@
                                     <td class="ps-3">
                                         - <t t-esc="category['name']"/>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" contenteditable="false">
                                         <t t-out="'{0:,.2f}'.format(category['compare_amount'])"/>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" contenteditable="false">
                                         <t t-out="category['compare_percentage']"/>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" contenteditable="false">
                                         <t t-out="'{0:,.2f}'.format(category['amount'])"/>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" contenteditable="false">
                                         <t t-out="category['percentage']"/>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" contenteditable="false">
                                         <t t-out="'{0:,.2f}'.format(category['diff_amount'])"/>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" contenteditable="false">
                                         <t t-out="'{0:,.2f}'.format(category['diff_percentage'])"/>
                                     </td>
                                 </tr>
@@ -119,26 +119,26 @@
                         </t>
                     </tbody>
                     <tfoot>
-                        <tr>
+                        <tr class="fw-bold">
                             <td class="text-center">
-                                <strong>รวมทั้งสิ้น</strong>
+                                รวมทั้งสิ้น
                             </td>
-                            <td class="text-end" style="font-weight: bold;">
+                            <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['compare_total_amount'])"/>
                             </td>
-                            <td class="text-end" style="font-weight: bold;">
+                            <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(100)"/>
                             </td>
-                            <td class="text-end" style="font-weight: bold;">
+                            <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['total_amount'])"/>
                             </td>
-                            <td class="text-end" style="font-weight: bold;">
+                            <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(100)"/>
                             </td>
-                            <td class="text-end" style="font-weight: bold;">
+                            <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['diff_amount'])"/>
                             </td>
-                            <td class="text-end" style="font-weight: bold;">
+                            <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['diff_percentage'])"/>
                             </td>
                         </tr>

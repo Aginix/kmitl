@@ -64,15 +64,15 @@
                                     <t t-out="department['name']"/>
                                 </td>
                                 <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                                    <th class="text-end border-0 border-end">
+                                    <th class="text-end border-0 border-end" contenteditable="false">
                                         <t t-out="'{0:,.2f}'.format(department['columns'][column['code']]['amount'])"/>
                                     </th>
-                                    <th class="text-end border-0 border-end">
+                                    <th class="text-end border-0 border-end" contenteditable="false">
                                         0.00
                                         <!-- <t t-out="department['columns'][column['code']]['percentage']" /> -->
                                     </th>
                                 </t>
-                                <th class="text-end border-0">
+                                <th class="text-end border-0" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(department['total']['amount'])"/>
                                 </th>
                             </tr>
@@ -85,15 +85,15 @@
                                 รวมทั้งสิ้น
                             </td>
                             <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                                <th class="text-end">
+                                <th class="text-end" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['column_totals'][column['code']]['amount'])"/>
                                 </th>
-                                <th class="text-end">
+                                <th class="text-end" contenteditable="false">
                                     0.00
                                     <!-- <t t-out="department['columns'][column['code']]['percentage']" /> -->
                                 </th>
                             </t>
-                            <td class="text-end">
+                            <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
