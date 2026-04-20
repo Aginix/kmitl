@@ -16,6 +16,20 @@ class BudgetAppropriationMasterSummary(models.Model):
         "done": [("readonly", True)],
     }
 
+    PRINT_REPORT_ORDER = [
+        "action_report_f2_revenue",
+        "action_report_f4p_revenue",
+        "action_report_f4w_revenue",
+        "action_report_f3w_f6w_revenue",
+        "action_report_f7w_expense",
+        "action_report_f5p_expense",
+        "action_report_f5w_expense",
+        "action_report_f8w_expense",
+        "action_report_f9w_expense",
+        "action_report_f11w_expense",
+        "action_report_f10w_expense",
+    ]
+
     name = fields.Char(
         string="ชื่อสรุปภาพรวม",
         compute="_compute_name",
@@ -317,20 +331,6 @@ class BudgetAppropriationMasterSummary(models.Model):
             "url": f"/budget_appropriation_summary/{self.id}/html",
             "target": "new",
         }
-
-    PRINT_REPORT_ORDER = [
-        "action_report_f2_revenue",
-        "action_report_f4p_revenue",
-        "action_report_f4w_revenue",
-        "action_report_f3w_f6w_revenue",
-        "action_report_f7w_expense",
-        "action_report_f5p_expense",
-        "action_report_f5w_expense",
-        "action_report_f8w_expense",
-        "action_report_f9w_expense",
-        "action_report_f11w_expense",
-        "action_report_f10w_expense",
-    ]
 
     def _get_merged_pdf(self):
         """Render each sub-report with its own paperformat and merge into one PDF.
