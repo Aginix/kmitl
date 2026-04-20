@@ -713,6 +713,20 @@ class BudgetAppropriationSummaryController(http.Controller):
                 add_children_fund(act_id, 1)
         return {"columns": columns, "rows": rows}
 
+    MASTER_SUMMARY_REPORT_MAP = {
+        "f2": "budget_appropriation_summary.action_report_f2_revenue",
+        "f4p": "budget_appropriation_summary.action_report_f4p_revenue",
+        "f4w": "budget_appropriation_summary.action_report_f4w_revenue",
+        "f3w_f6w": "budget_appropriation_summary.action_report_f3w_f6w_revenue",
+        "f5p": "budget_appropriation_summary.action_report_f5p_expense",
+        "f5w": "budget_appropriation_summary.action_report_f5w_expense",
+        "f7w": "budget_appropriation_summary.action_report_f7w_expense",
+        "f8w": "budget_appropriation_summary.action_report_f8w_expense",
+        "f9w": "budget_appropriation_summary.action_report_f9w_expense",
+        "f10w": "budget_appropriation_summary.action_report_f10w_expense",
+        "f11w": "budget_appropriation_summary.action_report_f11w_expense",
+    }
+
     @http.route(
         ["/budget_appropriation_summary/<int:summary_id>/<string:report_type>"],
         type="http",
@@ -730,8 +744,64 @@ class BudgetAppropriationSummaryController(http.Controller):
         )
 
         if report_type == "html":
-            html = request.env["ir.actions.report"]._render_qweb_html(
+            report_env = request.env["ir.actions.report"].with_context(
+                html_preview=True
+            )
+            html = report_env._render_qweb_html(
                 report.id, [record.id], data={"title": record.name}
+            )[0]
+            return request.make_response(
+                html,
+                headers=[
+                    ("Content-Type", "text/html"),
+                    ("Content-Length", len(html)),
+                ],
+            )
+        elif report_type == "pdf":
+            pdf_content = record._get_merged_pdf()
+            pdfhttpheaders = [
+                ("Content-Type", "application/pdf"),
+                ("Content-Length", len(pdf_content)),
+                (
+                    "Content-Disposition",
+                    f'inline; filename="{record._get_pdf_filename()}"',
+                ),
+            ]
+            return request.make_response(pdf_content, headers=pdfhttpheaders)
+
+        return request.redirect("/web")
+
+    @http.route(
+        [
+            "/budget_appropriation_summary/<int:summary_id>"
+            "/report/<string:report_name>/<string:report_type>"
+        ],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def budget_appropriation_summary_individual_report(
+        self, summary_id, report_name, report_type, **kw
+    ):
+        """Render individual master summary report in HTML or PDF format."""
+        record = request.env["budget.appropriation.master.summary"].browse(summary_id)
+        if not record.exists():
+            return request.redirect("/web")
+
+        report_ref = self.MASTER_SUMMARY_REPORT_MAP.get(report_name)
+        if not report_ref:
+            return request.redirect("/web")
+
+        report = request.env.ref(report_ref)
+
+        if report_type == "html":
+            report_env = request.env["ir.actions.report"].with_context(
+                html_preview=True
+            )
+            html = report_env._render_qweb_html(
+                report.id,
+                [record.id],
+                data={"title": f"{record.name} - {report_name.upper()}"},
             )[0]
             return request.make_response(
                 html,
@@ -749,7 +819,7 @@ class BudgetAppropriationSummaryController(http.Controller):
                 ("Content-Length", len(pdf_content)),
                 (
                     "Content-Disposition",
-                    f'inline; filename="{record.name}.pdf"',
+                    f'inline; filename="{record.name} - {report_name.upper()}.pdf"',
                 ),
             ]
             return request.make_response(pdf_content, headers=pdfhttpheaders)

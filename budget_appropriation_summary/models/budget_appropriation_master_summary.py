@@ -1,5 +1,8 @@
+import base64
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools.pdf import merge_pdf
 
 
 class BudgetAppropriationMasterSummary(models.Model):
@@ -12,6 +15,20 @@ class BudgetAppropriationMasterSummary(models.Model):
         "confirmed": [("readonly", True)],
         "done": [("readonly", True)],
     }
+
+    PRINT_REPORT_ORDER = [
+        "action_report_f2_revenue",
+        "action_report_f4p_revenue",
+        "action_report_f4w_revenue",
+        "action_report_f3w_f6w_revenue",
+        "action_report_f7w_expense",
+        "action_report_f5p_expense",
+        "action_report_f5w_expense",
+        "action_report_f8w_expense",
+        "action_report_f9w_expense",
+        "action_report_f11w_expense",
+        "action_report_f10w_expense",
+    ]
 
     name = fields.Char(
         string="ชื่อสรุปภาพรวม",
@@ -307,7 +324,7 @@ class BudgetAppropriationMasterSummary(models.Model):
         self.write({"state": "draft"})
 
     def action_open_report(self):
-        """Open the report in a new browser tab as HTML."""
+        """Open the combined report in a new browser tab as HTML."""
         self.ensure_one()
         return {
             "type": "ir.actions.act_url",
@@ -315,8 +332,105 @@ class BudgetAppropriationMasterSummary(models.Model):
             "target": "new",
         }
 
+    def _get_merged_pdf(self):
+        """Render each sub-report with its own paperformat and merge into one PDF.
+
+        Using merge_pdf preserves each report's orientation (portrait/landscape)
+        and starts every sub-report on a new page.
+        """
+        self.ensure_one()
+        pdfs = []
+        for ref in self.PRINT_REPORT_ORDER:
+            report = self.env.ref(f"budget_appropriation_summary.{ref}")
+            pdf_content, __ = report._render_qweb_pdf(report.id, self.ids)
+            pdfs.append(pdf_content)
+        return merge_pdf(pdfs)
+
+    def _get_pdf_filename(self):
+        """Return an ASCII-safe PDF filename so it survives HTTP transport."""
+        self.ensure_one()
+        parts = [
+            self.source_analytic_id.code or "",
+            self.account_fiscal_year_id.name or "",
+        ]
+        slug = "-".join(p for p in parts if p) or str(self.id)
+        return f"budget-summary-{slug}.pdf"
+
     def action_print_report(self):
         self.ensure_one()
-        return self.env.ref(
-            "budget_appropriation_summary.action_report_master_summary"
-        ).report_action(self)
+        merged = self._get_merged_pdf()
+        attachment = self.env["ir.attachment"].create(
+            {
+                "name": self._get_pdf_filename(),
+                "type": "binary",
+                "datas": base64.b64encode(merged),
+                "res_model": self._name,
+                "res_id": self.id,
+                "mimetype": "application/pdf",
+            }
+        )
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/web/content/{attachment.id}?download=false",
+            "target": "new",
+        }
+
+    # --- Individual report actions ---
+
+    REPORT_MAP = {
+        "f2": "action_report_f2_revenue",
+        "f4p": "action_report_f4p_revenue",
+        "f4w": "action_report_f4w_revenue",
+        "f3w_f6w": "action_report_f3w_f6w_revenue",
+        "f5p": "action_report_f5p_expense",
+        "f5w": "action_report_f5w_expense",
+        "f7w": "action_report_f7w_expense",
+        "f8w": "action_report_f8w_expense",
+        "f9w": "action_report_f9w_expense",
+        "f10w": "action_report_f10w_expense",
+        "f11w": "action_report_f11w_expense",
+    }
+
+    def _action_open_individual_report(self, report_name):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": (
+                f"/budget_appropriation_summary/{self.id}"
+                f"/report/{report_name}/html"
+            ),
+            "target": "new",
+        }
+
+    def action_open_f2_report(self):
+        return self._action_open_individual_report("f2")
+
+    def action_open_f4p_report(self):
+        return self._action_open_individual_report("f4p")
+
+    def action_open_f4w_report(self):
+        return self._action_open_individual_report("f4w")
+
+    def action_open_f3w_f6w_report(self):
+        return self._action_open_individual_report("f3w_f6w")
+
+    def action_open_f5p_report(self):
+        return self._action_open_individual_report("f5p")
+
+    def action_open_f5w_report(self):
+        return self._action_open_individual_report("f5w")
+
+    def action_open_f7w_report(self):
+        return self._action_open_individual_report("f7w")
+
+    def action_open_f8w_report(self):
+        return self._action_open_individual_report("f8w")
+
+    def action_open_f9w_report(self):
+        return self._action_open_individual_report("f9w")
+
+    def action_open_f10w_report(self):
+        return self._action_open_individual_report("f10w")
+
+    def action_open_f11w_report(self):
+        return self._action_open_individual_report("f11w")

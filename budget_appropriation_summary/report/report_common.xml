@@ -4,7 +4,7 @@
     <template id="report_common_styles">
         <style>
             * {
-                font-family: "THSarabunNew", Arial, sans-serif;
+                font-family: 'THSarabun', Arial, sans-serif;
                 --bs-body-font-size: 15pt;
             }
             p,
@@ -26,7 +26,144 @@
             .table-sm > :not(caption) > * > * {
                 padding: 0.065rem 0.15rem;
             }
+            h3 {
+                font-size: 18pt;
+                margin-bottom: 0;
+            }
         </style>
+    </template>
+
+    <!-- Preview styles for A4 paper page effect (set is_landscape before calling) -->
+    <template id="report_preview_styles">
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)"/>
+        <t t-if="is_html_preview">
+            <style>
+                html, body {
+                    background: #e8e8e8 !important;
+                    margin: 0;
+                    padding: 0;
+                }
+                .page {
+                    position: relative;
+                    background-color: white !important;
+                    margin: 40px auto;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+                    box-sizing: border-box;
+                    border-radius: 2px;
+                }
+                .page.landscape {
+                    width: 297mm;
+                    min-height: 210mm;
+                    padding: 8mm 15mm !important;
+                }
+                .page:not(.landscape) {
+                    width: 210mm;
+                    min-height: 297mm;
+                    padding: 25mm 8mm !important;
+                }
+                * {
+                    line-height: 1.145;
+                }
+                [contenteditable]:focus {
+                    outline: none;
+                }
+                *[contenteditable="false"] {
+                    cursor: not-allowed;
+                }
+                .print-btn {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1000;
+                    padding: 8px 20px;
+                    background: #714B67;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 16pt;
+                    cursor: pointer;
+                    font-family: 'THSarabun', Arial, sans-serif;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                }
+                .print-btn:hover {
+                    background: #5a3a52;
+                }
+                @media print {
+                    html, body {
+                        background: white !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        width: auto !important;
+                        height: auto !important;
+                    }
+                    .article, main, header, footer, .o_report_layout_standard {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    .page {
+                        width: 100% !important;
+                        min-height: auto !important;
+                        max-width: none !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none !important;
+                        border-radius: 0 !important;
+                        page-break-after: always;
+                    }
+                    .page.landscape {
+                      width: 297mm !important;
+                    }
+                    .page:last-child {
+                        page-break-after: auto;
+                    }
+                    .print-btn {
+                        display: none !important;
+                    }
+                }
+            </style>
+            <t t-if="not skip_orientation_page">
+                <t t-if="is_landscape">
+                    <style>
+                        @media print {
+                            @page {
+                              size: A4 landscape;
+                              margin: 8mm 15mm;
+                              padding: 24mm 0mm !important;
+                            }
+                        }
+                    </style>
+                </t>
+                <t t-else="">
+                    <style>
+                        @media print {
+                            @page {
+                              size: A4 portrait;
+                              margin: 0 !important;
+                              padding: 14mm 8mm !important;
+                            }
+                        }
+                    </style>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Printer icon SVG (reusable) -->
+    <template id="report_print_icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    </template>
+
+    <!-- Print button (call inside .page div, only shown in individual html_preview) -->
+    <template id="report_print_button">
+        <t t-if="o.env.context.get('html_preview', False) and not skip_orientation_page">
+            <button class="print-btn" onclick="window.print()" contenteditable="false">
+                <t t-call="budget_appropriation_summary.report_print_icon" />
+                พิมพ์รายงาน
+            </button>
+        </t>
     </template>
 
     <!-- Council meeting header template (reusable) -->
