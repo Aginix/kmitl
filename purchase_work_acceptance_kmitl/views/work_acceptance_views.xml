@@ -297,6 +297,10 @@
                     attrs="{'invisible': [('state', '!=', 'accept')]}"
                 />
             </xpath>
+
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <h2>Work Acceptance Form</h2>
+            </xpath>
         </field>
     </record>
 

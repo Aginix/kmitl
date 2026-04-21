@@ -92,6 +92,11 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <!-- Add form name -->
+            <xpath expr="//div[@class='oe_button_box']" position="after">
+                <h2>Purchase Guarantee Form</h2>
+            </xpath>
+
             <!-- Lock: readonly attrs on fields -->
             <xpath expr="//field[@name='reference']" position="attributes">
                 <attribute name="attrs">

@@ -55,6 +55,7 @@
                 </button>
             </xpath>
             <xpath expr="//group[1]" position="before">
+                <h2>Purchase Request Approval Form</h2>
                 <group>
                     <group>
                         <field

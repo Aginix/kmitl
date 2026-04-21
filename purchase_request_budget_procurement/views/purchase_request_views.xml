@@ -39,6 +39,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
+                <h2>Purchase Request Form</h2>
                 <group string="แผนจัดซื้อจัดจ้าง">
                     <field
                         name="use_procurement_plan"
