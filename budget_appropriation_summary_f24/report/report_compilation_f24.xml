@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paper Format (Landscape) -->
+    <record id="paperformat_compilation_f24" model="report.paperformat">
+        <field name="name">Budget Compilation F24 Landscape</field>
+        <field name="default" eval="False" />
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="dpi">90</field>
+    </record>
+    <!-- Report Action -->
+    <record id="action_report_compilation_f24" model="ir.actions.report">
+        <field name="name">รายงาน F24</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_summary_f24.report_compilation_f24</field>
+        <field name="report_file">budget_appropriation_summary_f24.report_compilation_f24</field>
+        <field name="paperformat_id" ref="paperformat_compilation_f24" />
+        <field name="binding_type">report</field>
+    </record>
+    <!-- F24 Document Template -->
+    <template id="report_compilation_f24_document">
+        <t t-call="web.basic_layout">
+            <t t-call="budget_appropriation_summary_f24.report_compilation_f24_styles" />
+            <t t-set="f24" t-value="o.get_f24_report_data()" />
+            <div class="page budget-compilation-f24-report"
+                t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+                <t t-if="o.env.context.get('html_preview', False)">
+                    <button class="f24-print-btn" onclick="window.print()" contenteditable="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 6 2 18 2 18 9" />
+                            <path
+                                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                        พิมพ์รายงาน </button>
+                </t>
+                <div class="report-header mb-2" contenteditable="false">
+                    <h4>รายงาน F24</h4>
+                    <h4> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
+                    </h4>
+                    <h4>
+                        <t t-out="o.department_analytic_id.complete_name.replace(' / ', ' ')" />
+                    </h4>
+                </div>
+                <div class="report-body">
+                    <!-- TODO: implement F24 report details -->
+                </div>
+            </div>
+        </t>
+    </template>
+    <!-- Styles template -->
+    <template id="report_compilation_f24_styles">
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-if="is_html_preview">
+            <style>html, body {
+                    background: #e8e8e8 !important;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .page {
+                    position: relative;
+                    width: 297mm;
+                    min-height: 210mm;
+                    background-color: white !important;
+                    background-image: repeating-linear-gradient(
+                    to bottom,
+                    transparent,
+                    transparent calc(187mm - 1px),
+                    rgba(239, 68, 68, 0.35) calc(187mm - 1px),
+                    rgba(239, 68, 68, 0.35) 187mm
+                    ) !important;
+                    margin: 40px auto;
+                    padding: 12mm 8mm !important;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+                    box-sizing: border-box;
+                    border-radius: 2px;
+                }
+                .page::after {
+                    content: 'ตำแหน่งตัดหน้า';
+                    position: absolute;
+                    top: calc(187mm - 10px);
+                    right: -90px;
+                    font-size: 10px;
+                    color: rgba(239, 68, 68, 0.6);
+                    font-family: 'THSarabun', 'Sarabun', sans-serif;
+                    pointer-events: none;
+                }
+
+                [contenteditable]:focus {
+                    outline: none;
+                }
+
+                .f24-page-label {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    font-size: 10pt;
+                    color: #333;
+                    pointer-events: none;
+                }
+
+                .f24-print-btn {
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1000;
+                    padding: 8px 20px;
+                    background: #714B67;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    font-family: 'THSarabun', 'Sarabun', Arial, sans-serif;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                }
+                .f24-print-btn:hover {
+                    background: #5a3a52;
+                }
+
+                @media print {
+                    html, body {
+                        background: white !important;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .page {
+                        width: auto;
+                        min-height: auto;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none;
+                        border-radius: 0;
+                        background-image: none !important;
+                    }
+                    .page::after {
+                        display: none;
+                    }
+                    @page {
+                        margin: 0 !important;
+                        padding: 12mm 8mm !important;
+                        size: A4 landscape;
+                    }
+                    .f24-page-label {
+                        position: fixed;
+                        top: 5mm;
+                        right: 5mm;
+                    }
+                    .f24-print-btn {
+                        display: none !important;
+                    }
+                }
+
+                *[contenteditable="false"] {
+                    cursor: not-allowed;
+                }
+            </style>
+        </t>
+        <t t-else="">
+            <style>
+                * {
+                    line-height: 0.975;
+                }
+            </style>
+        </t>
+        <style>.page {
+                page-break-after: always;
+            }
+            .page:last-child {
+                page-break-after: auto;
+            }
+
+            .budget-compilation-f24-report {
+                font-family: 'THSarabun', Arial, sans-serif;
+                line-height: 0.975;
+                font-size: 15pt;
+            }
+
+            .budget-compilation-f24-report h3 {
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .budget-compilation-f24-report h4 {
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .report-header {
+                position: relative;
+                text-align: center;
+                cursor: not-allowed;
+            }</style>
+    </template>
+    <!-- Main report template -->
+    <template id="report_compilation_f24">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="budget_appropriation_summary_f24.report_compilation_f24_document" />
+            </t>
+        </t>
+    </template>
+</odoo>

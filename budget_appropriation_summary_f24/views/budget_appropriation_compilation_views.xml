@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_budget_appropriation_compilation_form_f24" model="ir.ui.view">
+        <field name="name">budget.appropriation.compilation.form.f24</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="inherit_id" ref="budget_appropriation_summary.view_budget_appropriation_compilation_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_open_f24_report"
+                    string="รายงาน F24"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
