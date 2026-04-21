@@ -6,27 +6,15 @@ from odoo.http import request
 
 class PurchaseRequestDashboardController(http.Controller):
 
-    STATE_LABELS = {
-        "draft": "ฉบับร่าง",
-        "to_examine": "ตรวจสอบ",
-        "to_verify": "ตรวจรับ",
-        "to_approve": "รออนุมัติ",
-        "approved": "อนุมัติแล้ว",
-        "in_progress": "กำลังดำเนินการ",
-        "done": "เสร็จสิ้น",
-        "rejected": "ปฏิเสธ",
-    }
-
-    STATE_COLORS = {
-        "draft": "#6c757d",
-        "to_examine": "#17a2b8",
-        "to_verify": "#0dcaf0",
-        "to_approve": "#ffc107",
-        "approved": "#198754",
-        "in_progress": "#0d6efd",
-        "done": "#28a745",
-        "rejected": "#dc3545",
-    }
+    SUMMARY_STATES = [
+        ("draft", "ร่าง"),
+        ("to_verify", "รอจองเงิน"),
+        ("to_approve", "รออนุมัติ"),
+        ("approved", "อนุมัติแล้ว"),
+        ("in_progress", "อยู่ระหว่างจัดซื้อ/จ้าง"),
+        ("done", "จัดซื้อ/จ้างเสร็จสิ้น"),
+        ("rejected", "ยกเลิก"),
+    ]
 
     # Thai fiscal year months (Oct - Sep)
     FISCAL_MONTHS = [
@@ -49,27 +37,13 @@ class PurchaseRequestDashboardController(http.Controller):
         type="json",
         auth="user",
     )
-    def get_dashboard_data(
-        self, fiscal_year_id=None, department_id=None, source_id=None, **kw
-    ):
+    def get_dashboard_data(self, fiscal_year_id=None, source_id=None, **kw):
         # Filter options
         fiscal_years = request.env["account.fiscal.year"].search(
             [], order="date_from desc"
         )
         fiscal_year_options = [
             {"id": fy.id, "name": fy.name} for fy in fiscal_years
-        ]
-
-        departments = request.env["account.analytic.account"].search(
-            [
-                ("root_plan_id.code", "=", "departments"),
-                ("parent_id", "=", False),
-            ],
-            order="code",
-        )
-        department_options = [
-            {"id": dept.id, "name": dept.name, "code": dept.code}
-            for dept in departments
         ]
 
         sources = request.env["account.analytic.account"].search(
@@ -79,203 +53,252 @@ class PurchaseRequestDashboardController(http.Controller):
             {"id": src.id, "name": src.name, "code": src.code} for src in sources
         ]
 
+        # Default to first options (required filters)
         if not fiscal_year_id and fiscal_years:
             fiscal_year_id = fiscal_years[0].id
+        if not source_id and sources:
+            source_id = sources[0].id
 
-        stats = self._get_dashboard_stats(fiscal_year_id, department_id, source_id)
-
-        return {
-            "filter_options": {
-                "fiscal_years": fiscal_year_options,
-                "departments": department_options,
-                "sources": source_options,
-            },
-            "filters": {
-                "fiscal_year_id": fiscal_year_id,
-                "department_id": department_id,
-                "source_id": source_id,
-            },
-            "stats": stats,
-        }
-
-    def _filter_by_analytic(self, records, department_id, source_id):
-        """Filter records by department and source analytic dimensions."""
-        department_ids = set()
-        if department_id:
-            root_dept = request.env["account.analytic.account"].browse(department_id)
-            if root_dept.exists():
-                child_depts = request.env["account.analytic.account"].search(
-                    [("parent_path", "like", root_dept.parent_path + "%")]
-                )
-                department_ids = set(child_depts.ids)
-
-        if not department_ids and not source_id:
-            return records
-
-        filtered = request.env[records._name]
-        for rec in records:
-            if department_ids and rec.department_analytic_id.id not in department_ids:
-                continue
-            if source_id and rec.source_analytic_id.id != source_id:
-                continue
-            filtered |= rec
-        return filtered
-
-    def _get_dashboard_stats(self, fiscal_year_id, department_id, source_id):
+        # Fetch and filter records
         domain = []
         if fiscal_year_id:
             domain.append(("account_fiscal_year_id", "=", fiscal_year_id))
 
-        requests = request.env["purchase.request"].search(domain)
-        requests = self._filter_by_analytic(requests, department_id, source_id)
+        records = request.env["purchase.request"].search(domain)
+        records = self._filter_by_source(records, source_id)
 
-        # Summary counts
-        total_count = len(requests)
-        total_amount = sum(requests.mapped("estimated_cost"))
-
-        state_counts = {}
-        for state_key in self.STATE_LABELS:
-            state_requests = requests.filtered(lambda r, s=state_key: r.state == s)
-            state_counts[state_key] = len(state_requests)
-
-        # Pie chart data
-        state_pie_data = []
-        for state_key, label in self.STATE_LABELS.items():
-            count = state_counts.get(state_key, 0)
-            if count > 0:
-                state_pie_data.append({
-                    "name": label,
-                    "value": count,
-                    "itemStyle": {"color": self.STATE_COLORS.get(state_key)},
-                })
-
-        # Stacked bar by department
-        dept_bar_data = self._get_dept_bar_data(requests)
-
-        # Stacked bar by fiscal year (ignore fiscal year filter for this chart)
-        fy_bar_data = self._get_fy_bar_data(department_id, source_id)
-
-        # Line trend by month
-        trend_line_data = self._get_trend_line_data(requests, fiscal_year_id)
-
-        # Table data
-        table_data = []
-        for pr in requests[:100]:
-            table_data.append({
-                "id": pr.id,
-                "name": pr.name,
-                "title": pr.title or pr.description or "",
-                "estimated_cost": pr.estimated_cost,
-                "state": pr.state,
-                "state_display": self.STATE_LABELS.get(pr.state, pr.state),
-                "department": (
-                    pr.department_analytic_id.name
-                    if pr.department_analytic_id
-                    else "-"
-                ),
-                "fiscal_year": (
-                    pr.account_fiscal_year_id.name
-                    if pr.account_fiscal_year_id
-                    else "-"
-                ),
-            })
+        # Build caches for root lookups
+        budget_cache = self._build_root_budget_account_map(records)
+        dept_cache = self._build_root_department_map(records)
 
         return {
-            "total_count": total_count,
-            "total_amount": total_amount,
-            "pending_approval_count": state_counts.get("to_approve", 0),
-            "approved_count": state_counts.get("approved", 0),
-            "in_progress_count": state_counts.get("in_progress", 0),
-            "rejected_count": state_counts.get("rejected", 0),
-            "state_pie_data": state_pie_data,
-            "dept_bar_data": dept_bar_data,
-            "fy_bar_data": fy_bar_data,
-            "trend_line_data": trend_line_data,
-            "table_data": table_data,
+            "filter_options": {
+                "fiscal_years": fiscal_year_options,
+                "sources": source_options,
+            },
+            "filters": {
+                "fiscal_year_id": fiscal_year_id,
+                "source_id": source_id,
+            },
+            "summary_boxes": self._get_summary_boxes(records),
+            "chart1_purchase_type_by_month": self._get_chart1_purchase_type_by_month(
+                records
+            ),
+            "chart2_purchase_type_pie": self._get_chart2_purchase_type_pie(records),
+            "chart3_expense_type_by_month": self._get_chart3_expense_type_by_month(
+                records, budget_cache
+            ),
+            "chart4_approved_trend": self._get_chart4_approved_trend(records),
+            "chart5_purchase_type_by_dept": self._get_chart5_purchase_type_by_dept(
+                records, dept_cache
+            ),
+            "chart6_expense_type_by_dept": self._get_chart6_expense_type_by_dept(
+                records, budget_cache, dept_cache
+            ),
         }
 
-    def _get_dept_bar_data(self, requests):
-        """Group requests by root department and state for stacked bar chart."""
-        dept_state = defaultdict(lambda: defaultdict(int))
-        for pr in requests:
-            dept = pr.department_analytic_id
-            if not dept:
+    def _filter_by_source(self, records, source_id):
+        """Filter records by source analytic dimension."""
+        if not source_id:
+            return records
+        filtered = request.env[records._name]
+        for rec in records:
+            if rec.source_analytic_id.id == source_id:
+                filtered |= rec
+        return filtered
+
+    def _build_root_budget_account_map(self, records):
+        """Cache budget_account_id → root budget account name."""
+        cache = {}
+        for pr in records:
+            ba = pr.budget_account_id
+            if not ba or ba.id in cache:
                 continue
-            # Walk up to root department
+            root = ba
+            while root.parent_id:
+                root = root.parent_id
+            cache[ba.id] = root.name
+        return cache
+
+    def _build_root_department_map(self, records):
+        """Cache department_analytic_id → root department name."""
+        cache = {}
+        for pr in records:
+            dept = pr.department_analytic_id
+            if not dept or dept.id in cache:
+                continue
             root = dept
             while root.parent_id:
                 root = root.parent_id
-            dept_state[root.name][pr.state] += 1
+            cache[dept.id] = root.name
+        return cache
 
-        departments = sorted(dept_state.keys())
+    def _get_summary_boxes(self, records):
+        """Return list of 8 summary box data."""
+        boxes = []
+        for state_key, label in self.SUMMARY_STATES:
+            if state_key == "draft":
+                # Include to_examine in draft
+                state_recs = records.filtered(
+                    lambda r: r.state in ("draft", "to_examine")
+                )
+            else:
+                state_recs = records.filtered(
+                    lambda r, s=state_key: r.state == s
+                )
+            boxes.append({
+                "label": label,
+                "state": state_key,
+                "count": len(state_recs),
+                "amount": sum(state_recs.mapped("estimated_cost")),
+            })
+        # Box 8: total amount
+        boxes.append({
+            "label": "ยอดเงินรวมทั้งหมด",
+            "state": "total",
+            "count": None,
+            "amount": sum(records.mapped("estimated_cost")),
+        })
+        return boxes
+
+    def _get_chart1_purchase_type_by_month(self, records):
+        """Stacked bar: estimated_cost by purchase_type, grouped by month."""
+        month_labels = [m[1] for m in self.FISCAL_MONTHS]
+        month_nums = [m[0] for m in self.FISCAL_MONTHS]
+
+        type_month_amounts = defaultdict(lambda: defaultdict(float))
+        for pr in records:
+            if not pr.date_start or not pr.purchase_type_id:
+                continue
+            type_name = pr.purchase_type_id.name
+            month = pr.date_start.month
+            type_month_amounts[type_name][month] += pr.estimated_cost
+
+        purchase_types = sorted(type_month_amounts.keys())
         series = []
-        for state_key, label in self.STATE_LABELS.items():
-            data = [dept_state[d].get(state_key, 0) for d in departments]
-            if any(data):
-                series.append({
-                    "name": label,
-                    "data": data,
-                    "color": self.STATE_COLORS.get(state_key),
+        for pt in purchase_types:
+            data = [type_month_amounts[pt].get(m, 0) for m in month_nums]
+            series.append({"name": pt, "data": data})
+
+        return {"months": month_labels, "series": series}
+
+    def _get_chart2_purchase_type_pie(self, records):
+        """Pie: estimated_cost grouped by purchase_type."""
+        type_data = defaultdict(lambda: {"amount": 0, "id": None})
+        for pr in records:
+            if not pr.purchase_type_id:
+                continue
+            key = pr.purchase_type_id.name
+            type_data[key]["amount"] += pr.estimated_cost
+            type_data[key]["id"] = pr.purchase_type_id.id
+
+        pie_data = []
+        for name, info in sorted(type_data.items()):
+            if info["amount"] > 0:
+                pie_data.append({
+                    "name": name,
+                    "value": info["amount"],
+                    "purchase_type_id": info["id"],
                 })
+        return pie_data
+
+    def _get_chart3_expense_type_by_month(self, records, budget_cache):
+        """Stacked bar: estimated_cost by root budget_account, grouped by month."""
+        month_labels = [m[1] for m in self.FISCAL_MONTHS]
+        month_nums = [m[0] for m in self.FISCAL_MONTHS]
+
+        expense_month_amounts = defaultdict(lambda: defaultdict(float))
+        for pr in records:
+            if not pr.date_start or not pr.budget_account_id:
+                continue
+            expense_name = budget_cache.get(pr.budget_account_id.id)
+            if not expense_name:
+                continue
+            month = pr.date_start.month
+            expense_month_amounts[expense_name][month] += pr.estimated_cost
+
+        expense_types = sorted(expense_month_amounts.keys())
+        series = []
+        for et in expense_types:
+            data = [expense_month_amounts[et].get(m, 0) for m in month_nums]
+            series.append({"name": et, "data": data})
+
+        return {"months": month_labels, "series": series}
+
+    def _get_chart4_approved_trend(self, records):
+        """Stacked line: estimated_cost by purchase_type for approved records."""
+        month_labels = [m[1] for m in self.FISCAL_MONTHS]
+        month_nums = [m[0] for m in self.FISCAL_MONTHS]
+
+        approved_recs = records.filtered(
+            lambda r: r.state in ("approved", "in_progress", "done")
+        )
+
+        type_month_amounts = defaultdict(lambda: defaultdict(float))
+        for pr in approved_recs:
+            if not pr.date_approved or not pr.purchase_type_id:
+                continue
+            type_name = pr.purchase_type_id.name
+            month = pr.date_approved.month
+            type_month_amounts[type_name][month] += pr.estimated_cost
+
+        purchase_types = sorted(type_month_amounts.keys())
+        series = []
+        for pt in purchase_types:
+            data = [type_month_amounts[pt].get(m, 0) for m in month_nums]
+            series.append({"name": pt, "data": data})
+
+        return {"months": month_labels, "series": series}
+
+    def _get_chart5_purchase_type_by_dept(self, records, dept_cache):
+        """Stacked bar: estimated_cost by purchase_type, grouped by department."""
+        dept_type_amounts = defaultdict(lambda: defaultdict(float))
+        for pr in records:
+            if not pr.department_analytic_id or not pr.purchase_type_id:
+                continue
+            dept_name = dept_cache.get(pr.department_analytic_id.id)
+            if not dept_name:
+                continue
+            dept_type_amounts[dept_name][pr.purchase_type_id.name] += (
+                pr.estimated_cost
+            )
+
+        departments = sorted(dept_type_amounts.keys())
+        all_types = set()
+        for dept_data in dept_type_amounts.values():
+            all_types.update(dept_data.keys())
+        all_types = sorted(all_types)
+
+        series = []
+        for pt in all_types:
+            data = [dept_type_amounts[d].get(pt, 0) for d in departments]
+            if any(data):
+                series.append({"name": pt, "data": data})
 
         return {"departments": departments, "series": series}
 
-    def _get_fy_bar_data(self, department_id, source_id):
-        """Get stacked bar data across all fiscal years (last 5)."""
-        fiscal_years = request.env["account.fiscal.year"].search(
-            [], order="date_from desc", limit=5
-        )
-        if not fiscal_years:
-            return {"fiscal_years": [], "series": []}
-
-        all_requests = request.env["purchase.request"].search(
-            [("account_fiscal_year_id", "in", fiscal_years.ids)]
-        )
-        all_requests = self._filter_by_analytic(
-            all_requests, department_id, source_id
-        )
-
-        fy_state = defaultdict(lambda: defaultdict(int))
-        for pr in all_requests:
-            fy_name = pr.account_fiscal_year_id.name or "-"
-            fy_state[fy_name][pr.state] += 1
-
-        fy_names = [fy.name for fy in reversed(fiscal_years)]
-        series = []
-        for state_key, label in self.STATE_LABELS.items():
-            data = [fy_state[fy].get(state_key, 0) for fy in fy_names]
-            if any(data):
-                series.append({
-                    "name": label,
-                    "data": data,
-                    "color": self.STATE_COLORS.get(state_key),
-                })
-
-        return {"fiscal_years": fy_names, "series": series}
-
-    def _get_trend_line_data(self, requests, fiscal_year_id):
-        """Monthly trend for current and previous fiscal years."""
-        fiscal_years = request.env["account.fiscal.year"].search(
-            [], order="date_from desc", limit=3
-        )
-        if not fiscal_years:
-            return {"months": [], "series": []}
-
-        months = [m[1] for m in self.FISCAL_MONTHS]
-        month_nums = [m[0] for m in self.FISCAL_MONTHS]
-
-        series = []
-        for fy in reversed(fiscal_years):
-            fy_requests = requests.filtered(
-                lambda r, f=fy: r.account_fiscal_year_id.id == f.id
-            )
-            if not fy_requests and fy.id != fiscal_year_id:
+    def _get_chart6_expense_type_by_dept(self, records, budget_cache, dept_cache):
+        """Stacked bar: estimated_cost by root budget_account, grouped by dept."""
+        dept_expense_amounts = defaultdict(lambda: defaultdict(float))
+        for pr in records:
+            if not pr.department_analytic_id or not pr.budget_account_id:
                 continue
-            month_counts = defaultdict(int)
-            for pr in fy_requests:
-                if pr.date_start:
-                    month_counts[pr.date_start.month] += 1
-            data = [month_counts.get(m, 0) for m in month_nums]
-            series.append({"name": fy.name, "data": data})
+            dept_name = dept_cache.get(pr.department_analytic_id.id)
+            expense_name = budget_cache.get(pr.budget_account_id.id)
+            if not dept_name or not expense_name:
+                continue
+            dept_expense_amounts[dept_name][expense_name] += pr.estimated_cost
 
-        return {"months": months, "series": series}
+        departments = sorted(dept_expense_amounts.keys())
+        all_expenses = set()
+        for dept_data in dept_expense_amounts.values():
+            all_expenses.update(dept_data.keys())
+        all_expenses = sorted(all_expenses)
+
+        series = []
+        for et in all_expenses:
+            data = [dept_expense_amounts[d].get(et, 0) for d in departments]
+            if any(data):
+                series.append({"name": et, "data": data})
+
+        return {"departments": departments, "series": series}
