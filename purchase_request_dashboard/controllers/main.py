@@ -168,9 +168,9 @@ class PurchaseRequestDashboardController(http.Controller):
 
         type_month_amounts = defaultdict(lambda: defaultdict(float))
         for pr in records:
-            if not pr.date_start or not pr.purchase_type_id:
+            if not pr.date_start or not pr.procurement_type_id:
                 continue
-            type_name = pr.purchase_type_id.name
+            type_name = pr.procurement_type_id.name
             month = pr.date_start.month
             type_month_amounts[type_name][month] += pr.estimated_cost
 
@@ -186,11 +186,11 @@ class PurchaseRequestDashboardController(http.Controller):
         """Pie: estimated_cost grouped by purchase_type."""
         type_data = defaultdict(lambda: {"amount": 0, "id": None})
         for pr in records:
-            if not pr.purchase_type_id:
+            if not pr.procurement_type_id:
                 continue
-            key = pr.purchase_type_id.name
+            key = pr.procurement_type_id.name
             type_data[key]["amount"] += pr.estimated_cost
-            type_data[key]["id"] = pr.purchase_type_id.id
+            type_data[key]["id"] = pr.procurement_type_id.id
 
         pie_data = []
         for name, info in sorted(type_data.items()):
@@ -198,7 +198,7 @@ class PurchaseRequestDashboardController(http.Controller):
                 pie_data.append({
                     "name": name,
                     "value": info["amount"],
-                    "purchase_type_id": info["id"],
+                    "procurement_type_id": info["id"],
                 })
         return pie_data
 
@@ -236,9 +236,9 @@ class PurchaseRequestDashboardController(http.Controller):
 
         type_month_amounts = defaultdict(lambda: defaultdict(float))
         for pr in approved_recs:
-            if not pr.date_approved or not pr.purchase_type_id:
+            if not pr.date_approved or not pr.procurement_type_id:
                 continue
-            type_name = pr.purchase_type_id.name
+            type_name = pr.procurement_type_id.name
             month = pr.date_approved.month
             type_month_amounts[type_name][month] += pr.estimated_cost
 
@@ -254,12 +254,12 @@ class PurchaseRequestDashboardController(http.Controller):
         """Stacked bar: estimated_cost by purchase_type, grouped by department."""
         dept_type_amounts = defaultdict(lambda: defaultdict(float))
         for pr in records:
-            if not pr.department_analytic_id or not pr.purchase_type_id:
+            if not pr.department_analytic_id or not pr.procurement_type_id:
                 continue
             dept_name = dept_cache.get(pr.department_analytic_id.id)
             if not dept_name:
                 continue
-            dept_type_amounts[dept_name][pr.purchase_type_id.name] += (
+            dept_type_amounts[dept_name][pr.procurement_type_id.name] += (
                 pr.estimated_cost
             )
 

@@ -288,7 +288,7 @@ export class PurchaseRequestDashboard extends Component {
         // Click handler → navigate to tree view
         chart.off("click");
         chart.on("click", (params) => {
-            const purchaseTypeId = params.data.purchase_type_id;
+            const purchaseTypeId = params.data.procurement_type_id;
             if (purchaseTypeId) {
                 this.action.doAction({
                     type: "ir.actions.act_window",
@@ -299,7 +299,7 @@ export class PurchaseRequestDashboard extends Component {
                         [false, "form"],
                     ],
                     domain: [
-                        ["purchase_type_id", "=", purchaseTypeId],
+                        ["procurement_type_id", "=", purchaseTypeId],
                         [
                             "account_fiscal_year_id",
                             "=",
