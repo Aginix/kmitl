@@ -7,11 +7,10 @@
     "category": "Accounting",
     "depends": [
         "budget_appropriation_summary",
-        "account_analytic_kmitl",
     ],
     "data": [
         "report/report_compilation_f24.xml",
-        "views/budget_appropriation_compilation_views.xml",
+        "views/budget_appropriation_master_summary_views.xml",
     ],
     "application": False,
     "installable": True,

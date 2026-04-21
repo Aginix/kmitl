@@ -1,213 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Paper Format (Landscape) -->
-    <record id="paperformat_compilation_f24" model="report.paperformat">
-        <field name="name">Budget Compilation F24 Landscape</field>
-        <field name="default" eval="False" />
-        <field name="format">A4</field>
-        <field name="orientation">Landscape</field>
-        <field name="margin_top">8</field>
-        <field name="margin_bottom">8</field>
-        <field name="margin_left">8</field>
-        <field name="margin_right">8</field>
-        <field name="dpi">90</field>
-    </record>
     <!-- Report Action -->
     <record id="action_report_compilation_f24" model="ir.actions.report">
-        <field name="name">รายงาน F24</field>
-        <field name="model">budget.appropriation.compilation</field>
+        <field name="name">F24 สรุปงบประมาณตามหน่วยงาน</field>
+        <field name="model">budget.appropriation.master.summary</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">budget_appropriation_summary_f24.report_compilation_f24</field>
         <field name="report_file">budget_appropriation_summary_f24.report_compilation_f24</field>
-        <field name="paperformat_id" ref="paperformat_compilation_f24" />
-        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="budget_appropriation_summary.paperformat_landscape" />
     </record>
-    <!-- F24 Document Template -->
-    <template id="report_compilation_f24_document">
-        <t t-call="web.basic_layout">
-            <t t-call="budget_appropriation_summary_f24.report_compilation_f24_styles" />
-            <t t-set="f24" t-value="o.get_f24_report_data()" />
-            <div class="page budget-compilation-f24-report"
-                t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
-                <t t-if="o.env.context.get('html_preview', False)">
-                    <button class="f24-print-btn" onclick="window.print()" contenteditable="false">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 6 2 18 2 18 9" />
-                            <path
-                                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                            <rect x="6" y="14" width="12" height="8" />
-                        </svg>
-                        พิมพ์รายงาน </button>
-                </t>
-                <div class="report-header mb-2" contenteditable="false">
-                    <h4>รายงาน F24</h4>
-                    <h4> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
-                    </h4>
-                    <h4>
-                        <t t-out="o.department_analytic_id.complete_name.replace(' / ', ' ')" />
-                    </h4>
-                </div>
-                <div class="report-body">
-                    <!-- TODO: implement F24 report details -->
-                </div>
-            </div>
-        </t>
-    </template>
-    <!-- Styles template -->
-    <template id="report_compilation_f24_styles">
-        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
-        <t t-if="is_html_preview">
-            <style>html, body {
-                    background: #e8e8e8 !important;
-                    margin: 0;
-                    padding: 0;
-                }
 
-                .page {
-                    position: relative;
-                    width: 297mm;
-                    min-height: 210mm;
-                    background-color: white !important;
-                    background-image: repeating-linear-gradient(
-                    to bottom,
-                    transparent,
-                    transparent calc(187mm - 1px),
-                    rgba(239, 68, 68, 0.35) calc(187mm - 1px),
-                    rgba(239, 68, 68, 0.35) 187mm
-                    ) !important;
-                    margin: 40px auto;
-                    padding: 12mm 8mm !important;
-                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
-                    box-sizing: border-box;
-                    border-radius: 2px;
-                }
-                .page::after {
-                    content: 'ตำแหน่งตัดหน้า';
-                    position: absolute;
-                    top: calc(187mm - 10px);
-                    right: -90px;
-                    font-size: 10px;
-                    color: rgba(239, 68, 68, 0.6);
-                    font-family: 'THSarabun', 'Sarabun', sans-serif;
-                    pointer-events: none;
-                }
-
-                [contenteditable]:focus {
-                    outline: none;
-                }
-
-                .f24-page-label {
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    font-size: 10pt;
-                    color: #333;
-                    pointer-events: none;
-                }
-
-                .f24-print-btn {
-                    position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 1000;
-                    padding: 8px 20px;
-                    background: #714B67;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    font-size: 14px;
-                    cursor: pointer;
-                    font-family: 'THSarabun', 'Sarabun', Arial, sans-serif;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-                }
-                .f24-print-btn:hover {
-                    background: #5a3a52;
-                }
-
-                @media print {
-                    html, body {
-                        background: white !important;
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .page {
-                        width: auto;
-                        min-height: auto;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        box-shadow: none;
-                        border-radius: 0;
-                        background-image: none !important;
-                    }
-                    .page::after {
-                        display: none;
-                    }
-                    @page {
-                        margin: 0 !important;
-                        padding: 12mm 8mm !important;
-                        size: A4 landscape;
-                    }
-                    .f24-page-label {
-                        position: fixed;
-                        top: 5mm;
-                        right: 5mm;
-                    }
-                    .f24-print-btn {
-                        display: none !important;
-                    }
-                }
-
-                *[contenteditable="false"] {
-                    cursor: not-allowed;
-                }
-            </style>
-        </t>
-        <t t-else="">
-            <style>
-                * {
-                    line-height: 0.975;
-                }
-            </style>
-        </t>
-        <style>.page {
-                page-break-after: always;
+    <!-- Partial template for F24 content -->
+    <template id="report_compilation_f24_content">
+        <style>
+            .f24 {
+                font-size: 11pt;
+                border-color: #000 !important;
             }
-            .page:last-child {
-                page-break-after: auto;
+            .f24 th, .f24 td {
+                border-color: #000 !important;
             }
-
-            .budget-compilation-f24-report {
-                font-family: 'THSarabun', Arial, sans-serif;
-                line-height: 0.975;
-                font-size: 15pt;
-            }
-
-            .budget-compilation-f24-report h3 {
-                margin: 0;
-                font-weight: bold;
-            }
-
-            .budget-compilation-f24-report h4 {
-                margin: 0;
-                font-weight: bold;
-            }
-
-            .report-header {
-                position: relative;
+            .f24 thead th {
                 text-align: center;
-                cursor: not-allowed;
-            }</style>
+                vertical-align: middle;
+                font-weight: bold;
+            }
+            .f24 tbody td.num {
+                text-align: right;
+                white-space: nowrap;
+            }
+            .f24 tfoot th {
+                text-align: right;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+            .f24 tfoot th.dept {
+                text-align: center;
+            }
+        </style>
+        <div class="page landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+            <t t-call="budget_appropriation_summary.report_print_button"/>
+            <div class="text-center">
+                <h3>F24 สรุปงบประมาณรายจ่ายแยกตามหน่วยงาน</h3>
+                <h3>ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/></h3>
+            </div>
+            <t t-set="f24" t-value="o.get_f24_report_data()"/>
+            <div class="mt-3">
+                <table class="table table-sm table-bordered f24">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">หน่วยงาน</th>
+                            <th rowspan="2">สำรองจ่าย 15%</th>
+                            <th rowspan="2">ชดใช้เงินคงคลัง</th>
+                            <th colspan="2">MA</th>
+                            <th rowspan="2">งบประจำ</th>
+                            <th rowspan="2">งบลงทุน</th>
+                            <th rowspan="2">เงินสนับสนุนภายนอก</th>
+                            <th rowspan="2">รวม (1)</th>
+                            <th colspan="2">ด้านการศึกษา</th>
+                            <th colspan="2">ด้านการวิจัย</th>
+                            <th colspan="2">ด้านตอบโจทย์อุตสาหกรรม</th>
+                            <th colspan="2">ด้านสังคม</th>
+                            <th rowspan="2">รวม (2)</th>
+                            <th rowspan="2">รวมจัดสรร</th>
+                            <th rowspan="2">รวม (1)+(2)</th>
+                        </tr>
+                        <tr>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="f24['rows']" t-as="row">
+                            <tr>
+                                <td contenteditable="false" t-out="row['department_name']"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['reserve_15']) if row['reserve_15'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['treasury']) if row['treasury'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['ma']) if row['ma'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['ma_allocated_pct']) if row['ma_allocated_pct'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['recurrent']) if row['recurrent'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['capital']) if row['capital'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['external']) if row['external'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_1']) if row['total_1'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['education']) if row['education'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['education_pct']) if row['education_pct'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['academic']) if row['academic'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['academic_pct']) if row['academic_pct'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['industrial']) if row['industrial'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['industrial_pct']) if row['industrial_pct'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['social']) if row['social'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['social_pct']) if row['social_pct'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_2']) if row['total_2'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_pct']) if row['total_pct'] else '-'"/>
+                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_1_2']) if row['total_1_2'] else '-'"/>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="dept" contenteditable="false" t-out="f24['total']['department_name']"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['reserve_15']) if f24['total']['reserve_15'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['treasury']) if f24['total']['treasury'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['ma']) if f24['total']['ma'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['ma_allocated_pct']) if f24['total']['ma_allocated_pct'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['recurrent']) if f24['total']['recurrent'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['capital']) if f24['total']['capital'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['external']) if f24['total']['external'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_1']) if f24['total']['total_1'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['education']) if f24['total']['education'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['education_pct']) if f24['total']['education_pct'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['academic']) if f24['total']['academic'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['academic_pct']) if f24['total']['academic_pct'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['industrial']) if f24['total']['industrial'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['industrial_pct']) if f24['total']['industrial_pct'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['social']) if f24['total']['social'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['social_pct']) if f24['total']['social_pct'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_2']) if f24['total']['total_2'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_pct']) if f24['total']['total_pct'] else '-'"/>
+                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_1_2']) if f24['total']['total_1_2'] else '-'"/>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </template>
-    <!-- Main report template -->
+
+    <!-- Main F24 report template -->
     <template id="report_compilation_f24">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="budget_appropriation_summary_f24.report_compilation_f24_document" />
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
+                    <t t-call="budget_appropriation_summary.report_common_styles" />
+                    <t t-set="is_landscape" t-value="True" />
+                    <t t-call="budget_appropriation_summary.report_preview_styles" />
+                    <t t-call="budget_appropriation_summary_f24.report_compilation_f24_content" />
+                </t>
             </t>
         </t>
     </template>
