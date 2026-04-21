@@ -13,58 +13,70 @@
             .border-end {
                 border-right: 1pt solid #000 !important;
             }
+            p,
+            span,
+            div {
+                font-size: 12pt;
+                line-height: 1.1;
+            }
         </style>
-        <div class="page f9w">
-            <t t-call="budget_appropriation_summary.report_council_header" />
-            <div class="text-center mt-5 mb-3" style="font-weight: bold">
-                <div>
-                    สรุปสัดส่วนประมาณการรายจ่าย ปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
-                </div>
-                <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
-                <div>จําแนกตามหน่วยงานและแผนงาน</div>
+        <div class="page f9w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+            <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_council_header"/>
+            <div class="text-center" style="font-weight: bold">
+                <h3>
+                    สรุปสัดส่วนประมาณการรายจ่าย ปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/>
+                </h3>
+                <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
+                <h3>จําแนกตามหน่วยงานและแผนงาน</h3>
             </div>
+            <div style="height: 24pt;"/>
             <div>
                 <table class="table table-sm table-bordered">
                     <thead>
+                        <tr style="height:0; visibility:collapse; line-height:0;">
+                            <th style="width: auto;"/>
+                            <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
+                              <th style="width: 70pt;"/>
+                              <th style="width: 30pt;"/>
+                            </t>
+                            <th style="width: 70pt;"/>
+                        </tr>
                         <tr>
                             <th class="text-center" rowspan="2" style="width: 20%;">หน่วยงาน</th>
                             <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                                <th class="text-center" colspan="2"><t t-out="column['name']" /></th>
+                                <th class="text-center" colspan="2"><t t-out="column['name']"/></th>
                             </t>
                             <th class="text-center" rowspan="2">รวมทั้งสิ้น</th>
                         </tr>
                         <tr>
-                            <th class="text-center">เงินรายได้</th>
-                            <th class="text-center">%</th>
-                            <th class="text-center">เงินรายได้</th>
-                            <th class="text-center">%</th>
-                            <th class="text-center">เงินรายได้</th>
-                            <th class="text-center">%</th>
-                            <th class="text-center">เงินรายได้</th>
-                            <th class="text-center">%</th>
+                            <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
+                              <th class="text-center">เงินรายได้</th>
+                              <th class="text-center">%</th>
+                            </t>
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="row_no" t-value="1" />
+                        <t t-set="row_no" t-value="1"/>
                         <t t-foreach="o.f9w_expense_data['departments']" t-as="department">
                             <tr class="border-0 border-end">
                                 <td class="">
-                                    <t t-out="department['name']" />
+                                    <t t-out="department['name']"/>
                                 </td>
                                 <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                                    <th class="text-center border-0 border-end">
-                                        <t t-out="'{0:,.2f}'.format(department['columns'][column['code']]['amount'])" />
+                                    <th class="text-end border-0 border-end" contenteditable="false">
+                                        <t t-out="'{0:,.2f}'.format(department['columns'][column['code']]['amount'])"/>
                                     </th>
-                                    <th class="text-center border-0 border-end">
+                                    <th class="text-end border-0 border-end" contenteditable="false">
                                         0.00
                                         <!-- <t t-out="department['columns'][column['code']]['percentage']" /> -->
                                     </th>
                                 </t>
-                                <th class="text-center border-0">
-                                    <t t-out="'{0:,.2f}'.format(department['total']['amount'])" />
+                                <th class="text-end border-0" contenteditable="false">
+                                    <t t-out="'{0:,.2f}'.format(department['total']['amount'])"/>
                                 </th>
                             </tr>
-                            <t t-set="row_no" t-value="row_no + 1" />
+                            <t t-set="row_no" t-value="row_no + 1"/>
                         </t>
                     </tbody>
                     <tfoot>
@@ -73,16 +85,16 @@
                                 รวมทั้งสิ้น
                             </td>
                             <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                                <th class="text-center">
-                                    <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['column_totals'][column['code']]['amount'])" />
+                                <th class="text-end" contenteditable="false">
+                                    <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['column_totals'][column['code']]['amount'])"/>
                                 </th>
-                                <th class="text-center">
+                                <th class="text-end" contenteditable="false">
                                     0.00
                                     <!-- <t t-out="department['columns'][column['code']]['percentage']" /> -->
                                 </th>
                             </t>
-                            <td class="text-center">
-                                <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['summary']['total_amount'])" />
+                            <td class="text-end" contenteditable="false">
+                                <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
                     </tfoot>
@@ -96,8 +108,10 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
-                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
                     <t t-call="budget_appropriation_summary.report_common_styles" />
+                    <t t-set="is_landscape" t-value="True" />
+                    <t t-call="budget_appropriation_summary.report_preview_styles" />
                     <t t-call="budget_appropriation_summary.report_f9w_expense_content" />
                 </t>
             </t>
