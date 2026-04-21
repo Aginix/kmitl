@@ -17,6 +17,7 @@
                 <field name="is_construction" invisible="1" />
             </xpath>
             <xpath expr="//field[@name='payment_type']" position="attributes">
+                <attribute name="force_save">1</attribute>
                 <attribute
                     name="attrs"
                 >{'readonly': ['|',('is_construction', '=', True), ('is_editable','=', False)]}</attribute>
