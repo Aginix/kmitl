@@ -115,6 +115,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0200" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+        <field name="egp_project_id">12345678</field>
     </record>
     <function
         model="purchase.request"
@@ -288,6 +289,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0400" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_3" />
+        <field name="egp_project_id">12345678</field>
     </record>
     <function
         model="purchase.request"
@@ -466,6 +468,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_1" />
+        <field name="egp_project_id">12345678</field>
     </record>
     <function
         model="purchase.request"
@@ -562,6 +565,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0500" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+        <field name="egp_project_id">12345678</field>
     </record>
     <function
         model="purchase.request"
@@ -652,6 +656,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0500" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+        <field name="egp_project_id">12345678</field>
     </record>
     <function
         model="purchase.request"
@@ -742,6 +747,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_3" />
+        <field name="egp_project_id">12345678</field>
     </record>
     <function
         model="purchase.request"
@@ -835,6 +841,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_3" />
+        <field name="egp_project_id">12345678</field>
     </record>
     <function
         model="purchase.request"
