@@ -109,4 +109,5 @@ class PurchaseRequest(models.Model):
         return res
 
     def button_rejected_egp(self):
+        self.action_del_egp_status()
         return self.button_rejected()
