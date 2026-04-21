@@ -289,6 +289,7 @@ def _create_pr_with_line(env, case, admin_user, fiscal_year, budget_account,
             "department_analytic_id": dept.id,
             "fund_analytic_id": fund.id,
             "source_analytic_id": source.id,
+            "egp_project_id": case.get("egp_project_id"),
         }
     )
 
