@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="purchase_request_dashboard.PurchaseRequestDashboard" owl="1">
+        <div class="o_action purchase_request_dashboard">
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-top-right">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <div>
+                            <label class="form-label-sm mb-1">ปีงบประมาณ:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onFiscalYearChange"
+                            >
+                                <t
+                                    t-foreach="state.filterOptions.fiscal_years"
+                                    t-as="fy"
+                                    t-key="fy.id"
+                                >
+                                    <option
+                                        t-att-value="fy.id"
+                                        t-att-selected="isFiscalYearSelected(fy.id)"
+                                        t-esc="fy.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">ส่วนงาน:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onDepartmentChange"
+                            >
+                                <option value="">ทั้งหมด</option>
+                                <t
+                                    t-foreach="state.filterOptions.departments"
+                                    t-as="dept"
+                                    t-key="dept.id"
+                                >
+                                    <option
+                                        t-att-value="dept.id"
+                                        t-att-selected="isDepartmentSelected(dept.id)"
+                                        t-esc="dept.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">แหล่งเงิน:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onSourceChange"
+                            >
+                                <option value="">ทั้งหมด</option>
+                                <t
+                                    t-foreach="state.filterOptions.sources"
+                                    t-as="src"
+                                    t-key="src.id"
+                                >
+                                    <option
+                                        t-att-value="src.id"
+                                        t-att-selected="isSourceSelected(src.id)"
+                                        t-esc="src.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                </t>
+            </ControlPanel>
+            <div class="o_content">
+                <!-- Loading State -->
+                <t t-if="state.loading">
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="purchase_request_dashboard_content container-fluid p-4">
+                        <!-- Summary Cards Row -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body text-center">
+                                        <div class="text-muted mb-1">จำนวนทั้งหมด</div>
+                                        <div class="h2 fw-bold text-primary mb-0">
+                                            <t t-esc="formatNumber(state.stats.total_count)"/>
+                                        </div>
+                                        <div class="text-muted small">รายการ</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body text-center">
+                                        <div class="text-muted mb-1">วงเงินรวม</div>
+                                        <div class="h4 fw-bold text-success mb-0">
+                                            <t t-esc="formatCurrency(state.stats.total_amount)"/>
+                                        </div>
+                                        <div class="text-muted small">บาท</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body text-center">
+                                        <div class="text-muted mb-1">รออนุมัติ</div>
+                                        <div class="h2 fw-bold text-warning mb-0">
+                                            <t t-esc="formatNumber(state.stats.pending_approval_count)"/>
+                                        </div>
+                                        <div class="text-muted small">รายการ</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body text-center">
+                                        <div class="text-muted mb-1">อนุมัติแล้ว</div>
+                                        <div class="h2 fw-bold text-success mb-0">
+                                            <t t-esc="formatNumber(state.stats.approved_count)"/>
+                                        </div>
+                                        <div class="text-muted small">รายการ</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body text-center">
+                                        <div class="text-muted mb-1">กำลังดำเนินการ</div>
+                                        <div class="h2 fw-bold text-info mb-0">
+                                            <t t-esc="formatNumber(state.stats.in_progress_count)"/>
+                                        </div>
+                                        <div class="text-muted small">รายการ</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body text-center">
+                                        <div class="text-muted mb-1">ปฏิเสธ</div>
+                                        <div class="h2 fw-bold text-danger mb-0">
+                                            <t t-esc="formatNumber(state.stats.rejected_count)"/>
+                                        </div>
+                                        <div class="text-muted small">รายการ</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Row 1 -->
+                        <div class="row g-3 mb-4">
+                            <!-- State Pie Chart -->
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-header bg-white border-0">
+                                        <h6 class="mb-0 fw-bold">สถานะใบขอจัดซื้อ</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="prStatePieChart" style="height: 350px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stacked Bar by Fiscal Year -->
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-header bg-white border-0">
+                                        <h6 class="mb-0 fw-bold">สถานะแยกตามปีงบประมาณ</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="prFyBarChart" style="height: 350px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stacked Bar by Department -->
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-header bg-white border-0">
+                                        <h6 class="mb-0 fw-bold">สถานะแยกตามส่วนงาน</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="prDeptBarChart" style="height: 350px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Row 2: Trend Line -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white border-0">
+                                        <h6 class="mb-0 fw-bold">แนวโน้มจำนวนใบขอจัดซื้อรายเดือน</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="prTrendLineChart" style="height: 350px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Table -->
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white border-0">
+                                        <h6 class="mb-0 fw-bold">รายการใบขอจัดซื้อ</h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                            <table class="table table-hover table-sm mb-0">
+                                                <thead class="table-light sticky-top">
+                                                    <tr>
+                                                        <th class="text-nowrap">รหัส</th>
+                                                        <th>ชื่อเรื่อง</th>
+                                                        <th class="text-end text-nowrap">วงเงิน</th>
+                                                        <th class="text-center">สถานะ</th>
+                                                        <th>ส่วนงาน</th>
+                                                        <th>ปีงบประมาณ</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-if="state.stats.table_data.length === 0">
+                                                        <tr>
+                                                            <td colspan="6" class="text-center text-muted py-4">
+                                                                ไม่พบข้อมูล
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                    <t t-foreach="state.stats.table_data" t-as="row" t-key="row.id">
+                                                        <tr
+                                                            t-on-click="() => this.onRowClick(row.id)"
+                                                            style="cursor: pointer;"
+                                                        >
+                                                            <td class="text-nowrap">
+                                                                <t t-esc="row.name"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="row.title"/>
+                                                            </td>
+                                                            <td class="text-end text-nowrap">
+                                                                <t t-esc="formatCurrency(row.estimated_cost)"/>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span t-att-class="getStateClass(row.state)">
+                                                                    <t t-esc="row.state_display"/>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="row.department"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="row.fiscal_year"/>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

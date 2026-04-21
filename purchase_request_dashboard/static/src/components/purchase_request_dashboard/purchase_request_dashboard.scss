@@ -1,0 +1,15 @@
+.purchase_request_dashboard {
+    .purchase_request_dashboard_content {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 56px);
+    }
+
+    .card {
+        border-radius: 8px;
+        transition: box-shadow 0.2s;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    }
+}
