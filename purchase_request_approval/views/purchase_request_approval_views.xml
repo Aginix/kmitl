@@ -101,7 +101,6 @@
                         states="draft,validate,to_approve"
                         string="Reject"
                         type="object"
-                        class="btn btn-danger"
                         groups="purchase_request.group_purchase_request_manager"
                     />
                     <field

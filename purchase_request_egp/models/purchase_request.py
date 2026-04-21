@@ -95,9 +95,12 @@ class PurchaseRequest(models.Model):
             if record.is_egp:
                 record.egp_status = False
 
+    # check if have egp_project_id
     def action_egp_in_progress(self):
         for record in self:
             if record.is_egp:
+                if not record.egp_project_id:
+                    raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ก่อนดำเนินการ"))
                 record.egp_status = "in_progress"
 
     def button_draft(self):
