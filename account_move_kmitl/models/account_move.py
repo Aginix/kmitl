@@ -38,6 +38,19 @@ class AccountMove(models.Model):
     )
 
     # --- Compute ---
+    @api.depends("posted_before", "state", "journal_id", "date")
+    def _compute_name(self):
+        super()._compute_name()
+        submitted_no_name = self.filtered(
+            lambda m: m.state == "submitted" and (not m.name or m.name == "/")
+        )
+        for move in submitted_no_name.sorted(
+            lambda m: (m.date, m.ref or "", m.id)
+        ):
+            move._set_next_sequence()
+        if submitted_no_name:
+            submitted_no_name._inverse_name()
+
     @api.depends("date", "auto_post", "state", "validation_status")
     def _compute_hide_post_button(self):
         """Show Post button only when submitted AND validated.
