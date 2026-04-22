@@ -557,7 +557,7 @@ export class PurchaseRequestDashboard extends Component {
 
     getBoxColorClass(state) {
         const classes = {
-            draft: "text-secondary",
+            draft: "text-dark",
             to_verify: "text-info",
             to_approve: "text-warning",
             approved: "text-success",

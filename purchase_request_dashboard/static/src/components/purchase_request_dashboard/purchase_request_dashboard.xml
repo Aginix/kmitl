@@ -62,10 +62,11 @@
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
                                     <div
-                                        class="text-muted small mb-1 text-center fw-semibold border-bottom"
+                                        class="text-muted small mb-1 pb-4 text-center fw-semibold border-bottom"
                                     >
                                         จำนวน พ.1
                                     </div>
+                                    <div />
                                     <div class="text-center pt-1">
                                         <div
                                             class="text-muted small mb-1 text-center fw-semibold"
@@ -81,12 +82,14 @@
                                 t-as="box"
                                 t-key="box.state"
                             >
+
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-body p-2">
                                         <div
                                             class="text-muted small mb-1 text-center fw-semibold"
-                                            t-esc="box.label"
-                                        />
+                                        >
+                                            <t t-esc="box.label"/>
+                                        </div>
                                         <t t-if="box.state !== 'total'">
                                             <!-- Split: top count, bottom amount -->
                                             <div
@@ -99,12 +102,7 @@
                                                         t-esc="formatNumber(box.count)"
                                                     />
                                                 </div>
-                                                <div
-                                                    class="text-muted"
-                                                    style="font-size: 10px"
-                                                >
-                                                    รายการ
-                                                </div>
+
                                             </div>
                                             <div class="text-center pt-1">
                                                 <div
@@ -114,12 +112,6 @@
                                                     <t
                                                         t-esc="formatCurrency(box.amount)"
                                                     />
-                                                </div>
-                                                <div
-                                                    class="text-muted"
-                                                    style="font-size: 10px"
-                                                >
-                                                    บาท
                                                 </div>
                                             </div>
                                         </t>
