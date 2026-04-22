@@ -64,20 +64,24 @@
                                     <div class="card-body p-2">
                                         <div class="text-muted small mb-1 text-center fw-semibold" t-esc="box.label"/>
                                         <t t-if="box.state !== 'total'">
-                                            <!-- Split: left count, right amount -->
-                                            <div class="d-flex">
-                                                <div class="flex-fill text-center border-end pe-1">
-                                                    <div t-attf-class="h5 fw-bold mb-0 #{getBoxColorClass(box.state)}">
-                                                        <t t-esc="formatNumber(box.count)"/>
-                                                    </div>
-                                                    <div class="text-muted" style="font-size: 10px;">รายการ</div>
+                                            <!-- Split: top count, bottom amount -->
+                                            <div class="text-center border-bottom pb-1 mb-1">
+                                                <t t-if="box_index === 0">
+                                                    <div class="text-muted" style="font-size: 9px;">จำนวน พ.1</div>
+                                                </t>
+                                                <div t-attf-class="h5 fw-bold mb-0 #{getBoxColorClass(box.state)}">
+                                                    <t t-esc="formatNumber(box.count)"/>
                                                 </div>
-                                                <div class="flex-fill text-center ps-1">
-                                                    <div t-attf-class="fw-bold mb-0 #{getBoxColorClass(box.state)}" style="font-size: 13px;">
-                                                        <t t-esc="formatCurrency(box.amount)"/>
-                                                    </div>
-                                                    <div class="text-muted" style="font-size: 10px;">บาท</div>
+                                                <div class="text-muted" style="font-size: 10px;">รายการ</div>
+                                            </div>
+                                            <div class="text-center pt-1">
+                                                <t t-if="box_index === 0">
+                                                    <div class="text-muted" style="font-size: 9px;">ยอดเงินรวม</div>
+                                                </t>
+                                                <div t-attf-class="fw-bold mb-0 #{getBoxColorClass(box.state)}" style="font-size: 13px;">
+                                                    <t t-esc="formatCurrency(box.amount)"/>
                                                 </div>
+                                                <div class="text-muted" style="font-size: 10px;">บาท</div>
                                             </div>
                                         </t>
                                         <t t-else="">
