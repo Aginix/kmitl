@@ -74,13 +74,15 @@ class PurchaseRequestDashboardController(http.Controller):
         dept_cache = self._build_root_department_map(records)
 
         # Filter records by selected states for charts only
-        chart_records = records
         if selected_states:
             state_set = set(selected_states)
             # Map "draft" to include "to_examine"
             if "draft" in state_set:
                 state_set.add("to_examine")
             chart_records = records.filtered(lambda r: r.state in state_set)
+        else:
+            # Default: exclude rejected from charts
+            chart_records = records.filtered(lambda r: r.state != "rejected")
 
         return {
             "filter_options": {
