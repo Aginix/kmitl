@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class PurchaseRequest(models.Model):
+    _name = "purchase.request"
     _inherit = ['purchase.request', 'state.leadtime.mixin']
 
     _tracked_transitions = [
