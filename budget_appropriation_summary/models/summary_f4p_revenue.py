@@ -117,11 +117,11 @@ class BudgetAppropriationSummaryF4PRevenue(models.AbstractModel):
         }
 
     def _build_category_dept_totals(self, summary, dept_map):
-        """Build (category_code, top_dept_id) -> amount mapping.
+        """Build (category_code, top_dept_id) -> signed amount mapping.
 
-        Iterates compilations so department attribution follows the
-        compilation (not individual lines). Revenue reports show gross
-        revenue — deduct_line_ids (หักโอน) are excluded.
+        Iterates compilations so department is taken from the compilation
+        (not from individual lines) and deduct_line_ids are subtracted —
+        keeping totals aligned with compilation.amount_revenue_total.
         """
         category_accounts = {}
         for code, _ in self.REVENUE_CATEGORIES:
@@ -132,14 +132,13 @@ class BudgetAppropriationSummaryF4PRevenue(models.AbstractModel):
             top_dept_id = compilation.top_level_department_id()
             if not top_dept_id or top_dept_id not in dept_map:
                 continue
-            for approp in compilation.revenue_appropriation_ids:
-                for line in approp.line_ids:
-                    acc_id = line.account_id.id
-                    for code, _ in self.REVENUE_CATEGORIES:
-                        if acc_id in category_accounts[code]:
-                            key = (code, top_dept_id)
-                            totals[key] = totals.get(key, 0) + line.balance
-                            break
+            for line, sign in compilation.iter_signed_lines("revenue"):
+                acc_id = line.account_id.id
+                for code, _ in self.REVENUE_CATEGORIES:
+                    if acc_id in category_accounts[code]:
+                        key = (code, top_dept_id)
+                        totals[key] = totals.get(key, 0) + line.balance * sign
+                        break
 
         return totals
 

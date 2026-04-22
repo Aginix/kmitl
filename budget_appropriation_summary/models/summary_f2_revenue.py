@@ -147,18 +147,16 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
     def _build_category_totals(self, summary):
         """Build category_code -> amount mapping from all compilations.
 
-        Revenue reports show gross revenue (ก่อนหักโอน). Iterate line_ids
-        only — deduct_line_ids represent transfers out and must not reduce
-        the revenue figures shown in the F-reports.
+        Signed line sum (line_ids - deduct_line_ids) per compilation so the
+        grand total matches the compilation's amount_revenue_total (amount_net).
         """
         account_totals = {}
         for compilation in summary.compilation_ids:
-            for approp in compilation.revenue_appropriation_ids:
-                for line in approp.line_ids:
-                    acc_id = line.account_id.id
-                    account_totals[acc_id] = (
-                        account_totals.get(acc_id, 0) + line.balance
-                    )
+            for line, sign in compilation.iter_signed_lines("revenue"):
+                acc_id = line.account_id.id
+                account_totals[acc_id] = (
+                    account_totals.get(acc_id, 0) + line.balance * sign
+                )
 
         totals = {}
         for code, _ in self.REVENUE_CATEGORIES:
