@@ -58,19 +58,18 @@
                 <t t-else="">
                     <div class="purchase_request_dashboard_content container-fluid p-4">
                         <div class="pr-summary-boxes mb-4">
+                            <!-- header Box -->
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body p-2">
                                     <div
                                         class="text-muted small mb-1 text-center fw-semibold"
-                                        t-esc="box.label"
-                                    />
-                                    <div class="text-center border-bottom pb-1 mb-1">
-                                        <div class="text-muted" style="font-size: 9px">
-                                            จำนวน พ.1
-                                        </div>
+                                    >
+                                        จำนวน พ.1
                                     </div>
                                     <div class="text-center pt-1">
-                                        <div class="text-muted" style="font-size: 9px">
+                                        <div
+                                            class="text-muted small mb-1 text-center fw-semibold"
+                                        >
                                             ยอดเงินรวม
                                         </div>
                                     </div>
