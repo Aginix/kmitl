@@ -57,40 +57,89 @@
                 </t>
                 <t t-else="">
                     <div class="purchase_request_dashboard_content container-fluid p-4">
-                        <!-- Summary Boxes (8 boxes) -->
                         <div class="pr-summary-boxes mb-4">
-                            <t t-foreach="state.summaryBoxes" t-as="box" t-key="box.state">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-2">
+                                    <div
+                                        class="text-muted small mb-1 text-center fw-semibold"
+                                        t-esc="box.label"
+                                    />
+                                    <div class="text-center border-bottom pb-1 mb-1">
+                                        <div class="text-muted" style="font-size: 9px">
+                                            จำนวน พ.1
+                                        </div>
+                                    </div>
+                                    <div class="text-center pt-1">
+                                        <div class="text-muted" style="font-size: 9px">
+                                            ยอดเงินรวม
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Summary Boxes (8 boxes) -->
+                            <t
+                                t-foreach="state.summaryBoxes"
+                                t-as="box"
+                                t-key="box.state"
+                            >
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-body p-2">
-                                        <div class="text-muted small mb-1 text-center fw-semibold" t-esc="box.label"/>
+                                        <div
+                                            class="text-muted small mb-1 text-center fw-semibold"
+                                            t-esc="box.label"
+                                        />
                                         <t t-if="box.state !== 'total'">
                                             <!-- Split: top count, bottom amount -->
-                                            <div class="text-center border-bottom pb-1 mb-1">
-                                                <t t-if="box_index === 0">
-                                                    <div class="text-muted" style="font-size: 9px;">จำนวน พ.1</div>
-                                                </t>
-                                                <div t-attf-class="h5 fw-bold mb-0 #{getBoxColorClass(box.state)}">
-                                                    <t t-esc="formatNumber(box.count)"/>
+                                            <div
+                                                class="text-center border-bottom pb-1 mb-1"
+                                            >
+                                                <div
+                                                    t-attf-class="h5 fw-bold mb-0 #{getBoxColorClass(box.state)}"
+                                                >
+                                                    <t
+                                                        t-esc="formatNumber(box.count)"
+                                                    />
                                                 </div>
-                                                <div class="text-muted" style="font-size: 10px;">รายการ</div>
+                                                <div
+                                                    class="text-muted"
+                                                    style="font-size: 10px"
+                                                >
+                                                    รายการ
+                                                </div>
                                             </div>
                                             <div class="text-center pt-1">
-                                                <t t-if="box_index === 0">
-                                                    <div class="text-muted" style="font-size: 9px;">ยอดเงินรวม</div>
-                                                </t>
-                                                <div t-attf-class="fw-bold mb-0 #{getBoxColorClass(box.state)}" style="font-size: 13px;">
-                                                    <t t-esc="formatCurrency(box.amount)"/>
+                                                <div
+                                                    t-attf-class="fw-bold mb-0 #{getBoxColorClass(box.state)}"
+                                                    style="font-size: 13px"
+                                                >
+                                                    <t
+                                                        t-esc="formatCurrency(box.amount)"
+                                                    />
                                                 </div>
-                                                <div class="text-muted" style="font-size: 10px;">บาท</div>
+                                                <div
+                                                    class="text-muted"
+                                                    style="font-size: 10px"
+                                                >
+                                                    บาท
+                                                </div>
                                             </div>
                                         </t>
                                         <t t-else="">
                                             <!-- Total: amount only -->
                                             <div class="text-center">
-                                                <div class="h5 fw-bold text-primary mb-0">
-                                                    <t t-esc="formatCurrency(box.amount)"/>
+                                                <div
+                                                    class="h5 fw-bold text-primary mb-0"
+                                                >
+                                                    <t
+                                                        t-esc="formatCurrency(box.amount)"
+                                                    />
                                                 </div>
-                                                <div class="text-muted" style="font-size: 10px;">บาท</div>
+                                                <div
+                                                    class="text-muted"
+                                                    style="font-size: 10px"
+                                                >
+                                                    บาท
+                                                </div>
                                             </div>
                                         </t>
                                     </div>
@@ -104,10 +153,15 @@
                             <div class="col-lg-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-header bg-white border-0 py-2">
-                                        <h6 class="mb-0 fw-bold" style="font-size: 13px;">ประเภทการจัดซื้อจัดจ้าง (รายเดือน)</h6>
+                                        <h6
+                                            class="mb-0 fw-bold"
+                                            style="font-size: 13px"
+                                        >
+                                            ประเภทการจัดซื้อจัดจ้าง (รายเดือน)
+                                        </h6>
                                     </div>
                                     <div class="card-body p-2">
-                                        <div id="prChart1" style="height: 320px;"/>
+                                        <div id="prChart1" style="height: 320px" />
                                     </div>
                                 </div>
                             </div>
@@ -116,10 +170,15 @@
                             <div class="col-lg-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-header bg-white border-0 py-2">
-                                        <h6 class="mb-0 fw-bold" style="font-size: 13px;">ประเภทการจัดซื้อจัดจ้าง</h6>
+                                        <h6
+                                            class="mb-0 fw-bold"
+                                            style="font-size: 13px"
+                                        >
+                                            ประเภทการจัดซื้อจัดจ้าง
+                                        </h6>
                                     </div>
                                     <div class="card-body p-2">
-                                        <div id="prChart2" style="height: 320px;"/>
+                                        <div id="prChart2" style="height: 320px" />
                                     </div>
                                 </div>
                             </div>
@@ -128,10 +187,15 @@
                             <div class="col-lg-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-header bg-white border-0 py-2">
-                                        <h6 class="mb-0 fw-bold" style="font-size: 13px;">ประเภทค่าใช้จ่าย (รายเดือน)</h6>
+                                        <h6
+                                            class="mb-0 fw-bold"
+                                            style="font-size: 13px"
+                                        >
+                                            ประเภทค่าใช้จ่าย (รายเดือน)
+                                        </h6>
                                     </div>
                                     <div class="card-body p-2">
-                                        <div id="prChart3" style="height: 320px;"/>
+                                        <div id="prChart3" style="height: 320px" />
                                     </div>
                                 </div>
                             </div>
@@ -143,10 +207,15 @@
                             <div class="col-lg-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-header bg-white border-0 py-2">
-                                        <h6 class="mb-0 fw-bold" style="font-size: 13px;">แนวโน้มการอนุมัติจัดซื้อจัดจ้าง</h6>
+                                        <h6
+                                            class="mb-0 fw-bold"
+                                            style="font-size: 13px"
+                                        >
+                                            แนวโน้มการอนุมัติจัดซื้อจัดจ้าง
+                                        </h6>
                                     </div>
                                     <div class="card-body p-2">
-                                        <div id="prChart4" style="height: 320px;"/>
+                                        <div id="prChart4" style="height: 320px" />
                                     </div>
                                 </div>
                             </div>
@@ -155,10 +224,15 @@
                             <div class="col-lg-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-header bg-white border-0 py-2">
-                                        <h6 class="mb-0 fw-bold" style="font-size: 13px;">ประเภทการจัดซื้อจัดจ้าง (ตามส่วนงาน)</h6>
+                                        <h6
+                                            class="mb-0 fw-bold"
+                                            style="font-size: 13px"
+                                        >
+                                            ประเภทการจัดซื้อจัดจ้าง (ตามส่วนงาน)
+                                        </h6>
                                     </div>
                                     <div class="card-body p-2">
-                                        <div id="prChart5" style="height: 320px;"/>
+                                        <div id="prChart5" style="height: 320px" />
                                     </div>
                                 </div>
                             </div>
@@ -167,10 +241,15 @@
                             <div class="col-lg-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-header bg-white border-0 py-2">
-                                        <h6 class="mb-0 fw-bold" style="font-size: 13px;">ประเภทค่าใช้จ่าย (ตามส่วนงาน)</h6>
+                                        <h6
+                                            class="mb-0 fw-bold"
+                                            style="font-size: 13px"
+                                        >
+                                            ประเภทค่าใช้จ่าย (ตามส่วนงาน)
+                                        </h6>
                                     </div>
                                     <div class="card-body p-2">
-                                        <div id="prChart6" style="height: 320px;"/>
+                                        <div id="prChart6" style="height: 320px" />
                                     </div>
                                 </div>
                             </div>
