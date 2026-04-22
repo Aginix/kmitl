@@ -60,9 +60,9 @@
                         <div class="pr-summary-boxes mb-4">
                             <!-- header Box -->
                             <div class="card border-0 shadow-sm">
-                                <div class="card-body p-2">
+                                <div class="card-body">
                                     <div
-                                        class="text-muted small mb-1 text-center fw-semibold"
+                                        class="text-muted small mb-1 text-center fw-semibold border-bottom"
                                     >
                                         จำนวน พ.1
                                     </div>
