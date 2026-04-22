@@ -18,6 +18,11 @@ class StateLeadtimeMixin(models.AbstractModel):
         auto_join=True,
     )
 
+    state_entry_date = fields.Datetime(
+        string='State Entry Date',
+        copy=False,
+    )
+
     def _should_track_transition(self, from_state, to_state):
         """
         ตรวจสอบว่า transition นี้ควร track ไหม
@@ -43,6 +48,14 @@ class StateLeadtimeMixin(models.AbstractModel):
                         record=record,
                         from_state=from_state,
                         to_state=to_state,
+                        entry_date=record.state_entry_date,
                     )
+            
+            vals['state_entry_date'] = fields.Datetime.now()
 
         return super().write(vals)
+
+    def create(self, vals):
+        # บันทึกเวลาที่ record ถูกสร้าง = เวลาเข้าสู่ initial state
+        vals['state_entry_date'] = fields.Datetime.now()
+        return super().create(vals)

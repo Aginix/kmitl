@@ -35,18 +35,13 @@ class StateLeadtimeLog(models.Model):
         ondelete='set null',
     )
 
-    def _log_transition(self, record, from_state, to_state):
-        
-        last_log = self.search([
-            ('res_model', '=', record._name),
-            ('res_id', '=', record.id),
-            ('to_state', '=', from_state),
-        ], order='transition_date desc', limit=1)
-
+    def _log_transition(self, record, from_state, to_state, entry_date=None):
+        now = fields.Datetime.now()
         duration_minutes = 0.0
-        if last_log:
-            delta = fields.Datetime.now() - last_log.transition_date
-            duration_minutes = delta.total_seconds() / 60  # แปลงเป็นนาที
+
+        if entry_date:
+            delta = now - entry_date
+            duration_minutes = delta.total_seconds() / 60
 
         self.create({
             'res_model': record._name,
