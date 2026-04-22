@@ -17,3 +17,7 @@ access_hr_job_old_code_hr_user,hr.job.old.code.hr.user,model_hr_job_old_code,hr_
 access_hr_job_old_code_public,hr.job.old.code public,model_hr_job_old_code,,1,0,0,0
 access_hr_recruitment_degree_public,hr.recruitment.degree.public,hr_recruitment.model_hr_recruitment_degree,,1,0,0,0
 access_resource_education_level_portal,resource.education.level portal,hr_employee_education_history.model_resource_education_level,base.group_portal,1,0,0,0
+access_hr_onboarding_user,hr.onboarding user,model_hr_onboarding,base.group_user,1,1,1,1
+access_hr_onboarding_portal,hr.onboarding portal,model_hr_onboarding,base.group_portal,1,1,1,0
+access_hr_onboarding_family_user,hr.onboarding.family user,model_hr_onboarding_family,base.group_user,1,1,1,1
+access_hr_onboarding_family_portal,hr.onboarding.family portal,model_hr_onboarding_family,base.group_portal,1,1,1,0

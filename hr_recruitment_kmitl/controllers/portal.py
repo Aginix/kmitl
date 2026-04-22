@@ -243,10 +243,13 @@ class HrRecruitmentPortal(CustomerPortal):
             "-",
         )
 
+        title_name = (
+            application.applicant_title.name if application.applicant_title else ""
+        )
         full_name = " ".join(
             part
             for part in [
-                application.applicant_title or "",
+                title_name or "",
                 application.first_name or "",
                 application.middle_name or "",
                 application.last_name or "",

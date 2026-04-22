@@ -245,6 +245,11 @@ class HrApplicant(models.Model):
     )
     work_history_ids = fields.One2many("hr.applicant.work.history", "applicant_id")
 
+    # Onboarding
+    onboarding_ids = fields.One2many("hr.onboarding", "applicant_id")
+    onboarding_count = fields.Integer(compute="_compute_onboarding_count")
+    can_create_onboarding = fields.Boolean(compute="_compute_can_create_onboarding")
+
     ROLE_REQUIRED_FIELDS = {
         "academic": {
             "academic_standing_id": "ตำแหน่งทางวิชาการ",
@@ -475,3 +480,25 @@ class HrApplicant(models.Model):
                     "date_end": work.date_end,
                 }
             )
+
+    def _compute_onboarding_count(self):
+        for record in self:
+            record.onboarding_count = len(record.onboarding_ids)
+
+    @api.depends("stage_id", "onboarding_ids")
+    def _compute_can_create_onboarding(self):
+        hired_stage = self.env.ref(
+            "hr_recruitment.stage_job4", raise_if_not_found=False
+        )
+        for record in self:
+            record.can_create_onboarding = bool(
+                hired_stage
+                and record.stage_id.id == hired_stage.id
+                and not record.onboarding_ids
+            )
+
+    def action_view_onboarding(self):
+        self.ensure_one()
+        return self.env["ir.actions.act_window"]._for_xml_id(
+            "hr_recruitment_kmitl.action_hr_onboarding"
+        )
