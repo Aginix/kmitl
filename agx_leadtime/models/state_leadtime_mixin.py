@@ -55,7 +55,12 @@ class StateLeadtimeMixin(models.AbstractModel):
 
         return super().write(vals)
 
-    def create(self, vals):
-        # บันทึกเวลาที่ record ถูกสร้าง = เวลาเข้าสู่ initial state
-        vals['state_entry_date'] = fields.Datetime.now()
-        return super().create(vals)
+    def create(self, vals_list):
+        if isinstance(vals_list, dict):
+            vals_list = [vals_list]
+
+        now = fields.Datetime.now()
+        for vals in vals_list:
+            vals.setdefault('state_entry_date', now)
+
+        return super().create(vals_list)
