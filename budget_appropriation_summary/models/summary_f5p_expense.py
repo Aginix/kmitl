@@ -257,8 +257,6 @@ class BudgetAppropriationSummaryF5PExpense(models.AbstractModel):
         Returns:
             dict: (type_code, cat_name, dept_id) -> balance
         """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
-
         # Pre-compute account_id -> (type_code, cat_name) mapping
         account_category_map = {}
         for type_code, cat_name, mapping_type, codes in self.EXPENSE_CATEGORIES:
@@ -266,16 +264,21 @@ class BudgetAppropriationSummaryF5PExpense(models.AbstractModel):
             for acc_id in account_ids:
                 account_category_map[acc_id] = (type_code, cat_name)
 
-        # Aggregate
+        # Iterate compilations so department attribution follows the
+        # compilation (not the line) and deduct_line_ids are subtracted
+        # — matching compilation.amount_expense_total (amount_net).
         totals = {}
-        for line in lines:
-            acc_id = line.account_id.id
-            top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
-
-            if acc_id in account_category_map and top_dept_id and top_dept_id in dept_map:
+        for compilation in summary.compilation_ids:
+            top_dept_id = compilation.top_level_department_id()
+            if not top_dept_id or top_dept_id not in dept_map:
+                continue
+            for line, sign in compilation.iter_signed_lines("expense"):
+                acc_id = line.account_id.id
+                if acc_id not in account_category_map:
+                    continue
                 type_code, cat_name = account_category_map[acc_id]
                 key = (type_code, cat_name, top_dept_id)
-                totals[key] = totals.get(key, 0) + line.balance
+                totals[key] = totals.get(key, 0) + line.balance * sign
 
         return totals
 

@@ -230,19 +230,19 @@ class BudgetAppropriationSummaryF8WExpense(models.AbstractModel):
         Returns:
             dict: (dept_id, xml_id) -> balance
         """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
         totals = {}
-
-        for line in lines:
-            top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
-            activity = line.activity_analytic_id
-
-            if top_dept_id and top_dept_id in dept_map and activity and activity.parent_path:
-                # Find which activity plan this belongs to
+        for compilation in summary.compilation_ids:
+            top_dept_id = compilation.top_level_department_id()
+            if not top_dept_id or top_dept_id not in dept_map:
+                continue
+            for line, sign in compilation.iter_signed_lines("expense"):
+                activity = line.activity_analytic_id
+                if not activity or not activity.parent_path:
+                    continue
                 for prefix, xml_id in activity_path_map.items():
-                    if prefix in activity.parent_path or activity.parent_path.startswith(prefix):
+                    if activity.parent_path.startswith(prefix):
                         key = (top_dept_id, xml_id)
-                        totals[key] = totals.get(key, 0) + line.balance
+                        totals[key] = totals.get(key, 0) + line.balance * sign
                         break
 
         return totals

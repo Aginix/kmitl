@@ -462,6 +462,36 @@ class BudgetAppropriationCompilation(models.Model):
                 record.expense_appropriation_ids.mapped("amount_net")
             )
 
+    def iter_signed_lines(self, budget_type):
+        """Yield ``(line, sign)`` pairs across this compilation's appropriations.
+
+        ``sign`` is ``+1`` for regular lines and ``-1`` for deduct lines, so
+        summing ``line.balance * sign`` matches the appropriation's
+        ``amount_net`` (the value used by the compilation aggregate totals).
+        """
+        self.ensure_one()
+        field = (
+            "revenue_appropriation_ids"
+            if budget_type == "revenue"
+            else "expense_appropriation_ids"
+        )
+        for appropriation in self[field]:
+            for line in appropriation.line_ids:
+                yield line, 1
+            for line in appropriation.deduct_line_ids:
+                yield line, -1
+
+    def top_level_department_id(self):
+        """Return the top-level ancestor id of this compilation's department."""
+        self.ensure_one()
+        department = self.department_analytic_id
+        if department and department.parent_path:
+            try:
+                return int(department.parent_path.strip("/").split("/")[0])
+            except (ValueError, IndexError):
+                return None
+        return None
+
     @api.depends("revenue_appropriation_ids")
     def _compute_f4_revenue_data(self):
         F4Model = self.env["budget.appropriation.f4.report"]

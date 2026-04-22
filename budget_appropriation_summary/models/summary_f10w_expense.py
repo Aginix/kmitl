@@ -281,18 +281,17 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             dict: (activity_id, expense_type_code) -> balance
         """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
         totals = {}
+        for compilation in summary.compilation_ids:
+            for line, sign in compilation.iter_signed_lines("expense"):
+                activity = line.activity_analytic_id
+                account_id = line.account_id.id
 
-        for line in lines:
-            activity = line.activity_analytic_id
-            account_id = line.account_id.id
+                if not activity or account_id not in expense_type_map:
+                    continue
 
-            if not activity or account_id not in expense_type_map:
-                continue
-
-            expense_type_code = expense_type_map[account_id]
-            key = (activity.id, expense_type_code)
-            totals[key] = totals.get(key, 0) + line.balance
+                expense_type_code = expense_type_map[account_id]
+                key = (activity.id, expense_type_code)
+                totals[key] = totals.get(key, 0) + line.balance * sign
 
         return totals
