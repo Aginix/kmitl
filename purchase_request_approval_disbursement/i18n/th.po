@@ -77,7 +77,7 @@ msgstr "ใบขอเบิก"
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__draft
 msgid "Draft"
-msgstr "แบบร่าง"
+msgstr ""
 
 #. module: purchase_request_approval_disbursement
 #. odoo-python
@@ -89,7 +89,7 @@ msgstr ""
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_disbursement_request_form
 msgid "PA"
-msgstr "พจ.1"
+msgstr ""
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__display_purchase_order
@@ -100,7 +100,7 @@ msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
 msgid "Purchase Orders"
-msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
+msgstr ""
 
 #. module: purchase_request_approval_disbursement
 #. odoo-python
