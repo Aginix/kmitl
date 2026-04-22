@@ -9,12 +9,10 @@ class BankPaymentExport(models.Model):
     _name = "bank.payment.export"
     _inherit = ["bank.payment.export", "thai.date.mixin"]
 
-    payment_batch_id = fields.Many2one(
-        comodel_name="payment.batch",
-        string="Payment Batch",
-        ondelete="set null",
+    payment_cycle_id = fields.Many2one(
+        comodel_name="payment.cycle",
+        string="Payment Cycle",
         tracking=True,
-        copy=False,
     )
 
     account_fiscal_year_id = fields.Many2one(
@@ -88,31 +86,11 @@ class BankPaymentExport(models.Model):
 
     def action_confirm(self):
         """Trigger tier validation on exported payments after confirm."""
-        for rec in self:
-            if (
-                rec.payment_batch_id
-                and rec.payment_batch_id.state != "approved"
-            ):
-                raise UserError(
-                    _(
-                        "Cannot confirm this export independently. "
-                        "Please approve the payment batch '%s' first."
-                    )
-                    % rec.payment_batch_id.name
-                )
         res = super().action_confirm()
         for line in self.export_line_ids:
             move = line.payment_id.move_id
             if move.need_validation and move.state == "submitted":
                 move.request_validation()
-        return res
-
-    def action_done(self):
-        res = super().action_done()
-        batches = self.mapped("payment_batch_id").filtered(
-            lambda b: b.state == "approved"
-        )
-        batches._check_auto_done()
         return res
 
     # -------------------------------------------------------------------------

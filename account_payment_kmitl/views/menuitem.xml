@@ -50,13 +50,13 @@
         sequence="15"
     />
 
-    <!-- Payment Batch -->
+    <!-- Payment Cycle -->
     <menuitem
-        id="menu_payment_batch"
+        id="menu_payment_cycle"
         name="รอบการจ่ายเงิน"
-        parent="menu_payment_root"
-        action="action_payment_batch"
-        sequence="18"
+        parent="menu_payment_settings"
+        action="action_payment_cycle"
+        sequence="3"
     />
 
     <!-- Bank Payment Export -->

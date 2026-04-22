@@ -4,5 +4,4 @@ from . import account_payment
 from . import bank_payment_export
 from . import bank_payment_export_line
 from . import kmitl_payment_type
-from . import payment_batch
-from . import tier_definition
+from . import payment_cycle

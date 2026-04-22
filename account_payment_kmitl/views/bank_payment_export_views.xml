@@ -11,7 +11,7 @@
             <!-- Add fiscal year and payment batch fields to right_header group -->
             <xpath expr="//group[@name='right_header']" position="inside">
                 <field name="account_fiscal_year_id" readonly="1"/>
-                <field name="payment_batch_id" readonly="1"/>
+                <field name="payment_cycle_id"/>
             </xpath>
 
         </field>
@@ -40,7 +40,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='total_amount']" position="after">
                 <field name="account_fiscal_year_id" optional="show"/>
-                <field name="payment_batch_id" optional="hide"/>
+                <field name="payment_cycle_id" optional="hide"/>
             </xpath>
         </field>
     </record>
@@ -58,9 +58,9 @@
                     context="{'group_by': 'account_fiscal_year_id'}"
                 />
                 <filter
-                    string="Payment Batch"
-                    name="group_by_payment_batch"
-                    context="{'group_by': 'payment_batch_id'}"
+                    string="Payment Cycle"
+                    name="group_by_payment_cycle"
+                    context="{'group_by': 'payment_cycle_id'}"
                 />
             </xpath>
         </field>

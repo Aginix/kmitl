@@ -11,6 +11,11 @@ class AccountPayment(models.Model):
         comodel_name="kmitl.payment.type",
         string="Payment Type (KMITL)",
     )
+    payment_cycle_id = fields.Many2one(
+        comodel_name="payment.cycle",
+        string="Payment Cycle",
+        tracking=True,
+    )
     to_reconcile_payment_line_ids = fields.Many2many(
         comodel_name="account.move.line",
         relation="account_payment_to_reconcile_line_rel",

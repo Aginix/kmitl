@@ -35,7 +35,12 @@
 
             <!-- Add KMITL payment type where payment_type was -->
             <xpath expr="//field[@name='payment_type']" position="after">
-                <field name="kmitl_payment_type_id" domain="[('direction', '=', payment_type)]"/>
+                <field name="kmitl_payment_type_id" string="Payment Type (KMITL)" domain="[('direction', '=', payment_type)]"/>
+            </xpath>
+
+            <!-- Payment cycle -->
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name="payment_cycle_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
             </xpath>
 
             <!-- Add Budget tab -->
@@ -46,6 +51,7 @@
                             <group name="budget_info">
                                 <field name="budget_commitment_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                                 <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
+                                <field name="analytic_distribution" invisible="1"/>
                             </group>
                             <group name="analytic_dimensions">
                                 <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
@@ -70,7 +76,8 @@
         <field name="inherit_id" ref="account.view_account_payment_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="kmitl_payment_type_id" optional="hide"/>
+                <field name="kmitl_payment_type_id" string="Payment Type (KMITL)" optional="hide"/>
+                <field name="payment_cycle_id" optional="show"/>
             </xpath>
         </field>
     </record>
