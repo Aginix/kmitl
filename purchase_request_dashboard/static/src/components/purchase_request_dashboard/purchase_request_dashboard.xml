@@ -83,7 +83,9 @@
                                 t-key="box.state"
                             >
 
-                                <div class="card border-0 shadow-sm">
+                                <div t-attf-class="card shadow-sm #{isBoxSelected(box.state) ? 'pr-box-selected' : 'border-0'}"
+                                     t-att-style="box.state !== 'total' ? 'cursor: pointer;' : ''"
+                                     t-on-click="() => this.onBoxClick(box.state)">
                                     <div class="card-body p-2">
                                         <div
                                             class="text-muted small mb-1 text-center fw-semibold"

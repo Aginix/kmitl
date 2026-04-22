@@ -37,7 +37,9 @@ class PurchaseRequestDashboardController(http.Controller):
         type="json",
         auth="user",
     )
-    def get_dashboard_data(self, fiscal_year_id=None, source_id=None, **kw):
+    def get_dashboard_data(
+        self, fiscal_year_id=None, source_id=None, selected_states=None, **kw
+    ):
         # Filter options
         fiscal_years = request.env["account.fiscal.year"].search(
             [], order="date_from desc"
@@ -71,6 +73,15 @@ class PurchaseRequestDashboardController(http.Controller):
         budget_cache = self._build_root_budget_account_map(records)
         dept_cache = self._build_root_department_map(records)
 
+        # Filter records by selected states for charts only
+        chart_records = records
+        if selected_states:
+            state_set = set(selected_states)
+            # Map "draft" to include "to_examine"
+            if "draft" in state_set:
+                state_set.add("to_examine")
+            chart_records = records.filtered(lambda r: r.state in state_set)
+
         return {
             "filter_options": {
                 "fiscal_years": fiscal_year_options,
@@ -82,18 +93,20 @@ class PurchaseRequestDashboardController(http.Controller):
             },
             "summary_boxes": self._get_summary_boxes(records),
             "chart1_purchase_type_by_month": self._get_chart1_purchase_type_by_month(
-                records
+                chart_records
             ),
-            "chart2_purchase_type_pie": self._get_chart2_purchase_type_pie(records),
+            "chart2_purchase_type_pie": self._get_chart2_purchase_type_pie(
+                chart_records
+            ),
             "chart3_expense_type_by_month": self._get_chart3_expense_type_by_month(
-                records, budget_cache
+                chart_records, budget_cache
             ),
-            "chart4_approved_trend": self._get_chart4_approved_trend(records),
+            "chart4_approved_trend": self._get_chart4_approved_trend(chart_records),
             "chart5_purchase_type_by_dept": self._get_chart5_purchase_type_by_dept(
-                records, dept_cache
+                chart_records, dept_cache
             ),
             "chart6_expense_type_by_dept": self._get_chart6_expense_type_by_dept(
-                records, budget_cache, dept_cache
+                chart_records, budget_cache, dept_cache
             ),
         }
 

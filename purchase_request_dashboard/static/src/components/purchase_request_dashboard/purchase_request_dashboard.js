@@ -35,6 +35,7 @@ export class PurchaseRequestDashboard extends Component {
                 source_id: null,
             },
             loading: false,
+            selectedStates: [],
             summaryBoxes: [],
             chart1Data: {months: [], series: []},
             chart2Data: [],
@@ -100,6 +101,7 @@ export class PurchaseRequestDashboard extends Component {
             const response = await this.rpc("/purchase_request/dashboard/data", {
                 fiscal_year_id: this.state.filters.fiscal_year_id,
                 source_id: this.state.filters.source_id,
+                selected_states: this.state.selectedStates,
             });
 
             this.state.filterOptions = response.filter_options;
@@ -521,6 +523,21 @@ export class PurchaseRequestDashboard extends Component {
         const value = ev.target.value;
         this.state.filters.fiscal_year_id = value ? parseInt(value, 10) : null;
         this.loadData();
+    }
+
+    onBoxClick(stateKey) {
+        if (stateKey === "total") return;
+        const idx = this.state.selectedStates.indexOf(stateKey);
+        if (idx >= 0) {
+            this.state.selectedStates.splice(idx, 1);
+        } else {
+            this.state.selectedStates.push(stateKey);
+        }
+        this.loadData();
+    }
+
+    isBoxSelected(stateKey) {
+        return this.state.selectedStates.includes(stateKey);
     }
 
     onSourceChange(ev) {
