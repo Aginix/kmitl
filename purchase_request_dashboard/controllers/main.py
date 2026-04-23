@@ -16,7 +16,7 @@ class PurchaseRequestDashboardController(http.Controller):
         ("rejected", "ยกเลิก"),
     ]
 
-    # Thai fiscal year months (Oct - Sep)
+    # Thai fiscal year runs Oct → Sep (e.g., FY 2569 = Oct 2025 - Sep 2026)
     FISCAL_MONTHS = [
         (10, "ต.ค."),
         (11, "พ.ย."),
@@ -32,6 +32,10 @@ class PurchaseRequestDashboardController(http.Controller):
         (9, "ก.ย."),
     ]
 
+    # ──────────────────────────────────────────────────────────────────
+    # Main endpoint
+    # ──────────────────────────────────────────────────────────────────
+
     @http.route(
         "/purchase_request/dashboard/data",
         type="json",
@@ -40,6 +44,14 @@ class PurchaseRequestDashboardController(http.Controller):
     def get_dashboard_data(
         self, fiscal_year_id=None, source_id=None, selected_states=None, **kw
     ):
+        """Return all data needed by the dashboard frontend.
+
+        Returns dict with keys:
+            filter_options  – available fiscal years and source options
+            filters         – currently active filter IDs
+            summary_boxes   – list of 8 state-based summary cards (always all records)
+            chart1..chart6  – chart-specific data structures (filtered by state)
+        """
         # Filter options
         fiscal_years = request.env["account.fiscal.year"].search(
             [], order="date_from desc"
@@ -69,19 +81,20 @@ class PurchaseRequestDashboardController(http.Controller):
         records = request.env["purchase.request"].search(domain)
         records = self._filter_by_source(records, source_id)
 
-        # Build caches for root lookups
+        # Build caches for hierarchy lookups (avoids repeated DB traversal)
         budget_cache = self._build_root_budget_account_map(records)
         dept_cache = self._build_root_department_map(records)
 
-        # Filter records by selected states for charts only
+        # State filtering for charts only (summary boxes always show all records).
+        # The UI shows "ร่าง" (draft) as a single status, but internally Odoo uses
+        # both "draft" and "to_examine" states, so selecting "draft" must include both.
         if selected_states:
             state_set = set(selected_states)
-            # Map "draft" to include "to_examine"
             if "draft" in state_set:
                 state_set.add("to_examine")
             chart_records = records.filtered(lambda r: r.state in state_set)
         else:
-            # Default: exclude rejected from charts
+            # Default: exclude rejected from charts (cancelled data shouldn't pollute charts)
             chart_records = records.filtered(lambda r: r.state != "rejected")
 
         return {
@@ -112,8 +125,16 @@ class PurchaseRequestDashboardController(http.Controller):
             ),
         }
 
+    # ──────────────────────────────────────────────────────────────────
+    # Record filtering helpers
+    # ──────────────────────────────────────────────────────────────────
+
     def _filter_by_source(self, records, source_id):
-        """Filter records by source analytic dimension."""
+        """Filter records by source analytic dimension.
+
+        Source is stored in the analytic_distribution JSON field, so standard
+        ORM domain filtering isn't straightforward. We filter in Python instead.
+        """
         if not source_id:
             return records
         filtered = request.env[records._name]
@@ -122,8 +143,18 @@ class PurchaseRequestDashboardController(http.Controller):
                 filtered |= rec
         return filtered
 
+    # ──────────────────────────────────────────────────────────────────
+    # Hierarchy cache builders
+    # ──────────────────────────────────────────────────────────────────
+
     def _build_root_budget_account_map(self, records):
-        """Cache budget_account_id → parent budget account name (expense category)."""
+        """Cache budget_account_id → parent budget account name (expense category).
+
+        Budget accounts selectable in purchase requests are leaf-level nodes.
+        Their direct parent represents the expense category we want for charts
+        (e.g., "ครุภัณฑ์", "สิ่งก่อสร้าง", "ค่าตอบแทน").
+        We go up exactly one level. Falls back to self if no parent exists.
+        """
         cache = {}
         for pr in records:
             ba = pr.budget_account_id
@@ -134,7 +165,12 @@ class PurchaseRequestDashboardController(http.Controller):
         return cache
 
     def _build_root_department_map(self, records):
-        """Cache department_analytic_id → root department name."""
+        """Cache department_analytic_id → root department name.
+
+        Department analytic accounts form a multi-level hierarchy.
+        We traverse all the way up to the root (no parent) to get the
+        top-level department name for chart grouping.
+        """
         cache = {}
         for pr in records:
             dept = pr.department_analytic_id
@@ -146,12 +182,85 @@ class PurchaseRequestDashboardController(http.Controller):
             cache[dept.id] = root.name
         return cache
 
+    # ──────────────────────────────────────────────────────────────────
+    # Shared aggregation helpers
+    # ──────────────────────────────────────────────────────────────────
+
+    def _aggregate_by_month(self, records, category_fn, date_fn):
+        """Aggregate estimated_cost by category and fiscal month.
+
+        Common pattern for charts 1, 3, 4: group amounts into a 2D dict
+        {category_name: {month_num: total_amount}}, then build series list.
+
+        Args:
+            records: purchase.request recordset to aggregate
+            category_fn: callable(pr) -> str or None (series name)
+            date_fn: callable(pr) -> date or None (date whose month to use)
+        Returns:
+            dict: {"months": [label strings], "series": [{"name": ..., "data": [...]}]}
+        """
+        month_labels = [m[1] for m in self.FISCAL_MONTHS]
+        month_nums = [m[0] for m in self.FISCAL_MONTHS]
+
+        amounts = defaultdict(lambda: defaultdict(float))
+        for pr in records:
+            cat = category_fn(pr)
+            dt = date_fn(pr)
+            if not cat or not dt:
+                continue
+            amounts[cat][dt.month] += pr.estimated_cost
+
+        series = []
+        for name in sorted(amounts.keys()):
+            data = [amounts[name].get(m, 0) for m in month_nums]
+            series.append({"name": name, "data": data})
+
+        return {"months": month_labels, "series": series}
+
+    def _aggregate_by_department(self, records, category_fn, dept_cache):
+        """Aggregate estimated_cost by department and category.
+
+        Common pattern for charts 5, 6: group amounts into a 2D dict
+        {dept_name: {category_name: total_amount}}, then build series list.
+
+        Args:
+            records: purchase.request recordset
+            category_fn: callable(pr) -> str or None (series name)
+            dept_cache: dict mapping department_analytic_id -> department name
+        Returns:
+            dict: {"departments": [names], "series": [{"name": ..., "data": [...]}]}
+        """
+        dept_cat_amounts = defaultdict(lambda: defaultdict(float))
+        for pr in records:
+            if not pr.department_analytic_id:
+                continue
+            dept_name = dept_cache.get(pr.department_analytic_id.id)
+            cat = category_fn(pr)
+            if not dept_name or not cat:
+                continue
+            dept_cat_amounts[dept_name][cat] += pr.estimated_cost
+
+        departments = sorted(dept_cat_amounts.keys())
+        all_cats = sorted({c for d in dept_cat_amounts.values() for c in d})
+
+        series = []
+        for cat in all_cats:
+            data = [dept_cat_amounts[d].get(cat, 0) for d in departments]
+            if any(data):
+                series.append({"name": cat, "data": data})
+
+        return {"departments": departments, "series": series}
+
+    # ──────────────────────────────────────────────────────────────────
+    # Summary boxes
+    # ──────────────────────────────────────────────────────────────────
+
     def _get_summary_boxes(self, records):
-        """Return list of 8 summary box data."""
+        """Return list of 8 summary box data (7 states + 1 total)."""
         boxes = []
         for state_key, label in self.SUMMARY_STATES:
             if state_key == "draft":
-                # Include to_examine in draft
+                # "draft" box includes both "draft" and "to_examine" states
                 state_recs = records.filtered(
                     lambda r: r.state in ("draft", "to_examine")
                 )
@@ -165,7 +274,7 @@ class PurchaseRequestDashboardController(http.Controller):
                 "count": len(state_recs),
                 "amount": sum(state_recs.mapped("estimated_cost")),
             })
-        # Box 8: total amount
+        # Box 8: total amount across all states
         boxes.append({
             "label": "ยอดเงินรวมทั้งหมด",
             "state": "total",
@@ -174,29 +283,25 @@ class PurchaseRequestDashboardController(http.Controller):
         })
         return boxes
 
+    # ──────────────────────────────────────────────────────────────────
+    # Chart data builders
+    # ──────────────────────────────────────────────────────────────────
+
     def _get_chart1_purchase_type_by_month(self, records):
-        """Stacked bar: estimated_cost by purchase_type, grouped by month."""
-        month_labels = [m[1] for m in self.FISCAL_MONTHS]
-        month_nums = [m[0] for m in self.FISCAL_MONTHS]
-
-        type_month_amounts = defaultdict(lambda: defaultdict(float))
-        for pr in records:
-            if not pr.date_start or not pr.procurement_type_id:
-                continue
-            type_name = pr.procurement_type_id.name
-            month = pr.date_start.month
-            type_month_amounts[type_name][month] += pr.estimated_cost
-
-        purchase_types = sorted(type_month_amounts.keys())
-        series = []
-        for pt in purchase_types:
-            data = [type_month_amounts[pt].get(m, 0) for m in month_nums]
-            series.append({"name": pt, "data": data})
-
-        return {"months": month_labels, "series": series}
+        """Stacked bar: estimated_cost by procurement type, grouped by fiscal month."""
+        return self._aggregate_by_month(
+            records,
+            category_fn=lambda pr: (
+                pr.procurement_type_id.name if pr.procurement_type_id else None
+            ),
+            date_fn=lambda pr: pr.date_start,
+        )
 
     def _get_chart2_purchase_type_pie(self, records):
-        """Pie: estimated_cost grouped by purchase_type."""
+        """Pie/doughnut: estimated_cost grouped by procurement type.
+
+        Returns list of dicts with procurement_type_id for click-through navigation.
+        """
         type_data = defaultdict(lambda: {"amount": 0, "id": None})
         for pr in records:
             if not pr.procurement_type_id:
@@ -216,102 +321,52 @@ class PurchaseRequestDashboardController(http.Controller):
         return pie_data
 
     def _get_chart3_expense_type_by_month(self, records, budget_cache):
-        """Stacked bar: estimated_cost by root budget_account, grouped by month."""
-        month_labels = [m[1] for m in self.FISCAL_MONTHS]
-        month_nums = [m[0] for m in self.FISCAL_MONTHS]
-
-        expense_month_amounts = defaultdict(lambda: defaultdict(float))
-        for pr in records:
-            if not pr.date_start or not pr.budget_account_id:
-                continue
-            expense_name = budget_cache.get(pr.budget_account_id.id)
-            if not expense_name:
-                continue
-            month = pr.date_start.month
-            expense_month_amounts[expense_name][month] += pr.estimated_cost
-
-        expense_types = sorted(expense_month_amounts.keys())
-        series = []
-        for et in expense_types:
-            data = [expense_month_amounts[et].get(m, 0) for m in month_nums]
-            series.append({"name": et, "data": data})
-
-        return {"months": month_labels, "series": series}
+        """Stacked bar: estimated_cost by expense category, grouped by fiscal month."""
+        return self._aggregate_by_month(
+            records,
+            category_fn=lambda pr: (
+                budget_cache.get(pr.budget_account_id.id)
+                if pr.budget_account_id
+                else None
+            ),
+            date_fn=lambda pr: pr.date_start,
+        )
 
     def _get_chart4_approved_trend(self, records):
-        """Stacked line: estimated_cost by purchase_type for approved records."""
-        month_labels = [m[1] for m in self.FISCAL_MONTHS]
-        month_nums = [m[0] for m in self.FISCAL_MONTHS]
+        """Stacked line: estimated_cost trend by procurement type for approved records.
 
+        Only includes records in approved/in_progress/done states.
+        Uses date_approved (the date the request was approved) for the month axis.
+        """
         approved_recs = records.filtered(
             lambda r: r.state in ("approved", "in_progress", "done")
         )
-
-        type_month_amounts = defaultdict(lambda: defaultdict(float))
-        for pr in approved_recs:
-            if not pr.date_approved or not pr.procurement_type_id:
-                continue
-            type_name = pr.procurement_type_id.name
-            month = pr.date_approved.month
-            type_month_amounts[type_name][month] += pr.estimated_cost
-
-        purchase_types = sorted(type_month_amounts.keys())
-        series = []
-        for pt in purchase_types:
-            data = [type_month_amounts[pt].get(m, 0) for m in month_nums]
-            series.append({"name": pt, "data": data})
-
-        return {"months": month_labels, "series": series}
+        return self._aggregate_by_month(
+            approved_recs,
+            category_fn=lambda pr: (
+                pr.procurement_type_id.name if pr.procurement_type_id else None
+            ),
+            date_fn=lambda pr: pr.date_approved,
+        )
 
     def _get_chart5_purchase_type_by_dept(self, records, dept_cache):
-        """Stacked bar: estimated_cost by purchase_type, grouped by department."""
-        dept_type_amounts = defaultdict(lambda: defaultdict(float))
-        for pr in records:
-            if not pr.department_analytic_id or not pr.procurement_type_id:
-                continue
-            dept_name = dept_cache.get(pr.department_analytic_id.id)
-            if not dept_name:
-                continue
-            dept_type_amounts[dept_name][pr.procurement_type_id.name] += (
-                pr.estimated_cost
-            )
-
-        departments = sorted(dept_type_amounts.keys())
-        all_types = set()
-        for dept_data in dept_type_amounts.values():
-            all_types.update(dept_data.keys())
-        all_types = sorted(all_types)
-
-        series = []
-        for pt in all_types:
-            data = [dept_type_amounts[d].get(pt, 0) for d in departments]
-            if any(data):
-                series.append({"name": pt, "data": data})
-
-        return {"departments": departments, "series": series}
+        """Stacked bar: estimated_cost by procurement type, grouped by department."""
+        return self._aggregate_by_department(
+            records,
+            category_fn=lambda pr: (
+                pr.procurement_type_id.name if pr.procurement_type_id else None
+            ),
+            dept_cache=dept_cache,
+        )
 
     def _get_chart6_expense_type_by_dept(self, records, budget_cache, dept_cache):
-        """Stacked bar: estimated_cost by root budget_account, grouped by dept."""
-        dept_expense_amounts = defaultdict(lambda: defaultdict(float))
-        for pr in records:
-            if not pr.department_analytic_id or not pr.budget_account_id:
-                continue
-            dept_name = dept_cache.get(pr.department_analytic_id.id)
-            expense_name = budget_cache.get(pr.budget_account_id.id)
-            if not dept_name or not expense_name:
-                continue
-            dept_expense_amounts[dept_name][expense_name] += pr.estimated_cost
-
-        departments = sorted(dept_expense_amounts.keys())
-        all_expenses = set()
-        for dept_data in dept_expense_amounts.values():
-            all_expenses.update(dept_data.keys())
-        all_expenses = sorted(all_expenses)
-
-        series = []
-        for et in all_expenses:
-            data = [dept_expense_amounts[d].get(et, 0) for d in departments]
-            if any(data):
-                series.append({"name": et, "data": data})
-
-        return {"departments": departments, "series": series}
+        """Stacked bar: estimated_cost by expense category, grouped by department."""
+        return self._aggregate_by_department(
+            records,
+            category_fn=lambda pr: (
+                budget_cache.get(pr.budget_account_id.id)
+                if pr.budget_account_id
+                else None
+            ),
+            dept_cache=dept_cache,
+        )

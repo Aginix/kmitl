@@ -49,6 +49,7 @@ export class PurchaseRequestDashboard extends Component {
             },
         });
 
+        // ECharts instances (one per chart card)
         this.chart1 = null;
         this.chart2 = null;
         this.chart3 = null;
@@ -78,6 +79,38 @@ export class PurchaseRequestDashboard extends Component {
         });
     }
 
+    // ──────────────────────────────────────────────────────────────────
+    // Chart card definitions (used by XML t-foreach)
+    // ──────────────────────────────────────────────────────────────────
+
+    get chartCards() {
+        return [
+            {id: "prChart1", title: "ประเภทการจัดซื้อจัดจ้าง (รายเดือน)"},
+            {id: "prChart2", title: "ประเภทการจัดซื้อจัดจ้าง"},
+            {id: "prChart3", title: "ประเภทค่าใช้จ่าย (รายเดือน)"},
+            {id: "prChart4", title: "แนวโน้มการอนุมัติจัดซื้อจัดจ้าง"},
+            {id: "prChart5", title: "ประเภทการจัดซื้อจัดจ้าง (ตามส่วนงาน)"},
+            {id: "prChart6", title: "ประเภทค่าใช้จ่าย (ตามส่วนงาน)"},
+        ];
+    }
+
+    get chartCardsRow1() {
+        return this.chartCards.slice(0, 3);
+    }
+
+    get chartCardsRow2() {
+        return this.chartCards.slice(3, 6);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // ECharts loading & lifecycle
+    // ──────────────────────────────────────────────────────────────────
+
+    /**
+     * Load ECharts from CDN on demand.
+     * ECharts is not bundled in Odoo's asset pipeline, so we load it
+     * via a script tag the first time the dashboard is opened.
+     */
     async _loadECharts() {
         if (typeof echarts !== "undefined") {
             return;
@@ -141,6 +174,13 @@ export class PurchaseRequestDashboard extends Component {
         }
     }
 
+    /**
+     * Get or create an ECharts instance for a given DOM element.
+     *
+     * OWL may re-render the DOM at any time, which orphans the old chart container.
+     * We detect this by checking if the existing chart's DOM element is still in the
+     * document. If not, we dispose the stale instance and create a new one.
+     */
     _getOrCreateChart(propName, domId) {
         if (typeof echarts === "undefined") {
             return null;
@@ -166,7 +206,19 @@ export class PurchaseRequestDashboard extends Component {
         return this[propName];
     }
 
-    _makeStackedBarOption(data, xField, xData) {
+    // ──────────────────────────────────────────────────────────────────
+    // Shared chart option builders
+    // ──────────────────────────────────────────────────────────────────
+
+    /**
+     * Build a complete ECharts option for a stacked bar chart.
+     * Used by Charts 1, 3, 5, 6 — the most common chart type in this dashboard.
+     *
+     * @param {Object} data - {series: [{name, data}]}
+     * @param {Array} xData - X-axis category labels
+     * @param {Object} xAxisOpts - Extra xAxis config (e.g., axisLabel rotation for dept charts)
+     */
+    _makeStackedBarOption(data, xData, xAxisOpts = {}) {
         const series = (data.series || []).map((s, i) => ({
             name: s.name,
             type: "bar",
@@ -204,6 +256,7 @@ export class PurchaseRequestDashboard extends Component {
             xAxis: {
                 type: "category",
                 data: xData,
+                ...xAxisOpts,
             },
             yAxis: {
                 type: "value",
@@ -219,16 +272,43 @@ export class PurchaseRequestDashboard extends Component {
         };
     }
 
-    // Chart 1: Stacked Bar - Purchase Type by Month
+    /**
+     * Build ECharts option for a stacked area/line chart (Chart 4).
+     * Reuses _makeStackedBarOption as a base and converts series to smooth lines.
+     */
+    _makeStackedLineOption(data, xData) {
+        const option = this._makeStackedBarOption(data, xData);
+        // Override to line-specific settings
+        option.xAxis.boundaryGap = false;
+        option.series = (data.series || []).map((s, i) => ({
+            name: s.name,
+            type: "line",
+            stack: "total",
+            smooth: true,
+            areaStyle: {opacity: 0.3},
+            emphasis: {focus: "series"},
+            data: s.data,
+            itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
+        }));
+        return option;
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // Individual chart update methods
+    // ──────────────────────────────────────────────────────────────────
+
+    // Chart 1: Stacked Bar — Procurement type by fiscal month
     _updateChart1() {
         const chart = this._getOrCreateChart("chart1", "prChart1");
         if (!chart) return;
-
         const data = this.state.chart1Data;
-        chart.setOption(this._makeStackedBarOption(data, "months", data.months || []), true);
+        chart.setOption(
+            this._makeStackedBarOption(data, data.months || []),
+            true
+        );
     }
 
-    // Chart 2: Pie - Purchase Type (clickable)
+    // Chart 2: Doughnut — Procurement type breakdown (clickable → list view)
     _updateChart2() {
         const chart = this._getOrCreateChart("chart2", "prChart2");
         if (!chart) return;
@@ -287,7 +367,9 @@ export class PurchaseRequestDashboard extends Component {
             true
         );
 
-        // Click handler → navigate to tree view
+        // Click handler: navigate to list view filtered by all active dashboard filters.
+        // Domain includes: procurement type (from slice), fiscal year, source (from control panel),
+        // and state (from selected summary boxes, with "draft" mapping to include "to_examine").
         chart.off("click");
         chart.on("click", (params) => {
             const purchaseTypeId = params.data.procurement_type_id;
@@ -330,214 +412,69 @@ export class PurchaseRequestDashboard extends Component {
         });
     }
 
-    // Chart 3: Stacked Bar - Expense Type by Month
+    // Chart 3: Stacked Bar — Expense category by fiscal month
     _updateChart3() {
         const chart = this._getOrCreateChart("chart3", "prChart3");
         if (!chart) return;
-
         const data = this.state.chart3Data;
-        chart.setOption(this._makeStackedBarOption(data, "months", data.months || []), true);
+        chart.setOption(
+            this._makeStackedBarOption(data, data.months || []),
+            true
+        );
     }
 
-    // Chart 4: Stacked Line - Approved Trend
+    // Chart 4: Stacked Line — Approval trend by procurement type (date_approved)
     _updateChart4() {
         const chart = this._getOrCreateChart("chart4", "prChart4");
         if (!chart) return;
-
         const data = this.state.chart4Data;
-        const series = (data.series || []).map((s, i) => ({
-            name: s.name,
-            type: "line",
-            stack: "total",
-            smooth: true,
-            areaStyle: {opacity: 0.3},
-            emphasis: {focus: "series"},
-            data: s.data,
-            itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
-        }));
-
         chart.setOption(
-            {
-                tooltip: {
-                    trigger: "axis",
-                    formatter: (params) => {
-                        let result = `<strong>${params[0].axisValue}</strong><br/>`;
-                        params.forEach((p) => {
-                            if (p.value > 0) {
-                                result += `${p.marker} ${p.seriesName}: ${this.formatCurrency(p.value)} บาท<br/>`;
-                            }
-                        });
-                        return result;
-                    },
-                },
-                legend: {
-                    top: 0,
-                    type: "scroll",
-                },
-                grid: {
-                    left: "3%",
-                    right: "4%",
-                    bottom: "3%",
-                    top: 40,
-                    containLabel: true,
-                },
-                xAxis: {
-                    type: "category",
-                    boundaryGap: false,
-                    data: data.months || [],
-                },
-                yAxis: {
-                    type: "value",
-                    axisLabel: {
-                        formatter: (val) => {
-                            if (val >= 1e6) return `${(val / 1e6).toFixed(1)}M`;
-                            if (val >= 1e3) return `${(val / 1e3).toFixed(0)}K`;
-                            return val;
-                        },
-                    },
-                },
-                series: series,
-            },
+            this._makeStackedLineOption(data, data.months || []),
             true
         );
     }
 
-    // Chart 5: Stacked Bar - Purchase Type by Department
+    // Chart 5: Stacked Bar — Procurement type by department
     _updateChart5() {
         const chart = this._getOrCreateChart("chart5", "prChart5");
         if (!chart) return;
-
         const data = this.state.chart5Data;
-        const series = (data.series || []).map((s, i) => ({
-            name: s.name,
-            type: "bar",
-            stack: "total",
-            emphasis: {focus: "series"},
-            data: s.data,
-            itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
-        }));
-
+        const deptAxisOpts = {
+            axisLabel: {rotate: 30, overflow: "truncate", width: 80},
+        };
         chart.setOption(
-            {
-                tooltip: {
-                    trigger: "axis",
-                    axisPointer: {type: "shadow"},
-                    formatter: (params) => {
-                        let result = `<strong>${params[0].axisValue}</strong><br/>`;
-                        params.forEach((p) => {
-                            if (p.value > 0) {
-                                result += `${p.marker} ${p.seriesName}: ${this.formatCurrency(p.value)} บาท<br/>`;
-                            }
-                        });
-                        return result;
-                    },
-                },
-                legend: {
-                    top: 0,
-                    type: "scroll",
-                },
-                grid: {
-                    left: "3%",
-                    right: "4%",
-                    bottom: "3%",
-                    top: 40,
-                    containLabel: true,
-                },
-                xAxis: {
-                    type: "category",
-                    data: data.departments || [],
-                    axisLabel: {
-                        rotate: 30,
-                        overflow: "truncate",
-                        width: 80,
-                    },
-                },
-                yAxis: {
-                    type: "value",
-                    axisLabel: {
-                        formatter: (val) => {
-                            if (val >= 1e6) return `${(val / 1e6).toFixed(1)}M`;
-                            if (val >= 1e3) return `${(val / 1e3).toFixed(0)}K`;
-                            return val;
-                        },
-                    },
-                },
-                series: series,
-            },
+            this._makeStackedBarOption(data, data.departments || [], deptAxisOpts),
             true
         );
     }
 
-    // Chart 6: Stacked Bar - Expense Type by Department
+    // Chart 6: Stacked Bar — Expense category by department
     _updateChart6() {
         const chart = this._getOrCreateChart("chart6", "prChart6");
         if (!chart) return;
-
         const data = this.state.chart6Data;
-        const series = (data.series || []).map((s, i) => ({
-            name: s.name,
-            type: "bar",
-            stack: "total",
-            emphasis: {focus: "series"},
-            data: s.data,
-            itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
-        }));
-
+        const deptAxisOpts = {
+            axisLabel: {rotate: 30, overflow: "truncate", width: 80},
+        };
         chart.setOption(
-            {
-                tooltip: {
-                    trigger: "axis",
-                    axisPointer: {type: "shadow"},
-                    formatter: (params) => {
-                        let result = `<strong>${params[0].axisValue}</strong><br/>`;
-                        params.forEach((p) => {
-                            if (p.value > 0) {
-                                result += `${p.marker} ${p.seriesName}: ${this.formatCurrency(p.value)} บาท<br/>`;
-                            }
-                        });
-                        return result;
-                    },
-                },
-                legend: {
-                    top: 0,
-                    type: "scroll",
-                },
-                grid: {
-                    left: "3%",
-                    right: "4%",
-                    bottom: "3%",
-                    top: 40,
-                    containLabel: true,
-                },
-                xAxis: {
-                    type: "category",
-                    data: data.departments || [],
-                    axisLabel: {
-                        rotate: 30,
-                        overflow: "truncate",
-                        width: 80,
-                    },
-                },
-                yAxis: {
-                    type: "value",
-                    axisLabel: {
-                        formatter: (val) => {
-                            if (val >= 1e6) return `${(val / 1e6).toFixed(1)}M`;
-                            if (val >= 1e3) return `${(val / 1e3).toFixed(0)}K`;
-                            return val;
-                        },
-                    },
-                },
-                series: series,
-            },
+            this._makeStackedBarOption(data, data.departments || [], deptAxisOpts),
             true
         );
     }
 
+    // ──────────────────────────────────────────────────────────────────
     // Event handlers
+    // ──────────────────────────────────────────────────────────────────
+
     onFiscalYearChange(ev) {
         const value = ev.target.value;
         this.state.filters.fiscal_year_id = value ? parseInt(value, 10) : null;
+        this.loadData();
+    }
+
+    onSourceChange(ev) {
+        const value = ev.target.value;
+        this.state.filters.source_id = value ? parseInt(value, 10) : null;
         this.loadData();
     }
 
@@ -556,19 +493,13 @@ export class PurchaseRequestDashboard extends Component {
         return this.state.selectedStates.includes(stateKey);
     }
 
-    onSourceChange(ev) {
-        const value = ev.target.value;
-        this.state.filters.source_id = value ? parseInt(value, 10) : null;
-        this.loadData();
-    }
+    // ──────────────────────────────────────────────────────────────────
+    // Template helpers
+    // ──────────────────────────────────────────────────────────────────
 
-    // Helpers
-    isFiscalYearSelected(fyId) {
-        return String(fyId) === String(this.state.filters.fiscal_year_id);
-    }
-
-    isSourceSelected(srcId) {
-        return String(srcId) === String(this.state.filters.source_id);
+    /** Compare filter option ID with current selection (string comparison for select elements). */
+    isFilterSelected(optionId, currentId) {
+        return String(optionId) === String(currentId);
     }
 
     formatCurrency(amount) {

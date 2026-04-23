@@ -18,6 +18,24 @@
         background-color: #f0f6ff;
     }
 
+    // Chart card title and container (moved from inline styles)
+    .pr-chart-title {
+        font-size: 13px;
+    }
+
+    .pr-chart-container {
+        height: 320px;
+    }
+
+    // Summary box typography (moved from inline styles)
+    .pr-box-amount {
+        font-size: 13px;
+    }
+
+    .pr-box-unit {
+        font-size: 10px;
+    }
+
     .pr-summary-boxes {
         display: grid;
         grid-template-columns: repeat(9, 1fr);

@@ -18,7 +18,7 @@
                                 >
                                     <option
                                         t-att-value="fy.id"
-                                        t-att-selected="isFiscalYearSelected(fy.id)"
+                                        t-att-selected="isFilterSelected(fy.id, state.filters.fiscal_year_id)"
                                         t-esc="fy.name"
                                     />
                                 </t>
@@ -37,7 +37,7 @@
                                 >
                                     <option
                                         t-att-value="src.id"
-                                        t-att-selected="isSourceSelected(src.id)"
+                                        t-att-selected="isFilterSelected(src.id, state.filters.source_id)"
                                         t-esc="src.name"
                                     />
                                 </t>
@@ -57,8 +57,9 @@
                 </t>
                 <t t-else="">
                     <div class="purchase_request_dashboard_content container-fluid p-4">
+                        <!-- Summary Boxes: header + 7 state boxes + total -->
                         <div class="pr-summary-boxes mb-4">
-                            <!-- header Box -->
+                            <!-- Header box (labels for count / amount columns) -->
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
                                     <div
@@ -76,13 +77,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Summary Boxes (8 boxes) -->
+                            <!-- State boxes (clickable to filter charts) -->
                             <t
                                 t-foreach="state.summaryBoxes"
                                 t-as="box"
                                 t-key="box.state"
                             >
-
                                 <div t-attf-class="card shadow-sm #{isBoxSelected(box.state) ? 'pr-box-selected' : 'border-0'}"
                                      t-att-style="box.state !== 'total' ? 'cursor: pointer;' : ''"
                                      t-on-click="() => this.onBoxClick(box.state)">
@@ -93,7 +93,7 @@
                                             <t t-esc="box.label"/>
                                         </div>
                                         <t t-if="box.state !== 'total'">
-                                            <!-- Split: top count, bottom amount -->
+                                            <!-- Top: count, Bottom: amount -->
                                             <div
                                                 class="text-center border-bottom pb-1 mb-1"
                                             >
@@ -104,12 +104,10 @@
                                                         t-esc="formatNumber(box.count)"
                                                     />
                                                 </div>
-
                                             </div>
                                             <div class="text-center pt-1">
                                                 <div
-                                                    t-attf-class="fw-bold mb-0 #{getBoxColorClass(box.state)}"
-                                                    style="font-size: 13px"
+                                                    t-attf-class="fw-bold mb-0 pr-box-amount #{getBoxColorClass(box.state)}"
                                                 >
                                                     <t
                                                         t-esc="formatCurrency(box.amount)"
@@ -118,7 +116,7 @@
                                             </div>
                                         </t>
                                         <t t-else="">
-                                            <!-- Total: amount only -->
+                                            <!-- Total box: amount only -->
                                             <div class="text-center">
                                                 <div
                                                     class="h5 fw-bold text-primary mb-0"
@@ -127,10 +125,7 @@
                                                         t-esc="formatCurrency(box.amount)"
                                                     />
                                                 </div>
-                                                <div
-                                                    class="text-muted"
-                                                    style="font-size: 10px"
-                                                >
+                                                <div class="text-muted pr-box-unit">
                                                     บาท
                                                 </div>
                                             </div>
@@ -142,110 +137,34 @@
 
                         <!-- Charts Row 1 -->
                         <div class="row g-3 mb-4">
-                            <!-- Chart 1: Stacked Bar - Purchase Type by Month -->
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-0 py-2">
-                                        <h6
-                                            class="mb-0 fw-bold"
-                                            style="font-size: 13px"
-                                        >
-                                            ประเภทการจัดซื้อจัดจ้าง (รายเดือน)
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div id="prChart1" style="height: 320px" />
+                            <t t-foreach="chartCardsRow1" t-as="chart" t-key="chart.id">
+                                <div class="col-lg-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-white border-0 py-2">
+                                            <h6 class="mb-0 fw-bold pr-chart-title" t-esc="chart.title"/>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <div t-att-id="chart.id" class="pr-chart-container"/>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Chart 2: Pie - Purchase Type -->
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-0 py-2">
-                                        <h6
-                                            class="mb-0 fw-bold"
-                                            style="font-size: 13px"
-                                        >
-                                            ประเภทการจัดซื้อจัดจ้าง
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div id="prChart2" style="height: 320px" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Chart 3: Stacked Bar - Expense Type by Month -->
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-0 py-2">
-                                        <h6
-                                            class="mb-0 fw-bold"
-                                            style="font-size: 13px"
-                                        >
-                                            ประเภทค่าใช้จ่าย (รายเดือน)
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div id="prChart3" style="height: 320px" />
-                                    </div>
-                                </div>
-                            </div>
+                            </t>
                         </div>
 
                         <!-- Charts Row 2 -->
                         <div class="row g-3 mb-4">
-                            <!-- Chart 4: Stacked Line - Approved Trend -->
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-0 py-2">
-                                        <h6
-                                            class="mb-0 fw-bold"
-                                            style="font-size: 13px"
-                                        >
-                                            แนวโน้มการอนุมัติจัดซื้อจัดจ้าง
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div id="prChart4" style="height: 320px" />
+                            <t t-foreach="chartCardsRow2" t-as="chart" t-key="chart.id">
+                                <div class="col-lg-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-white border-0 py-2">
+                                            <h6 class="mb-0 fw-bold pr-chart-title" t-esc="chart.title"/>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <div t-att-id="chart.id" class="pr-chart-container"/>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Chart 5: Stacked Bar - Purchase Type by Department -->
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-0 py-2">
-                                        <h6
-                                            class="mb-0 fw-bold"
-                                            style="font-size: 13px"
-                                        >
-                                            ประเภทการจัดซื้อจัดจ้าง (ตามส่วนงาน)
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div id="prChart5" style="height: 320px" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Chart 6: Stacked Bar - Expense Type by Department -->
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-0 py-2">
-                                        <h6
-                                            class="mb-0 fw-bold"
-                                            style="font-size: 13px"
-                                        >
-                                            ประเภทค่าใช้จ่าย (ตามส่วนงาน)
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div id="prChart6" style="height: 320px" />
-                                    </div>
-                                </div>
-                            </div>
+                            </t>
                         </div>
                     </div>
                 </t>
