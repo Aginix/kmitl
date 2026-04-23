@@ -292,6 +292,29 @@ export class PurchaseRequestDashboard extends Component {
         chart.on("click", (params) => {
             const purchaseTypeId = params.data.procurement_type_id;
             if (purchaseTypeId) {
+                const domain = [
+                    ["procurement_type_id", "=", purchaseTypeId],
+                    [
+                        "account_fiscal_year_id",
+                        "=",
+                        this.state.filters.fiscal_year_id,
+                    ],
+                    [
+                        "source_analytic_id",
+                        "=",
+                        this.state.filters.source_id,
+                    ],
+                ];
+                const selected = this.state.selectedStates;
+                if (selected.length > 0) {
+                    const states = [...selected];
+                    if (states.includes("draft")) {
+                        states.push("to_examine");
+                    }
+                    domain.push(["state", "in", states]);
+                } else {
+                    domain.push(["state", "!=", "rejected"]);
+                }
                 this.action.doAction({
                     type: "ir.actions.act_window",
                     name: params.name,
@@ -300,14 +323,7 @@ export class PurchaseRequestDashboard extends Component {
                         [false, "list"],
                         [false, "form"],
                     ],
-                    domain: [
-                        ["procurement_type_id", "=", purchaseTypeId],
-                        [
-                            "account_fiscal_year_id",
-                            "=",
-                            this.state.filters.fiscal_year_id,
-                        ],
-                    ],
+                    domain: domain,
                     target: "current",
                 });
             }
