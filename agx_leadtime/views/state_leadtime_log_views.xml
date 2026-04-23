@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- List View -->
+    <!-- ==================== state.leadtime.log ==================== -->
+
     <record id="view_state_leadtime_log_list" model="ir.ui.view">
         <field name="name">state.leadtime.log.list</field>
         <field name="model">state.leadtime.log</field>
@@ -18,7 +19,6 @@
         </field>
     </record>
 
-    <!-- Form View -->
     <record id="view_state_leadtime_log_form" model="ir.ui.view">
         <field name="name">state.leadtime.log.form</field>
         <field name="model">state.leadtime.log</field>
@@ -43,7 +43,6 @@
         </field>
     </record>
 
-    <!-- Search View -->
     <record id="view_state_leadtime_log_search" model="ir.ui.view">
         <field name="name">state.leadtime.log.search</field>
         <field name="model">state.leadtime.log</field>
@@ -53,72 +52,77 @@
                 <field name="from_state" string="From State"/>
                 <field name="to_state" string="To State"/>
                 <field name="user_id" string="Triggered By"/>
-
                 <filter name="filter_today"
                         string="Today"
                         domain="[('transition_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
                 <filter name="filter_this_month"
                         string="This Month"
                         domain="[('transition_date', '>=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
-
                 <separator/>
-
                 <group expand="0" string="Group By">
-                    <filter name="group_model"    string="Model"       context="{'group_by': 'res_model'}"/>
-                    <filter name="group_from"     string="From State"  context="{'group_by': 'from_state'}"/>
-                    <filter name="group_to"       string="To State"    context="{'group_by': 'to_state'}"/>
+                    <filter name="group_model"    string="Model"        context="{'group_by': 'res_model'}"/>
+                    <filter name="group_from"     string="From State"   context="{'group_by': 'from_state'}"/>
+                    <filter name="group_to"       string="To State"     context="{'group_by': 'to_state'}"/>
                     <filter name="group_user"     string="Triggered By" context="{'group_by': 'user_id'}"/>
-                    <filter name="group_date"     string="Date"        context="{'group_by': 'transition_date:month'}"/>
+                    <filter name="group_date"     string="Date"         context="{'group_by': 'transition_date:month'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <!-- Pivot View (สำหรับ dashboard / วิเคราะห์) -->
-    <record id="view_state_leadtime_log_pivot" model="ir.ui.view">
-        <field name="name">state.leadtime.log.pivot</field>
-        <field name="model">state.leadtime.log</field>
+    <record id="action_state_leadtime_log" model="ir.actions.act_window">
+        <field name="name">Leadtime Logs</field>
+        <field name="res_model">state.leadtime.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_state_leadtime_log_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No leadtime logs yet</p>
+            <p>Logs will appear automatically when records change state.</p>
+        </field>
+    </record>
+
+    <!-- ==================== state.leadtime.report ==================== -->
+
+    <record id="view_state_leadtime_report_pivot" model="ir.ui.view">
+        <field name="name">state.leadtime.report.pivot</field>
+        <field name="model">state.leadtime.report</field>
         <field name="arch" type="xml">
             <pivot string="Leadtime Analysis" disable_linking="1">
                 <field name="res_model"   type="row"/>
                 <field name="from_state"  type="row"/>
                 <field name="to_state"    type="row"/>
-                <field name="duration_minutes" type="measure"/>
+                <field name="avg_minutes" type="measure"/>
+                <field name="min_minutes" type="measure"/>
+                <field name="max_minutes" type="measure"/>
+                <field name="count"       type="measure"/>
             </pivot>
         </field>
     </record>
 
-    <!-- Graph View -->
-    <record id="view_state_leadtime_log_graph" model="ir.ui.view">
-        <field name="name">state.leadtime.log.graph</field>
-        <field name="model">state.leadtime.log</field>
+    <record id="view_state_leadtime_report_graph" model="ir.ui.view">
+        <field name="name">state.leadtime.report.graph</field>
+        <field name="model">state.leadtime.report</field>
         <field name="arch" type="xml">
             <graph string="Leadtime Graph" type="bar">
-                <field name="from_state"       type="row"/>
-                <field name="to_state"         type="row"/>
-                <field name="duration_minutes" type="measure"/>
+                <field name="from_state"  type="row"/>
+                <field name="to_state"    type="row"/>
+                <field name="avg_minutes" type="measure"/>
             </graph>
         </field>
     </record>
 
-    <!-- Action -->
-    <record id="action_state_leadtime_log" model="ir.actions.act_window">
-        <field name="name">Leadtime Logs</field>
-        <field name="res_model">state.leadtime.log</field>
-        <field name="view_mode">tree,pivot,graph,form</field>
-        <field name="search_view_id" ref="view_state_leadtime_log_search"/>
-        <field name="context">{}</field>
+    <record id="action_state_leadtime_report" model="ir.actions.act_window">
+        <field name="name">Leadtime Analysis</field>
+        <field name="res_model">state.leadtime.report</field>
+        <field name="view_mode">pivot,graph</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No leadtime logs yet
-            </p>
-            <p>
-                Logs will appear automatically when records change state.
-            </p>
+            <p class="o_view_nocontent_smiling_face">No data yet</p>
+            <p>Data will appear once state transitions are recorded.</p>
         </field>
     </record>
 
-    <!-- Menu -->
+    <!-- ==================== Menu ==================== -->
+
     <menuitem id="menu_state_leadtime_root"
               name="Leadtime Tracker"
               sequence="100"/>
@@ -128,5 +132,11 @@
               parent="menu_state_leadtime_root"
               action="action_state_leadtime_log"
               sequence="10"/>
+
+    <menuitem id="menu_state_leadtime_report"
+              name="Leadtime Analysis"
+              parent="menu_state_leadtime_root"
+              action="action_state_leadtime_report"
+              sequence="20"/>
 
 </odoo>
