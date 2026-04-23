@@ -129,6 +129,10 @@ class BudgetAppropriationSummaryF4PRevenue(models.AbstractModel):
             top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
 
             if top_dept_id and top_dept_id in dept_map:
+                if line.deduct:
+                    key = ("r49000", top_dept_id)
+                    totals[key] = totals.get(key, 0) - line.balance
+                    continue
                 for code, _ in self.REVENUE_CATEGORIES:
                     if acc_id in category_accounts[code]:
                         key = (code, top_dept_id)

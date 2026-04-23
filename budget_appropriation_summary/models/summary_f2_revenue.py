@@ -149,7 +149,11 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         lines = summary.revenue_appropriation_ids.mapped("line_ids")
 
         account_totals = {}
+        deduct_total = 0
         for line in lines:
+            if line.deduct:
+                deduct_total += line.balance
+                continue
             acc_id = line.account_id.id
             account_totals[acc_id] = account_totals.get(acc_id, 0) + line.balance
 
@@ -159,6 +163,9 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
             totals[code] = sum(
                 account_totals.get(acc_id, 0) for acc_id in account_ids
             )
+
+        if "r49000" in totals:
+            totals["r49000"] -= deduct_total
 
         return totals
 
