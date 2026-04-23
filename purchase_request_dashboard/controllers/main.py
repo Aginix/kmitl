@@ -123,16 +123,14 @@ class PurchaseRequestDashboardController(http.Controller):
         return filtered
 
     def _build_root_budget_account_map(self, records):
-        """Cache budget_account_id → root budget account name."""
+        """Cache budget_account_id → parent budget account name (expense category)."""
         cache = {}
         for pr in records:
             ba = pr.budget_account_id
             if not ba or ba.id in cache:
                 continue
-            root = ba
-            while root.parent_id:
-                root = root.parent_id
-            cache[ba.id] = root.name
+            category = ba.parent_id or ba
+            cache[ba.id] = category.name
         return cache
 
     def _build_root_department_map(self, records):
