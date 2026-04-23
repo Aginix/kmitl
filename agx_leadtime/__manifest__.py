@@ -10,7 +10,6 @@
     'data': [
         'views/state_leadtime_log_views.xml',
         'security/ir.model.access.csv',
-        'views/state_leadtime_report_views.xml'
     ],
     'assets': {
               'web.assets_backend': [
