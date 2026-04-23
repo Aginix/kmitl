@@ -285,7 +285,6 @@ export class PurchaseRequestDashboard extends Component {
             type: "line",
             stack: "total",
             smooth: true,
-            areaStyle: {opacity: 0.3},
             emphasis: {focus: "series"},
             data: s.data,
             itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
