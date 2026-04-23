@@ -425,6 +425,9 @@
                 </group>
                 <searchpanel>
                     <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="account_id" icon="fa-sitemap" order="code asc"/>
+                    <field name="deduct_analytic_id" icon="fa-users" order="code asc"/>
+                    <field name="department_analytic_id" icon="fa-users" order="code asc"/>
                 </searchpanel>
             </search>
         </field>
