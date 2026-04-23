@@ -61,7 +61,11 @@ class AccountMove(models.Model):
         for move in self:
             if move.state != "draft":
                 raise UserError(_("Only draft entries can be submitted."))
-            move.state = "submitted"
+        self.write({"state": "submitted"})
+        # Assign sequence number on submit (standard Odoo only assigns on post)
+        for move in self.sorted(lambda m: (m.date, m.ref or "", m.id)):
+            if not move.name or move.name == "/":
+                move._set_next_sequence()
         for move in self:
             if move.need_validation and move.state == "submitted":
                 move.request_validation()
