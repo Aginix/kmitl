@@ -1424,3 +1424,23 @@ msgstr "ไม่มีงวดงาน"
 #, python-format
 msgid "Completed projects cannot be canceled."
 msgstr "ไม่สามารถยกเลิกโครงการที่เสร็จสิ้นแล้วได้"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__client_location
+msgid "Client Location"
+msgstr "ที่อยู่"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__client_name
+msgid "Client Name"
+msgstr "ชื่อ"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__client_tax_number
+msgid "Client Tax Number"
+msgstr "เลขประจำตัวผู้เสียภาษี"
+
+#. module: kris_project
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+msgid "Client/Funding Organization"
+msgstr "ผู้ว่าจ้าง/หน่วยงานผู้ให้ทุน"
