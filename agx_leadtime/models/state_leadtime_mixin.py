@@ -15,7 +15,6 @@ class StateLeadtimeMixin(models.AbstractModel):
         inverse_name='res_id',
         domain=lambda self: [('res_model', '=', self._name)],
         string='State Leadtime Logs',
-        auto_join=True,
     )
 
     state_entry_date = fields.Datetime(
@@ -34,26 +33,21 @@ class StateLeadtimeMixin(models.AbstractModel):
 
     def write(self, vals):
         tracked_field = self._state_field
-
+        transitions = []
         if tracked_field in vals:
             for record in self:
                 from_state = getattr(record, tracked_field)
                 to_state = vals[tracked_field]
-
-                if from_state == to_state:
-                    continue
-
-                if record._should_track_transition(from_state, to_state):
-                    self.env['state.leadtime.log']._log_transition(
-                        record=record,
-                        from_state=from_state,
-                        to_state=to_state,
-                        entry_date=record.state_entry_date,
-                    )
-            
+                if from_state != to_state and record._should_track_transition(from_state, to_state):
+                    transitions.append((record, from_state, to_state, record.state_entry_date))
             vals['state_entry_date'] = fields.Datetime.now()
-
-        return super().write(vals)
+        result = super().write(vals)
+        for record, from_state, to_state, entry_date in transitions:
+            self.env['state.leadtime.log']._log_transition(
+                record=record, from_state=from_state,
+                to_state=to_state, entry_date=entry_date,
+            )
+        return result
 
     def create(self, vals_list):
         if isinstance(vals_list, dict):
