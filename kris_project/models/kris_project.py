@@ -94,9 +94,24 @@ class KrisProject(models.Model):
         copy=False,
         tracking=True,
     )
-    partner_id = fields.Many2one(
-        comodel_name="res.partner",
-        string="Client",
+    # partner_id = fields.Many2one(
+    #     comodel_name="res.partner",
+    #     string="Client",
+    #     tracking=True,
+    #     states=READONLY_STATES,
+    # )
+    client_name = fields.Char(
+        string="Client Name",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    client_location = fields.Char(
+        string="Client Location",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    client_tax_number = fields.Char(
+        string="Client Tax Number",
         tracking=True,
         states=READONLY_STATES,
     )
