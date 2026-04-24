@@ -1433,7 +1433,7 @@ msgstr "ที่อยู่"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__client_name
 msgid "Client Name"
-msgstr "ชื่อ"
+msgstr "ชื่อผู้ว่าจ้าง"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__client_tax_number
