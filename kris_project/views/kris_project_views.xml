@@ -389,7 +389,8 @@
                 <field name="project_name"/>
                 <field name="project_category_id"/>
                 <field name="project_type_id" optional="show"/>
-                <field name="partner_id"/>
+                <!-- <field name="partner_id"/> -->
+                <field name="client_name"/>
                 <field name="leader_id" optional="show"/>
                 <field name="department_id"/>
                 <field name="project_value" sum="รวม"/>
@@ -415,7 +416,8 @@
             <search>
                 <field name="name" string="Project Number"/>
                 <field name="project_name" string="Project Name"/>
-                <field name="partner_id"/>
+                <!-- <field name="partner_id"/> -->
+                 <field name="client_name"/>
                 <field name="leader_id"/>
                 <field name="project_category_id"/>
                 <field name="project_type_id"/>
