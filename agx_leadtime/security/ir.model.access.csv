@@ -2,4 +2,4 @@ id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_state_leadtime_log_user,state.leadtime.log.user,model_state_leadtime_log,base.group_user,1,0,0,0
 access_state_leadtime_log_manager,state.leadtime.log.manager,model_state_leadtime_log,base.group_system,1,1,1,1
 access_state_leadtime_report_user,state.leadtime.report.user,model_state_leadtime_report,base.group_user,1,0,0,0
-access_state_leadtime_report_manager,state_leadtime_report_manager,model_state_leadtime_report,,1,1,1,1
+access_state_leadtime_report_manager,state.leadtime.report.manager,model_state_leadtime_report,base.group_system,1,0,0,0

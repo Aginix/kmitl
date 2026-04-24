@@ -35,6 +35,7 @@ class StateLeadtimeLog(models.Model):
         ondelete='set null',
     )
 
+    @api.model
     def _log_transition(self, record, from_state, to_state, entry_date=None):
         now = fields.Datetime.now()
         duration_minutes = 0.0
@@ -101,16 +102,25 @@ class StateLeadtimeLog(models.Model):
             self.env['state.leadtime.log'].get_all_stats('purchase.order')
         """
         # หา unique transitions ทั้งหมดของ model นี้
-        self.env.cr.execute("""
-            SELECT DISTINCT from_state, to_state
-            FROM state_leadtime_log
-            WHERE res_model = %s
-            ORDER BY from_state, to_state
-        """, [res_model])
-
-        transitions = self.env.cr.fetchall()
+        groups = self.read_group(
+            domain=[
+                ('res_model', '=', res_model),
+                ('duration_minutes', '>', 0),
+            ],
+            fields=['from_state', 'to_state', 'duration_minutes:avg', 'duration_minutes:min', 'duration_minutes:max'],
+            groupby=['from_state', 'to_state'],
+            lazy=False,
+        )
 
         return [
-            self.get_stats(res_model, from_state, to_state)
-            for from_state, to_state in transitions
+            {
+                'res_model': res_model,
+                'from_state': g['from_state'],
+                'to_state': g['to_state'],
+                'avg_minutes': g['duration_minutes:avg'],
+                'min_minutes': g['duration_minutes:min'],
+                'max_minutes': g['duration_minutes:max'],
+                'count': g['__count'],
+            }
+            for g in groups
         ]
