@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- Confirm-phase rules (state == 'draft')                       -->
+    <!-- ============================================================ -->
+
+    <record id="kris_excep_no_project_value" model="exception.rule">
+        <field name="name">Incorrect work value</field>
+        <field name="description">The project value must be greater than 0.</field>
+        <field name="sequence">10</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.project_value &lt;= 0:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_allocation_mismatch" model="exception.rule">
+        <field name="name">The allocated total does not match the maintenance fee.</field>
+        <field name="description">The total allocated revenue does not equal the value minus maintenance fees.</field>
+        <field name="sequence">20</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.warn_allocation_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_installments" model="exception.rule">
+        <field name="name">There is no work period.</field>
+        <field name="description">Please specify at least one work phase.</field>
+        <field name="sequence">30</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.installment_ids:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_installment_total_mismatch" model="exception.rule">
+        <field name="name">The total amount for each payment installment does not match.</field>
+        <field name="description">The sum of the installment payments does not equal the project value.</field>
+        <field name="sequence">40</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.installment_ids and self.warn_installment_total_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_installment_maintenance_mismatch" model="exception.rule">
+        <field name="name">The maintenance fee for this period does not match.</field>
+        <field name="description">The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees.</field>
+        <field name="sequence">50</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.installment_ids and self.warn_installment_maintenance_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Done-phase rules (state == 'confirmed')                      -->
+    <!-- ============================================================ -->
+
+    <record id="kris_excep_installments_not_received" model="exception.rule">
+        <field name="name">The payment schedule is not yet complete.</field>
+        <field name="description">There are still installments of work that have not been paid for.</field>
+        <field name="sequence">60</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'confirmed' and self.installment_ids and any(i.state != 'received' for i in self.installment_ids):
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_revenue_remaining" model="exception.rule">
+        <field name="name">The revenue hasn't been fully collected yet.</field>
+        <field name="description">There is still an outstanding revenue balance that has not been received.</field>
+        <field name="sequence">70</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'confirmed' and self.revenue_remaining > 0:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Cancel-phase rule                                            -->
+    <!-- ============================================================ -->
+
+    <record id="kris_excep_cancel_with_receipts" model="exception.rule">
+        <field name="name">There is income.</field>
+        <field name="description">This project has already generated recorded revenue.</field>
+        <field name="sequence">80</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state in ('draft', 'confirmed') and self.receipt_ids:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

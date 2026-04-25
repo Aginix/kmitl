@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- INSTALLMENT FORM VIEW                                       -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_installment_form" model="ir.ui.view">
+        <field name="name">kris.project.installment.form</field>
+        <field name="model">kris.project.installment</field>
+        <field name="arch" type="xml">
+            <form string="Installment">
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <group string="Installment Infomation">
+                        <field name="project_id" readonly="1"/>
+                        <field name="name"/>
+                        <field name="due_date"/>
+                        <field name="state" widget="badge"
+                            decoration-info="state == 'pending'"
+                            decoration-success="state == 'received'"
+                        />
+                    </group>
+                    <group string="Finance">
+                        <field name="amount"/>
+                        <field name="deduction_guarantee"/>
+                        <field name="deduction_advance"/>
+                        <field name="received_from_employer" readonly="1"/>
+                        <field name="maintenance_fee" readonly="1"/>
+                        <field name="extra_deduction"/>
+                        <field name="amount_net" readonly="1"/>
+                    </group>
+                </group>
+                <separator string="Installment allocation"/>
+                <field name="allocation_ids">
+                    <tree editable="bottom" create="0" delete="0">
+                        <field name="allocation_line_id" invisible="1"/>
+                        <field name="name" readonly="1" string="Allocator"/>
+                        <field name="estimated_amount" readonly="1"/>
+                        <field name="allocated_amount" readonly="1"/>
+                        <field name="remaining_amount" readonly="1"/>
+                        <field name="amount" sum="รวม"/>
+                        <field name="currency_id" invisible="1"/>
+                    </tree>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- FORM VIEW                                                    -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_form" model="ir.ui.view">
+        <field name="name">kris.project.form</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary"
+                        states="draft"
+                    />
+                    <button
+                        name="action_done"
+                        string="Done"
+                        type="object"
+                        class="btn-primary"
+                        states="confirmed"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        states="draft,confirmed"
+                    />
+                    <button
+                        name="action_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        states="cancel"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,confirmed,done"
+                    />
+                </header>
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary', '=', False)]}">
+                    <p><strong>Exception:</strong></p>
+                    <field name="exceptions_summary"/>
+                </div>
+                <sheet>
+                    <field name="warn_allocation_mismatch" invisible="1"/>
+                    <field name="warn_installment_maintenance_mismatch" invisible="1"/>
+                    <field name="warn_installment_total_mismatch" invisible="1"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <h2>
+                            <field
+                                name="project_name"
+                                placeholder="Project Name..."
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                        </h2>
+                    </div>
+                    <field name="currency_id" invisible="1"/>
+                    <group>
+                        <group string="Project Information">
+                            <field
+                                name="project_category_id"
+                                widget="selection"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="project_type_id"
+                                widget="radio"
+                                domain="[('category_id', '=', project_category_id)]"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <!-- <field
+                                name="partner_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="client_org_type"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            /> -->
+                            <field
+                                name="leader_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="department_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="user_id"
+                                widget="many2one_avatar_user"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                        </group>
+                        <group string="Contract Information">
+                            <field
+                                name="contract_number"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <label for="date_contract_start" string="Date Start" />
+                            <div name="date_contract_start_div" class="o_row">
+                                <field name="date_contract_start" attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}" />
+                                <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
+                                <field name="date_contract_end" attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}" />
+                            </div>
+                            <label for="project_duration"/>
+                            <div>
+                                <field name="project_duration" class="oe_inline"/> Day
+                            </div>
+                            <field
+                                name="account_fiscal_year_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Client/Funding Organization">
+                            <field
+                                name="client_name"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="client_location"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="client_tax_number"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="client_org_type"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                        </group>
+                    </group>
+                    <notebook>
+                        <!-- Tab 1: มูลค่าและงวดงาน -->
+                        <page string="Financials" name="financials">
+                            <group>
+                                <group string="1. Project Value">
+                                    <field
+                                        name="project_value"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                    <field
+                                        name="equipment_cost"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                    <field
+                                        name="operating_expense"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                </group>
+                                <group string="Allocation">
+                                    <field name="allocatable_value" readonly="1"/>
+                                    <field
+                                        name="maintenance_deduction_type"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                        widget="radio"
+                                    />
+                                    <field
+                                        name="maintenance_deduction_pct"
+                                        attrs="{
+                                            'invisible': [('maintenance_deduction_type', '!=', 'custom')],
+                                            'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]
+                                        }"
+                                    />
+                                    <field name="maintenance_deduction_amount" readonly="1"/>
+                                </group>
+                            </group>
+                            <separator string="2. Allocate Income" name="allocation_separator" />
+                            <group>
+                                <group>
+                                    <field name="maintenance_deduction_amount"
+                                        readonly="1"
+                                        string="Maintenance Deduction Value"
+                                    />
+                                </group>
+                            </group>
+                            <div class="mb-3"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <field
+                                    name="allocation_template_id"
+                                    nolabel="1"
+                                    class="d-inline-block me-2"
+                                    style="min-width: 250px;"
+                                    placeholder="Choose Template..."
+                                />
+                                <button
+                                    name="action_apply_allocation_template"
+                                    string="Template"
+                                    type="object"
+                                    class="btn-secondary"
+                                />
+                            </div>
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_allocation_mismatch', '=', False)]}"
+                            >
+                                The total allocated revenue does not equal the value minus maintenance fees. กรุณาตรวจสอบการจัดสรร
+                            </div>
+                            <field
+                                name="allocation_line_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="item_id"/>
+                                    <field name="allocation_pct" string="Allocation %" readonly="1" sum="รวม"/>
+                                    <field name="estimated_amount" sum="รวม"/>
+                                    <field name="actual_amount" readonly="1" sum="รวม"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                            <separator string="3. Contract payment installments" name="installment_separator" />
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_installment_total_mismatch', '=', False)]}"
+                            >
+                                The sum of the amounts received in each payment installment does not equal the project value. Please check the payment installments.
+                            </div>
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_installment_maintenance_mismatch', '=', False)]}"
+                            >
+                                The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees. Please check the allocation for each period.
+                            </div>
+                            <div class="mb-3"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <button
+                                    name="action_add_installment"
+                                    string="Add Installment"
+                                    type="object"
+                                    class="btn-secondary"
+                                />
+                            </div>
+                            <field
+                                name="installment_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree create="0">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="amount" sum="รวม"/>
+                                    <field name="deduction_guarantee" sum="รวม" optional="show"/>
+                                    <field name="deduction_advance" sum="รวม" optional="show"/>
+                                    <field name="received_from_employer" sum="รวม" optional="show"/>
+                                    <field name="maintenance_fee" sum="รวม" optional="show"/>
+                                    <field name="extra_deduction" sum="รวม" optional="show"/>
+                                    <field name="amount_net" sum="รวม" optional="show"/>
+                                    <field name="due_date"/>
+                                    <field name="state" widget="badge"
+                                        decoration-info="state == 'pending'"
+                                        decoration-success="state == 'received'"
+                                    />
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                            <group>
+                                <field name="total_installment_amount" readonly="1"/>
+                            </group>
+                        </page>
+
+                        <!-- Tab 2: รายรับ -->
+                        <page string="Revenue" name="receipts">
+                            <group>
+                                <group>
+                                    <field name="total_received_amount" readonly="1"/>
+                                    <field name="total_net_received" readonly="1"/>
+                                    <field name="revenue_remaining" readonly="1"/>
+                                </group>
+                            </group>
+                            <separator string="Revenue Record"/>
+                            <div class="mb-3"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <button
+                                    name="action_add_receipt"
+                                    string="Add Revenue"
+                                    type="object"
+                                    class="btn-secondary"
+                                />
+                            </div>
+                            <field
+                                name="receipt_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree create="0">
+                                    <field name="project_id" invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="installment_id"/>
+                                    <field name="date"/>
+                                    <field name="equipment_cost_in_installment" sum="รวม"/>
+                                    <field name="amount" sum="รวม"/>
+                                    <field name="net_amount" sum="รวม"/>
+                                    <field name="note"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- Tab 3: เอกสารแนบ -->
+                        <page string="Attachment" name="attachments">
+                            <field
+                                name="attachment_ids"
+                                widget="many2many_binary"
+                                string="File"
+                            />
+                        </page>
+
+                        <!-- Tab 4: หมายเหตุ -->
+                        <page string="Note" name="notes">
+                            <field name="note" placeholder="Note..." nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- TREE VIEW                                                    -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_tree" model="ir.ui.view">
+        <field name="name">kris.project.tree</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="project_name"/>
+                <field name="project_category_id"/>
+                <field name="project_type_id" optional="show"/>
+                <!-- <field name="partner_id"/> -->
+                <field name="client_name"/>
+                <field name="leader_id" optional="show"/>
+                <field name="department_id"/>
+                <field name="project_value" sum="รวม"/>
+                <field name="total_received_amount" sum="รวม" optional="show"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-primary="state == 'confirmed'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- SEARCH VIEW                                                  -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_search" model="ir.ui.view">
+        <field name="name">kris.project.search</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Project Number"/>
+                <field name="project_name" string="Project Name"/>
+                <!-- <field name="partner_id"/> -->
+                 <field name="client_name"/>
+                <field name="leader_id"/>
+                <field name="project_category_id"/>
+                <field name="project_type_id"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirm" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="cancel" string="Cancel" domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter
+                    name="my_projects"
+                    string="My Project"
+                    domain="[('user_id', '=', uid)]"
+                />
+                <!-- Group By -->
+                <group expand="0" string="จัดกลุ่มตาม">
+                    <filter name="group_category" string="Project Category" context="{'group_by': 'project_category_id'}"/>
+                    <filter name="group_type" string="Project Type" context="{'group_by': 'project_type_id'}"/>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_fiscal_year" string="Fiscal Year" context="{'group_by': 'account_fiscal_year_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- ACTION                                                       -->
+    <!-- ============================================================ -->
+
+    <record id="action_kris_project_exception_rule" model="ir.actions.act_window">
+        <field name="name">Exception Rules</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree"/>
+        <field name="domain">[('model', '=', 'kris.project')]</field>
+        <field name="context">{'active_test': False, 'default_model': 'kris.project'}</field>
+    </record>
+
+    <record id="action_kris_project" model="ir.actions.act_window">
+        <field name="name">KRIS Project</field>
+        <field name="res_model">kris.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_kris_project_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                สร้างโครงการ KRIS ใหม่
+            </p>
+            <p>
+                บันทึกข้อมูลโครงการบริการวิชาการและวิจัยหลังลงนามสัญญา
+            </p>
+        </field>
+    </record>
+
+</odoo>

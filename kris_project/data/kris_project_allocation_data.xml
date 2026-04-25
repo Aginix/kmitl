@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Allocation Items -->
+        <record id="allocation_item_central" model="kris.project.allocation.item">
+            <field name="name">ส่วนกลาง</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="allocation_item_faculty" model="kris.project.allocation.item">
+            <field name="name">คณะ/ส่วนงาน</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="allocation_item_dept" model="kris.project.allocation.item">
+            <field name="name">ภาค/หน่วยงาน</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="allocation_item_kris" model="kris.project.allocation.item">
+            <field name="name">KRIS</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- Default Template -->
+        <record id="allocation_template_standard" model="kris.project.allocation.template">
+            <field name="name">มาตรฐาน</field>
+        </record>
+
+        <record id="allocation_template_line_central" model="kris.project.allocation.template.line">
+            <field name="template_id" ref="allocation_template_standard"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="allocation_pct">35.0</field>
+        </record>
+        <record id="allocation_template_line_faculty" model="kris.project.allocation.template.line">
+            <field name="template_id" ref="allocation_template_standard"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="allocation_pct">35.0</field>
+        </record>
+        <record id="allocation_template_line_dept" model="kris.project.allocation.template.line">
+            <field name="template_id" ref="allocation_template_standard"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="allocation_pct">20.0</field>
+        </record>
+        <record id="allocation_template_line_kris" model="kris.project.allocation.template.line">
+            <field name="template_id" ref="allocation_template_standard"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="allocation_pct">10.0</field>
+        </record>
+
+    </data>
+</odoo>
