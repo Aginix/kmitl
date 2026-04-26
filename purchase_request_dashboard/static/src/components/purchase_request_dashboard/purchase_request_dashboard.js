@@ -39,6 +39,7 @@ export class PurchaseRequestDashboard extends Component {
             summaryBoxes: [],
             chart1Data: {months: [], series: []},
             chart2Data: [],
+            expensePieData: [],
             chart3Data: {months: [], series: []},
             chart4Data: {months: [], series: []},
             chart5Data: {departments: [], series: []},
@@ -52,14 +53,20 @@ export class PurchaseRequestDashboard extends Component {
         // ECharts instances (one per chart card)
         this.chart1 = null;
         this.chart2 = null;
+        this.chartExpensePie = null;
         this.chart3 = null;
         this.chart4 = null;
         this.chart5 = null;
         this.chart6 = null;
 
+        this._chartProps = [
+            "chart1", "chart2", "chartExpensePie",
+            "chart3", "chart4", "chart5", "chart6",
+        ];
+
         this._onResize = () => {
-            for (let i = 1; i <= 6; i++) {
-                if (this[`chart${i}`]) this[`chart${i}`].resize();
+            for (const prop of this._chartProps) {
+                if (this[prop]) this[prop].resize();
             }
         };
 
@@ -87,6 +94,7 @@ export class PurchaseRequestDashboard extends Component {
         return [
             {id: "prChart1", title: "ประเภทการจัดซื้อจัดจ้าง (รายเดือน)"},
             {id: "prChart2", title: "ประเภทการจัดซื้อจัดจ้าง"},
+            {id: "prChartExpPie", title: "ประเภทค่าใช้จ่าย"},
             {id: "prChart3", title: "ประเภทค่าใช้จ่าย (รายเดือน)"},
             {id: "prChart4", title: "แนวโน้มการอนุมัติจัดซื้อจัดจ้าง"},
             {id: "prChart5", title: "ประเภทการจัดซื้อจัดจ้าง (ตามส่วนงาน)"},
@@ -100,6 +108,10 @@ export class PurchaseRequestDashboard extends Component {
 
     get chartCardsRow2() {
         return this.chartCards.slice(3, 6);
+    }
+
+    get chartCardsRow3() {
+        return this.chartCards.slice(6);
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -142,6 +154,7 @@ export class PurchaseRequestDashboard extends Component {
             this.state.summaryBoxes = response.summary_boxes;
             this.state.chart1Data = response.chart1_purchase_type_by_month;
             this.state.chart2Data = response.chart2_purchase_type_pie;
+            this.state.expensePieData = response.expense_type_pie;
             this.state.chart3Data = response.chart3_expense_type_by_month;
             this.state.chart4Data = response.chart4_approved_trend;
             this.state.chart5Data = response.chart5_purchase_type_by_dept;
@@ -158,6 +171,7 @@ export class PurchaseRequestDashboard extends Component {
         setTimeout(() => {
             this._updateChart1();
             this._updateChart2();
+            this._updateChartExpensePie();
             this._updateChart3();
             this._updateChart4();
             this._updateChart5();
@@ -166,10 +180,10 @@ export class PurchaseRequestDashboard extends Component {
     }
 
     _disposeCharts() {
-        for (let i = 1; i <= 6; i++) {
-            if (this[`chart${i}`]) {
-                this[`chart${i}`].dispose();
-                this[`chart${i}`] = null;
+        for (const prop of this._chartProps) {
+            if (this[prop]) {
+                this[prop].dispose();
+                this[prop] = null;
             }
         }
     }
@@ -375,6 +389,108 @@ export class PurchaseRequestDashboard extends Component {
             if (purchaseTypeId) {
                 const domain = [
                     ["procurement_type_id", "=", purchaseTypeId],
+                    [
+                        "account_fiscal_year_id",
+                        "=",
+                        this.state.filters.fiscal_year_id,
+                    ],
+                    [
+                        "source_analytic_id",
+                        "=",
+                        this.state.filters.source_id,
+                    ],
+                ];
+                const selected = this.state.selectedStates;
+                if (selected.length > 0) {
+                    const states = [...selected];
+                    if (states.includes("draft")) {
+                        states.push("to_examine");
+                    }
+                    domain.push(["state", "in", states]);
+                } else {
+                    domain.push(["state", "!=", "rejected"]);
+                }
+                this.action.doAction({
+                    type: "ir.actions.act_window",
+                    name: params.name,
+                    res_model: "purchase.request",
+                    views: [
+                        [false, "list"],
+                        [false, "form"],
+                    ],
+                    domain: domain,
+                    target: "current",
+                });
+            }
+        });
+    }
+
+    // Expense Type Pie: Doughnut — Expense category breakdown (clickable → list view)
+    _updateChartExpensePie() {
+        const chart = this._getOrCreateChart("chartExpensePie", "prChartExpPie");
+        if (!chart) return;
+
+        const pieData = (this.state.expensePieData || []).map((item, i) => ({
+            ...item,
+            itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
+        }));
+
+        chart.setOption(
+            {
+                tooltip: {
+                    trigger: "item",
+                    formatter: (params) =>
+                        `${params.name}: ${this.formatCurrency(params.value)} บาท (${params.percent.toFixed(1)}%)`,
+                },
+                legend: {
+                    orient: "vertical",
+                    right: "5%",
+                    top: "center",
+                },
+                series: [
+                    {
+                        name: "ประเภทค่าใช้จ่าย",
+                        type: "pie",
+                        radius: ["40%", "70%"],
+                        center: ["35%", "50%"],
+                        avoidLabelOverlap: true,
+                        itemStyle: {
+                            borderRadius: 6,
+                            borderColor: "#fff",
+                            borderWidth: 2,
+                        },
+                        label: {
+                            show: true,
+                            formatter: (params) =>
+                                params.percent < 5
+                                    ? ""
+                                    : `${params.percent.toFixed(0)}%`,
+                            position: "inside",
+                            fontSize: 11,
+                            fontWeight: "bold",
+                            color: "#fff",
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: "rgba(0, 0, 0, 0.2)",
+                            },
+                        },
+                        data: pieData,
+                    },
+                ],
+            },
+            true
+        );
+
+        // Click handler: navigate to list view filtered by budget accounts in this category
+        chart.off("click");
+        chart.on("click", (params) => {
+            const accountIds = params.data.budget_account_ids;
+            if (accountIds && accountIds.length) {
+                const domain = [
+                    ["budget_account_id", "in", accountIds],
                     [
                         "account_fiscal_year_id",
                         "=",

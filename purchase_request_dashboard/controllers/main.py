@@ -113,6 +113,9 @@ class PurchaseRequestDashboardController(http.Controller):
             "chart2_purchase_type_pie": self._get_chart2_purchase_type_pie(
                 chart_records
             ),
+            "expense_type_pie": self._get_expense_type_pie(
+                chart_records, budget_cache
+            ),
             "chart3_expense_type_by_month": self._get_chart3_expense_type_by_month(
                 chart_records, budget_cache
             ),
@@ -319,6 +322,33 @@ class PurchaseRequestDashboardController(http.Controller):
                     "procurement_type_id": info["id"],
                 })
         return pie_data
+
+    def _get_expense_type_pie(self, records, budget_cache):
+        """Pie: estimated_cost grouped by expense category (budget_account parent).
+
+        Returns list of dicts with budget_account_ids for click-through navigation.
+        Each slice aggregates all budget accounts that share the same parent category.
+        """
+        cat_data = defaultdict(lambda: {"amount": 0, "account_ids": []})
+        for pr in records:
+            if not pr.budget_account_id:
+                continue
+            cat_name = budget_cache.get(pr.budget_account_id.id)
+            if not cat_name:
+                continue
+            cat_data[cat_name]["amount"] += pr.estimated_cost
+            if pr.budget_account_id.id not in cat_data[cat_name]["account_ids"]:
+                cat_data[cat_name]["account_ids"].append(pr.budget_account_id.id)
+
+        return [
+            {
+                "name": name,
+                "value": info["amount"],
+                "budget_account_ids": info["account_ids"],
+            }
+            for name, info in sorted(cat_data.items())
+            if info["amount"] > 0
+        ]
 
     def _get_chart3_expense_type_by_month(self, records, budget_cache):
         """Stacked bar: estimated_cost by expense category, grouped by fiscal month."""
