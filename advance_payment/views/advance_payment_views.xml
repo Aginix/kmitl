@@ -28,6 +28,7 @@
         <field name="arch" type="xml">
             <form string="Advance Payment">
                 <header>
+                    <field name="validated" invisible="1"/>
                     <button name="action_submit" string="Submit"
                         type="object" class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}" />
