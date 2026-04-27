@@ -28,12 +28,13 @@
                     attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'done'))]}"
                 >
                     <group>
+                        <!-- remove required in attrs -->
                         <field
                             name="egp_project_id"
                             attrs="{
                                 'readonly': [('can_edit_egp', '=', False)],
-                                'required': [('egp_status', '!=', False)]
                             }"
+                            class="o_required_modifier"
                         />
                         <field name="egp_project_url" widget="url" />
                     </group>
@@ -53,6 +54,14 @@
                     string="อยู่ในกระบวนการ e-GP"
                     attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}"
                     class="btn-primary"
+                />
+                <!-- Add reject button on state approved when EGP -->
+                <button
+                    name="button_rejected_egp"
+                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'approved')]}"
+                    string="Reject"
+                    type="object"
+                    groups="purchase_request.group_purchase_request_manager"
                 />
             </xpath>
             <xpath expr="//button[@type='action']" position="after">

@@ -83,6 +83,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0200",
         "source": "account_analytic_kmitl.source_2",
         "activity": "account_analytic_kmitl.activity_06",
+        "egp_project_id": "12345678",
     },
     # Group B: fund_0100 + source_1 + activity_09
     {
@@ -96,6 +97,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0100",
         "source": "account_analytic_kmitl.source_1",
         "activity": "account_analytic_kmitl.activity_09",
+        "egp_project_id": "12345678",
     },
     {
         "title": "[E2E] จ้างเหมาบริการทำความสะอาด (งบแผ่นดิน)",
@@ -120,6 +122,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0100",
         "source": "account_analytic_kmitl.source_1",
         "activity": "account_analytic_kmitl.activity_09",
+        "egp_project_id": "12345678",
     },
     # Group C: fund_0300 + source_2 + activity_00
     {
@@ -145,6 +148,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0300",
         "source": "account_analytic_kmitl.source_2",
         "activity": "account_analytic_kmitl.activity_00",
+        "egp_project_id": "12345678",
     },
     # Group D: fund_0400 + source_2 + activity_06
     {
@@ -170,6 +174,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0400",
         "source": "account_analytic_kmitl.source_2",
         "activity": "account_analytic_kmitl.activity_06",
+        "egp_project_id": "12345678",
     },
 ]
 
@@ -284,6 +289,7 @@ def _create_pr_with_line(env, case, admin_user, fiscal_year, budget_account,
             "department_analytic_id": dept.id,
             "fund_analytic_id": fund.id,
             "source_analytic_id": source.id,
+            "egp_project_id": case.get("egp_project_id"),
         }
     )
 
