@@ -675,23 +675,28 @@
                         </div>
 
                         <div class="border-top pt-4">
-                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
-                                <t t-set="name">health_family_files</t>
-                                <t t-set="label">เอกสารของครอบครัว</t>
-                                <t t-set="description">แนบเอกสารของคู่สมรสหรือบุตร เช่น บัตรประชาชน ทะเบียนสมรส สูติบัตร
-                                </t>
-                                <t t-set="required" t-value="False" />
-                                <t t-set="files" t-value="False" />
-                            </t>
+                            <h6 class="fw-bold text-dark mb-3">เอกสารของครอบครัว</h6>
+                            <p class="text-secondary small mb-4">
+                                กรุณาอัปโหลดเอกสารแยกตามรายบุคคล โดยดึงรายชื่อจากข้อมูลครอบครัวที่ระบุไว้
+                            </p>
 
-                            <div class="d-flex flex-column gap-2 mt-3">
-                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
-                                    <t t-set="filename">ทะเบียนสมรส.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">3</t>
+                            <div class="d-flex flex-column gap-3">
+
+                                <t t-call="hr_recruitment_kmitl.document_upload_card">
+                                    <t t-set="name">health_family_spouse_file</t>
+                                    <t t-set="label">นางสาว สุดา ใจดี</t>
+                                    <t t-set="description">เอกสารของคู่สมรส: บัตรประชาชน ทะเบียนบ้าน ทะเบียนสมรส</t>
                                 </t>
+
+                                <t t-call="hr_recruitment_kmitl.document_upload_card">
+                                    <t t-set="name">health_family_child_1_file</t>
+                                    <t t-set="label">เด็กหญิง พิมพ์ใจ ใจดี</t>
+                                    <t t-set="description">เอกสารของบุตร: สูติบัตร หรือเอกสารยืนยันความสัมพันธ์</t>
+                                </t>
+
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <!-- Group Accident Insurance -->
@@ -747,29 +752,25 @@
                         </div>
 
                         <div class="border-top pt-4">
-                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
-                                <t t-set="name">accident_family_files</t>
-                                <t t-set="label">เอกสารของครอบครัว</t>
-                                <t t-set="description">กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา
-                                    หรือคู่สมรส/บุตร ให้แนบแบบฟอร์มของครอบครัว และเอกสารประกอบ เช่น สำเนาบัตรประชาชน
-                                    และทะเบียนบ้าน</t>
-                                <t t-set="required" t-value="False" />
-                                <t t-set="files" t-value="False" />
-                            </t>
+                            <h6 class="fw-bold text-dark mb-3">เอกสารของครอบครัว</h6>
+                            <p class="text-secondary small mb-4">
+                                กรุณาอัปโหลดเอกสารของสมาชิกครอบครัวที่ใช้ประกอบการทำประกันอุบัติเหตุ
+                            </p>
 
-                            <!-- mock list -->
-                            <div class="d-flex flex-column gap-2 mt-3">
-                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
-                                    <t t-set="filename">ใบคำขอเอาประกันของบิดา.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">21</t>
+                            <div class="d-flex flex-column gap-3">
+
+                                <t t-call="hr_recruitment_kmitl.document_upload_card">
+                                    <t t-set="name">accident_family_father_file</t>
+                                    <t t-set="label">นาย สมชาย ใจดี</t>
+                                    <t t-set="description">เอกสารของบิดา: บัตรประชาชน ทะเบียนบ้าน</t>
                                 </t>
 
-                                <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
-                                    <t t-set="filename">ทะเบียนบ้านครอบครัว.jpg</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">22</t>
+                                <t t-call="hr_recruitment_kmitl.document_upload_card">
+                                    <t t-set="name">accident_family_mother_file</t>
+                                    <t t-set="label">นาง สมหญิง ใจดี</t>
+                                    <t t-set="description">เอกสารของมารดา: บัตรประชาชน ทะเบียนบ้าน</t>
                                 </t>
+
                             </div>
                         </div>
                     </div>
@@ -1101,6 +1102,7 @@
             </div>
         </div>
     </template>
+
     <!-- View Page -->
     <template id="onboarding_tab_personal_view" name="Onboarding Tab Personal View">
         <div class="card shadow-sm border-0 rounded-4 mb-4">
@@ -1528,7 +1530,6 @@
             </div>
         </div>
     </template>
-
     <template id="onboarding_tab_work_view" name="Onboarding Tab Work View">
         <!-- Report Duty -->
         <div class="card shadow-sm border-0 rounded-4 mb-4">
@@ -1727,18 +1728,25 @@
                                 หากไม่มีคู่สมรสหรือบุตร สามารถเว้นว่างได้
                             </p>
 
-                            <div class="d-flex flex-column gap-2">
-                                <!-- mock list -->
-                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                    <t t-set="filename">ทะเบียนสมรส.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">3</t>
-                                </t>
-                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                    <t t-set="filename">สูติบัตรบุตร.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">4</t>
-                                </t>
+                            <div class="border-top pt-4">
+                                <div class="fw-bold text-dark mb-2">เอกสารของครอบครัว</div>
+                                <p class="text-secondary small mb-3">
+                                    เอกสารแยกตามรายบุคคล เช่น คู่สมรสหรือบุตร
+                                </p>
+
+                                <div class="d-flex flex-column gap-3">
+                                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                                        <t t-set="label">นางสาว สุดา ใจดี</t>
+                                        <t t-set="filename" t-value="'spouse_health_documents.pdf'" />
+                                        <t t-set="download_url" t-value="true" />
+                                    </t>
+
+                                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                                        <t t-set="label">เด็กหญิง พิมพ์ใจ ใจดี</t>
+                                        <t t-set="filename" t-value="'child_health_documents.pdf'" />
+                                        <t t-set="download_url" t-value="true" />
+                                    </t>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1804,17 +1812,17 @@
                                 หากไม่มี สามารถเว้นว่างได้
                             </p>
 
-                            <div class="d-flex flex-column gap-2">
-                                <!-- mock list -->
-                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                    <t t-set="filename">ใบคำขอเอาประกันของบิดา.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">21</t>
+                            <div class="d-flex flex-column gap-3">
+                                <t t-call="hr_recruitment_kmitl.application_document_item">
+                                    <t t-set="label">นาย สมชาย ใจดี</t>
+                                    <t t-set="filename" t-value="'father_accident_documents.pdf'" />
+                                    <t t-set="download_url" t-value="true" />
                                 </t>
-                                <t t-call="hr_recruitment_kmitl.document_uploaded_view_list_item">
-                                    <t t-set="filename">ทะเบียนบ้านครอบครัว.jpg</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">22</t>
+
+                                <t t-call="hr_recruitment_kmitl.application_document_item">
+                                    <t t-set="label">นาง สมหญิง ใจดี</t>
+                                    <t t-set="filename" t-value="'mother_accident_documents.pdf'" />
+                                    <t t-set="download_url" t-value="true" />
                                 </t>
                             </div>
                         </div>
@@ -1841,7 +1849,7 @@
                         <t t-call="hr_recruitment_kmitl.application_document_item">
                             <t t-set="label">ใบสมัครกองทุนสำรองเลี้ยงชีพ</t>
                             <t t-set="filename" t-value="'provident_fund.pdf'" />
-                            <t t-set="download_url" t-value="False" />
+                            <t t-set="download_url" t-value="true" />
                         </t>
                     </div>
                 </div>
@@ -1865,7 +1873,7 @@
                         <t t-call="hr_recruitment_kmitl.application_document_item">
                             <t t-set="label">หนังสือแสดงเจตนาระบุตัวผู้รับเงินชดเชย</t>
                             <t t-set="filename" t-value="'beneficiary.pdf'" />
-                            <t t-set="download_url" t-value="False" />
+                            <t t-set="download_url" t-value="true" />
                         </t>
                     </div>
                 </div>
@@ -1892,7 +1900,7 @@
                         <t t-call="hr_recruitment_kmitl.application_document_item">
                             <t t-set="label">Letter of Consent</t>
                             <t t-set="filename" t-value="'consent.pdf'" />
-                            <t t-set="download_url" t-value="False" />
+                            <t t-set="download_url" t-value="true" />
                         </t>
                     </div>
                 </div>
@@ -2001,12 +2009,12 @@
                             <t t-call="hr_recruitment_kmitl.application_document_item">
                                 <t t-set="label">หน้าสมุดบัญชีธนาคารกรุงไทย</t>
                                 <t t-set="filename" t-value="'salary_book.pdf'" />
-                                <t t-set="download_url" t-value="False" />
+                                <t t-set="download_url" t-value="true" />
                             </t>
                             <t t-call="hr_recruitment_kmitl.application_document_item">
                                 <t t-set="label">ใบรับรองแพทย์ ฉบับจริง</t>
                                 <t t-set="filename" t-value="'medical_certificate.pdf'" />
-                                <t t-set="download_url" t-value="False" />
+                                <t t-set="download_url" t-value="true" />
                             </t>
                         </div>
                     </div>

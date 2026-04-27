@@ -105,13 +105,11 @@
     </template>
     <template id="document_uploaded_list_item">
         <div class="d-flex align-items-center gap-3 p-3 border rounded-3 bg-white">
-
             <!-- icon (เอากลับมา) -->
             <div
                 class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon">
                 <i class="fa fa-file-text-o text-secondary" />
             </div>
-
             <!-- file info -->
             <div class="flex-grow-1">
                 <div class="small text-success">
@@ -125,7 +123,6 @@
                     </t>
                 </div>
             </div>
-
             <!-- action -->
             <div class="flex-shrink-0">
                 <button type="button" class="btn btn-outline-danger btn-sm px-3 py-2 rounded-3 js-file-remove-item"
@@ -134,28 +131,23 @@
                     Delete
                 </button>
             </div>
-
         </div>
     </template>
     <template id="document_uploaded_view_list_item">
         <div class="d-flex align-items-center gap-3 p-3 border rounded-3 bg-white">
-            <div
-                class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon">
+            <div class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon">
                 <i class="fa fa-file-text-o text-secondary" />
             </div>
-
             <div class="flex-grow-1">
-                <div class="small text-success">
-                    <i class="fa fa-check-circle me-1" />
-                    <a t-if="download_url" t-att-href="download_url" class="text-success text-decoration-underline"
-                        target="_blank">
-                        <t t-esc="filename" />
-                    </a>
-                    <t t-else="">
-                        <t t-esc="filename" />
-                    </t>
+                <div class="fw-semibold text-dark">
+                    <t t-esc="filename" />
                 </div>
             </div>
+            <t t-if="download_url">
+                <a t-att-href="download_url" class="btn btn-outline-primary btn-sm rounded-3">
+                    <i class="fa fa-download me-1" />ดาวน์โหลด
+                </a>
+            </t>
         </div>
     </template>
     <template id="document_multi_upload_item">
@@ -166,11 +158,9 @@
                     <span class="text-danger ms-1">*</span>
                 </t>
             </label>
-
             <p class="text-secondary small mb-3">
                 <t t-esc="description" />
             </p>
-
             <div class="d-flex flex-column gap-2 mb-3">
                 <t t-if="files">
                     <t t-foreach="files" t-as="file" t-key="file.get('id')">
@@ -185,7 +175,6 @@
                     <div class="small text-muted">No file selected</div>
                 </t>
             </div>
-
             <label class="multi-upload-dropzone d-block text-center p-5 border border-2 rounded-4 mb-0">
                 <input type="file" class="d-none js-multi-file-input" t-att-name="name" multiple="multiple"
                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
@@ -286,8 +275,8 @@
             <t t-esc="label" />
         </label>
         <textarea class="form-control text-muted border-0 py-2" t-att-rows="rows or 4" readonly="readonly">
-        <t t-esc="value or '-'" />
-    </textarea>
+            <t t-esc="value or '-'" />
+        </textarea>
     </template>
     <template id="application_document_item">
         <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
