@@ -66,7 +66,7 @@ class PortalOnboardingController(http.Controller):
 
     def _prepare_values(self, onboarding):
         applicant = onboarding.applicant_id
-        partner = applicant.partner_id or request.env.user.partner_id
+        # partner = applicant.partner_id or request.env.user.partner_id
 
         # Prepare education items from applicant
         education_items = []
@@ -85,7 +85,7 @@ class PortalOnboardingController(http.Controller):
                         if edu.graduation_date
                         else "-",
                         "certificate_url": (
-                            f"/web/content/hr.applicant.education.history/{edu.id}/certificate_file/{edu.certificate_filename or 'certificate'}?download=true"
+                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=certificate_file&filename_field={edu.certificate_filename or 'certificate'}&download=true"
                             if edu.certificate_file
                             else False
                         ),
