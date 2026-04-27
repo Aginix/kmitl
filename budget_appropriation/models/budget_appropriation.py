@@ -391,6 +391,11 @@ class BudgetAppropriation(models.Model):
         self.write({"state": "posted"})
 
     def unlink(self):
+        for record in self:
+            if record.state != "cancel":
+                raise UserError(
+                    _("ไม่สามารถลบรายการจัดสรรงบประมาณได้ กรุณายกเลิกรายการก่อนทำการลบ")
+                )
         return super().unlink()
 
     def button_cancel(self):
