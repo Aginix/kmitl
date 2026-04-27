@@ -144,8 +144,6 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
         Returns:
             dict: xml_id -> balance
         """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
-
         # Pre-compute parent_path_prefix -> xml_id mapping
         # Using parent_path prefix (e.g., "123/") to match all descendants
         path_prefix_map = {}
@@ -157,14 +155,22 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
             else:
                 _logger.warning("Activity plan with xml_id '%s' not found", xml_id)
 
-        # Aggregate
+        # Iterate compilations with signed lines (deducts subtracted) so
+        # totals reconcile with compilation.amount_expense_total.
         totals = {}
-        for line in lines:
-            activity = line.activity_analytic_id
-            # Check which plan this activity belongs to
-            for prefix, xml_id in path_prefix_map.items():
-                if prefix in activity.parent_path or activity.parent_path.startswith(prefix):
-                    totals[xml_id] = totals.get(xml_id, 0) + line.balance
-                    break
+        for compilation in summary.compilation_ids:
+            for line, sign in compilation.iter_signed_lines("expense"):
+                activity = line.activity_analytic_id
+                if not activity or not activity.parent_path:
+                    continue
+                # parent_path.startswith(prefix) is the only valid ancestor
+                # check — `prefix in parent_path` is a substring match and
+                # can collide when ids share digits (e.g. "10/" vs "110/").
+                for prefix, xml_id in path_prefix_map.items():
+                    if activity.parent_path.startswith(prefix):
+                        totals[xml_id] = (
+                            totals.get(xml_id, 0) + line.balance * sign
+                        )
+                        break
 
         return totals

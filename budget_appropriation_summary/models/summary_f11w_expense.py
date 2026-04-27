@@ -223,23 +223,19 @@ class BudgetAppropriationSummaryF11WExpense(models.AbstractModel):
         Returns:
             dict: (dept_id, column_code) -> balance
         """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
         totals = {}
-
-        for line in lines:
-            top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
-
+        for compilation in summary.compilation_ids:
+            top_dept_id = compilation.top_level_department_id()
             if not top_dept_id or top_dept_id not in dept_map:
                 continue
-
-            # Check fund
-            fund = line.fund_analytic_id
-            if fund:
-                # Check if fund matches directly or is a child of one of our funds
+            for line, sign in compilation.iter_signed_lines("expense"):
+                fund = line.fund_analytic_id
+                if not fund:
+                    continue
                 fund_code = self._get_fund_code(fund, fund_path_map)
                 if fund_code:
                     key = (top_dept_id, fund_code)
-                    totals[key] = totals.get(key, 0) + line.balance
+                    totals[key] = totals.get(key, 0) + line.balance * sign
 
         return totals
 

@@ -209,8 +209,6 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
         Returns:
             dict: (type_code, cat_name) -> balance
         """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
-
         # Pre-compute account_id -> (type_code, cat_name) mapping
         account_category_map = {}
         for type_code, cat_name, mapping_type, codes in self.EXPENSE_CATEGORIES:
@@ -218,13 +216,16 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
             for acc_id in account_ids:
                 account_category_map[acc_id] = (type_code, cat_name)
 
-        # Aggregate
+        # Iterate compilations with signed lines so deduct_line_ids are
+        # subtracted — keeping totals aligned with compilation
+        # amount_expense_total (amount_net).
         totals = {}
-        for line in lines:
-            acc_id = line.account_id.id
-            if acc_id in account_category_map:
-                key = account_category_map[acc_id]
-                totals[key] = totals.get(key, 0) + line.balance
+        for compilation in summary.compilation_ids:
+            for line, sign in compilation.iter_signed_lines("expense"):
+                acc_id = line.account_id.id
+                if acc_id in account_category_map:
+                    key = account_category_map[acc_id]
+                    totals[key] = totals.get(key, 0) + line.balance * sign
 
         return totals
 
