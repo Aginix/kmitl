@@ -812,7 +812,7 @@ msgstr ""
 #, python-format
 msgid "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected 👎."
 msgstr ""
-"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ไม่ได้รับอนุมัติ 👎."
+"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ถูกตีกลับ 👎."
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -842,14 +842,14 @@ msgstr "เลขที่"
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Reject"
-msgstr "ไม่อนุมัติ"
+msgstr "ตีกลับ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__rejected
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Rejected"
-msgstr "ไม่อนุมัติ"
+msgstr "ถูกตีกลับ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected_message
