@@ -11,6 +11,5 @@ class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ['purchase.request', 'state.leadtime.mixin']
 
-    _tracked_transitions = [
-        ('to_approve', 'approved'),
-    ]
+    def _should_track_transition(self, from_state, to_state):
+        return to_state != 'rejected'
