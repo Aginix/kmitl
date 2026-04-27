@@ -1,0 +1,25 @@
+{
+    "name": "Advance Payment",
+    "summary": "Loan contract management (สัญญายืมเงิน)",
+    "version": "16.0.1.0.0",
+    "category": "Accounting",
+    "author": "KMITL",
+    "license": "LGPL-3",
+    "depends": [
+        "account",
+        "hr",
+        "account_analytic_kmitl",
+        "base_tier_validation",
+        "disbursement",
+        "purchase_request_approval_disbursement",
+    ],
+    "data": [
+        "security/security.xml",
+        "security/ir.model.access.csv",
+        "data/sequence.xml",
+        "data/tier_definition.xml",
+        "views/advance_payment_views.xml",
+    ],
+    "installable": True,
+    "application": False,
+}

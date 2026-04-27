@@ -1,0 +1,22 @@
+<odoo>
+    <data noupdate="0">
+        <record id="module_category_advance_payment" model="ir.module.category">
+            <field name="name">Advance Payment</field>
+            <field name="description">User groups for managing advance payments (loan contracts)</field>
+            <field name="sequence">16</field>
+        </record>
+
+        <record id="group_advance_payment_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="advance_payment.module_category_advance_payment"/>
+            <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+        </record>
+
+        <record id="group_advance_payment_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="advance_payment.module_category_advance_payment"/>
+            <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>
