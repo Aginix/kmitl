@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="purchase_request_dashboard.PurchaseRequestDashboard" owl="1">
+        <div class="o_action purchase_request_dashboard">
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-top-right">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <div>
+                            <label class="form-label-sm mb-1">ปีงบประมาณ:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onFiscalYearChange"
+                            >
+                                <t
+                                    t-foreach="state.filterOptions.fiscal_years"
+                                    t-as="fy"
+                                    t-key="fy.id"
+                                >
+                                    <option
+                                        t-att-value="fy.id"
+                                        t-att-selected="isFilterSelected(fy.id, state.filters.fiscal_year_id)"
+                                        t-esc="fy.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">แหล่งเงิน:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onSourceChange"
+                            >
+                                <t
+                                    t-foreach="state.filterOptions.sources"
+                                    t-as="src"
+                                    t-key="src.id"
+                                >
+                                    <option
+                                        t-att-value="src.id"
+                                        t-att-selected="isFilterSelected(src.id, state.filters.source_id)"
+                                        t-esc="src.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                </t>
+            </ControlPanel>
+            <div class="o_content">
+                <!-- Loading State -->
+                <t t-if="state.loading">
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="purchase_request_dashboard_content container-fluid p-4">
+                        <!-- Summary Boxes: header + 7 state boxes + total -->
+                        <div class="pr-summary-boxes mb-4">
+                            <!-- Header box (labels for count / amount columns) -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div
+                                        class="text-muted small mb-1 pb-4 text-center fw-semibold border-bottom"
+                                    >
+                                        จำนวน พ.1
+                                    </div>
+                                    <div />
+                                    <div class="text-center pt-1">
+                                        <div
+                                            class="text-muted small mb-1 text-center fw-semibold"
+                                        >
+                                            ยอดเงินรวม
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- State boxes (clickable to filter charts) -->
+                            <t
+                                t-foreach="state.summaryBoxes"
+                                t-as="box"
+                                t-key="box.state"
+                            >
+                                <div t-attf-class="card shadow-sm #{isBoxSelected(box.state) ? 'pr-box-selected' : 'border-0'}"
+                                     t-att-style="box.state !== 'total' ? 'cursor: pointer;' : ''"
+                                     t-on-click="() => this.onBoxClick(box.state)">
+                                    <div class="card-body p-2">
+                                        <div
+                                            class="text-muted small mb-1 text-center fw-semibold"
+                                        >
+                                            <t t-esc="box.label"/>
+                                        </div>
+                                        <t t-if="box.state !== 'total'">
+                                            <!-- Top: count, Bottom: amount -->
+                                            <div
+                                                class="text-center border-bottom pb-1 mb-1"
+                                            >
+                                                <div
+                                                    t-attf-class="h5 fw-bold mb-0 #{getBoxColorClass(box.state)}"
+                                                >
+                                                    <t
+                                                        t-esc="formatNumber(box.count)"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div class="text-center pt-1">
+                                                <div
+                                                    t-attf-class="fw-bold mb-0 pr-box-amount #{getBoxColorClass(box.state)}"
+                                                >
+                                                    <t
+                                                        t-esc="formatCurrency(box.amount)"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <!-- Total box: amount only -->
+                                            <div class="text-center">
+                                                <div
+                                                    class="h5 fw-bold text-primary mb-0"
+                                                >
+                                                    <t
+                                                        t-esc="formatCurrency(box.amount)"
+                                                    />
+                                                </div>
+                                                <div class="text-muted pr-box-unit">
+                                                    บาท
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Charts Row 1 -->
+                        <div class="row g-3 mb-4">
+                            <t t-foreach="chartCardsRow1" t-as="chart" t-key="chart.id">
+                                <div class="col-lg-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-white border-0 py-2">
+                                            <h6 class="mb-0 fw-bold pr-chart-title" t-esc="chart.title"/>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <div t-att-id="chart.id" class="pr-chart-container"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Charts Row 2 -->
+                        <div class="row g-3 mb-4">
+                            <t t-foreach="chartCardsRow2" t-as="chart" t-key="chart.id">
+                                <div class="col-lg-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-white border-0 py-2">
+                                            <h6 class="mb-0 fw-bold pr-chart-title" t-esc="chart.title"/>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <div t-att-id="chart.id" class="pr-chart-container"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Charts Row 3 -->
+                        <t t-if="chartCardsRow3.length">
+                            <div class="row g-3 mb-4">
+                                <t t-foreach="chartCardsRow3" t-as="chart" t-key="chart.id">
+                                    <div class="col-lg-4">
+                                        <div class="card border-0 shadow-sm h-100">
+                                            <div class="card-header bg-white border-0 py-2">
+                                                <h6 class="mb-0 fw-bold pr-chart-title" t-esc="chart.title"/>
+                                            </div>
+                                            <div class="card-body p-2">
+                                                <div t-att-id="chart.id" class="pr-chart-container"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

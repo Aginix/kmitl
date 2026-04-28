@@ -1,0 +1,1155 @@
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Dashboard Demo Data: FY 2569, งบประมาณแผ่นดิน (source_1)     -->
+    <!-- 20 purchase requests across 6 departments, 4 procurement     -->
+    <!-- types, multiple budget categories, and various states        -->
+    <!-- ============================================================ -->
+
+    <!-- PR D01: วิศวกรรม / ซื้อ / งบดำเนินงาน / draft -->
+    <record id="pr_dashboard_demo_01" model="purchase.request">
+        <field name="title">จัดซื้อเครื่องคอมพิวเตอร์สำหรับห้องปฏิบัติการ</field>
+        <field name="description">เครื่องคอมพิวเตอร์สำหรับห้อง Lab วิศวกรรมคอมพิวเตอร์</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_001"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 450000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_01')]"/>
+    </function>
+
+    <!-- PR D02: วิทยาศาสตร์ / จ้างทำของ / งบดำเนินงาน / draft -->
+    <record id="pr_dashboard_demo_02" model="purchase.request">
+        <field name="title">จ้างทำชุดทดลองวิทยาศาสตร์</field>
+        <field name="description">ชุดทดลองเคมีและฟิสิกส์สำหรับนักศึกษาปี 1</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_006"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_003"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_006"/>
+        <field name="department_id" ref="kmitl_demo.05"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 85000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_02')]"/>
+    </function>
+
+    <!-- PR D03: IT / เช่า / งบดำเนินงาน / draft -->
+    <record id="pr_dashboard_demo_03" model="purchase.request">
+        <field name="title">เช่าเครื่อง Server สำหรับระบบ Cloud</field>
+        <field name="description">เช่า Server 12 เดือนสำหรับระบบ Cloud Computing</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_005"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">prepaid</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_005"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_014"/>
+        <field name="department_id" ref="kmitl_demo.06"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 360000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_03')]"/>
+    </function>
+
+    <!-- PR D04: เกษตร / ซื้อ / งบลงทุน(ครุภัณฑ์) / to_verify -->
+    <record id="pr_dashboard_demo_04" model="purchase.request">
+        <field name="title">จัดซื้อเครื่องวิเคราะห์ดิน</field>
+        <field name="description">เครื่องวิเคราะห์คุณภาพดินสำหรับงานวิจัย</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_general"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_011"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_007"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_011"/>
+        <field name="department_id" ref="kmitl_demo.04"/>
+        <field name="budget_account_id" ref="budget.budget_account_5412000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 1200000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_04')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_04')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_04')]"/>
+    </function>
+
+    <!-- PR D05: สถาปัตย์ / จ้างก่อสร้าง / งบลงทุน / to_verify -->
+    <record id="pr_dashboard_demo_05" model="purchase.request">
+        <field name="title">ปรับปรุงห้องแสดงผลงานนักศึกษา</field>
+        <field name="description">ปรับปรุงห้อง Gallery ชั้น 1 อาคารสถาปัตย์</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_006"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_009"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_009"/>
+        <field name="department_id" ref="kmitl_demo.02"/>
+        <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 3500000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_05')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_05')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_05')]"/>
+    </function>
+
+    <!-- PR D06: อธิการ / จ้างทำของ / งบบุคลากร / to_verify -->
+    <record id="pr_dashboard_demo_06" model="purchase.request">
+        <field name="title">จ้างพัฒนาระบบบริหารทรัพยากรบุคคล</field>
+        <field name="description">ระบบ HR Online สำหรับสำนักงานอธิการบดี</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_010"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5101020008"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 2800000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_06')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_06')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_06')]"/>
+    </function>
+
+    <!-- PR D07: วิศวกรรม / ซื้อ / งบลงทุน(ครุภัณฑ์) / to_approve -->
+    <record id="pr_dashboard_demo_07" model="purchase.request">
+        <field name="title">จัดซื้อเครื่อง CNC สำหรับ Workshop</field>
+        <field name="description">เครื่อง CNC 5 แกน สำหรับงานวิจัยวิศวกรรมเครื่องกล</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_002"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5412000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 8500000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_07')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_07')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_07')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_07')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_07')]"/>
+    </function>
+
+    <!-- PR D08: IT / เช่า / งบดำเนินงาน / to_approve -->
+    <record id="pr_dashboard_demo_08" model="purchase.request">
+        <field name="title">เช่าลิขสิทธิ์ซอฟต์แวร์ Microsoft 365</field>
+        <field name="description">License Microsoft 365 สำหรับบุคลากร 500 คน</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_005"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">prepaid</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_004"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_014"/>
+        <field name="department_id" ref="kmitl_demo.06"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 1750000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_08')]"/>
+    </function>
+
+    <!-- PR D09: วิทยาศาสตร์ / ซื้อ / งบลงทุน(ครุภัณฑ์) / to_approve -->
+    <record id="pr_dashboard_demo_09" model="purchase.request">
+        <field name="title">จัดซื้อกล้องจุลทรรศน์อิเล็กตรอน</field>
+        <field name="description">กล้อง SEM สำหรับศูนย์เครื่องมือวิทยาศาสตร์</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_006"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_006"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_006"/>
+        <field name="department_id" ref="kmitl_demo.05"/>
+        <field name="budget_account_id" ref="budget.budget_account_5412000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 15000000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_09')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_09')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_09')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_09')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_09')]"/>
+    </function>
+
+    <!-- PR D10: เกษตร / จ้างทำของ / งบดำเนินงาน / to_approve -->
+    <record id="pr_dashboard_demo_10" model="purchase.request">
+        <field name="title">จ้างทำระบบรดน้ำอัตโนมัติ</field>
+        <field name="description">ระบบ Smart Farm สำหรับแปลงทดลองเกษตร</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_011"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_008"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_011"/>
+        <field name="department_id" ref="kmitl_demo.04"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 650000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_10')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_10')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_10')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_10')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_10')]"/>
+    </function>
+
+    <!-- PR D11: สถาปัตย์ / ซื้อ / งบดำเนินงาน / approved (to_verify → reserve → validate → approve) -->
+    <record id="pr_dashboard_demo_11" model="purchase.request">
+        <field name="title">จัดซื้อวัสดุศิลปะและการออกแบบ</field>
+        <field name="description">วัสดุสำหรับการเรียนการสอนภาคเรียนที่ 1</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_011"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_009"/>
+        <field name="department_id" ref="kmitl_demo.02"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 120000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_11')]"/>
+    </function>
+    <record id="pr_dashboard_demo_11" model="purchase.request">
+        <field name="date_approved">2025-10-15</field>
+    </record>
+
+    <!-- PR D12: วิศวกรรม / จ้างก่อสร้าง / งบลงทุน / approved -->
+    <record id="pr_dashboard_demo_12" model="purchase.request">
+        <field name="title">ก่อสร้างห้องปฏิบัติการ IoT</field>
+        <field name="description">ปรับปรุงห้อง Lab IoT อาคารวิศวกรรม ชั้น 5</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_006"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_014"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 12000000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_12')]"/>
+    </function>
+    <record id="pr_dashboard_demo_12" model="purchase.request">
+        <field name="date_approved">2025-11-20</field>
+    </record>
+
+    <!-- PR D13: IT / จ้างทำของ / งบดำเนินงาน / approved -->
+    <record id="pr_dashboard_demo_13" model="purchase.request">
+        <field name="title">จ้างพัฒนาแอปพลิเคชัน KMITL Mobile</field>
+        <field name="description">แอป iOS/Android สำหรับนักศึกษาและบุคลากร</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_015"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_014"/>
+        <field name="department_id" ref="kmitl_demo.06"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 4500000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_13')]"/>
+    </function>
+    <record id="pr_dashboard_demo_13" model="purchase.request">
+        <field name="date_approved">2025-12-10</field>
+    </record>
+
+    <!-- PR D14: เกษตร / ซื้อ / งบดำเนินงาน / approved -->
+    <record id="pr_dashboard_demo_14" model="purchase.request">
+        <field name="title">จัดซื้อพันธุ์พืชและปุ๋ยสำหรับแปลงทดลอง</field>
+        <field name="description">วัสดุการเกษตรประจำภาคเรียน</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_011"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_016"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_011"/>
+        <field name="department_id" ref="kmitl_demo.04"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 95000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_14')]"/>
+    </function>
+    <record id="pr_dashboard_demo_14" model="purchase.request">
+        <field name="date_approved">2026-01-18</field>
+    </record>
+
+    <!-- PR D15: วิทยาศาสตร์ / เช่า / งบดำเนินงาน / in_progress -->
+    <record id="pr_dashboard_demo_15" model="purchase.request">
+        <field name="title">เช่าเครื่องมือวิเคราะห์สารเคมี</field>
+        <field name="description">เช่า Spectrophotometer สำหรับภาควิชาเคมี 6 เดือน</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_005"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">prepaid</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_006"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_017"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_006"/>
+        <field name="department_id" ref="kmitl_demo.05"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 540000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
+    </function>
+    <record id="pr_dashboard_demo_15" model="purchase.request">
+        <field name="date_approved">2026-02-05</field>
+    </record>
+    <function model="purchase.request" name="button_in_progress">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_15')]"/>
+    </function>
+
+    <!-- PR D16: วิศวกรรม / จ้างทำของ / งบบุคลากร / in_progress -->
+    <record id="pr_dashboard_demo_16" model="purchase.request">
+        <field name="title">จ้างที่ปรึกษาโครงการวิจัย AI</field>
+        <field name="description">ที่ปรึกษาจากต่างประเทศสำหรับโครงการวิจัย Deep Learning</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_018"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5101020011"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 2200000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
+    </function>
+    <record id="pr_dashboard_demo_16" model="purchase.request">
+        <field name="date_approved">2026-03-12</field>
+    </record>
+    <function model="purchase.request" name="button_in_progress">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_16')]"/>
+    </function>
+
+    <!-- PR D17: สถาปัตย์ / จ้างก่อสร้าง / งบลงทุน / in_progress -->
+    <record id="pr_dashboard_demo_17" model="purchase.request">
+        <field name="title">ก่อสร้างอาคารปฏิบัติงานออกแบบ</field>
+        <field name="description">อาคาร Studio ใหม่สำหรับนักศึกษาสถาปัตย์</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_006"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_019"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_009"/>
+        <field name="department_id" ref="kmitl_demo.02"/>
+        <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 9800000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
+    </function>
+    <record id="pr_dashboard_demo_17" model="purchase.request">
+        <field name="date_approved">2026-04-08</field>
+    </record>
+    <function model="purchase.request" name="button_in_progress">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_17')]"/>
+    </function>
+
+    <!-- PR D18: IT / ซื้อ / งบดำเนินงาน / done -->
+    <record id="pr_dashboard_demo_18" model="purchase.request">
+        <field name="title">จัดซื้ออุปกรณ์เครือข่าย WiFi 6</field>
+        <field name="description">Access Point สำหรับอาคาร IT ทั้งหมด</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_general"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_020"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_014"/>
+        <field name="department_id" ref="kmitl_demo.06"/>
+        <field name="budget_account_id" ref="budget.budget_account_5412000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 780000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+    <record id="pr_dashboard_demo_18" model="purchase.request">
+        <field name="date_approved">2026-05-22</field>
+    </record>
+    <function model="purchase.request" name="button_in_progress">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+    <function model="purchase.request" name="button_done">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_18')]"/>
+    </function>
+
+    <!-- PR D19: วิศวกรรม / เช่า / งบดำเนินงาน / done -->
+    <record id="pr_dashboard_demo_19" model="purchase.request">
+        <field name="title">เช่าเครื่องพิมพ์ 3D</field>
+        <field name="description">เครื่อง 3D Printer สำหรับห้อง Fabrication Lab</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_005"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">prepaid</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_012"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 180000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+    <record id="pr_dashboard_demo_19" model="purchase.request">
+        <field name="date_approved">2026-06-15</field>
+    </record>
+    <function model="purchase.request" name="button_in_progress">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+    <function model="purchase.request" name="button_done">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
+    </function>
+
+    <!-- PR D20: วิทยาศาสตร์ / จ้างทำของ / งบบุคลากร / rejected -->
+    <record id="pr_dashboard_demo_20" model="purchase.request">
+        <field name="title">จ้างวิจัยการสังเคราะห์วัสดุนาโน</field>
+        <field name="description">โครงการวิจัยร่วมกับภาคเอกชน (ถูกยกเลิก)</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_006"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_013"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_006"/>
+        <field name="department_id" ref="kmitl_demo.05"/>
+        <field name="budget_account_id" ref="budget.budget_account_5101020016"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 3200000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
+    <function model="purchase.request" name="button_rejected">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
+
+    <!-- ============================================================ -->
+    <!-- Additional approved records D21-D30 for chart 4 coverage     -->
+    <!-- Covers ก.ค. - ก.ย. and fills gaps with all 4 procurement types -->
+    <!-- ============================================================ -->
+
+    <!-- PR D21: วิศวกรรม / ซื้อ / งบลงทุน(ครุภัณฑ์) / approved / ก.ค. -->
+    <record id="pr_dashboard_demo_21" model="purchase.request">
+        <field name="title">จัดซื้อเครื่องทดสอบแรงดึง</field>
+        <field name="description">เครื่อง Universal Testing Machine สำหรับห้อง Lab โยธา</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_general"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_002"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5412000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 2500000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_21')]"/>
+    </function>
+    <record id="pr_dashboard_demo_21" model="purchase.request">
+        <field name="date_approved">2026-07-10</field>
+    </record>
+
+    <!-- PR D22: IT / เช่า / งบดำเนินงาน / approved / ส.ค. -->
+    <record id="pr_dashboard_demo_22" model="purchase.request">
+        <field name="title">เช่าระบบ Cloud Storage</field>
+        <field name="description">บริการ Cloud Storage สำหรับระบบสำรองข้อมูลมหาวิทยาลัย</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_005"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">prepaid</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_004"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_014"/>
+        <field name="department_id" ref="kmitl_demo.06"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 890000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_22')]"/>
+    </function>
+    <record id="pr_dashboard_demo_22" model="purchase.request">
+        <field name="date_approved">2026-08-05</field>
+    </record>
+
+    <!-- PR D23: สถาปัตย์ / จ้างก่อสร้าง / งบลงทุน / approved / ก.ย. -->
+    <record id="pr_dashboard_demo_23" model="purchase.request">
+        <field name="title">ปรับปรุงห้องสมุดคณะสถาปัตย์</field>
+        <field name="description">ปรับปรุงพื้นที่อ่านหนังสือและห้องประชุมกลุ่ม</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_006"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_009"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_009"/>
+        <field name="department_id" ref="kmitl_demo.02"/>
+        <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 5600000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_23')]"/>
+    </function>
+    <record id="pr_dashboard_demo_23" model="purchase.request">
+        <field name="date_approved">2026-09-12</field>
+    </record>
+
+    <!-- PR D24: วิทยาศาสตร์ / จ้างทำของ / งบดำเนินงาน / approved / ต.ค. -->
+    <record id="pr_dashboard_demo_24" model="purchase.request">
+        <field name="title">จ้างซ่อมบำรุงเครื่องมือวิทยาศาสตร์</field>
+        <field name="description">ซ่อมบำรุงประจำปีเครื่องมือวิเคราะห์ขั้นสูง</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_006"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_006"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_006"/>
+        <field name="department_id" ref="kmitl_demo.05"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 750000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_24')]"/>
+    </function>
+    <record id="pr_dashboard_demo_24" model="purchase.request">
+        <field name="date_approved">2025-10-25</field>
+    </record>
+
+    <!-- PR D25: เกษตร / ซื้อ / งบดำเนินงาน / approved / ธ.ค. -->
+    <record id="pr_dashboard_demo_25" model="purchase.request">
+        <field name="title">จัดซื้อปุ๋ยอินทรีย์สำหรับแปลงวิจัย</field>
+        <field name="description">ปุ๋ยชีวภาพและสารปรับปรุงดินสำหรับโครงการวิจัยเกษตรยั่งยืน</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_011"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_016"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_011"/>
+        <field name="department_id" ref="kmitl_demo.04"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 320000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_25')]"/>
+    </function>
+    <record id="pr_dashboard_demo_25" model="purchase.request">
+        <field name="date_approved">2025-12-18</field>
+    </record>
+
+    <!-- PR D26: วิศวกรรม / เช่า / งบดำเนินงาน / approved / ก.พ. -->
+    <record id="pr_dashboard_demo_26" model="purchase.request">
+        <field name="title">เช่าเครื่องมือวัดความแม่นยำ</field>
+        <field name="description">เครื่อง CMM สำหรับห้อง Lab วิศวกรรมการผลิต</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_005"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">prepaid</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_017"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_008"/>
+        <field name="department_id" ref="kmitl_demo.01"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 1100000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_26')]"/>
+    </function>
+    <record id="pr_dashboard_demo_26" model="purchase.request">
+        <field name="date_approved">2026-02-20</field>
+    </record>
+
+    <!-- PR D27: เกษตร / จ้างก่อสร้าง / งบลงทุน / approved / เม.ย. -->
+    <record id="pr_dashboard_demo_27" model="purchase.request">
+        <field name="title">ก่อสร้างโรงเรือนเพาะปลูกอัจฉริยะ</field>
+        <field name="description">โรงเรือน Smart Greenhouse สำหรับงานวิจัยเกษตรแม่นยำ</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_006"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_011"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_019"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_011"/>
+        <field name="department_id" ref="kmitl_demo.04"/>
+        <field name="budget_account_id" ref="budget.budget_account_5411000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 4200000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_27')]"/>
+    </function>
+    <record id="pr_dashboard_demo_27" model="purchase.request">
+        <field name="date_approved">2026-04-15</field>
+    </record>
+
+    <!-- PR D28: IT / จ้างทำของ / งบบุคลากร / approved / มิ.ย. -->
+    <record id="pr_dashboard_demo_28" model="purchase.request">
+        <field name="title">จ้างพัฒนาระบบ Single Sign-On</field>
+        <field name="description">ระบบ SSO สำหรับเชื่อมต่อทุกระบบสารสนเทศของมหาวิทยาลัย</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_007"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_select"/>
+        <field name="payment_type">loan</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_014"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_015"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_014"/>
+        <field name="department_id" ref="kmitl_demo.06"/>
+        <field name="budget_account_id" ref="budget.budget_account_5101020008"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 1850000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_28')]"/>
+    </function>
+    <record id="pr_dashboard_demo_28" model="purchase.request">
+        <field name="date_approved">2026-06-08</field>
+    </record>
+
+    <!-- PR D29: วิทยาศาสตร์ / ซื้อ / งบลงทุน(ครุภัณฑ์) / approved / ส.ค. -->
+    <record id="pr_dashboard_demo_29" model="purchase.request">
+        <field name="title">จัดซื้อเครื่อง HPLC</field>
+        <field name="description">เครื่อง High-Performance Liquid Chromatography สำหรับภาควิชาเคมี</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_004"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_bidding"/>
+        <field name="is_egp" eval="True"/>
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_006"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_006"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_006"/>
+        <field name="department_id" ref="kmitl_demo.05"/>
+        <field name="budget_account_id" ref="budget.budget_account_5412000002"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 6800000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_29')]"/>
+    </function>
+    <record id="pr_dashboard_demo_29" model="purchase.request">
+        <field name="date_approved">2026-08-22</field>
+    </record>
+
+    <!-- PR D30: สถาปัตย์ / เช่า / งบดำเนินงาน / approved / ม.ค. -->
+    <record id="pr_dashboard_demo_30" model="purchase.request">
+        <field name="title">เช่าอุปกรณ์สำรวจพื้นที่ 3D Scanner</field>
+        <field name="description">เครื่อง LiDAR Scanner สำหรับงานสำรวจอาคารและภูมิทัศน์</field>
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2569"/>
+        <field name="procurement_type_id" ref="purchase_request_kmitl.procurement_type_005"/>
+        <field name="procurement_method_id" ref="purchase_request_kmitl.procurement_specific"/>
+        <field name="payment_type">prepaid</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_009"/>
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_011"/>
+        <field name="user_id" ref="kmitl_demo.user_demo_009"/>
+        <field name="department_id" ref="kmitl_demo.02"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
+    </record>
+    <function model="purchase.request" name="_onchange_budget_account_id"
+        context="{'default_price_unit': 480000}">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
+    </function>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
+    </function>
+    <function model="purchase.request" name="button_approved">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_30')]"/>
+    </function>
+    <record id="pr_dashboard_demo_30" model="purchase.request">
+        <field name="date_approved">2026-01-10</field>
+    </record>
+
+</odoo>
