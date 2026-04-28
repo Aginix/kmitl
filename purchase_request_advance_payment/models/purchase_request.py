@@ -16,6 +16,15 @@ class PurchaseRequest(models.Model):
         compute="_compute_advance_payment_count",
     )
 
+    is_requested_by_current_user = fields.Boolean(
+        compute="_compute_is_requested_by_current_user",
+    )
+
+    @api.depends("requested_by")
+    def _compute_is_requested_by_current_user(self):
+        for rec in self:
+            rec.is_requested_by_current_user = rec.requested_by == self.env.user
+
     @api.depends("advance_payment_id")
     def _compute_advance_payment_count(self):
         for rec in self:

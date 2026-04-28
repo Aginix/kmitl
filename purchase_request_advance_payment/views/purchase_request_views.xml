@@ -19,6 +19,7 @@
 
             <!-- Create advance payment button in header -->
             <xpath expr="//header/field[@name='state']" position="before">
+                <field name="is_requested_by_current_user" invisible="1"/>
                 <button name="action_create_advance_payment"
                     string="สร้างสัญญาเงินยืม"
                     type="object"
@@ -27,7 +28,7 @@
                         ('state', '!=', 'approved'),
                         ('payment_type', '!=', 'advance'),
                         ('advance_payment_count', '!=', 0),
-                        ('requested_by', '!=', uid)]}"/>
+                        ('is_requested_by_current_user', '=', False)]}"/>
             </xpath>
         </field>
     </record>
