@@ -142,8 +142,7 @@
                                     'invisible': [('is_reference_visible', '=', False)],
                                     'readonly': ['|', ('is_locked_by_reference', '=', True), ('id', '!=', False)]
                                 }" />
-                            <field name="loan_reason"
-                                attrs="{'readonly': [('is_locked_by_reference', '=', True)]}" />
+                            <field name="loan_reason" />
                             <field name="currency_id" invisible="1" />
                             <field name="loan_amount"
                                 attrs="{'readonly': [('is_locked_by_reference', '=', True)]}" />

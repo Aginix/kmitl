@@ -31,7 +31,7 @@ class PurchaseRequest(models.Model):
             "reference": "purchase.request,%s" % self.id,
             "loan_amount": self.get_estimated_cost_currency(),
             "loan_type_id": loan_type.id,
-            "loan_reason": self.title or self.description or "",
+            "loan_reason": self.description or "",
             "analytic_distribution": self.analytic_distribution,
         }
 

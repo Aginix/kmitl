@@ -23,10 +23,11 @@
                     string="สร้างสัญญาเงินยืม"
                     type="object"
                     class="btn-primary"
-                    attrs="{'invisible': ['|', '|',
+                    attrs="{'invisible': ['|', '|', '|',
                         ('state', '!=', 'approved'),
                         ('payment_type', '!=', 'advance'),
-                        ('advance_payment_count', '!=', 0)]}"/>
+                        ('advance_payment_count', '!=', 0),
+                        ('requested_by', '!=', uid)]}"/>
             </xpath>
         </field>
     </record>
