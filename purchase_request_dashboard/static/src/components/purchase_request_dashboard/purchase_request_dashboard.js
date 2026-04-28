@@ -589,22 +589,34 @@ export class PurchaseRequestDashboard extends Component {
         if (!chart) return;
 
         const raw = this.state.leadtimeHeatmap || [];
-        if (!raw.length) return;
 
-        // หา max สำหรับ normalize สี
+        // ถ้าไม่มีข้อมูลเลยให้แสดง empty state แทน
+        if (!raw.length) {
+            chart.setOption({
+                title: {
+                    text: "ยังไม่มีข้อมูล Leadtime",
+                    left: "center",
+                    top: "center",
+                    textStyle: {color: "#aaa", fontSize: 14},
+                },
+                series: [],
+            }, true);
+            return;
+        }
+
+        // ใช้เฉพาะ record ที่มีข้อมูล (value > 0) สำหรับ normalize สี
+        // แต่ยังคง render block ที่ value = 0 ไว้ด้วย (แสดงสีเทา)
         const maxVal = Math.max(...raw.map((d) => d.value), 1);
 
         const treemapData = raw.map((item) => ({
             name: item.name,
-            value: item.value,
+            value: Math.max(item.value, 0.1),  // treemap ต้องการ value > 0 เพื่อแสดง block
             itemStyle: {
-                color: this._durationToColor(item.value, maxVal),
+                color: item.count === 0
+                    ? "#d9d9d9"  // สีเทาถ้ายังไม่มีข้อมูล
+                    : this._durationToColor(item.value, maxVal),
             },
-            label: {
-                formatter: () =>
-                    `${item.name}\n${this._formatDuration(item.value)}`,
-            },
-            // เก็บ raw data ไว้สำหรับ tooltip
+            _realValue: item.value,
             _min: item.min,
             _max: item.max,
             _count: item.count,
@@ -615,11 +627,14 @@ export class PurchaseRequestDashboard extends Component {
                 tooltip: {
                     formatter: (params) => {
                         const d = params.data;
+                        if (d._count === 0) {
+                            return `<strong>${d.name}</strong><br/>ยังไม่มีข้อมูล`;
+                        }
                         return `
                             <strong>${d.name}</strong><br/>
-                            avg: ${this._formatDuration(d.value)}<br/>
-                            min: ${this._formatDuration(d._min)}<br/>
-                            max: ${this._formatDuration(d._max)}<br/>
+                            เฉลี่ย: ${this._formatDuration(d._realValue)}<br/>
+                            ต่ำสุด: ${this._formatDuration(d._min)}<br/>
+                            สูงสุด: ${this._formatDuration(d._max)}<br/>
                             จำนวน: ${d._count} ครั้ง
                         `;
                     },
@@ -631,17 +646,38 @@ export class PurchaseRequestDashboard extends Component {
                         roam: false,
                         nodeClick: false,
                         breadcrumb: {show: false},
+                        width: "100%",
+                        height: "100%",
                         label: {
                             show: true,
-                            fontSize: 12,
+                            fontSize: 13,
                             color: "#fff",
                             fontWeight: "bold",
-                            overflow: "truncate",
+                            formatter: (params) => {
+                                const d = params.data;
+                                if (d._count === 0) {
+                                    return `{name|${d.name}}\n{sub|ยังไม่มีข้อมูล}`;
+                                }
+                                return `{name|${d.name}}\n{sub|${this._formatDuration(d._realValue)}}`;
+                            },
+                            rich: {
+                                name: {
+                                    fontSize: 13,
+                                    fontWeight: "bold",
+                                    color: "#fff",
+                                    lineHeight: 20,
+                                },
+                                sub: {
+                                    fontSize: 12,
+                                    color: "rgba(255,255,255,0.85)",
+                                    lineHeight: 18,
+                                },
+                            },
                         },
                         itemStyle: {
-                            borderWidth: 3,
+                            borderWidth: 4,
                             borderColor: "#fff",
-                            gapWidth: 3,
+                            gapWidth: 4,
                         },
                         data: treemapData,
                     },
