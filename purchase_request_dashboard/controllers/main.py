@@ -405,11 +405,11 @@ class PurchaseRequestDashboardController(http.Controller):
 
     def _get_chart7_leadtime_heatmap(self):
         TRACKED_TRANSITIONS = [
-            ('draft',       'to_verify',  'จัดทำคำขอ'),
-            ('to_verify',   'to_approve', 'จองเงิน'),
-            ('to_approve',  'approved',   'ขออนุมัติคำขอ'),
-            ('approved',    'in_progress','จัดซื้อจัดจ้าง'),
-            ('in_progress', 'done',       'จัดทำสัญญา'),
+            ('draft',       'to_verify',   'จัดทำคำขอ'),
+            ('to_verify',   'to_approve',  'จองเงิน'),
+            ('to_approve',  'approved',    'ขออนุมัติคำขอ'),
+            ('approved',    'in_progress', 'จัดซื้อจัดจ้าง'),
+            ('in_progress', 'done',        'จัดทำสัญญา'),
         ]
 
         LeadtimeLog = request.env['state.leadtime.log']
@@ -421,38 +421,19 @@ class PurchaseRequestDashboardController(http.Controller):
                     ('res_model', '=', 'purchase.request'),
                     ('from_state', '=', from_state),
                     ('to_state', '=', to_state),
-                    ('duration_minutes', '>', 0),
                 ],
-                fields=[
-                    'duration_minutes:avg',
-                    'duration_minutes:min',
-                    'duration_minutes:max',
-                ],
+                fields=['duration_minutes:sum'],  # ← aggregate เดียว ไม่ duplicate
                 groupby=[],
                 lazy=False,
             )
 
-            if groups and groups[0]['__count']:
-                g = groups[0]
-                data.append({
-                    'name': label,
-                    'from_state': from_state,
-                    'to_state': to_state,
-                    'value': round(g['duration_minutes:avg'] or 0, 2),
-                    'min': round(g['duration_minutes:min'] or 0, 2),
-                    'max': round(g['duration_minutes:max'] or 0, 2),
-                    'count': g['__count'],
-                })
-            else:
-                # ยังไม่มีข้อมูลก็ใส่ 0 ไว้ก่อน ให้ block ยังแสดงอยู่
-                data.append({
-                    'name': label,
-                    'from_state': from_state,
-                    'to_state': to_state,
-                    'value': 0,
-                    'min': 0,
-                    'max': 0,
-                    'count': 0,
-                })
+            g = groups[0] if groups else {}
+            data.append({
+                'name': label,
+                'from_state': from_state,
+                'to_state': to_state,
+                'value': round(float(g.get('duration_minutes', 0) or 0), 2),
+                'count': g.get('__count', 0),
+            })
 
         return data

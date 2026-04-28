@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import api, models, fields
 
 
 class StateLeadtimeMixin(models.AbstractModel):
@@ -40,7 +40,10 @@ class StateLeadtimeMixin(models.AbstractModel):
                 to_state = vals[tracked_field]
                 if from_state != to_state and record._should_track_transition(from_state, to_state):
                     transitions.append((record, from_state, to_state, record.state_entry_date))
-            vals['state_entry_date'] = fields.Datetime.now()
+
+            if transitions:
+                vals['state_entry_date'] = fields.Datetime.now()
+
         result = super().write(vals)
         for record, from_state, to_state, entry_date in transitions:
             self.env['state.leadtime.log']._log_transition(
@@ -49,12 +52,9 @@ class StateLeadtimeMixin(models.AbstractModel):
             )
         return result
 
+    @api.model_create_multi
     def create(self, vals_list):
-        if isinstance(vals_list, dict):
-            vals_list = [vals_list]
-
         now = fields.Datetime.now()
         for vals in vals_list:
             vals.setdefault('state_entry_date', now)
-
         return super().create(vals_list)
