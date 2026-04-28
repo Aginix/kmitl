@@ -83,6 +83,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0200",
         "source": "account_analytic_kmitl.source_2",
         "activity": "account_analytic_kmitl.activity_06",
+        "egp_project_id": "12345678",
     },
     # Group B: fund_0100 + source_1 + activity_09
     {
@@ -96,6 +97,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0100",
         "source": "account_analytic_kmitl.source_1",
         "activity": "account_analytic_kmitl.activity_09",
+        "egp_project_id": "12345678",
     },
     {
         "title": "[E2E] จ้างเหมาบริการทำความสะอาด (งบแผ่นดิน)",
@@ -120,6 +122,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0100",
         "source": "account_analytic_kmitl.source_1",
         "activity": "account_analytic_kmitl.activity_09",
+        "egp_project_id": "12345678",
     },
     # Group C: fund_0300 + source_2 + activity_00
     {
@@ -145,6 +148,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0300",
         "source": "account_analytic_kmitl.source_2",
         "activity": "account_analytic_kmitl.activity_00",
+        "egp_project_id": "12345678",
     },
     # Group D: fund_0400 + source_2 + activity_06
     {
@@ -170,6 +174,7 @@ E2E_CASES = [
         "fund": "account_analytic_kmitl.fund_0400",
         "source": "account_analytic_kmitl.source_2",
         "activity": "account_analytic_kmitl.activity_06",
+        "egp_project_id": "12345678",
     },
 ]
 
@@ -257,7 +262,7 @@ def _process_sarabun_approve(env, origin_record, admin_user, department):
 
 def _create_pr_with_line(env, case, admin_user, fiscal_year, budget_account,
                          dept, department, operating_unit, admin_employee,
-                         supervisor_employee):
+                         supervisor_employee, wa_committee_employees=None):
     """Create a purchase request with line and committees."""
     activity = env.ref(case["activity"])
     fund = env.ref(case["fund"])
@@ -284,6 +289,7 @@ def _create_pr_with_line(env, case, admin_user, fiscal_year, budget_account,
             "department_analytic_id": dept.id,
             "fund_analytic_id": fund.id,
             "source_analytic_id": source.id,
+            "egp_project_id": case.get("egp_project_id"),
         }
     )
 
@@ -311,6 +317,19 @@ def _create_pr_with_line(env, case, admin_user, fiscal_year, budget_account,
             "phone": admin_employee.work_phone or "",
         }
     )
+
+    # Work acceptance committee members
+    for emp in wa_committee_employees or []:
+        env["procurement.committee"].create(
+            {
+                "request_id": pr.id,
+                "employee_id": emp.id,
+                "committee_type": "work_acceptance",
+                "approve_role": "committee",
+                "name": emp.name,
+                "phone": emp.work_phone or "",
+            }
+        )
 
     # Work supervisor: separate employee (constraint forbids same as work_acceptance)
     env["procurement.committee"].create(
@@ -385,7 +404,7 @@ def _run_egp_flow(env, pr, admin_user, department):
 
 
 def _create_e2e_purchase_demo(env):
-    """Create 10 end-to-end PR → PO demo records."""
+    """Create 10 end-to-end PR → PO demo records"""
     _logger.info("Creating end-to-end purchase demo data (10 cases)...")
 
     # Resolve shared references
@@ -402,6 +421,14 @@ def _create_e2e_purchase_demo(env):
     )
     # Separate employee for work_supervisor (constraint forbids same as work_acceptance)
     supervisor_employee = env.ref("kmitl_demo.employee_demo_008")
+
+    # Work acceptance committee members (คณะกรรมการตรวจรับพัสดุ)
+    wa_committee_employees = (
+        env.ref("kmitl_demo.employee_demo_012")   # ชนิดา
+        + env.ref("kmitl_demo.employee_demo_011")  # พิชัย
+        + env.ref("kmitl_demo.employee_demo_020")  # ปิยะนุช
+        + env.ref("kmitl_demo.employee_demo_018")  # สุดารัตน์
+    )
 
     # Create budget appropriations for each financial dimension group
     for activity_ref, fund_ref, source_ref, amount in BUDGET_GROUPS:
@@ -429,6 +456,7 @@ def _create_e2e_purchase_demo(env):
             operating_unit=operating_unit,
             admin_employee=admin_employee,
             supervisor_employee=supervisor_employee,
+            wa_committee_employees=wa_committee_employees,
         )
 
         if pr.is_egp:

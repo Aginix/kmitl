@@ -195,6 +195,7 @@ class PurchaseRequest(models.Model):
         "purchase_count",
         "request_approval_ids",
         "request_approval_ids.state",
+        "is_egp",
     )
     def _compute_need_make_purchase_order(self):
         for rec in self:
@@ -204,6 +205,7 @@ class PurchaseRequest(models.Model):
                 and rec.purchase_count == 0
                 and rec.request_approval_ids
                 and rec.request_approval_ids.state in ("approved")
+                and rec.is_egp
             ):
                 rec.need_make_purchase_order = True
             else:

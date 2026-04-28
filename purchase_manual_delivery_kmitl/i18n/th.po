@@ -51,7 +51,7 @@ msgstr "บันทึกรับวัสดุเข้าคลัง"
 #. module: purchase_manual_delivery
 #: model:ir.actions.act_window,name:purchase_manual_delivery.action_create_manual_stock_picking
 msgid "Create Manual Stock Picking"
-msgstr "บันทึกรับวัสดุเข้าคลัง"
+msgstr "แบบบันทึกรับวัสดุเข้าคลัง"
 
 #. module: purchase_manual_delivery_kmitl
 #: model:ir.model,name:purchase_manual_delivery_kmitl.model_create_stock_picking_wizard

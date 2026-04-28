@@ -64,8 +64,17 @@ class PurchaseRequestApproval(models.Model):
     def _get_record_url(self):
         return "/web#id={}&model={}&view_type=form".format(self.id, self._name)
 
+    def button_approved(self):
+        res = super().button_approved()
+        for rec in self:
+            if not rec.use_purchase_order:
+                rec.request_id.button_done()
+        return res
+
     def approval_make_purchase_order(self):
-        return self.request_id.approval_make_purchase_order()
+        res = self.request_id.approval_make_purchase_order()
+        self.request_id.button_done()
+        return res
 
     def action_view_purchase_order(self):
         return self.request_id.action_view_purchase_order()

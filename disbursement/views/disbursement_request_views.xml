@@ -139,6 +139,17 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
+                        <page string="Attachment" name="attachment">
+                            <field name="attachment_ids"
+                                   context="{'default_res_model': 'disbursement.request'}">
+                                <tree>
+                                    <field name="name" string="File Name"/>
+                                    <field name="type"/>
+                                    <field name="create_date" string="Upload Date"/>
+                                    <field name="create_uid" string="Uploaded By"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

@@ -214,3 +214,8 @@ msgstr ""
 #: model:ir.ui.menu,name:purchase_guarantee_kmitl.menu_contract_guarantee
 msgid "หลักประกันสัญญา"
 msgstr ""
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
+msgid "Purchase Guarantee Form"
+msgstr "แบบบันทึกข้อมูลหลักประกัน"

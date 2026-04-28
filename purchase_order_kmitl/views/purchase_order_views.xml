@@ -118,6 +118,15 @@
                     </field>
                 </page>
             </xpath>
+
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <h2>Purchase Order Form</h2>
+            </xpath>
+
+            <!-- hide label -->
+            <xpath expr="//span[@class='o_form_label'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 

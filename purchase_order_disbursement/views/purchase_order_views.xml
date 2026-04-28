@@ -10,7 +10,7 @@
                 <button name="action_disbursement_request" type="object" string="Create bill" attrs="{'invisible': [('hide_create_disbursement_request_button', '=', True)]}" class="btn-primary"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_disbursement_request" type="object" class="oe_stat_button" icon="fa-exchange">
+                <button name="action_view_disbursement_request" type="object" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible':[('disbursement_request_ids','=',[])]}">
                     <field name="disbursement_request_count" widget="statinfo" string="Disbursement Requests"/>
                     <field name='disbursement_request_ids' invisible="1"/>
                 </button>

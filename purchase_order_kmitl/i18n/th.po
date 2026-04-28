@@ -2,6 +2,7 @@
 # This file contains the translation of the following modules:
 # 	* purchase_order_kmitl
 # 	* purchase
+#   * purchase_no_rfq
 #
 msgid ""
 msgstr ""
@@ -304,8 +305,8 @@ msgid ""
 "<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not in',('draft','sent'))]}\">Request for Quotation </span>\n"
 "                        <span class=\"o_form_label\" attrs=\"{'invisible': [('state','in',('draft','sent'))]}\">Purchase Order </span>"
 msgstr ""
-"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not in',('draft','sent'))]}\">ใบแจ้งขอใบเสนอราคา </span>\n"
-"                        <span class=\"o_form_label\" attrs=\"{'invisible': [('state','in',('draft','sent'))]}\">ใบสั่งซื้อ </span>"
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not in',('draft','sent'))]}\">เลขที่ใบแจ้งขอใบเสนอราคา </span>\n"
+"                        <span class=\"o_form_label\" attrs=\"{'invisible': [('state','in',('draft','sent'))]}\">เลขที่ </span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.product_normal_form_view_inherit_purchase
@@ -3368,3 +3369,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
 msgid "งวดงาน"
 msgstr ""
+
+#. module: purchase_no_rfq
+#: model_terms:ir.ui.view,arch_db:purchase_no_rfq.purchase_order_form
+msgid ""
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not "
+"in',('draft','sent'))]}\">Purchase Order </span>"
+msgstr ""
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not "
+"in',('draft','sent'))]}\">เลขที่ </span>"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Purchase Order Form"
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"

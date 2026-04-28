@@ -147,3 +147,8 @@ msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้า�
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__validated
 msgid "Validated"
 msgstr "ตรวจสอบแล้ว"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Purchase Request Approval Form"
+msgstr "แบบรายงานคำขอซื้อ/จ้าง (พจ.1)"

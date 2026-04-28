@@ -114,7 +114,7 @@
                                         ('source_analytic_id', '=', False),
                                     '|',
                                         ('department_analytic_id', '=', department_analytic_id),
-                                        ('department_analytic_id.parent_id', '=', department_analytic_id),
+                                        ('department_analytic_id.parent_path', 'like', str(department_analytic_id) + '/%'),
                                 ]"
                                 attrs="{'readonly': ['|', '|', ('account_fiscal_year_id', '=', False), ('source_analytic_id', '=', False), ('department_analytic_id', '=', False)]}"
                                 context="{'can_edit': False}"
@@ -143,7 +143,7 @@
                                         ('source_analytic_id', '=', False),
                                     '|',
                                         ('department_analytic_id', '=', department_analytic_id),
-                                        ('department_analytic_id.parent_id', '=', department_analytic_id),
+                                        ('department_analytic_id.parent_path', 'like', str(department_analytic_id) + '/%'),
                                 ]"
                                 attrs="{'readonly': ['|', '|', ('account_fiscal_year_id', '=', False), ('source_analytic_id', '=', False), ('department_analytic_id', '=', False)]}"
                             >

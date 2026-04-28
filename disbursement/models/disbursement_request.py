@@ -175,6 +175,13 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    attachment_ids = fields.One2many(
+        "ir.attachment",
+        "res_id",
+        string="Document Attachments",
+        domain=[("res_model", "=", "disbursement.request")],
+    )
+
     amount_untaxed = fields.Monetary(
         string="Untaxed Amount",
         compute="_compute_amount_all",

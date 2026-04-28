@@ -84,6 +84,7 @@
                         bg_color="bg-success"
                         attrs="{'invisible': [('state', '!=', 'done')]}"
                     />
+                    <h2>Account Asset Batch Form</h2>
                     <div class="oe_edit_only">
                         <label for="name" class="oe_inline"/>
                     </div>

@@ -13,6 +13,7 @@ export class WaSystray extends Component {
         this.state = useState({
             items: [],
             totalCount: 0,
+            showAll: false,
         });
 
         onWillStart(() => this.fetchData());
@@ -22,7 +23,8 @@ export class WaSystray extends Component {
 
     async fetchData() {
         try {
-            const result = await this.orm.call("res.users", "get_wa_inbox_count", [], {});
+            const method = this.state.showAll ? "get_wa_inbox_all" : "get_wa_inbox_count";
+            const result = await this.orm.call("res.users", method, [], {});
             this.state.items = result.items || [];
             this.state.totalCount = result.total_count || 0;
         } catch {
@@ -38,6 +40,17 @@ export class WaSystray extends Component {
 
     async markAllRead() {
         await this.orm.call("res.users", "mark_all_wa_read", [], {});
+        this.state.showAll = false;
+        await this.fetchData();
+    }
+
+    async showAllItems() {
+        this.state.showAll = true;
+        await this.fetchData();
+    }
+
+    async showUnreadOnly() {
+        this.state.showAll = false;
         await this.fetchData();
     }
 }
