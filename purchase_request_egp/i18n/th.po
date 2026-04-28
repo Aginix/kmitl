@@ -10,10 +10,12 @@ msgstr ""
 "PO-Revision-Date: 2026-03-25 05:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
 
 #. module: purchase_request_egp
 #: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_kanban
@@ -97,3 +99,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request_egp.field_purchase_request__egp_project_id
 msgid "เลขที่โครงการ e-GP"
 msgstr ""
+
+#. module: purchase_request_egp
+#: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form
+msgid "Reject"
+msgstr "ตีกลับ"

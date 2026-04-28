@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- ============================================ -->
+        <!-- SECURITY GROUPS                              -->
+        <!-- ============================================ -->
+
+        <!-- Module Category -->
+        <record id="module_category_kris_project" model="ir.module.category">
+            <field name="name">KRIS Project</field>
+            <field name="description">Revenue tracking for KRIS academic service and research projects</field>
+            <field name="sequence">21</field>
+        </record>
+
+        <!-- User: Own Projects Only -->
+        <record id="group_kris_project_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="module_category_kris_project"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Officer: Full access to all projects -->
+        <record id="group_kris_project_officer" model="res.groups">
+            <field name="name">Officer</field>
+            <field name="category_id" ref="module_category_kris_project"/>
+            <field name="implied_ids" eval="[(4, ref('group_kris_project_user'))]"/>
+        </record>
+
+        <!-- Manager: Full access + implies Officer -->
+        <record id="group_kris_project_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_category_kris_project"/>
+            <field name="implied_ids" eval="[(4, ref('group_kris_project_officer'))]"/>
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for kris.project               -->
+        <!-- ============================================ -->
+
+        <!-- Global: Multi-company -->
+        <record id="kris_project_company_rule" model="ir.rule">
+            <field name="name">KRIS Project: Multi-company</field>
+            <field name="model_id" ref="model_kris_project"/>
+            <field name="domain_force">[
+                '|', ('company_id', '=', False), ('company_id', 'in', company_ids)
+            ]</field>
+            <field name="global" eval="True"/>
+        </record>
+
+        <!-- User: Own records only -->
+        <record id="kris_project_user_own_rule" model="ir.rule">
+            <field name="name">KRIS Project User: Own Projects</field>
+            <field name="model_id" ref="model_kris_project"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('user_id', '=', user.id),
+                ('create_uid', '=', user.id)
+            ]</field>
+        </record>
+
+        <!-- Officer: Full access -->
+        <record id="kris_project_officer_rule" model="ir.rule">
+            <field name="name">KRIS Project Officer: Full Access</field>
+            <field name="model_id" ref="model_kris_project"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_officer'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Manager: Full access -->
+        <record id="kris_project_manager_rule" model="ir.rule">
+            <field name="name">KRIS Project Manager: Full Access</field>
+            <field name="model_id" ref="model_kris_project"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for kris.project.installment   -->
+        <!-- ============================================ -->
+
+        <record id="kris_project_installment_user_rule" model="ir.rule">
+            <field name="name">KRIS Project Installment: User Access</field>
+            <field name="model_id" ref="model_kris_project_installment"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.user_id', '=', user.id),
+                ('project_id.create_uid', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="kris_project_installment_officer_rule" model="ir.rule">
+            <field name="name">KRIS Project Installment: Officer Access</field>
+            <field name="model_id" ref="model_kris_project_installment"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_officer'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <record id="kris_project_installment_manager_rule" model="ir.rule">
+            <field name="name">KRIS Project Installment: Manager Access</field>
+            <field name="model_id" ref="model_kris_project_installment"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for kris.project.receipt       -->
+        <!-- ============================================ -->
+
+        <record id="kris_project_receipt_user_rule" model="ir.rule">
+            <field name="name">KRIS Project Receipt: User Access</field>
+            <field name="model_id" ref="model_kris_project_receipt"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.user_id', '=', user.id),
+                ('project_id.create_uid', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="kris_project_receipt_officer_rule" model="ir.rule">
+            <field name="name">KRIS Project Receipt: Officer Access</field>
+            <field name="model_id" ref="model_kris_project_receipt"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_officer'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <record id="kris_project_receipt_manager_rule" model="ir.rule">
+            <field name="name">KRIS Project Receipt: Manager Access</field>
+            <field name="model_id" ref="model_kris_project_receipt"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for kris.project.allocation.line -->
+        <!-- ============================================ -->
+
+        <record id="kris_project_allocation_user_rule" model="ir.rule">
+            <field name="name">KRIS Project Allocation: User Access</field>
+            <field name="model_id" ref="model_kris_project_allocation_line"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.user_id', '=', user.id),
+                ('project_id.create_uid', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="kris_project_allocation_officer_rule" model="ir.rule">
+            <field name="name">KRIS Project Allocation: Officer Access</field>
+            <field name="model_id" ref="model_kris_project_allocation_line"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_officer'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <record id="kris_project_allocation_manager_rule" model="ir.rule">
+            <field name="name">KRIS Project Allocation: Manager Access</field>
+            <field name="model_id" ref="model_kris_project_allocation_line"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for kris.project.installment.allocation -->
+        <!-- ============================================ -->
+
+        <record id="kris_project_installment_allocation_user_rule" model="ir.rule">
+            <field name="name">KRIS Project Installment Allocation: User Access</field>
+            <field name="model_id" ref="model_kris_project_installment_allocation"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('installment_id.project_id.user_id', '=', user.id),
+                ('installment_id.project_id.create_uid', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="kris_project_installment_allocation_officer_rule" model="ir.rule">
+            <field name="name">KRIS Project Installment Allocation: Officer Access</field>
+            <field name="model_id" ref="model_kris_project_installment_allocation"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_officer'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <record id="kris_project_installment_allocation_manager_rule" model="ir.rule">
+            <field name="name">KRIS Project Installment Allocation: Manager Access</field>
+            <field name="model_id" ref="model_kris_project_installment_allocation"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for kris.project.receipt.allocation -->
+        <!-- ============================================ -->
+
+        <record id="kris_project_receipt_allocation_user_rule" model="ir.rule">
+            <field name="name">KRIS Project Receipt Allocation: User Access</field>
+            <field name="model_id" ref="model_kris_project_receipt_allocation"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('receipt_id.project_id.user_id', '=', user.id),
+                ('receipt_id.project_id.create_uid', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="kris_project_receipt_allocation_officer_rule" model="ir.rule">
+            <field name="name">KRIS Project Receipt Allocation: Officer Access</field>
+            <field name="model_id" ref="model_kris_project_receipt_allocation"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_officer'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <record id="kris_project_receipt_allocation_manager_rule" model="ir.rule">
+            <field name="name">KRIS Project Receipt Allocation: Manager Access</field>
+            <field name="model_id" ref="model_kris_project_receipt_allocation"/>
+            <field name="groups" eval="[(4, ref('group_kris_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+    </data>
+</odoo>

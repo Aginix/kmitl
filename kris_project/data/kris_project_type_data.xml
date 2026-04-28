@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ประเภทโครงการ (หมวดหมู่) -->
+        <record id="project_category_academic_service" model="kris.project.category">
+            <field name="name">งานบริการวิชาการ</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="project_category_research" model="kris.project.category">
+            <field name="name">งานวิจัย</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <!-- ประเภทย่อย: งานบริการวิชาการ -->
+        <record id="project_type_consulting" model="kris.project.type">
+            <field name="name">จ้างที่ปรึกษา</field>
+            <field name="category_id" ref="project_category_academic_service"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="project_type_research_contract" model="kris.project.type">
+            <field name="name">จ้างวิจัย</field>
+            <field name="category_id" ref="project_category_academic_service"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="project_type_training" model="kris.project.type">
+            <field name="name">อบรม</field>
+            <field name="category_id" ref="project_category_academic_service"/>
+            <field name="sequence">3</field>
+        </record>
+        <record id="project_type_testing" model="kris.project.type">
+            <field name="name">ทดสอบ</field>
+            <field name="category_id" ref="project_category_academic_service"/>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- ประเภทย่อย: งานวิจัย -->
+        <record id="project_type_external_research" model="kris.project.type">
+            <field name="name">วิจัยภายนอก</field>
+            <field name="category_id" ref="project_category_research"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="project_type_internal_research" model="kris.project.type">
+            <field name="name">วิจัยภายใน</field>
+            <field name="category_id" ref="project_category_research"/>
+            <field name="sequence">2</field>
+        </record>
+    </data>
+</odoo>

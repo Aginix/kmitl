@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- App root menu -->
+    <menuitem
+        id="menu_kris_project_root"
+        name="KRIS Project"
+        sequence="50"
+        groups="kris_project.group_kris_project_user"
+    />
+
+    <!-- Dashboard menu -->
+    <menuitem
+        id="menu_kris_project_dashboard"
+        name="Dashboard"
+        parent="menu_kris_project_root"
+        action="action_kris_project_dashboard"
+        sequence="1"
+        groups="kris_project.group_kris_project_user"
+    />
+
+    <!-- Projects menu -->
+    <menuitem
+        id="menu_kris_project_list"
+        name="Project"
+        parent="menu_kris_project_root"
+        action="action_kris_project"
+        sequence="10"
+        groups="kris_project.group_kris_project_user"
+    />
+
+    <!-- Configuration menu -->
+    <menuitem
+        id="menu_kris_project_config"
+        name="Configuration"
+        parent="menu_kris_project_root"
+        sequence="100"
+        groups="kris_project.group_kris_project_manager"
+    />
+
+    <menuitem
+        id="menu_kris_project_category"
+        name="Project Category"
+        parent="menu_kris_project_config"
+        action="action_kris_project_category"
+        sequence="10"
+        groups="kris_project.group_kris_project_manager"
+    />
+
+    <menuitem
+        id="menu_kris_project_allocation_item"
+        name="Allocation Item"
+        parent="menu_kris_project_config"
+        action="action_kris_project_allocation_item"
+        sequence="20"
+        groups="kris_project.group_kris_project_manager"
+    />
+
+    <menuitem
+        id="menu_kris_project_allocation_template"
+        name="Allocation Template"
+        parent="menu_kris_project_config"
+        action="action_kris_project_allocation_template"
+        sequence="30"
+        groups="kris_project.group_kris_project_manager"
+    />
+
+    <menuitem
+        id="menu_kris_project_exception_rules"
+        name="Exception Rules"
+        parent="menu_kris_project_config"
+        action="action_kris_project_exception_rule"
+        sequence="40"
+        groups="kris_project.group_kris_project_manager"
+    />
+
+</odoo>

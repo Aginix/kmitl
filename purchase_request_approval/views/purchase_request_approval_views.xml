@@ -95,12 +95,12 @@
                         class="oe_highlight"
                         groups="purchase_request.group_purchase_request_manager"
                     />
+                    <!-- Add rejected state draft, validate -->
                     <button
                         name="button_rejected"
-                        states="to_approve"
+                        states="draft,validate,to_approve"
                         string="Reject"
                         type="object"
-                        class="btn btn-danger"
                         groups="purchase_request.group_purchase_request_manager"
                     />
                     <field
