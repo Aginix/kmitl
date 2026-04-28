@@ -6,7 +6,7 @@
         <field name="name">view.budget.appropriation.tree</field>
         <field name="model">budget.appropriation</field>
         <field name="arch" type="xml">
-            <tree decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-muted="state == 'cancel'" decoration-success="state == 'posted'" delete="false">
+            <tree decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-muted="state == 'cancel'" decoration-success="state == 'posted'">
                 <field name="account_fiscal_year_id" />
                 <field name="name" />
                 <field name="budget_type" />
