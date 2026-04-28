@@ -44,6 +44,7 @@ export class PurchaseRequestDashboard extends Component {
             chart4Data: {months: [], series: []},
             chart5Data: {departments: [], series: []},
             chart6Data: {departments: [], series: []},
+            leadtimeHeatmap: [],
             filterOptions: {
                 fiscal_years: [],
                 sources: [],
@@ -58,10 +59,12 @@ export class PurchaseRequestDashboard extends Component {
         this.chart4 = null;
         this.chart5 = null;
         this.chart6 = null;
+        this.chartLeadtime = null;
 
         this._chartProps = [
             "chart1", "chart2", "chartExpensePie",
             "chart3", "chart4", "chart5", "chart6",
+            "chartLeadtime",
         ];
 
         this._onResize = () => {
@@ -99,6 +102,7 @@ export class PurchaseRequestDashboard extends Component {
             {id: "prChart4", title: "แนวโน้มการอนุมัติจัดซื้อจัดจ้าง"},
             {id: "prChart5", title: "ประเภทการจัดซื้อจัดจ้าง (ตามส่วนงาน)"},
             {id: "prChart6", title: "ประเภทค่าใช้จ่าย (ตามส่วนงาน)"},
+            {id: "prChartLeadtime", title: "leadtime"},
         ];
     }
 
@@ -111,7 +115,7 @@ export class PurchaseRequestDashboard extends Component {
     }
 
     get chartCardsRow3() {
-        return this.chartCards.slice(6);
+        return this.chartCards.slice(6, 9);
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -159,6 +163,7 @@ export class PurchaseRequestDashboard extends Component {
             this.state.chart4Data = response.chart4_approved_trend;
             this.state.chart5Data = response.chart5_purchase_type_by_dept;
             this.state.chart6Data = response.chart6_expense_type_by_dept;
+            this.state.leadtimeHeatmap = response.leadtime_heatmap;
         } catch (error) {
             console.error("Error loading dashboard data:", error);
         } finally {
@@ -176,6 +181,7 @@ export class PurchaseRequestDashboard extends Component {
             this._updateChart4();
             this._updateChart5();
             this._updateChart6();
+            this._updateChartLeadtime();
         }, 100);
     }
 
@@ -577,6 +583,74 @@ export class PurchaseRequestDashboard extends Component {
         );
     }
 
+    // Chart 7: Stock Heatmap
+    _updateChartLeadtime() {
+        const chart = this._getOrCreateChart("chartLeadtime", "prChartLeadtime");
+        if (!chart) return;
+
+        const raw = this.state.leadtimeHeatmap || [];
+        if (!raw.length) return;
+
+        // หา max สำหรับ normalize สี
+        const maxVal = Math.max(...raw.map((d) => d.value), 1);
+
+        const treemapData = raw.map((item) => ({
+            name: item.name,
+            value: item.value,
+            itemStyle: {
+                color: this._durationToColor(item.value, maxVal),
+            },
+            label: {
+                formatter: () =>
+                    `${item.name}\n${this._formatDuration(item.value)}`,
+            },
+            // เก็บ raw data ไว้สำหรับ tooltip
+            _min: item.min,
+            _max: item.max,
+            _count: item.count,
+        }));
+
+        chart.setOption(
+            {
+                tooltip: {
+                    formatter: (params) => {
+                        const d = params.data;
+                        return `
+                            <strong>${d.name}</strong><br/>
+                            avg: ${this._formatDuration(d.value)}<br/>
+                            min: ${this._formatDuration(d._min)}<br/>
+                            max: ${this._formatDuration(d._max)}<br/>
+                            จำนวน: ${d._count} ครั้ง
+                        `;
+                    },
+                },
+                series: [
+                    {
+                        name: "Leadtime",
+                        type: "treemap",
+                        roam: false,
+                        nodeClick: false,
+                        breadcrumb: {show: false},
+                        label: {
+                            show: true,
+                            fontSize: 12,
+                            color: "#fff",
+                            fontWeight: "bold",
+                            overflow: "truncate",
+                        },
+                        itemStyle: {
+                            borderWidth: 3,
+                            borderColor: "#fff",
+                            gapWidth: 3,
+                        },
+                        data: treemapData,
+                    },
+                ],
+            },
+            true
+        );
+    }
+
     // ──────────────────────────────────────────────────────────────────
     // Event handlers
     // ──────────────────────────────────────────────────────────────────
@@ -646,6 +720,25 @@ export class PurchaseRequestDashboard extends Component {
             total: "text-primary",
         };
         return classes[state] || "text-secondary";
+    }
+
+    _durationToColor(value, maxVal) {
+        const ratio = Math.min(value / maxVal, 1);
+        // ratio 0 = เขียว (#3ba272), ratio 1 = แดง (#ee6666)
+        const r = Math.round(59 + (238 - 59) * ratio);
+        const g = Math.round(162 + (102 - 162) * ratio);
+        const b = Math.round(114 + (102 - 114) * ratio);
+        return `rgb(${r},${g},${b})`;
+    }
+
+    _formatDuration(minutes) {
+        if (minutes < 60) {
+            return `${Math.round(minutes)} นาที`;
+        } else if (minutes < 60 * 24) {
+            return `${(minutes / 60).toFixed(1)} ชั่วโมง`;
+        } else {
+            return `${(minutes / 60 / 24).toFixed(1)} วัน`;
+        }
     }
 }
 

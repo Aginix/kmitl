@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from odoo import http
 from odoo.http import request
+from collections import defaultdict
 
 
 class PurchaseRequestDashboardController(http.Controller):
@@ -126,6 +127,7 @@ class PurchaseRequestDashboardController(http.Controller):
             "chart6_expense_type_by_dept": self._get_chart6_expense_type_by_dept(
                 chart_records, budget_cache, dept_cache
             ),
+            "chart7_leadtime_heatmap": self._get_chart7_leadtime_heatmap(),
         }
 
     # ──────────────────────────────────────────────────────────────────
@@ -400,3 +402,57 @@ class PurchaseRequestDashboardController(http.Controller):
             ),
             dept_cache=dept_cache,
         )
+
+    def _get_chart7_leadtime_heatmap(self):
+        TRACKED_TRANSITIONS = [
+            ('draft',       'to_verify',  'จัดทำคำขอ'),
+            ('to_verify',   'to_approve', 'จองเงิน'),
+            ('to_approve',  'approved',   'ขออนุมัติคำขอ'),
+            ('approved',    'in_progress','จัดซื้อจัดจ้าง'),
+            ('in_progress', 'done',       'จัดทำสัญญา'),
+        ]
+
+        LeadtimeLog = request.env['state.leadtime.log']
+        data = []
+
+        for from_state, to_state, label in TRACKED_TRANSITIONS:
+            groups = LeadtimeLog.read_group(
+                domain=[
+                    ('res_model', '=', 'purchase.request'),
+                    ('from_state', '=', from_state),
+                    ('to_state', '=', to_state),
+                    ('duration_minutes', '>', 0),
+                ],
+                fields=[
+                    'duration_minutes:avg',
+                    'duration_minutes:min',
+                    'duration_minutes:max',
+                ],
+                groupby=[],
+                lazy=False,
+            )
+
+            if groups and groups[0]['__count']:
+                g = groups[0]
+                data.append({
+                    'name': label,
+                    'from_state': from_state,
+                    'to_state': to_state,
+                    'value': round(g['duration_minutes:avg'] or 0, 2),
+                    'min': round(g['duration_minutes:min'] or 0, 2),
+                    'max': round(g['duration_minutes:max'] or 0, 2),
+                    'count': g['__count'],
+                })
+            else:
+                # ยังไม่มีข้อมูลก็ใส่ 0 ไว้ก่อน ให้ block ยังแสดงอยู่
+                data.append({
+                    'name': label,
+                    'from_state': from_state,
+                    'to_state': to_state,
+                    'value': 0,
+                    'min': 0,
+                    'max': 0,
+                    'count': 0,
+                })
+
+        return data
