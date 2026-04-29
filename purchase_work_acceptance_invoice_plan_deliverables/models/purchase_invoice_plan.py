@@ -13,3 +13,32 @@ class PurchaseInvoicePlan(models.Model):
     deliverables=fields.Text(
         string='Deliverables'
     )
+
+    deliverables_short = fields.Char(
+        string='Description',
+        compute='_compute_deliverables_short',
+        store=False,
+    )
+
+    @api.depends('deliverables')
+    def _compute_deliverables_short(self):
+        for rec in self:
+            if rec.deliverables:
+                text = rec.deliverables.replace('\n', ' ')
+                rec.deliverables_short = (
+                    text[:50] + '...' if len(text) > 50 else text
+                )
+            else:
+                rec.deliverables_short = False
+
+    def action_open_deliverables_dialog(self):
+        self.ensure_one()
+        return {
+            'name': _('รายละเอียดการส่งมอบงาน - งวดที่ %s') % self.installment_id,
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.invoice.plan',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'view_id': self.env.ref('your_module_name.view_purchase_invoice_plan_deliverables_form').id,
+            'target': 'new',
+        }

@@ -8,8 +8,35 @@
         <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_invoice_plan_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='amount_invoiced']" position="after">
-                <field name="deliverables"/>
+                <field name="deliverables_short" string="รายละเอียดการส่งมอบงาน" readonly="1"/>
+                <button name="action_open_deliverables_dialog"
+                        type="object"
+                        icon="fa-pencil"
+                        title="แก้ไขรายละเอียดการส่งมอบงาน"
+                        string=""/>
             </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_invoice_plan_deliverables_form" model="ir.ui.view">
+        <field name="name">view.purchase.invoice.plan.deliverables.form</field>
+        <field name="model">purchase.invoice.plan</field>
+        <field name="arch" type="xml">
+            <form string="Deliverables">
+                <sheet>
+                    <group>
+                        <field name="installment_id" readonly="1"/>
+                        <field name="percent" readonly="1"/>
+                        <field name="amount" readonly="1"/>
+                    </group>
+                    <group string="Deliverables">
+                        <field  name="deliverables" 
+                                nolabel="1"
+                                placeholder="กรอกรายละเอียดการส่งมอบงาน&#10;- รายการที่ 1&#10;- รายการที่ 2&#10;..."
+                                style="min-height: 200px;"/>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 
