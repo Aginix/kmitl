@@ -6,7 +6,6 @@
     "category": "KMITL",
     "depends": [
         "purchase_request_advance_payment",
-        "purchase_request_approval_disbursement",
     ],
     "data": [
         "views/advance_payment_views.xml",
