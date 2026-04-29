@@ -733,7 +733,7 @@ export class PurchaseRequestDashboard extends Component {
 
     _formatDuration(minutes) {
         if (minutes < 60) {
-            return `${Math.round(2)} นาที`;
+            return `${minutes.toFixed(2)} นาที`;
         } else if (minutes < 60 * 24) {
             return `${(minutes / 60).toFixed(2)} ชั่วโมง`;
         } else {
