@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" />
+                <field name="partner_type" optional="hide" />
                 <field name="partner_id" />
                 <field name="user_id" optional="show" />
                 <field name="date" />
@@ -77,8 +78,16 @@
                     </div>
                     <group>
                         <group id="header_left_group" string="Partner Information">
-                            <field name="partner_id" widget="res_partner_many2one" context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}" options='{"always_reload": True}' />
-                            <field name="partner_bank_id" context="{'default_partner_id': partner_id}" domain="[('partner_id', '=', partner_id)]" />
+                            <field name="partner_type" widget="radio"
+                                attrs="{'readonly': ['|', ('reference_model', '!=', False), ('state', '!=', 'draft')]}" />
+                            <field name="partner_id" widget="res_partner_many2one"
+                                context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}"
+                                options='{"always_reload": True}'
+                                attrs="{'invisible': [('partner_type', '=', 'multi')], 'required': [('partner_type', '=', 'single')]}" />
+                            <field name="partner_bank_id"
+                                context="{'default_partner_id': partner_id}"
+                                domain="[('partner_id', '=', partner_id)]"
+                                attrs="{'invisible': [('partner_type', '=', 'multi')]}" />
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="is_company" readonly="1" invisible="1" />
                             <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
@@ -115,6 +124,11 @@
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
+                                    <field name="partner_id"
+                                        attrs="{'column_invisible': [('parent.partner_type', '!=', 'multi')], 'required': [('parent.partner_type', '=', 'multi')]}" />
+                                    <field name="partner_bank_id"
+                                        attrs="{'column_invisible': [('parent.partner_type', '!=', 'multi')]}"
+                                        optional="hide" />
                                     <field name="product_id" />
                                     <field name="name" />
                                     <field name="quantity" />
@@ -182,6 +196,8 @@
                 <filter string="Payment Draft" name="payment_draft" domain="[('state', '=', 'payment_draft')]" />
                 <filter string="Payment Posted" name="payment_posted" domain="[('state', '=', 'payment_posted')]" />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
+                <separator />
+                <filter string="Multi-Partner" name="multi_partner" domain="[('partner_type', '=', 'multi')]" />
                 <separator />
                 <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
                 <separator />
