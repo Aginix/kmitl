@@ -5,7 +5,9 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
-        "purchase_request_advance_payment", "disbursement",
+        "purchase_request_advance_payment",
+        "purchase_request_approval_disbursement",
+        "disbursement",
     ],
     "data": [
         "views/advance_payment_views.xml",
