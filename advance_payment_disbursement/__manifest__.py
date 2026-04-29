@@ -7,6 +7,7 @@
     "depends": [
         "purchase_request_advance_payment",
         "purchase_request_approval_disbursement",
+        "purchase_request_approval_operating_unit",
     ],
     "data": [
         "views/advance_payment_views.xml",
