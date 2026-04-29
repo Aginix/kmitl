@@ -132,6 +132,10 @@
                             <field name="bank_id"
                                 domain="[('partner_id', '=', requested_by_partner_id)]"
                                 widget="selection" />
+                            <field name="use_attachment_bank" />
+                            <field name="book_bank_filename" invisible="1" />
+                            <field name="book_bank" filename="book_bank_filename"
+                                attrs="{'invisible': [('use_attachment_bank', '=', False)]}" />
                         </group>
                         <group string="ข้อมูลการยืม">
                             <field name="is_reference_visible" invisible="1" />

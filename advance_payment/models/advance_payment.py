@@ -162,6 +162,18 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
+    use_attachment_bank = fields.Boolean(
+        string="ประสงค์ใช้เลขบัญชีธนาคารตามเอกสารแนบ",
+        states=READONLY_STATES,
+    )
+
+    book_bank = fields.Binary(
+        string="Book Bank",
+        attachment=True,
+        states=READONLY_STATES,
+    )
+    book_bank_filename = fields.Char()
+
     usage_line_ids = fields.One2many(
         comodel_name="advance.payment.usage.line",
         inverse_name="agreement_id",
