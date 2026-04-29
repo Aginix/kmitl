@@ -7,6 +7,7 @@
     "depends": [
         "purchase_request_advance_payment",
         "purchase_request_approval_disbursement",
+        "purchase_order_disbursement",
         "disbursement",
     ],
     "data": [
