@@ -147,6 +147,11 @@ class DisbursementRequest(models.Model):
         compute="_compute_bill_count",
     )
 
+    bill_draft_count = fields.Integer(
+        string="Draft Bill Count",
+        compute="_compute_bill_count",
+    )
+
     # --- Pipeline: Payment tracking ---
     payment_ids = fields.Many2many(
         comodel_name="account.payment",
@@ -574,11 +579,14 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     # Computed fields
     # -------------------------------------------------------------------------
-    @api.depends("bill_ids")
+    @api.depends("bill_ids", "bill_ids.state")
     def _compute_bill_count(self):
         """Compute the number of bills linked to this request"""
         for record in self:
             record.bill_count = len(record.bill_ids)
+            record.bill_draft_count = len(
+                record.bill_ids.filtered(lambda b: b.state == "draft")
+            )
 
     @api.depends("bill_ids", "bill_ids.state", "bill_ids.payment_state")
     def _compute_payment_ids(self):
@@ -633,7 +641,7 @@ class DisbursementRequest(models.Model):
                 rec.state = "payment_posted"
             elif all_payments:
                 rec.state = "payment_draft"
-            elif any(b.state == "posted" for b in bills):
+            elif all(b.state == "posted" for b in bills):
                 rec.state = "bill_posted"
             else:
                 rec.state = "bill_draft"

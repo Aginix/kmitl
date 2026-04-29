@@ -57,6 +57,9 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_bill" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_count', '=', 0)]}">
                             <field name="bill_count" widget="statinfo" string="Bill" />
+                            <span class="text-muted small" attrs="{'invisible': [('bill_draft_count', '=', 0)]}">
+                                รอตั้งหนี้ <field name="bill_draft_count" /> ใบ
+                            </span>
                         </button>
                         <button name="action_view_payments"
                                 type="object"
