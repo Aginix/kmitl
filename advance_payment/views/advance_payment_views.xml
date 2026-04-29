@@ -175,15 +175,6 @@
                         <field name="cancel_reason" readonly="1" nolabel="1" />
                     </group>
                     <notebook>
-                        <page string="รายการใช้เงิน" name="usage_lines">
-                            <field name="usage_line_ids" readonly="1">
-                                <tree>
-                                    <field name="date" />
-                                    <field name="amount" />
-                                    <field name="note" />
-                                </tree>
-                            </field>
-                        </page>
                         <page string="รายการคืนเงิน" name="return_lines"
                             attrs="{'invisible': [('state', 'in', ['draft', 'submitted'])]}">
                             <field name="return_line_ids"
