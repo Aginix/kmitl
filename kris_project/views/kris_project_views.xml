@@ -75,13 +75,14 @@
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="draft,in_progress"
+                        states="draft,in_progress,done"
                     />
                     <button
                         name="action_draft"
                         string="Reset to Draft"
                         type="object"
                         states="cancel"
+                        groups="kris_project.group_kris_project_manager"
                     />
                     <field
                         name="state"
