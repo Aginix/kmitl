@@ -598,7 +598,7 @@ class AdvancePayment(models.Model):
                 payment.button_draft()
             elif payment.state == "submitted":
                 payment.write({"state": "draft"})
-            payment.button_cancel()
+            payment.action_cancel()
 
     def _action_do_cancel(self, reason):
         """Cancel the agreement (manager only). Voids linked payments if needed."""

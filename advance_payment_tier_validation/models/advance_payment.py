@@ -15,6 +15,12 @@ class AdvancePayment(models.Model):
         return res
 
     @api.model
+    def _get_all_validation_exceptions(self):
+        res = super()._get_all_validation_exceptions()
+        res.append("return_line_ids")
+        return res
+
+    @api.model
     def _get_after_validation_exceptions(self):
         res = super()._get_after_validation_exceptions()
         res.append("return_line_ids")
