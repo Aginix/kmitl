@@ -108,7 +108,6 @@
                                 name="project_name"
                                 placeholder="Project Name..."
                                 attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
-                                widget="text"
                             />
                         </h1>
                     </div>
