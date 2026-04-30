@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class AdvancePayment(models.Model):
@@ -17,3 +17,32 @@ class AdvancePayment(models.Model):
     def _compute_disbursement_request_count(self):
         for rec in self:
             rec.disbursement_request_count = len(rec.disbursement_request_ids)
+
+    @api.depends(
+        "loan_amount",
+        "disbursement_request_ids.amount_total",
+        "return_line_ids.amount",
+        "return_line_ids.state",
+    )
+    def _compute_amounts(self):
+        for rec in self:
+            used = sum(rec.disbursement_request_ids.mapped("amount_total"))
+            returned = sum(
+                rec.return_line_ids.filtered(
+                    lambda l: l.state in ("confirmed", "paid")
+                ).mapped("amount")
+            )
+            rec.amount_used = used
+            rec.amount_returned = returned
+            rec.amount_remaining = rec.loan_amount - used - returned
+
+    def action_disburse(self):
+        self.write({
+            "state": "in_progress",
+            "disbursement_state": "paid",
+        })
+        for rec in self:
+            rec.message_post(
+                body=_("ดำเนินการเบิกจ่ายแล้ว"),
+                subtype_xmlid="mail.mt_note",
+            )
