@@ -430,20 +430,19 @@ class PurchaseRequestDashboardController(http.Controller):
                 ]).ids
                 domain.append(('res_id', 'in', pr_ids))
 
-            groups = LeadtimeLog.read_group(
-                domain=domain,
-                fields=['duration_minutes:sum'],
-                groupby=[],
-                lazy=False,
-            )
+            logs = LeadtimeLog.search(domain)
+            durations = [l.duration_minutes for l in logs if l.duration_minutes > 0]
 
-            g = groups[0] if groups else {}
+            avg_val = sum(durations) / len(durations) if durations else 0
+            sum_val = sum(durations)
+
             data.append({
                 'name': label,
                 'from_state': from_state,
                 'to_state': to_state,
-                'value': round(float(g.get('duration_minutes', 0) or 0), 2),
-                'count': g.get('__count', 0),
+                'avg': round(avg_val, 2),
+                'total': round(sum_val, 2),
+                'count': len(logs),
             })
 
         return data

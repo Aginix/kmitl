@@ -591,17 +591,19 @@ export class PurchaseRequestDashboard extends Component {
         const raw = this.state.leadtimeHeatmap || [];
         if (!raw.length) return;
 
-        const maxVal = Math.max(...raw.map((d) => d.value), 1);
+        // ใช้ avg สำหรับ normalize สี และขนาด block
+        const maxVal = Math.max(...raw.map((d) => d.avg), 1);
 
         const treemapData = raw.map((item) => ({
             name: item.name,
-            value: Math.max(item.value, 0.1),
+            value: Math.max(item.avg, 0.1),  // ขนาด block ตาม avg
             itemStyle: {
-                color: item.value === 0
+                color: item.avg === 0
                     ? "#d9d9d9"
-                    : this._durationToColor(item.value, maxVal),
+                    : this._durationToColor(item.avg, maxVal),
             },
-            _realValue: item.value,
+            _avg: item.avg,
+            _total: item.total,
             _count: item.count,
         }));
 
@@ -609,13 +611,13 @@ export class PurchaseRequestDashboard extends Component {
             tooltip: {
                 formatter: (params) => {
                     const d = params.data;
-                    if (d._realValue === 0) {
+                    if (d._avg === 0) {
                         return `<strong>${d.name}</strong><br/>ยังไม่มีข้อมูล`;
                     }
                     return `
                         <strong>${d.name}</strong><br/>
-                        ระยะเวลารวม: ${this._formatDuration(d._realValue)}<br/>
-                        จำนวน: ${d._count} ครั้ง
+                        ระยะเวลาเฉลี่ย: ${this._formatDuration(d._avg)}<br/>
+                        ระยะเวลาสะสม: ${this._formatDuration(d._total)}<br/>
                     `;
                 },
             },
@@ -631,10 +633,11 @@ export class PurchaseRequestDashboard extends Component {
                     show: true,
                     formatter: (params) => {
                         const d = params.data;
-                        if (d._realValue === 0) {
+                        if (d._avg === 0) {
                             return `{name|${d.name}}\n{sub|ยังไม่มีข้อมูล}`;
                         }
-                        return `{name|${d.name}}\n{sub|${this._formatDuration(d._realValue)}}`;
+                        // แสดง avg ใน block
+                        return `{name|${d.name}}\n{sub|${this._formatDuration(d._avg)}}`;
                     },
                     rich: {
                         name: {fontSize: 13, fontWeight: "bold", color: "#fff", lineHeight: 20},
