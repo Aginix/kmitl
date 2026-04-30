@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_advance_payment_form_tier" model="ir.ui.view">
+        <field name="name">advance.payment.form.tier</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form"/>
+        <field name="arch" type="xml">
+            <button name="action_submit" position="after">
+                <field name="rejected" invisible="1"/>
+                <field name="validation_status" invisible="1"/>
+                <field name="need_validation" invisible="1"/>
+                <button
+                    name="request_validation"
+                    string="ส่งคำขออนุมัติ"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', '|', '|',
+                        ('need_validation', '!=', True),
+                        ('validation_status', '=', 'pending'),
+                        ('rejected', '=', True),
+                        ('state', '!=', 'submitted')
+                    ]}"
+                    type="object"
+                />
+                <button
+                    name="restart_validation"
+                    string="ส่งคำขออนุมัติอีกครั้ง"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', '|',
+                        ('need_validation', '!=', True),
+                        ('validation_status', '!=', 'pending'),
+                        ('state', '!=', 'submitted')
+                    ]}"
+                    type="object"
+                />
+            </button>
+            <xpath expr="//button[@name='action_approve']" position="replace">
+                <button name="action_approve"
+                    string="อนุมัติ"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', '!=', 'validated')]}"
+                    groups="advance_payment.group_advance_payment_manager"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
