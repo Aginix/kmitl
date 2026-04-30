@@ -47,13 +47,19 @@ class ApprovalRequest(models.Model):
             else:
                 record.billing_status = "no"
 
-    def _prepare_disbursement_request_vals(self, partner, lines):
+    def _prepare_disbursement_request_vals(self):
+        """Prepare vals for a single multi-partner DR from all approval lines."""
         return {
             "approval_request_id": self.id,
-            "partner_id": partner.id,
+            "partner_type": "multi",
             "line_ids": [
-                Command.create(line._prepare_disbursement_request_line_vals())
-                for line in lines
+                Command.create(
+                    {
+                        **line._prepare_disbursement_request_line_vals(),
+                        "partner_id": line.partner_id.id,
+                    }
+                )
+                for line in self.line_ids
             ],
             "ref": self.name,
             "budget_commitment_id": self.budget_commitment_id.id,
@@ -63,45 +69,34 @@ class ApprovalRequest(models.Model):
 
     def action_create_disbursement_request(self):
         self.ensure_one()
-        # Group lines by partner
-        partner_lines = {}
-        for line in self.line_ids:
-            partner = line.partner_id
-            partner_lines.setdefault(partner, self.env["approval.request.line"])
-            partner_lines[partner] |= line
+        vals = self._prepare_disbursement_request_vals()
+        disbursement = self.env["disbursement.request"].create(vals)
 
-        disbursements = self.env["disbursement.request"]
-        for partner, lines in partner_lines.items():
-            vals = self._prepare_disbursement_request_vals(partner, lines)
-            disbursement = self.env["disbursement.request"].create(vals)
-            link = self._get_record_url()
-            disbursement.message_post(
-                body=_(
-                    'This record has been created from: '
-                    '<a href="%(link)s" target="_blank">%(name)s</a>',
-                    link=link,
-                    name=self.name,
-                ),
-                message_type="comment",
-            )
-            self.message_post(
-                body=_(
-                    "Disbursement %(dr_name)s created successfully.",
-                    dr_name=disbursement.name,
-                ),
-                message_type="comment",
-            )
-            disbursements |= disbursement
+        link = self._get_record_url()
+        disbursement.message_post(
+            body=_(
+                'This record has been created from: '
+                '<a href="%(link)s" target="_blank">%(name)s</a>',
+                link=link,
+                name=self.name,
+            ),
+            message_type="comment",
+        )
+        self.message_post(
+            body=_(
+                "Disbursement %(dr_name)s created successfully.",
+                dr_name=disbursement.name,
+            ),
+            message_type="comment",
+        )
 
-        if len(disbursements) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "disbursement.request",
-                "view_mode": "form",
-                "res_id": disbursements.id,
-                "target": "current",
-            }
-        return self.action_view_disbursement_request()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "disbursement.request",
+            "view_mode": "form",
+            "res_id": disbursement.id,
+            "target": "current",
+        }
 
     def action_view_disbursement_request(self):
         self.ensure_one()
@@ -115,7 +110,9 @@ class ApprovalRequest(models.Model):
             action["res_id"] = self.disbursement_request_ids.id
         else:
             action["view_mode"] = "tree,form"
-            action["domain"] = [("id", "in", self.disbursement_request_ids.ids)]
+            action["domain"] = [
+                ("id", "in", self.disbursement_request_ids.ids)
+            ]
         return action
 
     def _get_record_url(self):

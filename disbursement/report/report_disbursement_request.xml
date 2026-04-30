@@ -53,11 +53,14 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col">
-                                ผู้รับเงิน                                <span class="ms-2" t-out="o.partner_id.name"/>
+                        <!-- Single partner: show partner in header -->
+                        <t t-if="o.partner_type == 'single'">
+                            <div class="row">
+                                <div class="col">
+                                    ผู้รับเงิน                                    <span class="ms-2" t-out="o.partner_id.name"/>
+                                </div>
                             </div>
-                        </div>
+                        </t>
 
                         <div class="row" t-if="o.ref">
                             <div class="col">
@@ -109,40 +112,93 @@
                             </tbody>
                         </table>
 
-                        <div class="row" t-if="o.partner_bank_id">
-                            <div class="col">
-                                ธนาคาร <span class="ms-2" t-out="o.partner_bank_id.bank_id.name"/>
-                                เลขที่บัญชี <span class="ms-2" t-out="o.partner_bank_id.acc_number"/>
+                        <!-- Single partner: bank info in header -->
+                        <t t-if="o.partner_type == 'single'">
+                            <div class="row" t-if="o.partner_bank_id">
+                                <div class="col">
+                                    ธนาคาร <span class="ms-2" t-out="o.partner_bank_id.bank_id.name"/>
+                                    เลขที่บัญชี <span class="ms-2" t-out="o.partner_bank_id.acc_number"/>
+                                </div>
                             </div>
-                        </div>
+                        </t>
 
                         <div class="my-4"/>
 
-                        <!-- Line Items Table -->
-                        <table class="table table-bordered table-sm mb-4">
-                            <thead>
-                                <tr>
-                                    <th class="text-center" style="width: 8%">ลำดับ</th>
-                                    <th class="text-center">รายละเอียด</th>
-                                    <th class="text-center">จำนวน</th>
-                                    <th class="text-end">ราคาต่อหน่วย</th>
-                                    <th class="text-end">จำนวนเงิน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="row_no" t-value="1"/>
-                                <t t-foreach="o.line_ids" t-as="line">
+                        <!-- Single partner: flat line items table -->
+                        <t t-if="o.partner_type == 'single'">
+                            <table class="table table-bordered table-sm mb-4">
+                                <thead>
                                     <tr>
-                                        <td class="text-center" style="width: 8%" t-out="row_no"/>
-                                        <td t-out="line.name"/>
-                                        <td class="text-center" t-out="'{0:,.2f}'.format(line.quantity)"/>
-                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.price_unit)"/>
-                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.price_subtotal)"/>
+                                        <th class="text-center" style="width: 8%">ลำดับ</th>
+                                        <th class="text-center">รายละเอียด</th>
+                                        <th class="text-center">จำนวน</th>
+                                        <th class="text-end">ราคาต่อหน่วย</th>
+                                        <th class="text-end">จำนวนเงิน</th>
                                     </tr>
-                                    <t t-set="row_no" t-value="row_no + 1"/>
-                                </t>
+                                </thead>
+                                <tbody>
+                                    <t t-set="row_no" t-value="1"/>
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                        <tr>
+                                            <td class="text-center" style="width: 8%" t-out="row_no"/>
+                                            <td t-out="line.name"/>
+                                            <td class="text-center" t-out="'{0:,.2f}'.format(line.quantity)"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(line.price_unit)"/>
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(line.price_subtotal)"/>
+                                        </tr>
+                                        <t t-set="row_no" t-value="row_no + 1"/>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
 
-                                <!-- Totals Section -->
+                        <!-- Multi partner: lines grouped by partner -->
+                        <t t-if="o.partner_type == 'multi'">
+                            <t t-set="partners" t-value="o.line_ids.mapped('partner_id')"/>
+                            <t t-set="global_row_no" t-value="1"/>
+                            <t t-foreach="partners" t-as="partner">
+                                <div class="row mt-3 mb-2">
+                                    <div class="col">
+                                        <strong>ผู้รับเงิน: <span t-out="partner.name"/></strong>
+                                    </div>
+                                </div>
+                                <t t-set="partner_lines" t-value="o.line_ids.filtered(lambda l: l.partner_id == partner)"/>
+                                <t t-set="partner_bank" t-value="partner_lines[0].partner_bank_id if partner_lines else False"/>
+                                <div class="row mb-2" t-if="partner_bank">
+                                    <div class="col">
+                                        ธนาคาร <span class="ms-2" t-out="partner_bank.bank_id.name"/>
+                                        เลขที่บัญชี <span class="ms-2" t-out="partner_bank.acc_number"/>
+                                    </div>
+                                </div>
+                                <table class="table table-bordered table-sm mb-4">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 8%">ลำดับ</th>
+                                            <th class="text-center">รายละเอียด</th>
+                                            <th class="text-center">จำนวน</th>
+                                            <th class="text-end">ราคาต่อหน่วย</th>
+                                            <th class="text-end">จำนวนเงิน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="partner_lines" t-as="line">
+                                            <tr>
+                                                <td class="text-center" style="width: 8%" t-out="global_row_no"/>
+                                                <td t-out="line.name"/>
+                                                <td class="text-center" t-out="'{0:,.2f}'.format(line.quantity)"/>
+                                                <td class="text-end" t-out="'{0:,.2f}'.format(line.price_unit)"/>
+                                                <td class="text-end" t-out="'{0:,.2f}'.format(line.price_subtotal)"/>
+                                            </tr>
+                                            <t t-set="global_row_no" t-value="global_row_no + 1"/>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </t>
+                        </t>
+
+                        <!-- Totals Section (shared) -->
+                        <table class="table table-bordered table-sm mb-4">
+                            <tbody>
                                 <tr>
                                     <td colspan="2" rowspan="3" class="text-center align-middle">
                                         (                                        <t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"/>
