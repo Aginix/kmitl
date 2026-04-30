@@ -29,26 +29,19 @@
 
             <xpath expr="//page[@name='return_lines']" position="before">
                 <page string="รายการใช้เงิน" name="usage_lines">
-                    <separator string="ใบเบิก" />
-                    <field name="disbursement_request_ids" readonly="1" nolabel="1">
-                        <tree>
-                            <field name="name" />
-                            <field name="partner_id" />
-                            <field name="amount_total" />
-                            <field name="state" widget="badge"
-                                decoration-info="state in ('draft', 'submitted')"
-                                decoration-primary="state in ('signed', 'verified', 'approved')"
-                                decoration-warning="state in ('bill_draft', 'payment_draft')"
-                                decoration-success="state in ('bill_posted', 'payment_posted', 'done')"
-                                decoration-danger="state == 'cancel'" />
-                        </tree>
-                    </field>
-                    <separator string="บันทึกการใช้เงิน (จาก Wizard)" />
                     <field name="usage_line_ids" readonly="1" nolabel="1">
                         <tree>
-                            <field name="date" />
-                            <field name="amount" />
-                            <field name="note" />
+                            <field name="source_display" string="ที่มา" />
+                            <field name="date" string="วันที่" />
+                            <field name="partner_id" string="ผู้รับเงิน" />
+                            <field name="amount" string="จำนวนเงิน" />
+                            <field name="note" string="หมายเหตุ" />
+                            <field name="disbursement_state" widget="badge" string="สถานะ"
+                                decoration-info="disbursement_state in ('draft', 'submitted')"
+                                decoration-primary="disbursement_state in ('signed', 'verified', 'approved')"
+                                decoration-warning="disbursement_state in ('bill_draft', 'payment_draft')"
+                                decoration-success="disbursement_state in ('bill_posted', 'payment_posted', 'done')"
+                                decoration-danger="disbursement_state == 'cancel'" />
                         </tree>
                     </field>
                 </page>
