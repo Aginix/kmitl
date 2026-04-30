@@ -403,6 +403,9 @@ class AdvancePayment(models.Model):
     def button_draft(self):
         self.write({"state": "draft"})
 
+    def button_cancel(self):
+        self.write({"state": "cancel"})
+
     def action_start(self, payment=None):
         """Transition approved agreements to in_progress (triggered by payment posting)."""
         self.write({"state": "in_progress"})
