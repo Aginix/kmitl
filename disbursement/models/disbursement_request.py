@@ -173,6 +173,16 @@ class DisbursementRequest(models.Model):
         compute="_compute_payment_ids",
     )
 
+    payment_move_ids = fields.Many2many(
+        comodel_name="account.move",
+        compute="_compute_payment_ids",
+        string="Payment Journal Entries",
+    )
+    payment_move_count = fields.Integer(
+        compute="_compute_payment_ids",
+        string="Payment Move Count",
+    )
+
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -619,6 +629,9 @@ class DisbursementRequest(models.Model):
             rec.payment_status_display = (
                 _("จ่ายแล้ว %s/%s", posted, total) if total else ""
             )
+            payment_moves = payments.mapped("move_id")
+            rec.payment_move_ids = payment_moves
+            rec.payment_move_count = len(payment_moves)
 
     def _update_state_from_pipeline(self):
         """Recompute state based on bill/payment status for records in pipeline."""
@@ -1182,6 +1195,28 @@ class DisbursementRequest(models.Model):
             "name": _("Payments"),
             "res_model": "account.payment",
             "domain": [("id", "in", self.payment_ids.ids)],
+            "view_mode": "tree,form",
+            "target": "current",
+        }
+
+    def action_view_payment_moves(self):
+        """Open journal entries linked to payments."""
+        self.ensure_one()
+        moves = self.payment_move_ids
+        if len(moves) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Journal Entry"),
+                "res_model": "account.move",
+                "res_id": moves.id,
+                "view_mode": "form",
+                "target": "current",
+            }
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("รายการล้างหนี้"),
+            "res_model": "account.move",
+            "domain": [("id", "in", moves.ids)],
             "view_mode": "tree,form",
             "target": "current",
         }
