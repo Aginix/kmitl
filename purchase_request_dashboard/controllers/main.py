@@ -403,7 +403,7 @@ class PurchaseRequestDashboardController(http.Controller):
             dept_cache=dept_cache,
         )
 
-    def _get_chart7_leadtime_heatmap(self):
+    def _get_chart7_leadtime_heatmap(self, fiscal_year_id=None):
         TRACKED_TRANSITIONS = [
             ('draft',       'to_verify',   'จัดทำคำขอ'),
             ('to_verify',   'to_approve',  'จองเงิน'),
@@ -416,13 +416,21 @@ class PurchaseRequestDashboardController(http.Controller):
         data = []
 
         for from_state, to_state, label in TRACKED_TRANSITIONS:
+            domain = [
+                ('res_model', '=', 'purchase.request'),
+                ('from_state', '=', from_state),
+                ('to_state', '=', to_state),
+            ]
+
+            if fiscal_year_id:
+                pr_ids = request.env['purchase.request'].search([
+                    ('account_fiscal_year_id', '=', fiscal_year_id),
+                ]).ids
+                domain.append(('res_id', 'in', pr_ids))
+
             groups = LeadtimeLog.read_group(
-                domain=[
-                    ('res_model', '=', 'purchase.request'),
-                    ('from_state', '=', from_state),
-                    ('to_state', '=', to_state),
-                ],
-                fields=['duration_minutes:sum'],  # ← aggregate เดียว ไม่ duplicate
+                domain=domain,
+                fields=['duration_minutes:sum'],
                 groupby=[],
                 lazy=False,
             )

@@ -163,7 +163,9 @@ export class PurchaseRequestDashboard extends Component {
             this.state.chart4Data = response.chart4_approved_trend;
             this.state.chart5Data = response.chart5_purchase_type_by_dept;
             this.state.chart6Data = response.chart6_expense_type_by_dept;
-            this.state.leadtimeHeatmap = response.chart7_leadtime_heatmap;
+            this.state.leadtimeHeatmap = response.chart7_leadtime_heatmap(
+                fiscal_year_id=fiscal_year_id
+            );
         } catch (error) {
             console.error("Error loading dashboard data:", error);
         } finally {
