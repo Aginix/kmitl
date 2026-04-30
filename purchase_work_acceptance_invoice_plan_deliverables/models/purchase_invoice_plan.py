@@ -39,6 +39,6 @@ class PurchaseInvoicePlan(models.Model):
             'res_model': 'purchase.invoice.plan',
             'res_id': self.id,
             'view_mode': 'form',
-            'view_id': self.env.ref('your_module_name.view_purchase_invoice_plan_deliverables_form').id,
+            'view_id': self.env.ref('purchase_work_acceptance_invoice_plan_deliverables.view_purchase_invoice_plan_deliverables_form').id,
             'target': 'new',
         }
