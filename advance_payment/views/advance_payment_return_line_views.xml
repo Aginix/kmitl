@@ -48,9 +48,11 @@
                     <group string="หมายเหตุ">
                         <field name="note" nolabel="1"/>
                     </group>
-                    <group string="เอกสารแนบ">
-                        <field name="attachment_ids" widget="many2many_binary" nolabel="1"/>
-                    </group>
+                    <notebook>
+                        <page string="สลิปเงิน" name="slip">
+                            <field name="attachment_ids" widget="many2many_binary" nolabel="1"/>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_ids"/>
