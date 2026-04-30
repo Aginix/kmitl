@@ -25,7 +25,7 @@
             <form string="Deliverables">
                 <sheet>
                     <group>
-                        <field name="installment_id" readonly="1"/>
+                        <field name="installment" readonly="1"/>
                         <field name="percent" readonly="1"/>
                         <field name="amount" readonly="1"/>
                     </group>

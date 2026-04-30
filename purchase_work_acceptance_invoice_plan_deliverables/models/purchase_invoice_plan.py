@@ -34,7 +34,7 @@ class PurchaseInvoicePlan(models.Model):
     def action_open_deliverables_dialog(self):
         self.ensure_one()
         return {
-            'name': _('รายละเอียดการส่งมอบงาน - งวดที่ %s') % self.installment_id,
+            'name': _('รายละเอียดการส่งมอบงาน - งวดที่ %s') % self.installment,
             'type': 'ir.actions.act_window',
             'res_model': 'purchase.invoice.plan',
             'res_id': self.id,
