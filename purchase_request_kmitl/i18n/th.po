@@ -2186,14 +2186,14 @@ msgid "รายละเอียดคำขอซื้อขอจ้าง"
 msgstr ""
 
 #. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__advance
+msgid "Advance"
+msgstr "เงินยืม"
+
+#. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__direct
 msgid "Direct paid"
 msgstr "จ่ายตรง"
-
-#. module: purchase_request_kmitl
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__loan
-msgid "Loan"
-msgstr "เงินยืม"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__payment_type

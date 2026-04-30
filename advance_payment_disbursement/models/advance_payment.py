@@ -21,12 +21,17 @@ class AdvancePayment(models.Model):
     @api.depends(
         "loan_amount",
         "disbursement_request_ids.amount_total",
+        "usage_line_ids.amount",
         "return_line_ids.amount",
         "return_line_ids.state",
     )
     def _compute_amounts(self):
         for rec in self:
-            used = sum(rec.disbursement_request_ids.mapped("amount_total"))
+            used_disbursement = sum(
+                rec.disbursement_request_ids.mapped("amount_total")
+            )
+            used_usage = sum(rec.usage_line_ids.mapped("amount"))
+            used = used_disbursement + used_usage
             returned = sum(
                 rec.return_line_ids.filtered(
                     lambda l: l.state in ("confirmed", "paid")
@@ -35,6 +40,12 @@ class AdvancePayment(models.Model):
             rec.amount_used = used
             rec.amount_returned = returned
             rec.amount_remaining = rec.loan_amount - used - returned
+
+    def _action_do_cancel(self, reason):
+        for rec in self:
+            if rec.reference and rec.reference._name == "purchase.request":
+                rec.reference.button_rejected()
+        return super()._action_do_cancel(reason)
 
     def action_disburse(self):
         self.write({

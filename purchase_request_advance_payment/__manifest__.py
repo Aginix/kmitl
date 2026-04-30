@@ -7,6 +7,7 @@
     "depends": [
         "purchase_request_kmitl",
         "purchase_request_budget",
+        "purchase_request_vendor_kmitl",
         "advance_payment",
     ],
     "data": [
