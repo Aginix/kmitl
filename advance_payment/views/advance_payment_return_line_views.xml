@@ -37,16 +37,16 @@
                         <group string="รายละเอียด">
                             <field name="agreement_id"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="amount"/>
                             <field name="date"/>
                         </group>
                         <group string="การชำระเงิน">
                             <field name="payment_id"
                                 attrs="{'invisible': [('payment_id', '=', False)]}"/>
+                            <field name="amount"/>
                         </group>
                     </group>
                     <group string="หมายเหตุ">
-                        <field name="note" nolabel="1"/>
+                        <field name="note" colspan="2" nolabel="1"/>
                     </group>
                     <notebook>
                         <page string="สลิปเงิน" name="slip">
