@@ -14,6 +14,12 @@ class AdvancePayment(models.Model):
         res.append("return_line_ids")
         return res
 
+    @api.model
+    def _get_after_validation_exceptions(self):
+        res = super()._get_after_validation_exceptions()
+        res.append("return_line_ids")
+        return res
+
     def _validate_tier(self, tiers=False):
         super()._validate_tier(tiers)
         reviews = self.review_ids.filtered(
