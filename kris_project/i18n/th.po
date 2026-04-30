@@ -1046,7 +1046,7 @@ msgstr "ยังเก็บรายได้ไม่ครบ"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "Confirm"
-msgstr "ยืนยัน"
+msgstr "อยู่ระหว่างดำเนินการ"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form

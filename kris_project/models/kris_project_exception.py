@@ -38,11 +38,11 @@ class KrisProject(models.Model):
             return self.with_context(
                 kris_exception_action="action_confirm"
             )._popup_exceptions()
-        self.write({"state": "confirmed", "ignore_exception": False})
+        self.write({"state": "in_progress", "ignore_exception": False})
 
     def action_done(self):
         for rec in self:
-            if rec.state != "confirmed":
+            if rec.state != "in_progress":
                 raise UserError(
                     _("Only confirmed projects can be closed.")
                 )

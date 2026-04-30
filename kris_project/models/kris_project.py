@@ -7,7 +7,7 @@ from odoo.tools import float_compare
 _logger = logging.getLogger(__name__)
 
 READONLY_STATES = {
-    "confirmed": [("readonly", True)],
+    "in_progress": [("readonly", True)],
     "done": [("readonly", True)],
     "cancel": [("readonly", True)],
 }
@@ -84,7 +84,7 @@ class KrisProject(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("confirmed", "Confirm"),
+            ("in_progress", "In Progress"),
             ("done", "Done"),
             ("cancel", "Cancel"),
         ],
