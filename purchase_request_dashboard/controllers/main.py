@@ -127,7 +127,9 @@ class PurchaseRequestDashboardController(http.Controller):
             "chart6_expense_type_by_dept": self._get_chart6_expense_type_by_dept(
                 chart_records, budget_cache, dept_cache
             ),
-            "chart7_leadtime_heatmap": self._get_chart7_leadtime_heatmap(),
+            "chart7_leadtime_heatmap": self._get_chart7_leadtime_heatmap(
+                fiscal_year_id=fiscal_year_id
+            ),
         }
 
     # ──────────────────────────────────────────────────────────────────
