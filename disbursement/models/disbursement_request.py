@@ -1073,9 +1073,35 @@ class DisbursementRequest(models.Model):
                 lambda l: l.account_type == "liability_payable"
                 and not l.reconciled
             )
+            amount = abs(bill.amount_residual)
+
+            # Compute WHT deduction from bill lines
+            wht_lines = bill.line_ids.filtered("wht_tax_id")
+            write_off_line_vals = []
+            if wht_lines:
+                deduction_list, amount_wht = (
+                    wht_lines._prepare_deduction_list(
+                        fields.Date.context_today(self),
+                        bill.currency_id,
+                    )
+                )
+                if deduction_list and amount_wht:
+                    amount -= amount_wht
+                    for deduct in deduction_list:
+                        write_off_line_vals.append({
+                            "name": deduct["name"],
+                            "account_id": deduct["account_id"],
+                            "partner_id": bill.partner_id.id,
+                            "currency_id": bill.currency_id.id,
+                            "amount_currency": -deduct["amount"],
+                            "balance": -deduct["amount"],
+                            "wht_tax_id": deduct["wht_tax_id"],
+                            "tax_base_amount": deduct["wht_amount_base"],
+                        })
+
             payment_vals = {
                 "partner_id": bill.partner_id.id,
-                "amount": abs(bill.amount_residual),
+                "amount": amount,
                 "currency_id": bill.currency_id.id,
                 "journal_id": journal.id,
                 "payment_type": "outbound",
@@ -1083,6 +1109,8 @@ class DisbursementRequest(models.Model):
                 "ref": _("%s - %s", self.name, bill.name),
                 "analytic_distribution": bill.analytic_distribution,
             }
+            if write_off_line_vals:
+                payment_vals["write_off_line_vals"] = write_off_line_vals
             if payment_type:
                 payment_vals["kmitl_payment_type_id"] = payment_type.id
             if bill.budget_commitment_id:
