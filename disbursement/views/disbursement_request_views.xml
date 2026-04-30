@@ -34,11 +34,11 @@
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will reserve budget." groups="disbursement.group_disbursement_manager" />
                     <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_register_payment"
-                            string="Register Payment"
+                    <button name="action_create_payment"
+                            string="Create Payment"
                             type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|', ('state', 'not in', ('bill_posted', 'payment_draft')), ('hide_register_payment_button', '=', True)]}"
+                            attrs="{'invisible': ['|', ('state', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
                             groups="account.group_account_invoice"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel', 'bill_posted', 'payment_draft', 'payment_posted'))]}" groups="disbursement.group_disbursement_officer" />
@@ -53,20 +53,23 @@
                     <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to confirm this Disbursement Request regardless of the exceptions." groups="base_exception.group_exception_rule_manager" />
                 </div>
                 <sheet>
-                    <field name="hide_register_payment_button" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_bill" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_count', '=', 0)]}">
-                            <field name="bill_count" widget="statinfo" string="Bill" />
-                            <span class="text-muted small" attrs="{'invisible': [('bill_draft_count', '=', 0)]}">
-                                รอตั้งหนี้ <field name="bill_draft_count" /> ใบ
-                            </span>
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">ใบตั้งหนี้ <field name="bill_count" nolabel="1" /></span>
+                                <span class="o_stat_text text-muted small"><field name="bill_status_display" nolabel="1" /></span>
+                            </div>
                         </button>
+                        <field name="bill_draft_count" invisible="1" />
                         <button name="action_view_payments"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-money"
                                 attrs="{'invisible': [('payment_count', '=', 0)]}">
-                            <field name="payment_count" widget="statinfo" string="Payments"/>
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">รายการจ่ายเงิน <field name="payment_count" nolabel="1" /></span>
+                                <span class="o_stat_text text-muted small"><field name="payment_status_display" nolabel="1" /></span>
+                            </div>
                         </button>
                         <button name="open_preview" type="object" class="oe_stat_button" icon="fa-globe">
                             <div class="o_field_widget o_stat_info">

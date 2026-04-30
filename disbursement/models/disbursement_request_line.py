@@ -26,6 +26,7 @@ class DisbursementRequestLine(models.Model):
     product_id = fields.Many2one(
         comodel_name="product.product",
         string="Product",
+        required=True,
         domain=["|", ("company_id", "=", False), ("company_id", "=", "company_id")],
     )
 

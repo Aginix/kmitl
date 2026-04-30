@@ -152,6 +152,11 @@ class DisbursementRequest(models.Model):
         compute="_compute_bill_count",
     )
 
+    bill_status_display = fields.Char(
+        string="Bill Status",
+        compute="_compute_bill_count",
+    )
+
     # --- Pipeline: Payment tracking ---
     payment_ids = fields.Many2many(
         comodel_name="account.payment",
@@ -162,8 +167,10 @@ class DisbursementRequest(models.Model):
         compute="_compute_payment_ids",
         string="Payment Count",
     )
-    hide_register_payment_button = fields.Boolean(
-        compute="_compute_hide_register_payment_button",
+
+    payment_status_display = fields.Char(
+        string="Payment Status",
+        compute="_compute_payment_ids",
     )
 
     company_id = fields.Many2one(
@@ -583,9 +590,14 @@ class DisbursementRequest(models.Model):
     def _compute_bill_count(self):
         """Compute the number of bills linked to this request"""
         for record in self:
-            record.bill_count = len(record.bill_ids)
-            record.bill_draft_count = len(
-                record.bill_ids.filtered(lambda b: b.state == "draft")
+            bills = record.bill_ids
+            total = len(bills)
+            draft = len(bills.filtered(lambda b: b.state == "draft"))
+            posted = total - draft
+            record.bill_count = total
+            record.bill_draft_count = draft
+            record.bill_status_display = (
+                _("ตั้งหนี้แล้ว %s/%s", posted, total) if total else ""
             )
 
     @api.depends("bill_ids", "bill_ids.state", "bill_ids.payment_state")
@@ -601,17 +613,12 @@ class DisbursementRequest(models.Model):
                     ("to_reconcile_payment_line_ids.move_id", "=", bill.id),
                 ])
             rec.payment_ids = payments
-            rec.payment_count = len(payments)
-
-    @api.depends("bill_ids", "bill_ids.state", "bill_ids.payment_state")
-    def _compute_hide_register_payment_button(self):
-        for rec in self:
-            has_payable = any(
-                b.state == "posted"
-                and b.payment_state in ("not_paid", "partial")
-                for b in rec.bill_ids
+            total = len(payments)
+            rec.payment_count = total
+            posted = len(payments.filtered(lambda p: p.state == "posted"))
+            rec.payment_status_display = (
+                _("จ่ายแล้ว %s/%s", posted, total) if total else ""
             )
-            rec.hide_register_payment_button = not has_payable
 
     def _update_state_from_pipeline(self):
         """Recompute state based on bill/payment status for records in pipeline."""
@@ -772,6 +779,7 @@ class DisbursementRequest(models.Model):
         else:
             bills = self._create_multi_bills()
 
+        bills.action_submit()
         self.state = "bill_draft"
 
         for bill in bills:
@@ -1030,28 +1038,103 @@ class DisbursementRequest(models.Model):
             "target": "current",
         }
 
-    def action_register_payment(self):
-        """Open payment wizard for unpaid posted bills."""
+    def action_create_payment(self):
+        """Create draft payments directly from DR, one per posted unpaid bill."""
         self.ensure_one()
         unpaid_bills = self.bill_ids.filtered(
             lambda b: b.state == "posted"
             and b.payment_state in ("not_paid", "partial")
         )
         if not unpaid_bills:
+            raise UserError(_("No posted unpaid bills to pay."))
+
+        # Find default bank journal and outbound payment type
+        journal = self.env["account.journal"].search(
+            [
+                ("type", "=", "bank"),
+                ("company_id", "=", self.company_id.id),
+            ],
+            limit=1,
+        )
+        if not journal:
             raise UserError(
-                _("No posted unpaid bills to pay.")
+                _("No bank journal found for company %s.")
+                % self.company_id.name
             )
+        payment_type = self.env.ref(
+            "account_payment_kmitl.payment_type_normal_outbound",
+            raise_if_not_found=False,
+        )
+
+        payments = self.env["account.payment"]
+        for bill in unpaid_bills:
+            # Get payable lines from the bill for reconciliation
+            payable_lines = bill.line_ids.filtered(
+                lambda l: l.account_type == "liability_payable"
+                and not l.reconciled
+            )
+            payment_vals = {
+                "partner_id": bill.partner_id.id,
+                "amount": abs(bill.amount_residual),
+                "currency_id": bill.currency_id.id,
+                "journal_id": journal.id,
+                "payment_type": "outbound",
+                "partner_type": "supplier",
+                "ref": _("%s - %s", self.name, bill.name),
+                "analytic_distribution": bill.analytic_distribution,
+            }
+            if payment_type:
+                payment_vals["kmitl_payment_type_id"] = payment_type.id
+            if bill.budget_commitment_id:
+                payment_vals["budget_commitment_id"] = (
+                    bill.budget_commitment_id.id
+                )
+            if bill.budget_account_id:
+                payment_vals["budget_account_id"] = bill.budget_account_id.id
+
+            payment = self.env["account.payment"].create(payment_vals)
+            # Store bill lines for deferred reconciliation on post
+            payment.to_reconcile_payment_line_ids = payable_lines
+            # Propagate analytic to payment move lines
+            if bill.analytic_distribution:
+                payment.move_id.line_ids.write(
+                    {"analytic_distribution": bill.analytic_distribution}
+                )
+            payments |= payment
+
+        self.state = "payment_draft"
+
+        # Log
+        for payment in payments:
+            pay_link = (
+                "/web#id=%d&model=account.payment&view_type=form" % payment.id
+            )
+            self.message_post(
+                body=_(
+                    'Payment <a href="%(link)s" target="_blank">'
+                    "%(name)s</a> created for %(partner)s.",
+                    link=pay_link,
+                    name=payment.name,
+                    partner=payment.partner_id.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
+        if len(payments) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "account.payment",
+                "res_id": payments.id,
+                "view_mode": "form",
+                "target": "current",
+            }
         return {
-            "name": _("Register Payment"),
-            "res_model": "account.payment.register",
-            "view_mode": "form",
-            "context": {
-                "active_model": "account.move",
-                "active_ids": unpaid_bills.ids,
-                "dont_redirect_to_payments": True,
-            },
-            "target": "new",
             "type": "ir.actions.act_window",
+            "name": _("Payments"),
+            "res_model": "account.payment",
+            "domain": [("id", "in", payments.ids)],
+            "view_mode": "tree,form",
+            "target": "current",
         }
 
     def action_view_payments(self):
