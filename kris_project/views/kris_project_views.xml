@@ -55,7 +55,7 @@
         <field name="name">kris.project.form</field>
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
-            <form>
+            <form class="kris_project_form">
                 <header>
                     <button
                         name="action_confirm"
