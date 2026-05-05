@@ -29,7 +29,7 @@
         "analytic_operating_unit",
         "account_analytic_kmitl",
         "disbursement",
-
+        "purchase_request_approval_work_acceptance",
     ],
     "data": [
         "data/company.xml",
