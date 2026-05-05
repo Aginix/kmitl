@@ -21,17 +21,6 @@
                     ]}"
                     type="object"
                 />
-                <button
-                    name="restart_validation"
-                    string="ส่งคำขออนุมัติอีกครั้ง"
-                    class="btn-primary"
-                    attrs="{'invisible': ['|', '|',
-                        ('need_validation', '!=', True),
-                        ('validation_status', '!=', 'pending'),
-                        ('state', '!=', 'submitted')
-                    ]}"
-                    type="object"
-                />
             </button>
             <xpath expr="//button[@name='action_approve']" position="replace">
                 <button name="action_approve"

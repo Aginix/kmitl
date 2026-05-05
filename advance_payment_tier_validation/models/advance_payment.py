@@ -1,3 +1,5 @@
+from lxml import etree
+
 from odoo import api, models
 
 
@@ -7,6 +9,9 @@ class AdvancePayment(models.Model):
     _state_from = ["submitted"]
     _state_to = ["approved"]
     _tier_validation_manual_config = False
+
+    def _add_tier_validation_buttons(self, node, params):
+        return etree.Element("div")
 
     @api.model
     def _get_under_validation_exceptions(self):
