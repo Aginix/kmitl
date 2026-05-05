@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="signature_block">
+        <div class="text-center">
+            <div style="white-space: nowrap;">
+                <span>(ลงชื่อ)</span>
+                <t t-if="signature">
+                    <img
+                        t-att-src="image_data_uri(signature)"
+                        style="max-height: 2.2cm; max-width: 6cm; vertical-align: middle;"
+                    />
+                </t>
+                <t t-else="">
+                    <span
+                        class="sig-line"
+                        style="display: inline-block; width: 200px; border-bottom: 1px dotted #000;"
+                    />
+                </t>
+                <t t-if="role">
+                    <span t-out="role" />
+                </t>
+            </div>
+            <div class="mt-1">
+                (<span t-out="name or ''" />)
+            </div>
+        </div>
+    </template>
+</odoo>

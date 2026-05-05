@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_committee_acceptance_signature"
+        inherit_id="purchase_work_acceptance_kmitl.report_committee_acceptance"
+    >
+
+        <xpath
+            expr="//t[@t-foreach='o.work_acceptance_committee_ids'][1]"
+            position="replace"
+        >
+            <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                <t t-if="line.approve_role != 'secretary'">
+                    <div class="row mt-5">
+                        <div class="col-9 offset-3 text-center">
+                            <div style="white-space: nowrap;">
+                                <span>(ลงชื่อ)</span>
+                                <t t-if="line.signature_image">
+                                    <img
+                                        t-att-src="image_data_uri(line.signature_image)"
+                                        style="max-height: 2.2cm; max-width: 6cm; vertical-align: middle;"
+                                    />
+                                </t>
+                                <t t-else="">
+                                    <span class="sig-line" />
+                                </t>
+                                <span t-field="line.approve_role" />
+                            </div>
+                            <div class="mt-2">
+                                (<span t-esc="line.name" />)
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </xpath>
+
+        <xpath
+            expr="//t[@t-foreach='o.work_acceptance_committee_ids'][2]"
+            position="replace"
+        >
+            <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                <t t-if="line.approve_role == 'secretary'">
+                    <div class="row mt-5">
+                        <div class="col-9 offset-3 text-center">
+                            <div style="white-space: nowrap;">
+                                <span>(ลงชื่อ)</span>
+                                <t t-if="line.signature_image">
+                                    <img
+                                        t-att-src="image_data_uri(line.signature_image)"
+                                        style="max-height: 2.2cm; max-width: 6cm; vertical-align: middle;"
+                                    />
+                                </t>
+                                <t t-else="">
+                                    <span class="sig-line" />
+                                </t>
+                                <span t-field="line.approve_role" />
+                            </div>
+                            <div class="mt-2">
+                                (<span t-esc="line.name" />)
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>
