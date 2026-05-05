@@ -1,6 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class DisbursementRequestLine(models.Model):
@@ -25,6 +26,7 @@ class DisbursementRequestLine(models.Model):
     product_id = fields.Many2one(
         comodel_name="product.product",
         string="Product",
+        required=True,
         domain=["|", ("company_id", "=", False), ("company_id", "=", "company_id")],
     )
 
@@ -97,6 +99,23 @@ class DisbursementRequestLine(models.Model):
         store=True,
     )
 
+    partner_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="Partner",
+        compute="_compute_line_partner_id",
+        store=True,
+        readonly=False,
+    )
+
+    partner_bank_id = fields.Many2one(
+        comodel_name="res.partner.bank",
+        string="Recipient Bank",
+        compute="_compute_line_partner_bank_id",
+        store=True,
+        readonly=False,
+        domain="[('partner_id', '=', partner_id)]",
+    )
+
     analytic_distribution = fields.Json(
         copy=False,
     )
@@ -159,7 +178,7 @@ class DisbursementRequestLine(models.Model):
         self.ensure_one()
         return self.env["account.tax"]._convert_to_tax_base_line_dict(
             self,
-            partner=self.request_id.partner_id,
+            partner=self.partner_id or self.request_id.partner_id,
             currency=self.request_id.currency_id,
             product=self.product_id,
             taxes=self.tax_ids,
@@ -187,12 +206,54 @@ class DisbursementRequestLine(models.Model):
                 self.tax_ids = self.product_id.supplier_taxes_id
 
     # -------------------------------------------------------------------------
+    # Partner compute methods
+    # -------------------------------------------------------------------------
+    @api.depends("request_id.partner_type", "request_id.partner_id")
+    def _compute_line_partner_id(self):
+        for line in self:
+            if line.request_id.partner_type == "single":
+                line.partner_id = line.request_id.partner_id
+
+    @api.depends(
+        "partner_id",
+        "request_id.partner_type",
+        "request_id.partner_bank_id",
+        "request_id.company_id",
+    )
+    def _compute_line_partner_bank_id(self):
+        for line in self:
+            if line.request_id.partner_type == "single":
+                line.partner_bank_id = line.request_id.partner_bank_id
+            elif line.partner_id:
+                banks = line.partner_id.bank_ids.filtered(
+                    lambda b: not b.company_id
+                    or b.company_id == line.request_id.company_id
+                )
+                line.partner_bank_id = banks[0] if banks else False
+            else:
+                line.partner_bank_id = False
+
+    @api.constrains("partner_id")
+    def _check_line_partner_required(self):
+        for line in self:
+            if line.request_id.partner_type == "multi" and not line.partner_id:
+                raise ValidationError(
+                    _("Partner is required on each line in multi-partner mode.")
+                )
+
+    # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends("request_id.partner_id.partner_type_id.wht_tax_id")
+    @api.depends(
+        "partner_id.partner_type_id.wht_tax_id",
+        "request_id.partner_id.partner_type_id.wht_tax_id",
+    )
     def _compute_wht_tax_id(self):
         for line in self:
-            line.wht_tax_id = line.request_id.partner_id.partner_type_id.wht_tax_id
+            partner = line.partner_id or line.request_id.partner_id
+            line.wht_tax_id = (
+                partner.partner_type_id.wht_tax_id if partner else False
+            )
 
     # -------------------------------------------------------------------------
     # Exception methods
