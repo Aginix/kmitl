@@ -1,4 +1,8 @@
+import logging
+
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class WorkAcceptanceCommittee(models.Model):
@@ -13,21 +17,29 @@ class WorkAcceptanceCommittee(models.Model):
     )
 
     def write(self, vals):
-        capture_ids = []
-        if vals.get("status") == "accept":
-            capture_ids = [
-                rec.id
-                for rec in self
-                if rec.status != "accept" and not rec.signature_image
-            ]
         result = super().write(vals)
-        if capture_ids:
-            for rec in self.browse(capture_ids):
-                user = rec.employee_id.user_id
-                if user and user.signature_image:
-                    super(WorkAcceptanceCommittee, rec).write(
-                        {"signature_image": user.signature_image}
-                    )
+        if vals.get("status") == "accept":
+            for rec in self:
+                if not rec.signature_image:
+                    user = rec.employee_id.user_id
+                    if not user:
+                        _logger.warning(
+                            "Employee %s has no linked user, "
+                            "signature not captured for committee record %s",
+                            rec.employee_id.display_name,
+                            rec.id,
+                        )
+                    elif user.signature_image:
+                        super(WorkAcceptanceCommittee, rec).write(
+                            {"signature_image": user.signature_image}
+                        )
+                    else:
+                        _logger.warning(
+                            "User %s has no signature_image set, "
+                            "signature not captured for committee record %s",
+                            user.name,
+                            rec.id,
+                        )
         return result
 
     @api.model
