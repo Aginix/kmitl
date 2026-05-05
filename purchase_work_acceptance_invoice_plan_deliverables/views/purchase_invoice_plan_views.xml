@@ -29,12 +29,10 @@
                         <field name="percent" readonly="1"/>
                         <field name="amount" readonly="1"/>
                     </group>
-                    <group string="Deliverables">
-                        <field  name="deliverables" 
-                                nolabel="1"
-                                placeholder="กรอกรายละเอียดการส่งมอบงาน&#10;- รายการที่ 1&#10;- รายการที่ 2&#10;..."
-                                style="min-height: 200px;"/>
-                    </group>
+                    <separator string="Deliverables"/>
+                    <field  name="deliverables"
+                            nolabel="1"
+                            placeholder="กรอกรายละเอียดการส่งมอบงาน&#10;- รายการที่ 1&#10;- รายการที่ 2&#10;..."/>
                 </sheet>
             </form>
         </field>
