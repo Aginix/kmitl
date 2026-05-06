@@ -11,7 +11,6 @@
         "data/uom.category.csv",
         "data/uom.uom.csv",
         "data/uom_group_data.xml",
-        "data/uom_disable_standard.xml",
     ],
     "installable": True,
     "auto_install": False,
