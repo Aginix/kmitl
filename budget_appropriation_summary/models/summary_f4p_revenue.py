@@ -10,7 +10,7 @@ class BudgetAppropriationSummaryF4PRevenue(models.AbstractModel):
     _description = "Budget Appropriation Summary F4-P Revenue Report"
 
     REVENUE_CATEGORIES = [
-        ("r49000", "ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ"),
+        ("43100 (ก)", "ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ"),
         ("43300", "รายได้จากงานบริการ"),
         ("43400", "รายได้จากเงินผลประโยชน์"),
         ("43500", "รายได้จากการรับบริจาค หรือ เงินอุดหนุน"),
