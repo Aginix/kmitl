@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Enable "Manage Multiple Units of Measure" for all internal users
+         so the UoM field is visible on products / purchase / sale forms. -->
+    <record id="uom.group_uom" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+</odoo>

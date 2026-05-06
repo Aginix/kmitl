@@ -10,6 +10,7 @@
     "data": [
         "data/uom.category.csv",
         "data/uom.uom.csv",
+        "data/uom_group_data.xml",
     ],
     "installable": True,
     "auto_install": False,
