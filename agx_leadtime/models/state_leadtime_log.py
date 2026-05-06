@@ -76,22 +76,25 @@ class StateLeadtimeLog(models.Model):
         })
 
     @api.model
-    def get_stats(self, res_model, from_state, to_state):
-        """Return avg/min/max duration statistics for a specific transition.
+    def get_stats(self, res_model, from_state, to_state, date_from=None, date_to=None):
+        """Return avg/min/max/total duration statistics for a specific transition.
 
-        Usage:
-            self.env['state.leadtime.log'].get_stats(
-                res_model='purchase.order',
-                from_state='draft',
-                to_state='purchase',
-            )
+        Args:
+            date_from: optional datetime — filter logs with transition_date >= date_from
+            date_to:   optional datetime — filter logs with transition_date <= date_to
         """
-        logs = self.search([
+        domain = [
             ('res_model', '=', res_model),
             ('from_state', '=', from_state),
             ('to_state', '=', to_state),
             ('duration_minutes', '>', 0),
-        ])
+        ]
+        if date_from:
+            domain.append(('transition_date', '>=', date_from))
+        if date_to:
+            domain.append(('transition_date', '<=', date_to))
+
+        logs = self.search(domain)
 
         if not logs:
             return {
@@ -101,17 +104,20 @@ class StateLeadtimeLog(models.Model):
                 'avg_minutes': 0.0,
                 'min_minutes': 0.0,
                 'max_minutes': 0.0,
+                'total_minutes': 0.0,
                 'count': 0,
             }
 
         durations = logs.mapped('duration_minutes')
+        total = sum(durations)
         return {
             'res_model': res_model,
             'from_state': from_state,
             'to_state': to_state,
-            'avg_minutes': sum(durations) / len(durations),
+            'avg_minutes': total / len(durations),
             'min_minutes': min(durations),
             'max_minutes': max(durations),
+            'total_minutes': total,
             'count': len(durations),
         }
 

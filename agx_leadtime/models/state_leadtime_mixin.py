@@ -18,8 +18,8 @@ class StateLeadtimeMixin(models.AbstractModel):
     _tracked_transitions = None
 
     # Blacklist: list of (from_state, to_state) tuples to exclude; None = no exclusions
-    # Supports '*' wildcard to match any state
-    # Example: [('*', 'rejected'), ('draft', '*')]
+    # Supports '*' wildcard on the from_state position only: ('*', to_state)
+    # Example: [('*', 'rejected')]  — exclude all transitions to 'rejected'
     _excluded_transitions = None
 
     state_leadtime_ids = fields.One2many(
@@ -82,9 +82,10 @@ class StateLeadtimeMixin(models.AbstractModel):
             new_state = vals[tracked_field]
             for record in self:
                 from_state = record[tracked_field]
-                if from_state != new_state and record._should_track_transition(from_state, new_state):
-                    transitions.append((record, from_state, new_state, record.state_entry_date))
-            vals['state_entry_date'] = now
+                if from_state != new_state:
+                    vals['state_entry_date'] = now
+                    if record._should_track_transition(from_state, new_state):
+                        transitions.append((record, from_state, new_state, record.state_entry_date))
         result = super().write(vals)
         for record, from_state, to_state, entry_date in transitions:
             self.env['state.leadtime.log']._log_transition(
@@ -98,11 +99,9 @@ class StateLeadtimeMixin(models.AbstractModel):
 
     @api.model_create_multi
     def create(self, vals_list):
-        if isinstance(vals_list, dict):
-            vals_list = [vals_list]
-
+        records = super().create(vals_list)
         now = fields.Datetime.now()
-        for vals in vals_list:
-            vals.setdefault('state_entry_date', now)
-
-        return super().create(vals_list)
+        no_date = records.filtered(lambda r: not r.state_entry_date)
+        if no_date:
+            no_date.write({'state_entry_date': now})
+        return records

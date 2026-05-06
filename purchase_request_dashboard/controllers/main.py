@@ -414,35 +414,30 @@ class PurchaseRequestDashboardController(http.Controller):
             ('in_progress', 'done',        'จัดทำสัญญา'),
         ]
 
-        LeadtimeLog = request.env['state.leadtime.log']
+        date_from = date_to = None
+        if fiscal_year_id:
+            fy = request.env['account.fiscal.year'].browse(fiscal_year_id)
+            date_from = fy.date_from
+            date_to = fy.date_to
+
+        Log = request.env['state.leadtime.log'].sudo()
         data = []
 
         for from_state, to_state, label in TRACKED_TRANSITIONS:
-            domain = [
-                ('res_model', '=', 'purchase.request'),
-                ('from_state', '=', from_state),
-                ('to_state', '=', to_state),
-            ]
-
-            if fiscal_year_id:
-                pr_ids = request.env['purchase.request'].search([
-                    ('account_fiscal_year_id', '=', fiscal_year_id),
-                ]).ids
-                domain.append(('res_id', 'in', pr_ids))
-
-            logs = LeadtimeLog.search(domain)
-            durations = [l.duration_minutes for l in logs if l.duration_minutes > 0]
-
-            avg_val = sum(durations) / len(durations) if durations else 0
-            sum_val = sum(durations)
-
+            stats = Log.get_stats(
+                res_model='purchase.request',
+                from_state=from_state,
+                to_state=to_state,
+                date_from=date_from,
+                date_to=date_to,
+            )
             data.append({
                 'name': label,
                 'from_state': from_state,
                 'to_state': to_state,
-                'avg': round(avg_val, 2),
-                'total': round(sum_val, 2),
-                'count': len(logs),
+                'avg': round(stats['avg_minutes'], 2),
+                'total': round(stats['total_minutes'], 2),
+                'count': stats['count'],
             })
 
         return data
