@@ -330,7 +330,7 @@ class AdvancePayment(models.Model):
             used = sum(rec.usage_line_ids.mapped("amount"))
             returned = sum(
                 rec.return_line_ids.filtered(
-                    lambda l: l.state in ("confirmed", "paid")
+                    lambda l: l.state == "done"
                 ).mapped("amount")
             )
             rec.amount_used = used

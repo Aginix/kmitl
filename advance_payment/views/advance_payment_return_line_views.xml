@@ -12,8 +12,9 @@
                 <field name="payment_id"/>
                 <field name="state" widget="badge"
                     decoration-info="state == 'draft'"
-                    decoration-warning="state == 'confirmed'"
-                    decoration-success="state == 'paid'"/>
+                    decoration-warning="state in ('confirmed', 'pending_review')"
+                    decoration-danger="state == 'rejected'"
+                    decoration-success="state == 'done'"/>
             </tree>
         </field>
     </record>
@@ -29,8 +30,39 @@
                         type="object"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        groups="advance_payment.group_advance_payment_user"/>
+                    <button name="action_accept_review"
+                        string="รับเข้าตรวจสอบ"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'confirmed')]}"
                         groups="advance_payment.group_advance_payment_manager"/>
-                    <field name="state" widget="statusbar"/>
+                    <button name="action_approve"
+                        string="อนุมัติ"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'pending_review')]}"
+                        groups="advance_payment.group_advance_payment_manager"/>
+                    <button name="action_reject"
+                        string="ตีกลับ"
+                        type="object"
+                        class="btn-danger"
+                        attrs="{'invisible': [('state', '!=', 'pending_review')]}"
+                        groups="advance_payment.group_advance_payment_manager"/>
+                    <button name="action_reset_to_draft"
+                        string="แก้ไข"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('state', '!=', 'rejected')]}"
+                        groups="advance_payment.group_advance_payment_user"/>
+                    <button name="action_admin_reset"
+                        string="ย้อนกลับเป็นร่าง"
+                        type="object"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('state', '!=', 'done')]}"
+                        groups="base.group_system"/>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,confirmed,pending_review,done"/>
                 </header>
                 <sheet>
                     <group>

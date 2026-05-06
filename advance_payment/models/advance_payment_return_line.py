@@ -6,13 +6,7 @@ class AdvancePaymentReturnLine(models.Model):
     """
     Return line for advance payment (รายการคืนเงินยืม).
 
-    Tracks each partial return of advance payment funds. Supports multiple
-    returns per agreement with a full audit trail for finance review.
-
-    Lifecycle: draft → confirmed → paid
-    - draft: employee submitted or manager entered, awaiting review
-    - confirmed: manager verified, inbound payment created and submitted
-    - paid: inbound payment posted by accounting
+    Lifecycle: draft → confirmed → pending_review → done / rejected
     """
 
     _name = "advance.payment.return.line"
@@ -74,7 +68,9 @@ class AdvancePaymentReturnLine(models.Model):
         selection=[
             ("draft", "Draft"),
             ("confirmed", "Confirmed"),
-            ("paid", "Paid"),
+            ("pending_review", "Pending Review"),
+            ("rejected", "Rejected"),
+            ("done", "Done"),
         ],
         string="Status",
         default="draft",
@@ -89,6 +85,16 @@ class AdvancePaymentReturnLine(models.Model):
         for rec in self:
             if rec.amount <= 0:
                 raise ValidationError(_("Return amount must be greater than zero."))
+
+    def unlink(self):
+        if self.filtered(lambda r: r.state in ("confirmed", "pending_review", "done")):
+            raise UserError(
+                _(
+                    "Cannot delete return lines that are confirmed,"
+                    " pending review, or done."
+                )
+            )
+        return super().unlink()
 
     def _prepare_return_payment_vals(self):
         """Prepare values for creating the inbound payment."""
@@ -109,7 +115,6 @@ class AdvancePaymentReturnLine(models.Model):
         return vals
 
     def action_confirm(self):
-        """Confirm return line: create inbound payment and auto-submit."""
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft return lines can be confirmed."))
@@ -117,13 +122,29 @@ class AdvancePaymentReturnLine(models.Model):
                 raise UserError(
                     _("Returns can only be confirmed for in-progress agreements.")
                 )
+            rec.write({"state": "confirmed"})
+
+    def action_accept_review(self):
+        for rec in self:
+            if rec.state != "confirmed":
+                raise UserError(
+                    _("Only confirmed return lines can be accepted for review.")
+                )
+            rec.write({"state": "pending_review"})
+
+    def action_approve(self):
+        for rec in self:
+            if rec.state != "pending_review":
+                raise UserError(
+                    _("Only pending review return lines can be approved.")
+                )
             vals = rec._prepare_return_payment_vals()
             payment = self.env["account.payment"].create(vals)
             payment.action_submit()
-            rec.write({"state": "confirmed", "payment_id": payment.id})
+            rec.write({"state": "done", "payment_id": payment.id})
             rec.agreement_id.message_post(
                 body=_(
-                    "Return of <b>%(amount)s %(currency)s</b> confirmed."
+                    "Return of <b>%(amount)s %(currency)s</b> approved."
                     " Payment"
                     " <a href='/web#id=%(pid)s&amp;model=account.payment'>"
                     "<b>%(pname)s</b></a> created.",
@@ -134,3 +155,29 @@ class AdvancePaymentReturnLine(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+
+    def action_reject(self):
+        for rec in self:
+            if rec.state != "pending_review":
+                raise UserError(
+                    _("Only pending review return lines can be rejected.")
+                )
+            rec.write({"state": "rejected"})
+
+    def action_reset_to_draft(self):
+        for rec in self:
+            if rec.state != "rejected":
+                raise UserError(
+                    _("Only rejected return lines can be reset to draft.")
+                )
+            rec.write({"state": "draft"})
+
+    def action_admin_reset(self):
+        for rec in self:
+            if rec.state != "done":
+                raise UserError(
+                    _("Only done return lines can be reset by admin.")
+                )
+            if rec.payment_id:
+                rec.payment_id.action_cancel()
+            rec.write({"state": "draft", "payment_id": False})
