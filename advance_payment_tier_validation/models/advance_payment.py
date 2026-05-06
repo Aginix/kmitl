@@ -48,7 +48,7 @@ class AdvancePayment(models.Model):
         super()._rejected_tier(tiers=tiers)
         for rec in self:
             if rec.state == "submitted":
-                rec.state = "rejected"
+                rec.with_context(skip_validation_check=True).state = "rejected"
                 rec._propagate_rejection_to_reference()
 
     def _propagate_rejection_to_reference(self):
