@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Field locking is handled by is_locked_by_reference in the base module.
-         Bridge module only needs to override _prepare_vals_from_reference(). -->
+    <record id="view_advance_payment_form_purchase_request" model="ir.ui.view">
+        <field name="name">advance.payment.form.purchase_request</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form"/>
+        <field name="priority">200</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_purchase_request"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    attrs="{'invisible': [('purchase_request_count', '=', 0)]}">
+                    <field name="purchase_request_count" string="ใบขอซื้อ" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
 </odoo>

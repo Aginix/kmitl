@@ -1,8 +1,33 @@
-from odoo import _, models
+from odoo import _, api, fields, models
 
 
 class AdvancePayment(models.Model):
     _inherit = "advance.payment"
+
+    purchase_request_count = fields.Integer(
+        compute="_compute_purchase_request_count",
+    )
+
+    @api.depends("reference")
+    def _compute_purchase_request_count(self):
+        for rec in self:
+            rec.purchase_request_count = (
+                1
+                if rec.reference and rec.reference._name == "purchase.request"
+                else 0
+            )
+
+    def action_view_purchase_request(self):
+        self.ensure_one()
+        if not self.reference or self.reference._name != "purchase.request":
+            return False
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "purchase.request",
+            "res_id": self.reference.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def action_start(self, payment=None):
         """Override to cross-post disbursement message to linked purchase request."""
