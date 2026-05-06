@@ -125,7 +125,8 @@
 
     <menuitem id="menu_state_leadtime_root"
               name="Leadtime Tracker"
-              sequence="100"/>
+              sequence="100"
+              groups="base.group_system"/>
 
     <menuitem id="menu_state_leadtime_log"
               name="Leadtime Logs"
