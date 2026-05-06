@@ -9,6 +9,11 @@ class PurchaseRequestLine(models.Model):
 
     name = fields.Text(string="Description", tracking=True)
 
+    product_uom_id = fields.Many2one(
+        comodel_name="uom.uom",
+        domain=[],
+    )
+
     product_id = fields.Many2one(
         compute="_compute_default_product_id",
         store=True,
