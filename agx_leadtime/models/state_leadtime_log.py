@@ -1,4 +1,6 @@
-from odoo import models, fields, api
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, tools, _
+from odoo.exceptions import UserError
 
 
 class StateLeadtimeLog(models.Model):
@@ -35,28 +37,48 @@ class StateLeadtimeLog(models.Model):
         ondelete='set null',
     )
 
+    def init(self):
+        tools.create_index(
+            self._cr,
+            'state_leadtime_log_report_idx',
+            self._table,
+            ['res_model', 'from_state', 'to_state'],
+        )
+        tools.create_index(
+            self._cr,
+            'state_leadtime_log_transition_date_idx',
+            self._table,
+            ['transition_date'],
+        )
+
+    def write(self, vals):
+        raise UserError(_("State leadtime log entries are immutable and cannot be modified."))
+
+    def unlink(self):
+        raise UserError(_("State leadtime log entries cannot be deleted."))
+
     @api.model
-    def _log_transition(self, record, from_state, to_state, entry_date=None):
-        now = fields.Datetime.now()
+    def _log_transition(self, record, from_state, to_state, entry_date=None, transition_date=None):
+        now = transition_date or fields.Datetime.now()
         duration_minutes = 0.0
 
         if entry_date:
             delta = now - entry_date
             duration_minutes = delta.total_seconds() / 60
 
-        self.create({
+        self.sudo().create({
             'res_model': record._name,
             'res_id': record.id,
             'from_state': from_state,
             'to_state': to_state,
+            'transition_date': now,
             'duration_minutes': duration_minutes,
         })
 
     @api.model
     def get_stats(self, res_model, from_state, to_state):
-        """
-        ดึงสถิติ avg/min/max สำหรับ dashboard
-        
+        """Return avg/min/max duration statistics for a specific transition.
+
         Usage:
             self.env['state.leadtime.log'].get_stats(
                 res_model='purchase.order',
@@ -95,13 +117,11 @@ class StateLeadtimeLog(models.Model):
 
     @api.model
     def get_all_stats(self, res_model):
-        """
-        ดึงสถิติทุก transition ของ model นั้น สำหรับ dashboard แบบ overview
-        
+        """Return statistics for all transitions of a model, suitable for dashboard overviews.
+
         Usage:
             self.env['state.leadtime.log'].get_all_stats('purchase.order')
         """
-        # หา unique transitions ทั้งหมดของ model นี้
         groups = self.read_group(
             domain=[
                 ('res_model', '=', res_model),

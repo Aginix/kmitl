@@ -24,7 +24,7 @@ class StateLeadtimeReport(models.Model):
         self.env.cr.execute("""
             CREATE OR REPLACE VIEW state_leadtime_report AS (
                 SELECT
-                    row_number() OVER () AS id,
+                    row_number() OVER (ORDER BY res_model, from_state, to_state) AS id,
                     res_model,
                     from_state,
                     to_state,

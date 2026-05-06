@@ -11,11 +11,6 @@
         'views/state_leadtime_log_views.xml',
         'security/ir.model.access.csv',
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'agx_leadtime/static/src/**/*'
-              ],
-          },
     'application': False,
     'installable': True,
     'auto_install': False,
