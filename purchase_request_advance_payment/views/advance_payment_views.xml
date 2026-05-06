@@ -10,9 +10,9 @@
                 <button name="action_view_purchase_request"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-file-text-o"
+                    icon="fa-cart"
                     attrs="{'invisible': [('purchase_request_count', '=', 0)]}">
-                    <field name="purchase_request_count" string="ใบขอซื้อ" widget="statinfo"/>
+                    <field name="purchase_request_count" string="คำขอซื้อขอจ้าง" widget="statinfo"/>
                 </button>
             </xpath>
         </field>
