@@ -1,10 +1,18 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import models
+from odoo import fields, models
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+
+    disbursement_request_id = fields.Many2one(
+        comodel_name="disbursement.request",
+        string="Disbursement Request",
+        ondelete="set null",
+        index=True,
+        copy=False,
+    )
 
     def write(self, vals):
         res = super().write(vals)
@@ -15,11 +23,8 @@ class AccountMove(models.Model):
                 "payment_draft",
                 "payment_posted",
             )
-            disbursements = self.env["disbursement.request"].search(
-                [
-                    ("bill_id", "in", self.ids),
-                    ("state", "in", pipeline_states),
-                ]
+            disbursements = self.mapped("disbursement_request_id").filtered(
+                lambda d: d.state in pipeline_states
             )
             if disbursements:
                 disbursements._update_state_from_pipeline()
