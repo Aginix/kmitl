@@ -6,7 +6,7 @@ class AdvancePaymentReturnLine(models.Model):
     """
     Return line for advance payment (รายการคืนเงินยืม).
 
-    Lifecycle: draft → confirmed → pending_review → done / rejected
+    Lifecycle: draft → pending_review → done / rejected
     """
 
     _name = "advance.payment.return.line"
@@ -67,7 +67,6 @@ class AdvancePaymentReturnLine(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("confirmed", "Confirmed"),
             ("pending_review", "Pending Review"),
             ("rejected", "Rejected"),
             ("done", "Done"),
@@ -87,12 +86,9 @@ class AdvancePaymentReturnLine(models.Model):
                 raise ValidationError(_("Return amount must be greater than zero."))
 
     def unlink(self):
-        if self.filtered(lambda r: r.state in ("confirmed", "pending_review", "done")):
+        if self.filtered(lambda r: r.state in ("pending_review", "done")):
             raise UserError(
-                _(
-                    "Cannot delete return lines that are confirmed,"
-                    " pending review, or done."
-                )
+                _("Cannot delete return lines that are pending review or done.")
             )
         return super().unlink()
 
@@ -121,14 +117,6 @@ class AdvancePaymentReturnLine(models.Model):
             if rec.agreement_id.state != "in_progress":
                 raise UserError(
                     _("Returns can only be confirmed for in-progress agreements.")
-                )
-            rec.write({"state": "confirmed"})
-
-    def action_accept_review(self):
-        for rec in self:
-            if rec.state != "confirmed":
-                raise UserError(
-                    _("Only confirmed return lines can be accepted for review.")
                 )
             rec.write({"state": "pending_review"})
 

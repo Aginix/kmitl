@@ -24,6 +24,11 @@
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <record id="group_advance_payment_responsible" model="res.groups">
+        <field name="name">ผู้รับผิดชอบเงินยืม</field>
+        <field name="category_id" ref="module_category_advance_payment"/>
+    </record>
+
     <!-- Record Rules -->
     <record id="advance_payment_user_rule" model="ir.rule">
         <field name="name">Advance Payment: User sees own records</field>

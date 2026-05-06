@@ -331,9 +331,19 @@ msgid "Confirm Close Agreement"
 msgstr "ยืนยันการปิดสัญญา"
 
 #. module: advance_payment
-#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__confirmed
-msgid "Confirmed"
-msgstr "ยืนยันแล้ว"
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__pending_review
+msgid "Pending Review"
+msgstr "รอตรวจสอบ"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__rejected
+msgid "Rejected"
+msgstr "ตีกลับ"
+
+#. module: advance_payment
+#: model:ir.model.fields.selection,name:advance_payment.selection__advance_payment_return_line__state__done
+msgid "Done"
+msgstr "เสร็จสิ้น"
 
 #. module: advance_payment
 #: model:ir.model.fields,field_description:advance_payment.field_advance_payment__create_uid
