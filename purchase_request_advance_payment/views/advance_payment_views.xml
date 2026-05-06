@@ -10,7 +10,7 @@
                 <button name="action_view_purchase_request"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-cart"
+                    icon="fa-shopping-cart"
                     attrs="{'invisible': [('purchase_request_count', '=', 0)]}">
                     <field name="purchase_request_count" string="คำขอซื้อขอจ้าง" widget="statinfo"/>
                 </button>
