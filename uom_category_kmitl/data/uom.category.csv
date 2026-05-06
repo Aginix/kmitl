@@ -1,7 +1,4 @@
 id,name
-uom_categ_kmitl_weight,KMITL หน่วยน้ำหนัก
-uom_categ_kmitl_length,KMITL หน่วยความยาว
-uom_categ_kmitl_volume,KMITL หน่วยปริมาตร
 uom_categ_kmitl_01,กล้อง
 uom_categ_kmitl_02,คัน
 uom_categ_kmitl_03,คู่
@@ -11,7 +8,9 @@ uom_categ_kmitl_06,ชุด
 uom_categ_kmitl_07,ตู้
 uom_categ_kmitl_08,ตัว
 uom_categ_kmitl_09,เตา
+uom_categ_kmitl_10,ถัง
 uom_categ_kmitl_11,ที่
+uom_categ_kmitl_12,แท้งค์
 uom_categ_kmitl_13,แท่ง
 uom_categ_kmitl_14,แท่น
 uom_categ_kmitl_15,แผ่น
@@ -26,6 +25,7 @@ uom_categ_kmitl_23,แฟ้ม
 uom_categ_kmitl_24,กล่อง
 uom_categ_kmitl_25,เล่ม
 uom_categ_kmitl_26,ซอง
+uom_categ_kmitl_27,ขวด
 uom_categ_kmitl_28,ม้วน
 uom_categ_kmitl_29,กระป๋อง
 uom_categ_kmitl_30,ก้อน
