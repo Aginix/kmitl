@@ -1,6 +1,6 @@
 from lxml import etree
 
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class AdvancePayment(models.Model):
@@ -9,6 +9,11 @@ class AdvancePayment(models.Model):
     _state_from = ["submitted"]
     _state_to = ["approved"]
     _tier_validation_manual_config = False
+
+    state = fields.Selection(
+        selection_add=[("rejected", "ไม่อนุมัติ")],
+        ondelete={"rejected": "set default"},
+    )
 
     def _add_tier_validation_buttons(self, node, params):
         return etree.Element("div")
@@ -38,3 +43,19 @@ class AdvancePayment(models.Model):
         )
         if not reviews:
             return self.action_approve()
+
+    def _rejected_tier(self, tiers=False):
+        super()._rejected_tier(tiers=tiers)
+        for rec in self:
+            if rec.state == "submitted":
+                rec.state = "rejected"
+                rec._propagate_rejection_to_reference()
+
+    def _propagate_rejection_to_reference(self):
+        self.ensure_one()
+        ref = self.reference
+        if not ref or ref._name != "purchase.request":
+            return
+        pr = self.env["purchase.request"].browse(ref.id)
+        if pr.exists() and pr.state != "rejected":
+            pr.button_rejected()
