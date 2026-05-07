@@ -213,6 +213,35 @@ class TestStateLeadtimeMixin(TransactionCase):
         expected = (log_done.transition_date - date_after_first).total_seconds() / 60
         self.assertAlmostEqual(log_done.duration_minutes, expected, delta=0.1)
 
+    # --- unlink cascade ---
+
+    def test_unlink_record_deletes_associated_logs(self):
+        """Deleting a record cascades to its leadtime logs."""
+        record = self.Model.create({'name': 'Test'})
+        record.write({'state': 'approved'})
+        self.assertEqual(len(self._get_logs(record)), 1)
+        record_id = record.id
+        record.unlink()
+        remaining = self.env['state.leadtime.log'].search([
+            ('res_model', '=', 'test.leadtime.model'),
+            ('res_id', '=', record_id),
+        ])
+        self.assertEqual(len(remaining), 0)
+
+    def test_unlink_record_without_logs_succeeds(self):
+        """Deleting a record with no logs does not raise."""
+        record = self.Model.create({'name': 'No transitions'})
+        record.unlink()  # should not raise
+
+    def test_direct_log_unlink_still_raises(self):
+        """Direct unlink of logs still raises UserError (immutability preserved)."""
+        from odoo.exceptions import UserError
+        record = self.Model.create({'name': 'Test'})
+        record.write({'state': 'approved'})
+        log = self._get_logs(record)
+        with self.assertRaises(UserError):
+            log.unlink()
+
     # --- _excluded_transitions specific pair (non-wildcard) ---
 
     def test_excluded_specific_pair_blocks_matching_transition(self):

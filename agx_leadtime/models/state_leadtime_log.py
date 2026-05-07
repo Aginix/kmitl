@@ -55,6 +55,8 @@ class StateLeadtimeLog(models.Model):
         raise UserError(_("State leadtime log entries are immutable and cannot be modified."))
 
     def unlink(self):
+        if self.env.context.get('_force_unlink_leadtime_logs'):
+            return super().unlink()
         raise UserError(_("State leadtime log entries cannot be deleted."))
 
     @api.model
