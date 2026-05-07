@@ -129,10 +129,10 @@
             </xpath>
 
             <button name="button_rejected" position="attributes">
-                <attribute name="states">to_approve</attribute>
+                <attribute name="states">to_approve,approved</attribute>
                 <attribute
                     name="groups"
-                >purchase_request.group_purchase_request_manager</attribute>
+                >purchase_request_kmitl.group_purchase_request_user_all</attribute>
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
