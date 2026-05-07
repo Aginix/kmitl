@@ -430,6 +430,7 @@ class PurchaseRequestDashboardController(http.Controller):
                 from_state=from_state,
                 to_state=to_state,
                 res_ids=res_ids,
+                latest_only=True,
             )
             data.append({
                 'name': label,

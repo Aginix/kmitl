@@ -76,14 +76,17 @@ class StateLeadtimeLog(models.Model):
         })
 
     @api.model
-    def get_stats(self, res_model, from_state, to_state, date_from=None, date_to=None, res_ids=None):
+    def get_stats(self, res_model, from_state, to_state, date_from=None, date_to=None,
+                  res_ids=None, latest_only=False):
         """Return avg/min/max/total duration statistics for a specific transition.
 
         Args:
-            date_from: optional datetime — filter logs with transition_date >= date_from
-            date_to:   optional datetime — filter logs with transition_date <= date_to
-            res_ids:   optional list of ints — filter logs by res_id; mutually exclusive
-                       with date_from/date_to (res_ids takes precedence when provided)
+            date_from:   optional datetime — filter logs with transition_date >= date_from
+            date_to:     optional datetime — filter logs with transition_date <= date_to
+            res_ids:     optional list of ints — filter logs by res_id; mutually exclusive
+                         with date_from/date_to (res_ids takes precedence when provided)
+            latest_only: when True, keep only the most-recent log per res_id so that
+                         records that went through multiple cycles don't skew averages
         """
         domain = [
             ('res_model', '=', res_model),
@@ -99,7 +102,16 @@ class StateLeadtimeLog(models.Model):
             if date_to:
                 domain.append(('transition_date', '<=', date_to))
 
-        logs = self.search(domain)
+        logs = self.search(domain)  # ordered transition_date desc by _order
+
+        if latest_only:
+            seen = set()
+            unique = self.env['state.leadtime.log']
+            for log in logs:        # newest-first because of _order
+                if log.res_id not in seen:
+                    seen.add(log.res_id)
+                    unique |= log
+            logs = unique
 
         if not logs:
             return {

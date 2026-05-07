@@ -48,23 +48,49 @@ class TestLeadtimeWhitelistModel(models.TransientModel):
     _tracked_transitions = [('approved', 'done')]
 
 
+class TestLeadtimeExactExclusionModel(models.TransientModel):
+    _name = 'test.leadtime.exact_exclusion'
+    _description = 'Test Model with Specific Pair Exclusion'
+    _inherit = 'state.leadtime.mixin'
+
+    name = fields.Char()
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('approved', 'Approved'),
+        ('done', 'Done'),
+    ], default='draft')
+
+    _excluded_transitions = [('draft', 'approved')]
+
+
 @tagged('post_install', '-at_install')
 class TestStateLeadtimeMixin(TransactionCase):
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        for model_class in (TestLeadtimeModel, TestLeadtimeExclusionModel, TestLeadtimeWhitelistModel):
+        for model_class in (
+            TestLeadtimeModel,
+            TestLeadtimeExclusionModel,
+            TestLeadtimeWhitelistModel,
+            TestLeadtimeExactExclusionModel,
+        ):
             model_class._build_model(cls.registry, cls.cr)
         cls.registry.setup_models(cls.cr)
         cls.registry.init_models(
             cls.cr,
-            ['test.leadtime.model', 'test.leadtime.exclusion', 'test.leadtime.whitelist'],
+            [
+                'test.leadtime.model',
+                'test.leadtime.exclusion',
+                'test.leadtime.whitelist',
+                'test.leadtime.exact_exclusion',
+            ],
             {'module': 'agx_leadtime'},
         )
         cls.Model = cls.env['test.leadtime.model']
         cls.ExclusionModel = cls.env['test.leadtime.exclusion']
         cls.WhitelistModel = cls.env['test.leadtime.whitelist']
+        cls.ExactExclusionModel = cls.env['test.leadtime.exact_exclusion']
 
     def _get_logs(self, record):
         return self.env['state.leadtime.log'].search([
@@ -153,3 +179,47 @@ class TestStateLeadtimeMixin(TransactionCase):
         self.assertEqual(len(logs), 1)
         self.assertEqual(logs.from_state, 'approved')
         self.assertEqual(logs.to_state, 'done')
+
+    # --- state_entry_date lifecycle ---
+
+    def test_state_entry_date_updated_after_transition(self):
+        """state_entry_date advances to the moment of each state change."""
+        past = fields.Datetime.from_string('2024-01-01 00:00:00')
+        record = self.Model.create({'name': 'Test', 'state_entry_date': past})
+        record.write({'state': 'approved'})
+        self.assertGreater(record.state_entry_date, past)
+
+    def test_duration_calculated_from_state_entry_date(self):
+        """Log duration equals elapsed time from state_entry_date to transition."""
+        fixed_entry = fields.Datetime.from_string('2020-01-01 00:00:00')
+        record = self.Model.create({'name': 'Test', 'state_entry_date': fixed_entry})
+        record.write({'state': 'approved'})
+        log = self._get_logs(record)
+        expected_minutes = (log.transition_date - fixed_entry).total_seconds() / 60
+        self.assertAlmostEqual(log.duration_minutes, expected_minutes, delta=0.1)
+
+    def test_state_entry_date_resets_between_transitions(self):
+        """Each transition records duration from the previous state's entry, not creation."""
+        early = fields.Datetime.from_string('2020-01-01 00:00:00')
+        record = self.Model.create({'name': 'Test', 'state_entry_date': early})
+        record.write({'state': 'approved'})
+        date_after_first = record.state_entry_date
+
+        record.write({'state': 'done'})
+        logs = self._get_logs(record).sorted('transition_date')
+        self.assertEqual(len(logs), 2)
+
+        log_done = logs[-1]
+        expected = (log_done.transition_date - date_after_first).total_seconds() / 60
+        self.assertAlmostEqual(log_done.duration_minutes, expected, delta=0.1)
+
+    # --- _excluded_transitions specific pair (non-wildcard) ---
+
+    def test_excluded_specific_pair_blocks_matching_transition(self):
+        """A specific (from, to) exclusion blocks only that exact pair."""
+        record = self.ExactExclusionModel.create({'name': 'Test'})
+        record.write({'state': 'approved'})  # ('draft', 'approved') excluded → no log
+        self.assertEqual(len(self._get_logs(record)), 0)
+
+        record.write({'state': 'done'})      # ('approved', 'done') not excluded → log created
+        self.assertEqual(len(self._get_logs(record)), 1)
