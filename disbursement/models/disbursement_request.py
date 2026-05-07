@@ -620,12 +620,18 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     @api.depends("bill_ids", "bill_ids.state")
     def _compute_bill_count(self):
-        """Compute the number of bills linked to this request"""
+        """Compute the number of bills linked to this request.
+
+        Cancelled bills are excluded from both numerator and denominator
+        so the display reflects only active bills.
+        """
         for record in self:
-            bills = record.bill_ids
-            total = len(bills)
-            draft = len(bills.filtered(lambda b: b.state == "draft"))
-            posted = total - draft
+            active_bills = record.bill_ids.filtered(
+                lambda b: b.state != "cancel"
+            )
+            total = len(active_bills)
+            draft = len(active_bills.filtered(lambda b: b.state == "draft"))
+            posted = len(active_bills.filtered(lambda b: b.state == "posted"))
             record.bill_count = total
             record.bill_draft_count = draft
             record.bill_status_display = (
@@ -644,14 +650,16 @@ class DisbursementRequest(models.Model):
                 payments |= Payment.search([
                     ("to_reconcile_payment_line_ids.move_id", "=", bill.id),
                 ])
-            rec.payment_ids = payments
-            total = len(payments)
+            # Exclude cancelled payments from both display and count
+            active_payments = payments.filtered(lambda p: p.state != "cancel")
+            rec.payment_ids = active_payments
+            total = len(active_payments)
             rec.payment_count = total
-            posted = len(payments.filtered(lambda p: p.state == "posted"))
+            posted = len(active_payments.filtered(lambda p: p.state == "posted"))
             rec.payment_status_display = (
                 _("จ่ายแล้ว %s/%s", posted, total) if total else ""
             )
-            payment_moves = payments.mapped("move_id")
+            payment_moves = active_payments.mapped("move_id")
             rec.payment_move_ids = payment_moves
             rec.payment_move_count = len(payment_moves)
 
