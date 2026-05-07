@@ -593,7 +593,7 @@ DR_CASES = [
         "department": "kmitl_demo.01",
         "operating_unit": "operating_unit_kmitl.operating_unit_01",
         "proc_type": "purchase_request_kmitl.procurement_type_005",
-        "payment_type": "loan",
+        "payment_type": "advance",
     },
     {
         "title": "[E2E-DR] จ้างที่ปรึกษา (ค่าผู้เชี่ยวชาญ)",
