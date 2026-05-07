@@ -32,7 +32,7 @@
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_sign" string="Sign" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will reserve budget." groups="disbursement.group_disbursement_manager" />
+                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_manager" />
                     <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}" groups="disbursement.group_disbursement_officer" />
                     <button name="action_create_payment"
                             string="Create Payment"
@@ -44,6 +44,13 @@
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel', 'bill_posted', 'payment_draft', 'payment_posted'))]}" groups="disbursement.group_disbursement_officer" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done" />
                 </header>
+                <!-- Budget Consumed Banner -->
+                <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">
+                    <strong>ตัดงบประมาณแล้ว:</strong>
+                    <field name="budget_consumed_amount" widget="monetary" class="oe_inline" nolabel="1"/>
+                    <span> เมื่อ </span>
+                    <field name="budget_consumed_date" class="oe_inline" nolabel="1"/>
+                </div>
                 <!-- Exception Alert -->
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
                     <p>
@@ -128,6 +135,9 @@
                             <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
                             <field name="budget_account_id" invisible="1" />
                             <field name="analytic_distribution" invisible="1"/>
+                            <field name="budget_consumed_amount" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
+                            <field name="budget_consumed_date" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
+                            <field name="currency_id" invisible="1"/>
                         </group>
                         <group id="other_information" string="Other Information">
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
@@ -145,13 +155,13 @@
                                         attrs="{'column_invisible': [('parent.partner_type', '!=', 'multi')]}"
                                         optional="hide" />
                                     <field name="product_id" />
-                                    <field name="name" />
+                                    <field name="name" optional="hide" />
                                     <field name="quantity" />
                                     <field name="price_unit" />
                                     <field name="tax_ids" widget="many2many_tags" />
                                     <field name="wht_tax_id" optional="show"/>
-                                    <field name="account_id" />
-                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" />
+                                    <field name="account_id" optional="hide" />
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" optional="hide" />
                                     <field name="price_subtotal" />
                                     <field name="price_tax" optional="hide" />
                                     <field name="price_total" />
@@ -168,7 +178,23 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <page string="Attachment" name="attachment">
+                        <page string="WHT" name="wht">
+                            <field name="wht_line_ids" nolabel="1">
+                                <tree create="0" delete="0" edit="0">
+                                    <field name="partner_id" string="Disburser"/>
+                                    <field name="name" string="Name"/>
+                                    <field name="wht_tax_id" string="WHT Item"/>
+                                    <field name="price_subtotal" string="Amount Before WHT"/>
+                                    <field name="amount_wht" string="WHT Deduction"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_wht" />
+                            </group>
+                            <div class="oe_clear" />
+                        </page>
+                        <page string="Attachments" name="attachment">
                             <field name="attachment_ids"
                                    context="{'default_res_model': 'disbursement.request'}">
                                 <tree>
