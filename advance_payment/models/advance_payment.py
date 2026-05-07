@@ -93,6 +93,12 @@ class AdvancePayment(models.Model):
         compute="_compute_reference_state",
     )
 
+    is_requester = fields.Boolean(compute="_compute_is_requester")
+
+    def _compute_is_requester(self):
+        for rec in self:
+            rec.is_requester = rec.requested_by == self.env.user
+
     reference = fields.Reference(
         selection=[("purchase.request", "Purchase Request")],
         string="Reference",
@@ -630,6 +636,16 @@ class AdvancePayment(models.Model):
         self.write({"state": "draft", "cancel_reason": reason})
         self.message_post(
             body=_("Agreement returned to draft. Reason: %(reason)s", reason=reason),
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def action_reject(self):
+        self.ensure_one()
+        if self.state != "submitted":
+            raise UserError(_("Only submitted agreements can be returned to draft."))
+        self.write({"state": "draft"})
+        self.message_post(
+            body=_("ส่งกลับแก้ไข"),
             subtype_xmlid="mail.mt_note",
         )
 

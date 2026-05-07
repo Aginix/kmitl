@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="tier_definition_advance_payment_responsible" model="tier.definition">
-        <field name="name">ผู้รับผิดชอบเงินยืม</field>
+    <record id="tier_definition_advance_payment_approver" model="tier.definition">
+        <field name="name">ผู้อนุมัติเงินยืม</field>
         <field name="model_id" ref="advance_payment.model_advance_payment"/>
         <field name="definition_type">domain</field>
         <field name="definition_domain"/>
@@ -12,8 +12,8 @@
         <field name="active">True</field>
     </record>
 
-    <record id="tier_definition_advance_payment_approver" model="tier.definition">
-        <field name="name">ผู้อนุมัติเงินยืม</field>
+    <record id="tier_definition_advance_payment_responsible" model="tier.definition">
+        <field name="name">ผู้รับผิดชอบเงินยืม</field>
         <field name="model_id" ref="advance_payment.model_advance_payment"/>
         <field name="definition_type">domain</field>
         <field name="definition_domain"/>

@@ -22,6 +22,9 @@
                     type="object"
                 />
             </button>
+            <xpath expr="//button[@name='action_reject']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('is_requester', '=', False), ('validation_status', '=', 'pending')]}</attribute>
+            </xpath>
             <xpath expr="//button[@name='action_approve']" position="replace">
                 <button name="action_approve"
                     string="อนุมัติ"
