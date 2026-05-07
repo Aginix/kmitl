@@ -128,7 +128,7 @@ class PurchaseRequestDashboardController(http.Controller):
                 chart_records, budget_cache, dept_cache
             ),
             "chart7_leadtime_heatmap": self._get_chart7_leadtime_heatmap(
-                fiscal_year_id=fiscal_year_id
+                records=records
             ),
         }
 
@@ -405,7 +405,7 @@ class PurchaseRequestDashboardController(http.Controller):
             dept_cache=dept_cache,
         )
 
-    def _get_chart7_leadtime_heatmap(self, fiscal_year_id=None):
+    def _get_chart7_leadtime_heatmap(self, records=None):
         TRACKED_TRANSITIONS = [
             ('draft',       'to_verify',   'จัดทำคำขอ'),
             ('to_verify',   'to_approve',  'จองเงิน'),
@@ -414,22 +414,17 @@ class PurchaseRequestDashboardController(http.Controller):
             ('in_progress', 'done',        'จัดทำสัญญา'),
         ]
 
-        date_from = date_to = None
-        if fiscal_year_id:
-            fy = request.env['account.fiscal.year'].browse(fiscal_year_id)
-            date_from = fy.date_from
-            date_to = fy.date_to
+        res_ids = records.ids if records is not None else None
 
-        Log = request.env['state.leadtime.log'].sudo()
+        log = request.env['state.leadtime.log'].sudo()
         data = []
 
         for from_state, to_state, label in TRACKED_TRANSITIONS:
-            stats = Log.get_stats(
+            stats = log.get_stats(
                 res_model='purchase.request',
                 from_state=from_state,
                 to_state=to_state,
-                date_from=date_from,
-                date_to=date_to,
+                res_ids=res_ids,
             )
             data.append({
                 'name': label,

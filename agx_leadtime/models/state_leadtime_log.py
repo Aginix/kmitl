@@ -76,12 +76,14 @@ class StateLeadtimeLog(models.Model):
         })
 
     @api.model
-    def get_stats(self, res_model, from_state, to_state, date_from=None, date_to=None):
+    def get_stats(self, res_model, from_state, to_state, date_from=None, date_to=None, res_ids=None):
         """Return avg/min/max/total duration statistics for a specific transition.
 
         Args:
             date_from: optional datetime — filter logs with transition_date >= date_from
             date_to:   optional datetime — filter logs with transition_date <= date_to
+            res_ids:   optional list of ints — filter logs by res_id; mutually exclusive
+                       with date_from/date_to (res_ids takes precedence when provided)
         """
         domain = [
             ('res_model', '=', res_model),
@@ -89,10 +91,13 @@ class StateLeadtimeLog(models.Model):
             ('to_state', '=', to_state),
             ('duration_minutes', '>', 0),
         ]
-        if date_from:
-            domain.append(('transition_date', '>=', date_from))
-        if date_to:
-            domain.append(('transition_date', '<=', date_to))
+        if res_ids is not None:
+            domain.append(('res_id', 'in', res_ids))
+        else:
+            if date_from:
+                domain.append(('transition_date', '>=', date_from))
+            if date_to:
+                domain.append(('transition_date', '<=', date_to))
 
         logs = self.search(domain)
 
