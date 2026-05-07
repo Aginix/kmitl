@@ -35,7 +35,8 @@ class PurchaseRequestApproval(models.Model):
         selection=[
             ("draft", "Draft"),
             ("submitted", "Submitted"),
-            ("validated", "Validated"),
+            ("in_progress", "In Progress"),
+            ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
         string='Billing Status',
@@ -88,8 +89,29 @@ class PurchaseRequestApproval(models.Model):
 
     @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
     def _compute_billing_status(self):
+        state_map = {
+            "draft": "draft",
+            "submitted": "submitted",
+            "signed": "submitted",
+            "verified": "submitted",
+            "approved": "submitted",
+            "bill_draft": "in_progress",
+            "bill_posted": "in_progress",
+            "payment_draft": "in_progress",
+            "payment_posted": "in_progress",
+            "done": "done",
+            "cancel": "cancel",
+        }
         for approval in self:
-            approval.billing_status = approval.disbursement_request_ids.state
+            active = approval.disbursement_request_ids.filtered(
+                lambda r: r.state != "cancel"
+            )
+            if not approval.disbursement_request_ids:
+                approval.billing_status = "draft"
+            elif not active:
+                approval.billing_status = "cancel"
+            else:
+                approval.billing_status = state_map.get(active[0].state, "draft")
 
     def _prepare_disbursement_request_vals(self):
         return {
