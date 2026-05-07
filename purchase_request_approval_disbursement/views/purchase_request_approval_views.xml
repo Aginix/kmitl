@@ -54,6 +54,18 @@
                     />
                 </button>
             </xpath>
+            <xpath expr="//field[@name='payment_type']" position="after">
+                <field
+                    name="billing_status"
+                    readonly="1"
+                    widget="badge"
+                    decoration-info="billing_status == 'draft'"
+                    decoration-warning="billing_status == 'submitted'"
+                    decoration-primary="billing_status == 'in_progress'"
+                    decoration-success="billing_status == 'done'"
+                    decoration-danger="billing_status == 'cancel'"
+                />
+            </xpath>
             <xpath expr="//group[1]" position="before">
                 <h2>Purchase Request Approval Form</h2>
                 <group>
