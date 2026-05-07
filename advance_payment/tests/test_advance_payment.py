@@ -206,7 +206,7 @@ class TestAdvancePayment(TransactionCase):
             {"agreement_id": agreement.id, "amount": 500, "date": "2026-01-01"}
         )
         self.env["advance.payment.return.line"].create(
-            {"agreement_id": agreement.id, "amount": 500, "state": "confirmed"}
+            {"agreement_id": agreement.id, "amount": 500, "state": "done"}
         )
         agreement.invalidate_recordset()
         agreement.action_close()
@@ -400,15 +400,15 @@ class TestAdvancePayment(TransactionCase):
     # Return lines: amount computation                                     #
     # ------------------------------------------------------------------ #
 
-    def test_amount_returned_from_confirmed_lines(self):
-        """amount_returned includes confirmed and paid return lines."""
+    def test_amount_returned_from_done_lines(self):
+        """amount_returned includes only done return lines."""
         agreement = self._make_agreement(loan_amount=10000)
         agreement.write({"state": "in_progress"})
         self.env["advance.payment.return.line"].create(
-            {"agreement_id": agreement.id, "amount": 2000, "state": "confirmed"}
+            {"agreement_id": agreement.id, "amount": 2000, "state": "done"}
         )
         self.env["advance.payment.return.line"].create(
-            {"agreement_id": agreement.id, "amount": 1000, "state": "paid"}
+            {"agreement_id": agreement.id, "amount": 1000, "state": "done"}
         )
         self.env["advance.payment.return.line"].create(
             {"agreement_id": agreement.id, "amount": 500, "state": "draft"}
@@ -425,9 +425,9 @@ class TestAdvancePayment(TransactionCase):
         self.env["advance.payment.usage.line"].create(
             {"agreement_id": agreement.id, "amount": 3000, "date": "2026-01-01"}
         )
-        # Return 2000 (confirmed)
+        # Return 2000 (done)
         self.env["advance.payment.return.line"].create(
-            {"agreement_id": agreement.id, "amount": 2000, "state": "confirmed"}
+            {"agreement_id": agreement.id, "amount": 2000, "state": "done"}
         )
         agreement.invalidate_recordset()
         self.assertEqual(agreement.amount_used, 3000)
@@ -448,13 +448,13 @@ class TestAdvancePayment(TransactionCase):
         )
         # Return 1: 2000
         self.env["advance.payment.return.line"].create(
-            {"agreement_id": agreement.id, "amount": 2000, "state": "confirmed"}
+            {"agreement_id": agreement.id, "amount": 2000, "state": "done"}
         )
         agreement.invalidate_recordset()
         self.assertEqual(agreement.amount_remaining, 5000)
         # Return 2: 5000
         self.env["advance.payment.return.line"].create(
-            {"agreement_id": agreement.id, "amount": 5000, "state": "confirmed"}
+            {"agreement_id": agreement.id, "amount": 5000, "state": "done"}
         )
         agreement.invalidate_recordset()
         self.assertEqual(agreement.amount_remaining, 0)
@@ -480,7 +480,7 @@ class TestAdvancePayment(TransactionCase):
         agreement = self._make_agreement()
         agreement.write({"state": "in_progress"})
         line = self.env["advance.payment.return.line"].create(
-            {"agreement_id": agreement.id, "amount": 500, "state": "confirmed"}
+            {"agreement_id": agreement.id, "amount": 500, "state": "done"}
         )
         with self.assertRaises(UserError):
             line.action_confirm()

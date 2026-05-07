@@ -223,18 +223,18 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
         self.assertEqual(ap.state, "in_progress")
 
     # ------------------------------------------------------------------ #
-    # is_reference_readonly override                                       #
+    # is_locked_by_reference / is_reference_visible                        #
     # ------------------------------------------------------------------ #
 
-    def test_reference_readonly_when_set(self):
-        """Reference field is readonly when it has a value (from PR)."""
+    def test_reference_locked_when_set(self):
+        """Reference field is locked when it has a value (from PR)."""
         pr = self._make_pr()
         pr.action_create_advance_payment()
         ap = pr.advance_payment_id
-        self.assertTrue(ap.is_reference_readonly)
+        self.assertTrue(ap.is_locked_by_reference)
 
-    def test_reference_not_readonly_when_empty_and_setting_enabled(self):
-        """Reference is editable when empty and setting is enabled."""
+    def test_reference_not_locked_when_empty(self):
+        """Reference is not locked when empty."""
         self.env["ir.config_parameter"].sudo().set_param(
             "advance_payment.allow_manual_reference", "True"
         )
@@ -248,10 +248,10 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 "loan_reason": "Standalone",
             }
         )
-        self.assertFalse(ap.is_reference_readonly)
+        self.assertFalse(ap.is_locked_by_reference)
 
-    def test_reference_readonly_when_empty_and_setting_disabled(self):
-        """Reference is readonly when setting is disabled (default)."""
+    def test_reference_visible_when_loan_type_has_model(self):
+        """Reference is visible when loan type has a reference_model."""
         self.env["ir.config_parameter"].sudo().set_param(
             "advance_payment.allow_manual_reference", "False"
         )
@@ -265,7 +265,7 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 "loan_reason": "Standalone",
             }
         )
-        self.assertTrue(ap.is_reference_readonly)
+        self.assertTrue(ap.is_reference_visible)
 
     # ------------------------------------------------------------------ #
     # View action                                                          #

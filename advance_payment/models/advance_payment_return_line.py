@@ -85,6 +85,27 @@ class AdvancePaymentReturnLine(models.Model):
             if rec.amount <= 0:
                 raise ValidationError(_("Return amount must be greater than zero."))
 
+    @api.constrains("amount", "agreement_id")
+    def _check_total_not_exceeding(self):
+        for rec in self:
+            agreement = rec.agreement_id
+            total_used = sum(agreement.usage_line_ids.mapped("amount"))
+            total_returned = sum(
+                agreement.return_line_ids.filtered(
+                    lambda l: l.state not in ("rejected",)
+                ).mapped("amount")
+            )
+            if total_used + total_returned > agreement.loan_amount:
+                raise ValidationError(
+                    _(
+                        "Total usage (%(used)s) + returns (%(returned)s)"
+                        " exceeds loan amount (%(loan)s).",
+                        used=total_used,
+                        returned=total_returned,
+                        loan=agreement.loan_amount,
+                    )
+                )
+
     def unlink(self):
         if self.filtered(lambda r: r.state in ("pending_review", "done")):
             raise UserError(
@@ -167,5 +188,9 @@ class AdvancePaymentReturnLine(models.Model):
                     _("Only done return lines can be reset by admin.")
                 )
             if rec.payment_id:
-                rec.payment_id.action_cancel()
+                payment = rec.payment_id
+                if payment.state == "posted":
+                    payment.button_draft()
+                if payment.state != "cancel":
+                    payment.action_cancel()
             rec.write({"state": "draft", "payment_id": False})

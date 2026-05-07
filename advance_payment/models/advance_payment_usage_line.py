@@ -1,4 +1,5 @@
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class AdvancePaymentUsageLine(models.Model):
@@ -22,6 +23,27 @@ class AdvancePaymentUsageLine(models.Model):
     )
 
     amount = fields.Monetary(string="Amount", required=True)
+
+    @api.constrains("amount", "agreement_id")
+    def _check_total_not_exceeding(self):
+        for rec in self:
+            agreement = rec.agreement_id
+            total_used = sum(agreement.usage_line_ids.mapped("amount"))
+            total_returned = sum(
+                agreement.return_line_ids.filtered(
+                    lambda l: l.state == "done"
+                ).mapped("amount")
+            )
+            if total_used + total_returned > agreement.loan_amount:
+                raise ValidationError(
+                    _(
+                        "Total usage (%(used)s) + returns (%(returned)s)"
+                        " exceeds loan amount (%(loan)s).",
+                        used=total_used,
+                        returned=total_returned,
+                        loan=agreement.loan_amount,
+                    )
+                )
 
     date = fields.Date(
         string="Date",
