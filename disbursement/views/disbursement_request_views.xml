@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <tree string="Disbursement Requests">
                 <field name="name" />
+                <field name="partner_type" optional="hide" />
                 <field name="partner_id" />
                 <field name="user_id" optional="show" />
                 <field name="date" />
@@ -33,11 +34,11 @@
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will reserve budget." groups="disbursement.group_disbursement_manager" />
                     <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_register_payment"
-                            string="Register Payment"
+                    <button name="action_create_payment"
+                            string="Create Payment"
                             type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|', ('state', 'not in', ('bill_posted', 'payment_draft')), ('hide_register_payment_button', '=', True)]}"
+                            attrs="{'invisible': ['|', ('state', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
                             groups="account.group_account_invoice"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel', 'bill_posted', 'payment_draft', 'payment_posted'))]}" groups="disbursement.group_disbursement_officer" />
@@ -52,17 +53,32 @@
                     <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to confirm this Disbursement Request regardless of the exceptions." groups="base_exception.group_exception_rule_manager" />
                 </div>
                 <sheet>
-                    <field name="hide_register_payment_button" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_bill" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_count', '=', 0)]}">
-                            <field name="bill_count" widget="statinfo" string="Bill" />
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">ใบตั้งหนี้ <field name="bill_count" nolabel="1" /></span>
+                                <span class="o_stat_text text-muted small"><field name="bill_status_display" nolabel="1" /></span>
+                            </div>
                         </button>
+                        <field name="bill_draft_count" invisible="1" />
                         <button name="action_view_payments"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-money"
                                 attrs="{'invisible': [('payment_count', '=', 0)]}">
-                            <field name="payment_count" widget="statinfo" string="Payments"/>
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">รายการจ่ายเงิน <field name="payment_count" nolabel="1" /></span>
+                                <span class="o_stat_text text-muted small"><field name="payment_status_display" nolabel="1" /></span>
+                            </div>
+                        </button>
+                        <button name="action_view_payment_moves"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-book"
+                                attrs="{'invisible': [('payment_move_count', '=', 0)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">รายการล้างหนี้ <field name="payment_move_count" nolabel="1" /></span>
+                            </div>
                         </button>
                         <button name="open_preview" type="object" class="oe_stat_button" icon="fa-globe">
                             <div class="o_field_widget o_stat_info">
@@ -77,8 +93,16 @@
                     </div>
                     <group>
                         <group id="header_left_group" string="Partner Information">
-                            <field name="partner_id" widget="res_partner_many2one" context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}" options='{"always_reload": True}' />
-                            <field name="partner_bank_id" context="{'default_partner_id': partner_id}" domain="[('partner_id', '=', partner_id)]" />
+                            <field name="partner_type" widget="radio"
+                                attrs="{'readonly': ['|', ('reference_model', '!=', False), ('state', '!=', 'draft')]}" />
+                            <field name="partner_id" widget="res_partner_many2one"
+                                context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}"
+                                options='{"always_reload": True}'
+                                attrs="{'invisible': [('partner_type', '=', 'multi')], 'required': [('partner_type', '=', 'single')]}" />
+                            <field name="partner_bank_id"
+                                context="{'default_partner_id': partner_id}"
+                                domain="[('partner_id', '=', partner_id)]"
+                                attrs="{'invisible': [('partner_type', '=', 'multi')]}" />
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="is_company" readonly="1" invisible="1" />
                             <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
@@ -115,6 +139,11 @@
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
+                                    <field name="partner_id"
+                                        attrs="{'column_invisible': [('parent.partner_type', '!=', 'multi')], 'required': [('parent.partner_type', '=', 'multi')]}" />
+                                    <field name="partner_bank_id"
+                                        attrs="{'column_invisible': [('parent.partner_type', '!=', 'multi')]}"
+                                        optional="hide" />
                                     <field name="product_id" />
                                     <field name="name" />
                                     <field name="quantity" />
@@ -182,6 +211,8 @@
                 <filter string="Payment Draft" name="payment_draft" domain="[('state', '=', 'payment_draft')]" />
                 <filter string="Payment Posted" name="payment_posted" domain="[('state', '=', 'payment_posted')]" />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
+                <separator />
+                <filter string="Multi-Partner" name="multi_partner" domain="[('partner_type', '=', 'multi')]" />
                 <separator />
                 <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
                 <separator />

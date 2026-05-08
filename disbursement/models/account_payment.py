@@ -30,7 +30,7 @@ class AccountPayment(models.Model):
             )
             disbursements = self.env["disbursement.request"].search(
                 [
-                    ("bill_id", "in", list(bill_ids)),
+                    ("bill_ids", "in", list(bill_ids)),
                     ("state", "in", pipeline_states),
                 ]
             )
