@@ -94,7 +94,7 @@ class PurchaseRequestApproval(models.Model):
             "submitted": "submitted",
             "signed": "submitted",
             "verified": "submitted",
-            "approved": "submitted",
+            "approved": "in_progress",
             "bill_draft": "in_progress",
             "bill_posted": "in_progress",
             "payment_draft": "in_progress",
