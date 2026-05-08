@@ -1,0 +1,52 @@
+.purchase_request_dashboard {
+    .purchase_request_dashboard_content {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 56px);
+    }
+
+    .card {
+        border-radius: 8px;
+        transition: box-shadow 0.2s;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .pr-box-selected {
+        border: 2px solid #0d6efd !important;
+        background-color: #f0f6ff;
+    }
+
+    // Chart card title and container (moved from inline styles)
+    .pr-chart-title {
+        font-size: 13px;
+    }
+
+    .pr-chart-container {
+        height: 320px;
+    }
+
+    // Summary box typography (moved from inline styles)
+    .pr-box-amount {
+        font-size: 13px;
+    }
+
+    .pr-box-unit {
+        font-size: 10px;
+    }
+
+    .pr-summary-boxes {
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 0.5rem;
+
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media (max-width: 576px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}
