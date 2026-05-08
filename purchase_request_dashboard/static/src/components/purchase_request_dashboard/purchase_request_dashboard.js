@@ -44,6 +44,7 @@ export class PurchaseRequestDashboard extends Component {
             chart4Data: {months: [], series: []},
             chart5Data: {departments: [], series: []},
             chart6Data: {departments: [], series: []},
+            leadtimeHeatmap: [],
             filterOptions: {
                 fiscal_years: [],
                 sources: [],
@@ -58,10 +59,12 @@ export class PurchaseRequestDashboard extends Component {
         this.chart4 = null;
         this.chart5 = null;
         this.chart6 = null;
+        this.chartLeadtime = null;
 
         this._chartProps = [
             "chart1", "chart2", "chartExpensePie",
             "chart3", "chart4", "chart5", "chart6",
+            "chartLeadtime",
         ];
 
         this._onResize = () => {
@@ -99,6 +102,7 @@ export class PurchaseRequestDashboard extends Component {
             {id: "prChart4", title: "แนวโน้มการอนุมัติจัดซื้อจัดจ้าง"},
             {id: "prChart5", title: "ประเภทการจัดซื้อจัดจ้าง (ตามส่วนงาน)"},
             {id: "prChart6", title: "ประเภทค่าใช้จ่าย (ตามส่วนงาน)"},
+            {id: "prChartLeadtime", title: "leadtime"},
         ];
     }
 
@@ -154,6 +158,8 @@ export class PurchaseRequestDashboard extends Component {
             this.state.chart4Data = response.chart4_approved_trend;
             this.state.chart5Data = response.chart5_purchase_type_by_dept;
             this.state.chart6Data = response.chart6_expense_type_by_dept;
+            this.state.leadtimeHeatmap.splice(0);
+            this.state.leadtimeHeatmap.push(...response.chart7_leadtime_heatmap);
         } catch (error) {
             console.error("Error loading dashboard data:", error);
         } finally {
@@ -171,6 +177,7 @@ export class PurchaseRequestDashboard extends Component {
             this._updateChart4();
             this._updateChart5();
             this._updateChart6();
+            this._updateChartLeadtime();
         }, 100);
     }
 
@@ -504,6 +511,77 @@ export class PurchaseRequestDashboard extends Component {
         );
     }
 
+    // Chart 7: Stock Heatmap
+    _updateChartLeadtime() {
+        const chart = this._getOrCreateChart("chartLeadtime", "prChartLeadtime");
+        if (!chart) return;
+
+        const raw = this.state.leadtimeHeatmap || [];
+        if (!raw.length) return;
+
+        // ใช้ avg สำหรับ normalize สี และขนาด block
+        const maxVal = Math.max(...raw.map((d) => d.avg), 1);
+
+        const treemapData = raw.map((item) => ({
+            name: item.name,
+            value: Math.max(item.avg, 0.1),  // ขนาด block ตาม avg
+            itemStyle: {
+                color: item.avg === 0
+                    ? "#d9d9d9"
+                    : this._durationToColor(item.avg, maxVal),
+            },
+            _avg: item.avg,
+            _total: item.total,
+            _count: item.count,
+        }));
+
+        chart.setOption({
+            tooltip: {
+                formatter: (params) => {
+                    const d = params.data;
+                    if (d._avg === 0) {
+                        return `<strong>${d.name}</strong><br/>ยังไม่มีข้อมูล`;
+                    }
+                    return `
+                        <strong>${d.name}</strong><br/>
+                        ระยะเวลาเฉลี่ย: ${this._formatDuration(d._avg)}<br/>
+                        ระยะเวลาสะสม: ${this._formatDuration(d._total)}<br/>
+                    `;
+                },
+            },
+            series: [{
+                name: "Leadtime",
+                type: "treemap",
+                roam: false,
+                nodeClick: false,
+                breadcrumb: {show: false},
+                width: "100%",
+                height: "100%",
+                label: {
+                    show: true,
+                    formatter: (params) => {
+                        const d = params.data;
+                        if (d._avg === 0) {
+                            return `{name|${d.name}}\n{sub|ยังไม่มีข้อมูล}`;
+                        }
+                        // แสดง avg ใน block
+                        return `{name|${d.name}}\n{sub|${this._formatDuration(d._avg)}}`;
+                    },
+                    rich: {
+                        name: {fontSize: 13, fontWeight: "bold", color: "#fff", lineHeight: 20},
+                        sub: {fontSize: 12, color: "rgba(255,255,255,0.85)", lineHeight: 18},
+                    },
+                },
+                itemStyle: {
+                    borderWidth: 4,
+                    borderColor: "#fff",
+                    gapWidth: 4,
+                },
+                data: treemapData,
+            }],
+        }, true);
+    }
+
     // ──────────────────────────────────────────────────────────────────
     // Event handlers
     // ──────────────────────────────────────────────────────────────────
@@ -573,6 +651,25 @@ export class PurchaseRequestDashboard extends Component {
             total: "text-primary",
         };
         return classes[state] || "text-secondary";
+    }
+
+    _durationToColor(value, maxVal) {
+        const ratio = Math.min(value / maxVal, 1);
+        // ratio 0 = เขียว (#3ba272), ratio 1 = แดง (#ee6666)
+        const r = Math.round(59 + (238 - 59) * ratio);
+        const g = Math.round(162 + (102 - 162) * ratio);
+        const b = Math.round(114 + (102 - 114) * ratio);
+        return `rgb(${r},${g},${b})`;
+    }
+
+    _formatDuration(minutes) {
+        if (minutes < 60) {
+            return `${minutes.toFixed(2)} นาที`;
+        } else if (minutes < 60 * 24) {
+            return `${(minutes / 60).toFixed(2)} ชั่วโมง`;
+        } else {
+            return `${(minutes / 60 / 24).toFixed(2)} วัน`;
+        }
     }
 }
 

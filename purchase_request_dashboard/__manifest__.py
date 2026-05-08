@@ -6,7 +6,7 @@
     "category": "KMITL",
     "depends": [
         "web",
-        "purchase_request_kmitl",
+        "purchase_request_leadtime",
         "purchase_request_verify_state",
         "purchase_request_budget",
     ],

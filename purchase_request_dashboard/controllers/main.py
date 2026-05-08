@@ -126,6 +126,9 @@ class PurchaseRequestDashboardController(http.Controller):
             "chart6_expense_type_by_dept": self._get_chart6_expense_type_by_dept(
                 chart_records, budget_cache, dept_cache
             ),
+            "chart7_leadtime_heatmap": self._get_chart7_leadtime_heatmap(
+                fiscal_year_id=fiscal_year_id
+            ),
         }
 
     # ──────────────────────────────────────────────────────────────────
@@ -399,3 +402,41 @@ class PurchaseRequestDashboardController(http.Controller):
             ),
             dept_cache=dept_cache,
         )
+
+    def _get_chart7_leadtime_heatmap(self, fiscal_year_id=None):
+        TRACKED_TRANSITIONS = [
+            ('draft',       'to_verify',   'จัดทำคำขอ'),
+            ('to_verify',   'to_approve',  'จองเงิน'),
+            ('to_approve',  'approved',    'ขออนุมัติคำขอ'),
+            ('approved',    'in_progress', 'จัดซื้อจัดจ้าง'),
+            ('in_progress', 'done',        'จัดทำสัญญา'),
+        ]
+
+        res_ids = None
+        if fiscal_year_id:
+            prs = request.env['purchase.request'].search(
+                [('account_fiscal_year_id', '=', fiscal_year_id)]
+            )
+            res_ids = prs.ids
+
+        log = request.env['state.leadtime.log'].sudo()
+        data = []
+
+        for from_state, to_state, label in TRACKED_TRANSITIONS:
+            stats = log.get_stats(
+                res_model='purchase.request',
+                from_state=from_state,
+                to_state=to_state,
+                res_ids=res_ids,
+                latest_only=True,
+            )
+            data.append({
+                'name': label,
+                'from_state': from_state,
+                'to_state': to_state,
+                'avg': round(stats['avg_minutes'], 2),
+                'total': round(stats['total_minutes'], 2),
+                'count': stats['count'],
+            })
+
+        return data
