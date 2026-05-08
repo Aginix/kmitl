@@ -58,7 +58,7 @@ class PurchaseRequest(models.Model):
         copy=True,
     )
     payment_type = fields.Selection(
-        [("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        [("direct", "Direct paid"), ("advance", "Advance"), ("prepaid", "Prepaid")],
         tracking=True,
     )
     assigned_to = fields.Many2one(

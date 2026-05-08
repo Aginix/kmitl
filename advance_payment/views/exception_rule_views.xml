@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_advance_payment_exception_rule" model="ir.actions.act_window">
+        <field name="name">Exception Rules</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree"/>
+        <field name="domain">[('model', '=', 'advance.payment')]</field>
+        <field name="context">{'active_test': False, 'default_model': 'advance.payment'}</field>
+    </record>
+
+    <menuitem id="menu_advance_payment_exception_rule"
+        name="Exception Rules"
+        parent="menu_advance_payment_config"
+        action="action_advance_payment_exception_rule"
+        sequence="30"/>
+</odoo>

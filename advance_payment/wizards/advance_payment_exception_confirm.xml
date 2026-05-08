@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_advance_payment_exception_confirm" model="ir.actions.act_window">
+        <field name="name">Advance Payment Exceptions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">advance.payment.exception.confirm</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_confirm"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

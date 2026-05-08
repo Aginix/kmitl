@@ -104,19 +104,6 @@
                         </div>
                     </group>
                 </group>
-                <group name="warning_loan">
-                    <group>
-                        <div
-                            colspan="2"
-                            class="alert alert-warning show"
-                            role="alert"
-                            attrs="{'invisible': [('payment_type', '!=', 'loan')]}"
-                        >
-                            When payment type is Loan, please select the loan's
-                            name in the Vendor field.
-                        </div>
-                    </group>
-                </group>
             </xpath>
 
             <xpath expr="//form" position="inside">

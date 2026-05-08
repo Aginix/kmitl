@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_advance_payment_loan_type_list" model="ir.ui.view">
+        <field name="name">advance.payment.loan.type.list</field>
+        <field name="model">advance.payment.loan.type</field>
+        <field name="arch" type="xml">
+            <tree string="ประเภทเงินยืม" editable="bottom">
+                <field name="name"/>
+                <field name="reference_model"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_loan_type_form" model="ir.ui.view">
+        <field name="name">advance.payment.loan.type.form</field>
+        <field name="model">advance.payment.loan.type</field>
+        <field name="arch" type="xml">
+            <form string="ประเภทเงินยืม">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="reference_model"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_advance_payment_loan_type" model="ir.actions.act_window">
+        <field name="name">ประเภทเงินยืม</field>
+        <field name="res_model">advance.payment.loan.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

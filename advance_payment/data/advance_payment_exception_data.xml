@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="excep_loan_amount_too_low" model="exception.rule">
+        <field name="name">จำนวนเงินยืมต้องมากกว่า 0</field>
+        <field name="description">จำนวนเงินยืมต้องมากกว่า 0 บาท</field>
+        <field name="sequence">10</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('loan_amount', '&lt;=', 0)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="excep_loan_amount_too_high" model="exception.rule">
+        <field name="name">จำนวนเงินยืมเกินวงเงิน</field>
+        <field name="description">จำนวนเงินยืมต้องไม่เกิน 50,000 บาท</field>
+        <field name="sequence">20</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('loan_amount', '&gt;', 50000)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="excep_missing_bank_account" model="exception.rule">
+        <field name="name">ไม่ได้ระบุบัญชีธนาคาร</field>
+        <field name="description">กรุณาระบุบัญชีธนาคารก่อนส่งขออนุมัติ</field>
+        <field name="sequence">30</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('bank_id', '=', False)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="excep_missing_department" model="exception.rule">
+        <field name="name">ไม่ได้ระบุหน่วยงาน</field>
+        <field name="description">กรุณาระบุหน่วยงานก่อนส่งขออนุมัติ</field>
+        <field name="sequence">31</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('department_id', '=', False)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="excep_missing_analytic" model="exception.rule">
+        <field name="name">ไม่ได้ระบุมิติทางบัญชีครบถ้วน</field>
+        <field name="description">กรุณาระบุส่วนงาน แหล่งเงิน กองทุน และด้าน/แผนงาน/กิจกรรม ให้ครบถ้วน</field>
+        <field name="sequence">32</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">if not self.department_analytic_id or not self.source_analytic_id or not self.fund_analytic_id or not self.activity_analytic_id:
+    failed = True</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>
