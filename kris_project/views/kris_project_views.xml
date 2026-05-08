@@ -125,14 +125,6 @@
                                 domain="[('category_id', '=', project_category_id)]"
                                 attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
-                            <!-- <field
-                                name="partner_id"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
-                            />
-                            <field
-                                name="client_org_type"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
-                            /> -->
                             <field
                                 name="leader_id"
                                 attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
@@ -391,7 +383,6 @@
                 <field name="contract_number" optional="show"/>
                 <field name="project_category_id" optional="show"/>
                 <field name="project_type_id" optional="show"/>
-                <!-- <field name="partner_id"/> -->
                 <field name="leader_id" optional="show"/>
                 <field name="user_id" optional="show"/>
                 <field name="client_name" optional="show"/>
@@ -420,7 +411,6 @@
             <search>
                 <field name="name" string="Project Number"/>
                 <field name="project_name" string="Project Name"/>
-                <!-- <field name="partner_id"/> -->
                  <field name="client_name"/>
                 <field name="leader_id"/>
                 <field name="project_category_id"/>

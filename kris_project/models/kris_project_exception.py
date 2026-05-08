@@ -52,13 +52,7 @@ class KrisProject(models.Model):
             )._popup_exceptions()
         self.write({"state": "done", "ignore_exception": False})
 
-    # new req: can cancel when state=done
     def action_cancel(self):
-        # for rec in self:
-        #     if rec.state == "done":
-        #         raise UserError(
-        #             _("Completed projects cannot be canceled.")
-        #         )
         if self.detect_exceptions() and not self.ignore_exception:
             return self.with_context(
                 kris_exception_action="action_cancel"
