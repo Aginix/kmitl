@@ -266,6 +266,15 @@ class PurchaseRequest(models.Model):
         if self.analytic_distribution:
             self.line_ids.update({"analytic_distribution": self.analytic_distribution})
 
+    def write(self, vals):
+        result = super().write(vals)
+        if "budget_account_id" in vals:
+            for rec in self:
+                product = rec.budget_account_id.product_id
+                if product and rec.line_ids:
+                    rec.line_ids.write({"product_id": product.id})
+        return result
+
     @api.onchange("budget_account_id")
     def _onchange_budget_account_id(self):
         default_price = self.env.context.get("default_price_unit", 0)
