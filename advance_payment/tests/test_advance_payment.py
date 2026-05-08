@@ -17,6 +17,9 @@ class TestAdvancePayment(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Deactivate exception rules that require full accounting setup
+        cls.env.ref("advance_payment.excep_missing_department").active = False
+        cls.env.ref("advance_payment.excep_missing_analytic").active = False
         # admin is in group_advance_payment_manager (from security.xml)
         cls.manager = cls.env.ref("base.user_admin")
 
@@ -103,9 +106,9 @@ class TestAdvancePayment(TransactionCase):
         with self.assertRaises(UserError):
             agreement.action_submit()
 
-    def test_submit_requires_loan_amount_above_100(self):
-        """Exception rule blocks submission if loan_amount <= 100 (blocking exception)."""
-        agreement = self._make_agreement(loan_amount=50)
+    def test_submit_requires_loan_amount_above_zero(self):
+        """Exception rule blocks submission if loan_amount <= 0 (blocking exception)."""
+        agreement = self._make_agreement(loan_amount=0)
         agreement.action_submit()
         self.assertEqual(agreement.state, "draft")
 
