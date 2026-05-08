@@ -95,6 +95,7 @@ class AdvancePayment(models.Model):
 
     is_requester = fields.Boolean(compute="_compute_is_requester")
 
+    @api.depends("requested_by")
     def _compute_is_requester(self):
         for rec in self:
             rec.is_requester = rec.requested_by == self.env.user
@@ -628,26 +629,23 @@ class AdvancePayment(models.Model):
             subtype_xmlid="mail.mt_note",
         )
 
-    def _action_do_reject(self, reason):
-        """Return the agreement to draft with a reason (manager only)."""
+    def _action_do_reject(self, reason=False):
         self.ensure_one()
         if self.state != "submitted":
             raise UserError(_("Only submitted agreements can be rejected."))
-        self.write({"state": "draft", "cancel_reason": reason})
-        self.message_post(
-            body=_("Agreement returned to draft. Reason: %(reason)s", reason=reason),
-            subtype_xmlid="mail.mt_note",
-        )
+        vals = {"state": "draft"}
+        if reason:
+            vals["cancel_reason"] = reason
+        self.write(vals)
+        if reason:
+            body = _("Agreement returned to draft. Reason: %(reason)s", reason=reason)
+        else:
+            body = _("ส่งกลับแก้ไข")
+        self.message_post(body=body, subtype_xmlid="mail.mt_note")
 
     def action_reject(self):
         self.ensure_one()
-        if self.state != "submitted":
-            raise UserError(_("Only submitted agreements can be returned to draft."))
-        self.write({"state": "draft"})
-        self.message_post(
-            body=_("ส่งกลับแก้ไข"),
-            subtype_xmlid="mail.mt_note",
-        )
+        self._action_do_reject()
 
     def action_view_payments(self):
         """Open linked account.payments."""
