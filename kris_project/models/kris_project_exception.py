@@ -38,11 +38,11 @@ class KrisProject(models.Model):
             return self.with_context(
                 kris_exception_action="action_confirm"
             )._popup_exceptions()
-        self.write({"state": "confirmed", "ignore_exception": False})
+        self.write({"state": "in_progress", "ignore_exception": False})
 
     def action_done(self):
         for rec in self:
-            if rec.state != "confirmed":
+            if rec.state != "in_progress":
                 raise UserError(
                     _("Only confirmed projects can be closed.")
                 )
@@ -53,11 +53,6 @@ class KrisProject(models.Model):
         self.write({"state": "done", "ignore_exception": False})
 
     def action_cancel(self):
-        for rec in self:
-            if rec.state == "done":
-                raise UserError(
-                    _("Completed projects cannot be canceled.")
-                )
         if self.detect_exceptions() and not self.ignore_exception:
             return self.with_context(
                 kris_exception_action="action_cancel"
