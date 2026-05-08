@@ -147,25 +147,26 @@ class StateLeadtimeLog(models.Model):
         Usage:
             self.env['state.leadtime.log'].get_all_stats('purchase.order')
         """
-        groups = self.read_group(
-            domain=[
-                ('res_model', '=', res_model),
-                ('duration_minutes', '>', 0),
-            ],
-            fields=['from_state', 'to_state', 'duration_minutes:avg', 'duration_minutes:min', 'duration_minutes:max'],
-            groupby=['from_state', 'to_state'],
-            lazy=False,
-        )
+        logs = self.search([
+            ('res_model', '=', res_model),
+            ('duration_minutes', '>', 0),
+        ])
 
-        return [
-            {
+        buckets = {}
+        for log in logs:
+            key = (log.from_state, log.to_state)
+            buckets.setdefault(key, []).append(log.duration_minutes)
+
+        result = []
+        for (from_state, to_state), durations in buckets.items():
+            total = sum(durations)
+            result.append({
                 'res_model': res_model,
-                'from_state': g['from_state'],
-                'to_state': g['to_state'],
-                'avg_minutes': g['duration_minutes:avg'],
-                'min_minutes': g['duration_minutes:min'],
-                'max_minutes': g['duration_minutes:max'],
-                'count': g['__count'],
-            }
-            for g in groups
-        ]
+                'from_state': from_state,
+                'to_state': to_state,
+                'avg_minutes': total / len(durations),
+                'min_minutes': min(durations),
+                'max_minutes': max(durations),
+                'count': len(durations),
+            })
+        return result
