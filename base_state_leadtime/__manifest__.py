@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Aginix Leadtime',
+    'name': 'Base State Leadtime',
     'version': '16.0.1.0.0',
     'summary': """ Mixin for tracking leadtime between state transitions """,
     "category": "Tools",
@@ -13,7 +13,7 @@
     ],
     'assets': {
               'web.assets_backend': [
-                  'agx_leadtime/static/src/**/*'
+                  'base_state_leadtime/static/src/**/*'
               ],
           },
     'application': False,

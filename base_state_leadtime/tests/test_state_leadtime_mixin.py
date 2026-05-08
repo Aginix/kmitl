@@ -85,7 +85,7 @@ class TestStateLeadtimeMixin(TransactionCase):
                 'test.leadtime.whitelist',
                 'test.leadtime.exact_exclusion',
             ],
-            {'module': 'agx_leadtime'},
+            {'module': 'base_state_leadtime'},
         )
         cls.Model = cls.env['test.leadtime.model']
         cls.ExclusionModel = cls.env['test.leadtime.exclusion']
