@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_advance_payment_usage_wizard_form" model="ir.ui.view">
+        <field name="name">advance.payment.usage.wizard.form</field>
+        <field name="model">advance.payment.usage.wizard</field>
+        <field name="arch" type="xml">
+            <form string="บันทึกการใช้เงิน">
+                <group string="ข้อมูลสัญญา">
+                    <field name="agreement_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="loan_amount"/>
+                    <field name="amount_used"/>
+                    <field name="amount_remaining"/>
+                </group>
+                <group string="รายการใช้เงิน">
+                    <field name="amount"/>
+                    <field name="date"/>
+                    <field name="note"/>
+                </group>
+                <group string="เอกสารแนบ">
+                    <field name="attachment_ids" nolabel="1" widget="many2many_binary"/>
+                </group>
+                <footer>
+                    <button name="action_create_usage" string="บันทึก" type="object" class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

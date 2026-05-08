@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_advance_payment_root"
+        name="สัญญายืมเงิน"
+        sequence="50"
+        web_icon="advance_payment,static/description/icon.png"
+        groups="advance_payment.group_advance_payment_user"/>
+
+    <menuitem id="menu_advance_payment_agreement"
+        name="สัญญายืมเงิน"
+        parent="menu_advance_payment_root"
+        action="action_advance_payment"
+        sequence="10"/>
+
+    <menuitem id="menu_advance_payment_usage_line"
+        name="รายการบันทึกการใช้เงินยืม"
+        parent="menu_advance_payment_root"
+        action="action_advance_payment_usage_line"
+        sequence="20"/>
+
+    <menuitem id="menu_advance_payment_config"
+        name="การกำหนดค่า"
+        parent="menu_advance_payment_root"
+        sequence="100"
+        groups="base.group_system"/>
+
+    <menuitem id="menu_advance_payment_settings"
+        name="การตั้งค่า"
+        parent="menu_advance_payment_config"
+        action="base_setup.action_general_configuration"
+        sequence="1"/>
+
+    <menuitem id="menu_advance_payment_loan_type"
+        name="ประเภทเงินยืม"
+        parent="menu_advance_payment_config"
+        action="action_advance_payment_loan_type"
+        sequence="10"/>
+
+</odoo>

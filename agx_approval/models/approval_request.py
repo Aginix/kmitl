@@ -38,7 +38,7 @@ class ApprovalRequest(models.Model):
     payment_type = fields.Selection(
         selection=[
             ("direct", "Direct paid"),
-            ("loan", "Loan"),
+            ("advance", "Advance"),
             ("prepaid", "Prepaid")
         ],
         tracking=True,

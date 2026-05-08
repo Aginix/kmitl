@@ -104,6 +104,7 @@
                         </div>
                     </group>
                 </group>
+<<<<<<< 16.0-fix-kmitl_demo-install-error
                 <group name="warning_advance">
                     <group>
                         <div
@@ -117,6 +118,8 @@
                         </div>
                     </group>
                 </group>
+=======
+>>>>>>> 16.0
             </xpath>
 
             <xpath expr="//form" position="inside">
