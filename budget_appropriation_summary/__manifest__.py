@@ -1,6 +1,6 @@
 {
     "name": "Budget Appropriation Summary",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": "Compilation and master summary for budget appropriations",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
