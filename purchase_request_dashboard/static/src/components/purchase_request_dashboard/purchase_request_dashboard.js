@@ -116,6 +116,14 @@ export class PurchaseRequestDashboard extends Component {
 
     get chartCardsRow3() {
         return this.chartCards.slice(6, 9);
+        ];
+    }
+
+    get chartCardRows() {
+        const cards = this.chartCards;
+        return [cards.slice(0, 3), cards.slice(3, 6), cards.slice(6)].filter(
+            (row) => row.length
+        );
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -313,6 +321,83 @@ export class PurchaseRequestDashboard extends Component {
         return option;
     }
 
+    /**
+     * Build ECharts option for a doughnut/pie chart with center label space.
+     * Used by Chart 2 (procurement types) and Expense Type pie.
+     */
+    _makeDoughnutOption(seriesName, pieData) {
+        return {
+            tooltip: {
+                trigger: "item",
+                formatter: (params) =>
+                    `${params.name}: ${this.formatCurrency(params.value)} บาท (${params.percent.toFixed(1)}%)`,
+            },
+            legend: {
+                orient: "vertical",
+                right: "5%",
+                top: "center",
+            },
+            series: [
+                {
+                    name: seriesName,
+                    type: "pie",
+                    radius: ["40%", "70%"],
+                    center: ["35%", "50%"],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderRadius: 6,
+                        borderColor: "#fff",
+                        borderWidth: 2,
+                    },
+                    label: {
+                        show: true,
+                        formatter: (params) =>
+                            params.percent < 5
+                                ? ""
+                                : `${params.percent.toFixed(0)}%`,
+                        position: "inside",
+                        fontSize: 11,
+                        fontWeight: "bold",
+                        color: "#fff",
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: "rgba(0, 0, 0, 0.2)",
+                        },
+                    },
+                    data: pieData,
+                },
+            ],
+        };
+    }
+
+    /**
+     * Build a list-view domain from active dashboard filters plus a chart-specific tuple.
+     *
+     * Mirrors the backend filter logic so a click-through tree view shows the same
+     * records contributing to the chart slice. The "draft" UI state maps to two
+     * Odoo states ("draft" + "to_examine") which the backend treats as one bucket.
+     */
+    _pieDrilldownDomain(extraFilter) {
+        const domain = [
+            extraFilter,
+            ["account_fiscal_year_id", "=", this.state.filters.fiscal_year_id],
+            ["source_analytic_id", "=", this.state.filters.source_id],
+        ];
+        const selected = this.state.selectedStates;
+        if (selected.length > 0) {
+            const states = selected.includes("draft")
+                ? [...selected, "to_examine"]
+                : selected;
+            domain.push(["state", "in", states]);
+        } else {
+            domain.push(["state", "!=", "rejected"]);
+        }
+        return domain;
+    }
+
     // ──────────────────────────────────────────────────────────────────
     // Individual chart update methods
     // ──────────────────────────────────────────────────────────────────
@@ -328,209 +413,64 @@ export class PurchaseRequestDashboard extends Component {
         );
     }
 
-    // Chart 2: Doughnut — Procurement type breakdown (clickable → list view)
-    _updateChart2() {
-        const chart = this._getOrCreateChart("chart2", "prChart2");
+    /**
+     * Render a clickable doughnut chart that drills into a filtered list view.
+     * Used by chart 2 (procurement types) and the expense type pie.
+     */
+    _renderPieDrilldown({propName, domId, data, seriesName, getDrilldownFilter}) {
+        const chart = this._getOrCreateChart(propName, domId);
         if (!chart) return;
 
-        const pieData = (this.state.chart2Data || []).map((item, i) => ({
+        const pieData = (data || []).map((item, i) => ({
             ...item,
             itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
         }));
 
-        chart.setOption(
-            {
-                tooltip: {
-                    trigger: "item",
-                    formatter: (params) =>
-                        `${params.name}: ${this.formatCurrency(params.value)} บาท (${params.percent.toFixed(1)}%)`,
-                },
-                legend: {
-                    orient: "vertical",
-                    right: "5%",
-                    top: "center",
-                },
-                series: [
-                    {
-                        name: "ประเภทการจัดซื้อจัดจ้าง",
-                        type: "pie",
-                        radius: ["40%", "70%"],
-                        center: ["35%", "50%"],
-                        avoidLabelOverlap: true,
-                        itemStyle: {
-                            borderRadius: 6,
-                            borderColor: "#fff",
-                            borderWidth: 2,
-                        },
-                        label: {
-                            show: true,
-                            formatter: (params) =>
-                                params.percent < 5
-                                    ? ""
-                                    : `${params.percent.toFixed(0)}%`,
-                            position: "inside",
-                            fontSize: 11,
-                            fontWeight: "bold",
-                            color: "#fff",
-                        },
-                        emphasis: {
-                            itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: "rgba(0, 0, 0, 0.2)",
-                            },
-                        },
-                        data: pieData,
-                    },
-                ],
-            },
-            true
-        );
+        chart.setOption(this._makeDoughnutOption(seriesName, pieData), true);
 
-        // Click handler: navigate to list view filtered by all active dashboard filters.
-        // Domain includes: procurement type (from slice), fiscal year, source (from control panel),
-        // and state (from selected summary boxes, with "draft" mapping to include "to_examine").
         chart.off("click");
         chart.on("click", (params) => {
-            const purchaseTypeId = params.data.procurement_type_id;
-            if (purchaseTypeId) {
-                const domain = [
-                    ["procurement_type_id", "=", purchaseTypeId],
-                    [
-                        "account_fiscal_year_id",
-                        "=",
-                        this.state.filters.fiscal_year_id,
-                    ],
-                    [
-                        "source_analytic_id",
-                        "=",
-                        this.state.filters.source_id,
-                    ],
-                ];
-                const selected = this.state.selectedStates;
-                if (selected.length > 0) {
-                    const states = [...selected];
-                    if (states.includes("draft")) {
-                        states.push("to_examine");
-                    }
-                    domain.push(["state", "in", states]);
-                } else {
-                    domain.push(["state", "!=", "rejected"]);
-                }
-                this.action.doAction({
-                    type: "ir.actions.act_window",
-                    name: params.name,
-                    res_model: "purchase.request",
-                    views: [
-                        [false, "list"],
-                        [false, "form"],
-                    ],
-                    domain: domain,
-                    target: "current",
-                });
-            }
+            const extraFilter = getDrilldownFilter(params);
+            if (!extraFilter) return;
+            this.action.doAction({
+                type: "ir.actions.act_window",
+                name: params.name,
+                res_model: "purchase.request",
+                views: [
+                    [false, "list"],
+                    [false, "form"],
+                ],
+                domain: this._pieDrilldownDomain(extraFilter),
+                target: "current",
+            });
+        });
+    }
+
+    // Chart 2: Doughnut — Procurement type breakdown (clickable → list view)
+    _updateChart2() {
+        this._renderPieDrilldown({
+            propName: "chart2",
+            domId: "prChart2",
+            data: this.state.chart2Data,
+            seriesName: "ประเภทการจัดซื้อจัดจ้าง",
+            getDrilldownFilter: (params) => {
+                const id = params.data.procurement_type_id;
+                return id ? ["procurement_type_id", "=", id] : null;
+            },
         });
     }
 
     // Expense Type Pie: Doughnut — Expense category breakdown (clickable → list view)
     _updateChartExpensePie() {
-        const chart = this._getOrCreateChart("chartExpensePie", "prChartExpPie");
-        if (!chart) return;
-
-        const pieData = (this.state.expensePieData || []).map((item, i) => ({
-            ...item,
-            itemStyle: {color: CHART_COLORS[i % CHART_COLORS.length]},
-        }));
-
-        chart.setOption(
-            {
-                tooltip: {
-                    trigger: "item",
-                    formatter: (params) =>
-                        `${params.name}: ${this.formatCurrency(params.value)} บาท (${params.percent.toFixed(1)}%)`,
-                },
-                legend: {
-                    orient: "vertical",
-                    right: "5%",
-                    top: "center",
-                },
-                series: [
-                    {
-                        name: "ประเภทค่าใช้จ่าย",
-                        type: "pie",
-                        radius: ["40%", "70%"],
-                        center: ["35%", "50%"],
-                        avoidLabelOverlap: true,
-                        itemStyle: {
-                            borderRadius: 6,
-                            borderColor: "#fff",
-                            borderWidth: 2,
-                        },
-                        label: {
-                            show: true,
-                            formatter: (params) =>
-                                params.percent < 5
-                                    ? ""
-                                    : `${params.percent.toFixed(0)}%`,
-                            position: "inside",
-                            fontSize: 11,
-                            fontWeight: "bold",
-                            color: "#fff",
-                        },
-                        emphasis: {
-                            itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: "rgba(0, 0, 0, 0.2)",
-                            },
-                        },
-                        data: pieData,
-                    },
-                ],
+        this._renderPieDrilldown({
+            propName: "chartExpensePie",
+            domId: "prChartExpPie",
+            data: this.state.expensePieData,
+            seriesName: "ประเภทค่าใช้จ่าย",
+            getDrilldownFilter: (params) => {
+                const ids = params.data.budget_account_ids;
+                return ids && ids.length ? ["budget_account_id", "in", ids] : null;
             },
-            true
-        );
-
-        // Click handler: navigate to list view filtered by budget accounts in this category
-        chart.off("click");
-        chart.on("click", (params) => {
-            const accountIds = params.data.budget_account_ids;
-            if (accountIds && accountIds.length) {
-                const domain = [
-                    ["budget_account_id", "in", accountIds],
-                    [
-                        "account_fiscal_year_id",
-                        "=",
-                        this.state.filters.fiscal_year_id,
-                    ],
-                    [
-                        "source_analytic_id",
-                        "=",
-                        this.state.filters.source_id,
-                    ],
-                ];
-                const selected = this.state.selectedStates;
-                if (selected.length > 0) {
-                    const states = [...selected];
-                    if (states.includes("draft")) {
-                        states.push("to_examine");
-                    }
-                    domain.push(["state", "in", states]);
-                } else {
-                    domain.push(["state", "!=", "rejected"]);
-                }
-                this.action.doAction({
-                    type: "ir.actions.act_window",
-                    name: params.name,
-                    res_model: "purchase.request",
-                    views: [
-                        [false, "list"],
-                        [false, "form"],
-                    ],
-                    domain: domain,
-                    target: "current",
-                });
-            }
         });
     }
 

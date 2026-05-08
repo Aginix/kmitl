@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 BUDGET_SOURCE_CODES = ("1", "3", "5")
 
 # Top-level revenue account codes in display order
-REVENUE_CODES = ["r49000", "43300", "43400", "43500", "43700"]
+REVENUE_CODES = ["43100 (ก)", "43300", "43400", "43500", "43700"]
 
 # Top-level expense account codes in display order
 EXPENSE_LEVEL0_CODES = ["51000", "52000", "53000", "54000", "55000", "07020"]

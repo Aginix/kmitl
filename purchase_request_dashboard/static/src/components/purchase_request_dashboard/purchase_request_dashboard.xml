@@ -135,42 +135,10 @@
                             </t>
                         </div>
 
-                        <!-- Charts Row 1 -->
-                        <div class="row g-3 mb-4">
-                            <t t-foreach="chartCardsRow1" t-as="chart" t-key="chart.id">
-                                <div class="col-lg-4">
-                                    <div class="card border-0 shadow-sm h-100">
-                                        <div class="card-header bg-white border-0 py-2">
-                                            <h6 class="mb-0 fw-bold pr-chart-title" t-esc="chart.title"/>
-                                        </div>
-                                        <div class="card-body p-2">
-                                            <div t-att-id="chart.id" class="pr-chart-container"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </t>
-                        </div>
-
-                        <!-- Charts Row 2 -->
-                        <div class="row g-3 mb-4">
-                            <t t-foreach="chartCardsRow2" t-as="chart" t-key="chart.id">
-                                <div class="col-lg-4">
-                                    <div class="card border-0 shadow-sm h-100">
-                                        <div class="card-header bg-white border-0 py-2">
-                                            <h6 class="mb-0 fw-bold pr-chart-title" t-esc="chart.title"/>
-                                        </div>
-                                        <div class="card-body p-2">
-                                            <div t-att-id="chart.id" class="pr-chart-container"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </t>
-                        </div>
-
-                        <!-- Charts Row 3 -->
-                        <t t-if="chartCardsRow3.length">
+                        <!-- Chart rows: 3 cards per row, last row may be partial -->
+                        <t t-foreach="chartCardRows" t-as="row" t-key="row_index">
                             <div class="row g-3 mb-4">
-                                <t t-foreach="chartCardsRow3" t-as="chart" t-key="chart.id">
+                                <t t-foreach="row" t-as="chart" t-key="chart.id">
                                     <div class="col-lg-4">
                                         <div class="card border-0 shadow-sm h-100">
                                             <div class="card-header bg-white border-0 py-2">
