@@ -2191,8 +2191,8 @@ msgid "Direct paid"
 msgstr "จ่ายตรง"
 
 #. module: purchase_request_kmitl
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__loan
-msgid "Loan"
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__advance
+msgid "Advance"
 msgstr "เงินยืม"
 
 #. module: purchase_request_kmitl
@@ -2220,6 +2220,6 @@ msgstr "กรณีเลือกประเภทการจ่ายเง
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid ""
-"When payment type is Loan, please select the loan's\n"
+"When payment type is Advance, please select the advance's\n"
 "                            name in the Vendor field."
 msgstr "กรณีเลือกประเภทการจ่ายเงินเป็นเงินยืมให้เลือกชื่อยืมเงิน"
