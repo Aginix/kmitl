@@ -42,6 +42,7 @@
                         พิมพ์รายงาน </button>
                 </t>
                 <div class="report-header mb-2" contenteditable="false">
+                    <div class="f3-document-ref">F3-P-วง-003</div>
                     <h4>สรุปประมาณการรายรับ - รายจ่าย</h4>
                     <h4> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
                     </h4>
@@ -395,6 +396,13 @@
                 position: relative;
                 text-align: center;
                 cursor: not-allowed;
+            }
+
+            .f3-document-ref {
+                position: absolute;
+                top: 0;
+                right: 0;
+                font-size: 10pt;
             }</style>
     </template>
     <!-- Main report template -->
