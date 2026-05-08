@@ -1517,8 +1517,8 @@ msgid "Levels of Approvals *"
 msgstr "ระดับการอนุมัติ *"
 
 #. module: purchase_order_kmitl
-#: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__payment_type__loan
-msgid "Loan"
+#: model:ir.model.fields.selection,name:purchase_order_kmitl.selection__purchase_order__payment_type__advance
+msgid "Advance"
 msgstr "เงินยืม"
 
 #. module: purchase

@@ -2220,6 +2220,6 @@ msgstr "กรณีเลือกประเภทการจ่ายเง
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid ""
-"When payment type is Loan, please select the loan's\n"
+"When payment type is Advance, please select the advance's\n"
 "                            name in the Vendor field."
 msgstr "กรณีเลือกประเภทการจ่ายเงินเป็นเงินยืมให้เลือกชื่อยืมเงิน"
