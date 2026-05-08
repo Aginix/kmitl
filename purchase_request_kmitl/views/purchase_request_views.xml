@@ -104,22 +104,6 @@
                         </div>
                     </group>
                 </group>
-<<<<<<< 16.0-fix-kmitl_demo-install-error
-                <group name="warning_advance">
-                    <group>
-                        <div
-                            colspan="2"
-                            class="alert alert-warning show"
-                            role="alert"
-                            attrs="{'invisible': [('payment_type', '!=', 'advance')]}"
-                        >
-                            When payment type is Advance, please select the advance's
-                            name in the Vendor field.
-                        </div>
-                    </group>
-                </group>
-=======
->>>>>>> 16.0
             </xpath>
 
             <xpath expr="//form" position="inside">
