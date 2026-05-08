@@ -106,19 +106,6 @@ export class PurchaseRequestDashboard extends Component {
         ];
     }
 
-    get chartCardsRow1() {
-        return this.chartCards.slice(0, 3);
-    }
-
-    get chartCardsRow2() {
-        return this.chartCards.slice(3, 6);
-    }
-
-    get chartCardsRow3() {
-        return this.chartCards.slice(6, 9);
-        ];
-    }
-
     get chartCardRows() {
         const cards = this.chartCards;
         return [cards.slice(0, 3), cards.slice(3, 6), cards.slice(6)].filter(
