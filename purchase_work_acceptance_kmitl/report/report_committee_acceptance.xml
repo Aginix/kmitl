@@ -105,12 +105,12 @@
                             <div class="ms-5">
                                 <div>รายละเอียดงวดงาน</div>
                                 <t t-if="o.installment_id.deliverables">
-                                    <t
+                                    เนื้องาน <t
                                         t-foreach="(o.installment_id.deliverables or '').split('\n')"
                                         t-as="item"
                                     >
                                         <div class="ms-5" t-if="item.strip()">
-                                            เนื้องาน <span t-out="item.strip()" />
+                                            <span t-out="item.strip()" />
                                         </div>
                                     </t>
                                 </t>
