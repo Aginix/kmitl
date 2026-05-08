@@ -2,7 +2,6 @@ from collections import defaultdict
 
 from odoo import http
 from odoo.http import request
-from collections import defaultdict
 
 
 class PurchaseRequestDashboardController(http.Controller):

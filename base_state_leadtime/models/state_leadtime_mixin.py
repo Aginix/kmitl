@@ -102,8 +102,7 @@ class StateLeadtimeMixin(models.AbstractModel):
             ('res_model', '=', self._name),
             ('res_id', 'in', self.ids),
         ])
-        if logs:
-            logs.with_context(_force_unlink_leadtime_logs=True).unlink()
+        logs.with_context(_force_unlink_leadtime_logs=True).unlink()
         return super().unlink()
 
     @api.model_create_multi

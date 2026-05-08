@@ -108,12 +108,12 @@ class StateLeadtimeLog(models.Model):
 
         if latest_only:
             seen = set()
-            unique = self.env['state.leadtime.log']
+            unique_ids = []
             for log in logs:        # newest-first because of _order
                 if log.res_id not in seen:
                     seen.add(log.res_id)
-                    unique |= log
-            logs = unique
+                    unique_ids.append(log.id)
+            logs = self.browse(unique_ids)
 
         if not logs:
             return {
