@@ -329,7 +329,7 @@ class PurchaseRequestDashboardController(http.Controller):
         Returns list of dicts with budget_account_ids for click-through navigation.
         Each slice aggregates all budget accounts that share the same parent category.
         """
-        cat_data = defaultdict(lambda: {"amount": 0, "account_ids": []})
+        cat_data = defaultdict(lambda: {"amount": 0, "account_ids": set()})
         for pr in records:
             if not pr.budget_account_id:
                 continue
@@ -337,14 +337,13 @@ class PurchaseRequestDashboardController(http.Controller):
             if not cat_name:
                 continue
             cat_data[cat_name]["amount"] += pr.estimated_cost
-            if pr.budget_account_id.id not in cat_data[cat_name]["account_ids"]:
-                cat_data[cat_name]["account_ids"].append(pr.budget_account_id.id)
+            cat_data[cat_name]["account_ids"].add(pr.budget_account_id.id)
 
         return [
             {
                 "name": name,
                 "value": info["amount"],
-                "budget_account_ids": info["account_ids"],
+                "budget_account_ids": list(info["account_ids"]),
             }
             for name, info in sorted(cat_data.items())
             if info["amount"] > 0
