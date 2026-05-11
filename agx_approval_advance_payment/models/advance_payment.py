@@ -20,6 +20,13 @@ class AdvancePayment(models.Model):
         selection_add=[("approval.request", "Approval Request")],
     )
 
+    @api.depends("approval_request_id", "reference", "loan_type_id.reference_model")
+    def _compute_reference_state(self):
+        super()._compute_reference_state()
+        for rec in self:
+            if rec.approval_request_id:
+                rec.is_reference_visible = True
+
     @api.depends("approval_request_id")
     def _compute_approval_request_count(self):
         for rec in self:
