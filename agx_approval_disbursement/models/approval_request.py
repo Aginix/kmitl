@@ -27,6 +27,10 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    attachment_ids = fields.One2many(
+        domain=[("is_disbursement_evidence", "=", False)],
+    )
+
     disbursement_attachment_ids = fields.Many2many(
         comodel_name='ir.attachment',
         relation='approval_request_disbursement_attachment_rel',
@@ -54,6 +58,14 @@ class ApprovalRequest(models.Model):
                 record.billing_status = "partial"
             else:
                 record.billing_status = "no"
+
+    def write(self, vals):
+        result = super().write(vals)
+        if "disbursement_attachment_ids" in vals:
+            self.disbursement_attachment_ids.filtered(
+                lambda a: not a.is_disbursement_evidence
+            ).write({"is_disbursement_evidence": True})
+        return result
 
     def _prepare_disbursement_request_vals(self):
         """Prepare vals for a single multi-partner DR from all approval lines."""

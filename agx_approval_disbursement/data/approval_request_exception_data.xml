@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="excep_no_disbursement_evidence" model="exception.rule">
-        <!-- ไม่มีหลักฐานการขอเบิกจ่าย -->
         <field name="name">There is no evidence of a disbursement request.</field>
-        <!-- กรุณาระบุหลักฐานการขอเบิกจ่ายอย่างน้อย 1 หลักฐาน -->
         <field name="description">Please provide at least one piece of supporting documentation for your disbursement request.</field>
         <field name="sequence">10</field>
         <field name="model">approval.request</field>

@@ -467,8 +467,8 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__loan
-msgid "Loan"
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__advance
+msgid "Advance"
 msgstr "เงินยืม"
 
 #. module: agx_approval
@@ -722,6 +722,11 @@ msgid "Total"
 msgstr "จำนวนเงิน"
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__total_amount
+msgid "Total Estimated Cost"
+msgstr "รวม"
+
+#. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr ""
@@ -783,3 +788,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__attachment_ids
 msgid "Document Attachments"
 msgstr "เอกสารแนบ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid ""
+"When payment type is Prepaid, please select the advance\n"
+"                                payer's name in the Partner field."
+msgstr ""
+"กรณีเลือกประเภทการจ่ายเงินเป็นสำรองจ่าย\n"
+"                                ให้เลือกชื่อผู้สำรองจ่าย"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid ""
+"If vendor name not found, contact procurement staff to add the information."
+msgstr "ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน เพื่อเพิ่มข้อมูล"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Attachment for Approval Request"
+msgstr "เอกสารประกอบคำขออนุมัติ"

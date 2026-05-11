@@ -39,7 +39,7 @@
             >
                 <button
                     name="action_create_advance_payment"
-                    string="สร้างสัญญายืมเงิน"
+                    string="Create Advance Payment"
                     type="object"
                     class="btn-primary oe_highlight"
                     attrs="{'invisible': [('show_create_advance_payment_button', '=', False)]}"
@@ -58,7 +58,7 @@
                     <field
                         name="advance_payment_count"
                         widget="statinfo"
-                        string="สัญญายืมเงิน"
+                        string="Advance Payment"
                     />
                 </button>
             </xpath>
