@@ -708,6 +708,13 @@ class BudgetAppropriationCompilation(models.Model):
 
         rows = []
 
+        # Sort by 2-char prefix priority (09 first, then 06, then others), code asc
+        _prefix_order = {"09": 0, "06": 1}
+
+        def _sort_key(a):
+            code = a.code or ""
+            return (_prefix_order.get(code[:2], 99), code)
+
         def flatten_node(account, display_level):
             acc_level = account_levels.get(account.id, 1)
             if acc_level >= min_level:
@@ -722,7 +729,7 @@ class BudgetAppropriationCompilation(models.Model):
                 })
             child_accounts = sorted(
                 [a for a in accounts if a.parent_id and a.parent_id.id == account.id],
-                key=lambda a: a.code or "",
+                key=_sort_key,
             )
             for child in child_accounts:
                 next_level = display_level + 1 if acc_level >= min_level else display_level
@@ -730,7 +737,7 @@ class BudgetAppropriationCompilation(models.Model):
 
         root_accounts = sorted(
             [a for a in accounts if not a.parent_id or a.parent_id.id not in all_account_ids],
-            key=lambda a: a.code or "",
+            key=_sort_key,
         )
         for root in root_accounts:
             flatten_node(root, 0)
