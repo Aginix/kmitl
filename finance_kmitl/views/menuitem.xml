@@ -4,8 +4,8 @@
     <!-- Root menu -->
     <menuitem
         id="menu_payment_root"
-        name="Payment"
-        web_icon="account_payment_kmitl,static/description/icon.png"
+        name="Finance"
+        web_icon="finance_kmitl,static/description/icon.png"
         sequence="60"
     />
 

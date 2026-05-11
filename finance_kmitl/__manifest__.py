@@ -1,16 +1,16 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 {
-    "name": "Payment",
+    "name": "KMITL Finance",
     "version": "16.0.1.1.0",
-    "category": "Accounting",
-    "summary": "ระบบเบิกจ่ายเงิน - รวมการสร้างรายการจ่าย และส่งข้อมูล e-Payment",
+    "category": "KMITL/Finance",
+    "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "depends": [
         "account",
-        "account_move_kmitl",
+        "accounting_kmitl",
         "account_fiscal_year_enhance",
         "budget",
         "l10n_th_bank_payment_export",

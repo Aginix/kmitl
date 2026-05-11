@@ -34,10 +34,10 @@ class PurchaseGuarantee(models.Model):
     def _prepare_account_payment_vals(self):
         if self.guarantee_method_id == self.env.ref("l10n_th_gov_purchase_guarantee.bid_guarantee"):
             payment_type = self.env.ref(
-                "account_payment_kmitl.payment_type_bid_guarantee_receive")
+                "finance_kmitl.payment_type_bid_guarantee_receive")
         elif self.guarantee_method_id == self.env.ref("l10n_th_gov_purchase_guarantee.advance_payment_guarantee"):
             payment_type = self.env.ref(
-                "account_payment_kmitl.payment_type_guarantee_receive")
+                "finance_kmitl.payment_type_guarantee_receive")
         else:
             raise UserError(
                 _("ไม่สามารถสร้างใบส่งเงินสำหรับประเภทหลักประกัน '%s' ได้", self.guarantee_method_id.name))

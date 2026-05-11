@@ -1128,7 +1128,7 @@ class DisbursementRequest(models.Model):
                 % self.company_id.name
             )
         payment_type = self.env.ref(
-            "account_payment_kmitl.payment_type_normal_outbound",
+            "finance_kmitl.payment_type_normal_outbound",
             raise_if_not_found=False,
         )
 

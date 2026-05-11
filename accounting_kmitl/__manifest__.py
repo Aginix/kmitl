@@ -1,9 +1,8 @@
 {
-    "name": "Account Move KMITL",
+    "name": "KMITL Accounting",
     "version": "16.0.1.0.0",
     "category": "KMITL/Accounting",
-    "summary": "KMITL customizations for Account Moves: submitted state, "
-    "tier validation, and budget commitment linking",
+    "summary": "งานบัญชี KMITL: ตั้งหนี้, ล้างหนี้, สมุดรายวัน, รายงานบัญชี",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "license": "AGPL-3",
@@ -18,5 +17,5 @@
     ],
     "installable": True,
     "auto_install": False,
-    "application": False,
+    "application": True,
 }
