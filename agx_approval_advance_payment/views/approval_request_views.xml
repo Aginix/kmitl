@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record
+        id="approval_request_view_form_advance_payment"
+        model="ir.ui.view"
+    >
+        <field name="name">approval.request.view.form.advance.payment</field>
+        <field name="model">approval.request</field>
+        <field
+            name="inherit_id"
+            ref="agx_approval_disbursement.approval_request_view_form"
+        />
+        <field name="arch" type="xml">
+
+            <!-- Declare invisible computed fields in header -->
+            <xpath
+                expr="//header/field[@name='is_editable']"
+                position="after"
+            >
+                <field name="show_create_disbursement_button" invisible="1" />
+                <field name="show_create_advance_payment_button" invisible="1" />
+                <field name="advance_payment_count" invisible="1" />
+            </xpath>
+
+            <!-- Override "Create Bill" button to use our computed visibility field -->
+            <xpath
+                expr="//header/button[@name='action_create_disbursement_request']"
+                position="attributes"
+            >
+                <attribute name="attrs">
+                    {'invisible': [('show_create_disbursement_button', '=', False)]}
+                </attribute>
+            </xpath>
+
+            <!-- Add "Create Advance Payment" button after "Create Bill" -->
+            <xpath
+                expr="//header/button[@name='action_create_disbursement_request']"
+                position="after"
+            >
+                <button
+                    name="action_create_advance_payment"
+                    string="สร้างสัญญายืมเงิน"
+                    type="object"
+                    class="btn-primary oe_highlight"
+                    attrs="{'invisible': [('show_create_advance_payment_button', '=', False)]}"
+                />
+            </xpath>
+
+            <!-- Add stat button for linked advance payment -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_advance_payment"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-money"
+                    attrs="{'invisible': [('advance_payment_count', '=', 0)]}"
+                >
+                    <field
+                        name="advance_payment_count"
+                        widget="statinfo"
+                        string="สัญญายืมเงิน"
+                    />
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
