@@ -634,6 +634,15 @@ class BudgetAppropriationCompilation(models.Model):
             "context": {"active_id": self.id},
         }
 
+    def action_open_f5_report_html(self):
+        """Open F5 expense report in a new browser tab as HTML with default options."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/budget_appropriation_summary/compilation/{self.id}/f5/html",
+            "target": "new",
+        }
+
     def action_print_f4_report(self):
         """Print F4 revenue report as PDF."""
         self.ensure_one()
