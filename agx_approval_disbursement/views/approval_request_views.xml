@@ -32,6 +32,18 @@
                     />
                 </button>
             </xpath>
+            <xpath expr="//group[@name='attachment']/field[@name='attachment_ids']" position="attributes">
+                <attribute name="context">{'default_res_model': 'approval.request', 'default_is_disbursement_evidence': False}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='attachment']" position="after">
+                <group string="Attachment for Disbursement"
+                    attrs="{'invisible': [('state', '!=', 'approved')]}">
+                    <field name="disbursement_attachment_ids"
+                        context="{'default_res_model': 'approval.request', 'default_is_disbursement_evidence': True}"
+                        widget="many2many_binary">
+                    </field>
+                </group>
+            </xpath>
         </field>
     </record>
 

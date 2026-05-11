@@ -27,6 +27,17 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    attachment_ids = fields.One2many(
+        domain=[('is_disbursement_evidence', '=', False)],
+    )
+
+    disbursement_attachment_ids = fields.One2many(
+        'ir.attachment',
+        'res_id',
+        domain=[('is_disbursement_evidence', '=', True)],
+        string='Attachment',
+    )
+
     @api.depends("disbursement_request_ids")
     def _compute_disbursement_request(self):
         for record in self:

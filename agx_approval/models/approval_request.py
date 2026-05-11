@@ -54,6 +54,20 @@ class ApprovalRequest(models.Model):
 
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
 
+    currency_id = fields.Many2one(
+        string="Currency",
+        comodel_name="res.currency",
+        related="company_id.currency_id",
+        readonly=True,
+    )
+
+    total_amount = fields.Monetary(
+        compute="_compute_total_amount",
+        string="Total Estimated Cost",
+        currency_field="currency_id",
+        store=True,
+    )
+
     category_id = fields.Many2one(
         string="Category",
         comodel_name="approval.category",
@@ -522,3 +536,8 @@ class ApprovalRequest(models.Model):
                 rec.is_editable = False
             else:
                 rec.is_editable = True
+
+    @api.depends("line_ids.total_amount")
+    def _compute_total_amount(self):
+        for rec in self:
+            rec.total_amount = sum(rec.line_ids.mapped("total_amount"))

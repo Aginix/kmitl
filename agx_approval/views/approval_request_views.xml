@@ -22,6 +22,11 @@
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="agx_approval.group_approval_manager"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved" />
                 </header>
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary', '=', False)]}">
+                    <p><strong>Exception:</strong></p>
+                    <field name="exceptions_summary"/>
+                </div>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
                         <button name="action_open_budget_commitment" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible':[('budget_commitment_id','=',False)]}">
@@ -61,6 +66,13 @@
                             <field name="description" />
                         </group>
                     </group>
+                    <group name="attachment" string="Attachment for Approval Request">
+                        <field name="attachment_ids"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            context="{'default_res_model': 'approval.request'}"
+                            widget="many2many_binary">
+                        </field>
+                    </group>
                     <group string="Budget">
                         <field name="is_budget_editable" invisible="1"/>
                         <field name="budget_account_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
@@ -75,41 +87,50 @@
                         <field name="source_analytic_id" widget="selection" invisible="1" />
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
-                    
+                    <group name="warning_partner">
+                        <group>
+                            <div
+                                colspan="2"
+                                class="alert alert-warning show"
+                                role="alert"
+                                attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
+                            >
+                                If vendor name not found, contact procurement staff to add the information.
+                            </div>
+                        </group>
+                    </group>
+                    <group name="warning_prepaid">
+                        <group>
+                            <div
+                                colspan="2"
+                                class="alert alert-warning show"
+                                role="alert"
+                                attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
+                            >
+                                When payment type is Prepaid, please select the advance
+                                payer's name in the Partner field.
+                            </div>
+                        </group>
+                    </group>
                     <notebook>
                         <page name="request_lines" string="Request Lines">
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="allowed_product_ids" invisible="1"/>
                                     <field name="sequence" widget="handle" />
+                                    <field name="currency_id" invisible="1"/>
                                     <field name="partner_id" />
                                     <field name="product_id" />
                                     <field name="total_amount" />
                                 </tree>
                             </field>
-                        </page>
-
-                        <page name="document" string="Attachment">
-                            <field name="attachment_ids" 
-                                attrs="{'readonly': [('is_editable','=', False)]}" 
-                                context="{'default_res_model': 'approval.request'}">
-                                <tree default_order="sequence">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="name" string="File Name" required="1"/>
-                                    <field name="description"/>
-                                </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <field name="res_model" invisible="1" readonly="0"/>
-                                            <field name="res_id" invisible="1" readonly="0"/>
-                                            <field name="name" required="1" invisible="1"/>
-                                            <field name="datas" filename="name" required="1"/>
-                                            <field name="description" placeholder="Description"/>
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="currency_id" invisible="1"/>
+                                <div class="oe_subtotal_footer_separator oe_inline">
+                                    <label for="total_amount"/>
+                                </div>
+                                <field name="total_amount" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
