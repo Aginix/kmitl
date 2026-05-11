@@ -13,4 +13,3 @@ class AccountMove(models.Model):
         index=True,
         copy=False,
     )
-
