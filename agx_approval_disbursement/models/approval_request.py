@@ -27,15 +27,12 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
-    attachment_ids = fields.One2many(
-        domain=[('is_disbursement_evidence', '=', False)],
-    )
-
-    disbursement_attachment_ids = fields.One2many(
-        'ir.attachment',
-        'res_id',
-        domain=[('is_disbursement_evidence', '=', True)],
-        string='Attachment',
+    disbursement_attachment_ids = fields.Many2many(
+        comodel_name='ir.attachment',
+        relation='approval_request_disbursement_attachment_rel',
+        column1='request_id',
+        column2='attachment_id',
+        string='Disbursement Attachments',
     )
 
     @api.depends("disbursement_request_ids")
