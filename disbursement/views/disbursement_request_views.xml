@@ -14,7 +14,8 @@
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="ref" />
                 <field name="amount_total" />
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('submitted', 'signed')" decoration-primary="state in ('verified', 'bill_draft', 'bill_posted', 'payment_draft')" decoration-success="state in ('approved', 'payment_posted', 'done')" />
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('submitted', 'signed')" decoration-primary="state == 'verified'" decoration-success="state == 'approved'" />
+                <field name="pipeline_status" optional="hide" />
                 <field name="main_exception_id" />
                 <field name="budget_commitment_id" optional="hide" />
                 <field name="source_analytic_id" optional="show" />
@@ -38,11 +39,12 @@
                             string="Create Payment"
                             type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': ['|', ('state', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
+                            attrs="{'invisible': ['|', ('pipeline_status', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
                             groups="account.group_account_invoice"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel', 'bill_posted', 'payment_draft', 'payment_posted'))]}" groups="disbursement.group_disbursement_officer" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done" />
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved" />
+                    <field name="pipeline_status" widget="statusbar" attrs="{'invisible': [('state', '!=', 'approved')]}"/>
                 </header>
                 <!-- Budget Consumed Banner -->
                 <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">
@@ -232,11 +234,11 @@
                 <filter string="Signed" name="signed" domain="[('state', '=', 'signed')]" />
                 <filter string="Verified" name="verified" domain="[('state', '=', 'verified')]" />
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
-                <filter string="Bill Draft" name="bill_draft" domain="[('state', '=', 'bill_draft')]" />
-                <filter string="Bill Posted" name="bill_posted" domain="[('state', '=', 'bill_posted')]" />
-                <filter string="Payment Draft" name="payment_draft" domain="[('state', '=', 'payment_draft')]" />
-                <filter string="Payment Posted" name="payment_posted" domain="[('state', '=', 'payment_posted')]" />
-                <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
+                <filter string="Bill Draft" name="bill_draft" domain="[('pipeline_status', '=', 'bill_draft')]" />
+                <filter string="Bill Posted" name="bill_posted" domain="[('pipeline_status', '=', 'bill_posted')]" />
+                <filter string="Payment Draft" name="payment_draft" domain="[('pipeline_status', '=', 'payment_draft')]" />
+                <filter string="Payment Posted" name="payment_posted" domain="[('pipeline_status', '=', 'payment_posted')]" />
+                <filter string="Done" name="done" domain="[('pipeline_status', '=', 'done')]" />
                 <separator />
                 <filter string="Multi-Partner" name="multi_partner" domain="[('partner_type', '=', 'multi')]" />
                 <separator />

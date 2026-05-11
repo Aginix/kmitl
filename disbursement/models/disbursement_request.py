@@ -25,23 +25,11 @@ class DisbursementRequest(models.Model):
     _commitment_id_field = "budget_commitment_id"
     _commitment_account_id_field = "budget_account_id"
 
-    PIPELINE_STATES = (
-        "bill_draft",
-        "bill_posted",
-        "payment_draft",
-        "payment_posted",
-    )
-
     READONLY_STATES = {
         "submitted": [("readonly", True)],
         "signed": [("readonly", True)],
         "verified": [("readonly", True)],
         "approved": [("readonly", True)],
-        "bill_draft": [("readonly", True)],
-        "bill_posted": [("readonly", True)],
-        "payment_draft": [("readonly", True)],
-        "payment_posted": [("readonly", True)],
-        "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
 
@@ -274,11 +262,6 @@ class DisbursementRequest(models.Model):
             ("signed", "Signed"),
             ("verified", "Verified"),
             ("approved", "Approved"),
-            ("bill_draft", "Bill Draft"),
-            ("bill_posted", "Bill Posted"),
-            ("payment_draft", "Payment Draft"),
-            ("payment_posted", "Payment Posted"),
-            ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
         string="Status",
@@ -287,6 +270,18 @@ class DisbursementRequest(models.Model):
         copy=False,
         tracking=True,
         default="draft",
+    )
+
+    pipeline_status = fields.Selection(
+        selection=[
+            ("pre_approval", "Pre-approval"),
+            ("approved", "Approved"),
+        ],
+        string="Pipeline Status",
+        compute="_compute_pipeline_status",
+        store=True,
+        readonly=True,
+        copy=False,
     )
 
     analytic_distribution = fields.Json(
@@ -663,38 +658,18 @@ class DisbursementRequest(models.Model):
             rec.payment_move_ids = payment_moves
             rec.payment_move_count = len(payment_moves)
 
-    def _update_state_from_pipeline(self):
-        """Recompute state based on bill/payment status for records in pipeline."""
-        Payment = self.env["account.payment"]
+    @api.depends("state")
+    def _compute_pipeline_status(self):
+        """Pipeline status reflects downstream document progress.
+
+        Core only knows pre_approval / approved. Bridge modules
+        (disbursement_accounting_kmitl, disbursement_finance_kmitl) extend
+        the selection and override this compute to add bill_*/payment_*/done.
+        """
         for rec in self:
-            if rec.state not in rec.PIPELINE_STATES:
-                continue
-            bills = rec.bill_ids
-            if not bills:
-                continue
-            # All bills fully paid → done
-            if all(b.payment_state == "paid" for b in bills):
-                rec.state = "done"
-                rec.message_post(
-                    body=_("All payments complete. Disbursement done."),
-                    subtype_xmlid="mail.mt_note",
-                )
-                continue
-            # Collect all payments across all bills
-            all_payments = Payment
-            for bill in bills:
-                all_payments |= bill._get_reconciled_payments()
-                all_payments |= Payment.search(
-                    [("to_reconcile_payment_line_ids.move_id", "=", bill.id)]
-                )
-            if all_payments.filtered(lambda p: p.state == "posted"):
-                rec.state = "payment_posted"
-            elif all_payments:
-                rec.state = "payment_draft"
-            elif all(b.state == "posted" for b in bills):
-                rec.state = "bill_posted"
-            else:
-                rec.state = "bill_draft"
+            rec.pipeline_status = (
+                "approved" if rec.state == "approved" else "pre_approval"
+            )
 
     @api.depends("partner_id", "company_id")
     def _compute_partner_bank_id(self):
@@ -823,7 +798,6 @@ class DisbursementRequest(models.Model):
             bills = self._create_multi_bills()
 
         bills.action_submit()
-        self.state = "bill_draft"
 
         for bill in bills:
             bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
@@ -1015,24 +989,12 @@ class DisbursementRequest(models.Model):
             subtype_xmlid="mail.mt_note",
         )
 
-    def action_done(self):
-        """Mark as done when bill is fully paid"""
-        for record in self:
-            if record.state not in record.PIPELINE_STATES:
-                continue
-            record.state = "done"
-            record.message_post(
-                body=_("Payment complete. Disbursement done."),
-                subtype_xmlid="mail.mt_note",
-            )
-        return True
-
     def action_cancel(self):
         """Cancel the request"""
         for record in self:
-            if record.state in ("cancel", "done"):
+            if record.state == "cancel":
                 raise UserError(
-                    _("Cannot cancel a done or already cancelled request.")
+                    _("Cannot cancel an already cancelled request.")
                 )
             posted_bills = record.bill_ids.filtered(
                 lambda b: b.state == "posted"
@@ -1195,8 +1157,6 @@ class DisbursementRequest(models.Model):
                     {"analytic_distribution": bill.analytic_distribution}
                 )
             payments |= payment
-
-        self.state = "payment_draft"
 
         # Log
         for payment in payments:

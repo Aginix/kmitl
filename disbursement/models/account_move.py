@@ -14,18 +14,3 @@ class AccountMove(models.Model):
         copy=False,
     )
 
-    def write(self, vals):
-        res = super().write(vals)
-        if "state" in vals or "payment_state" in vals:
-            pipeline_states = (
-                "bill_draft",
-                "bill_posted",
-                "payment_draft",
-                "payment_posted",
-            )
-            disbursements = self.mapped("disbursement_request_id").filtered(
-                lambda d: d.state in pipeline_states
-            )
-            if disbursements:
-                disbursements._update_state_from_pipeline()
-        return res
