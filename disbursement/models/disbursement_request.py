@@ -233,6 +233,7 @@ class DisbursementRequest(models.Model):
         store=True,
         readonly=True,
         copy=False,
+        default="pre_approval",
     )
 
     analytic_distribution = fields.Json(
