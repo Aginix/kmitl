@@ -21,6 +21,7 @@
         "l10n_th_account_wht_cert_form"
     ],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "data/kmitl_payment_type_data.xml",
         "data/tier_definition.xml",

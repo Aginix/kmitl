@@ -7,6 +7,7 @@
         name="Finance"
         web_icon="finance_kmitl,static/description/icon.png"
         sequence="60"
+        groups="finance_kmitl.group_finance_kmitl_user"
     />
 
     <!-- Action: account.payment outbound -->
@@ -68,12 +69,13 @@
         sequence="25"
     />
 
-    <!-- Settings submenu -->
+    <!-- Settings submenu (manager only) -->
     <menuitem
         id="menu_payment_settings"
         name="Settings"
         parent="menu_payment_root"
         sequence="90"
+        groups="finance_kmitl.group_finance_kmitl_manager"
     />
     <menuitem
         id="menu_settings_bank_payment_template"

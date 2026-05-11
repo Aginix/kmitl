@@ -12,7 +12,9 @@
         "l10n_th_account_tax",
     ],
     "data": [
+        "security/security.xml",
         "views/account_move_views.xml",
+        "views/menuitem.xml",
         "data/tier_definition.xml",
     ],
     "installable": True,
