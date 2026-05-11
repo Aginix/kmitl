@@ -209,6 +209,14 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    wht_line_ids = fields.One2many(
+        comodel_name="disbursement.request.line",
+        inverse_name="request_id",
+        string="WHT Lines",
+        readonly=True,
+        copy=False,
+    )
+
     attachment_ids = fields.One2many(
         "ir.attachment",
         "res_id",
@@ -303,6 +311,20 @@ class DisbursementRequest(models.Model):
         tracking=True,
         copy=False,
         states=READONLY_STATES,
+    )
+
+    budget_consumed_amount = fields.Monetary(
+        string="Budget Consumed",
+        currency_field="currency_id",
+        copy=False,
+        readonly=True,
+        tracking=True,
+    )
+
+    budget_consumed_date = fields.Datetime(
+        string="Budget Consumed At",
+        copy=False,
+        readonly=True,
     )
 
     # Analytic dimension fields
@@ -598,12 +620,18 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     @api.depends("bill_ids", "bill_ids.state")
     def _compute_bill_count(self):
-        """Compute the number of bills linked to this request"""
+        """Compute the number of bills linked to this request.
+
+        Cancelled bills are excluded from both numerator and denominator
+        so the display reflects only active bills.
+        """
         for record in self:
-            bills = record.bill_ids
-            total = len(bills)
-            draft = len(bills.filtered(lambda b: b.state == "draft"))
-            posted = total - draft
+            active_bills = record.bill_ids.filtered(
+                lambda b: b.state != "cancel"
+            )
+            total = len(active_bills)
+            draft = len(active_bills.filtered(lambda b: b.state == "draft"))
+            posted = len(active_bills.filtered(lambda b: b.state == "posted"))
             record.bill_count = total
             record.bill_draft_count = draft
             record.bill_status_display = (
@@ -622,14 +650,16 @@ class DisbursementRequest(models.Model):
                 payments |= Payment.search([
                     ("to_reconcile_payment_line_ids.move_id", "=", bill.id),
                 ])
-            rec.payment_ids = payments
-            total = len(payments)
+            # Exclude cancelled payments from both display and count
+            active_payments = payments.filtered(lambda p: p.state != "cancel")
+            rec.payment_ids = active_payments
+            total = len(active_payments)
             rec.payment_count = total
-            posted = len(payments.filtered(lambda p: p.state == "posted"))
+            posted = len(active_payments.filtered(lambda p: p.state == "posted"))
             rec.payment_status_display = (
                 _("จ่ายแล้ว %s/%s", posted, total) if total else ""
             )
-            payment_moves = payments.mapped("move_id")
+            payment_moves = active_payments.mapped("move_id")
             rec.payment_move_ids = payment_moves
             rec.payment_move_count = len(payment_moves)
 
@@ -923,42 +953,65 @@ class DisbursementRequest(models.Model):
         return True
 
     def _action_approve_budget(self):
-        """Reserve budget commitment on approval"""
+        """Obligate and consume from the pre-linked budget commitment.
+
+        The BC is expected to be set from an upstream process (PR/PO/PA);
+        this method does NOT create a new BC. It posts an obligate and a
+        consume line for the DR amount, leaving the BC open for other DRs.
+        """
         self.ensure_one()
-        if self.budget_commitment_id:
-            return
-        if not self.budget_account_id:
-            return
-        check = self._check_budget_availability(
-            amount=self.amount_total,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-        )
-        if not check["is_sufficient"]:
+        if not self.budget_commitment_id:
             raise UserError(
-                _(
-                    "Insufficient budget. Available: %(available)s, "
-                    "Required: %(required)s"
-                )
+                _("Budget commitment is required before approval. "
+                  "Please link one from the upstream document.")
+            )
+        commitment = self.budget_commitment_id
+        if commitment.state not in ("reserved", "partial"):
+            raise UserError(
+                _("Cannot obligate: commitment %(name)s is in state '%(state)s' "
+                  "(must be 'reserved' or 'partial').")
+                % {"name": commitment.name, "state": commitment.state}
+            )
+        if commitment.available_to_obligate < self.amount_total:
+            raise UserError(
+                _("Insufficient available to obligate on commitment %(name)s. "
+                  "Available: %(available)s, Required: %(required)s")
                 % {
-                    "available": check["available"],
+                    "name": commitment.name,
+                    "available": commitment.available_to_obligate,
                     "required": self.amount_total,
                 }
             )
-        commitment = self._create_budget_commitment(
-            amount=self.amount_total,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-            ref=self.name,
-            description=_("Disbursement Request: %s") % self.name,
-            auto_reserve=True,
-        )
+        first_reserve = commitment.line_ids.filtered(
+            lambda l: l.move_type == "reserve" and l.state == "posted"
+        )[:1]
+        if not first_reserve:
+            raise UserError(
+                _("No active reserve line on commitment %s.") % commitment.name
+            )
+        self.env["budget.commitment.line"].create([
+            {
+                "commitment_id": commitment.id,
+                "move_type": "obligate",
+                "account_id": first_reserve.account_id.id,
+                "analytic_distribution": first_reserve.analytic_distribution,
+                "amount": self.amount_total,
+                "name": _("Obligation: %s") % self.name,
+            },
+            {
+                "commitment_id": commitment.id,
+                "move_type": "consume",
+                "account_id": first_reserve.account_id.id,
+                "analytic_distribution": first_reserve.analytic_distribution,
+                "amount": self.amount_total,
+                "name": _("Consumption: %s") % self.name,
+            },
+        ])
+        self.budget_consumed_amount = self.amount_total
+        self.budget_consumed_date = fields.Datetime.now()
         self.message_post(
-            body=_("Budget committed: %s") % commitment.name,
+            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
+            % {"amount": self.amount_total, "name": commitment.name},
             subtype_xmlid="mail.mt_note",
         )
 
