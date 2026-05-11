@@ -8,6 +8,7 @@
         "agx_approval_disbursement",
     ],
     "data": [
+        "views/advance_payment_views.xml",
         "views/approval_request_views.xml",
     ],
     "installable": True,

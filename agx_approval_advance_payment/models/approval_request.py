@@ -57,15 +57,18 @@ class ApprovalRequest(models.Model):
             else:
                 rec.show_create_disbursement_button = rec.state == "approved"
 
-    def _prepare_advance_payment_context(self):
+    def _prepare_advance_payment_vals(self):
         self.ensure_one()
+        loan_type = self.env.ref("advance_payment.loan_type_other")
         return {
-            "default_requested_by": self.owner_id.id,
-            "default_department_id": self.department_id.id,
-            "default_loan_reason": self.description or "",
-            "default_loan_amount": self.total_amount,
-            "default_approval_request_id": self.id,
-            "default_reference": "approval.request,%s" % self.id,
+            "requested_by": self.owner_id.id,
+            "department_id": self.department_id.id,
+            "loan_reason": self.description or "",
+            "loan_amount": self.total_amount,
+            "loan_type_id": loan_type.id,
+            "reference": "approval.request,%s" % self.id,
+            "analytic_distribution": self.analytic_distribution,
+            "approval_request_id": self.id,
         }
 
     def action_create_advance_payment(self):
@@ -82,13 +85,29 @@ class ApprovalRequest(models.Model):
             raise UserError(
                 _("An advance payment already exists for this approval request.")
             )
+
+        vals = self._prepare_advance_payment_vals()
+        advance_payment = self.env["advance.payment"].create(vals)
+        self.advance_payment_id = advance_payment.id
+        self.message_post(
+            body=_(
+                "สร้างสัญญายืมเงิน"
+                " <a href='/web#id=%(id)s&amp;model=advance.payment'>"
+                "<b>%(name)s</b></a> แล้ว"
+                " จำนวน <b>%(amount)s %(currency)s</b>",
+                id=advance_payment.id,
+                name=advance_payment.name,
+                amount=advance_payment.loan_amount,
+                currency=advance_payment.currency_id.name,
+            ),
+            subtype_xmlid="mail.mt_note",
+        )
         return {
             "type": "ir.actions.act_window",
-            "name": _("Create Advance Payment"),
             "res_model": "advance.payment",
+            "res_id": advance_payment.id,
             "view_mode": "form",
             "target": "current",
-            "context": self._prepare_advance_payment_context(),
         }
 
     def action_view_advance_payment(self):
