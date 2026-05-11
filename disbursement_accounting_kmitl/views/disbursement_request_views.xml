@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- DR menu in the Accounting app (DR is the navigation document) -->
+    <menuitem
+        id="menu_accounting_disbursement_request"
+        name="Disbursement Requests"
+        parent="accounting_kmitl.menu_accounting_root"
+        action="disbursement.action_disbursement_request"
+        sequence="5"
+    />
+
     <!-- Form view: add Create Bill button + Bills smart button -->
     <record id="view_disbursement_request_form_inherit_accounting" model="ir.ui.view">
         <field name="name">disbursement.request.form.inherit.accounting_kmitl</field>

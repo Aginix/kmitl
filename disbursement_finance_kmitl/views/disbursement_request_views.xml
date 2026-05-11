@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- DR menu in the Finance app (DR is the navigation document) -->
+    <menuitem
+        id="menu_finance_disbursement_request"
+        name="Disbursement Requests"
+        parent="finance_kmitl.menu_payment_root"
+        action="disbursement.action_disbursement_request"
+        sequence="5"
+    />
+
     <!-- Form view: add Create Payment button + Payment smart buttons -->
     <record id="view_disbursement_request_form_inherit_finance" model="ir.ui.view">
         <field name="name">disbursement.request.form.inherit.finance_kmitl</field>

@@ -14,6 +14,7 @@
         "accounting_kmitl",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "views/disbursement_request_views.xml",
     ],
     "installable": True,

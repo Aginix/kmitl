@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_request_finance_user,disbursement.request.finance.user,disbursement.model_disbursement_request,finance_kmitl.group_finance_kmitl_user,1,0,0,0
+access_disbursement_request_line_finance_user,disbursement.request.line.finance.user,disbursement.model_disbursement_request_line,finance_kmitl.group_finance_kmitl_user,1,0,0,0
