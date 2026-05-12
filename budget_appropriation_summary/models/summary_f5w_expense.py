@@ -92,12 +92,14 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
         for xml_id, code, name in self.ACTIVITY_PLANS:
             amount = activity_totals.get(xml_id, 0)
             compare_amount = compare_totals.get(xml_id, 0)
+            diff_amount = amount - compare_amount
             activities.append({
                 "code": code,
                 "name": name,
                 "amount": amount,
                 "compare_amount": compare_amount,
-                "diff_amount": amount - compare_amount,
+                "diff_amount": diff_amount,
+                "diff_percentage": round((diff_amount / compare_amount) * 100, 2) if compare_amount else 0,
             })
 
         # Calculate percentages
@@ -106,7 +108,6 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
         for act in activities:
             act["percentage"] = round((act["amount"] / total_amount) * 100, 2) if total_amount else 0
             act["compare_percentage"] = round((act["compare_amount"] / compare_total_amount) * 100, 2) if compare_total_amount else 0
-            act["diff_percentage"] = round(act["percentage"] - act["compare_percentage"], 2)
 
         # Summary with comparison
         diff_total = total_amount - compare_total_amount

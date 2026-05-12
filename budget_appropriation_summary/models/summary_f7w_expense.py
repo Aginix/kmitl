@@ -116,11 +116,13 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
                 compare_amount = compare_totals.get(cat_key, 0)
 
                 if amount or compare_amount:
+                    diff_amount = amount - compare_amount
                     categories.append({
                         "name": cat_name,
                         "amount": amount,
                         "compare_amount": compare_amount,
-                        "diff_amount": amount - compare_amount,
+                        "diff_amount": diff_amount,
+                        "diff_percentage": round((diff_amount / compare_amount) * 100, 2) if compare_amount else 0,
                     })
                     type_total += amount
                     compare_type_total += compare_amount
@@ -129,15 +131,16 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
             for cat in categories:
                 cat["percentage"] = round((cat["amount"] / type_total) * 100, 2) if type_total else 0
                 cat["compare_percentage"] = round((cat["compare_amount"] / compare_type_total) * 100, 2) if compare_type_total else 0
-                cat["diff_percentage"] = round(cat["percentage"] - cat["compare_percentage"], 2)
 
             if type_total or compare_type_total:
+                diff_type = type_total - compare_type_total
                 expense_types.append({
                     "code": type_code,
                     "name": type_name,
                     "amount": type_total,
                     "compare_amount": compare_type_total,
-                    "diff_amount": type_total - compare_type_total,
+                    "diff_amount": diff_type,
+                    "diff_percentage": round((diff_type / compare_type_total) * 100, 2) if compare_type_total else 0,
                     "categories": categories,
                 })
 
@@ -147,7 +150,6 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
         for t in expense_types:
             t["percentage"] = round((t["amount"] / total_amount) * 100, 2) if total_amount else 0
             t["compare_percentage"] = round((t["compare_amount"] / compare_total_amount) * 100, 2) if compare_total_amount else 0
-            t["diff_percentage"] = round(t["percentage"] - t["compare_percentage"], 2)
 
         # Summary with comparison
         diff_total = total_amount - compare_total_amount

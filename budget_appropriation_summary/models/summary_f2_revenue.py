@@ -60,13 +60,19 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         for code, name in self.REVENUE_CATEGORIES:
             amount = category_totals.get(code, 0)
             compare_amount = compare_totals.get(code, 0)
+            diff_amount = amount - compare_amount
             categories.append(
                 {
                     "code": code,
                     "name": name,
                     "amount": amount,
                     "compare_amount": compare_amount,
-                    "diff_amount": amount - compare_amount,
+                    "diff_amount": diff_amount,
+                    "diff_percentage": (
+                        round((diff_amount / compare_amount) * 100, 2)
+                        if compare_amount
+                        else 0
+                    ),
                 }
             )
 
@@ -85,9 +91,6 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
                 )
                 if compare_total_amount
                 else 0.0
-            )
-            category["diff_percentage"] = round(
-                category["percentage"] - category["compare_percentage"], 2
             )
 
         diff_total = total_amount - compare_total_amount
