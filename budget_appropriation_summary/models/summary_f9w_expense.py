@@ -39,7 +39,7 @@ class BudgetAppropriationSummaryF9WExpense(models.AbstractModel):
     RESERVE_FUND = ("budget.budget_account_07020", "07020", "งบกองทุนสำรอง")
 
     # All column codes in order
-    COLUMN_CODES = ["09007", "09010", "09011", "06004", "06005", "07020"]
+    COLUMN_CODES = ["09007", "09010", "09011", "06004", "06005", "06006", "07020"]
 
     @api.model
     def get_data(self, summary_id):
