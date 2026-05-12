@@ -86,13 +86,13 @@
                                     <t t-out="'{0:,.2f}'.format(department['compare_amount'])"/>
                                 </td>
                                 <td class="text-end border-bottom border-black" contenteditable="false">
-                                    100.0
+                                    <t t-out="'{0:,.2f}'.format(department['compare_percentage'])"/>
                                 </td>
                                 <td class="text-end border-bottom border-black" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(department['amount'])"/>
                                 </td>
                                 <td class="text-end border-bottom border-black" contenteditable="false">
-                                    100.0
+                                    <t t-out="'{0:,.2f}'.format(department['percentage'])"/>
                                 </td>
                                 <td class="text-end border-bottom border-black" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(department['diff_amount'])"/>

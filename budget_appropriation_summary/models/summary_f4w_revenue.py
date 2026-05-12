@@ -68,29 +68,24 @@ class BudgetAppropriationSummaryF4WRevenue(models.AbstractModel):
                     compare_amount = compare_category_totals.get(code, 0)
 
                     if amount or compare_amount:
-                        diff_amount = amount - compare_amount
-                        diff_percentage = round((diff_amount / compare_amount) * 100, 2) if compare_amount else 0
-
+                        percentage = round((amount / dept_total) * 100, 2) if dept_total else 0
+                        compare_percentage = round((compare_amount / compare_dept_total) * 100, 2) if compare_dept_total else 0
                         categories.append({
                             "code": code,
                             "name": name,
                             "amount": amount,
                             "compare_amount": compare_amount,
-                            "diff_amount": diff_amount,
-                            "diff_percentage": diff_percentage,
-                            "percentage": round((amount / dept_total) * 100, 2) if dept_total else 0,
-                            "compare_percentage": round((compare_amount / compare_dept_total) * 100, 2) if compare_dept_total else 0,
+                            "diff_amount": amount - compare_amount,
+                            "diff_percentage": round(percentage - compare_percentage, 2),
+                            "percentage": percentage,
+                            "compare_percentage": compare_percentage,
                         })
-
-                diff_dept_amount = dept_total - compare_dept_total
-                diff_dept_percentage = round((diff_dept_amount / compare_dept_total) * 100, 2) if compare_dept_total else 0
 
                 departments.append({
                     **dept_info,
                     "amount": dept_total,
                     "compare_amount": compare_dept_total,
-                    "diff_amount": diff_dept_amount,
-                    "diff_percentage": diff_dept_percentage,
+                    "diff_amount": dept_total - compare_dept_total,
                     "categories": categories,
                 })
 
@@ -99,6 +94,7 @@ class BudgetAppropriationSummaryF4WRevenue(models.AbstractModel):
         for dept in departments:
             dept["percentage"] = round((dept["amount"] / total_amount) * 100, 2) if total_amount else 0
             dept["compare_percentage"] = round((dept["compare_amount"] / compare_total_amount) * 100, 2) if compare_total_amount else 0
+            dept["diff_percentage"] = round(dept["percentage"] - dept["compare_percentage"], 2)
 
         departments = sorted(departments, key=lambda x: x["code"])
 

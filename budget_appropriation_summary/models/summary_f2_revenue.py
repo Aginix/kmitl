@@ -60,21 +60,13 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         for code, name in self.REVENUE_CATEGORIES:
             amount = category_totals.get(code, 0)
             compare_amount = compare_totals.get(code, 0)
-            diff_amount = amount - compare_amount
-            diff_percentage = (
-                round((diff_amount / compare_amount) * 100, 2)
-                if compare_amount
-                else 0
-            )
-
             categories.append(
                 {
                     "code": code,
                     "name": name,
                     "amount": amount,
                     "compare_amount": compare_amount,
-                    "diff_amount": diff_amount,
-                    "diff_percentage": diff_percentage,
+                    "diff_amount": amount - compare_amount,
                 }
             )
 
@@ -82,18 +74,21 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         compare_total_amount = sum(c["compare_amount"] for c in categories)
 
         for category in categories:
-            if total_amount:
-                category["percentage"] = round(
-                    (category["amount"] / total_amount) * 100, 2
-                )
-            else:
-                category["percentage"] = 0.0
-            if compare_total_amount:
-                category["compare_percentage"] = round(
+            category["percentage"] = (
+                round((category["amount"] / total_amount) * 100, 2)
+                if total_amount
+                else 0.0
+            )
+            category["compare_percentage"] = (
+                round(
                     (category["compare_amount"] / compare_total_amount) * 100, 2
                 )
-            else:
-                category["compare_percentage"] = 0.0
+                if compare_total_amount
+                else 0.0
+            )
+            category["diff_percentage"] = round(
+                category["percentage"] - category["compare_percentage"], 2
+            )
 
         diff_total = total_amount - compare_total_amount
         diff_total_percentage = (
