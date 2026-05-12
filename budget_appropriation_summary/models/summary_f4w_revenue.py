@@ -129,10 +129,10 @@ class BudgetAppropriationSummaryF4WRevenue(models.AbstractModel):
         }
 
     def _build_dept_category_totals(self, summary, dept_map, category_accounts):
-        lines = summary.revenue_appropriation_ids.mapped("line_ids")
+        appropriations = summary.revenue_appropriation_ids
         totals = {}
 
-        for line in lines:
+        for line in appropriations.mapped("line_ids"):
             acc_id = line.account_id.id
             top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
 
@@ -142,6 +142,14 @@ class BudgetAppropriationSummaryF4WRevenue(models.AbstractModel):
                         key = (top_dept_id, code)
                         totals[key] = totals.get(key, 0) + line.balance
                         break
+
+        # Deduct lines do not specify activity/fund, so subtract them directly
+        # from each department's "43100 (ก)" cell instead of matching by account.
+        for line in appropriations.mapped("deduct_line_ids"):
+            top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
+            if top_dept_id and top_dept_id in dept_map:
+                key = (top_dept_id, "43100 (ก)")
+                totals[key] = totals.get(key, 0) - line.balance
 
         return totals
 

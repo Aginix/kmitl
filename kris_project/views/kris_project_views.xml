@@ -439,6 +439,26 @@
     </record>
 
     <!-- ============================================================ -->
+    <!-- PIVOT VIEW                                                   -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_pivot" model="ir.ui.view">
+        <field name="name">kris.project.pivot</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <pivot string="KRIS Project Analysis" disable_linking="True">
+                <field name="project_category_id" type="row"/>
+                <field name="project_type_id" type="row"/>
+                <field name="project_value" type="measure"/>
+                <field name="maintenance_deduction_amount" type="measure"/>
+                <field name="total_received_amount" type="measure"/>
+                <field name="total_net_received" type="measure"/>
+                <field name="revenue_remaining" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
     <!-- ACTION                                                       -->
     <!-- ============================================================ -->
 
@@ -454,7 +474,7 @@
     <record id="action_kris_project" model="ir.actions.act_window">
         <field name="name">KRIS Project</field>
         <field name="res_model">kris.project</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,pivot,form</field>
         <field name="search_view_id" ref="view_kris_project_search"/>
         <field name="context">{}</field>
         <field name="help" type="html">

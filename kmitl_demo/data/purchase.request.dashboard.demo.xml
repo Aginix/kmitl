@@ -696,7 +696,7 @@
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_19')]"/>
     </function>
 
-    <!-- PR D20: วิทยาศาสตร์ / จ้างทำของ / งบบุคลากร / rejected -->
+    <!-- PR D20: วิทยาศาสตร์ / จ้างทำของ / งบดำเนินงาน / rejected -->
     <record id="pr_dashboard_demo_20" model="purchase.request">
         <field name="title">จ้างวิจัยการสังเคราะห์วัสดุนาโน</field>
         <field name="description">โครงการวิจัยร่วมกับภาคเอกชน (ถูกยกเลิก)</field>
@@ -708,12 +708,15 @@
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013"/>
         <field name="user_id" ref="kmitl_demo.user_demo_006"/>
         <field name="department_id" ref="kmitl_demo.05"/>
-        <field name="budget_account_id" ref="budget.budget_account_5101020016"/>
+        <field name="budget_account_id" ref="budget.budget_account_5230000000"/>
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06"/>
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
     </record>
+    <function model="purchase.request" name="button_draft">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
     <function model="purchase.request" name="_onchange_budget_account_id"
         context="{'default_price_unit': 3200000}">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>

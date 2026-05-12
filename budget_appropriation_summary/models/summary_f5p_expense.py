@@ -16,7 +16,7 @@ class BudgetAppropriationSummaryF5PExpense(models.AbstractModel):
 
     Structure (3 Levels):
         - Level 1: Expense Type (e.g., 51000 งบบุคลากร)
-        - Level 2: Expense Category (e.g., ค่าจ้างชั่วคราว)
+        - Level 2: Expense Category — direct children of the Level 1 budget.account
         - Level 3: Department (e.g., คณะวิทยาศาสตร์)
     """
 
@@ -31,24 +31,6 @@ class BudgetAppropriationSummaryF5PExpense(models.AbstractModel):
         ("54000", "งบเงินอุดหนุน"),
         ("55000", "งบรายจ่ายอื่น"),
         ("07020", "กองทุนสำรอง"),
-    ]
-
-    # Sub-categories (Level 2) with account mapping
-    # Format: (type_code, sub_name, mapping_type, codes)
-    # mapping_type: "exact" for specific codes, "parent" for hierarchy lookup
-    EXPENSE_CATEGORIES = [
-        ("51000", "ค่าจ้างชั่วคราว", "exact", ["5101010003"]),
-        ("51000", "ค่าจ้างลูกจ้างสัญญาจ้าง", "exact", ["5101010017"]),
-        ("51000", "เงินประจำตำแหน่ง", "exact", ["5101010007", "5101010002", "5101010004", "5101010005", "5101010006"]),
-        ("52000", "เงินค่าตอบแทน", "parent", ["52301"]),
-        ("52000", "เงินค่าใช้สอย", "parent", ["52400"]),
-        ("52000", "เงินค่าวัสดุ", "parent", ["52500"]),
-        ("52000", "เงินค่าสาธารณูปโภค", "parent", ["52600"]),
-        ("53000", "ค่าครุภัณฑ์", "parent", ["5412000000"]),
-        ("53000", "ค่าที่ดินและสิ่งก่อสร้าง", "parent", ["5411000000"]),
-        ("54000", "เงินอุดหนุนอื่น", "parent", ["54000"]),
-        ("55000", "เงินรายจ่ายอื่นๆ", "parent", ["55000"]),
-        ("07020", "กองทุนสำรอง", "exact", ["0702000001", "0702000002"]),
     ]
 
     @api.model
@@ -117,30 +99,27 @@ class BudgetAppropriationSummaryF5PExpense(models.AbstractModel):
         top_level_depts = self._get_top_level_departments()
         dept_map = {d.id: {"id": d.id, "code": d.code, "name": d.name} for d in top_level_depts}
 
+        hierarchy = self._build_hierarchy()
+
         # Build current report totals: (type_code, cat_name, dept_id) -> balance
-        category_dept_totals = self._build_category_dept_totals(summary, dept_map)
+        category_dept_totals = self._build_category_dept_totals(summary, dept_map, hierarchy)
 
         # Build comparison totals if compare_summary_id exists
         compare_summary = summary.compare_summary_id
         compare_totals = {}
         if compare_summary:
-            compare_totals = self._build_category_dept_totals(compare_summary, dept_map)
+            compare_totals = self._build_category_dept_totals(compare_summary, dept_map, hierarchy)
 
         # Build expense types with categories and departments
         expense_types = []
         for type_code, type_name in self.EXPENSE_TYPES:
-            # Get categories for this type
-            type_categories = [
-                (cat_name, mapping_type, codes)
-                for t_code, cat_name, mapping_type, codes in self.EXPENSE_CATEGORIES
-                if t_code == type_code
-            ]
+            type_cat_names = [cat_name for cat_name, _path in hierarchy.get(type_code, [])]
 
             categories = []
             type_total = 0
             compare_type_total = 0
 
-            for cat_name, mapping_type, codes in type_categories:
+            for cat_name in type_cat_names:
                 # Sum by department within category
                 dept_totals = {}
                 compare_dept_totals = {}
@@ -246,103 +225,55 @@ class BudgetAppropriationSummaryF5PExpense(models.AbstractModel):
             } if compare_summary else None,
         }
 
-    def _build_category_dept_totals(self, summary, dept_map):
-        """
-        Build (type_code, cat_name, dept_id) -> balance mapping for a summary.
+    def _build_hierarchy(self):
+        """Resolve each EXPENSE_TYPES code to a budget.account record and return
+        type_code -> [(cat_name, cat_parent_path), ...] from the parent's direct children."""
+        hierarchy = {}
+        for type_code, _type_name in self.EXPENSE_TYPES:
+            parent = self.env["budget.account"].search([
+                ("code", "=", type_code),
+                ("budget_type", "=", "expense"),
+            ], limit=1)
+            if not parent:
+                _logger.warning("Budget account with code '%s' not found", type_code)
+                hierarchy[type_code] = []
+                continue
+            hierarchy[type_code] = [
+                (child.name, child.parent_path)
+                for child in parent.child_ids.sorted(key=lambda a: a.code)
+            ]
+        return hierarchy
 
-        Args:
-            summary: budget.appropriation.master.summary record
-            dept_map: dict of dept_id -> dept_info
+    def _build_category_dept_totals(self, summary, dept_map, hierarchy):
+        """Aggregate line balances by (type_code, cat_name, dept_id) using parent_path matching."""
+        flat = [
+            (t_code, cat_name, cat_path)
+            for t_code, cats in hierarchy.items()
+            for cat_name, cat_path in cats
+        ]
 
-        Returns:
-            dict: (type_code, cat_name, dept_id) -> balance
-        """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
-
-        # Pre-compute account_id -> (type_code, cat_name) mapping
-        account_category_map = {}
-        for type_code, cat_name, mapping_type, codes in self.EXPENSE_CATEGORIES:
-            account_ids = self._get_accounts_for_category(mapping_type, codes)
-            for acc_id in account_ids:
-                account_category_map[acc_id] = (type_code, cat_name)
-
-        # Aggregate
         totals = {}
-        for line in lines:
-            acc_id = line.account_id.id
+        for line in summary.expense_appropriation_ids.mapped("line_ids"):
+            path = line.account_id.parent_path or ""
             top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
-
-            if acc_id in account_category_map and top_dept_id and top_dept_id in dept_map:
-                type_code, cat_name = account_category_map[acc_id]
-                key = (type_code, cat_name, top_dept_id)
-                totals[key] = totals.get(key, 0) + line.balance
-
+            if not (top_dept_id and top_dept_id in dept_map):
+                continue
+            for type_code, cat_name, cat_path in flat:
+                if path.startswith(cat_path):
+                    key = (type_code, cat_name, top_dept_id)
+                    totals[key] = totals.get(key, 0) + line.balance
+                    break
         return totals
 
-    def _get_accounts_for_category(self, mapping_type, codes):
-        """
-        Get budget.account IDs based on mapping type.
-
-        Args:
-            mapping_type: "exact" for specific codes, "parent" for hierarchy lookup
-            codes: List of budget account codes
-
-        Returns:
-            list: List of budget.account IDs
-        """
-        account_ids = []
-
-        for code in codes:
-            if mapping_type == "exact":
-                # Find exact account by code
-                account = self.env["budget.account"].search([
-                    ("code", "=", code),
-                    ("budget_type", "=", "expense"),
-                ], limit=1)
-                if account:
-                    account_ids.append(account.id)
-                else:
-                    _logger.warning("Budget account with code '%s' not found", code)
-            else:  # parent
-                # Find parent and all descendants
-                parent = self.env["budget.account"].search([
-                    ("code", "=", code),
-                    ("budget_type", "=", "expense"),
-                ], limit=1)
-                if parent:
-                    descendants = self.env["budget.account"].search([
-                        ("parent_path", "like", f"{parent.parent_path}%"),
-                    ])
-                    account_ids.extend(descendants.ids)
-                else:
-                    _logger.warning("Budget account with code '%s' not found", code)
-
-        return account_ids
-
     def _get_top_level_departments(self):
-        """
-        Get top-level departments (first level only).
-
-        Returns:
-            recordset: account.analytic.account records for top-level departments
-        """
+        """Get top-level departments (first level only)."""
         return self.env["account.analytic.account"].search([
             ("root_plan_id.code", "=", "departments"),
             ("parent_id", "=", False),
         ], order="code ASC")
 
     def _extract_top_level_dept_id(self, department):
-        """
-        Extract top-level department ID from parent_path.
-
-        parent_path format: "1/2/3/" where first element is the top-level ancestor.
-
-        Args:
-            department: account.analytic.account record
-
-        Returns:
-            int or None: Top-level department ID
-        """
+        """Extract top-level department ID from parent_path."""
         if department and department.parent_path:
             try:
                 return int(department.parent_path.split("/")[0])
