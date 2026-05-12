@@ -714,6 +714,9 @@
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100"/>
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_1"/>
     </record>
+    <function model="purchase.request" name="button_draft">
+        <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
+    </function>
     <function model="purchase.request" name="_onchange_budget_account_id"
         context="{'default_price_unit': 3200000}">
         <value eval="[ref('kmitl_demo.pr_dashboard_demo_20')]"/>
