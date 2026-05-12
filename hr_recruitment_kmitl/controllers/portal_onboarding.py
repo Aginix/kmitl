@@ -85,13 +85,14 @@ class PortalOnboardingController(http.Controller):
                         if edu.graduation_date
                         else "-",
                         "certificate_url": (
-                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=certificate_file&filename_field={edu.certificate_filename or 'certificate'}&download=true"
+                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=certificate_file&filename_field=certificate_filename&download=true"
                             if edu.certificate_file
                             else False
                         ),
                         "certificate_filename": edu.certificate_filename or "",
                         "transcript_url": (
-                            f"/web/content/hr.applicant.education.history/{edu.id}/transcript_file/{edu.transcript_filename or 'transcript'}?download=true"
+                            # f"/web/content/hr.applicant.education.history/{edu.id}/transcript_file/{edu.transcript_filename or 'transcript'}?download=true"
+                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=transcript_file&filename_field=transcript_filename&download=true"
                             if edu.transcript_file
                             else False
                         ),

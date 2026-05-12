@@ -10,6 +10,7 @@ access_hr_recruitment_stage_portal,hr.recruitment.stage.portal,hr_recruitment.mo
 access_hr_job_portal,hr.job.portal,hr.model_hr_job,base.group_portal,1,0,0,0
 access_hr_department_portal,hr.department.portal,hr.model_hr_department,base.group_portal,1,0,0,0
 access_hr_applicant_education_history,access_hr_applicant_education_history,model_hr_applicant_education_history,base.group_user,1,0,0,0
+access_hr_applicant_education_history,access_hr_applicant_education_history,model_hr_applicant_education_history,base.group_portal,1,0,0,0
 access_hr_applicant_work_history,access_hr_applicant_work_history,model_hr_applicant_work_history,base.group_user,1,0,0,0
 access_hr_job_category_user,hr.job.category user,model_hr_job_category,base.group_user,1,0,0,0
 access_hr_job_category_hr,hr.job.category hr,model_hr_job_category,hr.group_hr_manager,1,1,1,1
