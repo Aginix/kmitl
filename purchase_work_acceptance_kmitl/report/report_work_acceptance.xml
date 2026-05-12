@@ -140,8 +140,8 @@
                                     <th style="text-align: center">
                                         ตามใบสั่งซื้อ/จ้าง
                                     </th>
-                                    <th style="text-align: center">ตามใบส่งของ</th>
-                                    <th style="text-align: center">ตามที่รับจริง</th>
+                                    <!-- <th style="text-align: center">ตามใบส่งของ</th>
+                                    <th style="text-align: center">ตามที่รับจริง</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -161,14 +161,14 @@
                                             class="text-end"
                                             t-out="'{0:,.2f}'.format(line.purchase_line_id.product_qty)"
                                         />
-                                        <td
+                                        <!-- <td
                                             class="text-end"
                                             t-out="'{0:,.2f}'.format(line.product_qty)"
                                         />
                                         <td
                                             class="text-end"
                                             t-out="'{0:,.2f}'.format(line.product_qty)"
-                                        />
+                                        /> -->
                                         <td
                                             class="text-end"
                                             t-out="'{0:,.2f}'.format(line.price_subtotal)"
