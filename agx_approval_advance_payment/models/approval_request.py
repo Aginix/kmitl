@@ -35,6 +35,7 @@ class ApprovalRequest(models.Model):
             rec.show_create_advance_payment_button = (
                 rec.state == "approved"
                 and rec.payment_type == "advance"
+                and rec.owner_id == self.env.user
                 and not rec.advance_payment_id
             )
 
