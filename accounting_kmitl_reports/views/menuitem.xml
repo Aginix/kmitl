@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Actions: open the pre-configured instance directly -->
+    <record id="action_report_pl_kmitl" model="ir.actions.client">
+        <field name="name">งบกำไรขาดทุน</field>
+        <field name="tag">mis_report.client_action</field>
+        <field name="context"
+               eval="{'default_report_instance_id': ref('instance_pl_kmitl'), 'active_id': ref('instance_pl_kmitl'), 'active_model': 'mis.report.instance'}"/>
+    </record>
+
+    <record id="action_report_bs_kmitl" model="ir.actions.client">
+        <field name="name">งบแสดงฐานะการเงิน</field>
+        <field name="tag">mis_report.client_action</field>
+        <field name="context"
+               eval="{'default_report_instance_id': ref('instance_bs_kmitl'), 'active_id': ref('instance_bs_kmitl'), 'active_model': 'mis.report.instance'}"/>
+    </record>
+
+    <record id="action_report_cf_kmitl" model="ir.actions.client">
+        <field name="name">งบกระแสเงินสด</field>
+        <field name="tag">mis_report.client_action</field>
+        <field name="context"
+               eval="{'default_report_instance_id': ref('instance_cf_kmitl'), 'active_id': ref('instance_cf_kmitl'), 'active_model': 'mis.report.instance'}"/>
+    </record>
+
+    <!-- Menus under accounting_kmitl Reports submenu -->
+    <menuitem
+        id="menu_report_pl_kmitl"
+        name="งบกำไรขาดทุน"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_report_pl_kmitl"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_report_bs_kmitl"
+        name="งบแสดงฐานะการเงิน"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_report_bs_kmitl"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_report_cf_kmitl"
+        name="งบกระแสเงินสด"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_report_cf_kmitl"
+        sequence="30"
+    />
+
+</odoo>
