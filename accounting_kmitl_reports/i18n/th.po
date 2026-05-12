@@ -18,18 +18,18 @@ msgstr ""
 
 #. module: accounting_kmitl_reports
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_pl_kmitl
-#: model:ir.actions.client,name:accounting_kmitl_reports.action_report_pl_kmitl
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_pl_kmitl
 msgid "งบกำไรขาดทุน"
 msgstr ""
 
 #. module: accounting_kmitl_reports
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_bs_kmitl
-#: model:ir.actions.client,name:accounting_kmitl_reports.action_report_bs_kmitl
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_bs_kmitl
 msgid "งบแสดงฐานะการเงิน"
 msgstr ""
 
 #. module: accounting_kmitl_reports
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_cf_kmitl
-#: model:ir.actions.client,name:accounting_kmitl_reports.action_report_cf_kmitl
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_cf_kmitl
 msgid "งบกระแสเงินสด"
 msgstr ""

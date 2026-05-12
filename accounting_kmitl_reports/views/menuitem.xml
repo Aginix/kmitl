@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- Actions: open the pre-configured instance directly -->
-    <record id="action_report_pl_kmitl" model="ir.actions.client">
+    <!-- Actions: open the pre-configured instance directly on its result
+         view (the same view mis_builder.preview() uses, so the report
+         renders inline without a "Preview" click). -->
+
+    <record id="action_report_pl_kmitl" model="ir.actions.act_window">
         <field name="name">งบกำไรขาดทุน</field>
-        <field name="tag">mis_report.client_action</field>
-        <field name="context"
-               eval="{'default_report_instance_id': ref('instance_pl_kmitl'), 'active_id': ref('instance_pl_kmitl'), 'active_model': 'mis.report.instance'}"/>
+        <field name="res_model">mis.report.instance</field>
+        <field name="res_id" eval="ref('instance_pl_kmitl')"/>
+        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
     </record>
 
-    <record id="action_report_bs_kmitl" model="ir.actions.client">
+    <record id="action_report_bs_kmitl" model="ir.actions.act_window">
         <field name="name">งบแสดงฐานะการเงิน</field>
-        <field name="tag">mis_report.client_action</field>
-        <field name="context"
-               eval="{'default_report_instance_id': ref('instance_bs_kmitl'), 'active_id': ref('instance_bs_kmitl'), 'active_model': 'mis.report.instance'}"/>
+        <field name="res_model">mis.report.instance</field>
+        <field name="res_id" eval="ref('instance_bs_kmitl')"/>
+        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
     </record>
 
-    <record id="action_report_cf_kmitl" model="ir.actions.client">
+    <record id="action_report_cf_kmitl" model="ir.actions.act_window">
         <field name="name">งบกระแสเงินสด</field>
-        <field name="tag">mis_report.client_action</field>
-        <field name="context"
-               eval="{'default_report_instance_id': ref('instance_cf_kmitl'), 'active_id': ref('instance_cf_kmitl'), 'active_model': 'mis.report.instance'}"/>
+        <field name="res_model">mis.report.instance</field>
+        <field name="res_id" eval="ref('instance_cf_kmitl')"/>
+        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
     </record>
 
     <!-- Menus under accounting_kmitl Reports submenu -->
