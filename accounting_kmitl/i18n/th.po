@@ -126,8 +126,14 @@ msgstr "บัญชี"
 
 #. module: accounting_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl.menu_vendor_bills
-msgid "Vendor Bills"
-msgstr "ใบตั้งหนี้ผู้ขาย"
+msgid "ใบตั้งเจ้าหนี้"
+msgstr ""
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_vendor_payment_moves
+#: model:ir.actions.act_window,name:accounting_kmitl.action_vendor_payment_moves
+msgid "ใบล้างเจ้าหนี้"
+msgstr ""
 
 #. module: accounting_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl.menu_journal_entries

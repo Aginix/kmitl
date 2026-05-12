@@ -10,13 +10,29 @@
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
 
-    <!-- Vendor Bills -->
+    <!-- ใบตั้งเจ้าหนี้ (Vendor Bills) -->
     <menuitem
         id="menu_vendor_bills"
-        name="Vendor Bills"
+        name="ใบตั้งเจ้าหนี้"
         parent="menu_accounting_root"
         action="account.action_move_in_invoice_type"
         sequence="10"
+    />
+
+    <!-- ใบล้างเจ้าหนี้ — journal entries created from vendor payments -->
+    <record id="action_vendor_payment_moves" model="ir.actions.act_window">
+        <field name="name">ใบล้างเจ้าหนี้</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payment_id', '!=', False), ('payment_id.partner_type', '=', 'supplier'), ('payment_id.payment_type', '=', 'outbound')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+    <menuitem
+        id="menu_vendor_payment_moves"
+        name="ใบล้างเจ้าหนี้"
+        parent="menu_accounting_root"
+        action="action_vendor_payment_moves"
+        sequence="15"
     />
 
     <!-- Journal Entries -->
