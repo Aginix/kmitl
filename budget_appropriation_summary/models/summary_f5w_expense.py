@@ -14,10 +14,12 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
         lines by activity plans (แผนงาน). Includes comparison with compare_summary_id.
 
     Activity Plans:
+        - 06004: แผนงานวิจัย
+        - 06005: แผนงานบูรณาการ
+        - 06006: แผนงานยุทธศาสตร์
         - 09007: แผนงานจัดการศึกษาอุดมศึกษา
         - 09010: แผนงานบริการวิชาการแก่สังคม
-        - 09011: แผนงานศาสนา ศิลปและวัฒนธรรม
-        - 06004: แผนงานวิจัย
+        - 09011: แผนงานศาสนา ศิลปะ และวัฒนธรรม
     """
 
     _name = "budget.appropriation.summary.f5w.expense"
@@ -25,10 +27,12 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
 
     # Format: (xml_id, code, name)
     ACTIVITY_PLANS = [
+        ("account_analytic_kmitl.activity_06004", "06004", "แผนงานวิจัย"),
+        ("account_analytic_kmitl.activity_06005", "06005", "แผนงานบูรณาการ"),
+        ("account_analytic_kmitl.activity_09006", "06006", "แผนงานยุทธศาสตร์"),
         ("account_analytic_kmitl.activity_09007", "09007", "แผนงานจัดการศึกษาอุดมศึกษา"),
         ("account_analytic_kmitl.activity_09010", "09010", "แผนงานบริการวิชาการแก่สังคม"),
-        ("account_analytic_kmitl.activity_09011", "09011", "แผนงานศาสนา ศิลปและวัฒนธรรม"),
-        ("account_analytic_kmitl.activity_06004", "06004", "แผนงานวิจัย"),
+        ("account_analytic_kmitl.activity_09011", "09011", "แผนงานศาสนา ศิลปะ และวัฒนธรรม"),
     ]
 
     @api.model
