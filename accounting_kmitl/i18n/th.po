@@ -103,3 +103,63 @@ msgstr ""
 #: model:tier.definition,name:accounting_kmitl.tier_definition_account_move_accountant
 msgid "ผู้จัดทำ/ผู้ตรวจสอบ"
 msgstr ""
+
+#. module: accounting_kmitl
+#: model:ir.module.category,name:accounting_kmitl.module_category_accounting_kmitl
+msgid "KMITL Accounting"
+msgstr "บัญชี KMITL"
+
+#. module: accounting_kmitl
+#: model:res.groups,name:accounting_kmitl.group_accounting_kmitl_user
+msgid "User"
+msgstr "ผู้ใช้งาน"
+
+#. module: accounting_kmitl
+#: model:res.groups,name:accounting_kmitl.group_accounting_kmitl_manager
+msgid "Manager"
+msgstr "ผู้จัดการ"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_root
+msgid "Accounting"
+msgstr "บัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_vendor_bills
+msgid "Vendor Bills"
+msgstr "ใบตั้งหนี้ผู้ขาย"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_journal_entries
+msgid "Journal Entries"
+msgstr "รายการบันทึกบัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_bank_statements
+msgid "Bank Statements"
+msgstr "รายการเดินบัญชีธนาคาร"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_reports
+msgid "Reports"
+msgstr "รายงาน"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_config
+msgid "Configuration"
+msgstr "ตั้งค่า"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_config_chart_of_accounts
+msgid "Chart of Accounts"
+msgstr "ผังบัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_config_journals
+msgid "Journals"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_config_taxes
+msgid "Taxes"
+msgstr "ภาษี"

@@ -173,3 +173,68 @@ msgstr ""
 #: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
 msgid "จ่ายเงิน"
 msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.module.category,name:finance_kmitl.module_category_finance_kmitl
+msgid "KMITL Finance"
+msgstr "การเงิน KMITL"
+
+#. module: finance_kmitl
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_in
+msgid "User การเงินรับ (Payment In)"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_out
+msgid "User การเงินจ่าย (Payment Out)"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_manager
+msgid "Manager"
+msgstr "ผู้จัดการ"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
+msgid "Finance"
+msgstr "การเงิน"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
+msgid "จ่ายเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
+msgid "รับเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
+msgid "Bank Payment Export"
+msgstr "ส่งออกข้อมูลจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_withholding_tax_cert
+msgid "Withholding Tax Certificates"
+msgstr "หนังสือรับรองหัก ณ ที่จ่าย (ทวิ 50)"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
+msgid "Settings"
+msgstr "ตั้งค่า"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
+msgid "Bank Payment Templates"
+msgstr "เทมเพลตการจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
+msgid "Bank Export Formats"
+msgstr "รูปแบบส่งออกข้อมูลธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
+msgid "Payment Types (KMITL)"
+msgstr "ประเภทการจ่ายเงิน (KMITL)"
