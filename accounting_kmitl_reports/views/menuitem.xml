@@ -34,6 +34,13 @@
 
     <!-- Menus under accounting_kmitl Reports submenu -->
     <menuitem
+        id="menu_report_trial_balance_kmitl"
+        name="งบทดลอง"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="account_financial_report.action_trial_balance_wizard"
+        sequence="5"
+    />
+    <menuitem
         id="menu_report_pl_kmitl"
         name="งบกำไรขาดทุน"
         parent="accounting_kmitl.menu_accounting_reports"

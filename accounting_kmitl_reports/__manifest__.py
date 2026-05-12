@@ -13,6 +13,7 @@
         # OCA building blocks (clone from OCA/account-financial-reporting 16.0)
         "mis_template_financial_report",
         "mis_builder_cash_flow",
+        "account_financial_report",
     ],
     "data": [
         "data/mis_report_style_kmitl.xml",

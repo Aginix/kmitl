@@ -17,6 +17,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: accounting_kmitl_reports
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_trial_balance_kmitl
+msgid "งบทดลอง"
+msgstr ""
+
+#. module: accounting_kmitl_reports
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_pl_kmitl
 #: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_pl_kmitl
 msgid "งบกำไรขาดทุน"
