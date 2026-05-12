@@ -794,7 +794,7 @@
             <field name="code">06006</field>
             <field name="name">แผนงานยุทธศาสตร์</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
-            <field name="parent_id" ref="account_analytic_kmitl.activity_06" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09" />
         </record>
         <record id="account_analytic_kmitl.activity_090060601" model="account.analytic.account">
             <field name="code">060060601</field>
