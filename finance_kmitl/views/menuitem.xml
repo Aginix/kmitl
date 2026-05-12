@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Root menu -->
+    <!-- Root menu — visible to any finance role (manager implies the other three) -->
     <menuitem
         id="menu_payment_root"
         name="Finance"
         web_icon="finance_kmitl,static/description/icon.png"
         sequence="60"
-        groups="finance_kmitl.group_finance_kmitl_user"
+        groups="finance_kmitl.group_finance_kmitl_approver,finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
     />
 
     <!-- Action: account.payment outbound -->
@@ -42,6 +42,7 @@
         parent="menu_payment_root"
         action="action_account_payment_outbound"
         sequence="10"
+        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_approver"
     />
     <menuitem
         id="menu_account_payment_inbound"
@@ -49,24 +50,27 @@
         parent="menu_payment_root"
         action="action_account_payment_inbound"
         sequence="15"
+        groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_approver"
     />
 
-    <!-- Bank Payment Export -->
+    <!-- Bank Payment Export (outbound-side workflow) -->
     <menuitem
         id="menu_bank_payment_export"
         name="Bank Payment Export"
         parent="menu_payment_root"
         action="l10n_th_bank_payment_export.action_bank_payment_export"
         sequence="20"
+        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_approver"
     />
 
-    <!-- Withholding Tax Certificates -->
+    <!-- Withholding Tax Certificates (outbound-side workflow) -->
     <menuitem
         id="menu_withholding_tax_cert"
         name="Withholding Tax Certificates"
         parent="menu_payment_root"
         action="l10n_th_account_tax.action_withholding_tax_cert_menu"
         sequence="25"
+        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_approver"
     />
 
     <!-- Settings submenu (manager only) -->

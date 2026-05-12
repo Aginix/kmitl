@@ -8,18 +8,37 @@
             <field name="sequence">21</field>
         </record>
 
-        <!-- User Group -->
-        <record id="group_finance_kmitl_user" model="res.groups">
-            <field name="name">User</field>
+        <!-- Approver: view only (reserved for future approval workflow) -->
+        <record id="group_finance_kmitl_approver" model="res.groups">
+            <field name="name">Approver (view only)</field>
+            <field name="category_id" ref="finance_kmitl.module_category_finance_kmitl"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- User การเงินรับ: create inbound payments -->
+        <record id="group_finance_kmitl_user_in" model="res.groups">
+            <field name="name">User การเงินรับ (Payment In)</field>
             <field name="category_id" ref="finance_kmitl.module_category_finance_kmitl"/>
             <field name="implied_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
         </record>
 
-        <!-- Manager Group (inherits from User + account manager) -->
+        <!-- User การเงินจ่าย: create outbound payments -->
+        <record id="group_finance_kmitl_user_out" model="res.groups">
+            <field name="name">User การเงินจ่าย (Payment Out)</field>
+            <field name="category_id" ref="finance_kmitl.module_category_finance_kmitl"/>
+            <field name="implied_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
+        </record>
+
+        <!-- Manager: full access -->
         <record id="group_finance_kmitl_manager" model="res.groups">
             <field name="name">Manager</field>
             <field name="category_id" ref="finance_kmitl.module_category_finance_kmitl"/>
-            <field name="implied_ids" eval="[(4, ref('group_finance_kmitl_user')), (4, ref('account.group_account_manager'))]"/>
+            <field name="implied_ids" eval="[
+                (4, ref('group_finance_kmitl_approver')),
+                (4, ref('group_finance_kmitl_user_in')),
+                (4, ref('group_finance_kmitl_user_out')),
+                (4, ref('account.group_account_manager')),
+            ]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
     </data>

@@ -39,7 +39,7 @@
                         type="object"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('pipeline_status', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
-                        groups="finance_kmitl.group_finance_kmitl_user"/>
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
             </xpath>
 
             <!-- Payment smart buttons -->
