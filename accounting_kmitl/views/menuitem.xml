@@ -28,15 +28,6 @@
         sequence="20"
     />
 
-    <!-- Bank Statements -->
-    <menuitem
-        id="menu_bank_statements"
-        name="Bank Statements"
-        parent="menu_accounting_root"
-        action="account.action_bank_statement_tree"
-        sequence="30"
-    />
-
     <!-- Reports submenu (placeholder — extend ผ่านโมดูล report ในอนาคต) -->
     <menuitem
         id="menu_accounting_reports"

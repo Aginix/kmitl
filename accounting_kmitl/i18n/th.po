@@ -135,11 +135,6 @@ msgid "Journal Entries"
 msgstr "รายการบันทึกบัญชี"
 
 #. module: accounting_kmitl
-#: model:ir.ui.menu,name:accounting_kmitl.menu_bank_statements
-msgid "Bank Statements"
-msgstr "รายการเดินบัญชีธนาคาร"
-
-#. module: accounting_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_reports
 msgid "Reports"
 msgstr "รายงาน"
