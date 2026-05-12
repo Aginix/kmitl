@@ -158,6 +158,7 @@
                                             <span t-field="line.product_uom" />
                                         </td>
                                         <td
+                                            colspan="3"
                                             class="text-end"
                                             t-out="'{0:,.2f}'.format(line.purchase_line_id.product_qty)"
                                         />
@@ -170,7 +171,6 @@
                                             t-out="'{0:,.2f}'.format(line.product_qty)"
                                         /> -->
                                         <td
-                                            colspan="3"
                                             class="text-end"
                                             t-out="'{0:,.2f}'.format(line.price_subtotal)"
                                         />
