@@ -19,6 +19,17 @@ class DisbursementRequest(models.Model):
         },
     )
 
+    display_status = fields.Selection(
+        selection_add=[
+            ("bill_draft", "Bill Draft"),
+            ("bill_posted", "Bill Posted"),
+        ],
+        ondelete={
+            "bill_draft": "set default",
+            "bill_posted": "set default",
+        },
+    )
+
     bill_ids = fields.One2many(
         comodel_name="account.move",
         inverse_name="disbursement_request_id",

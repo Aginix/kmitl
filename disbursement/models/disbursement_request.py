@@ -236,6 +236,23 @@ class DisbursementRequest(models.Model):
         default="pre_approval",
     )
 
+    display_status = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("submitted", "Submitted"),
+            ("signed", "Signed"),
+            ("verified", "Verified"),
+            ("approved", "Approved"),
+            ("cancel", "Cancelled"),
+        ],
+        string="Status",
+        compute="_compute_display_status",
+        store=True,
+        readonly=True,
+        copy=False,
+        default="draft",
+    )
+
     analytic_distribution = fields.Json(
         inverse="_inverse_analytic_distribution",
         copy=False,
@@ -577,6 +594,25 @@ class DisbursementRequest(models.Model):
             rec.pipeline_status = (
                 "approved" if rec.state == "approved" else "pre_approval"
             )
+
+    @api.depends("state", "pipeline_status")
+    def _compute_display_status(self):
+        """Unify state + pipeline_status into one user-visible value.
+
+        Used by the form statusbar so the user sees a single progressive
+        bar from draft → ... → approved → bill_* → payment_* → done. The
+        underlying state and pipeline_status fields still drive button
+        visibility, security, and search filters.
+        """
+        for rec in self:
+            if rec.state == "cancel":
+                rec.display_status = "cancel"
+            elif rec.state != "approved":
+                rec.display_status = rec.state
+            elif rec.pipeline_status in (False, "pre_approval", "approved"):
+                rec.display_status = "approved"
+            else:
+                rec.display_status = rec.pipeline_status
 
     @api.depends("partner_id", "company_id")
     def _compute_partner_bank_id(self):

@@ -14,8 +14,14 @@
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="ref" />
                 <field name="amount_total" />
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('submitted', 'signed')" decoration-primary="state == 'verified'" decoration-success="state == 'approved'" />
-                <field name="pipeline_status" optional="hide" />
+                <field name="display_status" widget="badge"
+                    decoration-info="display_status == 'draft'"
+                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
+                    decoration-primary="display_status in ('verified', 'bill_posted')"
+                    decoration-success="display_status in ('approved', 'payment_posted', 'done')"
+                    decoration-danger="display_status == 'cancel'" />
+                <field name="state" invisible="1" />
+                <field name="pipeline_status" invisible="1" />
                 <field name="main_exception_id" />
                 <field name="budget_commitment_id" optional="hide" />
                 <field name="source_analytic_id" optional="show" />
@@ -36,8 +42,9 @@
                     <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_manager" />
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved" />
-                    <field name="pipeline_status" widget="statusbar" attrs="{'invisible': [('state', '!=', 'approved')]}"/>
+                    <field name="state" invisible="1"/>
+                    <field name="pipeline_status" invisible="1"/>
+                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
                 </header>
                 <!-- Budget Consumed Banner -->
                 <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">

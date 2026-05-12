@@ -20,6 +20,19 @@ class DisbursementRequest(models.Model):
         },
     )
 
+    display_status = fields.Selection(
+        selection_add=[
+            ("payment_draft", "Payment Draft"),
+            ("payment_posted", "Payment Posted"),
+            ("done", "Done"),
+        ],
+        ondelete={
+            "payment_draft": "set default",
+            "payment_posted": "set default",
+            "done": "set default",
+        },
+    )
+
     payment_ids = fields.Many2many(
         comodel_name="account.payment",
         compute="_compute_payment_ids",
