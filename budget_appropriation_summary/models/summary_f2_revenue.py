@@ -145,13 +145,18 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         }
 
     def _build_category_totals(self, summary):
-        """Build category_code -> balance mapping from all compilations."""
-        lines = summary.revenue_appropriation_ids.mapped("line_ids")
+        """Build category_code -> net balance mapping (line_ids minus deduct_line_ids)."""
+        appropriations = summary.revenue_appropriation_ids
+        lines = appropriations.mapped("line_ids")
+        deduct_lines = appropriations.mapped("deduct_line_ids")
 
         account_totals = {}
         for line in lines:
             acc_id = line.account_id.id
             account_totals[acc_id] = account_totals.get(acc_id, 0) + line.balance
+        for line in deduct_lines:
+            acc_id = line.account_id.id
+            account_totals[acc_id] = account_totals.get(acc_id, 0) - line.balance
 
         totals = {}
         for code, _ in self.REVENUE_CATEGORIES:

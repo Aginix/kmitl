@@ -117,23 +117,25 @@ class BudgetAppropriationSummaryF4PRevenue(models.AbstractModel):
         }
 
     def _build_category_dept_totals(self, summary, dept_map):
-        lines = summary.revenue_appropriation_ids.mapped("line_ids")
+        appropriations = summary.revenue_appropriation_ids
 
         category_accounts = {}
         for code, _ in self.REVENUE_CATEGORIES:
             category_accounts[code] = set(self._get_accounts_in_category(code))
 
         totals = {}
-        for line in lines:
-            acc_id = line.account_id.id
-            top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
+        for lines, sign in ((appropriations.mapped("line_ids"), 1),
+                            (appropriations.mapped("deduct_line_ids"), -1)):
+            for line in lines:
+                acc_id = line.account_id.id
+                top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
 
-            if top_dept_id and top_dept_id in dept_map:
-                for code, _ in self.REVENUE_CATEGORIES:
-                    if acc_id in category_accounts[code]:
-                        key = (code, top_dept_id)
-                        totals[key] = totals.get(key, 0) + line.balance
-                        break
+                if top_dept_id and top_dept_id in dept_map:
+                    for code, _ in self.REVENUE_CATEGORIES:
+                        if acc_id in category_accounts[code]:
+                            key = (code, top_dept_id)
+                            totals[key] = totals.get(key, 0) + sign * line.balance
+                            break
 
         return totals
 
