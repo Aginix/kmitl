@@ -27,12 +27,12 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
 
     # Format: (xml_id, code, name)
     ACTIVITY_PLANS = [
-        ("account_analytic_kmitl.activity_06004", "06004", "แผนงานวิจัย"),
-        ("account_analytic_kmitl.activity_06005", "06005", "แผนงานบูรณาการ"),
-        ("account_analytic_kmitl.activity_09006", "06006", "แผนงานยุทธศาสตร์"),
         ("account_analytic_kmitl.activity_09007", "09007", "แผนงานจัดการศึกษาอุดมศึกษา"),
         ("account_analytic_kmitl.activity_09010", "09010", "แผนงานบริการวิชาการแก่สังคม"),
         ("account_analytic_kmitl.activity_09011", "09011", "แผนงานศาสนา ศิลปะ และวัฒนธรรม"),
+        ("account_analytic_kmitl.activity_06004", "06004", "แผนงานวิจัย"),
+        ("account_analytic_kmitl.activity_06005", "06005", "แผนงานบูรณาการ"),
+        ("account_analytic_kmitl.activity_09006", "06006", "แผนงานยุทธศาสตร์"),
     ]
 
     @api.model

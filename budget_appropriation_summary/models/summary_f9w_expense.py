@@ -29,15 +29,17 @@ class BudgetAppropriationSummaryF9WExpense(models.AbstractModel):
     ACTIVITY_PLANS = [
         ("account_analytic_kmitl.activity_09007", "09007", "แผนงานจัดการศึกษาอุดมศึกษา"),
         ("account_analytic_kmitl.activity_09010", "09010", "แผนงานบริการวิชาการแก่สังคม"),
-        ("account_analytic_kmitl.activity_09011", "09011", "แผนงานศาสนา ศิลปและวัฒนธรรม"),
+        ("account_analytic_kmitl.activity_09011", "09011", "แผนงานศาสนา ศิลปะ และวัฒนธรรม"),
         ("account_analytic_kmitl.activity_06004", "06004", "แผนงานวิจัย"),
+        ("account_analytic_kmitl.activity_06005", "06005", "แผนงานบูรณาการ"),
+        ("account_analytic_kmitl.activity_09006", "06006", "แผนงานยุทธศาสตร์"),
     ]
 
     # Reserve fund (xml_id, code, name)
     RESERVE_FUND = ("budget.budget_account_07020", "07020", "งบกองทุนสำรอง")
 
     # All column codes in order
-    COLUMN_CODES = ["09007", "09010", "09011", "06004", "07020"]
+    COLUMN_CODES = ["09007", "09010", "09011", "06004", "06005", "07020"]
 
     @api.model
     def get_data(self, summary_id):
