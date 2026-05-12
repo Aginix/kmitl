@@ -49,7 +49,7 @@ msgstr "เอกสารขอเบิกจ่าย"
 #. module: agx_approval_disbursement
 #: model:ir.model.fields,field_description:agx_approval_disbursement.field_approval_request__billing_status
 msgid "Billing Status"
-msgstr ""
+msgstr "สถานะการเบิก"
 
 #. module: agx_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
@@ -101,7 +101,7 @@ msgstr "เอกสารแนบ"
 #. module: agx_approval_disbursement
 #: model:ir.model.fields.selection,name:agx_approval_disbursement.selection__approval_request__billing_status__full
 msgid "Fully Billed"
-msgstr ""
+msgstr "เบิกเต็มจำนวน"
 
 #. module: agx_approval_disbursement
 #. odoo-python
@@ -113,12 +113,12 @@ msgstr "ไม่มีการอนุมัติคำขอซื้อท
 #. module: agx_approval_disbursement
 #: model:ir.model.fields.selection,name:agx_approval_disbursement.selection__approval_request__billing_status__no
 msgid "Nothing to Bill"
-msgstr ""
+msgstr "ไม่มีให้เบิก"
 
 #. module: agx_approval_disbursement
 #: model:ir.model.fields.selection,name:agx_approval_disbursement.selection__approval_request__billing_status__partial
 msgid "Partially Billed"
-msgstr ""
+msgstr "เบิกแล้วบางส่วน"
 
 #. module: agx_approval_disbursement
 #: model:exception.rule,description:agx_approval_disbursement.excep_no_disbursement_evidence

@@ -63,7 +63,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_all_approval_menu
 msgid "All Approval"
-msgstr ""
+msgstr "คำขออนุมัติค่าใช้จ่ายทั้งหมด"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__allowed_product_ids
@@ -173,7 +173,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__billed
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Billed"
-msgstr ""
+msgstr "เบิกจ่ายแล้ว"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -232,7 +232,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_category_menu
 msgid "Categories"
-msgstr ""
+msgstr "ประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__category_id
@@ -242,12 +242,12 @@ msgstr "ประเภทคำขออนุมัติค่าใช้จ
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
 msgid "Category Group"
-msgstr ""
+msgstr "กลุ่มประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_category_group_menu
 msgid "Category Groups"
-msgstr ""
+msgstr "กลุ่มประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__city
@@ -479,7 +479,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_manage_menu
 msgid "Manage"
-msgstr ""
+msgstr "จัดการ"
 
 #. module: agx_approval
 #: model:res.groups,name:agx_approval.group_approval_manager
@@ -504,25 +504,31 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_approvals_menu
 msgid "My Approvals"
-msgstr ""
+msgstr "คำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_my_request_menu
 msgid "My Request"
-msgstr ""
+msgstr "คำขออนุมัติค่าใช้จ่ายของฉัน"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__name
 msgid "Name"
-msgstr ""
+msgstr "เลขที่"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
+msgid "Name"
+msgstr "ประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_new_request_menu
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_kanban
 msgid "New Request"
-msgstr ""
+msgstr "สร้างประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_calendar_event_id
@@ -623,7 +629,7 @@ msgstr "วันที่จัดทำคำขอ"
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__group_id
 msgid "Request Group"
-msgstr ""
+msgstr "กลุ่มประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -677,7 +683,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_menu
 msgid "Settings"
-msgstr ""
+msgstr "การตั้งค่า"
 
 #. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request__activity_state
@@ -740,7 +746,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__validated
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Validated"
-msgstr ""
+msgstr "อนุมัติแล้ว"
 
 #. module: agx_approval
 #. odoo-python
