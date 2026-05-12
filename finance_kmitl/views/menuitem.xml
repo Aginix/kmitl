@@ -7,7 +7,7 @@
         name="Finance"
         web_icon="finance_kmitl,static/description/icon.png"
         sequence="60"
-        groups="finance_kmitl.group_finance_kmitl_viewer,finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
+        groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
     />
 
     <!-- Action: account.payment outbound -->
@@ -42,7 +42,7 @@
         parent="menu_payment_root"
         action="action_account_payment_outbound"
         sequence="10"
-        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_viewer"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
     />
     <menuitem
         id="menu_account_payment_inbound"
@@ -50,7 +50,7 @@
         parent="menu_payment_root"
         action="action_account_payment_inbound"
         sequence="15"
-        groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_viewer"
+        groups="finance_kmitl.group_finance_kmitl_user_in"
     />
 
     <!-- Bank Payment Export (outbound-side workflow) -->
@@ -60,7 +60,7 @@
         parent="menu_payment_root"
         action="l10n_th_bank_payment_export.action_bank_payment_export"
         sequence="20"
-        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_viewer"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
     <!-- Withholding Tax Certificates (outbound-side workflow) -->
@@ -70,7 +70,7 @@
         parent="menu_payment_root"
         action="l10n_th_account_tax.action_withholding_tax_cert_menu"
         sequence="25"
-        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_viewer"
+        groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
     <!-- Settings submenu (manager only) -->
