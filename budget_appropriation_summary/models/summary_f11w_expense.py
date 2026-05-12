@@ -41,7 +41,7 @@ class BudgetAppropriationSummaryF11WExpense(models.AbstractModel):
         ("account_analytic_kmitl.fund_0300", "0300", "กองทุนวิจัย"),
         ("account_analytic_kmitl.fund_0600", "0600", "กองทุนสินทรัพย์ถาวร"),
         ("account_analytic_kmitl.fund_0702", "0702", "กองทุนสำรอง"),
-        ("account_analytic_kmitl.fund_0704", "0704", "กองทุนสำรอง"),
+        ("account_analytic_kmitl.fund_0704", "0704", "กองทุนบูรณาการ"),
         ("account_analytic_kmitl.fund_0705", "0705", "กองทุนยุทธศาสตร์"),
     ]
 

@@ -21,6 +21,9 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
         - 54000: งบเงินอุดหนุน (Subsidy)
         - 55000: งบรายจ่ายอื่น (Other Expenses)
         - 07020: กองทุนสำรอง (Reserve Fund)
+
+    Sub-categories (Level 2) are resolved dynamically as direct children of each
+    Level 1 budget.account.
     """
 
     _name = "budget.appropriation.summary.f7w.expense"
@@ -34,24 +37,6 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
         ("54000", "งบเงินอุดหนุน"),
         ("55000", "งบรายจ่ายอื่น"),
         ("07020", "กองทุนสำรอง"),
-    ]
-
-    # Sub-categories (Level 2) with account mapping
-    # Format: (type_code, sub_name, mapping_type, codes)
-    # mapping_type: "exact" for specific codes, "parent" for hierarchy lookup
-    EXPENSE_CATEGORIES = [
-        ("51000", "ค่าจ้างชั่วคราว", "exact", ["5101010003"]),
-        ("51000", "ค่าจ้างลูกจ้างสัญญาจ้าง", "exact", ["5101010017"]),
-        ("51000", "เงินประจำตำแหน่ง", "exact", ["5101010007", "5101010002", "5101010004", "5101010005", "5101010006"]),
-        ("52000", "เงินค่าตอบแทน", "parent", ["52301"]),
-        ("52000", "เงินค่าใช้สอย", "parent", ["52400"]),
-        ("52000", "เงินค่าวัสดุ", "parent", ["52500"]),
-        ("52000", "เงินค่าสาธารณูปโภค", "parent", ["52600"]),
-        ("53000", "ค่าครุภัณฑ์", "parent", ["5412000000"]),
-        ("53000", "ค่าที่ดินและสิ่งก่อสร้าง", "parent", ["5411000000"]),
-        ("54000", "เงินอุดหนุนอื่น", "parent", ["54000"]),
-        ("55000", "เงินรายจ่ายอื่นๆ", "parent", ["55000"]),
-        ("07020", "กองทุนสำรอง", "parent", ["0702000000"]),
     ]
 
     @api.model
@@ -105,30 +90,27 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
                 "compare_report": None,
             }
 
+        hierarchy = self._build_hierarchy()
+
         # Build current report totals
-        category_totals = self._build_category_totals(summary)
+        category_totals = self._build_category_totals(summary, hierarchy)
 
         # Build comparison totals if compare_summary_id exists
         compare_summary = summary.compare_summary_id
         compare_totals = {}
         if compare_summary:
-            compare_totals = self._build_category_totals(compare_summary)
+            compare_totals = self._build_category_totals(compare_summary, hierarchy)
 
         # Build expense types with categories
         expense_types = []
         for type_code, type_name in self.EXPENSE_TYPES:
-            # Get categories for this type
-            type_categories = [
-                (cat_name, mapping_type, codes)
-                for t_code, cat_name, mapping_type, codes in self.EXPENSE_CATEGORIES
-                if t_code == type_code
-            ]
+            type_cat_names = [cat_name for cat_name, _path in hierarchy.get(type_code, [])]
 
             categories = []
             type_total = 0
             compare_type_total = 0
 
-            for cat_name, mapping_type, codes in type_categories:
+            for cat_name in type_cat_names:
                 cat_key = (type_code, cat_name)
                 amount = category_totals.get(cat_key, 0)
                 compare_amount = compare_totals.get(cat_key, 0)
@@ -199,71 +181,39 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
             } if compare_summary else None,
         }
 
-    def _build_category_totals(self, summary):
-        """
-        Build (type_code, cat_name) -> balance mapping for a summary.
+    def _build_hierarchy(self):
+        """Resolve each EXPENSE_TYPES code to a budget.account record and return
+        type_code -> [(cat_name, cat_parent_path), ...] from the parent's direct children."""
+        hierarchy = {}
+        for type_code, _type_name in self.EXPENSE_TYPES:
+            parent = self.env["budget.account"].search([
+                ("code", "=", type_code),
+                ("budget_type", "=", "expense"),
+            ], limit=1)
+            if not parent:
+                _logger.warning("Budget account with code '%s' not found", type_code)
+                hierarchy[type_code] = []
+                continue
+            hierarchy[type_code] = [
+                (child.name, child.parent_path)
+                for child in parent.child_ids.sorted(key=lambda a: a.code)
+            ]
+        return hierarchy
 
-        Args:
-            summary: budget.appropriation.master.summary record
+    def _build_category_totals(self, summary, hierarchy):
+        """Aggregate line balances by (type_code, cat_name) using parent_path matching."""
+        flat = [
+            (t_code, cat_name, cat_path)
+            for t_code, cats in hierarchy.items()
+            for cat_name, cat_path in cats
+        ]
 
-        Returns:
-            dict: (type_code, cat_name) -> balance
-        """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
-
-        # Pre-compute account_id -> (type_code, cat_name) mapping
-        account_category_map = {}
-        for type_code, cat_name, mapping_type, codes in self.EXPENSE_CATEGORIES:
-            account_ids = self._get_accounts_for_category(mapping_type, codes)
-            for acc_id in account_ids:
-                account_category_map[acc_id] = (type_code, cat_name)
-
-        # Aggregate
         totals = {}
-        for line in lines:
-            acc_id = line.account_id.id
-            if acc_id in account_category_map:
-                key = account_category_map[acc_id]
-                totals[key] = totals.get(key, 0) + line.balance
-
+        for line in summary.expense_appropriation_ids.mapped("line_ids"):
+            path = line.account_id.parent_path or ""
+            for type_code, cat_name, cat_path in flat:
+                if path.startswith(cat_path):
+                    key = (type_code, cat_name)
+                    totals[key] = totals.get(key, 0) + line.balance
+                    break
         return totals
-
-    def _get_accounts_for_category(self, mapping_type, codes):
-        """
-        Get budget.account IDs based on mapping type.
-
-        Args:
-            mapping_type: "exact" for specific codes, "parent" for hierarchy lookup
-            codes: List of budget account codes
-
-        Returns:
-            list: List of budget.account IDs
-        """
-        account_ids = []
-
-        for code in codes:
-            if mapping_type == "exact":
-                # Find exact account by code
-                account = self.env["budget.account"].search([
-                    ("code", "=", code),
-                    ("budget_type", "=", "expense"),
-                ], limit=1)
-                if account:
-                    account_ids.append(account.id)
-                else:
-                    _logger.warning("Budget account with code '%s' not found", code)
-            else:  # parent
-                # Find parent and all descendants
-                parent = self.env["budget.account"].search([
-                    ("code", "=", code),
-                    ("budget_type", "=", "expense"),
-                ], limit=1)
-                if parent:
-                    descendants = self.env["budget.account"].search([
-                        ("parent_path", "like", f"{parent.parent_path}%"),
-                    ])
-                    account_ids.extend(descendants.ids)
-                else:
-                    _logger.warning("Budget account with code '%s' not found", code)
-
-        return account_ids
