@@ -624,12 +624,39 @@ class DisbursementRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to generate sequence number and log budget commitment"""
+        """Override create to generate sequence number and log budget commitment.
+
+        The DR name follows the pattern DR/<fy>/<padding> (e.g. DR/69/0001),
+        mirroring the per-fiscal-year scheme that purchase_request_sequence_kmitl
+        uses. A dedicated ir.sequence is created on first use per fiscal year.
+        """
+        Sequence = self.env["ir.sequence"].sudo()
+        Company = self.env["res.company"]
         for vals in vals_list:
-            if vals.get("name", "/") == "/":
-                vals["name"] = self.env["ir.sequence"].next_by_code(
-                    "disbursement.request"
-                ) or "/"
+            if vals.get("name") and vals["name"] != "/":
+                continue
+
+            date = fields.Date.to_date(
+                vals.get("date") or fields.Date.context_today(self)
+            )
+            company = Company.browse(
+                vals.get("company_id") or self.env.company.id
+            )
+            fy = company.find_daterange_fy(date) if company else False
+            fy_year = fy.name[-2:] if fy else date.strftime("%y")
+
+            seq_code = f"disbursement.request.{fy_year}"
+            if not Sequence.search([("code", "=", seq_code)], limit=1):
+                Sequence.create({
+                    "name": f"Disbursement Request {fy_year}",
+                    "code": seq_code,
+                    "prefix": f"DR/{fy_year}/",
+                    "padding": 4,
+                    "number_increment": 1,
+                })
+
+            vals["name"] = Sequence.next_by_code(seq_code) or "/"
+
         records = super().create(vals_list)
         for rec in records:
             if rec.budget_commitment_id:
