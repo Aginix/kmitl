@@ -731,6 +731,11 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be submitted."))
+            if not record.line_ids:
+                raise UserError(
+                    _("Cannot submit a disbursement request with no lines. "
+                      "Please add at least one line.")
+                )
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
             record.state = "submitted"
