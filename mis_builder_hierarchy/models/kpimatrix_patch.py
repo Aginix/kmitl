@@ -266,7 +266,7 @@ def _patched_as_dict(self):
     if len(visible_rows) != len(result["body"]):
         return result
     children_lookup = self._hierarchy_children or {}
-    for row_data, row in zip(visible_rows, result["body"]):
+    for row, row_data in zip(visible_rows, result["body"]):
         kpi = row.kpi
         hierarchical = _hierarchy_enabled(kpi) and row.account_id is not None
         if hierarchical:
