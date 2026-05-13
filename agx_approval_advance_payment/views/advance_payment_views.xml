@@ -17,7 +17,7 @@
             <!-- Allow loan_type_id to be edited when linked to an approval request -->
             <xpath expr="//field[@name='loan_type_id']" position="attributes">
                 <attribute name="attrs">
-                    {'readonly': [('is_locked_by_reference', '=', True), ('approval_request_id', '=', False)]}
+                    {'readonly': ['|', ('state', '!=', 'draft'), '&', ('is_locked_by_reference', '=', True), ('approval_request_id', '=', False)]}
                 </attribute>
             </xpath>
 
