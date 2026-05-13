@@ -38,8 +38,8 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.approval_request_count = 1 if rec.approval_request_id else 0
 
-    def _action_do_reject(self, reason=False):
-        super()._action_do_reject(reason=reason)
+    def _propagate_rejection_to_reference(self):
+        super()._propagate_rejection_to_reference()
         if self.approval_request_id and self.approval_request_id.state != "rejected":
             self.approval_request_id.action_cancel()
             self.approval_request_id.message_post(

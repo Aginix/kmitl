@@ -4,7 +4,7 @@
     "author": "KMITL",
     "category": "KMITL",
     "depends": [
-        "advance_payment",
+        "advance_payment_tier_validation",
         "agx_approval_disbursement",
     ],
     "data": [
