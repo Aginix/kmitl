@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates>
+
+    <t
+        t-name="mis_builder_hierarchy.MisReportWidget"
+        t-inherit="mis_builder.MisReportWidget"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <xpath expr="//tbody/tr" position="attributes">
+            <attribute name="t-if">!isRowHidden(row)</attribute>
+        </xpath>
+        <xpath expr="//tbody/tr/td[1]" position="replace">
+            <td
+                t-att-style="(row.style || '') + ';' + rowIndentStyle(row)"
+                class="o_mis_hierarchy_label"
+            >
+                <span
+                    t-if="row.has_children"
+                    class="o_mis_tree_toggle fa"
+                    t-att-class="state.collapsed[row.row_key] ? 'fa-caret-right' : 'fa-caret-down'"
+                    t-on-click="() => this.toggleRow(row.row_key)"
+                />
+                <span t-elif="row.account_id" class="o_mis_tree_spacer" />
+                <t t-esc="row.label" />
+                <t t-if="row.description">
+                    <br />
+                    <t t-esc="row.description" />
+                </t>
+            </td>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="mis_report_view_kpi_form_hierarchy" model="ir.ui.view">
+        <field name="name">mis.report.view.kpi.form.hierarchy</field>
+        <field name="model">mis.report.kpi</field>
+        <field name="inherit_id" ref="mis_builder.mis_report_view_kpi_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//group[@string='Auto expand']/field[@name='auto_expand_accounts_style_id']"
+                position="after"
+            >
+                <field
+                    name="auto_expand_accounts_hierarchical"
+                    attrs="{'invisible': [('auto_expand_accounts', '!=', True)]}"
+                />
+                <field
+                    name="auto_expand_accounts_rollup"
+                    attrs="{'invisible': ['|', ('auto_expand_accounts', '!=', True), ('auto_expand_accounts_hierarchical', '!=', True)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
