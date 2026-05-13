@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- DR action for finance queue (default filter: pipeline_status=bill_posted) -->
+    <record id="action_disbursement_request_finance" model="ir.actions.act_window">
+        <field name="name">Disbursement Requests</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_bill_posted": 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ไม่มีใบขอเบิกที่รอทำการจ่ายเงิน
+            </p>
+            <p>
+                ใบขอเบิกที่บัญชีตั้งหนี้แล้ว รอเจ้าหน้าที่การเงินสร้างใบจ่าย
+            </p>
+        </field>
+    </record>
+
+    <!-- DR menu in the Finance app (DR is the navigation document) -->
+    <menuitem
+        id="menu_finance_disbursement_request"
+        name="Disbursement Requests"
+        parent="finance_kmitl.menu_payment_root"
+        action="action_disbursement_request_finance"
+        sequence="5"
+    />
+
+    <!-- Form view: add Create Payment button + Payment smart buttons -->
+    <record id="view_disbursement_request_form_inherit_finance" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.finance_kmitl</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="arch" type="xml">
+            <!-- Create Payment button placed before Reset to draft -->
+            <xpath expr="//button[@name='action_draft']" position="before">
+                <button name="action_create_payment"
+                        string="Create Payment"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('pipeline_status', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+            </xpath>
+
+            <!-- Payment smart buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_payments"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-money"
+                        attrs="{'invisible': [('payment_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">รายการจ่ายเงิน <field name="payment_count" nolabel="1" /></span>
+                        <span class="o_stat_text text-muted small"><field name="payment_status_display" nolabel="1" /></span>
+                    </div>
+                </button>
+                <button name="action_view_payment_moves"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-book"
+                        attrs="{'invisible': [('payment_move_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">รายการล้างหนี้ <field name="payment_move_count" nolabel="1" /></span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

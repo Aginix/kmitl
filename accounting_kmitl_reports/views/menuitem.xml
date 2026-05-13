@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Actions: open the pre-configured instance directly on its result
+         view (the same view mis_builder.preview() uses, so the report
+         renders inline without a "Preview" click). -->
+
+    <record id="action_report_pl_kmitl" model="ir.actions.act_window">
+        <field name="name">งบกำไรขาดทุน</field>
+        <field name="res_model">mis.report.instance</field>
+        <field name="res_id" eval="ref('instance_pl_kmitl')"/>
+        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_report_bs_kmitl" model="ir.actions.act_window">
+        <field name="name">งบแสดงฐานะการเงิน</field>
+        <field name="res_model">mis.report.instance</field>
+        <field name="res_id" eval="ref('instance_bs_kmitl')"/>
+        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_report_cf_kmitl" model="ir.actions.act_window">
+        <field name="name">งบกระแสเงินสด</field>
+        <field name="res_model">mis.report.instance</field>
+        <field name="res_id" eval="ref('instance_cf_kmitl')"/>
+        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Menus under accounting_kmitl Reports submenu -->
+    <menuitem
+        id="menu_report_trial_balance_kmitl"
+        name="งบทดลอง"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="account_financial_report.action_trial_balance_wizard"
+        sequence="5"
+    />
+    <menuitem
+        id="menu_report_pl_kmitl"
+        name="งบกำไรขาดทุน"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_report_pl_kmitl"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_report_bs_kmitl"
+        name="งบแสดงฐานะการเงิน"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_report_bs_kmitl"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_report_cf_kmitl"
+        name="งบกระแสเงินสด"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_report_cf_kmitl"
+        sequence="30"
+    />
+
+</odoo>

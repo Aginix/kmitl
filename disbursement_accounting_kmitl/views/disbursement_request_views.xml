@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- DR action for accountant queue (default filter: state=approved) -->
+    <record id="action_disbursement_request_accounting" model="ir.actions.act_window">
+        <field name="name">Disbursement Requests</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_approved": 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ไม่มีใบขอเบิกที่รออนุมัติเบิก
+            </p>
+            <p>
+                ใบขอเบิกที่ผู้อนุมัติอนุมัติแล้ว รอเจ้าหน้าที่บัญชีตั้งหนี้
+            </p>
+        </field>
+    </record>
+
+    <!-- DR menu in the Accounting app (DR is the navigation document) -->
+    <menuitem
+        id="menu_accounting_disbursement_request"
+        name="Disbursement Requests"
+        parent="accounting_kmitl.menu_accounting_root"
+        action="action_disbursement_request_accounting"
+        sequence="5"
+    />
+
+    <!-- Form view: add Create Bill button + Bills smart button -->
+    <record id="view_disbursement_request_form_inherit_accounting" model="ir.ui.view">
+        <field name="name">disbursement.request.form.inherit.accounting_kmitl</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
+        <field name="arch" type="xml">
+            <!-- Create Bill button placed after Approve -->
+            <xpath expr="//button[@name='action_approve']" position="after">
+                <button name="action_create_bill"
+                        string="Create Bill"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"/>
+            </xpath>
+
+            <!-- Bills smart button -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_bill"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        attrs="{'invisible': [('bill_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">ใบตั้งหนี้ <field name="bill_count" nolabel="1" /></span>
+                        <span class="o_stat_text text-muted small"><field name="bill_status_display" nolabel="1" /></span>
+                    </div>
+                </button>
+                <field name="bill_draft_count" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
