@@ -238,6 +238,16 @@ class DisbursementRequest(models.Model):
         return super().action_cancel()
 
     def action_create_bill(self):
+        self.ensure_one()
+        existing_bills = self.bill_ids.filtered(lambda b: b.state != "cancel")
+        if existing_bills:
+            raise UserError(
+                _(
+                    "Cannot create new bill: existing bill(s) %s are still "
+                    "in progress. Cancel them first before creating a new one."
+                )
+                % ", ".join(existing_bills.mapped("name"))
+            )
         bills = self._create_bill()
         if len(bills) == 1:
             return {
