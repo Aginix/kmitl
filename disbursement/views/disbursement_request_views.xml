@@ -253,4 +253,7 @@
 
     <!-- Configuration submenu -->
     <menuitem id="menu_disbursement_config" name="Configuration" parent="menu_disbursement_root" sequence="100" groups="disbursement.group_disbursement_manager"/>
+
+    <!-- Disbursement Requests submenu for Purchase Contract -->
+     <menuitem id="menu_disbursement_request_sub_purchase" name="Disbursement Requests" parent="menu_disbursement_root" action="action_disbursement_request" sequence="10" groups="disbursement.group_disbursement_user"/>
 </odoo>
