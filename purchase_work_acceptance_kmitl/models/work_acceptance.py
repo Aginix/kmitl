@@ -127,12 +127,10 @@ class WorkAcceptance(models.Model):
     amount_tax = fields.Monetary(
         compute="_compute_amount_tax",
         string="Tax Amount",
-        store=True,
     )
     amount_total = fields.Monetary(
         compute="_compute_amount_total",
         string="Total Amount",
-        store=True,
     )
 
     fines_total = fields.Monetary(
