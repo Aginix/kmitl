@@ -8,12 +8,13 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "license": "AGPL-3",
+    "maintainers": ["n3n"],
+    "development_status": "Beta",
     "depends": [
         "mis_builder",
     ],
     "data": [
         "views/mis_report_views.xml",
-        "views/report_qweb_inherit.xml",
     ],
     "assets": {
         "web.assets_backend": [

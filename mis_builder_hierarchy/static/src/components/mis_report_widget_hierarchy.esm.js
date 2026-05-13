@@ -7,6 +7,9 @@ patch(MisReportWidget.prototype, "mis_builder_hierarchy", {
     setup() {
         this._super(...arguments);
         this.state.collapsed = {};
+        this._hiddenKeysCache = null;
+        this._hiddenKeysBody = null;
+        this._hiddenKeysCollapsed = null;
     },
 
     toggleRow(rowKey) {
@@ -16,33 +19,43 @@ patch(MisReportWidget.prototype, "mis_builder_hierarchy", {
         };
     },
 
-    isRowHidden(row) {
-        if (!row.parent_row_key) {
-            return false;
-        }
+    get hiddenKeys() {
         const body = this.state.mis_report_data.body || [];
+        const collapsed = this.state.collapsed;
+        if (
+            this._hiddenKeysCache &&
+            this._hiddenKeysBody === body &&
+            this._hiddenKeysCollapsed === collapsed
+        ) {
+            return this._hiddenKeysCache;
+        }
         const byKey = {};
         for (const r of body) {
             if (r.row_key) {
                 byKey[r.row_key] = r;
             }
         }
-        let key = row.parent_row_key;
-        while (key) {
-            if (this.state.collapsed[key]) {
-                return true;
+        const hidden = new Set();
+        for (const r of body) {
+            let key = r.parent_row_key;
+            while (key) {
+                if (collapsed[key]) {
+                    hidden.add(r.row_key);
+                    break;
+                }
+                key = byKey[key] ? byKey[key].parent_row_key : null;
             }
-            const parent = byKey[key];
-            key = parent ? parent.parent_row_key : null;
         }
-        return false;
+        this._hiddenKeysCache = hidden;
+        this._hiddenKeysBody = body;
+        this._hiddenKeysCollapsed = collapsed;
+        return hidden;
     },
 
-    rowIndentStyle(row) {
-        const level = row.level || 0;
-        if (!level) {
-            return "";
+    isRowHidden(row) {
+        if (!row.parent_row_key) {
+            return false;
         }
-        return `padding-left: ${level * 1.5}em;`;
+        return this.hiddenKeys.has(row.row_key);
     },
 });

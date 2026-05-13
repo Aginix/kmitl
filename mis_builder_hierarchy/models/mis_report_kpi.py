@@ -1,4 +1,4 @@
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class MisReportKpi(models.Model):
@@ -7,16 +7,14 @@ class MisReportKpi(models.Model):
     auto_expand_accounts_hierarchical = fields.Boolean(
         string="Expand as hierarchy",
         help="When 'Display details by account' is set, render detail rows as a "
-        "tree using the source model's parent_id field (e.g. account.account, "
-        "account.analytic.account). Parent rows auto-aggregate child values.",
+        "tree using the source model's parent_id (parent_path). Parent rows are "
+        "created automatically; child values are aggregated bottom-up.",
     )
-    auto_expand_accounts_rollup = fields.Selection(
-        [("sum", "Sum"), ("none", "None")],
-        string="Hierarchy rollup",
-        default="sum",
-        help="How parent rows are computed from children. "
-        "Sum: parent value = own value + sum of descendants. "
-        "None: parent shows only its own direct value.",
+    auto_expand_accounts_rollup = fields.Boolean(
+        string="Rollup children into parents",
+        default=True,
+        help="When set, parent rows display the sum of their own value and "
+        "all descendant values. Otherwise parents show only their own value.",
     )
 
     @api.onchange("auto_expand_accounts")

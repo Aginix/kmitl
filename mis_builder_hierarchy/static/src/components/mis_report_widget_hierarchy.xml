@@ -2,7 +2,6 @@
 <templates>
 
     <t
-        t-name="mis_builder_hierarchy.MisReportWidget"
         t-inherit="mis_builder.MisReportWidget"
         t-inherit-mode="extension"
         owl="1"
@@ -11,10 +10,7 @@
             <attribute name="t-if">!isRowHidden(row)</attribute>
         </xpath>
         <xpath expr="//tbody/tr/td[1]" position="replace">
-            <td
-                t-att-style="(row.style || '') + ';' + rowIndentStyle(row)"
-                class="o_mis_hierarchy_label"
-            >
+            <td t-att="{'style': row.style}">
                 <span
                     t-if="row.has_children"
                     class="o_mis_tree_toggle fa"
