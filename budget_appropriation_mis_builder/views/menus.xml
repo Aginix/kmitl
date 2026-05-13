@@ -9,7 +9,7 @@
         sequence="80"
     />
 
-    <!-- Action: open the Budget Appropriation Expense MIS Report instance -->
+    <!-- Action: open the Budget Appropriation Expense MIS Report preview -->
     <record
         id="action_mis_report_budget_appropriation_expense"
         model="ir.actions.act_window"
@@ -17,6 +17,10 @@
         <field name="name">รายงานการจัดสรรงบประมาณรายจ่าย แยกตามประเภทงบประมาณ</field>
         <field name="res_model">mis.report.instance</field>
         <field name="view_mode">form</field>
+        <field
+            name="view_id"
+            ref="mis_builder.mis_report_instance_result_view_form"
+        />
         <field
             name="res_id"
             eval="ref('mis_report_instance_budget_appropriation_expense')"
