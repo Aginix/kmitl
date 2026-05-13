@@ -39,7 +39,7 @@
             <xpath expr="//field[@name='procurement_type_id']" position="attributes">
                 <attribute
                     name="domain"
-                >[('is_construction', '=', is_construction)]</attribute>
+                >([('is_construction', '=', True)] if is_construction else [('is_purchase', '=', True)])</attribute>
             </xpath>
 
         </field>
