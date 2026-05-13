@@ -159,7 +159,7 @@
                                         </td>
                                         <td
                                             colspan="3"
-                                            class="text-end"
+                                            class="text-center"
                                             t-out="'{0:,.2f}'.format(line.purchase_line_id.product_qty)"
                                         />
                                         <!-- <td
