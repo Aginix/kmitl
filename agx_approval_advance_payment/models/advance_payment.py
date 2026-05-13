@@ -27,6 +27,12 @@ class AdvancePayment(models.Model):
             if rec.approval_request_id:
                 rec.is_reference_visible = True
 
+    @api.onchange("loan_type_id")
+    def _onchange_loan_type_id(self):
+        if self.approval_request_id:
+            return
+        super()._onchange_loan_type_id()
+
     @api.depends("approval_request_id")
     def _compute_approval_request_count(self):
         for rec in self:

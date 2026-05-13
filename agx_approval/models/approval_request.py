@@ -19,7 +19,7 @@ class ApprovalRequest(models.Model):
         "submitted": [("readonly", True)],
         "approved": [("readonly", True)],
         "billed": [("readonly", True)],
-        "cancelled": [("readonly", True)],
+        "rejected": [("readonly", True)],
     }
 
     attachment_ids = fields.One2many(
@@ -183,7 +183,7 @@ class ApprovalRequest(models.Model):
         ("validated", "Validated"),
         ("approved", "Approved"),
         ("billed", "Billed"),
-        ("cancelled", "Cancelled"),
+        ("rejected", "Rejected"),
     ],
         default="draft",
         string="state"
@@ -200,10 +200,13 @@ class ApprovalRequest(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+        domain=lambda self: self._domain_budget_account_id(),
         copy=False,
         tracking=True,
     )
+
+    def _domain_budget_account_id(self):
+        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
 
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -358,9 +361,9 @@ class ApprovalRequest(models.Model):
 
     def action_cancel(self):
         for record in self:
-            if record.state == "cancelled":
-                raise UserError(_("Request is already cancelled."))
-            record.state = "cancelled"
+            if record.state == "rejected":
+                raise UserError(_("Request is already rejected."))
+            record.state = "rejected"
             if record.budget_commitment_id:
                 try:
                     record._cancel_budget_commitment()
@@ -382,7 +385,7 @@ class ApprovalRequest(models.Model):
                 try:
                     record._cancel_budget_commitment()
                     record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
+                        body=_("Budget commitment %s has been rejected")
                         % record.budget_commitment_id.name
                     )
                 except UserError as e:
@@ -531,7 +534,7 @@ class ApprovalRequest(models.Model):
                 "validated",
                 "approved",
                 "billed",
-                "cancelled"
+                "rejected"
             ):
                 rec.is_editable = False
             else:
