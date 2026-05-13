@@ -147,8 +147,28 @@
                             <field name="compare_summary_id" domain="[('id', '!=', id)]" />
                             <field name="council_meeting_no" />
                             <field name="council_meeting_date" />
-                            <field name="amount_revenue_total" />
-                            <field name="amount_expense_total" />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="ประมาณการรายรับ">
+                            <field name="amount_revenue_gross" />
+                            <field name="amount_revenue_deduct" />
+                            <field
+                                style="text-decoration-line: underline; text-decoration-style: double;"
+                                name="amount_revenue_total"
+                            />
+                        </group>
+                        <group string="สรุปตามประเภทงบ">
+                            <field name="personnel_expense_amount" />
+                            <field name="operating_expense_amount" />
+                            <field name="capital_expenditure_amount" />
+                            <field name="subsidy_amount" />
+                            <field name="other_expenditure_amount" />
+                            <field name="reserve_fund_amount" />
+                            <field
+                                style="text-decoration-line: underline; text-decoration-style: double;"
+                                name="amount_expense_total"
+                            />
                         </group>
                     </group>
                     <notebook>

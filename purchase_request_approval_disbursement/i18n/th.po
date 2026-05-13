@@ -46,7 +46,7 @@ msgstr "สถานะการเบิก"
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__cancel
 msgid "Cancelled"
-msgstr "ยกเลิกแล้ว"
+msgstr "ตีกลับ"
 
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
@@ -75,9 +75,14 @@ msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
 #. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__done
+msgid "Done"
+msgstr "เบิกจ่ายเสร็จสิ้น"
+
+#. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__draft
 msgid "Draft"
-msgstr "แบบร่าง"
+msgstr "ร่าง"
 
 #. module: purchase_request_approval_disbursement
 #. odoo-python
@@ -124,7 +129,7 @@ msgstr ""
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__submitted
 msgid "Submitted"
-msgstr "ส่งข้อมูลแล้ว"
+msgstr "รออนุมัติ"
 
 #. module: purchase_request_approval_disbursement
 #. odoo-python
@@ -144,9 +149,9 @@ msgid "Use Purchase Order"
 msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_request_approval_disbursement
-#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__validated
-msgid "Validated"
-msgstr "ตรวจสอบแล้ว"
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__in_progress
+msgid "In Progress"
+msgstr "อยู่ระหว่างเบิกจ่าย"
 
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form

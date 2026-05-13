@@ -10,7 +10,7 @@
         "account",
         "budget",
         "account_fiscal_year_enhance",
-        "account_payment_kmitl",
+        "finance_kmitl",
         "base_exception",
         "l10n_th_account_tax",
         "base_fontawesome",

@@ -791,139 +791,139 @@
             <field name="parent_id" ref="account_analytic_kmitl.activity_090110301" />
         </record>
         <record id="account_analytic_kmitl.activity_09006" model="account.analytic.account">
-            <field name="code">09006</field>
+            <field name="code">06006</field>
             <field name="name">แผนงานยุทธศาสตร์</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09" />
         </record>
         <record id="account_analytic_kmitl.activity_090060601" model="account.analytic.account">
-            <field name="code">090060601</field>
+            <field name="code">060060601</field>
             <field name="name">กิจกรรมหลัก งานพัฒนาและผลิตกำลังคนของประเทศ เพื่อรองรับนโยบาย Thailand 4.0</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060160" model="account.analytic.account">
-            <field name="code">09006060160</field>
+            <field name="code">06006060160</field>
             <field name="name">กิจกรรมรอง พัฒนารูปแบบข้อสอบวัดระดับมาตราฐานภาษาอังกฤษสำหรับบุคลากรในภาคอุตสาหกรรม S – Curve</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060161" model="account.analytic.account">
-            <field name="code">09006060161</field>
+            <field name="code">06006060161</field>
             <field name="name">กิจกรรมรอง ยกระดับแรงงานไทยในภาคอุตสาหกรรมให้มีศักยภาพเพิ่มขึ้น เพื่อเพิ่มขีดความสามารถในการแข่งขันของประเทศ</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060162" model="account.analytic.account">
-            <field name="code">09006060162</field>
+            <field name="code">06006060162</field>
             <field name="name">กิจกรรมรอง กำลังคนต้นแบบด้านวิทยาศาสตร์และเทคโนโลยี เพื่อตอบสนองความต้องการภาคอุตสาหกรรมตามนโยบายรัฐบาล (KNAST)</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060163" model="account.analytic.account">
-            <field name="code">09006060163</field>
+            <field name="code">06006060163</field>
             <field name="name">กิจกรรมรอง ผลิตและพัฒนากำลังคนระดับอาชีวศึกษาและอุดมศึกษาตามความต้องการของประเทศ (ปริญญาตรีต่อเนื่อง)</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060164" model="account.analytic.account">
-            <field name="code">09006060164</field>
+            <field name="code">06006060164</field>
             <field name="name">กิจกรรมรอง พัฒนาทรัพยากรบุคคลตามโครงการยกระดับคุณภาพหลักสูตรตามนโยบายกระทรวงศึกษาธิการ สำหรับสาขาอุตสาหกรรมเป้าหมายเร่งด่วนของประเทศ(อาชีวะพรีเมี่ยม)</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
         </record>
         <record id="account_analytic_kmitl.activity_090060602" model="account.analytic.account">
-            <field name="code">090060602</field>
+            <field name="code">060060602</field>
             <field name="name">กิจกรรมหลัก งานสร้างกำลังคนที่มีสมรรถนะสูง สำหรับอุตสาหกรรม New Growth Engine ตามนโยบาย Thailand 4.0</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060265" model="account.analytic.account">
-            <field name="code">09006060265</field>
+            <field name="code">06006060265</field>
             <field name="name">กิจกรรมรอง สร้างกำลังคนที่มีสมรรถนะสูง สำหรับอุตสาหกรรมNew Growth Engine ตามนโยบาย Thailand 4.0 (บัณฑิตพันธ์ใหม่)</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060602" />
         </record>
         <record id="account_analytic_kmitl.activity_090060603" model="account.analytic.account">
-            <field name="code">090060603</field>
+            <field name="code">060060603</field>
             <field name="name">กิจกรรมหลัก งานพัฒนากำลังคนด้านวิศวกรรมศาสตร์เทคโนโลยีและนวัตกรรม</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060366" model="account.analytic.account">
-            <field name="code">09006060366</field>
+            <field name="code">06006060366</field>
             <field name="name">กิจกรรมรอง พัฒนาผู้มีความสามารถพิเศษด้านวิทยาศาสตร์และคณิตศาสตร์ (โคเซ็น)</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060603" />
         </record>
         <record id="account_analytic_kmitl.activity_090060604" model="account.analytic.account">
-            <field name="code">090060604</field>
+            <field name="code">060060604</field>
             <field name="name">กิจกรรมหลัก งานวิจัยและพัฒนานวัตกรรม</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060467" model="account.analytic.account">
-            <field name="code">09006060467</field>
+            <field name="code">06006060467</field>
             <field name="name">กิจกรรมรอง สถานีอัดประจุยานพาหนะไฟฟ้าแบบเคลื่อนย้ายได้โดยใช้พลังงานแสงอาทิตย์</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060468" model="account.analytic.account">
-            <field name="code">09006060468</field>
+            <field name="code">06006060468</field>
             <field name="name">กิจกรรมรอง ความเป็นเลิศด้านวิจัยและพัฒนาเทคโนโลยีและนวัตกรรมจากวัสดุอนุพันธ์กราฟี นขั้นแนวหน้าสำหรับอุตสาหกรรมสมัยใหม่</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060469" model="account.analytic.account">
-            <field name="code">09006060469</field>
+            <field name="code">06006060469</field>
             <field name="name">กิจกรรมรอง เพิ่มผลผลิตข้าวโพดเลี้ยงสัตว์และมูลค่าวัสดุเหลือใช้ทางการเกษตรในอุตสาหกรรมอาหารสัตว์</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060470" model="account.analytic.account">
-            <field name="code">09006060470</field>
+            <field name="code">06006060470</field>
             <field name="name">กิจกรรมรอง การใช้ประโยชน์ของวัตถุดิบพื้นถิ่นอย่างคุ้มค่าและต่อยอดพัฒนาเศรษฐกิจฐานรากของชุมชน</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
         </record>
         <record id="account_analytic_kmitl.activity_090060605" model="account.analytic.account">
-            <field name="code">090060605</field>
+            <field name="code">060060605</field>
             <field name="name">กิจกรรมหลัก งานพัฒนาทักษะกำลังคนของประเทศ</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060571" model="account.analytic.account">
-            <field name="code">09006060571</field>
+            <field name="code">06006060571</field>
             <field name="name">กิจกรรมรอง เรียนรู้ตลอดชีวิตและพัฒนาทักษะเพื่ออนาคต (Upskill/Reskill)</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060605" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060572" model="account.analytic.account">
-            <field name="code">09006060572</field>
+            <field name="code">06006060572</field>
             <field name="name">กิจกรรมรอง ยุวชนอาสา</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060605" />
         </record>
         <record id="account_analytic_kmitl.activity_090060606" model="account.analytic.account">
-            <field name="code">090060606</field>
+            <field name="code">060060606</field>
             <field name="name">กิจกรรมหลัก งาน 1 อำเภอ 1 แปลงเกษตรอัจฉริยะ</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060673" model="account.analytic.account">
-            <field name="code">09006060673</field>
+            <field name="code">06006060673</field>
             <field name="name">กิจกรรมรอง ส่งเสริมและพัฒนาต้นแบบเกษตรอัจฉริยะ</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060606" />
         </record>
         <record id="account_analytic_kmitl.activity_090060607" model="account.analytic.account">
-            <field name="code">090060607</field>
+            <field name="code">060060607</field>
             <field name="name">กิจกรรมหลัก งานพัฒนาความเป็นเลิศของสถาบันอุดมศึกษาและพัฒนากำลังคนขั้นสูง</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
         </record>
         <record id="account_analytic_kmitl.activity_09006060774" model="account.analytic.account">
-            <field name="code">09006060774</field>
+            <field name="code">06006060774</field>
             <field name="name">กิจกรรมรอง พัฒนาหลักสูตรรูปแบบ Entrepreneurship Educationที่เป็น Niche Area หรือ Strength ของสถาบันอุดมศึกษา</field>
             <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
             <field name="parent_id" ref="account_analytic_kmitl.activity_090060607" />

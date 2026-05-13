@@ -7,7 +7,7 @@
     "website": "https://www.kmitl.ac.th",
     "depends": [
         "purchase_guarantee_kmitl",
-        "account_payment_kmitl",
+        "finance_kmitl",
     ],
     "data": [
         "security/ir.model.access.csv",

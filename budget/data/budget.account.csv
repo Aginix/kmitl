@@ -378,7 +378,7 @@ budget_account_07020,expense,07020,งบกองทุนสำรอง,,,tru
 budget_account_0702000000,expense,0702000000,กองทุนสำรอง,budget_account_07020,,true,account_analytic_kmitl.fund_0702
 budget_account_0702000001,expense,0702000001,เงินชดใช้เงินคงคลัง,budget_account_0702000000,,true,account_analytic_kmitl.fund_0702
 budget_account_0702000002,expense,0702000002,เงินสำรอง,budget_account_0702000000,,true,account_analytic_kmitl.fund_0702
-budget_account_r49000,revenue,"r49000","ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ",,,true,
+budget_account_r49000,revenue,"43100 (ก)","ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ",,,true,
 budget_account_r43100,revenue,"43100","รายได้ค่าธรรมเนียมการศึกษา",budget_account_r49000,,true,
 budget_account_r4121010010,revenue,"4121010010","รายได้ค่าบำรุงกีฬา",budget_account_r43100,,true,
 budget_account_r4121010011,revenue,"4121010011","รายได้ค่าบำรุงห้องสมุด",budget_account_r43100,,true,

@@ -10,7 +10,7 @@
                 'account_asset_kmitl', 'account_asset_number_kmitl', 'account_asset_operating_unit_access_all',
                 'account_asset_batch', 'account_asset_subcomponent_kmitl',
                 'account_fiscal_year_all_user', 'account_fiscal_year_enhance',
-                'disbursement', 'account_move_kmitl',
+                'disbursement', 'accounting_kmitl',
                 'analytic_operating_unit_tree', 'base_tier_validation_comment', 'budget_account_mass_edit',
                 'budget_analytic_account', 'budget_appropriation_operating_unit',
                 'budget_appropriation_report',

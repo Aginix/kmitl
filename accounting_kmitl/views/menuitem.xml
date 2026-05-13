@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root menu -->
+    <menuitem
+        id="menu_accounting_root"
+        name="Accounting"
+        web_icon="accounting_kmitl,static/description/icon.png"
+        sequence="55"
+        groups="accounting_kmitl.group_accounting_kmitl_user"
+    />
+
+    <!-- ใบตั้งเจ้าหนี้ (Vendor Bills) -->
+    <menuitem
+        id="menu_vendor_bills"
+        name="ใบตั้งเจ้าหนี้"
+        parent="menu_accounting_root"
+        action="account.action_move_in_invoice_type"
+        sequence="10"
+    />
+
+    <!-- ใบล้างเจ้าหนี้ — journal entries created from vendor payments -->
+    <record id="action_vendor_payment_moves" model="ir.actions.act_window">
+        <field name="name">ใบล้างเจ้าหนี้</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payment_id', '!=', False), ('payment_id.partner_type', '=', 'supplier'), ('payment_id.payment_type', '=', 'outbound')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+    <menuitem
+        id="menu_vendor_payment_moves"
+        name="ใบล้างเจ้าหนี้"
+        parent="menu_accounting_root"
+        action="action_vendor_payment_moves"
+        sequence="15"
+    />
+
+    <!-- Journal Entries -->
+    <menuitem
+        id="menu_journal_entries"
+        name="Journal Entries"
+        parent="menu_accounting_root"
+        action="account.action_move_journal_line"
+        sequence="20"
+    />
+
+    <!-- Reports submenu (placeholder — extend ผ่านโมดูล report ในอนาคต) -->
+    <menuitem
+        id="menu_accounting_reports"
+        name="Reports"
+        parent="menu_accounting_root"
+        sequence="80"
+    />
+
+    <!-- Configuration (manager only) -->
+    <menuitem
+        id="menu_accounting_config"
+        name="Configuration"
+        parent="menu_accounting_root"
+        sequence="90"
+        groups="accounting_kmitl.group_accounting_kmitl_manager"
+    />
+    <menuitem
+        id="menu_config_chart_of_accounts"
+        name="Chart of Accounts"
+        parent="menu_accounting_config"
+        action="account.action_account_form"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_config_journals"
+        name="Journals"
+        parent="menu_accounting_config"
+        action="account.action_account_journal_form"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_config_taxes"
+        name="Taxes"
+        parent="menu_accounting_config"
+        action="account.action_tax_form"
+        sequence="30"
+    />
+
+</odoo>

@@ -55,7 +55,7 @@
         <field name="name">kris.project.form</field>
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
-            <form>
+            <form class="kris_project_form">
                 <header>
                     <button
                         name="action_confirm"
@@ -69,24 +69,25 @@
                         string="Done"
                         type="object"
                         class="btn-primary"
-                        states="confirmed"
+                        states="in_progress"
                     />
                     <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="draft,confirmed"
+                        states="draft,in_progress,done"
                     />
                     <button
                         name="action_draft"
                         string="Reset to Draft"
                         type="object"
                         states="cancel"
+                        groups="kris_project.group_kris_project_manager"
                     />
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,confirmed,done"
+                        statusbar_visible="draft,in_progress,done"
                     />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
@@ -102,13 +103,13 @@
                         <h1>
                             <field name="name" readonly="1"/>
                         </h1>
-                        <h2>
+                        <h1>
                             <field
                                 name="project_name"
                                 placeholder="Project Name..."
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
-                        </h2>
+                        </h1>
                     </div>
                     <field name="currency_id" invisible="1"/>
                     <group>
@@ -116,46 +117,38 @@
                             <field
                                 name="project_category_id"
                                 widget="selection"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field
                                 name="project_type_id"
                                 widget="radio"
                                 domain="[('category_id', '=', project_category_id)]"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
-                            <!-- <field
-                                name="partner_id"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
-                            />
-                            <field
-                                name="client_org_type"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
-                            /> -->
                             <field
                                 name="leader_id"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field
                                 name="department_id"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field
                                 name="user_id"
                                 widget="many2one_avatar_user"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                         </group>
                         <group string="Contract Information">
                             <field
                                 name="contract_number"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <label for="date_contract_start" string="Date Start" />
                             <div name="date_contract_start_div" class="o_row">
-                                <field name="date_contract_start" attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}" />
+                                <field name="date_contract_start" attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}" />
                                 <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
-                                <field name="date_contract_end" attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}" />
+                                <field name="date_contract_end" attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}" />
                             </div>
                             <label for="project_duration"/>
                             <div>
@@ -163,7 +156,7 @@
                             </div>
                             <field
                                 name="account_fiscal_year_id"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                         </group>
                     </group>
@@ -171,19 +164,19 @@
                         <group string="Client/Funding Organization">
                             <field
                                 name="client_name"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field
                                 name="client_location"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field
                                 name="client_tax_number"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field
                                 name="client_org_type"
-                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                         </group>
                     </group>
@@ -194,29 +187,29 @@
                                 <group string="1. Project Value">
                                     <field
                                         name="project_value"
-                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                     />
                                     <field
                                         name="equipment_cost"
-                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                     />
                                     <field
                                         name="operating_expense"
-                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                     />
                                 </group>
                                 <group string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
                                         name="maintenance_deduction_type"
-                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                         widget="radio"
                                     />
                                     <field
                                         name="maintenance_deduction_pct"
                                         attrs="{
                                             'invisible': [('maintenance_deduction_type', '!=', 'custom')],
-                                            'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]
+                                            'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]
                                         }"
                                     />
                                     <field name="maintenance_deduction_amount" readonly="1"/>
@@ -387,17 +380,19 @@
             <tree>
                 <field name="name"/>
                 <field name="project_name"/>
-                <field name="project_category_id"/>
+                <field name="contract_number" optional="show"/>
+                <field name="project_category_id" optional="show"/>
                 <field name="project_type_id" optional="show"/>
-                <!-- <field name="partner_id"/> -->
-                <field name="client_name"/>
                 <field name="leader_id" optional="show"/>
+                <field name="user_id" optional="show"/>
+                <field name="client_name" optional="show"/>
                 <field name="department_id"/>
-                <field name="project_value" sum="รวม"/>
+                <field name="account_fiscal_year_id" optional="show"/>
+                <field name="project_value" sum="รวม" optional="show"/>
                 <field name="total_received_amount" sum="รวม" optional="show"/>
                 <field name="state" widget="badge"
                     decoration-info="state == 'draft'"
-                    decoration-primary="state == 'confirmed'"
+                    decoration-primary="state == 'in_progress'"
                     decoration-success="state == 'done'"
                     decoration-danger="state == 'cancel'"
                 />
@@ -416,14 +411,13 @@
             <search>
                 <field name="name" string="Project Number"/>
                 <field name="project_name" string="Project Name"/>
-                <!-- <field name="partner_id"/> -->
                  <field name="client_name"/>
                 <field name="leader_id"/>
                 <field name="project_category_id"/>
                 <field name="project_type_id"/>
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="confirmed" string="Confirm" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
                 <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
                 <filter name="cancel" string="Cancel" domain="[('state', '=', 'cancel')]"/>
                 <separator/>
@@ -445,6 +439,26 @@
     </record>
 
     <!-- ============================================================ -->
+    <!-- PIVOT VIEW                                                   -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_pivot" model="ir.ui.view">
+        <field name="name">kris.project.pivot</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <pivot string="KRIS Project Analysis" disable_linking="True">
+                <field name="project_category_id" type="row"/>
+                <field name="project_type_id" type="row"/>
+                <field name="project_value" type="measure"/>
+                <field name="maintenance_deduction_amount" type="measure"/>
+                <field name="total_received_amount" type="measure"/>
+                <field name="total_net_received" type="measure"/>
+                <field name="revenue_remaining" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
     <!-- ACTION                                                       -->
     <!-- ============================================================ -->
 
@@ -460,7 +474,7 @@
     <record id="action_kris_project" model="ir.actions.act_window">
         <field name="name">KRIS Project</field>
         <field name="res_model">kris.project</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,pivot,form</field>
         <field name="search_view_id" ref="view_kris_project_search"/>
         <field name="context">{}</field>
         <field name="help" type="html">

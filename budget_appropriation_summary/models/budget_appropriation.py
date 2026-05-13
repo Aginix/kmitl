@@ -10,6 +10,25 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriation(models.Model):
     _inherit = "budget.appropriation"
 
+    # Inverse M2M needed so Odoo registers field_inverses and propagates
+    # amount_net changes back to compilation stored computes.
+    revenue_compilation_ids = fields.Many2many(
+        comodel_name="budget.appropriation.compilation",
+        relation="budget_appropriation_compilation_revenue_rel",
+        column1="appropriation_id",
+        column2="compilation_id",
+        string="รวมเล่ม (รายรับ)",
+        copy=False,
+    )
+    expense_compilation_ids = fields.Many2many(
+        comodel_name="budget.appropriation.compilation",
+        relation="budget_appropriation_compilation_expense_rel",
+        column1="appropriation_id",
+        column2="compilation_id",
+        string="รวมเล่ม (รายจ่าย)",
+        copy=False,
+    )
+
     treasury_replenishment_amount = fields.Monetary(
         string="ชดใช้เงินคงคลัง",
         currency_field="currency_id",

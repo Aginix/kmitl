@@ -674,5 +674,25 @@
             <field name="acc_holder_name">นางสาว ปิยะนุช เทคนิค</field>
             <field name="allow_out_payment" eval="True"/>
         </record>
+
+        <!-- ============================================================ -->
+        <!-- Bank Accounts for Admin User                                 -->
+        <!-- ============================================================ -->
+
+        <!-- Admin: Administrator -->
+        <record id="admin_bank_account_1" model="res.partner.bank">
+            <field name="acc_number">900-0-00001-0</field>
+            <field name="partner_id" ref="base.partner_admin"/>
+            <field name="bank_id" ref="bank_ktb"/>
+            <field name="acc_holder_name">Administrator</field>
+            <field name="allow_out_payment" eval="True"/>
+        </record>
+        <record id="admin_bank_account_2" model="res.partner.bank">
+            <field name="acc_number">900-0-00002-0</field>
+            <field name="partner_id" ref="base.partner_admin"/>
+            <field name="bank_id" ref="bank_scb"/>
+            <field name="acc_holder_name">Administrator</field>
+            <field name="allow_out_payment" eval="True"/>
+        </record>
     </data>
 </odoo>

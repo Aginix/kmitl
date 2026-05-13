@@ -35,12 +35,12 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr style="height:0; visibility:collapse; line-height:0;">
-                            <th style="width: auto;"/>
+                            <th style="width: 150pt;"/>
                             <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                              <th style="width: 70pt;"/>
-                              <th style="width: 30pt;"/>
+                              <th style="width: 55pt;"/>
+                              <th style="width: 22pt;"/>
                             </t>
-                            <th style="width: 70pt;"/>
+                            <th style="width: 55pt;"/>
                         </tr>
                         <tr>
                             <th class="text-center" rowspan="2" style="width: 20%;">หน่วยงาน</th>

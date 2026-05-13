@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_advance_payment" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.advance_payment</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="20"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block"
+                    data-string="สัญญายืมเงิน"
+                    string="สัญญายืมเงิน"
+                    data-key="advance_payment"
+                    groups="advance_payment.group_advance_payment_manager">
+                    <h2>การส่งขออนุมัติ</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="advance_payment_strict_submit"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="advance_payment_strict_submit"/>
+                                <div class="text-muted">
+                                    เมื่อเปิดโหมดนี้ เฉพาะผู้ยืมหรือ Admin เท่านั้นที่สามารถส่งขออนุมัติได้
+                                </div>
+                                <div class="text-muted"
+                                    attrs="{'invisible': [('advance_payment_strict_submit', '=', True)]}">
+                                    ปัจจุบัน: ผู้ยืม, ผู้จัดการ หรือ Admin สามารถส่งขออนุมัติได้
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>แบบฟอร์ม</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="advance_payment_allow_manual_reference"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="advance_payment_allow_manual_reference"/>
+                                <div class="text-muted">
+                                    อนุญาตให้ผู้ใช้ระบุเอกสารอ้างอิง (Reference) เองได้ตอนสร้างสัญญา
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

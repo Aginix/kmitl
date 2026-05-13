@@ -34,6 +34,7 @@
                     </button>
                 </t>
                 <div class="report-header mb-2" contenteditable="false">
+                    <div class="f23w-document-ref">F23-W-วง-002</div>
                     <h4>สรุปงบประมาณรายจ่าย</h4>
                     <h4>
                         ประจำปีงบประมาณ พ.ศ.
@@ -375,6 +376,13 @@
                 position: relative;
                 text-align: center;
                 cursor: not-allowed;
+            }
+
+            .f23w-document-ref {
+                position: absolute;
+                top: 0;
+                right: 0;
+                font-size: 15pt;
             }</style>
     </template>
     <!-- Main report template -->

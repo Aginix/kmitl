@@ -15,15 +15,6 @@ class PurchaseRequestLine(models.Model):
         related='request_id.analytic_distribution'
     )
 
-    product_uom_id = fields.Many2one(
-        comodel_name="uom.uom",
-        domain=lambda self: self._get_unit_domain(),
-    )
-
-    def _get_unit_domain(self):
-        unit_category = self.env.ref('uom.product_uom_categ_unit')
-        return [('category_id', '=', unit_category.id)]
-
     @api.onchange("product_id")
     def onchange_product_id(self):
         pass

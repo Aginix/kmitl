@@ -29,7 +29,7 @@
         "analytic_operating_unit",
         "account_analytic_kmitl",
         "disbursement",
-
+        "purchase_request_approval_work_acceptance",
     ],
     "data": [
         "data/company.xml",
@@ -42,6 +42,7 @@
         "data/account.fiscal.year.csv",
         "data/ir_config_parameter.xml",
         "data/purchase.request.xml",
+        "data/purchase.request.dashboard.demo.xml",
         "data/account.analytic.account.xml",
         "data/res.users.role.xml",
     ],
