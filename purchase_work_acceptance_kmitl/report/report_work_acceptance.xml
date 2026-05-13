@@ -185,30 +185,28 @@
                                     >
                                         (
                                         <t
-                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
-    sum(o.wa_line_ids.mapped('price_subtotal'))
-)"
+                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
                                         />
                                         )
                                     </td>
                                     <td class="text-center">รวมเป็นเงิน</td>
                                     <td
                                         class="text-end"
-                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                        t-esc="'{0:,.2f}'.format(o.price_subtotal)"
                                     />
                                 </tr>
                                 <tr>
                                     <td class="text-center">ภาษีมูลค่าเพิ่ม</td>
                                     <td
                                         class="text-end"
-                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                        t-esc="'{0:,.2f}'.format(o.amount_tax)"
                                     />
                                 </tr>
                                 <tr>
                                     <td class="text-center">รวมเป็นเงินทั้งสิ้น</td>
                                     <td
                                         class="text-end"
-                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                        t-esc="'{0:,.2f}'.format(o.amount_total)"
                                     />
                                 </tr>
                             </tbody>
