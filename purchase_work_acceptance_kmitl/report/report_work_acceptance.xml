@@ -192,7 +192,7 @@
                                     <td class="text-center">รวมเป็นเงิน</td>
                                     <td
                                         class="text-end"
-                                        t-esc="'{0:,.2f}'.format(o.price_subtotal)"
+                                        t-esc="'{0:,.2f}'.format(o.amount_untaxed)"
                                     />
                                 </tr>
                                 <tr>
