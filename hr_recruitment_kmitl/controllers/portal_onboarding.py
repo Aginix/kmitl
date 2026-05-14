@@ -260,6 +260,10 @@ class PortalOnboardingController(http.Controller):
             ("health_employee", "เอกสารของตัวพนักงาน (ประกันสุขภาพกลุ่ม)"),
             ("accident_employee", "เอกสารของผู้สมัคร (ประกันอุบัติเหตุกลุ่ม)"),
         ]
+        if onboarding.applicant_id.job_id.kmitl_employee_type in ("N", "B"):
+            required.append(
+                ("letter_of_consent", "Letter of Consent (ยินยอมให้ตรวจสอบคุณวุฒิ)")
+            )
         missing = [
             label
             for prefix, label in required

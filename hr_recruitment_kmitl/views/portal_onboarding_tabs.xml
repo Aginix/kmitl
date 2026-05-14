@@ -1329,7 +1329,10 @@
                                     <t t-set="name">letter_of_consent_file</t>
                                     <t t-set="label">อัปโหลดไฟล์ Letter of Consent</t>
                                     <t t-set="description">ไฟล์ PDF เท่านั้น</t>
-                                    <t t-set="required" t-value="True" />
+                                    <t
+                                        t-set="required"
+                                        t-value="applicant.job_id.kmitl_employee_type in ('N', 'B')"
+                                    />
                                     <t
                                         t-set="existing_filename"
                                         t-value="onboarding.letter_of_consent_filename or False"
