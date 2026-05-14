@@ -86,7 +86,7 @@ msgstr ""
 #. module: agx_approval_disbursement
 #: model:ir.model.fields,field_description:agx_approval_disbursement.field_approval_request__disbursement_request_ids
 msgid "Disbursement Requests"
-msgstr ""
+msgstr "ใบขอเบิก"
 
 #. module: agx_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form

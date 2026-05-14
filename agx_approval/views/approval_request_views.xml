@@ -151,7 +151,7 @@
                 <field name="name" />
                 <field name="department_id" />
                 <field name="owner_id" />
-                <field name="state" />
+                <field name="state" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-danger="state == 'rejected'"/>
                 <field name="category_id" />
                 <field name="source_analytic_id" />
             </tree>
