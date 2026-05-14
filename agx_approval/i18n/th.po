@@ -173,7 +173,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__billed
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Billed"
-msgstr "เบิกจ่ายแล้ว"
+msgstr "ส่งเบิกแล้ว"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -232,22 +232,22 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_category_menu
 msgid "Categories"
-msgstr "ประเภทคำขออนุมัติค่าใช้จ่าย"
+msgstr "ประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__category_id
 msgid "Category"
-msgstr "ประเภทคำขออนุมัติค่าใช้จ่าย"
+msgstr "ประเภทคำขอ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
 msgid "Category Group"
-msgstr "กลุ่มประเภทคำขออนุมัติค่าใช้จ่าย"
+msgstr "กลุ่มประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_category_group_menu
 msgid "Category Groups"
-msgstr "กลุ่มประเภทคำขออนุมัติค่าใช้จ่าย"
+msgstr "กลุ่มประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__city
@@ -522,7 +522,7 @@ msgstr "เลขที่"
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
 msgid "Name"
-msgstr "ประเภทคำขออนุมัติค่าใช้จ่าย"
+msgstr "ประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_new_request_menu
@@ -698,7 +698,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__submitted
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Submitted"
-msgstr "ส่งคำขอ"
+msgstr "รอการอนุมัติ"
 
 #. module: agx_approval
 #. odoo-python
@@ -720,7 +720,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "To Verify"
-msgstr "ขอการอนุมัติ"
+msgstr "จองงบประมาณ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount

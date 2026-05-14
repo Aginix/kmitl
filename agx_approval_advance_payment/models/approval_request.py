@@ -44,6 +44,7 @@ class ApprovalRequest(models.Model):
         "payment_type",
         "advance_payment_id",
         "advance_payment_id.state",
+        "disbursement_request_ids.state",
     )
     def _compute_show_create_disbursement_button(self):
         for rec in self:
@@ -54,9 +55,13 @@ class ApprovalRequest(models.Model):
                     rec.state == "approved"
                     and bool(rec.advance_payment_id)
                     and rec.advance_payment_id.state == "in_progress"
+                    and not rec.has_active_disbursement
                 )
             else:
-                rec.show_create_disbursement_button = rec.state == "approved"
+                rec.show_create_disbursement_button = (
+                    rec.state == "approved"
+                    and not rec.has_active_disbursement
+                )
 
     def _prepare_advance_payment_vals(self):
         self.ensure_one()

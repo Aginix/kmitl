@@ -39,6 +39,17 @@ class ApprovalRequest(models.Model):
         string='Disbursement Attachments',
     )
 
+    has_active_disbursement = fields.Boolean(
+        compute="_compute_has_active_disbursement",
+    )
+
+    @api.depends("disbursement_request_ids.state")
+    def _compute_has_active_disbursement(self):
+        for record in self:
+            record.has_active_disbursement = any(
+                d.state != "cancel" for d in record.disbursement_request_ids
+            )
+
     @api.depends("disbursement_request_ids")
     def _compute_disbursement_request(self):
         for record in self:
