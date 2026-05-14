@@ -1,26 +1,3 @@
-// When the portal summary is mounted, body gets the .bap-fullwidth class
-// (set in portal_summary.js). portal.portal_layout wraps content in TWO
-// nested .container divs (#wrap > .container.mb64 → .container.o_portal_sidebar),
-// both of which constrain max-width. Strip max-width + horizontal padding
-// from every .container variant under our scope so the dashboard fills
-// the viewport without the 100vw scrollbar-overflow problem.
-body.bap-fullwidth {
-    .container,
-    .container-sm, .container-md, .container-lg,
-    .container-xl, .container-xxl {
-        max-width: 95% !important;
-    }
-    #wrap > .container {
-        margin-bottom: 0 !important;
-    }
-    // Hide the portal breadcrumb bar (rendered by portal.portal_layout as
-    // <div class="o_portal container mt-3">). The o_portal_sidebar element
-    // uses a different class so it's unaffected.
-    > .o_portal {
-        display: none !important;
-    }
-}
-
 .bap-summary {
     background-color: #f6f7fb;
     min-height: 100vh;

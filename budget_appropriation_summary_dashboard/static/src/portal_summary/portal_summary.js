@@ -55,9 +55,6 @@
             this.payload = this._readPayload();
             this.charts = {};
             this.activeTab = this._readTabFromUrl() || "overview";
-            // Switch the portal layout's .container into full-width mode.
-            // Scoped by the body class so it doesn't leak to other pages.
-            document.body.classList.add("bap-fullwidth");
             this._setUpdated();
             this._bindFilters();
             this._bindTabs();
