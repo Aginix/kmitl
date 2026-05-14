@@ -4,7 +4,7 @@
     "category": "Construction",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["base", "hr", "mail", "purchase_request_kmitl"],
+    "depends": ["base", "hr", "mail", "purchase_request_sarabun"],
     "data": [
         "security/ir.model.access.csv",
         "wizard/construction_project_end_wizard_views.xml",

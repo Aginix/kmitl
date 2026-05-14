@@ -73,12 +73,13 @@
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <tree string="Constructions">
-                <field name="name" />
+                <field name="main_sarabun_document_id" optional="show"/>
+                <field name="name" optional="hide"/>
                 <field name="project_id" />
                 <field name="date_start" />
-                <field name="requested_by" widget="many2one_avatar_user" />
+                <field name="requested_by" widget="many2one_avatar_user" optional="show"/>
                 <field name="currency_id" invisible="1" />
-                <field name="estimated_cost" />
+                <field name="estimated_cost" optional="show"/>
                 <field
                     name="state"
                     widget="badge"
