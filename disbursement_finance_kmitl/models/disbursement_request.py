@@ -130,6 +130,16 @@ class DisbursementRequest(models.Model):
     def action_create_payment(self):
         """Create draft payments directly from DR, one per posted unpaid bill."""
         self.ensure_one()
+        existing_payments = self.payment_ids
+        if existing_payments:
+            raise UserError(
+                _(
+                    "Cannot create new payment: existing payment(s) %s are "
+                    "still in progress. Cancel them first before creating a "
+                    "new one."
+                )
+                % ", ".join(existing_payments.mapped("name"))
+            )
         unpaid_bills = self.bill_ids.filtered(
             lambda b: b.state == "posted"
             and b.payment_state in ("not_paid", "partial")
