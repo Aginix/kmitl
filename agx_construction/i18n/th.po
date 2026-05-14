@@ -1,0 +1,450 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_construction
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-14 07:25+0000\n"
+"PO-Revision-Date: 2026-05-14 15:04+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: agx_construction
+#. odoo-python
+#: code:addons/agx_construction/models/construction_project.py:0
+#, python-format
+msgid "All purchase requests must be done before ending the project."
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_end_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: agx_construction
+#: model:ir.model.fields.selection,name:agx_construction.selection__construction_project__state__cancelled
+msgid "Cancelled"
+msgstr "ยกเลิก"
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_end_wizard_view_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_purchase_request__is_construction
+#: model:ir.ui.menu,name:agx_construction.construction_root_menu
+msgid "Construction"
+msgstr "ทะเบียนคุมงานก่อสร้าง"
+
+#. module: agx_construction
+#: model:ir.model,name:agx_construction.model_construction_project
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__project_id
+#: model:ir.model.fields,field_description:agx_construction.field_purchase_request__project_id
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Construction Project"
+msgstr "ทะเบียนคุมงานก่อสร้าง"
+
+#. module: agx_construction
+#: model:ir.actions.act_window,name:agx_construction.action_construction_project
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_search
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_tree
+msgid "Construction Projects"
+msgstr "ทะเบียนคุมงานก่อสร้าง"
+
+#. module: agx_construction
+#: model:ir.actions.act_window,name:agx_construction.action_construction_purchase_request
+#: model:ir.ui.menu,name:agx_construction.construction_purchase_request_menu
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_search
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_tree
+msgid "Constructions"
+msgstr "แบบคำขอซื้อขอจ้าง (พ.1)"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__create_uid
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__create_date
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__department_id
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_search
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__display_name
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_search
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: agx_construction
+#: model:ir.model.fields.selection,name:agx_construction.selection__construction_project__state__draft
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_search
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "End"
+msgstr "ปิด"
+
+#. module: agx_construction
+#. odoo-python
+#: code:addons/agx_construction/models/construction_project.py:0
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_end_wizard_view_form
+#, python-format
+msgid "End Construction Project"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model,name:agx_construction.model_construction_project_end_wizard
+msgid "End Construction Project Wizard"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__date_end
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__date_end
+msgid "End Date"
+msgstr "วันที่ปิดโครงการ"
+
+#. module: agx_construction
+#: model:ir.model.fields.selection,name:agx_construction.selection__construction_project__state__ended
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Ended"
+msgstr "ปิดโครงการ"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_search
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__id
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__message_has_error
+#: model:ir.model.fields,help:agx_construction.field_construction_project__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields.selection,name:agx_construction.selection__construction_project__state__in_progress
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_search
+msgid "In Progress"
+msgstr "อยู่ระหว่างดำเนินการ"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_procurement_type__is_construction
+msgid "Is Construction"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project____last_update
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__write_uid
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__write_date
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__name
+msgid "Name"
+msgstr "ชื่องานก่อสร้าง"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: agx_construction
+#. odoo-python
+#: code:addons/agx_construction/models/construction_project.py:0
+#, python-format
+msgid "Only draft projects can be started."
+msgstr ""
+
+#. module: agx_construction
+#. odoo-python
+#: code:addons/agx_construction/models/construction_project.py:0
+#: code:addons/agx_construction/wizard/construction_project_end_wizard.py:0
+#, python-format
+msgid "Only in-progress projects can be ended."
+msgstr ""
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Open"
+msgstr ""
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "PO"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model,name:agx_construction.model_procurement_type
+msgid "Procurement Method"
+msgstr "วิธีการจัดซื้อจัดจ้าง"
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_search
+msgid "Project"
+msgstr ""
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Project Name"
+msgstr ""
+
+#. module: agx_construction
+#. odoo-python
+#: code:addons/agx_construction/models/construction_project.py:0
+#, python-format
+msgid "Project is already cancelled."
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.ui.menu,name:agx_construction.construction_project_menu
+msgid "Projects"
+msgstr "ทะเบียนคุมงานก่อสร้าง"
+
+#. module: agx_construction
+#: model:ir.model,name:agx_construction.model_purchase_order
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__purchase_order_ids
+msgid "Purchase Orders"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model,name:agx_construction.model_purchase_request
+msgid "Purchase Request"
+msgstr "แบบคำขอซื้อขอจ้าง (พ.1)"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__purchase_request_ids
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Purchase Requests"
+msgstr "แบบคำขอซื้อขอจ้าง (พ.1)"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__ref
+msgid "Reference"
+msgstr "เลขอ้างอิง"
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Reset to Draft"
+msgstr "รีเซ็ท"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
+msgid "Start"
+msgstr "เริ่ม"
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__state
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_search
+msgid "State"
+msgstr "สถานะ"
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,help:agx_construction.field_construction_project__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: agx_construction
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__main_sarabun_document_id
+msgid "Main Sarabun Document"
+msgstr "เลขที่หนังสือ"
