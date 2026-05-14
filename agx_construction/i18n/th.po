@@ -100,6 +100,11 @@ msgid "Constructions"
 msgstr "แบบคำขอซื้อขอจ้าง (พ.1)"
 
 #. module: agx_construction
+#: model_terms:ir.ui.view,arch_db:agx_construction.construction_purchase_request_view_tree
+msgid "Constructions"
+msgstr "แบบคำขอซื้อขอจ้างงานก่อสร้าง"
+
+#. module: agx_construction
 #: model:ir.model.fields,field_description:agx_construction.field_construction_project__create_uid
 #: model:ir.model.fields,field_description:agx_construction.field_construction_project_end_wizard__create_uid
 msgid "Created by"
