@@ -1,6 +1,7 @@
 import base64
-from odoo import fields, http
+from odoo import _, fields, http
 from odoo.addons.portal.controllers.portal import CustomerPortal
+from odoo.exceptions import UserError
 from odoo.http import request
 
 
@@ -245,6 +246,28 @@ class PortalOnboardingController(http.Controller):
             if rec.id not in submitted_ids:
                 rec.unlink()
 
+    def _is_file_present(self, onboarding, prefix, post, files):
+        """Return True if a file for ``prefix`` will exist after save."""
+        upload = files.get(f"{prefix}_file")
+        if upload and upload.filename:
+            return True
+        if post.get(f"delete_{prefix}_file") == "1":
+            return False
+        return bool(getattr(onboarding, f"{prefix}_file"))
+
+    def _validate_required_files(self, onboarding, post, files):
+        required = [
+            ("health_employee", "เอกสารของตัวพนักงาน (ประกันสุขภาพกลุ่ม)"),
+            ("accident_employee", "เอกสารของผู้สมัคร (ประกันอุบัติเหตุกลุ่ม)"),
+        ]
+        missing = [
+            label
+            for prefix, label in required
+            if not self._is_file_present(onboarding, prefix, post, files)
+        ]
+        if missing:
+            raise UserError(_("กรุณากรอกข้อมูลให้ครบถ้วน:\n• ") + "\n• ".join(missing))
+
     def _save_single_file(self, onboarding, prefix, post, files):
         for file_suffix in ["_file", "_filename"]:
             if (
@@ -340,6 +363,8 @@ class PortalOnboardingController(http.Controller):
             return request.redirect(f"/my/onboarding/{onboarding_id}")
 
         if post and request.httprequest.method == "POST":
+            self._validate_required_files(onboarding, post, request.httprequest.files)
+
             self._save_main(onboarding, post, request.httprequest.files)
             self._save_family(onboarding, request.httprequest.form)
 

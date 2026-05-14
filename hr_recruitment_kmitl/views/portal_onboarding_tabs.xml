@@ -1100,7 +1100,10 @@
                             </t>
                         </div>
 
-                        <div class="border-top pt-4">
+                        <div
+                            t-if="applicant.job_id.kmitl_employee_type != 'E'"
+                            class="border-top pt-4"
+                        >
                             <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
                                 <t t-set="name">health_family_files</t>
                                 <t t-set="label">เอกสารของครอบครัว</t>
@@ -1182,7 +1185,10 @@
                             </t>
                         </div>
 
-                        <div class="border-top pt-4">
+                        <div
+                            t-if="applicant.job_id.kmitl_employee_type != 'E'"
+                            class="border-top pt-4"
+                        >
                             <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
                                 <t t-set="name">accident_family_files</t>
                                 <t t-set="label">เอกสารของครอบครัว</t>
@@ -2439,7 +2445,10 @@
                             </div>
                         </div>
 
-                        <div class="border-top pt-4 mt-4">
+                        <div
+                            t-if="applicant.job_id.kmitl_employee_type != 'E'"
+                            class="border-top pt-4 mt-4"
+                        >
                             <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
                             <p class="text-secondary small mb-3">
                                 กรณีประสงค์เพิ่มสิทธิ์ / ซื้อประกันสุขภาพให้คู่สมรสหรือบุตร
@@ -2541,7 +2550,10 @@
                             </div>
                         </div>
 
-                        <div class="border-top pt-4 mt-4">
+                        <div
+                            t-if="applicant.job_id.kmitl_employee_type != 'E'"
+                            class="border-top pt-4 mt-4"
+                        >
                             <h6 class="fw-bold text-dark mb-2">เอกสารของครอบครัว</h6>
                             <p class="text-secondary small mb-3">
                                 กรณีประสงค์ใช้สิทธิ์ / ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา
