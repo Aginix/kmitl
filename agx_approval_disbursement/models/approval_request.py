@@ -81,6 +81,7 @@ class ApprovalRequest(models.Model):
     def _prepare_disbursement_request_vals(self):
         """Prepare vals for a single multi-partner DR from all approval lines."""
         return {
+            "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
             "partner_type": "multi",
             "line_ids": [
