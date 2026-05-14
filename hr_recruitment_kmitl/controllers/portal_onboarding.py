@@ -136,7 +136,6 @@ class PortalOnboardingController(http.Controller):
             "blood_type",
             "background_check_location_type",
             "krungthai_bank_account",
-            "bank_account_name",
             "pdpa_consent",
         ]:
             if field in post:

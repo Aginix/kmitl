@@ -232,7 +232,6 @@
                                 <group string="Background Check &amp; Bank">
                                     <field name="background_check_location_type" />
                                     <field name="krungthai_bank_account" />
-                                    <field name="bank_account_name" />
                                 </group>
                                 <group string="Supporting Documents">
                                     <field

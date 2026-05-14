@@ -70,7 +70,6 @@ class HrOnboarding(models.Model):
         [("police_hq", "Police Headquarters"), ("local_police", "Local Police")]
     )
     krungthai_bank_account = fields.Char()
-    bank_account_name = fields.Char()
     salary_book_file = fields.Binary(attachment=True)
     salary_book_filename = fields.Char()
     medical_certificate_file = fields.Binary(attachment=True)
