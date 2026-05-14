@@ -281,7 +281,7 @@
 
     <!-- Action for Purchase submenu: show all statuses (no pre_approval filter) -->
     <record id="action_disbursement_request_purchase" model="ir.actions.act_window">
-        <field name="name">Disbursement Requests</field>
+        <field name="name">Disbursement Requests Purchase</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
         <field name="views">[(ref('view_disbursement_request_tree_purchase'), 'tree'), (False, 'form')]</field>
