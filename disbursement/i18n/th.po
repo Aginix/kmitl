@@ -352,6 +352,17 @@ msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
 #. module: disbursement
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_request_sub_purchase
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_tree_purchase
+msgid "Disbursement Requests"
+msgstr "รายการขอเบิก"
+
+#. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_request_purchase
+msgid "Disbursement Requests Purchase"
+msgstr "รายการขอเบิก"
+
+#. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__exception_rule__model__disbursement_request_line
 msgid "Disbursement Requests line"
 msgstr "รายการใบขอเบิก"
@@ -571,7 +582,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__name
 msgid "Number"
-msgstr ""
+msgstr "เลขที่ใบขอเบิก"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_needaction_counter
