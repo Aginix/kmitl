@@ -119,14 +119,8 @@ class PortalOnboardingController(http.Controller):
             "age": self._compute_age(applicant.birthday),
             "page_name": "onboarding",
             "education_items": education_items,
-            "health_employee_attachments": prepare_attachment_items(
-                onboarding.health_employee_attachment_ids
-            ),
             "health_family_attachments": prepare_attachment_items(
                 onboarding.health_family_attachment_ids
-            ),
-            "accident_employee_attachments": prepare_attachment_items(
-                onboarding.accident_employee_attachment_ids
             ),
             "accident_family_attachments": prepare_attachment_items(
                 onboarding.accident_family_attachment_ids
@@ -353,6 +347,8 @@ class PortalOnboardingController(http.Controller):
             for prefix in [
                 "royal_decoration_proof",
                 "starting_date_attachment",
+                "health_employee",
+                "accident_employee",
                 "provident_fund",
                 "beneficiary_declaration",
                 "letter_of_consent",
@@ -365,9 +361,7 @@ class PortalOnboardingController(http.Controller):
 
             # Save multi-attachment fields
             for m2m_field in [
-                "health_employee_attachment_ids",
                 "health_family_attachment_ids",
-                "accident_employee_attachment_ids",
                 "accident_family_attachment_ids",
             ]:
                 self._save_multi_attachments(

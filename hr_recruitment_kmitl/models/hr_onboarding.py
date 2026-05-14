@@ -40,13 +40,8 @@ class HrOnboarding(models.Model):
     starting_date_attachment_filename = fields.Char()
 
     # Tab 6 - Benefits
-    health_employee_attachment_ids = fields.Many2many(
-        "ir.attachment",
-        "hr_onboarding_health_employee_attachment_rel",
-        "onboarding_id",
-        "attachment_id",
-        string="Health Insurance (Employee) Attachments",
-    )
+    health_employee_file = fields.Binary(attachment=True)
+    health_employee_filename = fields.Char()
     health_family_attachment_ids = fields.Many2many(
         "ir.attachment",
         "hr_onboarding_health_family_attachment_rel",
@@ -54,13 +49,8 @@ class HrOnboarding(models.Model):
         "attachment_id",
         string="Health Insurance (Family) Attachments",
     )
-    accident_employee_attachment_ids = fields.Many2many(
-        "ir.attachment",
-        "hr_onboarding_accident_employee_attachment_rel",
-        "onboarding_id",
-        "attachment_id",
-        string="Accident Insurance (Employee) Attachments",
-    )
+    accident_employee_file = fields.Binary(attachment=True)
+    accident_employee_filename = fields.Char()
     accident_family_attachment_ids = fields.Many2many(
         "ir.attachment",
         "hr_onboarding_accident_family_attachment_rel",

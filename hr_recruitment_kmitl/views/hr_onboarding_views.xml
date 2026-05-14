@@ -169,8 +169,12 @@
                             <group attrs="{'readonly': [('state', '=', 'submitted')]}">
                                 <group string="Health Insurance">
                                     <field
-                                        name="health_employee_attachment_ids"
-                                        widget="many2many_binary"
+                                        name="health_employee_file"
+                                        filename="health_employee_filename"
+                                    />
+                                    <field
+                                        name="health_employee_filename"
+                                        invisible="1"
                                     />
                                     <field
                                         name="health_family_attachment_ids"
@@ -179,8 +183,12 @@
                                 </group>
                                 <group string="Accident Insurance">
                                     <field
-                                        name="accident_employee_attachment_ids"
-                                        widget="many2many_binary"
+                                        name="accident_employee_file"
+                                        filename="accident_employee_filename"
+                                    />
+                                    <field
+                                        name="accident_employee_filename"
+                                        invisible="1"
                                     />
                                     <field
                                         name="accident_family_attachment_ids"

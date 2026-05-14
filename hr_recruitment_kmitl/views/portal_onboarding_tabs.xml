@@ -1080,8 +1080,8 @@
                         </div>
 
                         <div class="mb-4">
-                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
-                                <t t-set="name">health_employee_files</t>
+                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                <t t-set="name">health_employee_file</t>
                                 <t t-set="label">เอกสารของตัวพนักงาน</t>
                                 <t
                                     t-set="description"
@@ -1089,26 +1089,15 @@
                                     ทะเบียนบ้าน
                                     และเอกสารที่เกี่ยวข้อง</t>
                                 <t t-set="required" t-value="True" />
-                                <t t-set="files" t-value="False" />
+                                <t
+                                    t-set="existing_filename"
+                                    t-value="onboarding.health_employee_filename or False"
+                                />
+                                <t
+                                    t-set="download_url"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=health_employee_file&amp;filename_field=health_employee_filename&amp;download=true' % onboarding.id) if onboarding.health_employee_file else False"
+                                />
                             </t>
-
-                            <div class="d-flex flex-column gap-2 mt-3">
-                                <t
-                                    t-call="hr_recruitment_kmitl.document_uploaded_list_item"
-                                >
-                                    <t t-set="filename">ใบสมัครประกันสุขภาพ.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">1</t>
-                                </t>
-
-                                <t
-                                    t-call="hr_recruitment_kmitl.document_uploaded_list_item"
-                                >
-                                    <t t-set="filename">สำเนาบัตรประชาชน.jpg</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">2</t>
-                                </t>
-                            </div>
                         </div>
 
                         <div class="border-top pt-4">
@@ -1174,37 +1163,23 @@
                         </div>
 
                         <div class="mb-4">
-                            <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
-                                <t t-set="name">accident_employee_files</t>
+                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                <t t-set="name">accident_employee_file</t>
                                 <t t-set="label">เอกสารของผู้สมัคร</t>
                                 <t
                                     t-set="description"
                                 >แนบใบคำขอเอาประกันของพนักงานที่กรอกครบถ้วนและลงนามแล้ว
                                     พร้อมสำเนาบัตรประชาชน</t>
                                 <t t-set="required" t-value="True" />
-                                <t t-set="files" t-value="False" />
+                                <t
+                                    t-set="existing_filename"
+                                    t-value="onboarding.accident_employee_filename or False"
+                                />
+                                <t
+                                    t-set="download_url"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=accident_employee_file&amp;filename_field=accident_employee_filename&amp;download=true' % onboarding.id) if onboarding.accident_employee_file else False"
+                                />
                             </t>
-
-                            <!-- mock list -->
-                            <div class="d-flex flex-column gap-2 mt-3">
-                                <t
-                                    t-call="hr_recruitment_kmitl.document_uploaded_list_item"
-                                >
-                                    <t
-                                        t-set="filename"
-                                    >ใบคำขอเอาประกันของพนักงาน.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">11</t>
-                                </t>
-
-                                <t
-                                    t-call="hr_recruitment_kmitl.document_uploaded_list_item"
-                                >
-                                    <t t-set="filename">สำเนาบัตรประชาชนผู้สมัคร.jpg</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">12</t>
-                                </t>
-                            </div>
                         </div>
 
                         <div class="border-top pt-4">
@@ -2442,23 +2417,22 @@
                         </p>
 
                         <div class="d-flex flex-column gap-2">
-                            <t
-                                t-foreach="onboarding.health_employee_attachment_ids"
-                                t-as="att"
-                            >
+                            <t t-if="onboarding.health_employee_file">
                                 <t
                                     t-call="hr_recruitment_kmitl.document_uploaded_view_list_item"
                                 >
-                                    <t t-set="filename" t-value="att.name" />
+                                    <t
+                                        t-set="filename"
+                                        t-value="onboarding.health_employee_filename"
+                                    />
                                     <t
                                         t-set="download_url"
-                                        t-value="'/web/content/%d?download=true' % att.id"
+                                        t-value="'/web/content?model=hr.onboarding&amp;id=%d&amp;field=health_employee_file&amp;filename_field=health_employee_filename&amp;download=true' % onboarding.id"
                                     />
-                                    <t t-set="attachment_id" t-value="att.id" />
                                 </t>
                             </t>
                             <div
-                                t-if="not onboarding.health_employee_attachment_ids"
+                                t-if="not onboarding.health_employee_file"
                                 class="small text-muted"
                             >
                                 ไม่มีเอกสาร
@@ -2545,23 +2519,22 @@
                         </p>
 
                         <div class="d-flex flex-column gap-2">
-                            <t
-                                t-foreach="onboarding.accident_employee_attachment_ids"
-                                t-as="att"
-                            >
+                            <t t-if="onboarding.accident_employee_file">
                                 <t
                                     t-call="hr_recruitment_kmitl.document_uploaded_view_list_item"
                                 >
-                                    <t t-set="filename" t-value="att.name" />
+                                    <t
+                                        t-set="filename"
+                                        t-value="onboarding.accident_employee_filename"
+                                    />
                                     <t
                                         t-set="download_url"
-                                        t-value="'/web/content/%d?download=true' % att.id"
+                                        t-value="'/web/content?model=hr.onboarding&amp;id=%d&amp;field=accident_employee_file&amp;filename_field=accident_employee_filename&amp;download=true' % onboarding.id"
                                     />
-                                    <t t-set="attachment_id" t-value="att.id" />
                                 </t>
                             </t>
                             <div
-                                t-if="not onboarding.accident_employee_attachment_ids"
+                                t-if="not onboarding.accident_employee_file"
                                 class="small text-muted"
                             >
                                 ไม่มีเอกสาร
