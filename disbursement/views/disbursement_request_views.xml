@@ -254,6 +254,39 @@
     <!-- Configuration submenu -->
     <menuitem id="menu_disbursement_config" name="Configuration" parent="menu_disbursement_root" sequence="100" groups="disbursement.group_disbursement_manager"/>
 
+    <!-- Tree View for Purchase submenu (different columns from main tree) -->
+    <record id="view_disbursement_request_tree_purchase" model="ir.ui.view">
+        <field name="name">disbursement.request.tree.purchase</field>
+        <field name="model">disbursement.request</field>
+        <field name="arch" type="xml">
+            <tree string="Disbursement Requests">
+                <field name="name" optional="show" />
+                <field name="partner_id" optional="show" />
+                <field name="user_id" optional="show" />
+                <field name="date" optional="show" />
+                <field name="ref" optional="show" />
+                <field name="amount_total" optional="show" />
+                <field name="display_status" widget="badge"
+                    decoration-info="display_status == 'draft'"
+                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
+                    decoration-primary="display_status in ('verified', 'bill_posted')"
+                    decoration-success="display_status in ('approved', 'payment_posted', 'done')"
+                    decoration-danger="display_status == 'cancel'"
+                    optional="show" />
+                <field name="source_analytic_id" optional="show" />
+                <field name="department_analytic_id" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for Purchase submenu: show all statuses (no pre_approval filter) -->
+    <record id="action_disbursement_request_purchase" model="ir.actions.act_window">
+        <field name="name">Disbursement Requests</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="views">[(ref('view_disbursement_request_tree_purchase'), 'tree'), (False, 'form')]</field>
+    </record>
+
     <!-- Disbursement Requests submenu for Purchase Contract -->
-     <menuitem id="menu_disbursement_request_sub_purchase" name="Disbursement Requests" parent="menu_disbursement_root" action="action_disbursement_request" sequence="10" groups="disbursement.group_disbursement_user"/>
+    <menuitem id="menu_disbursement_request_sub_purchase" name="Disbursement Requests" parent="purchase_kmitl.menu_purchase_contract_root" action="action_disbursement_request_purchase" sequence="20"/>
 </odoo>
