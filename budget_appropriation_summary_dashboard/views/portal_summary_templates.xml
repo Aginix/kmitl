@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="portal_summary_page" name="Budget Appropriation Portal Summary" inherit_id="portal.portal_sidebar" primary="True">
+            <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+                <t t-set="stats" t-value="payload.get('stats') or {}"/>
+                <t t-set="filters" t-value="payload.get('filters') or {}"/>
+                <t t-set="options" t-value="payload.get('filter_options') or {}"/>
+                <t t-set="context_info" t-value="stats.get('context') or {}"/>
+                <t t-set="expense_stats" t-value="stats.get('expense') or {}"/>
+                <t t-set="revenue_stats" t-value="stats.get('revenue') or {}"/>
+                <div class="bap-summary" id="bapSummaryRoot" t-att-data-payload="payload_json">
+                    <div class="container-fluid py-4">
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <div>
+                                <h2 class="mb-0 fw-bold">ภาพรวมการจัดสรรงบประมาณ</h2>
+                                <p class="text-muted mb-0 small">ข้อมูลที่ผ่านสภาสถาบัน · ตัวเลขต้นปีงบประมาณ · ดูแยกตามแหล่งเงิน</p>
+                            </div>
+                            <div class="text-muted small" id="bapSummaryUpdated"></div>
+                        </div>
+
+                        <!-- Filter Bar -->
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-body py-3">
+                                <div class="row g-3 align-items-end" id="bapSummaryFilters">
+                                    <div class="col-lg-2 col-md-3 col-sm-6">
+                                        <label class="form-label small fw-semibold mb-1">ปีงบประมาณ</label>
+                                        <select class="form-select form-select-sm" data-filter="fiscal_year_id">
+                                            <t t-foreach="options.get('fiscal_years', [])" t-as="fy">
+                                                <option t-att-value="fy.get('id')"
+                                                        t-att-selected="filters.get('fiscal_year_id') == fy.get('id') or None"
+                                                        t-esc="fy.get('name')"/>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-6">
+                                        <label class="form-label small fw-semibold mb-1">แหล่งเงิน <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" data-filter="source_id" data-required="1">
+                                            <t t-foreach="options.get('sources', [])" t-as="s">
+                                                <option t-att-value="s.get('id')"
+                                                        t-att-selected="filters.get('source_id') == s.get('id') or None">
+                                                    [<t t-esc="s.get('code')"/>] <t t-esc="s.get('name')"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-6">
+                                        <label class="form-label small fw-semibold mb-1">หน่วยงาน (Level 1)</label>
+                                        <select class="form-select form-select-sm" data-filter="department_id">
+                                            <option value="">ทุกหน่วยงาน</option>
+                                            <t t-foreach="options.get('departments', [])" t-as="d">
+                                                <option t-att-value="d.get('id')"
+                                                        t-att-selected="filters.get('department_id') == d.get('id') or None">
+                                                    [<t t-esc="d.get('code')"/>] <t t-esc="d.get('name')"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="bapSummaryReset">รีเซ็ต</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Context badge -->
+                        <div class="mb-3 small text-muted">
+                            แสดงข้อมูล:
+                            <span class="badge text-bg-primary"><t t-esc="context_info.get('fiscal_year_name') or '-'"/></span>
+                            <span class="badge text-bg-info"><t t-esc="context_info.get('source_name') or '-'"/></span>
+                        </div>
+
+                        <!-- Tab Navigation -->
+                        <ul class="nav nav-tabs mb-3" id="bapTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" data-tab="overview">ภาพรวม</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-tab="revenue">
+                                    <span class="text-success fw-semibold">รายรับ</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-tab="expense">
+                                    <span class="text-danger fw-semibold">รายจ่าย</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- ========================== OVERVIEW TAB ========================== -->
+                        <div class="bap-tab-pane" data-pane="overview">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="card kpi-card kpi-revenue h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="kpi-label">รายรับสุทธิ</div>
+                                            <div class="kpi-value text-success" data-kpi="total_revenue">0</div>
+                                            <div class="kpi-sub small text-muted">
+                                                รวม <span data-kpi="total_revenue_gross">0</span> หัก <span data-kpi="total_revenue_deduct">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card kpi-card kpi-expense h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="kpi-label">รายจ่ายรวม</div>
+                                            <div class="kpi-value text-danger" data-kpi="total_expense">0</div>
+                                            <div class="kpi-sub small text-muted">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-lg-6">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายรับ vs รายจ่าย</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart" id="bapChartRevExp"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายรับตามหมวด</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart" id="bapChartOverviewRevenue"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายจ่ายตามหมวดงบ</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart" id="bapChartOverviewExpense"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========================== REVENUE TAB ========================== -->
+                        <div class="bap-tab-pane d-none" data-pane="revenue">
+                            <div class="row g-3 mb-3">
+                                <div class="col-lg-5">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">รายรับตามหมวด</span>
+                                            <span class="small text-muted">หักโอนถูกลบจาก 43100 (ก)</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-lg" id="bapChartRevCategory"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">
+                                            รายรับต่อหน่วยงาน (Gross vs หักโอน vs สุทธิ)
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-lg" id="bapChartRevByDept"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">การไหลของเงินหักโอน (หน่วยงานต้นทาง → ปลายทาง)</span>
+                                            <span class="small text-muted">
+                                                Sankey: เส้นแสดงจำนวนเงินที่หน่วยงานหารายได้ได้แล้วต้องส่งให้หน่วยงานปลายทาง
+                                            </span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-xl" id="bapChartRevDeductFlow"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-2 fw-semibold">
+                                            Heatmap: หน่วยงาน × หมวดรายรับ
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-lg" id="bapChartRevDeptCatHeatmap"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายการรายรับ Top 15</div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-striped mb-0" id="bapTableRevenueItems">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th style="width:48px">#</th>
+                                                            <th>รหัสงบประมาณ</th>
+                                                            <th>รายการ</th>
+                                                            <th>หน่วยงาน</th>
+                                                            <th class="text-end">จำนวนเงิน</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========================== EXPENSE TAB ========================== -->
+                        <div class="bap-tab-pane d-none" data-pane="expense">
+                            <div class="row g-3 mb-3">
+                                <div class="col-lg-4">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายจ่ายตามหมวดงบ</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart" id="bapChartExpCategory"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายจ่ายตามกองทุน</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart" id="bapChartExpFund"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายจ่ายตามด้าน/แผนงาน</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart" id="bapChartExpActivity"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Concentration KPI strip -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body py-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <div class="kpi-label">Top 5 หน่วยงาน คิดเป็นสัดส่วน</div>
+                                                    <div class="fs-4 fw-bold text-danger" data-kpi="exp_top5_pct">0%</div>
+                                                </div>
+                                                <div class="text-muted small text-end">
+                                                    ของรายจ่ายทั้งหมด<br/>
+                                                    <span data-kpi="exp_dept_count">0</span> หน่วยงานทั้งหมด
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body py-3">
+                                            <div class="kpi-label mb-2">โครงสร้างงบบุคลากร vs ไม่ใช่บุคลากร (รวม)</div>
+                                            <div class="progress" style="height: 24px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" data-progress="personnel" style="width: 0%">
+                                                    <span data-kpi="exp_personnel_pct">0%</span> บุคลากร
+                                                </div>
+                                                <div class="progress-bar bg-secondary" role="progressbar" data-progress="other" style="width: 0%">
+                                                    <span data-kpi="exp_other_pct">0%</span> อื่น ๆ
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-lg-7">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">Top 15 หน่วยงาน ตามรายจ่าย</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-lg" id="bapChartExpTopDept"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">สัดส่วนบุคลากร vs ไม่ใช่บุคลากร รายหน่วยงาน</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-lg" id="bapChartExpPersonnel"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">การไหลของเงิน: กองทุน → หน่วยงาน → หมวดงบ</span>
+                                            <span class="small text-muted">Sankey 3-stage · เส้นยิ่งหนา = เงินยิ่งมาก</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-xl" id="bapChartExpFundDeptCat"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-lg-6">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 fw-semibold">
+                                            Heatmap: หน่วยงาน × ด้าน/แผนงาน
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-xl" id="bapChartExpDeptActivity"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card shadow-sm h-100">
+                                        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">Activity Hierarchy</span>
+                                            <span class="small text-muted">ด้าน → แผนงาน → กิจกรรมหลัก · click ดูใน-นอก</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-xl" id="bapChartExpActivitySunburst"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-2 fw-semibold">Heatmap: หน่วยงาน × หมวดงบรายจ่าย</div>
+                                        <div class="card-body">
+                                            <div class="bap-chart bap-chart-xl" id="bapChartExpHeatmap"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-2 fw-semibold">รายการรายจ่าย Top 15</div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-striped mb-0" id="bapTableExpenseItems">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th style="width:48px">#</th>
+                                                            <th>รหัสงบประมาณ</th>
+                                                            <th>รายการ</th>
+                                                            <th>หน่วยงาน</th>
+                                                            <th>กองทุน</th>
+                                                            <th class="text-end">จำนวนเงิน</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Department × Category detail table -->
+                            <div class="card shadow-sm mb-3">
+                                <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold">ตารางสรุปรายจ่ายตามหน่วยงาน</span>
+                                    <div class="small text-muted">หน่วย: บาท</div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped mb-0" id="bapSummaryTable">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>หน่วยงาน</th>
+                                                    <t t-foreach="expense_stats.get('categories', [])" t-as="c">
+                                                        <th class="text-end">
+                                                            <span class="d-block small text-muted" t-esc="c.get('code')"/>
+                                                            <t t-esc="c.get('name')"/>
+                                                        </th>
+                                                    </t>
+                                                    <th class="text-end">รวม</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                            <tfoot class="table-light fw-semibold">
+                                                <tr>
+                                                    <td>รวมทั้งหมด</td>
+                                                    <t t-foreach="expense_stats.get('categories', [])" t-as="c">
+                                                        <td class="text-end" t-att-data-foot="c.get('code')">0</td>
+                                                    </t>
+                                                    <td class="text-end" data-foot="total">0</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>
