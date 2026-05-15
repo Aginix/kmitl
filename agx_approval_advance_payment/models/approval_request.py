@@ -52,14 +52,14 @@ class ApprovalRequest(models.Model):
                 # Show "Create Bill" only when the linked advance payment
                 # has funds disbursed (in_progress state)
                 rec.show_create_disbursement_button = (
-                    rec.state == "approved"
+                    rec.state in ("approved", "billed")
                     and bool(rec.advance_payment_id)
                     and rec.advance_payment_id.state == "in_progress"
                     and not rec.has_active_disbursement
                 )
             else:
                 rec.show_create_disbursement_button = (
-                    rec.state == "approved"
+                    rec.state in ("approved", "billed")
                     and not rec.has_active_disbursement
                 )
 
