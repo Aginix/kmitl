@@ -15,7 +15,7 @@
                     string="Create Bill"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('has_active_disbursement', '=', True)]}"
+                    attrs="{'invisible': ['|', ('state', 'not in', ['approved', 'billed']), ('has_active_disbursement', '=', True)]}"
                 />
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -35,7 +35,7 @@
             </xpath>
             <xpath expr="//group[@name='attachment']" position="after">
                 <group string="Attachment for Disbursement"
-                    attrs="{'invisible': [('state', '!=', 'approved')]}">
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'billed'])]}">
                     <field name="disbursement_attachment_ids"
                         widget="many2many_binary"
                         attrs="{'readonly': [('disbursement_request_count', '>', 0)]}">
