@@ -359,6 +359,13 @@ class ApprovalRequest(models.Model):
             record.state = "validated"
         return True
 
+    def action_bill(self):
+        for record in self:
+            if record.state != "approved":
+                raise UserError(_("Only approved requests can be billed."))
+            record.state = "billed"
+        return True
+
     def action_cancel(self):
         for record in self:
             if record.state == "rejected":

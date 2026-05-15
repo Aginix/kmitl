@@ -101,6 +101,7 @@ class ApprovalRequest(models.Model):
 
     def action_create_disbursement_request(self):
         self.ensure_one()
+        self.action_bill()
         vals = self._prepare_disbursement_request_vals()
         disbursement = self.env["disbursement.request"].create(vals)
 
