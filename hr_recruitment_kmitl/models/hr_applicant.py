@@ -319,6 +319,17 @@ class HrApplicant(models.Model):
             missing.append("ค่าธรรมเนียมการสอบ")
         if not any(k.startswith("medical_certificate_file") for k in req_files):
             missing.append("ใบรับรองแพทย์")
+        # extract_data only auto-fills filenames for "manual" fields,
+        # so Python-defined fields need it set explicitly.
+        filename_field_by_input = {
+            "exam_fee_file": "exam_fee_filename",
+            "medical_certificate_file": "medical_certificate_filename",
+        }
+        for key, fs in req_files.items():
+            base = key.split("[", 1)[0]
+            filename_field = filename_field_by_input.get(base)
+            if filename_field and fs.filename:
+                values[filename_field] = fs.filename
         if missing:
             raise UserError(_("กรุณากรอกข้อมูลให้ครบถ้วน:\n• " + "\n• ".join(missing)))
         return values
