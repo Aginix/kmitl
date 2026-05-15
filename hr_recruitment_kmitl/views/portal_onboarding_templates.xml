@@ -270,7 +270,12 @@
                                         ข้อมูลรายงานตัวนี้ถูกส่งแล้ว ไม่สามารถแก้ไขข้อมูลได้
                                     </span>
                                 </div>
-                                <a href="#" class="text-primary text-decoration small">
+                                <a
+                                    t-if="applicant.job_id"
+                                    t-attf-href="/jobs/detail/#{applicant.job_id.id}"
+                                    target="_blank"
+                                    class="text-primary text-decoration small"
+                                >
                                     <i class="fa fa-external-link me-1" />
                                     ดูประกาศตำแหน่งงานต้นฉบับ
                                 </a>
