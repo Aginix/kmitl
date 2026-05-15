@@ -145,8 +145,11 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         }
 
     def _build_category_totals(self, summary):
-        """Build category_code -> balance mapping from all compilations."""
-        lines = summary.revenue_appropriation_ids.mapped("line_ids")
+        """Build category_code -> balance mapping. Deduct lines are subtracted
+        directly from "43100 (ก)" because revenue deduct lines do not specify
+        activity/fund and cannot be classified by category."""
+        appropriations = summary.revenue_appropriation_ids
+        lines = appropriations.mapped("line_ids")
 
         account_totals = {}
         for line in lines:
@@ -159,6 +162,10 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
             totals[code] = sum(
                 account_totals.get(acc_id, 0) for acc_id in account_ids
             )
+
+        totals["43100 (ก)"] -= sum(
+            appropriations.mapped("deduct_line_ids.balance")
+        )
 
         return totals
 

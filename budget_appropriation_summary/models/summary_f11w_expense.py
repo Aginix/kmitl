@@ -41,11 +41,12 @@ class BudgetAppropriationSummaryF11WExpense(models.AbstractModel):
         ("account_analytic_kmitl.fund_0300", "0300", "กองทุนวิจัย"),
         ("account_analytic_kmitl.fund_0600", "0600", "กองทุนสินทรัพย์ถาวร"),
         ("account_analytic_kmitl.fund_0702", "0702", "กองทุนสำรอง"),
+        ("account_analytic_kmitl.fund_0704", "0704", "กองทุนบูรณาการ"),
         ("account_analytic_kmitl.fund_0705", "0705", "กองทุนยุทธศาสตร์"),
     ]
 
     # All column codes in order
-    COLUMN_CODES = ["0100", "0200", "0703", "0500", "0400", "0701", "0300", "0600", "0702", "0705"]
+    COLUMN_CODES = ["0100", "0200", "0703", "0500", "0400", "0701", "0300", "0600", "0702", "0704", "0705"]
 
     @api.model
     def get_data(self, summary_id):

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Default report instances: each menu opens a pre-configured instance.
+         All three use a single relative-year period (offset 0, duration 1)
+         so the report shows the current fiscal year by default. Users can
+         adjust the period or add comparison columns from the form view. -->
+
+    <!-- งบกำไรขาดทุน (P&L) -->
+    <record id="instance_pl_kmitl" model="mis.report.instance">
+        <field name="name">งบกำไรขาดทุน (ปีปัจจุบัน)</field>
+        <field name="report_id" ref="report_pl_kmitl" />
+        <field name="comparison_mode" eval="False" />
+        <field name="target_move">posted</field>
+    </record>
+    <record id="instance_pl_kmitl_period_current" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="instance_pl_kmitl" />
+        <field name="name">งวดปัจจุบัน</field>
+        <field name="type">y</field>
+        <field name="mode">relative</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- งบแสดงฐานะการเงิน (Balance Sheet) -->
+    <record id="instance_bs_kmitl" model="mis.report.instance">
+        <field name="name">งบแสดงฐานะการเงิน (ปีปัจจุบัน)</field>
+        <field name="report_id" ref="report_bs_kmitl" />
+        <field name="comparison_mode" eval="False" />
+        <field name="target_move">posted</field>
+    </record>
+    <record id="instance_bs_kmitl_period_current" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="instance_bs_kmitl" />
+        <field name="name">ณ วันสิ้นงวด</field>
+        <field name="type">y</field>
+        <field name="mode">relative</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- งบกระแสเงินสด (Cash Flow) -->
+    <record id="instance_cf_kmitl" model="mis.report.instance">
+        <field name="name">งบกระแสเงินสด (ปีปัจจุบัน)</field>
+        <field name="report_id" ref="report_cf_kmitl" />
+        <field name="comparison_mode" eval="False" />
+        <field name="target_move">posted</field>
+    </record>
+    <record id="instance_cf_kmitl_period_current" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="instance_cf_kmitl" />
+        <field name="name">งวดปัจจุบัน</field>
+        <field name="type">y</field>
+        <field name="mode">relative</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="sequence">10</field>
+    </record>
+
+</odoo>

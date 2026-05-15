@@ -259,6 +259,33 @@
                 <field name="amount_revenue_total" sum="รวมรายรับ" />
                 <field name="amount_expense_total" sum="รวมรายจ่าย" />
                 <field name="state" />
+                <field name="revenue_appropriation_ids" invisible="1" />
+                <field name="expense_appropriation_ids" invisible="1" />
+                <field name="use_f23" invisible="1" />
+                <button
+                    name="action_open_f4_report"
+                    type="object"
+                    icon="fa-file-text-o"
+                    string="F4"
+                    title="เปิดรายงาน F4"
+                    attrs="{'invisible': [('revenue_appropriation_ids', '=', [])]}"
+                />
+                <button
+                    name="action_open_f5_report_html"
+                    type="object"
+                    icon="fa-file-text-o"
+                    string="F5"
+                    title="เปิดรายงาน F5"
+                    attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
+                />
+                <button
+                    name="action_open_f23w_report"
+                    type="object"
+                    icon="fa-file-text-o"
+                    string="F23"
+                    title="เปิดรายงาน F23"
+                    attrs="{'invisible': [('use_f23', '=', False)]}"
+                />
             </tree>
         </field>
     </record>
@@ -271,6 +298,9 @@
             <kanban class="oe_background_grey o_kanban_dashboard o_budget_appropriation_compilation_kanban" sample="1">
                 <field name="currency_id" />
                 <field name="state" />
+                <field name="revenue_appropriation_ids" />
+                <field name="expense_appropriation_ids" />
+                <field name="use_f23" />
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_card oe_kanban_global_click">
@@ -309,6 +339,35 @@
                                                 widget="monetary"
                                             /></span>
                                     </div>
+                                </div>
+                                <div class="mt-2 d-flex flex-wrap gap-1">
+                                    <button
+                                        t-if="record.revenue_appropriation_ids.raw_value.length &gt; 0"
+                                        name="action_open_f4_report"
+                                        type="object"
+                                        class="btn btn-sm btn-outline-primary"
+                                        title="เปิดรายงาน F4"
+                                    >
+                                        <i class="fa fa-file-text-o me-1" />F4
+                                    </button>
+                                    <button
+                                        t-if="record.expense_appropriation_ids.raw_value.length &gt; 0"
+                                        name="action_open_f5_report_html"
+                                        type="object"
+                                        class="btn btn-sm btn-outline-primary"
+                                        title="เปิดรายงาน F5"
+                                    >
+                                        <i class="fa fa-file-text-o me-1" />F5
+                                    </button>
+                                    <button
+                                        t-if="record.use_f23.raw_value"
+                                        name="action_open_f23w_report"
+                                        type="object"
+                                        class="btn btn-sm btn-outline-primary"
+                                        title="เปิดรายงาน F23"
+                                    >
+                                        <i class="fa fa-file-text-o me-1" />F23
+                                    </button>
                                 </div>
                             </div>
                         </div>

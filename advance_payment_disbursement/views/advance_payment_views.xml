@@ -37,11 +37,10 @@
                             <field name="amount" string="จำนวนเงิน" />
                             <field name="note" string="หมายเหตุ" />
                             <field name="disbursement_state" widget="badge" string="สถานะ"
-                                decoration-info="disbursement_state in ('draft', 'submitted')"
-                                decoration-primary="disbursement_state in ('signed', 'verified', 'approved')"
+                                decoration-info="disbursement_state == 'pre_approval'"
+                                decoration-primary="disbursement_state == 'approved'"
                                 decoration-warning="disbursement_state in ('bill_draft', 'payment_draft')"
-                                decoration-success="disbursement_state in ('bill_posted', 'payment_posted', 'done')"
-                                decoration-danger="disbursement_state == 'cancel'" />
+                                decoration-success="disbursement_state in ('bill_posted', 'payment_posted', 'done')" />
                         </tree>
                     </field>
                 </page>

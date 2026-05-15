@@ -106,6 +106,48 @@ class BudgetAppropriationMasterSummary(models.Model):
         store=True,
         currency_field="currency_id",
     )
+    amount_revenue_gross = fields.Monetary(
+        string="รายรับรวม",
+        compute="_compute_revenue_breakdown",
+        store=True,
+        currency_field="currency_id",
+    )
+    amount_revenue_deduct = fields.Monetary(
+        string="หักโอน",
+        compute="_compute_revenue_breakdown",
+        store=True,
+        currency_field="currency_id",
+    )
+    reserve_fund_amount = fields.Monetary(
+        string="งบกองทุนสำรอง",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    personnel_expense_amount = fields.Monetary(
+        string="งบบุคลากร",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    operating_expense_amount = fields.Monetary(
+        string="งบดำเนินงาน",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    capital_expenditure_amount = fields.Monetary(
+        string="งบลงทุน",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    subsidy_amount = fields.Monetary(
+        string="งบเงินอุดหนุน",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    other_expenditure_amount = fields.Monetary(
+        string="งบรายจ่ายอื่น",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
@@ -231,6 +273,43 @@ class BudgetAppropriationMasterSummary(models.Model):
             record.amount_expense_total = sum(
                 record.compilation_ids.mapped("amount_expense_total")
             )
+
+    @api.depends(
+        "compilation_ids.revenue_appropriation_ids.amount_total",
+        "compilation_ids.revenue_appropriation_ids.amount_deduct",
+    )
+    def _compute_revenue_breakdown(self):
+        for record in self:
+            record.amount_revenue_gross = sum(
+                record.revenue_appropriation_ids.mapped("amount_total")
+            )
+            record.amount_revenue_deduct = sum(
+                record.revenue_appropriation_ids.mapped("amount_deduct")
+            )
+
+    BUDGET_SUMMARY_FIELDS = [
+        "reserve_fund_amount",
+        "personnel_expense_amount",
+        "operating_expense_amount",
+        "capital_expenditure_amount",
+        "subsidy_amount",
+        "other_expenditure_amount",
+    ]
+
+    @api.depends(
+        "compilation_ids.reserve_fund_amount",
+        "compilation_ids.personnel_expense_amount",
+        "compilation_ids.operating_expense_amount",
+        "compilation_ids.capital_expenditure_amount",
+        "compilation_ids.subsidy_amount",
+        "compilation_ids.other_expenditure_amount",
+    )
+    def _compute_budget_summary_amounts(self):
+        for record in self:
+            for field_name in self.BUDGET_SUMMARY_FIELDS:
+                record[field_name] = sum(
+                    record.compilation_ids.mapped(field_name)
+                )
 
     @api.depends("revenue_appropriation_ids", "compare_summary_id")
     def _compute_f2_revenue_data(self):
