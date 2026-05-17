@@ -72,7 +72,9 @@
                     </div>
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
-                            <t t-set="label">เลขบัตรประชาชน (Identification No.)</t>
+                            <t
+                                t-set="label"
+                            >เลขบัตรประชาชน (Identification No./Passport No.)</t>
                             <t
                                 t-set="value"
                                 t-value="applicant.identification_id or '-'"
@@ -1715,7 +1717,9 @@
                     </div>
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
-                            <t t-set="label">เลขบัตรประชาชน (Identification No.)</t>
+                            <t
+                                t-set="label"
+                            >เลขบัตรประชาชน (Identification No./Passport No.)</t>
                             <t
                                 t-set="value"
                                 t-value="applicant.identification_id or '-'"

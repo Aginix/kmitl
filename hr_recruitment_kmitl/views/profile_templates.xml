@@ -385,9 +385,7 @@
                                             <label
                                                 class="col-form-label"
                                                 for="identification_id"
-                                            >เลขบัตรประชาชน
-                                                (Identification No.)
-                                                *</label>
+                                            >เลขบัตรประชาชน(Identification No./Passport No.)*</label>
                                             <input
                                                 type="text"
                                                 name="identification_id"
