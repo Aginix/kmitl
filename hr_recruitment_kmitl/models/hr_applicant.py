@@ -99,39 +99,43 @@ SUPPORT_ONLY_FIELDS = {
 class HrApplicant(models.Model):
     _inherit = "hr.applicant"
 
-    job_role = fields.Selection(related="job_id.role", string="Job Role")
-    old_code = fields.Char()
+    job_role = fields.Selection(related="job_id.role", string="Job Role", tracking=True)
+    old_code = fields.Char(tracking=True)
 
     # Name fields
-    applicant_title = fields.Many2one("res.partner.title")
-    first_name = fields.Char(string="First Name (TH)")
-    middle_name = fields.Char(string="Middle Name (TH)")
-    last_name = fields.Char(string="Last Name (TH)")
-    first_name_en = fields.Char(string="First Name (EN)")
-    middle_name_en = fields.Char(string="Middle Name (EN)")
-    last_name_en = fields.Char(string="Last Name (EN)")
+    applicant_title = fields.Many2one("res.partner.title", tracking=True)
+    first_name = fields.Char(string="First Name (TH)", tracking=True)
+    middle_name = fields.Char(string="Middle Name (TH)", tracking=True)
+    last_name = fields.Char(string="Last Name (TH)", tracking=True)
+    first_name_en = fields.Char(string="First Name (EN)", tracking=True)
+    middle_name_en = fields.Char(string="Middle Name (EN)", tracking=True)
+    last_name_en = fields.Char(string="Last Name (EN)", tracking=True)
 
     # Registered address
-    address_street = fields.Char(string="Registered Address")
-    address_city = fields.Char()
-    address_state_id = fields.Many2one("res.country.state")
-    address_zip = fields.Char()
-    address_country_id = fields.Many2one("res.country")
-    address_zip_id = fields.Many2one("res.city.zip", string="Registered ZIP Location")
+    address_street = fields.Char(string="Registered Address", tracking=True)
+    address_city = fields.Char(tracking=True)
+    address_state_id = fields.Many2one("res.country.state", tracking=True)
+    address_zip = fields.Char(tracking=True)
+    address_country_id = fields.Many2one("res.country", tracking=True)
+    address_zip_id = fields.Many2one(
+        "res.city.zip", string="Registered ZIP Location", tracking=True
+    )
 
     # Current address
-    current_street = fields.Char(string="Current Address")
-    current_city = fields.Char()
-    current_state_id = fields.Many2one("res.country.state")
-    current_zip = fields.Char()
-    current_country_id = fields.Many2one("res.country")
-    current_zip_id = fields.Many2one("res.city.zip", string="Current ZIP Location")
+    current_street = fields.Char(string="Current Address", tracking=True)
+    current_city = fields.Char(tracking=True)
+    current_state_id = fields.Many2one("res.country.state", tracking=True)
+    current_zip = fields.Char(tracking=True)
+    current_country_id = fields.Many2one("res.country", tracking=True)
+    current_zip_id = fields.Many2one(
+        "res.city.zip", string="Current ZIP Location", tracking=True
+    )
 
     # Personal
-    identification_id = fields.Char(string="Identification No.")
-    birthday = fields.Date()
-    gender = fields.Selection([("male", "Male"), ("female", "Female")])
-    nationality_id = fields.Many2one("res.country")
+    identification_id = fields.Char(string="Identification No.", tracking=True)
+    birthday = fields.Date(tracking=True)
+    gender = fields.Selection([("male", "Male"), ("female", "Female")], tracking=True)
+    nationality_id = fields.Many2one("res.country", tracking=True)
     marital = fields.Selection(
         [
             ("single", "Single"),
@@ -140,60 +144,65 @@ class HrApplicant(models.Model):
             ("widowed", "Widowed"),
         ],
         string="Marital Status",
+        tracking=True,
     )
-    spouse_prefix = fields.Char()
-    spouse_first_name = fields.Char()
-    spouse_middle_name = fields.Char()
-    spouse_last_name = fields.Char()
+    spouse_prefix = fields.Char(tracking=True)
+    spouse_first_name = fields.Char(tracking=True)
+    spouse_middle_name = fields.Char(tracking=True)
+    spouse_last_name = fields.Char(tracking=True)
 
     # Emergency contact
-    emergency_contact_name = fields.Char()
-    emergency_contact_relation = fields.Char()
-    emergency_contact_phone = fields.Char()
-    emergency_contact_email = fields.Char()
+    emergency_contact_name = fields.Char(tracking=True)
+    emergency_contact_relation = fields.Char(tracking=True)
+    emergency_contact_phone = fields.Char(tracking=True)
+    emergency_contact_email = fields.Char(tracking=True)
 
     # Health
-    congenital_disease = fields.Text()
+    congenital_disease = fields.Text(tracking=True)
 
     # Academic
     academic_standing_id = fields.Many2one(
         "hr.employee.academic.standing",
         string="Academic Position",
+        tracking=True,
     )
-    academic_position_date = fields.Date()
-    academic_position_institution = fields.Char()
+    academic_position_date = fields.Date(tracking=True)
+    academic_position_institution = fields.Char(tracking=True)
     academic_position_file = fields.Binary(
         string="Academic Position Proof", attachment=True
     )
-    academic_position_filename = fields.Char(string="Academic Position Proof Filename")
+    academic_position_filename = fields.Char(
+        string="Academic Position Proof Filename", tracking=True
+    )
 
     # OCSC exam
-    has_ocsc_exam = fields.Boolean(string="Has OCSC Exam")
+    has_ocsc_exam = fields.Boolean(string="Has OCSC Exam", tracking=True)
     ocsc_exam_level = fields.Selection(
         [
             ("bachelor", "Bachelor"),
             ("master", "Master"),
         ],
         string="OCSC Exam Level",
+        tracking=True,
     )
-    ocsc_exam_date = fields.Date(string="OCSC Exam Date")
-    ocsc_exam_number = fields.Char(string="OCSC Exam Number")
+    ocsc_exam_date = fields.Date(string="OCSC Exam Date", tracking=True)
+    ocsc_exam_number = fields.Char(string="OCSC Exam Number", tracking=True)
     ocsc_exam_file = fields.Binary(string="OCSC Exam Proof", attachment=True)
-    ocsc_exam_filename = fields.Char(string="OCSC Exam Filename")
+    ocsc_exam_filename = fields.Char(string="OCSC Exam Filename", tracking=True)
     resume_file = fields.Binary(string="Resume", attachment=True)
-    resume_filename = fields.Char()
+    resume_filename = fields.Char(tracking=True)
     military_certificate_file = fields.Binary(
         string="Military Certificate", attachment=True
     )
-    military_certificate_filename = fields.Char()
+    military_certificate_filename = fields.Char(tracking=True)
     id_card_file = fields.Binary(string="ID Card", attachment=True)
-    id_card_filename = fields.Char()
+    id_card_filename = fields.Char(tracking=True)
     household_registration_file = fields.Binary(
         string="Household Registration", attachment=True
     )
-    household_registration_filename = fields.Char()
+    household_registration_filename = fields.Char(tracking=True)
     work_certificate_file = fields.Binary(string="Work Certificate", attachment=True)
-    work_certificate_filename = fields.Char()
+    work_certificate_filename = fields.Char(tracking=True)
     english_test_type = fields.Selection(
         [
             ("toefl_paper", "TOEFL (Paper-Based)"),
@@ -203,34 +212,35 @@ class HrApplicant(models.Model):
             ("cutep", "CU-TEP"),
             ("kmitl_tep", "KMITL-TEP"),
         ],
+        tracking=True,
     )
-    english_test_score = fields.Char()
-    english_test_date = fields.Date()
-    english_test_certificate_number = fields.Char()
+    english_test_score = fields.Char(tracking=True)
+    english_test_date = fields.Date(tracking=True)
+    english_test_certificate_number = fields.Char(tracking=True)
     english_score_file = fields.Binary(string="English Test Result", attachment=True)
-    english_score_filename = fields.Char()
+    english_score_filename = fields.Char(tracking=True)
     other_documents_file = fields.Binary(string="Other Documents", attachment=True)
-    other_documents_filename = fields.Char()
+    other_documents_filename = fields.Char(tracking=True)
     photo_file = fields.Binary(string="Photo", attachment=True)
-    photo_filename = fields.Char()
+    photo_filename = fields.Char(tracking=True)
 
     # Confirmation documents
     exam_fee_file = fields.Binary(string="Exam Fee Receipt", attachment=True)
-    exam_fee_filename = fields.Char()
+    exam_fee_filename = fields.Char(tracking=True)
     medical_certificate_file = fields.Binary(
         string="Medical Certificate", attachment=True
     )
-    medical_certificate_filename = fields.Char()
+    medical_certificate_filename = fields.Char(tracking=True)
 
     # Consent
-    data_certification = fields.Boolean()
-    pdpa_consent = fields.Boolean(string="PDPA Consent")
+    data_certification = fields.Boolean(tracking=True)
+    pdpa_consent = fields.Boolean(string="PDPA Consent", tracking=True)
 
     # Skills
-    foreign_language_skills = fields.Text()
-    computer_skills = fields.Text()
-    other_abilities = fields.Text()
-    interests = fields.Text()
+    foreign_language_skills = fields.Text(tracking=True)
+    computer_skills = fields.Text(tracking=True)
+    other_abilities = fields.Text(tracking=True)
+    interests = fields.Text(tracking=True)
 
     # History
     highest_education = fields.Selection(
@@ -241,16 +251,23 @@ class HrApplicant(models.Model):
             ("under_bachelor", "ต่ำกว่าปริญญาตรี"),
         ],
         string="Highest Education Level",
+        tracking=True,
     )
     education_history_ids = fields.One2many(
-        "hr.applicant.education.history", "applicant_id"
+        "hr.applicant.education.history", "applicant_id", tracking=True
     )
-    work_history_ids = fields.One2many("hr.applicant.work.history", "applicant_id")
+    work_history_ids = fields.One2many(
+        "hr.applicant.work.history", "applicant_id", tracking=True
+    )
 
     # Onboarding
-    onboarding_ids = fields.One2many("hr.onboarding", "applicant_id")
-    onboarding_count = fields.Integer(compute="_compute_onboarding_count")
-    can_create_onboarding = fields.Boolean(compute="_compute_can_create_onboarding")
+    onboarding_ids = fields.One2many("hr.onboarding", "applicant_id", tracking=True)
+    onboarding_count = fields.Integer(
+        compute="_compute_onboarding_count", tracking=True
+    )
+    can_create_onboarding = fields.Boolean(
+        compute="_compute_can_create_onboarding", tracking=True
+    )
 
     ROLE_REQUIRED_FIELDS = {
         "academic": {
