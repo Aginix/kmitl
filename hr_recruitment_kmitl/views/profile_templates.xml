@@ -385,7 +385,8 @@
                                             <label
                                                 class="col-form-label"
                                                 for="identification_id"
-                                            >เลขบัตรประชาชน(Identification No./Passport No.)*</label>
+                                            >เลขบัตรประชาชน(Identification
+                                                No./Passport No.)*</label>
                                             <input
                                                 type="text"
                                                 name="identification_id"
@@ -801,15 +802,14 @@
                                         >Congenital
                                             Disease /
                                             โรคประจำตัว</label>
+                                        <!-- prettier-ignore-start -->
                                         <textarea
                                             name="congenital_disease"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t
-                                                t-esc="profile.congenital_disease or ''"
-                                            />
-                                        </textarea>
+                                            xml:space="preserve"
+                                        ><t t-esc="profile.congenital_disease or ''"/></textarea>
+                                        <!-- prettier-ignore-end -->
                                     </div>
                                 </div>
                             </div>
@@ -1508,68 +1508,57 @@
                                         <t t-set="title">ทักษะและความสนใจ
                                             (Skills &amp; Interests)</t>
                                     </t>
-                                    <label
-                                        class="col-form-label"
-                                        for="foreign_language_skills"
-                                    >Foreign
-                                        Language
-                                        Skills /
-                                        ทักษะภาษาต่างประเทศ</label>
-                                    <textarea
-                                        name="foreign_language_skills"
-                                        class="form-control"
-                                        rows="3"
-                                    >
-                                        <t
-                                            t-esc="profile.foreign_language_skills or ''"
-                                        />
-                                    </textarea>
+                                    <!-- prettier-ignore-start -->
+                                    <div class="mb-3">
+                                        <label
+                                            class="col-form-label"
+                                            for="foreign_language_skills"
+                                        >Foreign Language Skills /
+                                            ทักษะภาษาต่างประเทศ</label>
+                                        <textarea
+                                            name="foreign_language_skills"
+                                            class="form-control"
+                                            rows="3"
+                                            xml:space="preserve"
+                                        ><t t-esc="profile.foreign_language_skills or ''"/></textarea>
+                                    </div>
                                     <div class="mb-3">
                                         <label
                                             class="col-form-label"
                                             for="computer_skills"
-                                        >Computer
-                                            Skills
-                                            /
-                                            ทักษะคอมพิวเตอร์</label>
+                                        >Computer Skills / ทักษะคอมพิวเตอร์</label>
                                         <textarea
                                             name="computer_skills"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.computer_skills or ''" />
-                                        </textarea>
+                                            xml:space="preserve"
+                                        ><t t-esc="profile.computer_skills or ''"/></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
                                             class="col-form-label"
                                             for="other_abilities"
-                                        >Other
-                                            Abilities
-                                            /
-                                            ความสามารถอื่นๆ</label>
+                                        >Other Abilities / ความสามารถอื่นๆ</label>
                                         <textarea
                                             name="other_abilities"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.other_abilities or ''" />
-                                        </textarea>
+                                            xml:space="preserve"
+                                        ><t t-esc="profile.other_abilities or ''"/></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
                                             class="col-form-label"
                                             for="interests"
-                                        >Interests /
-                                            ความสนใจ</label>
+                                        >Interests / ความสนใจ</label>
                                         <textarea
                                             name="interests"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.interests or ''" />
-                                        </textarea>
+                                            xml:space="preserve"
+                                        ><t t-esc="profile.interests or ''"/></textarea>
                                     </div>
+                                    <!-- prettier-ignore-end -->
                                 </div>
                             </div>
                         </div>
@@ -1667,12 +1656,11 @@
                                                 <t
                                                     t-set="name"
                                                 >doc_military_certificate</t>
+                                                <!-- prettier-ignore -->
                                                 <t
                                                     t-set="label"
-                                                >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
-                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร <br
-                                                    /> (ใบ สด.8
-                                                    สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ) </t>
+                                                >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร <br
+                                                    /> (ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ) </t>
                                                 <t t-set="description">เฉพาะเพศชาย</t>
                                                 <t
                                                     t-set="existing_filename"
