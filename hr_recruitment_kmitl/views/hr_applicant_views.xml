@@ -43,6 +43,14 @@
         <field name="model">hr.applicant</field>
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" />
         <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <field
+                    name="photo_file"
+                    widget="image"
+                    class="oe_avatar m-0"
+                    options='{"zoom": true}'
+                />
+            </xpath>
             <xpath expr="//notebook" position="inside">
                 <!-- Profile Info tab -->
                 <page string="Profile Info" name="profile_info">

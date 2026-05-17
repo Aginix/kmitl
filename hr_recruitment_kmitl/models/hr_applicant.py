@@ -211,6 +211,8 @@ class HrApplicant(models.Model):
     english_score_filename = fields.Char()
     other_documents_file = fields.Binary(string="Other Documents", attachment=True)
     other_documents_filename = fields.Char()
+    photo_file = fields.Binary(string="Photo", attachment=True)
+    photo_filename = fields.Char()
 
     # Confirmation documents
     exam_fee_file = fields.Binary(string="Exam Fee Receipt", attachment=True)
@@ -296,6 +298,8 @@ class HrApplicant(models.Model):
             missing.append("สำเนาบัตรประจำตัวประชาชน")
         if not profile.household_registration_file:
             missing.append("สำเนาทะเบียนบ้าน")
+        if not profile.photo_file:
+            missing.append("รูปถ่ายหน้าตรง")
         if profile.gender == "male" and not profile.military_certificate_file:
             missing.append("สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร")
         # Role-specific required fields
@@ -444,6 +448,9 @@ class HrApplicant(models.Model):
         if profile.other_documents_file:
             vals["other_documents_file"] = profile.other_documents_file
             vals["other_documents_filename"] = profile.other_documents_filename
+        if profile.photo_file:
+            vals["photo_file"] = profile.photo_file
+            vals["photo_filename"] = profile.photo_filename
 
         # Filter out fields not relevant to the job role
         role = self.job_id.role
