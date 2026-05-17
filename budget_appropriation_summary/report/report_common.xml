@@ -30,7 +30,30 @@
                 font-size: 18pt;
                 margin-bottom: 0;
             }
+            .report-page-label {
+                position: absolute;
+                top: 4mm;
+                right: 8mm;
+                font-size: 15pt;
+                font-family: 'THSarabun', Arial, sans-serif;
+                z-index: 10;
+                pointer-events: none;
+            }
+            @media print {
+                .report-page-label {
+                    position: fixed;
+                    top: 5mm;
+                    right: 5mm;
+                }
+            }
         </style>
+    </template>
+
+    <!-- Reusable page label (top-right of every page, persists on print) -->
+    <template id="report_page_label">
+        <div class="report-page-label" contenteditable="false">
+            <t t-out="page_label"/>
+        </div>
     </template>
 
     <!-- Preview styles for A4 paper page effect (set is_landscape before calling) -->

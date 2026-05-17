@@ -19,6 +19,9 @@
         </style>
         <div class="page f5w" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F5-W-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center" style="font-weight: bold">
                 <h3>สรุปเปรียบเทียบประมาณการรายจ่าย</h3>
