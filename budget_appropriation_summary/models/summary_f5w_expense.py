@@ -147,24 +147,23 @@ class BudgetAppropriationSummaryF5WExpense(models.AbstractModel):
         """
         lines = summary.expense_appropriation_ids.mapped("line_ids")
 
-        # Pre-compute parent_path_prefix -> xml_id mapping
-        # Using parent_path prefix (e.g., "123/") to match all descendants
+        # Match plan to descendants by full parent_path prefix; using just
+        # "{id}/" caused substring false positives (e.g. "12/" matches "112/").
         path_prefix_map = {}
         for xml_id, code, name in self.ACTIVITY_PLANS:
             parent = self.env.ref(xml_id, raise_if_not_found=False)
             if parent:
-                # parent_path starts with parent.id/ for all descendants
-                path_prefix_map[f"{parent.id}/"] = xml_id
+                path_prefix_map[parent.parent_path] = xml_id
             else:
                 _logger.warning("Activity plan with xml_id '%s' not found", xml_id)
 
-        # Aggregate
         totals = {}
         for line in lines:
             activity = line.activity_analytic_id
-            # Check which plan this activity belongs to
+            if not activity.parent_path:
+                continue
             for prefix, xml_id in path_prefix_map.items():
-                if prefix in activity.parent_path or activity.parent_path.startswith(prefix):
+                if activity.parent_path.startswith(prefix):
                     totals[xml_id] = totals.get(xml_id, 0) + line.balance
                     break
 

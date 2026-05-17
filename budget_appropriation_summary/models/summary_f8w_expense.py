@@ -207,11 +207,13 @@ class BudgetAppropriationSummaryF8WExpense(models.AbstractModel):
         Returns:
             dict: path_prefix -> xml_id
         """
+        # Use full parent_path (e.g. "1/5/") instead of just "{id}/", otherwise
+        # substring search produces false positives ("12/" matches "112/").
         path_prefix_map = {}
         for xml_id, code, name in self.ACTIVITY_PLANS:
             parent = self.env.ref(xml_id, raise_if_not_found=False)
             if parent:
-                path_prefix_map[f"{parent.id}/"] = xml_id
+                path_prefix_map[parent.parent_path] = xml_id
             else:
                 _logger.warning("Activity plan with xml_id '%s' not found", xml_id)
         return path_prefix_map
@@ -236,9 +238,8 @@ class BudgetAppropriationSummaryF8WExpense(models.AbstractModel):
             activity = line.activity_analytic_id
 
             if top_dept_id and top_dept_id in dept_map and activity and activity.parent_path:
-                # Find which activity plan this belongs to
                 for prefix, xml_id in activity_path_map.items():
-                    if prefix in activity.parent_path or activity.parent_path.startswith(prefix):
+                    if activity.parent_path.startswith(prefix):
                         key = (top_dept_id, xml_id)
                         totals[key] = totals.get(key, 0) + line.balance
                         break
