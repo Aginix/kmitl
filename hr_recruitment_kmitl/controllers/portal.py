@@ -4,6 +4,8 @@ from odoo import fields, http
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.http import request
 
+from .profile import must_set_email
+
 
 class HrRecruitmentPortal(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
@@ -400,6 +402,8 @@ class HrRecruitmentPortal(CustomerPortal):
         website=True,
     )
     def portal_my_applications(self, page=1, sortby=None, **kw):
+        if must_set_email():
+            return request.redirect("/my/profile")
         HrApplicant = request.env["hr.applicant"].sudo()
         domain = self._get_applications_domain()
 
@@ -444,6 +448,8 @@ class HrRecruitmentPortal(CustomerPortal):
         website=True,
     )
     def portal_my_application(self, application_id, **kw):
+        if must_set_email():
+            return request.redirect("/my/profile")
         partner = request.env.user.partner_id
         application = (
             request.env["hr.applicant"]

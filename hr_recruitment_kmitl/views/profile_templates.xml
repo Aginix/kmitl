@@ -60,6 +60,15 @@
                         <br />
                     </t>
                 </div>
+                <!-- Force email update notice for Thai ID accounts -->
+                <div t-if="email_editable" class="alert alert-warning" role="alert">
+                    <strong>กรุณาเปลี่ยนอีเมลของท่าน</strong>
+                    <br />
+                    ท่านเข้าสู่ระบบด้วย ThaID
+                    อีเมลปัจจุบันของท่านยังเป็นเลขบัตรประชาชน
+                    กรุณากรอกอีเมลจริงในช่อง "อีเมล (Email)"
+                    ด้านล่าง แล้วบันทึกข้อมูลก่อนใช้งานส่วนอื่น
+                </div>
                 <div class="card border-secondary mb-4">
                     <div class="card-body p-4 d-flex align-items-center">
                         <t

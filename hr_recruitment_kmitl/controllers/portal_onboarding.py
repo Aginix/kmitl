@@ -4,6 +4,8 @@ from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.exceptions import UserError
 from odoo.http import request
 
+from .profile import must_set_email
+
 
 class PortalOnboardingHome(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
@@ -319,6 +321,8 @@ class PortalOnboardingController(http.Controller):
 
     @http.route(["/my/onboarding"], type="http", auth="user", website=True)
     def portal_my_onboarding_list(self, **kwargs):
+        if must_set_email():
+            return request.redirect("/my/profile")
         HrOnboarding = request.env["hr.onboarding"].sudo()
         domain = self._get_onboarding_domain()
 
@@ -340,6 +344,8 @@ class PortalOnboardingController(http.Controller):
         ["/my/onboarding/<int:onboarding_id>"], type="http", auth="user", website=True
     )
     def portal_my_onboarding_detail(self, onboarding_id, **kwargs):
+        if must_set_email():
+            return request.redirect("/my/profile")
         onboarding = self._get_onboarding_for_user(onboarding_id)
         if not onboarding:
             return request.redirect("/my/onboarding")
@@ -357,6 +363,8 @@ class PortalOnboardingController(http.Controller):
         methods=["GET", "POST"],
     )
     def portal_my_onboarding_form(self, onboarding_id, **post):
+        if must_set_email():
+            return request.redirect("/my/profile")
         onboarding = self._get_onboarding_for_user(onboarding_id)
         if not onboarding:
             return request.redirect("/my/onboarding")

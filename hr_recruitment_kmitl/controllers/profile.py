@@ -8,6 +8,13 @@ from odoo.http import request
 EDUCATION_FIELDS = ["program", "major", "institution", "country_id", "graduation_date"]
 
 
+def must_set_email():
+    """Return True when the current user signed up via Thai ID and their email
+    is still the placeholder Thai ID number (not yet a real email)."""
+    user = request.env.user
+    return bool(user.oauth_uid) and user.partner_id.email == user.oauth_uid
+
+
 class PortalProfile(CustomerPortal):
     CHAR_FIELDS = [
         "identification_id",
@@ -72,8 +79,7 @@ class PortalProfile(CustomerPortal):
     ]
 
     def _is_email_editable(self, profile):
-        user = request.env.user
-        return bool(user.oauth_uid) and profile.email == user.oauth_uid
+        return must_set_email()
 
     def _prepare_profile_render_values(self, partner, profile, error_message=None):
         """Prepare common render values for the profile page."""
@@ -156,6 +162,14 @@ class PortalProfile(CustomerPortal):
                 errors.append(
                     "Please fill required fields: %s" % ", ".join(missing_profile)
                 )
+            if email_editable:
+                submitted_email = post.get("email", "").strip()
+                if submitted_email and submitted_email == request.env.user.oauth_uid:
+                    errors.append(
+                        "กรุณาเปลี่ยนอีเมลให้เป็นอีเมลจริง (อีเมลปัจจุบันยังเป็นเลขบัตรประชาชน)"
+                    )
+                elif submitted_email and "@" not in submitted_email:
+                    errors.append("กรุณากรอกอีเมลให้ถูกต้อง")
             errors.extend(self._validate_education_history(post))
             errors.extend(self._validate_work_history(request.httprequest.form))
             if errors:
