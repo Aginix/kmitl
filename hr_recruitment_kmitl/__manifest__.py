@@ -19,6 +19,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "security/security.xml",
         "data/server_actions.xml",
         "data/website_data.xml",
         "views/snippets/s_benefit_card.xml",

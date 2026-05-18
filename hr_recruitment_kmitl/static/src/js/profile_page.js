@@ -209,6 +209,38 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         });
     }
 
+    function setupMultiFileInputs() {
+        document.querySelectorAll(".js-multi-file-input").forEach(function (input) {
+            input.addEventListener("change", function () {
+                var wrapper = this.closest(".js-multi-file-upload-wrapper");
+                if (!wrapper || !this.files || !this.files.length) return;
+                var names = Array.from(this.files)
+                    .map(function (f) {
+                        return f.name;
+                    })
+                    .join(", ");
+                var preview = wrapper.querySelector(".js-pending-files-preview");
+                if (!preview) {
+                    preview = document.createElement("div");
+                    preview.className =
+                        "small text-muted mt-2 js-pending-files-preview";
+                    this.closest("label").after(preview);
+                }
+                preview.textContent = names;
+            });
+        });
+
+        document.querySelectorAll(".js-file-remove-item").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var item = this.closest(".js-uploaded-item");
+                if (!item) return;
+                var flag = item.querySelector(".js-delete-attachment-flag");
+                if (flag) flag.value = "1";
+                item.style.display = "none";
+            });
+        });
+    }
+
     function setupSameAsRegisteredAddress() {
         var cb = document.getElementById("same_as_registered_address");
         var fields = document.getElementById("current_address_fields");
@@ -234,6 +266,7 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         setupWorkHistory();
         setupAgeCompute();
         setupFileInputs();
+        setupMultiFileInputs();
         setupSameAsRegisteredAddress();
         setupTabNavigation();
     }

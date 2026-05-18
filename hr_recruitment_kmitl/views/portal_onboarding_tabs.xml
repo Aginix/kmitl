@@ -4,7 +4,7 @@
         <!-- ข้อมูลส่วนบุคคล -->
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 p-md-5">
-                <t t-call="hr_recruitment_kmitl.onboarding_banner" />
+                <!-- <t t-call="hr_recruitment_kmitl.onboarding_banner" /> -->
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
                     <t t-set="title">1. ข้อมูลส่วนบุคคล (Personal Info)</t>
                 </t>
@@ -613,7 +613,7 @@
     <template id="onboarding_tab_education" name="Onboarding Tab Education">
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4 p-md-5">
-                <t t-call="hr_recruitment_kmitl.onboarding_banner" />
+                <!-- <t t-call="hr_recruitment_kmitl.onboarding_banner" /> -->
                 <t t-call="hr_recruitment_kmitl.section_tab_intro">
                     <t t-set="title">2. ประวัติการศึกษา (Education History)</t>
                     <t
@@ -1107,7 +1107,7 @@
                             class="border-top pt-4"
                         >
                             <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
-                                <t t-set="name">health_family_files</t>
+                                <t t-set="name">health_family_attachment_ids</t>
                                 <t t-set="label">เอกสารของครอบครัว</t>
                                 <t
                                     t-set="description"
@@ -1115,26 +1115,8 @@
                                     ทะเบียนสมรส สูติบัตร
                                 </t>
                                 <t t-set="required" t-value="False" />
-                                <t t-set="files" t-value="False" />
+                                <t t-set="files" t-value="health_family_attachments" />
                             </t>
-
-                            <div class="d-flex flex-column gap-2 mt-3">
-                                <t
-                                    t-call="hr_recruitment_kmitl.document_uploaded_list_item"
-                                >
-                                    <t t-set="filename">ทะเบียนสมรส.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">3</t>
-                                </t>
-
-                                <t t-call="hr_recruitment_kmitl.document_upload_card">
-                                    <t t-set="name">health_family_child_1_file</t>
-                                    <t t-set="label">เด็กหญิง พิมพ์ใจ ใจดี</t>
-                                    <t t-set="description">เอกสารของบุตร: สูติบัตร
-                                        หรือเอกสารยืนยันความสัมพันธ์</t>
-                                </t>
-
-                            </div>
                         </div>
 
                     </div>
@@ -1192,7 +1174,7 @@
                             class="border-top pt-4"
                         >
                             <t t-call="hr_recruitment_kmitl.document_multi_upload_item">
-                                <t t-set="name">accident_family_files</t>
+                                <t t-set="name">accident_family_attachment_ids</t>
                                 <t t-set="label">เอกสารของครอบครัว</t>
                                 <t t-set="description">กรณีประสงค์ใช้สิทธิ์ /
                                     ซื้อประกันอุบัติเหตุให้กับบิดา-มารดา
@@ -1200,28 +1182,11 @@
                                     สำเนาบัตรประชาชน
                                     และทะเบียนบ้าน</t>
                                 <t t-set="required" t-value="False" />
-                                <t t-set="files" t-value="False" />
+                                <t
+                                    t-set="files"
+                                    t-value="accident_family_attachments"
+                                />
                             </t>
-
-                            <!-- mock list -->
-                            <div class="d-flex flex-column gap-2 mt-3">
-                                <t
-                                    t-call="hr_recruitment_kmitl.document_uploaded_list_item"
-                                >
-                                    <t t-set="filename">ใบคำขอเอาประกันของบิดา.pdf</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">21</t>
-                                </t>
-
-                                <t
-                                    t-call="hr_recruitment_kmitl.document_uploaded_list_item"
-                                >
-                                    <t t-set="filename">ทะเบียนบ้านครอบครัว.jpg</t>
-                                    <t t-set="download_url">#</t>
-                                    <t t-set="attachment_id">22</t>
-                                </t>
-
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -2462,6 +2427,10 @@
                                             t-set="download_url"
                                             t-value="'/web/content/%d?download=true' % att.id"
                                         />
+                                        <!--
+                                        t-value="'/web/content?model=ir.attachment&amp;id=%d&amp;field=datas&amp;filename_field=name&amp;download=true'
+                                        % att.id" -->
+                                        <!-- t-value="'/web/content/%d?download=true' % att.id"   -->
                                         <t t-set="attachment_id" t-value="att.id" />
                                     </t>
                                 </t>

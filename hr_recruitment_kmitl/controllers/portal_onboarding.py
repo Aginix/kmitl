@@ -293,21 +293,19 @@ class PortalOnboardingController(http.Controller):
                 )
 
     def _save_multi_attachments(self, onboarding, m2m_field, post, files):
+        # AttachmentModel = request.env["ir.attachment"].sudo()
         AttachmentModel = request.env["ir.attachment"].sudo()
         delete_prefix = f"delete_attachment_{m2m_field}_"
 
         # Process deletes
         for key in post:
-            if key.startswith(delete_prefix):
+            if key.startswith(delete_prefix) and post.get(key) == "1":
                 att_id = int(key.replace(delete_prefix, ""))
-                current = getattr(onboarding, m2m_field)
-                if att_id in current.ids:
-                    current -= AttachmentModel.browse(att_id)
+                if att_id in getattr(onboarding, m2m_field).ids:
+                    onboarding.write({m2m_field: [(3, att_id)]})
 
         # Process uploads
-        file_input_prefix = f"{m2m_field}_attachment"
-        if file_input_prefix in files:
-            uploaded = files.get(file_input_prefix)
+        for uploaded in files.getlist(m2m_field):
             if uploaded and uploaded.filename:
                 attachment = AttachmentModel.create(
                     {
@@ -317,7 +315,7 @@ class PortalOnboardingController(http.Controller):
                         "res_id": onboarding.id,
                     }
                 )
-                getattr(onboarding, m2m_field).add(attachment)
+                onboarding.write({m2m_field: [(4, attachment.id)]})
 
     @http.route(["/my/onboarding"], type="http", auth="user", website=True)
     def portal_my_onboarding_list(self, **kwargs):
