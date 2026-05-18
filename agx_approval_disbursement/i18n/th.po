@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 10:41+0000\n"
-"PO-Revision-Date: 2026-02-25 17:41+0700\n"
+"POT-Creation-Date: 2026-05-11 13:53+0000\n"
+"PO-Revision-Date: 2026-05-11 21:09+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -20,7 +20,7 @@ msgstr ""
 #. module: agx_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.view_disbursement_request_form
 msgid "Approval"
-msgstr ""
+msgstr "คำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval_disbursement
 #. odoo-python
@@ -37,20 +37,40 @@ msgid "Approval Request Line"
 msgstr ""
 
 #. module: agx_approval_disbursement
+#: model:ir.model,name:agx_approval_disbursement.model_ir_attachment
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
+msgid "Attachment for Disbursement"
+msgstr "เอกสารขอเบิกจ่าย"
+
+#. module: agx_approval_disbursement
 #: model:ir.model.fields,field_description:agx_approval_disbursement.field_approval_request__billing_status
 msgid "Billing Status"
-msgstr ""
+msgstr "สถานะการเบิก"
 
 #. module: agx_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
 msgid "Create Bill"
-msgstr ""
+msgstr "สร้างใบขอเบิก"
 
 #. module: agx_approval_disbursement
 #. odoo-python
 #: code:addons/agx_approval_disbursement/models/approval_request.py:0
 #, python-format
 msgid "Disbursement %(dr_name)s created successfully."
+msgstr ""
+
+#. module: agx_approval_disbursement
+#: model:ir.model.fields,field_description:agx_approval_disbursement.field_approval_request__disbursement_attachment_ids
+msgid "Disbursement Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval_disbursement
+#: model:ir.model.fields,field_description:agx_approval_disbursement.field_ir_attachment__is_disbursement_evidence
+msgid "Disbursement Evidence"
 msgstr ""
 
 #. module: agx_approval_disbursement
@@ -66,7 +86,7 @@ msgstr ""
 #. module: agx_approval_disbursement
 #: model:ir.model.fields,field_description:agx_approval_disbursement.field_approval_request__disbursement_request_ids
 msgid "Disbursement Requests"
-msgstr ""
+msgstr "ใบขอเบิก"
 
 #. module: agx_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
@@ -74,26 +94,43 @@ msgid "Disbursements"
 msgstr "ใบขอเบิก"
 
 #. module: agx_approval_disbursement
+#: model:ir.model.fields,field_description:agx_approval_disbursement.field_approval_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval_disbursement
 #: model:ir.model.fields.selection,name:agx_approval_disbursement.selection__approval_request__billing_status__full
 msgid "Fully Billed"
-msgstr ""
+msgstr "เบิกเต็มจำนวน"
 
 #. module: agx_approval_disbursement
 #. odoo-python
 #: code:addons/agx_approval_disbursement/models/disbursement_request.py:0
 #, python-format
 msgid "No Approval Request linked to this request."
-msgstr ""
+msgstr "ไม่มีการอนุมัติคำขอซื้อที่เชื่อมโยงกับคำขอนี้"
 
 #. module: agx_approval_disbursement
 #: model:ir.model.fields.selection,name:agx_approval_disbursement.selection__approval_request__billing_status__no
 msgid "Nothing to Bill"
-msgstr ""
+msgstr "ไม่มีให้เบิก"
 
 #. module: agx_approval_disbursement
 #: model:ir.model.fields.selection,name:agx_approval_disbursement.selection__approval_request__billing_status__partial
 msgid "Partially Billed"
-msgstr ""
+msgstr "เบิกแล้วบางส่วน"
+
+#. module: agx_approval_disbursement
+#: model:exception.rule,description:agx_approval_disbursement.excep_no_disbursement_evidence
+msgid ""
+"Please provide at least one piece of supporting documentation for your "
+"disbursement request."
+msgstr "กรุณาระบุหลักฐานการขอเบิกจ่ายอย่างน้อย 1 หลักฐาน"
+
+#. module: agx_approval_disbursement
+#: model:exception.rule,name:agx_approval_disbursement.excep_no_disbursement_evidence
+msgid "There is no evidence of a disbursement request."
+msgstr "ไม่มีหลักฐานการขอเบิกจ่าย"
 
 #. module: agx_approval_disbursement
 #. odoo-python

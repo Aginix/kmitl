@@ -10,4 +10,7 @@ _logger = logging.getLogger(__name__)
 class IrAttachment(models.Model):
     _inherit = 'ir.attachment'
 
-    sequence = fields.Integer(string="Sequence")
+    is_disbursement_evidence = fields.Boolean(
+        string="Disbursement Evidence",
+        default=False,
+    )

@@ -63,7 +63,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_all_approval_menu
 msgid "All Approval"
-msgstr ""
+msgstr "คำขอทั้งหมด"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__allowed_product_ids
@@ -173,7 +173,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__billed
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Billed"
-msgstr ""
+msgstr "ส่งเบิกแล้ว"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -210,10 +210,10 @@ msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__cancelled
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__rejected
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
-msgid "Cancelled"
-msgstr "ยกเลิก"
+msgid "Rejected"
+msgstr "ปฏิเสธ"
 
 #. module: agx_approval
 #. odoo-python
@@ -232,22 +232,22 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_category_menu
 msgid "Categories"
-msgstr ""
+msgstr "ประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__category_id
 msgid "Category"
-msgstr "ประเภทคำขออนุมัติค่าใช้จ่าย"
+msgstr "ประเภทคำขอ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
 msgid "Category Group"
-msgstr ""
+msgstr "กลุ่มประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_category_group_menu
 msgid "Category Groups"
-msgstr ""
+msgstr "กลุ่มประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__city
@@ -467,8 +467,8 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__loan
-msgid "Loan"
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__advance
+msgid "Advance"
 msgstr "เงินยืม"
 
 #. module: agx_approval
@@ -478,8 +478,8 @@ msgstr ""
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_manage_menu
-msgid "Manage"
-msgstr ""
+msgid "Manage Approval"
+msgstr "จัดการคำขอ"
 
 #. module: agx_approval
 #: model:res.groups,name:agx_approval.group_approval_manager
@@ -504,25 +504,31 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_approvals_menu
 msgid "My Approvals"
-msgstr ""
+msgstr "รายการคำขอ"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_my_request_menu
 msgid "My Request"
-msgstr ""
+msgstr "คำขอของฉัน"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__name
 msgid "Name"
-msgstr ""
+msgstr "เลขที่"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
+msgid "Name"
+msgstr "ประเภทคำขอ"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_new_request_menu
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_kanban
 msgid "New Request"
-msgstr ""
+msgstr "แบบฟอร์มคำขอ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_calendar_event_id
@@ -623,7 +629,7 @@ msgstr "วันที่จัดทำคำขอ"
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__group_id
 msgid "Request Group"
-msgstr ""
+msgstr "กลุ่มประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -677,7 +683,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_menu
 msgid "Settings"
-msgstr ""
+msgstr "การตั้งค่า"
 
 #. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request__activity_state
@@ -692,7 +698,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__submitted
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Submitted"
-msgstr "ส่งคำขอ"
+msgstr "รอการอนุมัติ"
 
 #. module: agx_approval
 #. odoo-python
@@ -714,12 +720,17 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "To Verify"
-msgstr "ขอการอนุมัติ"
+msgstr "จองงบประมาณ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount
 msgid "Total"
 msgstr "จำนวนเงิน"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__total_amount
+msgid "Total Estimated Cost"
+msgstr "รวม"
 
 #. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request__activity_exception_decoration
@@ -735,7 +746,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__validated
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Validated"
-msgstr ""
+msgstr "อนุมัติแล้ว"
 
 #. module: agx_approval
 #. odoo-python
@@ -783,3 +794,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__attachment_ids
 msgid "Document Attachments"
 msgstr "เอกสารแนบ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid ""
+"When payment type is Prepaid, please select the advance\n"
+"                                payer's name in the Partner field."
+msgstr ""
+"กรณีเลือกประเภทการจ่ายเงินเป็นสำรองจ่าย\n"
+"                                ให้เลือกชื่อผู้สำรองจ่าย"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid ""
+"If vendor name not found, contact procurement staff to add the information."
+msgstr "ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน เพื่อเพิ่มข้อมูล"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Attachment for Approval Request"
+msgstr "เอกสารประกอบคำขออนุมัติ"

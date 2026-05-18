@@ -61,7 +61,7 @@ class ApprovalRequest(models.Model):
 
     def _on_sarabun_rejected(self, document, recipient):
         """Called when sarabun document is rejected."""
-        self.state = "draft"
+        self.action_cancel()
         reason = recipient.comment if recipient else _("No reason provided")
         self.message_post(
             body=_("Rejected via Sarabun. Reason: %s") % reason,
