@@ -402,6 +402,14 @@ class ApprovalRequest(models.Model):
                     )
         return True
 
+    def write(self, vals):
+        result = super().write(vals)
+        if vals.get("state") == "approved":
+            for record in self:
+                for line in record.line_ids.filtered(lambda l: not l.actual_amount):
+                    line.actual_amount = line.total_amount
+        return result
+
     # def write(self, values):
     #     if (
     #         "budget_commitment_id" in values

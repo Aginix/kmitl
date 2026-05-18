@@ -53,6 +53,11 @@ class ApprovalRequestLine(models.Model):
         required=True,
     )
 
+    actual_amount = fields.Monetary(
+        string="Actual amount",
+        currency_field="currency_id",
+    )
+
     @api.depends('request_id.category_id')
     def _compute_allowed_product_ids(self):
         for record in self:
