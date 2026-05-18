@@ -114,16 +114,21 @@
                     </group>
                     <notebook>
                         <page name="request_lines" string="Request Lines">
-                            <field name="line_ids">
+                            <field name="line_ids"
+                                attrs="{'readonly': [('state', 'in', ['to_verify', 'submitted', 'validated', 'rejected'])]}">
                                 <tree editable="bottom">
                                     <field name="allowed_product_ids" invisible="1"/>
-                                    <field name="sequence" widget="handle" />
+                                    <field name="sequence" widget="handle"
+                                        attrs="{'readonly': [('parent.state', 'in', ['approved', 'billed'])]}" />
                                     <field name="currency_id" invisible="1"/>
-                                    <field name="partner_id" />
-                                    <field name="product_id" />
-                                    <field name="total_amount" />
+                                    <field name="partner_id"
+                                        attrs="{'readonly': [('parent.state', 'in', ['approved', 'billed'])]}" />
+                                    <field name="product_id"
+                                        attrs="{'readonly': [('parent.state', 'in', ['approved', 'billed'])]}" />
+                                    <field name="total_amount"
+                                        attrs="{'readonly': [('parent.state', 'in', ['approved', 'billed'])]}" />
                                     <field name="actual_amount"
-                                        attrs="{'column_invisible': [('parent.state', 'not in', ['approved', 'billed'])]}" />
+                                        attrs="{'column_invisible': [('parent.state', 'not in', ['approved', 'billed'])], 'readonly': [('parent.state', '=', 'billed')]}" />
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">
