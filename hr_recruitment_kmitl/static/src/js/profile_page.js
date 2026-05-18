@@ -56,21 +56,21 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
                 '<div class="row g-3 mb-1">' +
                 '<div class="col-lg-6">' +
                 '<label class="col-form-label">Company</label>' +
-                '<input type="text" name="wh_company_name" class="form-control" placeholder="ชื่อบริษัท" required="required"/>' +
+                '<input type="text" name="wh_company_name" class="form-control" placeholder="ชื่อบริษัท"/>' +
                 "</div>" +
                 '<div class="col-lg-6">' +
                 '<label class="col-form-label">Job Title / Description</label>' +
-                '<input type="text" name="wh_job_title" class="form-control" placeholder="ตำแหน่ง / ลักษณะงาน" required="required"/>' +
+                '<input type="text" name="wh_job_title" class="form-control" placeholder="ตำแหน่ง / ลักษณะงาน"/>' +
                 "</div>" +
                 "</div>" +
                 '<div class="row g-3">' +
                 '<div class="col-lg-4">' +
                 '<label class="col-form-label">เงินเดือนสุดท้าย (Last Salary)</label>' +
-                '<input type="number" name="wh_salary" class="form-control" step="0.01" placeholder="เงินเดือนสุดท้าย" required="required"/>' +
+                '<input type="number" name="wh_salary" class="form-control" step="0.01" placeholder="เงินเดือนสุดท้าย"/>' +
                 "</div>" +
                 '<div class="col-lg-4">' +
                 '<label class="col-form-label">Start Date</label>' +
-                '<input type="date" name="wh_date_start" class="form-control" required="required"/>' +
+                '<input type="date" name="wh_date_start" class="form-control"/>' +
                 "</div>" +
                 '<div class="col-lg-4">' +
                 '<label class="col-form-label">End Date</label>' +

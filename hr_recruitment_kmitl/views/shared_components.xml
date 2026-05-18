@@ -3,16 +3,16 @@
         <div class="mb-4">
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-1">
                 <span class="section-indicator bg-primary" />
-                <t t-esc="title" />
+                <t t-out="title" />
             </h5>
             <p t-if="description" class="text-secondary small ms-4 mb-0">
-                <t t-esc="description" />
+                <t t-out="description" />
             </p>
         </div>
     </template>
     <template id="input_readonly_field">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
         <input
             type="text"
@@ -23,14 +23,14 @@
     </template>
     <template id="input_readonly_textarea">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
         <!-- prettier-ignore-start -->
         <textarea
             class="form-control text-muted border-0 py-2"
             t-att-rows="rows or 4"
             readonly="readonly"
-        ><t t-esc="value or '-'" /></textarea>
+        ><t t-out="value or '-'" /></textarea>
         <!-- prettier-ignore-end -->
     </template>
     <!-- Alert หน้าฟอร์มที่บอกวาขั้นตอน 1-4 แก้ไขไม่ได้ -->
@@ -88,7 +88,7 @@
                 class="js-delete-flag"
             />
             <label class="form-label fw-semibold small d-block mb-2">
-                <t t-esc="label" />
+                <t t-out="label" />
                 <t t-if="required">
                     <span class="text-danger ms-1">*</span>
                 </t>
@@ -127,10 +127,10 @@
                             class="text-success text-decoration-underline"
                             target="_blank"
                         >
-                            <t t-esc="existing_filename" />
+                            <t t-out="existing_filename" />
                         </a>
                         <t t-else="">
-                            <t t-esc="existing_filename" />
+                            <t t-out="existing_filename" />
                         </t>
                     </t>
                     <t t-else="">
@@ -168,10 +168,10 @@
                         class="text-dark text-decoration-underline"
                         target="_blank"
                     >
-                        <t t-esc="filename" />
+                        <t t-out="filename" />
                     </a>
                     <t t-else="">
-                        <t t-esc="filename" />
+                        <t t-out="filename" />
                     </t>
                 </div>
             </div>
@@ -195,7 +195,7 @@
             </div>
             <div class="flex-grow-1">
                 <div class="fw-semibold text-dark">
-                    <t t-esc="filename" />
+                    <t t-out="filename" />
                 </div>
             </div>
             <t t-if="download_url">
@@ -210,13 +210,13 @@
     <template id="document_multi_upload_item">
         <div class="js-multi-file-upload-wrapper">
             <label class="form-label fw-semibold small d-block mb-2">
-                <t t-esc="label" />
+                <t t-out="label" />
                 <t t-if="required">
                     <span class="text-danger ms-1">*</span>
                 </t>
             </label>
             <p class="text-secondary small mb-3">
-                <t t-esc="description" />
+                <t t-out="description" />
             </p>
             <div class="d-flex flex-column gap-2 mb-3">
                 <t t-if="files">
@@ -278,7 +278,7 @@
                 <div class="flex-grow-1">
                     <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
                         <span class="fw-semibold text-dark">
-                            <t t-esc="label" />
+                            <t t-out="label" />
                         </span>
                         <t t-if="required">
                             <span
@@ -289,7 +289,7 @@
                         </t>
                     </div>
                     <p class="text-secondary small mb-2">
-                        <t t-esc="description" />
+                        <t t-out="description" />
                     </p>
                     <div
                         t-att-class="'small text-success js-file-status' if existing_filename else 'small text-muted js-file-status'"
@@ -302,10 +302,10 @@
                                 class="text-success text-decoration-underline"
                                 target="_blank"
                             >
-                                <t t-esc="existing_filename" />
+                                <t t-out="existing_filename" />
                             </a>
                             <t t-else="">
-                                <t t-esc="existing_filename" />
+                                <t t-out="existing_filename" />
                             </t>
                         </t>
                         <t t-else="">
@@ -342,23 +342,23 @@
         <span
             t-attf-class="badge text-bg-#{badge_class or 'primary'} px-3 py-2 rounded-pill fw-semibold"
         >
-            <t t-esc="label or '-'" />
+            <t t-out="label or '-'" />
         </span>
     </template>
     <template id="application_tab_intro">
         <div class="mb-4">
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-1">
                 <span class="section-indicator bg-primary" />
-                <t t-esc="title" />
+                <t t-out="title" />
             </h5>
             <p t-if="description" class="text-secondary small ms-4 mb-0">
-                <t t-esc="description" />
+                <t t-out="description" />
             </p>
         </div>
     </template>
     <template id="application_readonly_field">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
         <input
             type="text"
@@ -369,14 +369,14 @@
     </template>
     <template id="application_readonly_textarea">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
         <textarea
             class="form-control text-muted border-0 py-2"
             t-att-rows="rows or 4"
             readonly="readonly"
         >
-            <t t-esc="value or '-'" />
+            <t t-out="value or '-'" />
         </textarea>
     </template>
     <template id="application_document_item">
@@ -388,10 +388,10 @@
             </div>
             <div class="flex-grow-1">
                 <span class="fw-semibold text-dark">
-                    <t t-esc="label" />
+                    <t t-out="label" />
                 </span>
                 <div class="small text-muted">
-                    <t t-esc="filename or '-'" />
+                    <t t-out="filename or '-'" />
                 </div>
             </div>
             <t t-if="download_url">

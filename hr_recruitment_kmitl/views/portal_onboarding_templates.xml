@@ -67,19 +67,19 @@
                                                     class="rounded-circle bg-primary-light text-primary fw-bold d-flex align-items-center justify-content-center"
                                                     style="width: 40px; height: 40px;"
                                                 >
-                                                    <t t-esc="ob_index + 1" />
+                                                    <t t-out="ob_index + 1" />
                                                 </div>
                                             </div>
                                             <div class="col">
                                                 <h5 class="fw-bold text-dark mb-1">
                                                     <t
-                                                        t-esc="ob.applicant_id.job_id.name or '-'"
+                                                        t-out="ob.applicant_id.job_id.name or '-'"
                                                     />
                                                 </h5>
                                                 <div class="text-secondary small">
                                                     <i class="fa fa-building-o me-1" />
                                                     <t
-                                                        t-esc="ob.applicant_id.department_id.name or '-'"
+                                                        t-out="ob.applicant_id.department_id.name or '-'"
                                                     />
                                                 </div>
                                                 <div class="text-secondary small mt-1">
@@ -87,7 +87,7 @@
                                                         class="fa fa-calendar-check-o me-1"
                                                     />
                                                     ผ่านการคัดเลือกเมื่อ: <t
-                                                        t-esc="ob.create_date.strftime('%d %b %Y')"
+                                                        t-out="ob.create_date.strftime('%d %b %Y')"
                                                     />
                                                 </div>
                                             </div>
@@ -149,19 +149,19 @@
                                             <div class="col">
                                                 <h5 class="fw-bold text-dark mb-1">
                                                     <t
-                                                        t-esc="ob.applicant_id.job_id.name or '-'"
+                                                        t-out="ob.applicant_id.job_id.name or '-'"
                                                     />
                                                 </h5>
                                                 <div class="text-secondary small">
                                                     <i class="fa fa-building-o me-1" />
                                                     <t
-                                                        t-esc="ob.applicant_id.department_id.name or '-'"
+                                                        t-out="ob.applicant_id.department_id.name or '-'"
                                                     />
                                                 </div>
                                                 <div class="text-secondary small mt-1">
                                                     <i class="fa fa-send-o me-1" />
                                                     ข้อมูลถูกส่งเข้าระบบแล้วเมื่อ: <t
-                                                        t-esc="ob.submitted_date.strftime('%d %b %Y')"
+                                                        t-out="ob.submitted_date.strftime('%d %b %Y')"
                                                     />
                                                 </div>
                                             </div>

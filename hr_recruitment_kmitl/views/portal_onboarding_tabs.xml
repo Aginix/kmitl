@@ -301,7 +301,7 @@
                                     <h6
                                         class="fw-bold text-dark mb-0"
                                     >สมาชิกครอบครัวคนที่ <t
-                                            t-esc="family_index + 1"
+                                            t-out="family_index + 1"
                                         /></h6>
                                     <button
                                         type="button"
@@ -334,7 +334,7 @@
                                                     t-att-value="rel.id"
                                                     t-att-selected="family.relation_id.id == rel.id or None"
                                                 >
-                                                    <t t-esc="rel.name" />
+                                                    <t t-out="rel.name" />
                                                 </option>
                                             </t>
                                         </select>
@@ -367,7 +367,7 @@
                                                     t-att-value="pfx.id"
                                                     t-att-selected="family.prefix_id.id == pfx.id or None"
                                                 >
-                                                    <t t-esc="pfx.name" />
+                                                    <t t-out="pfx.name" />
                                                 </option>
                                             </t>
                                         </select>
@@ -510,7 +510,7 @@
                                             t-as="rel"
                                         >
                                             <option t-att-value="rel.id">
-                                                <t t-esc="rel.name" />
+                                                <t t-out="rel.name" />
                                             </option>
                                         </t>
                                     </select>
@@ -532,7 +532,7 @@
                                             t-as="pfx"
                                         >
                                             <option t-att-value="pfx.id">
-                                                <t t-esc="pfx.name" />
+                                                <t t-out="pfx.name" />
                                             </option>
                                         </t>
                                     </select>
@@ -631,10 +631,10 @@
                                         class="rounded-circle border border-2 border-primary text-primary d-inline-flex align-items-center justify-content-center mb-2"
                                         style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;"
                                     >
-                                        <t t-esc="edu_index + 1" />
+                                        <t t-out="edu_index + 1" />
                                     </div>
                                     <h6 class="mb-0 fw-bold">
-                                        <t t-esc="edu.get('level') or '-'" />
+                                        <t t-out="edu.get('level') or '-'" />
                                     </h6>
                                 </div>
                             </div>
@@ -1929,37 +1929,37 @@
                             <t t-foreach="onboarding.family_member_ids" t-as="family">
                                 <tr>
                                     <td>
-                                        <t t-esc="family.relation_id.name or '-'" />
+                                        <t t-out="family.relation_id.name or '-'" />
                                     </td>
                                     <td>
-                                        <t t-esc="family.identification_id or '-'" />
+                                        <t t-out="family.identification_id or '-'" />
                                     </td>
                                     <td>
-                                        <t t-esc="family.prefix_id.name or '-'" />
+                                        <t t-out="family.prefix_id.name or '-'" />
                                     </td>
                                     <td>
-                                        <t t-esc="family.first_name or '-'" />
+                                        <t t-out="family.first_name or '-'" />
                                     </td>
                                     <td>
-                                        <t t-esc="family.middle_name or '-'" />
+                                        <t t-out="family.middle_name or '-'" />
                                     </td>
                                     <td>
-                                        <t t-esc="family.last_name or '-'" />
+                                        <t t-out="family.last_name or '-'" />
                                     </td>
                                     <td>
                                         <t
-                                            t-esc="family.date_of_birth and family.date_of_birth.strftime('%d/%m/%Y') or '-'"
+                                            t-out="family.date_of_birth and family.date_of_birth.strftime('%d/%m/%Y') or '-'"
                                         />
                                     </td>
                                     <td>
-                                        <t t-esc="family.job or '-'" />
+                                        <t t-out="family.job or '-'" />
                                     </td>
                                     <td>
-                                        <t t-esc="family.phone or '-'" />
+                                        <t t-out="family.phone or '-'" />
                                     </td>
                                     <td>
                                         <t
-                                            t-esc="status_labels.get(family.status, '-')"
+                                            t-out="status_labels.get(family.status, '-')"
                                         />
                                     </td>
                                 </tr>
@@ -1999,10 +1999,10 @@
                                         class="rounded-circle border border-2 border-primary text-primary d-inline-flex align-items-center justify-content-center mb-2"
                                         style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;"
                                     >
-                                        <t t-esc="edu_index + 1" />
+                                        <t t-out="edu_index + 1" />
                                     </div>
                                     <h6 class="mb-0 fw-bold">
-                                        <t t-esc="edu.get('level') or '-'" />
+                                        <t t-out="edu.get('level') or '-'" />
                                     </h6>
                                 </div>
                             </div>

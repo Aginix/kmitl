@@ -131,37 +131,7 @@ class PortalProfile(CustomerPortal):
 
         if post and request.httprequest.method == "POST":
             email_editable = self._is_email_editable(profile)
-            profile_required = {
-                "title": "Title",
-                "first_name": "First Name",
-                "last_name": "Last Name",
-                "first_name_en": "First Name (EN)",
-                "last_name_en": "Last Name (EN)",
-                "identification_id": "Identification No.",
-                "nationality_id": "Nationality",
-                "gender": "Gender",
-                "birthday": "Birthday",
-                "phone": "Phone",
-                "address_street": "Registered Address",
-                "address_zip_id": "Registered ZIP Location",
-                "marital": "Marital Status",
-                "emergency_contact_name": "Emergency Contact Name",
-                "emergency_contact_relation": "Emergency Contact Relation",
-                "emergency_contact_phone": "Emergency Contact Phone",
-                "emergency_contact_email": "Emergency Contact Email",
-            }
-            if email_editable:
-                profile_required["email"] = "Email"
             errors = []
-            missing_profile = [
-                label
-                for field, label in profile_required.items()
-                if not post.get(field, "").strip()
-            ]
-            if missing_profile:
-                errors.append(
-                    "Please fill required fields: %s" % ", ".join(missing_profile)
-                )
             if email_editable:
                 submitted_email = post.get("email", "").strip()
                 if submitted_email and submitted_email == request.env.user.oauth_uid:
@@ -170,8 +140,6 @@ class PortalProfile(CustomerPortal):
                     )
                 elif submitted_email and "@" not in submitted_email:
                     errors.append("กรุณากรอกอีเมลให้ถูกต้อง")
-            errors.extend(self._validate_education_history(post))
-            errors.extend(self._validate_work_history(request.httprequest.form))
             if errors:
                 values = self._prepare_profile_render_values(partner, profile, errors)
                 return request.render("hr_recruitment_kmitl.portal_my_profile", values)
