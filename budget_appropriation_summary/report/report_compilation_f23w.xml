@@ -303,11 +303,15 @@
                         margin: 0;
                         padding: 0;
                     }
+                    .article, main, header, footer, .o_report_layout_standard {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
                     .page {
                         width: auto;
                         min-height: auto;
                         margin: 0 !important;
-                        padding: 0 !important;
+                        padding: 24mm 8mm !important;
                         box-shadow: none;
                         border-radius: 0;
                         background-image: none !important;
@@ -317,7 +321,6 @@
                     }
                     @page {
                         margin: 0 !important;
-                        padding: 24mm 8mm !important;
                         size: A4;
                     }
                     .f23w-print-btn {
