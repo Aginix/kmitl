@@ -482,6 +482,7 @@
                                                 name="email"
                                                 class="form-control"
                                                 t-att-value="profile.email or ''"
+                                                t-att-readonly="not email_editable and 'readonly' or None"
                                                 required="required"
                                             />
                                         </div>

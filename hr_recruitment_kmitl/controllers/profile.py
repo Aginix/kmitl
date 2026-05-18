@@ -71,6 +71,10 @@ class PortalProfile(CustomerPortal):
         "same_as_registered_address",
     ]
 
+    def _is_email_editable(self, profile):
+        user = request.env.user
+        return bool(user.oauth_uid) and profile.email == user.oauth_uid
+
     def _prepare_profile_render_values(self, partner, profile, error_message=None):
         """Prepare common render values for the profile page."""
         values = self._prepare_portal_layout_values()
@@ -78,6 +82,7 @@ class PortalProfile(CustomerPortal):
             {
                 "profile": profile,
                 "partner": partner,
+                "email_editable": self._is_email_editable(profile),
                 "titles": request.env["res.partner.title"].sudo().search([]),
                 "countries": request.env["res.country"].sudo().search([]),
                 "zips": request.env["res.city.zip"].sudo().search([]),
@@ -119,6 +124,7 @@ class PortalProfile(CustomerPortal):
         profile = partner.sudo()._get_or_create_profile()
 
         if post and request.httprequest.method == "POST":
+            email_editable = self._is_email_editable(profile)
             profile_required = {
                 "title": "Title",
                 "first_name": "First Name",
@@ -130,7 +136,6 @@ class PortalProfile(CustomerPortal):
                 "gender": "Gender",
                 "birthday": "Birthday",
                 "phone": "Phone",
-                "email": "Email",
                 "address_street": "Registered Address",
                 "address_zip_id": "Registered ZIP Location",
                 "marital": "Marital Status",
@@ -139,6 +144,8 @@ class PortalProfile(CustomerPortal):
                 "emergency_contact_phone": "Emergency Contact Phone",
                 "emergency_contact_email": "Emergency Contact Email",
             }
+            if email_editable:
+                profile_required["email"] = "Email"
             errors = []
             missing_profile = [
                 label
@@ -155,6 +162,8 @@ class PortalProfile(CustomerPortal):
                 values = self._prepare_profile_render_values(partner, profile, errors)
                 return request.render("hr_recruitment_kmitl.portal_my_profile", values)
             vals = self._prepare_profile_values(post)
+            if not email_editable:
+                vals.pop("email", None)
             profile.sudo().write(vals)
             self._save_education_history(profile, post)
             self._save_work_history(profile, request.httprequest.form)
