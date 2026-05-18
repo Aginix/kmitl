@@ -1773,6 +1773,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label class="col-form-label">Program</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="text"
                                 t-attf-name="#{section_prefix}program"
@@ -1782,6 +1783,7 @@
                         </div>
                         <div class="mb-3 col-md-6">
                             <label class="col-form-label">Major</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="text"
                                 t-attf-name="#{section_prefix}major"
@@ -1793,6 +1795,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Institution</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="text"
                                 t-attf-name="#{section_prefix}institution"
@@ -1802,6 +1805,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Country</label>
+                            <span class="text-danger ms-1">*</span>
                             <select
                                 t-attf-name="#{section_prefix}country_id"
                                 class="form-select"
@@ -1819,6 +1823,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Graduation Date</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="date"
                                 t-attf-name="#{section_prefix}graduation_date"
@@ -1834,7 +1839,7 @@
                                 <t
                                     t-set="description"
                                 >อัปโหลดไฟล์ PDF, รูปภาพ หรือเอกสาร</t>
-                                <t t-set="required" t-value="False" />
+                                <t t-set="required" t-value="True" />
                                 <t
                                     t-set="name"
                                     t-valuef="#{section_prefix}certificate_file"
@@ -1855,7 +1860,7 @@
                                 <t
                                     t-set="description"
                                 >อัปโหลดไฟล์ PDF, รูปภาพ หรือเอกสาร</t>
-                                <t t-set="required" t-value="False" />
+                                <t t-set="required" t-value="True" />
                                 <t
                                     t-set="name"
                                     t-valuef="#{section_prefix}transcript_file"
