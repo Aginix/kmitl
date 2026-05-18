@@ -47,21 +47,41 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
             profile = (
                 request.env["portal.profile"]
                 .sudo()
+                .with_context(lang="th_TH")
                 .search([("partner_id", "=", partner.id)], limit=1)
             )
+
             if profile:
                 d = default.setdefault
 
                 name_parts = filter(
                     None,
-                    [profile.first_name, profile.middle_name, profile.last_name],
+                    [
+                        profile.with_context(lang="th_TH").title.name,
+                        profile.first_name,
+                        profile.middle_name,
+                        profile.last_name,
+                    ],
                 )
+
+                name_en_parts = filter(
+                    None,
+                    [
+                        profile.with_context(lang="en_US").title.name,
+                        profile.first_name_en,
+                        profile.middle_name_en,
+                        profile.last_name_en,
+                    ],
+                )
+
                 d("partner_name", " ".join(name_parts))
+                d("partner_name_en", " ".join(name_en_parts))
                 d("email_from", profile.email or "")
                 d("partner_phone", profile.phone or "")
 
                 # Thai name
                 d("applicant_title", profile.title.id if profile.title else "")
+                d("applicant_title_name", profile.title.name if profile.title else "")
                 d("first_name", profile.first_name or "")
                 d("middle_name", profile.middle_name or "")
                 d("last_name", profile.last_name or "")
@@ -80,7 +100,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("birthday", str(profile.birthday) if profile.birthday else "")
                 d(
                     "nationality_id",
-                    profile.nationality_id.id if profile.nationality_id else "",
+                    profile.nationality_id.name if profile.nationality_id else "",
                 )
                 d("marital", profile.marital or "")
 

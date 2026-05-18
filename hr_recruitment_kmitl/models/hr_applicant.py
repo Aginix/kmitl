@@ -269,6 +269,23 @@ class HrApplicant(models.Model):
         compute="_compute_can_create_onboarding", tracking=True
     )
 
+    PROFILE_REQUIRED_FIELDS = {
+        "title": "คำนำหน้าชื่อ",
+        "first_name": "ชื่อ (ภาษาไทย)",
+        "last_name": "นามสกุล (ภาษาไทย)",
+        "first_name_en": "ชื่อภาษาอังกฤษ",
+        "last_name_en": "นามสกุลภาษาอังกฤษ",
+        "identification_id": "เลขบัตรประชาชน",
+        "birthday": "วัน/เดือน/ปี เกิด",
+        "gender": "เพศ",
+        "nationality_id": "สัญชาติ",
+        "email": "อีเมล",
+        "phone": "โทรศัพท์",
+        "emergency_contact_name": "ชื่อผู้ติดต่อฉุกเฉิน",
+        "emergency_contact_relation": "ความสัมพันธ์ผู้ติดต่อฉุกเฉิน",
+        "emergency_contact_phone": "เบอร์ติดต่อฉุกเฉิน",
+    }
+
     ROLE_REQUIRED_FIELDS = {
         "academic": {
             "academic_standing_id": "ตำแหน่งทางวิชาการ",
@@ -308,6 +325,11 @@ class HrApplicant(models.Model):
         if not profile:
             return values
         missing = []
+        # Personal info required fields
+        for field_name, label in self.PROFILE_REQUIRED_FIELDS.items():
+            val = getattr(profile, field_name, False)
+            if not val or (isinstance(val, str) and val.strip() == "-"):
+                missing.append(label)
         # Common required: education, work history, documents
         if not profile.education_history_ids:
             missing.append("ประวัติการศึกษา")
