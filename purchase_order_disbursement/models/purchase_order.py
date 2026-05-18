@@ -40,11 +40,14 @@ class PurchaseOrder(models.Model):
             order.is_disbursement_request_allowed = order.disbursement_request_total < order.amount_total
             order.disbursement_request_count = len(order.disbursement_request_ids)
 
-    @api.depends("state", "is_disbursement_request_allowed")
+    @api.depends("state", "is_disbursement_request_allowed", "disbursement_request_ids.state")
     def _compute_hide_create_disbursement_request_button(self):
         for order in self:
+            has_active = any(d.state != "cancel" for d in order.disbursement_request_ids)
             order.hide_create_disbursement_request_button = (
-                order.state != "purchase" or not order.is_disbursement_request_allowed
+                order.state != "purchase"
+                or not order.is_disbursement_request_allowed
+                or has_active
             )
 
     def _prepare_disbursement_request_vals(self):
