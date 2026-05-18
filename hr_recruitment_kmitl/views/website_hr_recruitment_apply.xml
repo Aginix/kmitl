@@ -90,7 +90,7 @@
                         data-mark="*"
                         data-model_name="hr.applicant"
                         data-success-mode="redirect"
-                        data-success-page="/job-thank-you"
+                        data-success-page="/my/applications"
                         hide-change-model="true"
                         novalidate="novalidate"
                     >

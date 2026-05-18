@@ -5,5 +5,8 @@ from . import res_partner
 from . import hr_job
 from . import hr_job_old_code
 from . import hr_applicant
+from . import mail_thread_applicant_child
 from . import hr_applicant_education
 from . import hr_applicant_work
+from . import hr_onboarding
+from . import hr_onboarding_family

@@ -13,9 +13,14 @@
         "partner_middlename",
         "hr_employee_academic_standing_thailand",
         "hr_employee_education_history",
+        "hr_employee_decoration",
+        "hr_employee_relative",
+        "kmitl_hr_employee_full_name",
     ],
     "data": [
         "security/ir.model.access.csv",
+        "security/security.xml",
+        "data/server_actions.xml",
         "data/website_data.xml",
         "views/snippets/s_benefit_card.xml",
         "views/snippets/snippets.xml",
@@ -27,18 +32,22 @@
         "views/profile_templates.xml",
         "views/portal_templates.xml",
         "views/hr_applicant_views.xml",
+        "views/hr_onboarding_views.xml",
         "views/website_hr_recruitment_defaults.xml",
         "views/website_hr_recruitment_index.xml",
         "views/website_hr_recruitment_detail.xml",
         "views/website_hr_recruitment_apply_tabs.xml",
         "views/website_hr_recruitment_apply.xml",
         "views/portal_application_detail_tabs.xml",
+        "views/portal_onboarding_templates.xml",
+        "views/portal_onboarding_tabs.xml",
     ],
     "assets": {
         "web.assets_frontend": [
             "hr_recruitment_kmitl/static/src/scss/theme.scss",
             "hr_recruitment_kmitl/static/src/js/profile_page.js",
             "hr_recruitment_kmitl/static/src/js/apply_page.js",
+            "hr_recruitment_kmitl/static/src/js/onboarding_family.js",
         ],
         "web._assets_frontend_helpers": [
             (

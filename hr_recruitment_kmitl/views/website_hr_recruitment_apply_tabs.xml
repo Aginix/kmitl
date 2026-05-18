@@ -194,9 +194,7 @@
                         rows="4"
                         readonly="readonly"
                         required=""
-                    >
-                        <t t-esc="default.get('address_address') or ''" />
-                    </textarea>
+                    ><t t-esc="default.get('address_address') or ''" /></textarea>
                 </div>
                 <label
                     class="col-form-label col-sm-auto s_website_form_label mb-2 mt-3"
@@ -212,9 +210,7 @@
                         name="current_address_from"
                         readonly="readonly"
                         required=""
-                    >
-                        <t t-esc="default.get('current_address') or ''" />
-                    </textarea>
+                    ><t t-esc="default.get('current_address') or ''" /></textarea>
                 </div>
             </div>
             <hr class="my-4" />
@@ -582,7 +578,7 @@
             </t>
         </t>
         <t t-else="">
-            <div class="d-flex align-items-start gap-3 p-4 rounded-4 bg-light border">
+            <div class="alert d-flex align-items-start gap-3 p-4 mb-4 rounded-4 bg-danger-light">
                 <i class="fa fa-exclamation-triangle text-danger fs-4 mt-1" />
                 <div>
                     <h6 class="fw-bold text-dark mb-1">ไม่พบข้อมูลประวัติการศึกษา</h6>
@@ -599,12 +595,6 @@
         <t t-call="hr_recruitment_kmitl.section_tab_intro">
             <t t-set="title">3. ประสบการณ์การทำงาน (Work History)</t>
         </t>
-        <!-- Validation: must have work history -->
-        <input
-            type="hidden"
-            data-required-label="ประสบการณ์การทำงาน"
-            t-att-value="'1' if work_history_ids else ''"
-        />
         <t t-if="work_history_ids and len(work_history_ids) > 0">
             <t t-foreach="work_history_ids" t-as="work">
                 <div class="card border-secondary rounded-4 mb-3 shadow-none">
@@ -1139,6 +1129,11 @@
         <!-- Validation: required documents -->
         <input
             type="hidden"
+            data-required-label="รูปถ่าย"
+            t-att-value="profile.photo_filename or ''"
+        />
+        <input
+            type="hidden"
             data-required-label="สำเนาบัตรประจำตัวประชาชน"
             t-att-value="profile.id_card_filename or ''"
         />
@@ -1148,6 +1143,15 @@
             t-att-value="profile.household_registration_filename or ''"
         />
         <div class="d-flex flex-column gap-3">
+            <!-- Photo -->
+            <t t-call="hr_recruitment_kmitl.application_document_item">
+                <t t-set="label">รูปถ่าย (Photo)</t>
+                <t t-set="filename" t-value="profile.photo_filename" />
+                <t
+                    t-set="download_url"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=photo_file&amp;filename_field=photo_filename&amp;download=true' % profile.id if profile.photo_filename else False"
+                />
+            </t>
             <!-- ID Card -->
             <t t-call="hr_recruitment_kmitl.application_document_item">
                 <t t-set="label">สำเนาบัตรประจำตัวประชาชน</t>

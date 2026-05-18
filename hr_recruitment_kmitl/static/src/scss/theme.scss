@@ -125,6 +125,9 @@
 .bg-accent-light {
   background-color: var(--accent-light) !important;
 }
+.bg-info-light {
+  background-color: var(--info-light) !important;
+}
 .bg-danger-light {
   background-color: var(--danger-light) !important;
 }
@@ -146,6 +149,9 @@
 }
 .text-info {
   color: var(--info) !important;
+}
+.text-warning {
+  color: var(--warning) !important;
 }
 .text-success {
   color: var(--success) !important;
@@ -356,10 +362,11 @@ body {
 }
 
 .upload-section {
-    border: 2px dashed var(--primary);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+  border: 2px dashed var(--primary);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
-
 
 .custom-file-input::file-selector-button {
   background-color: var(--primary);
@@ -386,4 +393,49 @@ body {
 .custom-file-input:hover::file-selector-button,
 .custom-file-input:hover::-webkit-file-upload-button {
   background-color: var(--primary-dark);
+}
+
+.icon-box {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+}
+
+.uploaded-file-item {
+  background: #f8fafc;
+  border-color: #cbd5e1 !important;
+}
+
+.file-icon-box {
+  width: 72px;
+  height: 72px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+}
+
+.file-icon {
+  font-size: 2rem;
+  color: #ef4444;
+}
+
+.multi-upload-dropzone {
+  background: #f8fafc;
+  border-style: dashed !important;
+  border-color: #cbd5e1 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.multi-upload-dropzone:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8 !important;
+}
+
+.upload-cloud-icon {
+  font-size: 3rem;
+  color: #94a3b8;
 }

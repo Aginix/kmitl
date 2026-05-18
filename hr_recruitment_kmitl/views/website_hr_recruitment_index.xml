@@ -133,7 +133,7 @@
                                         class="d-flex align-items-center"
                                     >
                                         <i class="fa fa-user-o me-2 text-primary" />
-                                        <t t-esc="job.no_of_recruitment" /> อัตรา
+                                        <t t-out="job.no_of_recruitment" /> อัตรา
                                     </span>
                                     <span
                                         t-if="job.role"
@@ -141,7 +141,7 @@
                                     >
                                         <i class="fa fa-briefcase me-2 text-primary" />
                                         <span
-                                            t-esc="dict(job.fields_get(['role'])['role']['selection']).get(job.role)"
+                                            t-out="dict(job.fields_get(['role'])['role']['selection']).get(job.role)"
                                         />
                                     </span>
                                     <span
@@ -150,7 +150,7 @@
                                     >
                                         <i class="fa fa-id-badge me-2 text-primary" />
                                         <span
-                                            t-esc="dict(job.fields_get(['kmitl_employee_type'])['kmitl_employee_type']['selection']).get(job.kmitl_employee_type)"
+                                            t-out="dict(job.fields_get(['kmitl_employee_type'])['kmitl_employee_type']['selection']).get(job.kmitl_employee_type)"
                                         />
                                     </span>
                                     <span
@@ -174,26 +174,26 @@
                                         <i class="fa fa-money me-2 text-primary" />
                                         <span t-if="job.salary_min and job.salary_max">
                                             <t
-                                                t-esc="'{:,.0f}'.format(job.salary_min)"
+                                                t-out="'{:,.0f}'.format(job.salary_min)"
                                             /> -
                                             <t
-                                                t-esc="'{:,.0f}'.format(job.salary_max)"
+                                                t-out="'{:,.0f}'.format(job.salary_max)"
                                             />
                                         </span>
                                         <span t-elif="job.salary_min">
                                             <t
-                                                t-esc="'{:,.0f}'.format(job.salary_min)"
+                                                t-out="'{:,.0f}'.format(job.salary_min)"
                                             />
                                         </span>
                                         <span t-elif="job.salary_max">
                                             <t
-                                                t-esc="'{:,.0f}'.format(job.salary_max)"
+                                                t-out="'{:,.0f}'.format(job.salary_max)"
                                             />
                                         </span>
                                         <span
                                             class="ms-1"
                                             t-if="job.currency_id"
-                                            t-esc="job.currency_id.symbol"
+                                            t-out="job.currency_id.symbol"
                                         />
                                     </span>
                                 </div>
@@ -211,7 +211,7 @@
                                         >
                                             <span
                                                 class="badge bg-primary-light border-primary text-primary"
-                                                t-esc="edu.name"
+                                                t-out="edu.name"
                                             />
                                         </t>
                                     </div>
@@ -226,7 +226,7 @@
                                         <t t-foreach="job.category_ids" t-as="cat">
                                             <span
                                                 class="badge text-bg-light border text-secondary"
-                                                t-esc="cat.name"
+                                                t-out="cat.name"
                                             />
                                         </t>
                                     </div>
@@ -422,7 +422,7 @@
                                     t-attf-href="#{kmitl_base_url}?education_level=#{edu.id}#{ '&amp;' + qs_no_edu if qs_no_edu else '' }"
                                     t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if education_level == edu.id else ' text-secondary'}"
                                 >
-                                    <span t-esc="edu.name" />
+                                    <span t-out="edu.name" />
                                 </a>
                             </li>
                         </t>
@@ -469,7 +469,7 @@
                                     t-attf-href="#{kmitl_base_url}?category_id=#{cat.id}#{ '&amp;' + qs_no_cat if qs_no_cat else '' }"
                                     t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if category_id == cat.id else ' text-secondary'}"
                                 >
-                                    <span t-esc="cat.name" />
+                                    <span t-out="cat.name" />
                                 </a>
                             </li>
                         </t>

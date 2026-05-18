@@ -39,26 +39,51 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
     }
 
     function setupWorkHistory() {
-        var whTbody = document.getElementById("wh-tbody");
+        var whList = document.getElementById("wh-list");
         var whAddBtn = document.getElementById("btn-wh-add");
-        if (!whAddBtn || !whTbody) return;
+        if (!whAddBtn || !whList) return;
         whAddBtn.addEventListener("click", function () {
-            var tr = document.createElement("tr");
-            tr.innerHTML =
-                '<td><input type="hidden" name="wh_id" value="0"/>' +
-                '<input type="text" name="wh_company_name" class="form-control form-control-sm" required="required"/></td>' +
-                '<td><input type="text" name="wh_job_title" class="form-control form-control-sm" required="required"/></td>' +
-                '<td><input type="number" name="wh_salary" class="form-control form-control-sm" step="0.01" required="required"/></td>' +
-                '<td><input type="date" name="wh_date_start" class="form-control form-control-sm" required="required"/></td>' +
-                '<td><input type="date" name="wh_date_end" class="form-control form-control-sm"/></td>' +
-                '<td><button type="button" class="btn btn-sm btn-outline-danger btn-wh-remove">' +
-                '<i class="fa fa-trash"></i></button></td>';
-            whTbody.appendChild(tr);
+            var card = document.createElement("div");
+            card.className = "card border rounded-4";
+            card.innerHTML =
+                '<div class="card-body p-4">' +
+                '<div class="d-flex justify-content-between align-items-center mb-4">' +
+                '<h5 class="fw-bold text-dark mb-0">ประวัติการทำงาน</h5>' +
+                '<button type="button" class="btn btn-outline-danger btn-sm rounded-pill btn-wh-remove">' +
+                '<i class="fa fa-trash me-1"></i> ลบ</button>' +
+                "</div>" +
+                '<input type="hidden" name="wh_id" value="0"/>' +
+                '<div class="row g-3 mb-1">' +
+                '<div class="col-lg-6">' +
+                '<label class="col-form-label">Company</label>' +
+                '<input type="text" name="wh_company_name" class="form-control" placeholder="ชื่อบริษัท"/>' +
+                "</div>" +
+                '<div class="col-lg-6">' +
+                '<label class="col-form-label">Job Title / Description</label>' +
+                '<input type="text" name="wh_job_title" class="form-control" placeholder="ตำแหน่ง / ลักษณะงาน"/>' +
+                "</div>" +
+                "</div>" +
+                '<div class="row g-3">' +
+                '<div class="col-lg-4">' +
+                '<label class="col-form-label">เงินเดือนสุดท้าย (Last Salary)</label>' +
+                '<input type="number" name="wh_salary" class="form-control" step="0.01" placeholder="เงินเดือนสุดท้าย"/>' +
+                "</div>" +
+                '<div class="col-lg-4">' +
+                '<label class="col-form-label">Start Date</label>' +
+                '<input type="date" name="wh_date_start" class="form-control"/>' +
+                "</div>" +
+                '<div class="col-lg-4">' +
+                '<label class="col-form-label">End Date</label>' +
+                '<input type="date" name="wh_date_end" class="form-control"/>' +
+                "</div>" +
+                "</div>" +
+                "</div>";
+            whList.appendChild(card);
         });
-        whTbody.addEventListener("click", function (e) {
+        whList.addEventListener("click", function (e) {
             var btn = e.target.closest(".btn-wh-remove");
             if (btn) {
-                btn.closest("tr").remove();
+                btn.closest(".card").remove();
             }
         });
     }
@@ -184,6 +209,38 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         });
     }
 
+    function setupMultiFileInputs() {
+        document.querySelectorAll(".js-multi-file-input").forEach(function (input) {
+            input.addEventListener("change", function () {
+                var wrapper = this.closest(".js-multi-file-upload-wrapper");
+                if (!wrapper || !this.files || !this.files.length) return;
+                var names = Array.from(this.files)
+                    .map(function (f) {
+                        return f.name;
+                    })
+                    .join(", ");
+                var preview = wrapper.querySelector(".js-pending-files-preview");
+                if (!preview) {
+                    preview = document.createElement("div");
+                    preview.className =
+                        "small text-muted mt-2 js-pending-files-preview";
+                    this.closest("label").after(preview);
+                }
+                preview.textContent = names;
+            });
+        });
+
+        document.querySelectorAll(".js-file-remove-item").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var item = this.closest(".js-uploaded-item");
+                if (!item) return;
+                var flag = item.querySelector(".js-delete-attachment-flag");
+                if (flag) flag.value = "1";
+                item.style.display = "none";
+            });
+        });
+    }
+
     function setupSameAsRegisteredAddress() {
         var cb = document.getElementById("same_as_registered_address");
         var fields = document.getElementById("current_address_fields");
@@ -209,6 +266,7 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         setupWorkHistory();
         setupAgeCompute();
         setupFileInputs();
+        setupMultiFileInputs();
         setupSameAsRegisteredAddress();
         setupTabNavigation();
     }

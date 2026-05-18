@@ -3,16 +3,16 @@
         <div class="mb-4">
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-1">
                 <span class="section-indicator bg-primary" />
-                <t t-esc="title" />
+                <t t-out="title" />
             </h5>
             <p t-if="description" class="text-secondary small ms-4 mb-0">
-                <t t-esc="description" />
+                <t t-out="description" />
             </p>
         </div>
     </template>
     <template id="input_readonly_field">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
         <input
             type="text"
@@ -23,15 +23,15 @@
     </template>
     <template id="input_readonly_textarea">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
+        <!-- prettier-ignore-start -->
         <textarea
             class="form-control text-muted border-0 py-2"
             t-att-rows="rows or 4"
             readonly="readonly"
-        >
-            <t t-esc="value or '-'" />
-        </textarea>
+        ><t t-out="value or '-'" /></textarea>
+        <!-- prettier-ignore-end -->
     </template>
     <!-- Alert หน้าฟอร์มที่บอกวาขั้นตอน 1-4 แก้ไขไม่ได้ -->
     <template id="profile_banner">
@@ -44,16 +44,35 @@
                     ข้อมูลในขั้นตอนที่ 1–5 ดึงมาจากแฟ้มประวัติ (Master Profile)
                     และไม่สามารถแก้ไขได้ในหน้านี้
                 </h6>
-                <p class="text-secondary small mb-0">
-                    เพื่อป้องกันข้อมูลไม่ตรงกัน หากพบว่าข้อมูลไม่ถูกต้อง
-                    <a
+                <p class="text-secondary small mb-0"> เพื่อป้องกันข้อมูลไม่ตรงกัน
+                    หากพบว่าข้อมูลไม่ถูกต้อง <a
                         href="/my/profile"
                         class="fw-bold text-primary text-decoration-underline"
                     >
-                        คลิกที่นี่เพื่อแก้ไขแฟ้มประวัติส่วนตัว
+                    คลิกที่นี่เพื่อแก้ไขแฟ้มประวัติส่วนตัว
                     </a>
                 </p>
             </div>
+        </div>
+    </template>
+    <!-- Alert หน้าฟอร์มที่บอกวาขั้นตอน 1-2 แก้ไขไม่ได้ -->
+    <template id="onboarding_banner">
+        <div
+            class="alert d-flex align-items-start gap-3 p-3 mb-4 rounded-4 bg-primary-light border border-primary"
+        >
+            <i class="fa fa-exclamation-circle fs-4 text-primary mt-1" />
+            <!-- <div>
+                <h6 class="fw-bold text-dark mb-1">
+                    ข้อมูลในขั้นตอนที่ 1–2 ดึงมาจากแฟ้มประวัติ (Master Profile)
+                    และไม่สามารถแก้ไขได้ในหน้านี้
+                </h6>
+                <p class="text-secondary small mb-0">
+                    เพื่อป้องกันข้อมูลไม่ตรงกัน หากพบว่าข้อมูลไม่ถูกต้อง
+                    <a href="/my/profile" class="fw-bold text-primary text-decoration-underline">
+                        คลิกที่นี่เพื่อแก้ไขแฟ้มประวัติส่วนตัว
+                    </a>
+                </p>
+            </div> -->
         </div>
     </template>
     <!-- สำหรับอัปโหลดเอกสาร -->
@@ -69,7 +88,7 @@
                 class="js-delete-flag"
             />
             <label class="form-label fw-semibold small d-block mb-2">
-                <t t-esc="label" />
+                <t t-out="label" />
                 <t t-if="required">
                     <span class="text-danger ms-1">*</span>
                 </t>
@@ -108,10 +127,10 @@
                             class="text-success text-decoration-underline"
                             target="_blank"
                         >
-                            <t t-esc="existing_filename" />
+                            <t t-out="existing_filename" />
                         </a>
                         <t t-else="">
-                            <t t-esc="existing_filename" />
+                            <t t-out="existing_filename" />
                         </t>
                     </t>
                     <t t-else="">
@@ -119,6 +138,124 @@
                     </t>
                 </div>
             </div>
+        </div>
+    </template>
+    <template id="document_uploaded_list_item">
+        <div
+            class="d-flex align-items-center gap-3 p-3 border rounded-3 bg-white js-uploaded-item"
+        >
+            <t t-if="input_name">
+                <input
+                    type="hidden"
+                    t-att-name="'delete_attachment_' + input_name + '_' + str(attachment_id)"
+                    value="0"
+                    class="js-delete-attachment-flag"
+                />
+            </t>
+            <!-- icon (เอากลับมา) -->
+            <div
+                class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon"
+            >
+                <i class="fa fa-file-text-o text-secondary" />
+            </div>
+            <!-- file info -->
+            <div class="flex-grow-1">
+                <div class="small text-success">
+                    <i class="fa fa-check-circle me-1" />
+                    <a
+                        t-if="download_url"
+                        t-att-href="download_url"
+                        class="text-dark text-decoration-underline"
+                        target="_blank"
+                    >
+                        <t t-out="filename" />
+                    </a>
+                    <t t-else="">
+                        <t t-out="filename" />
+                    </t>
+                </div>
+            </div>
+            <!-- action -->
+            <div class="flex-shrink-0">
+                <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm px-3 py-2 rounded-3 js-file-remove-item"
+                    t-att-data-id="attachment_id"
+                >
+                    <i class="fa fa-trash me-1" /> Delete </button>
+            </div>
+        </div>
+    </template>
+    <template id="document_uploaded_view_list_item">
+        <div class="d-flex align-items-center gap-3 p-3 border rounded-3 bg-white">
+            <div
+                class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon"
+            >
+                <i class="fa fa-file-text-o text-secondary" />
+            </div>
+            <div class="flex-grow-1">
+                <div class="fw-semibold text-dark">
+                    <t t-out="filename" />
+                </div>
+            </div>
+            <t t-if="download_url">
+                <a
+                    t-att-href="download_url"
+                    class="btn btn-outline-primary btn-sm rounded-3"
+                >
+                    <i class="fa fa-download me-1" />ดาวน์โหลด </a>
+            </t>
+        </div>
+    </template>
+    <template id="document_multi_upload_item">
+        <div class="js-multi-file-upload-wrapper">
+            <label class="form-label fw-semibold small d-block mb-2">
+                <t t-out="label" />
+                <t t-if="required">
+                    <span class="text-danger ms-1">*</span>
+                </t>
+            </label>
+            <p class="text-secondary small mb-3">
+                <t t-out="description" />
+            </p>
+            <div class="d-flex flex-column gap-2 mb-3">
+                <t t-if="files">
+                    <t t-foreach="files" t-as="file" t-key="file.get('id')">
+                        <t t-call="hr_recruitment_kmitl.document_uploaded_list_item">
+                            <t t-set="filename" t-value="file.get('filename')" />
+                            <t
+                                t-set="download_url"
+                                t-value="file.get('download_url')"
+                            />
+                            <t t-set="attachment_id" t-value="file.get('id')" />
+                            <t t-set="input_name" t-value="name" />
+                        </t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="small text-muted">No file selected</div>
+                </t>
+            </div>
+            <label
+                class="multi-upload-dropzone d-block text-center p-5 border border-2 rounded-4 mb-0"
+            >
+                <input
+                    type="file"
+                    class="d-none js-multi-file-input"
+                    t-att-name="name"
+                    multiple="multiple"
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                />
+                <div class="mb-3">
+                    <i class="fa fa-cloud-upload text-secondary upload-cloud-icon" />
+                </div>
+                <div class="fw-semibold text-secondary mb-1">
+                    คลิกหรือลากไฟล์มาวางเพื่อเพิ่มเอกสาร
+                </div>
+                <div class="small text-muted">
+                    อัปโหลดได้หลายไฟล์
+                </div>
+            </label>
         </div>
     </template>
     <template id="document_upload_card">
@@ -141,18 +278,18 @@
                 <div class="flex-grow-1">
                     <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
                         <span class="fw-semibold text-dark">
-                            <t t-esc="label" />
+                            <t t-out="label" />
                         </span>
                         <t t-if="required">
                             <span
-                                class="badge rounded-pill text-danger bg-danger-subtle"
+                                class="badge rounded-pill text-danger bg-danger-light"
                             >
-                            จำเป็น
-                        </span>
+                                จำเป็น
+                            </span>
                         </t>
                     </div>
                     <p class="text-secondary small mb-2">
-                        <t t-esc="description" />
+                        <t t-out="description" />
                     </p>
                     <div
                         t-att-class="'small text-success js-file-status' if existing_filename else 'small text-muted js-file-status'"
@@ -165,10 +302,10 @@
                                 class="text-success text-decoration-underline"
                                 target="_blank"
                             >
-                                <t t-esc="existing_filename" />
+                                <t t-out="existing_filename" />
                             </a>
                             <t t-else="">
-                                <t t-esc="existing_filename" />
+                                <t t-out="existing_filename" />
                             </t>
                         </t>
                         <t t-else="">
@@ -197,9 +334,7 @@
                     t-att-style="'' if existing_filename else 'display:none'"
                     title="ลบไฟล์"
                 >
-                    <i class="fa fa-trash me-1" />
-                    ลบไฟล์
-                </button>
+                    <i class="fa fa-trash me-1" /> ลบไฟล์ </button>
             </div>
         </div>
     </template>
@@ -207,23 +342,23 @@
         <span
             t-attf-class="badge text-bg-#{badge_class or 'primary'} px-3 py-2 rounded-pill fw-semibold"
         >
-            <t t-esc="label or '-'" />
+            <t t-out="label or '-'" />
         </span>
     </template>
     <template id="application_tab_intro">
         <div class="mb-4">
             <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-1">
                 <span class="section-indicator bg-primary" />
-                <t t-esc="title" />
+                <t t-out="title" />
             </h5>
             <p t-if="description" class="text-secondary small ms-4 mb-0">
-                <t t-esc="description" />
+                <t t-out="description" />
             </p>
         </div>
     </template>
     <template id="application_readonly_field">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
         <input
             type="text"
@@ -234,13 +369,15 @@
     </template>
     <template id="application_readonly_textarea">
         <label class="form-label fw-semibold text-dark">
-            <t t-esc="label" />
+            <t t-out="label" />
         </label>
         <textarea
             class="form-control text-muted border-0 py-2"
             t-att-rows="rows or 4"
             readonly="readonly"
-        ><t t-esc="value or '-'" /></textarea>
+        >
+            <t t-out="value or '-'" />
+        </textarea>
     </template>
     <template id="application_document_item">
         <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
@@ -250,16 +387,19 @@
                 <i class="fa fa-file-text-o text-secondary" />
             </div>
             <div class="flex-grow-1">
-                <span class="fw-semibold text-dark"><t t-esc="label" /></span>
-                <div class="small text-muted"><t t-esc="filename or '-'" /></div>
+                <span class="fw-semibold text-dark">
+                    <t t-out="label" />
+                </span>
+                <div class="small text-muted">
+                    <t t-out="filename or '-'" />
+                </div>
             </div>
             <t t-if="download_url">
                 <a
                     t-att-href="download_url"
                     class="btn btn-outline-primary btn-sm rounded-3"
                 >
-                    <i class="fa fa-download me-1" />ดาวน์โหลด
-                </a>
+                    <i class="fa fa-download me-1" />ดาวน์โหลด </a>
             </t>
         </div>
     </template>

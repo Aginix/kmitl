@@ -8,6 +8,13 @@ from odoo.http import request
 EDUCATION_FIELDS = ["program", "major", "institution", "country_id", "graduation_date"]
 
 
+def must_set_email():
+    """Return True when the current user signed up via Thai ID and their email
+    is still the placeholder Thai ID number (not yet a real email)."""
+    user = request.env.user
+    return bool(user.oauth_uid) and user.partner_id.email == user.oauth_uid
+
+
 class PortalProfile(CustomerPortal):
     CHAR_FIELDS = [
         "identification_id",
@@ -71,6 +78,9 @@ class PortalProfile(CustomerPortal):
         "same_as_registered_address",
     ]
 
+    def _is_email_editable(self, profile):
+        return must_set_email()
+
     def _prepare_profile_render_values(self, partner, profile, error_message=None):
         """Prepare common render values for the profile page."""
         values = self._prepare_portal_layout_values()
@@ -78,6 +88,7 @@ class PortalProfile(CustomerPortal):
             {
                 "profile": profile,
                 "partner": partner,
+                "email_editable": self._is_email_editable(profile),
                 "titles": request.env["res.partner.title"].sudo().search([]),
                 "countries": request.env["res.country"].sudo().search([]),
                 "zips": request.env["res.city.zip"].sudo().search([]),
@@ -119,46 +130,27 @@ class PortalProfile(CustomerPortal):
         profile = partner.sudo()._get_or_create_profile()
 
         if post and request.httprequest.method == "POST":
-            profile_required = {
-                "title": "Title",
-                "first_name": "First Name",
-                "last_name": "Last Name",
-                "first_name_en": "First Name (EN)",
-                "last_name_en": "Last Name (EN)",
-                "identification_id": "Identification No.",
-                "nationality_id": "Nationality",
-                "gender": "Gender",
-                "birthday": "Birthday",
-                "phone": "Phone",
-                "email": "Email",
-                "address_street": "Registered Address",
-                "address_zip_id": "Registered ZIP Location",
-                "marital": "Marital Status",
-                "emergency_contact_name": "Emergency Contact Name",
-                "emergency_contact_relation": "Emergency Contact Relation",
-                "emergency_contact_phone": "Emergency Contact Phone",
-                "emergency_contact_email": "Emergency Contact Email",
-            }
+            email_editable = self._is_email_editable(profile)
             errors = []
-            missing_profile = [
-                label
-                for field, label in profile_required.items()
-                if not post.get(field, "").strip()
-            ]
-            if missing_profile:
-                errors.append(
-                    "Please fill required fields: %s" % ", ".join(missing_profile)
-                )
-            errors.extend(self._validate_education_history(post))
-            errors.extend(self._validate_work_history(request.httprequest.form))
+            if email_editable:
+                submitted_email = post.get("email", "").strip()
+                if submitted_email and submitted_email == request.env.user.oauth_uid:
+                    errors.append(
+                        "กรุณาเปลี่ยนอีเมลให้เป็นอีเมลจริง (อีเมลปัจจุบันยังเป็นเลขบัตรประชาชน)"
+                    )
+                elif submitted_email and "@" not in submitted_email:
+                    errors.append("กรุณากรอกอีเมลให้ถูกต้อง")
             if errors:
                 values = self._prepare_profile_render_values(partner, profile, errors)
                 return request.render("hr_recruitment_kmitl.portal_my_profile", values)
             vals = self._prepare_profile_values(post)
+            if not email_editable:
+                vals.pop("email", None)
             profile.sudo().write(vals)
             self._save_education_history(profile, post)
             self._save_work_history(profile, request.httprequest.form)
             for doc_name, field_name in [
+                ("doc_photo", "photo"),
                 ("doc_ocsc_proof", "ocsc_exam"),
                 ("doc_academic_position", "academic_position"),
                 ("doc_resume", "resume"),
@@ -182,6 +174,12 @@ class PortalProfile(CustomerPortal):
                                 f"{field_name}_filename": uploaded.filename,
                             }
                         )
+            if post.get("delete_doc_photo") == "1":
+                partner.sudo().write({"image_1920": False})
+            else:
+                uploaded_photo = request.httprequest.files.get("doc_photo")
+                if uploaded_photo and uploaded_photo.filename:
+                    partner.sudo().write({"image_1920": profile.photo_file})
             return request.redirect("/my/profile")
 
         values = self._prepare_profile_render_values(partner, profile)
