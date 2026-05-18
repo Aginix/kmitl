@@ -30,6 +30,11 @@ msgid "<span>Budget</span>"
 msgstr "<span>งบประมาณ</span>"
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "<span>Total</span>"
+msgstr "<span>รวม</span>"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction
 msgid "Action Needed"
 msgstr ""
