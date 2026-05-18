@@ -556,6 +556,23 @@ class HrApplicant(models.Model):
 
     def action_view_onboarding(self):
         self.ensure_one()
-        return self.env["ir.actions.act_window"]._for_xml_id(
+        action = self.env["ir.actions.act_window"]._for_xml_id(
             "hr_recruitment_kmitl.action_hr_onboarding"
         )
+        action["domain"] = [
+            ("applicant_id", "=", self.id),
+            ("applicant_id.job_id", "=", self.job_id.id),
+        ]
+        action["context"] = {
+            "default_applicant_id": self.id,
+        }
+        onboardings = self.onboarding_ids
+        if len(onboardings) == 1:
+            action["views"] = [
+                (
+                    self.env.ref("hr_recruitment_kmitl.hr_onboarding_view_form").id,
+                    "form",
+                ),
+            ]
+            action["res_id"] = onboardings.id
+        return action
