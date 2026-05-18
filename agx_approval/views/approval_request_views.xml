@@ -134,7 +134,7 @@
                             <div class="oe_subtotal_footer oe_right">
                                 <field name="currency_id" invisible="1"/>
                                 <div class="oe_subtotal_footer_separator d-flex align-items-center gap-4">
-                                    <span>รวม</span>
+                                    <span>Total</span>
                                     <field name="total_amount" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="total_actual_amount" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"
                                         attrs="{'invisible': [('state', 'not in', ['approved', 'billed'])]}"/>
