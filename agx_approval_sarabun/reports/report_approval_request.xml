@@ -205,7 +205,7 @@
             <div class="my-2 d-inline-block">
                 <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้รับผิดชอบ</div>
                 <div class="text-center my-2">
-                    ( <span t-field="o.requested_by" />
+                    ( <span t-field="o.owner_id" />
                     )
                 </div>
             </div>
@@ -213,7 +213,7 @@
             <div class="my-2 d-inline-block">
                 <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สร้างคำขอ</div>
                 <div class="text-center my-2">
-                    ( <span t-field="o.owner_id" />
+                    ( <span t-field="o.user_id" />
                     )
                 </div>
             </div>
