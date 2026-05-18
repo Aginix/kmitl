@@ -68,6 +68,13 @@ class ApprovalRequest(models.Model):
         store=True,
     )
 
+    total_actual_amount = fields.Monetary(
+        compute="_compute_total_actual_amount",
+        string="รวมยอดเบิกจริง",
+        currency_field="currency_id",
+        store=True,
+    )
+
     category_id = fields.Many2one(
         string="Category",
         comodel_name="approval.category",
@@ -559,3 +566,8 @@ class ApprovalRequest(models.Model):
     def _compute_total_amount(self):
         for rec in self:
             rec.total_amount = sum(rec.line_ids.mapped("total_amount"))
+
+    @api.depends("line_ids.actual_amount")
+    def _compute_total_actual_amount(self):
+        for rec in self:
+            rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))
