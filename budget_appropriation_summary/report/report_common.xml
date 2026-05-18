@@ -32,7 +32,7 @@
             }
             .report-page-label {
                 position: absolute;
-                top: 4mm;
+                top: 1mm;
                 right: 8mm;
                 font-size: 15pt;
                 font-family: 'THSarabun', Arial, sans-serif;
@@ -42,7 +42,7 @@
             @media print {
                 .report-page-label {
                     position: fixed;
-                    top: 5mm;
+                    top: 2mm;
                     right: 5mm;
                 }
             }

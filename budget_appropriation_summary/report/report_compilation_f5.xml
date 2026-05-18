@@ -79,11 +79,10 @@
 
     <!-- Reusable F5 content (renders a single data dict) -->
     <template id="report_compilation_f5_content">
+        <t t-call="budget_appropriation_summary.report_page_label">
+            <t t-set="page_label" t-value="'F5-P-วง-003'"/>
+        </t>
         <div class="report-header">
-            <div class="document-ref">
-                <div>F5-P-วง-003</div>
-            </div>
-
             <div class="institution-info">
                 <h3 t-out="data.get('source', '')"/>
                 <h3>ประมาณการรายจ่าย <span t-out="data.get('fiscal_year', '')"/></h3>
@@ -232,11 +231,6 @@
                         padding: 24mm 8mm !important;
                         size: A4;
                     }
-                    .f5-page-label {
-                        position: fixed;
-                        top: 5mm;
-                        right: 5mm;
-                    }
                     .f5-print-btn {
                         display: none !important;
                     }
@@ -298,9 +292,21 @@
                 margin-bottom: 12pt;
             }
 
-            .document-ref {
-                float: right;
-                margin-bottom: 12pt;
+            .report-page-label {
+                position: absolute;
+                top: 1mm;
+                right: 8mm;
+                font-size: 15pt;
+                font-family: 'THSarabun', Arial, sans-serif;
+                z-index: 10;
+                pointer-events: none;
+            }
+            @media print {
+                .report-page-label {
+                    position: fixed;
+                    top: 2mm;
+                    right: 5mm;
+                }
             }
 
             .institution-info {
