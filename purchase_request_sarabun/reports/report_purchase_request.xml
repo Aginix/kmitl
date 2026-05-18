@@ -343,21 +343,23 @@
 
     <template id="report_purchase_request_sign">
         <div class="my-5">
-            <div class="my-2">
+            <div class="my-2 d-inline-block">
                 <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้รับผิดชอบ</div>
                 <div class="text-center my-2">
                     ( <span t-field="o.requested_by" />
                     )
                 </div>
             </div>
-            <div class="my-2">
+            <div class="my-5" />
+            <div class="my-2 d-inline-block">
                 <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สร้างคำขอ</div>
                 <div class="text-center my-2">
                     ( <span t-field="o.user_id" />
                     )
                 </div>
             </div>
-            <div class="my-2">
+            <div class="my-5" />
+            <div class="my-2 d-inline-block">
                 <div>ลงชื่อ <t t-out="'.' * 80" /> คณบดี</div>
                 <div class="text-center my-2">
                     ( <span t-field="o.department_id.master_department_id.name" />
