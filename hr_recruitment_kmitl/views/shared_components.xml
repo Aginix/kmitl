@@ -371,13 +371,13 @@
         <label class="form-label fw-semibold text-dark">
             <t t-out="label" />
         </label>
+        <!-- prettier-ignore-start -->
         <textarea
             class="form-control text-muted border-0 py-2"
             t-att-rows="rows or 4"
             readonly="readonly"
-        >
-            <t t-out="value or '-'" />
-        </textarea>
+        ><t t-out="value or '-'" /></textarea>
+        <!-- prettier-ignore-end -->
     </template>
     <template id="application_document_item">
         <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
