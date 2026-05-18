@@ -13,7 +13,7 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
         }
     }
 
-    function showValidationError(form, missing) {
+    function showValidationError(form, missing, hasProfileMissing) {
         var result = form.querySelector("#s_website_form_result");
         if (!result) return;
         var html =
@@ -22,7 +22,13 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
         for (var i = 0; i < missing.length; i++) {
             html += "<li>" + missing[i] + "</li>";
         }
-        html += "</ul></div>";
+        html += "</ul>";
+        if (hasProfileMissing) {
+            html +=
+                '<p class="mb-0 mt-2">ข้อมูลส่วนบุคคลบางส่วนยังไม่ครบ กรุณาตรวจสอบ ' +
+                '<a href="/my/profile">แฟ้มประวัติ</a> ก่อนส่งใบสมัคร</p>';
+        }
+        html += "</div>";
         result.innerHTML = html;
         result.scrollIntoView({behavior: "smooth"});
     }
@@ -39,7 +45,7 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
         var missing = [];
         var firstPane = null;
         form.querySelectorAll("[data-required-label]").forEach(function (el) {
-            if (!el.value || !el.value.trim()) {
+            if (!el.value || !el.value.trim() || el.value.trim() === "-") {
                 missing.push(el.getAttribute("data-required-label"));
                 if (!firstPane) firstPane = el.closest(".tab-pane");
             }
@@ -70,6 +76,7 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
         var result = checkRequiredLabels(form);
         var missing = result.missing;
         var firstPane = result.firstPane;
+        var hasProfileMissing = missing.length > 0;
 
         var cert = checkCertification(form);
         if (cert.label) {
@@ -81,7 +88,11 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
             missing.push(pdpa.label);
             if (!firstPane) firstPane = pdpa.pane;
         }
-        return {missing: missing, firstPane: firstPane};
+        return {
+            missing: missing,
+            firstPane: firstPane,
+            hasProfileMissing: hasProfileMissing,
+        };
     }
 
     function initApplyValidation() {
@@ -99,7 +110,7 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
                     e.preventDefault();
                     e.stopImmediatePropagation();
                     navigateToPane(result.firstPane);
-                    showValidationError(form, result.missing);
+                    showValidationError(form, result.missing, result.hasProfileMissing);
                     return;
                 }
                 // Clear previous errors
