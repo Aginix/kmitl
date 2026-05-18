@@ -233,6 +233,10 @@
                         </ol>
 
                         <div class="my-5" style="height: 10px" />
+
+                        <t
+                            t-call="purchase_request_approval.report_purchase_request_sign"
+                        />
                     </div>
                 </t>
             </t>
