@@ -36,9 +36,9 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
     EXPENSE_TYPES = [
         ("51000", "งบบุคลากร"),
         ("52000", "งบดําเนินงาน"),
+        ("53000", "งบลงทุน"),
         ("54000", "งบเงินอุดหนุน"),
         ("55000", "งบรายจ่ายอื่น"),
-        ("53000", "งบลงทุน"),
         ("07020", "กองทุนสํารอง"),
     ]
 
@@ -81,14 +81,12 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
             dim_total = 0
             dim_rows = []
 
-            for plan_idx, plan in enumerate(self._get_plans(dimension)):
-                plan_label = chr(ord('ก') + plan_idx)  # Thai: ก, ข, ค, ง...
+            for plan in self._get_plans(dimension):
                 plan_columns = {code: 0 for code in self.COLUMN_CODES}
                 plan_total = 0
                 plan_rows = []
 
-                for work_idx, work in enumerate(self._get_works(plan)):
-                    work_label = str(work_idx + 1)  # 1, 2, 3...
+                for work in self._get_works(plan):
                     work_columns = {code: 0 for code in self.COLUMN_CODES}
                     work_total = 0
                     work_rows = []
@@ -121,7 +119,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
                     if work_total:  # Only include if has data
                         plan_rows.append({
                             "level": 2,
-                            "name": f"{work_label}. {work.name}",
+                            "name": work.name,
                             "columns": work_columns,
                             "total": work_total,
                         })
@@ -135,7 +133,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
                 if plan_total:  # Only include if has data
                     dim_rows.append({
                         "level": 1,
-                        "name": f"{plan_label}. {plan.name}",
+                        "name": plan.name,
                         "columns": plan_columns,
                         "total": plan_total,
                     })
@@ -195,10 +193,14 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             recordset: account.analytic.account records
         """
-        return self.env["account.analytic.account"].search([
+        dimensions = self.env["account.analytic.account"].search([
             ("root_plan_id.code", "=", "activities"),
             ("parent_id", "=", False),
-        ], order="code DESC")
+        ])
+        # Display order: codes starting with "09" first, then the rest by code ASC
+        return dimensions.sorted(
+            key=lambda d: (0 if (d.code or "").startswith("09") else 1, d.code or "")
+        )
 
     def _get_plans(self, dimension):
         """
@@ -210,9 +212,13 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             recordset: account.analytic.account records
         """
-        return self.env["account.analytic.account"].search([
+        plans = self.env["account.analytic.account"].search([
             ("parent_id", "=", dimension.id),
-        ], order="code ASC")
+        ])
+        # Display order: codes starting with "09" first, then the rest by code ASC
+        return plans.sorted(
+            key=lambda p: (0 if (p.code or "").startswith("09") else 1, p.code or "")
+        )
 
     def _get_works(self, plan):
         """
