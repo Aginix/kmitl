@@ -16,8 +16,24 @@
             p,
             span,
             div {
-                font-size: 12pt;
+                font-size: 11pt;
                 line-height: 1.1;
+            }
+            .page.landscape {
+                width: 297mm;
+                min-height: 210mm;
+                padding: 5mm 6mm !important;
+            }
+            .table tbody .summary-row {
+                border-top: 1px solid black !important;
+                border-bottom: 1px solid black !important;
+            }
+            .table tfoot .page-bottom-line td {
+                border-top: 1pt solid #000 !important;
+                padding: 0;
+                height: 0;
+                line-height: 0;
+                font-size: 0;
             }
         </style>
         <div class="page f9w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
@@ -38,12 +54,12 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr style="height:0; visibility:collapse; line-height:0;">
-                            <th style="width: 150pt;"/>
+                            <th style="width: 140pt;"/>
                             <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                              <th style="width: 55pt;"/>
+                              <th style="width: 62pt;"/>
                               <th style="width: 22pt;"/>
                             </t>
-                            <th style="width: 55pt;"/>
+                            <th style="width: 60pt;"/>
                         </tr>
                         <tr>
                             <th class="text-center" rowspan="2" style="width: 20%;">หน่วยงาน</th>
@@ -81,9 +97,7 @@
                             </tr>
                             <t t-set="row_no" t-value="row_no + 1"/>
                         </t>
-                    </tbody>
-                    <tfoot>
-                        <tr style="font-weight: bold;">
+                        <tr class="summary-row" style="font-weight: bold;">
                             <td class="text-center">
                                 รวมทั้งสิ้น
                             </td>
@@ -99,6 +113,11 @@
                             <td class="text-end" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['summary']['total_amount'])"/>
                             </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="page-bottom-line">
+                            <td t-att-colspan="2 + len(o.f9w_expense_data['columns']) * 2">&#160;</td>
                         </tr>
                     </tfoot>
                 </table>
