@@ -197,10 +197,9 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
             ("root_plan_id.code", "=", "activities"),
             ("parent_id", "=", False),
         ])
-        # Display order: prefix 09 first, then 06, then any others by code
-        prefix_priority = {"09": 0, "06": 1}
+        # Display order: codes starting with "09" first, then the rest by code ASC
         return dimensions.sorted(
-            key=lambda d: (prefix_priority.get((d.code or "")[:2], 99), d.code or "")
+            key=lambda d: (0 if (d.code or "").startswith("09") else 1, d.code or "")
         )
 
     def _get_plans(self, dimension):
