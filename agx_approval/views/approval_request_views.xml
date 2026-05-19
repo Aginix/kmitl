@@ -87,6 +87,13 @@
                         <field name="source_analytic_id" widget="selection" invisible="1" />
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
+                    <button
+                        name="action_open_actual_amount_wizard"
+                        string="Update actual amount"
+                        type="object"
+                        class="btn btn-primary my-3"
+                        attrs="{'invisible': [('state', '!=', 'approved')]}"
+                    />
                     <group name="warning_partner">
                         <group>
                             <div
@@ -115,21 +122,17 @@
                     <notebook>
                         <page name="request_lines" string="Request Lines">
                             <field name="line_ids"
-                                attrs="{'readonly': [('state', 'in', ['to_verify', 'submitted', 'validated', 'billed', 'rejected'])]}">
+                                attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
                                     <field name="allowed_product_ids" invisible="1"/>
-                                    <field name="sequence" widget="handle"
-                                        attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
+                                    <field name="sequence" widget="handle"/>
                                     <field name="currency_id" invisible="1"/>
-                                    <field name="partner_id"
-                                        attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
-                                    <field name="product_id"
-                                        attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
-                                    <field name="total_amount"
-                                        attrs="{'readonly': [('parent.state', '!=', 'draft')]}" sum="Total"/>
+                                    <field name="partner_id"/>
+                                    <field name="product_id"/>
+                                    <field name="total_amount" sum="Total"/>
                                     <field name="actual_amount"
-                                        attrs="{'column_invisible': [('parent.state', 'not in', ['approved', 'billed'])],
-                                                'readonly': [('parent.state', '!=', 'approved')]}" sum="Total"/>
+                                        attrs="{'column_invisible': [('parent.state', 'not in', ['approved', 'billed'])]}"
+                                        readonly="1" sum="Total"/>
                                 </tree>
                             </field>
                         </page>

@@ -561,6 +561,27 @@ class ApprovalRequest(models.Model):
             else:
                 rec.is_editable = True
 
+    def action_open_actual_amount_wizard(self):
+        self.ensure_one()
+        wizard = self.env["approval.update.actual.amount.wizard"].create({
+            "approval_request_id": self.id,
+            "line_ids": [
+                (0, 0, {
+                    "approval_line_id": line.id,
+                    "actual_amount": line.actual_amount,
+                })
+                for line in self.line_ids
+            ],
+        })
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Update actual amount"),
+            "res_model": "approval.update.actual.amount.wizard",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):
         for rec in self:

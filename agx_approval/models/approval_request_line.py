@@ -55,7 +55,7 @@ class ApprovalRequestLine(models.Model):
     )
 
     actual_amount = fields.Monetary(
-        string="Actual amount",
+        string="Actual Amount",
         currency_field="currency_id",
     )
 

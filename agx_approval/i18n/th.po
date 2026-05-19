@@ -342,6 +342,7 @@ msgstr "แบบร่าง"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__product_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__product_id
 msgid "Expense"
 msgstr "รหัสค่าใช้จ่าย"
 
@@ -598,6 +599,7 @@ msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__partner_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__partner_id
 msgid "Payee"
 msgstr "ผู้รับเงิน"
 
@@ -733,6 +735,9 @@ msgstr "จองงบประมาณ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__total_amount
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
 msgid "Total"
 msgstr "จำนวนเงิน"
 
@@ -825,6 +830,27 @@ msgid "Attachment for Approval Request"
 msgstr "เอกสารประกอบคำขออนุมัติ"
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__actual_amount
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__actual_amount
-msgid "Actual amount"
+msgid "Actual Amount"
 msgstr "ยอดเบิกจริง"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
+#, python-format
+msgid "Update actual amount"
+msgstr "แก้ไขยอดเบิกจริง"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard
+msgid "Update Actual Amount Wizard"
+msgstr "แก้ไขยอดเบิกจริง"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard_line
+msgid "Update Actual Amount Wizard Line"
+msgstr ""
+
