@@ -168,7 +168,6 @@ class ApprovalRequest(models.Model):
         "approval.request.line",
         "request_id",
         string="Expense Lines",
-        states=READONLY_STATES,
     )
 
     has_period = fields.Boolean(
