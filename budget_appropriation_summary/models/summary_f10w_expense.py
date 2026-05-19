@@ -212,9 +212,13 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             recordset: account.analytic.account records
         """
-        return self.env["account.analytic.account"].search([
+        plans = self.env["account.analytic.account"].search([
             ("parent_id", "=", dimension.id),
-        ], order="code ASC")
+        ])
+        # Display order: codes starting with "09" first, then the rest by code ASC
+        return plans.sorted(
+            key=lambda p: (0 if (p.code or "").startswith("09") else 1, p.code or "")
+        )
 
     def _get_works(self, plan):
         """
