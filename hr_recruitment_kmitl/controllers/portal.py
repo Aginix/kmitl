@@ -13,16 +13,16 @@ class HrRecruitmentPortal(CustomerPortal):
         if "application_count" in counters:
             domain = self._get_applications_domain()
             values["application_count"] = (
-                request.env["hr.applicant"].sudo().search_count(domain)
+                request.env["hr.applicant"]
+                .with_context(active_test=False)
+                .search_count(domain)
             )
         return values
 
     def _get_applications_domain(self):
         partner = request.env.user.partner_id
         return [
-            "|",
             ("partner_id", "=", partner.id),
-            ("email_from", "=ilike", partner.email or ""),
             ("active", "in", [True, False]),
         ]
 
@@ -44,10 +44,8 @@ class HrRecruitmentPortal(CustomerPortal):
         return dict(field.selection).get(value, value)
 
     def _get_profile(self, partner):
-        return (
-            request.env["portal.profile"]
-            .sudo()
-            .search([("partner_id", "=", partner.id)], limit=1)
+        return request.env["portal.profile"].search(
+            [("partner_id", "=", partner.id)], limit=1
         )
 
     def _compute_age(self, birthday):
@@ -531,7 +529,7 @@ class HrRecruitmentPortal(CustomerPortal):
     def portal_my_applications(self, page=1, sortby=None, **kw):
         if must_set_email():
             return request.redirect("/my/profile")
-        HrApplicant = request.env["hr.applicant"].sudo()
+        HrApplicant = request.env["hr.applicant"].with_context(active_test=False)
         domain = self._get_applications_domain()
 
         sortings = {
@@ -580,7 +578,6 @@ class HrRecruitmentPortal(CustomerPortal):
         partner = request.env.user.partner_id
         application = (
             request.env["hr.applicant"]
-            .sudo()
             .with_context(active_test=False)
             .browse(application_id)
         )
@@ -588,15 +585,7 @@ class HrRecruitmentPortal(CustomerPortal):
         if not application.exists():
             return request.redirect("/my")
 
-        partner_match = (
-            application.partner_id and application.partner_id.id == partner.id
-        )
-        email_match = (
-            application.email_from
-            and partner.email
-            and application.email_from.lower() == partner.email.lower()
-        )
-        if not partner_match and not email_match:
+        if not (application.partner_id and application.partner_id.id == partner.id):
             return request.redirect("/my")
 
         stage_domain = [
