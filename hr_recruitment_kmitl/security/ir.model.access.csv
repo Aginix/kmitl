@@ -31,3 +31,8 @@ access_hr_onboarding_recruiter,hr.onboarding recruiter,model_hr_onboarding,hr_re
 access_hr_onboarding_family_user,hr.onboarding.family user,model_hr_onboarding_family,base.group_user,1,1,1,0
 access_hr_onboarding_family_portal,hr.onboarding.family portal,model_hr_onboarding_family,base.group_portal,1,1,1,1
 access_hr_onboarding_family_recruiter,hr.onboarding.family recruiter,model_hr_onboarding_family,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_hr_employee_relative_relation_portal,hr.employee.relative.relation portal,hr_employee_relative.model_hr_employee_relative_relation,base.group_portal,1,0,0,0
+access_hr_employee_prefix_user,hr.employee.prefix user,kmitl_hr_employee_full_name.model_hr_employee_prefix,base.group_user,1,0,0,0
+access_hr_employee_prefix_portal,hr.employee.prefix portal,kmitl_hr_employee_full_name.model_hr_employee_prefix,base.group_portal,1,0,0,0
+access_hr_employee_decoration_relation_user,hr.employee.decoration.relation user,hr_employee_decoration.model_hr_employee_decoration_relation,base.group_user,1,0,0,0
+access_hr_employee_decoration_relation_portal,hr.employee.decoration.relation portal,hr_employee_decoration.model_hr_employee_decoration_relation,base.group_portal,1,0,0,0

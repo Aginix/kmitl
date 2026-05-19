@@ -760,28 +760,43 @@
                 <div class="row">
 
                     <div class="mb-3 col-lg-6">
-                        <label class="col-form-label" for="royal_decoration_name">
+                        <label class="col-form-label" for="royal_decoration_id">
                             ชื่อเครื่องราชอิสริยาภรณ์ที่ได้รับ
                         </label>
-                        <input
-                            type="text"
-                            id="royal_decoration_name"
-                            name="royal_decoration_name"
-                            class="form-control"
-                            placeholder="เช่น เครื่องราชอิสริยาภรณ์ช้างเผือก"
-                        />
+                        <select
+                            id="royal_decoration_id"
+                            name="royal_decoration_id"
+                            class="form-select"
+                        >
+                            <option value="">เลือกเครื่องราชอิสริยาภรณ์</option>
+                            <t
+                                t-foreach="request.env['hr.employee.decoration.relation'].sudo().search([])"
+                                t-as="deco"
+                            >
+                                <option
+                                    t-att-value="deco.id"
+                                    t-att-selected="onboarding.royal_decoration_id.id == deco.id or None"
+                                >
+                                    <t t-out="deco.name" />
+                                    <t t-if="deco.abbreviation"> (<t
+                                            t-out="deco.abbreviation"
+                                        />)</t>
+                                </option>
+                            </t>
+                        </select>
                     </div>
 
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label" for="royal_decoration_level">
-                            ขั้น
+                            ชั้น
                         </label>
                         <input
                             type="text"
                             id="royal_decoration_level"
                             name="royal_decoration_level"
                             class="form-control"
-                            placeholder="เช่น ทวีติยาภรณ์"
+                            placeholder="ชั้น"
+                            t-att-value="onboarding.royal_decoration_level or ''"
                         />
                     </div>
 
@@ -797,6 +812,7 @@
                             min="2400"
                             max="2600"
                             placeholder="เช่น 2566"
+                            t-att-value="onboarding.royal_decoration_year or ''"
                         />
                     </div>
 
@@ -810,6 +826,7 @@
                             name="royal_decoration_agency"
                             class="form-control"
                             placeholder="เช่น สำนักนายกรัฐมนตรี"
+                            t-att-value="onboarding.royal_decoration_agency or ''"
                         />
                     </div>
 
@@ -2126,28 +2143,40 @@
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ชื่อเครื่องราชอิสริยาภรณ์ที่ได้รับ</t>
-                            <t t-set="value">เครื่องราชอิสริยาภรณ์ช้างเผือก</t>
+                            <t
+                                t-set="value"
+                                t-value="onboarding.royal_decoration_id.name or '-'"
+                            />
                         </t>
                     </div>
 
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ขั้น</t>
-                            <t t-set="value">ทวีติยาภรณ์</t>
+                            <t
+                                t-set="value"
+                                t-value="onboarding.royal_decoration_level or '-'"
+                            />
                         </t>
                     </div>
 
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ปี พ.ศ. ที่ได้รับ</t>
-                            <t t-set="value">2566</t>
+                            <t
+                                t-set="value"
+                                t-value="onboarding.royal_decoration_year or '-'"
+                            />
                         </t>
                     </div>
 
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">รับจากหน่วยงาน</t>
-                            <t t-set="value">สำนักนายกรัฐมนตรี</t>
+                            <t
+                                t-set="value"
+                                t-value="onboarding.royal_decoration_agency or '-'"
+                            />
                         </t>
                     </div>
 

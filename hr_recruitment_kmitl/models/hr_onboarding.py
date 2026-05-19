@@ -34,7 +34,7 @@ class HrOnboarding(models.Model):
     royal_decoration_id = fields.Many2one(
         "hr.employee.decoration.relation", tracking=True
     )
-    royal_decoration_level = fields.Integer(tracking=True)
+    royal_decoration_level = fields.Char(tracking=True)
     royal_decoration_year = fields.Integer(
         string="Royal Decoration Year (B.E.)", tracking=True
     )
@@ -43,9 +43,7 @@ class HrOnboarding(models.Model):
     royal_decoration_proof_filename = fields.Char(tracking=True)
 
     # Tab 5 - Work
-    can_start_on_time = fields.Selection(
-        [("yes", "Yes"), ("no", "No")], tracking=True
-    )
+    can_start_on_time = fields.Selection([("yes", "Yes"), ("no", "No")], tracking=True)
     starting_date = fields.Date(tracking=True)
     starting_date_note = fields.Text(tracking=True)
     starting_date_attachment_file = fields.Binary(attachment=True)
@@ -89,9 +87,7 @@ class HrOnboarding(models.Model):
     salary_book_filename = fields.Char(tracking=True)
     medical_certificate_file = fields.Binary(attachment=True)
     medical_certificate_filename = fields.Char(tracking=True)
-    pdpa_consent = fields.Selection(
-        [("yes", "Yes"), ("no", "No")], tracking=True
-    )
+    pdpa_consent = fields.Selection([("yes", "Yes"), ("no", "No")], tracking=True)
     final_confirm = fields.Boolean(tracking=True)
 
     _sql_constraints = [

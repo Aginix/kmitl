@@ -317,6 +317,7 @@ class HrApplicant(models.Model):
         user = request.env.user
         if user._is_public():
             return values
+        values["partner_id"] = user.partner_id.id
         profile = (
             self.env["portal.profile"]
             .sudo()
