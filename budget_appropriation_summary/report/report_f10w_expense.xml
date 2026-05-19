@@ -32,9 +32,16 @@
                 border-top: 0;
                 border-bottom: 0;
             }
-            .table tbody tr:last-child {
+            .table tbody .summary-row {
                 border-top: 1px solid black !important;
                 border-bottom: 1px solid black !important;
+            }
+            .table tfoot .page-bottom-line td {
+                border-top: 1pt solid #000 !important;
+                padding: 0;
+                height: 0;
+                line-height: 0;
+                font-size: 0;
             }
             p,
             span,
@@ -87,7 +94,7 @@
                                 </td>
                             </tr>
                         </t>
-                        <tr style="font-weight: bold;">
+                        <tr class="summary-row" style="font-weight: bold;">
                             <td class="text-center">
                                 รวมทั้งสิ้น
                             </td>
@@ -101,6 +108,11 @@
                             </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr class="page-bottom-line">
+                            <td t-att-colspan="2 + len(o.f10w_expense_data['columns'])">&#160;</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

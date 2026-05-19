@@ -24,9 +24,16 @@
                 min-height: 210mm;
                 padding: 5mm 6mm !important;
             }
-            .table tbody tr:last-child {
+            .table tbody .summary-row {
                 border-top: 1px solid black !important;
                 border-bottom: 1px solid black !important;
+            }
+            .table tfoot .page-bottom-line td {
+                border-top: 1pt solid #000 !important;
+                padding: 0;
+                height: 0;
+                line-height: 0;
+                font-size: 0;
             }
         </style>
         <div class="page f9w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
@@ -90,7 +97,7 @@
                             </tr>
                             <t t-set="row_no" t-value="row_no + 1"/>
                         </t>
-                        <tr style="font-weight: bold;">
+                        <tr class="summary-row" style="font-weight: bold;">
                             <td class="text-center">
                                 รวมทั้งสิ้น
                             </td>
@@ -108,6 +115,11 @@
                             </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr class="page-bottom-line">
+                            <td t-att-colspan="2 + len(o.f9w_expense_data['columns']) * 2">&#160;</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

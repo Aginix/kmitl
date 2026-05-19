@@ -22,9 +22,16 @@
             h3 {
                 font-weight: bold;
             }
-            .table tbody tr:last-child {
+            .table tbody .summary-row {
                 border-top: 1px solid black !important;
                 border-bottom: 1px solid black !important;
+            }
+            .table tfoot .page-bottom-line td {
+                border-top: 1pt solid #000 !important;
+                padding: 0;
+                height: 0;
+                line-height: 0;
+                font-size: 0;
             }
         </style>
         <div class="page f8w" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
@@ -121,7 +128,7 @@
                             </t>
                             <t t-set="row_no" t-value="row_no + 1"/>
                         </t>
-                        <tr>
+                        <tr class="summary-row">
                             <td class="text-center fw-bold">
                                 รวมทั้งสิ้น
                             </td>
@@ -145,6 +152,11 @@
                             </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr class="page-bottom-line">
+                            <td colspan="7">&#160;</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
