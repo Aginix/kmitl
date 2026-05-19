@@ -51,12 +51,12 @@
                     options='{"zoom": true}'
                 />
             </xpath>
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="old_code" />
+            </xpath>
             <xpath expr="//notebook" position="inside">
                 <!-- Profile Info tab -->
                 <page string="Profile Info" name="profile_info">
-                    <group>
-                        <field name="old_code" />
-                    </group>
                     <group>
                         <group string="Thai Name">
                             <field name="applicant_title" />

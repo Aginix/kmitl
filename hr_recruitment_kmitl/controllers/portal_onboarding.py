@@ -143,19 +143,21 @@ class PortalOnboardingController(http.Controller):
                 vals[field] = post.get(field) or False
 
         # Royal decoration fields
-        for field in [
-            "royal_decoration_level",
-            "royal_decoration_year",
-            "royal_decoration_agency",
-        ]:
-            if field in post:
-                try:
-                    if field.endswith("_year") or field.endswith("_level"):
-                        vals[field] = int(post.get(field)) if post.get(field) else False
-                    else:
-                        vals[field] = post.get(field) or False
-                except (ValueError, TypeError):
-                    vals[field] = False
+        if "royal_decoration_year" in post:
+            try:
+                vals["royal_decoration_year"] = (
+                    int(post.get("royal_decoration_year"))
+                    if post.get("royal_decoration_year")
+                    else False
+                )
+            except (ValueError, TypeError):
+                vals["royal_decoration_year"] = False
+        if "royal_decoration_level" in post:
+            vals["royal_decoration_level"] = post.get("royal_decoration_level") or False
+        if "royal_decoration_agency" in post:
+            vals["royal_decoration_agency"] = (
+                post.get("royal_decoration_agency") or False
+            )
 
         if "royal_decoration_id" in post:
             try:
