@@ -32,6 +32,10 @@
                 border-top: 0;
                 border-bottom: 0;
             }
+            .table tbody tr:last-child {
+                border-top: 1px solid black !important;
+                border-bottom: 1px solid black !important;
+            }
             p,
             span,
             div {
@@ -83,8 +87,6 @@
                                 </td>
                             </tr>
                         </t>
-                    </tbody>
-                    <tfoot>
                         <tr style="font-weight: bold;">
                             <td class="text-center">
                                 รวมทั้งสิ้น
@@ -98,7 +100,7 @@
                                 <t t-out="'{0:,.2f}'.format(o.f10w_expense_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
-                    </tfoot>
+                    </tbody>
                 </table>
             </div>
         </div>
