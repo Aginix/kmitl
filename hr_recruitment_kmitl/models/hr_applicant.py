@@ -333,6 +333,17 @@ class HrApplicant(models.Model):
         # Common required: education, work history, documents
         if not profile.education_history_ids:
             missing.append("ประวัติการศึกษา")
+        else:
+            for edu in profile.education_history_ids:
+                level_name = edu.education_level_id.name or "ไม่ระบุระดับ"
+                if not edu.certificate_file:
+                    missing.append(
+                        f"เอกสารแนบประวัติการศึกษา ({level_name}): วุฒิบัตร/ประกาศนียบัตร"
+                    )
+                if not edu.transcript_file:
+                    missing.append(
+                        f"เอกสารแนบประวัติการศึกษา ({level_name}): ใบแสดงผลการศึกษา (Transcript)"
+                    )
         if not profile.id_card_file:
             missing.append("สำเนาบัตรประจำตัวประชาชน")
         if not profile.household_registration_file:
@@ -346,6 +357,8 @@ class HrApplicant(models.Model):
             required = dict(self.ROLE_REQUIRED_FIELDS.get(job.role, {}))
             if job.role == "support" and profile.has_ocsc_exam:
                 required.update(self.OCSC_CONDITIONAL_FIELDS)
+                if not profile.ocsc_exam_file:
+                    missing.append("เอกสารแนบการสอบ ก.พ.: ไฟล์ใบรับรองผลสอบ ก.พ.")
             for field_name, label in required.items():
                 if not getattr(profile, field_name, False):
                     missing.append(label)

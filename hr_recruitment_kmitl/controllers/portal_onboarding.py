@@ -12,13 +12,9 @@ class PortalOnboardingHome(CustomerPortal):
         values = super()._prepare_home_portal_values(counters)
         if "onboarding_count" in counters:
             partner = request.env.user.partner_id
-            domain = [
-                "|",
-                ("applicant_id.partner_id", "=", partner.id),
-                ("applicant_id.email_from", "=ilike", partner.email or ""),
-            ]
-            values["onboarding_count"] = (
-                request.env["hr.onboarding"].sudo().search_count(domain)
+            domain = [("applicant_id.partner_id", "=", partner.id)]
+            values["onboarding_count"] = request.env["hr.onboarding"].search_count(
+                domain
             )
         return values
 
@@ -26,27 +22,17 @@ class PortalOnboardingHome(CustomerPortal):
 class PortalOnboardingController(http.Controller):
     def _get_onboarding_domain(self):
         partner = request.env.user.partner_id
-        return [
-            "|",
-            ("applicant_id.partner_id", "=", partner.id),
-            ("applicant_id.email_from", "=ilike", partner.email or ""),
-        ]
+        return [("applicant_id.partner_id", "=", partner.id)]
 
     def _get_onboarding_for_user(self, onboarding_id):
-        onboarding = request.env["hr.onboarding"].sudo().browse(onboarding_id)
+        onboarding = request.env["hr.onboarding"].browse(onboarding_id)
         if not onboarding.exists():
             return None
         partner = request.env.user.partner_id
-        partner_match = (
+        if not (
             onboarding.applicant_id.partner_id
             and onboarding.applicant_id.partner_id.id == partner.id
-        )
-        email_match = (
-            onboarding.applicant_id.email_from
-            and partner.email
-            and onboarding.applicant_id.email_from.lower() == partner.email.lower()
-        )
-        if not partner_match and not email_match:
+        ):
             return None
         return onboarding
 
@@ -183,7 +169,7 @@ class PortalOnboardingController(http.Controller):
             onboarding.write(vals)
 
     def _save_family(self, onboarding, form):
-        FamilyModel = request.env["hr.onboarding.family"].sudo()
+        FamilyModel = request.env["hr.onboarding.family"]
         family_ids = form.getlist("family_id")
         family_relation_ids = form.getlist("family_relation_id")
         family_identifications = form.getlist("family_identification_id")
@@ -321,7 +307,7 @@ class PortalOnboardingController(http.Controller):
     def portal_my_onboarding_list(self, **kwargs):
         if must_set_email():
             return request.redirect("/my/profile")
-        HrOnboarding = request.env["hr.onboarding"].sudo()
+        HrOnboarding = request.env["hr.onboarding"]
         domain = self._get_onboarding_domain()
 
         pending_onboardings = HrOnboarding.search(

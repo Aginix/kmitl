@@ -46,7 +46,6 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
             partner = request.env.user.partner_id
             profile = (
                 request.env["portal.profile"]
-                .sudo()
                 .with_context(lang="th_TH")
                 .search([("partner_id", "=", partner.id)], limit=1)
             )

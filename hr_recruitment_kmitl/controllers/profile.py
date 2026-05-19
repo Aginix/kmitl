@@ -92,9 +92,9 @@ class PortalProfile(CustomerPortal):
                 "titles": request.env["res.partner.title"].sudo().search([]),
                 "countries": request.env["res.country"].sudo().search([]),
                 "zips": request.env["res.city.zip"].sudo().search([]),
-                "academic_standings": request.env["hr.employee.academic.standing"]
-                .sudo()
-                .search([]),
+                "academic_standings": request.env[
+                    "hr.employee.academic.standing"
+                ].search([]),
                 "education_levels": request.env["resource.education.level"]
                 .sudo()
                 .search(
@@ -127,7 +127,10 @@ class PortalProfile(CustomerPortal):
     @http.route(["/my/profile"], type="http", auth="user", website=True)
     def portal_my_profile(self, **post):
         partner = request.env.user.partner_id
-        profile = partner.sudo()._get_or_create_profile()
+        # sudo only for the create path; get a user-env reference for all writes
+        profile = request.env["portal.profile"].browse(
+            partner.sudo()._get_or_create_profile().id
+        )
 
         if post and request.httprequest.method == "POST":
             email_editable = self._is_email_editable(profile)
@@ -146,7 +149,8 @@ class PortalProfile(CustomerPortal):
             vals = self._prepare_profile_values(post)
             if not email_editable:
                 vals.pop("email", None)
-            profile.sudo().write(vals)
+            if vals:
+                profile.write(vals)
             self._save_education_history(profile, post)
             self._save_work_history(profile, request.httprequest.form)
             for doc_name, field_name in [
@@ -162,13 +166,13 @@ class PortalProfile(CustomerPortal):
                 ("doc_other_documents", "other_documents"),
             ]:
                 if post.get(f"delete_{doc_name}") == "1":
-                    profile.sudo().write(
+                    profile.write(
                         {f"{field_name}_file": False, f"{field_name}_filename": False}
                     )
                 else:
                     uploaded = request.httprequest.files.get(doc_name)
                     if uploaded and uploaded.filename:
-                        profile.sudo().write(
+                        profile.write(
                             {
                                 f"{field_name}_file": base64.b64encode(uploaded.read()),
                                 f"{field_name}_filename": uploaded.filename,
@@ -242,7 +246,7 @@ class PortalProfile(CustomerPortal):
 
     def _save_education_section(self, profile, post, prefix, level_id, existing):
         """Save a single education section. Returns the level_id if saved."""
-        EduHistory = request.env["portal.education.history"].sudo()
+        EduHistory = request.env["portal.education.history"]
         program = post.get(f"{prefix}program", "").strip()
         major = post.get(f"{prefix}major", "").strip()
         institution = post.get(f"{prefix}institution", "").strip()
@@ -347,7 +351,7 @@ class PortalProfile(CustomerPortal):
 
     def _save_work_history(self, profile, form):
         """Save work history from multi-value form fields."""
-        WorkHistory = request.env["portal.work.history"].sudo()
+        WorkHistory = request.env["portal.work.history"]
         wh_ids = form.getlist("wh_id")
         wh_company_names = form.getlist("wh_company_name")
         wh_job_titles = form.getlist("wh_job_title")
