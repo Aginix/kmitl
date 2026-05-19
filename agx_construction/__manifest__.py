@@ -4,6 +4,7 @@
     "category": "Construction",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
+    "license": "LGPL-3",
     "depends": ["base", "hr", "mail", "purchase_request_kmitl"],
     "data": [
         "security/ir.model.access.csv",

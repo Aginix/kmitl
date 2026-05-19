@@ -97,15 +97,19 @@ class PurchaseOrder(models.Model):
                 'There are %s contracts that are about to expire. '
                 '<a href="/web#action=%s">Click to review</a>'
             ) % (len(orders), action.id)
-            
-            channel_data = self.env['mail.channel'].sudo().channel_get(
-                [odoobot_user.partner_id.id, user.partner_id.id]
-            )
-            channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
-
-            channel.sudo().with_user(odoobot_user).message_post(
-                body=body,
-                message_type='comment',
-                subtype_xmlid='mail.mt_comment',
-                author_id=odoobot_user.partner_id.id,
-            )
+            try:
+                with self.env.cr.savepoint():
+                    channel_data = self.env['mail.channel'].sudo().channel_get(
+                        [odoobot_user.partner_id.id, user.partner_id.id]
+                    )
+                    channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
+                    channel.sudo().with_user(odoobot_user).message_post(
+                        body=body,
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_comment',
+                        author_id=odoobot_user.partner_id.id,
+                    )
+            except Exception:
+                _logger.warning(
+                    "Failed to notify user %s of expiring contracts", user.name, exc_info=True
+                )
