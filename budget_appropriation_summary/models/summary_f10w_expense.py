@@ -86,8 +86,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
                 plan_total = 0
                 plan_rows = []
 
-                for work_idx, work in enumerate(self._get_works(plan)):
-                    work_label = str(work_idx + 1)  # 1, 2, 3...
+                for work in self._get_works(plan):
                     work_columns = {code: 0 for code in self.COLUMN_CODES}
                     work_total = 0
                     work_rows = []
@@ -120,7 +119,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
                     if work_total:  # Only include if has data
                         plan_rows.append({
                             "level": 2,
-                            "name": f"{work_label}. {work.name}",
+                            "name": work.name,
                             "columns": work_columns,
                             "total": work_total,
                         })
