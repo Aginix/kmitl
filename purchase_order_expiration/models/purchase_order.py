@@ -93,6 +93,8 @@ class PurchaseOrder(models.Model):
             orders_by_user[order.user_id] |= order
 
         for user, orders in orders_by_user.items():
+            if user == odoobot_user:
+                continue
             body = _(
                 'There are %s contracts that are about to expire. '
                 '<a href="/web#action=%s">Click to review</a>'
