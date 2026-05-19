@@ -16,7 +16,7 @@ class ApprovalRequestLine(models.Model):
     )
 
     partner_id = fields.Many2one(
-        string="Partner",
+        string="Payee",
         comodel_name="res.partner",
         required=True
     )
