@@ -49,6 +49,10 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         """
         Get F10-W expense data as flat row structure with levels.
 
+        Each level row's totals are computed by parent_path subtree matching,
+        so a row aggregates every line whose activity sits anywhere beneath it
+        — including sub-activities deeper than the displayed 4-level hierarchy.
+
         Args:
             summary_id: ID of budget.appropriation.master.summary record
 
@@ -69,93 +73,81 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         # Build expense type mapping (account_id -> expense_type_code)
         expense_type_map = self._build_expense_type_map()
 
-        # Build activity totals: (activity_id, expense_type_code) -> balance
-        activity_totals = self._build_activity_expense_totals(summary, expense_type_map)
+        # Build (activity_parent_path, expense_type_code, balance) tuples so
+        # any ancestor row can sum its full subtree via prefix matching.
+        path_totals = self._build_activity_path_totals(summary, expense_type_map)
 
         # Build flat row structure with levels (dynamic from database)
         rows = []
         grand_total = {code: 0 for code in self.COLUMN_CODES}
 
         for dimension in self._get_dimensions():
-            dim_columns = {code: 0 for code in self.COLUMN_CODES}
-            dim_total = 0
+            dim_columns = self._subtree_columns(path_totals, dimension.parent_path)
+            dim_total = sum(dim_columns.values())
+
+            if not dim_total:
+                continue
+
             dim_rows = []
 
             for plan in self._get_plans(dimension):
-                plan_columns = {code: 0 for code in self.COLUMN_CODES}
-                plan_total = 0
+                plan_columns = self._subtree_columns(path_totals, plan.parent_path)
+                plan_total = sum(plan_columns.values())
+
+                if not plan_total:
+                    continue
+
                 plan_rows = []
 
                 for work in self._get_works(plan):
-                    work_columns = {code: 0 for code in self.COLUMN_CODES}
-                    work_total = 0
+                    work_columns = self._subtree_columns(path_totals, work.parent_path)
+                    work_total = sum(work_columns.values())
+
+                    if not work_total:
+                        continue
+
                     work_rows = []
 
-                    # Get child activities under this work
                     for activity in self._get_activities(work):
-                        act_columns = {code: 0 for code in self.COLUMN_CODES}
-                        act_total = 0
+                        act_columns = self._subtree_columns(path_totals, activity.parent_path)
+                        act_total = sum(act_columns.values())
 
-                        # Get amounts for this activity
-                        for code in self.COLUMN_CODES:
-                            key = (activity.id, code)
-                            amount = activity_totals.get(key, 0)
-                            act_columns[code] = amount
-                            act_total += amount
+                        if not act_total:
+                            continue
 
-                        if act_total:  # Only include if has data
-                            work_rows.append({
-                                "level": 3,
-                                "name": f"- {activity.name}",
-                                "columns": act_columns,
-                                "total": act_total,
-                            })
-
-                            # Roll up to work level
-                            for code in self.COLUMN_CODES:
-                                work_columns[code] += act_columns[code]
-                            work_total += act_total
-
-                    if work_total:  # Only include if has data
-                        plan_rows.append({
-                            "level": 2,
-                            "name": work.name,
-                            "columns": work_columns,
-                            "total": work_total,
+                        work_rows.append({
+                            "level": 3,
+                            "name": f"- {activity.name}",
+                            "columns": act_columns,
+                            "total": act_total,
                         })
-                        plan_rows.extend(work_rows)
 
-                        # Roll up to plan level
-                        for code in self.COLUMN_CODES:
-                            plan_columns[code] += work_columns[code]
-                        plan_total += work_total
-
-                if plan_total:  # Only include if has data
-                    dim_rows.append({
-                        "level": 1,
-                        "name": plan.name,
-                        "columns": plan_columns,
-                        "total": plan_total,
+                    plan_rows.append({
+                        "level": 2,
+                        "name": work.name,
+                        "columns": work_columns,
+                        "total": work_total,
                     })
-                    dim_rows.extend(plan_rows)
+                    plan_rows.extend(work_rows)
 
-                    # Roll up to dimension level
-                    for code in self.COLUMN_CODES:
-                        dim_columns[code] += plan_columns[code]
-                    dim_total += plan_total
-
-            if dim_total:  # Only include if has data
-                rows.append({
-                    "level": 0,
-                    "name": dimension.name,
-                    "columns": dim_columns,
-                    "total": dim_total,
+                dim_rows.append({
+                    "level": 1,
+                    "name": plan.name,
+                    "columns": plan_columns,
+                    "total": plan_total,
                 })
-                rows.extend(dim_rows)
+                dim_rows.extend(plan_rows)
 
-                # Roll up to grand total
-                for code in self.COLUMN_CODES:
-                    grand_total[code] += dim_columns[code]
+            rows.append({
+                "level": 0,
+                "name": dimension.name,
+                "columns": dim_columns,
+                "total": dim_total,
+            })
+            rows.extend(dim_rows)
+
+            for code in self.COLUMN_CODES:
+                grand_total[code] += dim_columns[code]
 
         # Build column metadata
         columns_meta = [{"code": code, "name": name} for code, name in self.EXPENSE_TYPES]
@@ -204,7 +196,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
 
     def _get_plans(self, dimension):
         """
-        Get plan-level activities under a dimension (5-digit codes).
+        Get direct plan-level children of a dimension (5-digit codes).
 
         Args:
             dimension: account.analytic.account record (dimension level)
@@ -212,9 +204,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             recordset: account.analytic.account records
         """
-        plans = self.env["account.analytic.account"].search([
-            ("parent_id", "=", dimension.id),
-        ])
+        plans = self._get_direct_children(dimension)
         # Display order: codes starting with "09" first, then the rest by code ASC
         return plans.sorted(
             key=lambda p: (0 if (p.code or "").startswith("09") else 1, p.code or "")
@@ -222,7 +212,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
 
     def _get_works(self, plan):
         """
-        Get work-level activities under a plan (9-digit codes).
+        Get direct work-level children of a plan (9-digit codes).
 
         Args:
             plan: account.analytic.account record (plan level)
@@ -230,13 +220,15 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             recordset: account.analytic.account records
         """
-        return self.env["account.analytic.account"].search([
-            ("parent_id", "=", plan.id),
-        ], order="code ASC")
+        return self._get_direct_children(plan).sorted(key=lambda w: w.code or "")
 
     def _get_activities(self, work):
         """
-        Get activity-level items under a work (11-digit codes).
+        Get direct activity-level children of a work (11-digit codes).
+
+        Sub-activities (14-digit and deeper) are not displayed as separate
+        rows — their amounts roll up into the activity row's total via
+        parent_path subtree matching in :meth:`_subtree_columns`.
 
         Args:
             work: account.analytic.account record (work level)
@@ -244,9 +236,31 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             recordset: account.analytic.account records
         """
-        return self.env["account.analytic.account"].search([
-            ("parent_id", "=", work.id),
-        ], order="code ASC")
+        return self._get_direct_children(work).sorted(key=lambda a: a.code or "")
+
+    def _get_direct_children(self, parent):
+        """
+        Return direct children of ``parent`` using parent_path matching.
+
+        Direct children have parent_path == parent.parent_path + "<id>/", so
+        their depth (slash count) is exactly one more than parent's.
+
+        Args:
+            parent: account.analytic.account record
+
+        Returns:
+            recordset: account.analytic.account records (direct children only)
+        """
+        if not parent.parent_path:
+            return self.env["account.analytic.account"]
+        parent_depth = parent.parent_path.count("/")
+        candidates = self.env["account.analytic.account"].search([
+            ("parent_path", "=like", f"{parent.parent_path}%"),
+            ("id", "!=", parent.id),
+        ])
+        return candidates.filtered(
+            lambda r: r.parent_path and r.parent_path.count("/") == parent_depth + 1
+        )
 
     def _build_expense_type_map(self):
         """
@@ -257,7 +271,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         """
         expense_type_map = {}
 
-        for type_code, type_name in self.EXPENSE_TYPES:
+        for type_code, _type_name in self.EXPENSE_TYPES:
             # Find parent account
             parent = self.env["budget.account"].search([
                 ("code", "=", type_code),
@@ -265,9 +279,9 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
             ], limit=1)
 
             if parent:
-                # Get all descendants
+                # Get all descendants (parent + subtree) via parent_path
                 descendants = self.env["budget.account"].search([
-                    ("parent_path", "like", f"{parent.parent_path}%"),
+                    ("parent_path", "=like", f"{parent.parent_path}%"),
                 ])
                 for acc in descendants:
                     expense_type_map[acc.id] = type_code
@@ -276,29 +290,45 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
 
         return expense_type_map
 
-    def _build_activity_expense_totals(self, summary, expense_type_map):
+    def _build_activity_path_totals(self, summary, expense_type_map):
         """
-        Build (activity_id, expense_type_code) -> balance mapping.
+        Aggregate line balances keyed by the line's activity parent_path so
+        any ancestor row can sum its subtree by prefix matching.
 
         Args:
             summary: budget.appropriation.master.summary record
             expense_type_map: dict of account_id -> expense_type_code
 
         Returns:
-            dict: (activity_id, expense_type_code) -> balance
+            list[tuple]: (activity_parent_path, expense_type_code, balance)
         """
-        lines = summary.expense_appropriation_ids.mapped("line_ids")
-        totals = {}
-
-        for line in lines:
+        items = []
+        for line in summary.expense_appropriation_ids.mapped("line_ids"):
             activity = line.activity_analytic_id
-            account_id = line.account_id.id
-
-            if not activity or account_id not in expense_type_map:
+            if not activity or not activity.parent_path:
                 continue
+            code = expense_type_map.get(line.account_id.id)
+            if not code:
+                continue
+            items.append((activity.parent_path, code, line.balance))
+        return items
 
-            expense_type_code = expense_type_map[account_id]
-            key = (activity.id, expense_type_code)
-            totals[key] = totals.get(key, 0) + line.balance
+    def _subtree_columns(self, path_totals, parent_path):
+        """
+        Sum balances per expense-type column for every line whose activity
+        parent_path is a descendant of (or equal to) ``parent_path``.
 
-        return totals
+        Args:
+            path_totals: list of (activity_parent_path, code, balance)
+            parent_path: ancestor parent_path used as the prefix filter
+
+        Returns:
+            dict: code -> aggregated balance
+        """
+        columns = {code: 0 for code in self.COLUMN_CODES}
+        if not parent_path:
+            return columns
+        for path, code, balance in path_totals:
+            if path.startswith(parent_path):
+                columns[code] += balance
+        return columns
