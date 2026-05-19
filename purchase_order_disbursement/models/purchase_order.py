@@ -33,10 +33,11 @@ class PurchaseOrder(models.Model):
         store=False,
     )
 
-    @api.depends("disbursement_request_ids", "disbursement_request_ids.amount_total")
+    @api.depends("disbursement_request_ids", "disbursement_request_ids.amount_total", "disbursement_request_ids.state")
     def _compute_disbursement_request(self):
         for order in self:
-            order.disbursement_request_total = sum(order.disbursement_request_ids.mapped("amount_total"))
+            active_requests = order.disbursement_request_ids.filtered(lambda d: d.state != "cancel")
+            order.disbursement_request_total = sum(active_requests.mapped("amount_total"))
             order.is_disbursement_request_allowed = order.disbursement_request_total < order.amount_total
             order.disbursement_request_count = len(order.disbursement_request_ids)
 
