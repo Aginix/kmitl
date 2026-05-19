@@ -36,9 +36,9 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
     EXPENSE_TYPES = [
         ("51000", "งบบุคลากร"),
         ("52000", "งบดําเนินงาน"),
+        ("53000", "งบลงทุน"),
         ("54000", "งบเงินอุดหนุน"),
         ("55000", "งบรายจ่ายอื่น"),
-        ("53000", "งบลงทุน"),
         ("07020", "กองทุนสํารอง"),
     ]
 
@@ -81,8 +81,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
             dim_total = 0
             dim_rows = []
 
-            for plan_idx, plan in enumerate(self._get_plans(dimension)):
-                plan_label = chr(ord('ก') + plan_idx)  # Thai: ก, ข, ค, ง...
+            for plan in self._get_plans(dimension):
                 plan_columns = {code: 0 for code in self.COLUMN_CODES}
                 plan_total = 0
                 plan_rows = []
@@ -135,7 +134,7 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
                 if plan_total:  # Only include if has data
                     dim_rows.append({
                         "level": 1,
-                        "name": f"{plan_label}. {plan.name}",
+                        "name": plan.name,
                         "columns": plan_columns,
                         "total": plan_total,
                     })
@@ -195,10 +194,15 @@ class BudgetAppropriationSummaryF10WExpense(models.AbstractModel):
         Returns:
             recordset: account.analytic.account records
         """
-        return self.env["account.analytic.account"].search([
+        dimensions = self.env["account.analytic.account"].search([
             ("root_plan_id.code", "=", "activities"),
             ("parent_id", "=", False),
-        ], order="code DESC")
+        ])
+        # Display order: prefix 09 first, then 06, then any others by code
+        prefix_priority = {"09": 0, "06": 1}
+        return dimensions.sorted(
+            key=lambda d: (prefix_priority.get((d.code or "")[:2], 99), d.code or "")
+        )
 
     def _get_plans(self, dimension):
         """
