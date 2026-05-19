@@ -114,7 +114,7 @@
                     </group>
                     <notebook>
                         <page name="request_lines" string="Request Lines">
-                            <!-- draft: full edit, no actual_amount -->
+                            <!-- draft: full edit, add/delete enabled -->
                             <field name="line_ids"
                                 attrs="{'invisible': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
@@ -126,10 +126,11 @@
                                     <field name="total_amount" sum="Total"/>
                                 </tree>
                             </field>
-                            <!-- non-draft: no create/delete; actual_amount editable only in approved -->
+                            <!-- non-draft: no add/delete; actual_amount editable in approved only -->
                             <field name="line_ids"
                                 options="{'no_create': True, 'no_delete': True}"
-                                attrs="{'invisible': [('state', '=', 'draft')]}">
+                                attrs="{'invisible': [('state', '=', 'draft')],
+                                        'readonly': [('state', 'in', ['to_verify', 'submitted', 'validated', 'billed', 'rejected'])]}">
                                 <tree editable="bottom">
                                     <field name="allowed_product_ids" invisible="1"/>
                                     <field name="sequence" widget="handle" readonly="1"/>

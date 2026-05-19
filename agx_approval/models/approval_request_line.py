@@ -1,4 +1,5 @@
 from odoo import api, fields, models, tools, _
+from odoo.exceptions import UserError
 
 
 class ApprovalRequestLine(models.Model):
@@ -57,6 +58,20 @@ class ApprovalRequestLine(models.Model):
         string="Actual amount",
         currency_field="currency_id",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            request = self.env["approval.request"].browse(vals.get("request_id"))
+            if request and request.state == "approved":
+                raise UserError(_("ไม่สามารถเพิ่มรายการเมื่อใบคำขออยู่ในสถานะ Approved"))
+        return super().create(vals_list)
+
+    def unlink(self):
+        for line in self:
+            if line.request_id.state == "approved":
+                raise UserError(_("ไม่สามารถลบรายการเมื่อใบคำขออยู่ในสถานะ Approved"))
+        return super().unlink()
 
     @api.depends('request_id.category_id')
     def _compute_allowed_product_ids(self):
