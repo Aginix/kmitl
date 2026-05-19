@@ -1,0 +1,31 @@
+.hr_employee_decoration table [data-name="effective_date"] {
+    width: 130px !important;
+}
+
+.hr_employee_decoration table [data-name="published_date"] {
+    width: 130px !important;
+}
+
+.hr_employee_decoration table [data-name="relation_id"] {
+    max-width: 180px !important;
+}
+
+.hr_employee_decoration table [data-name="volume"] {
+    width: 70px !important;
+}
+
+.hr_employee_decoration table [data-name="chapter"] {
+    width: 70px !important;
+}
+
+.hr_employee_decoration table [data-name="page"] {
+    width: 80px !important;
+}
+
+.hr_employee_decoration table [data-name="no"] {
+    width: 80px !important;
+}
+
+.hr_employee_decoration table [data-name="office_order_id"] {
+    width: 120px !important;
+}
