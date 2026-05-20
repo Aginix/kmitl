@@ -8,11 +8,6 @@
             ref="l10n_th_gov_account_asset_management.account_asset_view_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='asset_location_id']" position="after">
-                <field name="location" />
-                <field name="department_id" />
-            </xpath>
-
             <xpath expr="//field[@name='asset_location_id']" position="attributes">
                 <attribute name="groups">base.group_no_one</attribute>
             </xpath>
@@ -30,6 +25,8 @@
                         <group>
                             <field name="employee_id" />
                             <field name="asset_location_id" />
+                            <field name="location" />
+                            <field name="department_id" />
                         </group>
                         <group>
                             <field name="asset_serial_number" />

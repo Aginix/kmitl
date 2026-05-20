@@ -960,7 +960,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_guarantee_start
 msgid "Guarantee Start"
-msgstr ""
+msgstr "ระยะเวลารับประกัน"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__has_message
@@ -1358,8 +1358,9 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#. modules: account_asset_management, l10n_th_gov_account_asset_management
+#. modules: account_asset_management, l10n_th_gov_account_asset_management, account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
 msgid "Other Information"
 msgstr "ข้อมูลอื่นๆ"
 
