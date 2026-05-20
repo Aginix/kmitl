@@ -49,7 +49,6 @@
                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                 <h3>จําแนกตามหน่วยงานและแผนงาน</h3>
             </div>
-            <div style="height: 24pt;"/>
             <div>
                 <table class="table table-sm table-bordered">
                     <thead>
@@ -57,7 +56,7 @@
                             <th style="width: 140pt;"/>
                             <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
                               <th style="width: 62pt;"/>
-                              <th style="width: 22pt;"/>
+                              <th style="width: 24pt;"/>
                             </t>
                             <th style="width: 60pt;"/>
                         </tr>
@@ -87,8 +86,9 @@
                                         <t t-out="'{0:,.2f}'.format(department['columns'][column['code']]['amount'])"/>
                                     </th>
                                     <th class="text-end border-0 border-end" contenteditable="false">
-                                        0.00
-                                        <!-- <t t-out="department['columns'][column['code']]['percentage']" /> -->
+                                        <t t-set="col_total" t-value="o.f9w_expense_data['column_totals'][column['code']]['amount']"/>
+                                        <t t-set="pct" t-value="(department['columns'][column['code']]['amount'] / col_total * 100) if col_total else 0"/>
+                                        <t t-out="'{0:,.2f}'.format(pct)"/>
                                     </th>
                                 </t>
                                 <th class="text-end border-0" contenteditable="false">
@@ -106,8 +106,7 @@
                                     <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['column_totals'][column['code']]['amount'])"/>
                                 </th>
                                 <th class="text-end" contenteditable="false">
-                                    0.00
-                                    <!-- <t t-out="department['columns'][column['code']]['percentage']" /> -->
+                                    100.00
                                 </th>
                             </t>
                             <td class="text-end" contenteditable="false">
