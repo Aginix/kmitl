@@ -4,6 +4,7 @@
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
+    "license": "LGPL-3",
     "depends": ["account", "hr", "budget_product", "budget", "base_exception"],
     "data": [
         "security/security.xml",

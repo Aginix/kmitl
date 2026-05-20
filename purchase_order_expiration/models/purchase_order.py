@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+from datetime import timedelta
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
-from datetime import timedelta
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -34,10 +34,10 @@ class PurchaseOrder(models.Model):
         records._compute_days_to_expire()
         records._compute_expire_range()
 
-    @api.depends('days_to_expire')
+    @api.depends('work_end', 'days_to_expire')
     def _compute_days_to_expire_display(self):
         for record in self:
-            record.days_to_expire_display = str(record.days_to_expire) if record.days_to_expire else ''
+            record.days_to_expire_display = str(record.days_to_expire) if record.work_end else ''
 
     @api.depends('work_end')
     def _compute_days_to_expire(self):
@@ -46,7 +46,7 @@ class PurchaseOrder(models.Model):
             if record.work_end:
                 record.days_to_expire = (record.work_end - today).days
             else:
-                record.days_to_expire = 9999
+                record.days_to_expire = 0
     
     @api.depends('days_to_expire')
     def _compute_expire_range(self):
@@ -93,19 +93,25 @@ class PurchaseOrder(models.Model):
             orders_by_user[order.user_id] |= order
 
         for user, orders in orders_by_user.items():
+            if user == odoobot_user:
+                continue
             body = _(
                 'There are %s contracts that are about to expire. '
                 '<a href="/web#action=%s">Click to review</a>'
             ) % (len(orders), action.id)
-            
-            channel_data = self.env['mail.channel'].sudo().channel_get(
-                [odoobot_user.partner_id.id, user.partner_id.id]
-            )
-            channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
-
-            channel.sudo().with_user(odoobot_user).message_post(
-                body=body,
-                message_type='comment',
-                subtype_xmlid='mail.mt_comment',
-                author_id=odoobot_user.partner_id.id,
-            )
+            try:
+                with self.env.cr.savepoint():
+                    channel_data = self.env['mail.channel'].sudo().channel_get(
+                        [odoobot_user.partner_id.id, user.partner_id.id]
+                    )
+                    channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
+                    channel.sudo().with_user(odoobot_user).message_post(
+                        body=body,
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_comment',
+                        author_id=odoobot_user.partner_id.id,
+                    )
+            except Exception:
+                _logger.warning(
+                    "Failed to notify user %s of expiring contracts", user.name, exc_info=True
+                )

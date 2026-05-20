@@ -35,8 +35,8 @@
                 <field name="routing_progress" widget="progressbar" optional="hide" />
                 <field name="date"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
-                <button name="action_mark_inbox_read" type="object" icon="fa-envelope-open" attrs="{'invisible': [('current_user_inbox_is_read', '=', True)]}"/>
-                <button name="action_mark_inbox_unread" type="object" icon="fa-envelope" attrs="{'invisible': [('current_user_inbox_is_read', '=', False)]}"/>
+                <button name="action_mark_inbox_read" type="object" icon="fa-envelope-open" title="Mark as Read" attrs="{'invisible': [('current_user_inbox_is_read', '=', True)]}"/>
+                <button name="action_mark_inbox_unread" type="object" icon="fa-envelope" title="Mark as Unread" attrs="{'invisible': [('current_user_inbox_is_read', '=', False)]}"/>
             </tree>
         </field>
     </record>
