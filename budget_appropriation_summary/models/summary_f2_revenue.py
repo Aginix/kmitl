@@ -62,7 +62,7 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
             compare_amount = compare_totals.get(code, 0)
             diff_amount = amount - compare_amount
             diff_percentage = (
-                round((diff_amount / compare_amount) * 100, 2)
+                round(((amount - compare_amount) / compare_amount) * 100, 2)
                 if compare_amount
                 else 0
             )
