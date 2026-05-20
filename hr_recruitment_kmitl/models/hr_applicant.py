@@ -284,6 +284,9 @@ class HrApplicant(models.Model):
         "emergency_contact_name": "ชื่อผู้ติดต่อฉุกเฉิน",
         "emergency_contact_relation": "ความสัมพันธ์ผู้ติดต่อฉุกเฉิน",
         "emergency_contact_phone": "เบอร์ติดต่อฉุกเฉิน",
+        "emergency_contact_email": "อีเมลติดต่อฉุกเฉิน",
+        "address_address": "ที่อยู่ตามทะเบียนบ้าน",
+        "current_address": "ที่อยู่ปัจจุบัน",
     }
 
     ROLE_REQUIRED_FIELDS = {
@@ -332,6 +335,22 @@ class HrApplicant(models.Model):
             if not val or (isinstance(val, str) and val.strip() == "-"):
                 missing.append(label)
         # Common required: education, work history, documents
+        if profile.work_history_ids:
+            for i, work in enumerate(profile.work_history_ids, start=1):
+                fields = []
+                if not work.company_name:
+                    fields.append("ชื่อสถานที่ทำงาน")
+                if not work.job_title:
+                    fields.append("ตำแหน่ง")
+                if not work.salary:
+                    fields.append("เงินเดือน")
+                if not work.date_start:
+                    fields.append("วันที่เริ่มงาน")
+                if not work.date_end:
+                    fields.append("วันที่สิ้นสุดงาน")
+                if fields:
+                    company = work.company_name or f"งานที่ {i}"
+                    missing.append(f"{company}: กรุณากรอก {', '.join(fields)}")
         if not profile.education_history_ids:
             missing.append("ประวัติการศึกษา")
         else:

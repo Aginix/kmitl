@@ -453,6 +453,16 @@
                             </div>
                         </div>
                     </div>
+                    <div
+                        t-if="error_message"
+                        class="alert alert-danger"
+                        role="alert"
+                        style="white-space: pre-line"
+                    >
+                        <t t-foreach="error_message" t-as="err">
+                            <t t-out="err" />
+                        </t>
+                    </div>
                     <form
                         t-attf-action="/my/onboarding/form/#{onboarding.id}"
                         method="post"
