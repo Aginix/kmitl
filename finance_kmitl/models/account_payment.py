@@ -9,7 +9,8 @@ class AccountPayment(models.Model):
 
     kmitl_payment_type_id = fields.Many2one(
         comodel_name="kmitl.payment.type",
-        string="Payment Type (KMITL)",
+        string="Operation Type",
+        required=True,
     )
     to_reconcile_payment_line_ids = fields.Many2many(
         comodel_name="account.move.line",
