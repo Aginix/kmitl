@@ -1,7 +1,7 @@
 import base64
 from odoo import _, fields, http
 from odoo.addons.portal.controllers.portal import CustomerPortal
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
 
 from .profile import must_set_email
@@ -360,38 +360,48 @@ class PortalOnboardingController(http.Controller):
             return request.redirect(f"/my/onboarding/{onboarding_id}")
 
         if post and request.httprequest.method == "POST":
-            self._validate_required_files(onboarding, post, request.httprequest.files)
-
-            self._save_main(onboarding, post, request.httprequest.files)
-            self._save_family(onboarding, request.httprequest.form)
-
-            # Save file uploads for single-file fields
-            for prefix in [
-                "royal_decoration_proof",
-                "starting_date_attachment",
-                "health_employee",
-                "accident_employee",
-                "provident_fund",
-                "beneficiary_declaration",
-                "letter_of_consent",
-                "salary_book",
-                "medical_certificate",
-            ]:
-                self._save_single_file(
-                    onboarding, prefix, post, request.httprequest.files
+            try:
+                self._validate_required_files(
+                    onboarding, post, request.httprequest.files
                 )
 
-            # Save multi-attachment fields
-            for m2m_field in [
-                "health_family_attachment_ids",
-                "accident_family_attachment_ids",
-            ]:
-                self._save_multi_attachments(
-                    onboarding, m2m_field, post, request.httprequest.files
-                )
+                self._save_main(onboarding, post, request.httprequest.files)
+                self._save_family(onboarding, request.httprequest.form)
 
-            onboarding.action_submit()
-            return request.redirect(f"/my/onboarding/{onboarding_id}")
+                # Save file uploads for single-file fields
+                for prefix in [
+                    "royal_decoration_proof",
+                    "starting_date_attachment",
+                    "health_employee",
+                    "accident_employee",
+                    "provident_fund",
+                    "beneficiary_declaration",
+                    "letter_of_consent",
+                    "salary_book",
+                    "medical_certificate",
+                ]:
+                    self._save_single_file(
+                        onboarding, prefix, post, request.httprequest.files
+                    )
+
+                # Save multi-attachment fields
+                for m2m_field in [
+                    "health_family_attachment_ids",
+                    "accident_family_attachment_ids",
+                ]:
+                    self._save_multi_attachments(
+                        onboarding, m2m_field, post, request.httprequest.files
+                    )
+
+                onboarding.action_submit()
+                return request.redirect(f"/my/onboarding/{onboarding_id}")
+            except (UserError, ValidationError) as e:
+                error_message = [e.args[0] if e.args else str(e)]
+                values = self._prepare_values(onboarding)
+                values["error_message"] = error_message
+                return request.render(
+                    "hr_recruitment_kmitl.portal_my_onboarding_form", values
+                )
 
         values = self._prepare_values(onboarding)
         return request.render("hr_recruitment_kmitl.portal_my_onboarding_form", values)

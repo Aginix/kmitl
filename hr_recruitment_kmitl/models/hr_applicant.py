@@ -284,6 +284,9 @@ class HrApplicant(models.Model):
         "emergency_contact_name": "ชื่อผู้ติดต่อฉุกเฉิน",
         "emergency_contact_relation": "ความสัมพันธ์ผู้ติดต่อฉุกเฉิน",
         "emergency_contact_phone": "เบอร์ติดต่อฉุกเฉิน",
+        "emergency_contact_email": "อีเมลติดต่อฉุกเฉิน",
+        "address_address": "ที่อยู่ตามทะเบียนบ้าน",
+        "current_address": "ที่อยู่ปัจจุบัน",
     }
 
     ROLE_REQUIRED_FIELDS = {
