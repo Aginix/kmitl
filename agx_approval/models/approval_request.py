@@ -68,6 +68,13 @@ class ApprovalRequest(models.Model):
         store=True,
     )
 
+    total_actual_amount = fields.Monetary(
+        compute="_compute_total_actual_amount",
+        string="รวมยอดเบิกจริง",
+        currency_field="currency_id",
+        store=True,
+    )
+
     category_id = fields.Many2one(
         string="Category",
         comodel_name="approval.category",
@@ -161,7 +168,6 @@ class ApprovalRequest(models.Model):
         "approval.request.line",
         "request_id",
         string="Expense Lines",
-        states=READONLY_STATES,
     )
 
     has_period = fields.Boolean(
@@ -402,6 +408,14 @@ class ApprovalRequest(models.Model):
                     )
         return True
 
+    def write(self, vals):
+        result = super().write(vals)
+        if vals.get("state") == "approved":
+            for record in self:
+                for line in record.line_ids.filtered(lambda l: not l.actual_amount):
+                    line.actual_amount = line.total_amount
+        return result
+
     # def write(self, values):
     #     if (
     #         "budget_commitment_id" in values
@@ -547,7 +561,33 @@ class ApprovalRequest(models.Model):
             else:
                 rec.is_editable = True
 
+    def action_open_actual_amount_wizard(self):
+        self.ensure_one()
+        wizard = self.env["approval.update.actual.amount.wizard"].create({
+            "approval_request_id": self.id,
+            "line_ids": [
+                (0, 0, {
+                    "approval_line_id": line.id,
+                    "actual_amount": line.actual_amount,
+                })
+                for line in self.line_ids
+            ],
+        })
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Update actual amount"),
+            "res_model": "approval.update.actual.amount.wizard",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):
         for rec in self:
             rec.total_amount = sum(rec.line_ids.mapped("total_amount"))
+
+    @api.depends("line_ids.actual_amount")
+    def _compute_total_actual_amount(self):
+        for rec in self:
+            rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))
