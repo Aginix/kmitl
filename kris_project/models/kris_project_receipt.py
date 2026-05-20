@@ -43,6 +43,11 @@ class KrisProjectReceipt(models.Model):
         string="Amount",
         tracking=True,
     )
+    extra_income = fields.Monetary(
+        string="ค่า Extra",
+        default=0.0,
+        tracking=True,
+    )
     net_amount = fields.Monetary(
         string="Net Amount",
         compute="_compute_net_amount",

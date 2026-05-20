@@ -143,6 +143,11 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+    extra_value = fields.Monetary(
+        string="ค่า Extra",
+        tracking=True,
+        states=READONLY_STATES,
+    )
     allocatable_value = fields.Monetary(
         string="Allocatable Value",
         compute="_compute_allocatable_value",
@@ -281,13 +286,18 @@ class KrisProject(models.Model):
     warn_installment_total_mismatch = fields.Boolean(
         compute="_compute_warnings",
     )
+    warn_extra_overshoot = fields.Boolean(
+        compute="_compute_warnings",
+    )
 
     @api.depends(
         "maintenance_deduction_amount",
         "allocation_line_ids.estimated_amount",
         "installment_ids.maintenance_fee",
+        "installment_ids.extra_income",
         "total_installment_amount",
         "project_value",
+        "extra_value",
     )
     def _compute_warnings(self):
         prec = self.env["decimal.precision"].precision_get("Account")
@@ -318,9 +328,15 @@ class KrisProject(models.Model):
                     )
                     != 0
                 )
+                extra_total = sum(rec.installment_ids.mapped("extra_income"))
+                rec.warn_extra_overshoot = (
+                    float_compare(extra_total, rec.extra_value, precision_digits=prec)
+                    > 0
+                )
             else:
                 rec.warn_installment_maintenance_mismatch = False
                 rec.warn_installment_total_mismatch = False
+                rec.warn_extra_overshoot = False
 
     @api.depends("operating_expense")
     def _compute_allocatable_value(self):

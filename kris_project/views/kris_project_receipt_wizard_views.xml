@@ -19,6 +19,7 @@
                     <field name="equipment_cost_in_installment"/>
                     <field name="amount"/>
                     <field name="net_amount" readonly="1"/>
+                    <field name="extra_income"/>
                     <field name="note"/>
                 </group>
                 <separator string="Allocation based on revenue."/>
@@ -26,6 +27,7 @@
                     <tree editable="bottom" create="0" delete="0">
                         <field name="allocation_line_id" invisible="1"/>
                         <field name="name" readonly="1" string="Allocator"/>
+                        <field name="remaining_amount" readonly="1"/>
                         <field name="amount"/>
                         <field name="currency_id" invisible="1"/>
                     </tree>

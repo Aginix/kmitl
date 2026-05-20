@@ -42,6 +42,9 @@ class KrisProjectReceiptWizard(models.TransientModel):
         string="Net Amount",
         compute="_compute_net_amount",
     )
+    extra_income = fields.Monetary(
+        string="ค่า Extra",
+    )
     allocation_ids = fields.One2many(
         comodel_name="kris.project.receipt.wizard.line",
         inverse_name="wizard_id",
@@ -83,16 +86,26 @@ class KrisProjectReceiptWizard(models.TransientModel):
         for wiz in self:
             wiz.net_amount = wiz.amount - wiz.equipment_cost_in_installment
 
+    def _fill_allocation_proportionally(self):
+        base = self.project_id.maintenance_deduction_amount
+        net = self.net_amount
+        for line in self.allocation_ids:
+            if base and line.allocation_line_id:
+                ratio = line.allocation_line_id.estimated_amount / base
+                line.amount = net * ratio
+            else:
+                line.amount = 0.0
+
+    @api.onchange("amount", "equipment_cost_in_installment")
+    def _onchange_amount(self):
+        self._fill_allocation_proportionally()
+
     @api.onchange("installment_id")
     def _onchange_installment_id(self):
         if self.installment_id:
             self.amount = self.installment_id.amount
-            inst_alloc_by_line = {
-                ia.allocation_line_id.id: ia.amount
-                for ia in self.installment_id.allocation_ids
-            }
-            for line in self.allocation_ids:
-                line.amount = inst_alloc_by_line.get(line.allocation_line_id.id, 0.0)
+            self.extra_income = self.installment_id.extra_income
+            self._fill_allocation_proportionally()
 
     def action_save(self):
         self.ensure_one()
@@ -104,6 +117,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
                 "date": self.date,
                 "equipment_cost_in_installment": self.equipment_cost_in_installment,
                 "amount": self.amount,
+                "extra_income": self.extra_income,
                 "note": self.note,
             }
         )
@@ -140,8 +154,24 @@ class KrisProjectReceiptWizardLine(models.TransientModel):
         readonly=True,
     )
     amount = fields.Monetary(string="Amount")
+    remaining_amount = fields.Monetary(
+        string="จำนวนเงินคงค้าง",
+        compute="_compute_remaining_amount",
+    )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="wizard_id.currency_id",
         readonly=True,
     )
+
+    @api.depends(
+        "allocation_line_id",
+        "allocation_line_id.estimated_amount",
+        "allocation_line_id.actual_amount",
+    )
+    def _compute_remaining_amount(self):
+        for line in self:
+            alloc = line.allocation_line_id
+            line.remaining_amount = (
+                alloc.estimated_amount - alloc.actual_amount if alloc else 0.0
+            )

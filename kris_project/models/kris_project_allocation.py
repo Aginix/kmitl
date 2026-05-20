@@ -73,10 +73,21 @@ class KrisProjectAllocationLine(models.Model):
             else:
                 line.allocation_pct = 0.0
 
-    @api.depends("receipt_allocation_ids.amount")
+    @api.depends(
+        "project_id.receipt_ids.net_amount",
+        "estimated_amount",
+        "project_id.maintenance_deduction_amount",
+    )
     def _compute_actual_amount(self):
         for line in self:
-            line.actual_amount = sum(line.receipt_allocation_ids.mapped("amount"))
+            base = line.project_id.maintenance_deduction_amount
+            if base and line.estimated_amount:
+                ratio = line.estimated_amount / base
+                line.actual_amount = (
+                    sum(line.project_id.receipt_ids.mapped("net_amount")) * ratio
+                )
+            else:
+                line.actual_amount = 0.0
 
     @api.constrains("estimated_amount")
     def _check_estimated_amount_sum(self):
