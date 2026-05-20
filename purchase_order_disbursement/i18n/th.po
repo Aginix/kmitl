@@ -44,6 +44,17 @@ msgid "Disbursement Requests"
 msgstr "ใบขอเบิก"
 
 #. module: purchase_order_disbursement
+#: model:ir.ui.menu,name:purchase_order_disbursement.menu_disbursement_request_sub_purchase
+#: model_terms:ir.ui.view,arch_db:purchase_order_disbursement.view_disbursement_request_tree_purchase
+msgid "Disbursement Requests"
+msgstr "รายการขอเบิก"
+
+#. module: purchase_order_disbursement
+#: model:ir.actions.act_window,name:purchase_order_disbursement.action_disbursement_request_purchase
+msgid "Disbursement Requests Purchase"
+msgstr "รายการขอเบิก"
+
+#. module: purchase_order_disbursement
 #: model:ir.model.fields,field_description:purchase_order_disbursement.field_purchase_order__hide_create_disbursement_request_button
 msgid "Hide Create Disbursement Request Button"
 msgstr ""

@@ -15,7 +15,6 @@
         "l10n_th_account_tax",
         "base_fontawesome",
         "partner_type_aginix",
-        'purchase_kmitl',
     ],
     "data": [
         "security/security.xml",
