@@ -55,8 +55,8 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
                 '<input type="hidden" name="wh_id" value="0"/>' +
                 '<div class="row g-3 mb-1">' +
                 '<div class="col-lg-6">' +
-                '<label class="col-form-label">Company</label>' +
-                '<input type="text" name="wh_company_name" class="form-control" placeholder="ชื่อบริษัท"/>' +
+                '<label class="col-form-label">Company</label><span class="text-danger ms-1">*</span>' +
+                '<input type="text" name="wh_company_name" class="form-control" placeholder="ชื่อบริษัท" required />' +
                 "</div>" +
                 '<div class="col-lg-6">' +
                 '<label class="col-form-label">Job Title / Description</label>' +

@@ -335,6 +335,22 @@ class HrApplicant(models.Model):
             if not val or (isinstance(val, str) and val.strip() == "-"):
                 missing.append(label)
         # Common required: education, work history, documents
+        if profile.work_history_ids:
+            for i, work in enumerate(profile.work_history_ids, start=1):
+                fields = []
+                if not work.company_name:
+                    fields.append("ชื่อสถานที่ทำงาน")
+                if not work.job_title:
+                    fields.append("ตำแหน่ง")
+                if not work.salary:
+                    fields.append("เงินเดือน")
+                if not work.date_start:
+                    fields.append("วันที่เริ่มงาน")
+                if not work.date_end:
+                    fields.append("วันที่สิ้นสุดงาน")
+                if fields:
+                    company = work.company_name or f"งานที่ {i}"
+                    missing.append(f"{company}: กรุณากรอก {', '.join(fields)}")
         if not profile.education_history_ids:
             missing.append("ประวัติการศึกษา")
         else:
