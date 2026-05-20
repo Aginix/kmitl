@@ -571,7 +571,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__name
 msgid "Number"
-msgstr ""
+msgstr "เลขที่ใบขอเบิก"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_needaction_counter
