@@ -54,7 +54,7 @@ msgstr "บัญชีงบประมาณที่ใช้สำหรั
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
 msgid "Submit"
-msgstr "ส่งอนุมัติ"
+msgstr "ยืนยัน"
 
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl

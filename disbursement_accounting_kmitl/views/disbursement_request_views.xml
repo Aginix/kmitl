@@ -32,13 +32,26 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- Create Bill button placed after Approve -->
+            <!-- Statusbar: add bills_posted -->
+            <xpath expr="//field[@name='display_status']" position="attributes">
+                <attribute name="statusbar_visible">draft,submitted,signed,verified,approved,bills_posted</attribute>
+            </xpath>
+
+            <!-- Create Bill + ตั้งหนี้ buttons placed after Approve -->
             <xpath expr="//button[@name='action_approve']" position="after">
                 <button name="action_create_bill"
                         string="Create Bill"
                         type="object"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"/>
+                <button name="action_post_bills"
+                        string="ตั้งหนี้"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',
+                            ('state', '!=', 'approved'),
+                            ('bill_draft_count', '=', 0)]}"
                         groups="accounting_kmitl.group_accounting_kmitl_user"/>
             </xpath>
 
@@ -52,6 +65,15 @@
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">ใบตั้งหนี้ <field name="bill_count" nolabel="1" /></span>
                         <span class="o_stat_text text-muted small"><field name="bill_status_display" nolabel="1" /></span>
+                    </div>
+                </button>
+                <button name="action_view_move_lines"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-list"
+                        attrs="{'invisible': [('move_line_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">รายการบัญชี <field name="move_line_count" nolabel="1" /></span>
                     </div>
                 </button>
                 <field name="bill_draft_count" invisible="1" />

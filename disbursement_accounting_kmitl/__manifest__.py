@@ -16,6 +16,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/disbursement_request_views.xml",
+        "views/account_move_line_views.xml",
     ],
     "installable": True,
     "auto_install": False,

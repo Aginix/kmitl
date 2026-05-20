@@ -7,7 +7,7 @@
     "website": "https://www.kmitl.ac.th",
     "license": "AGPL-3",
     "depends": [
-        "account_move_tier_validation",
+        "base_tier_validation",
         "budget",
         "l10n_th_account_tax",
     ],
