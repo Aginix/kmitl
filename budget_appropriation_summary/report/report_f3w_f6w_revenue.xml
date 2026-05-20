@@ -16,6 +16,9 @@
                 font-size: 14pt;
                 line-height: 1.4;
             }
+            .page:not(.landscape) {
+                padding: 6mm 6mm !important;
+            }
         </style>
         <div class="page f3w_f6w" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
