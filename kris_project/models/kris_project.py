@@ -259,6 +259,11 @@ class KrisProject(models.Model):
         compute="_compute_totals",
         store=True,
     )
+    over_revenue = fields.Monetary(
+        string="Over Revenue",
+        compute="_compute_totals",
+        store=True,
+    )
     # --- Standard fields ---
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -370,7 +375,9 @@ class KrisProject(models.Model):
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
-            rec.revenue_remaining = rec.project_value - rec.total_received_amount
+            diff = rec.project_value - rec.total_received_amount
+            rec.revenue_remaining = max(0.0, diff)
+            rec.over_revenue = max(0.0, -diff)
 
     @api.depends("date_contract_start", "date_contract_end")
     def _compute_project_duration(self):

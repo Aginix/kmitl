@@ -322,6 +322,11 @@
                                     <field name="total_received_amount" readonly="1"/>
                                     <field name="total_net_received" readonly="1"/>
                                     <field name="revenue_remaining" readonly="1"/>
+                                    <field
+                                        name="over_revenue"
+                                        readonly="1"
+                                        attrs="{'invisible': [('over_revenue', '=', 0.0)]}"
+                                    />
                                 </group>
                             </group>
                             <separator string="Revenue Record"/>

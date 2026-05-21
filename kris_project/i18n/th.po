@@ -673,6 +673,11 @@ msgid "Revenue Remaining"
 msgstr "คงเหลือ"
 
 #. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__over_revenue
+msgid "Over Revenue"
+msgstr "รับเกินจากโครงการ"
+
+#. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__equipment_cost
 msgid "Equipment Cost"
 msgstr "ค่าครุภัณฑ์"
