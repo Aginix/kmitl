@@ -86,26 +86,37 @@ class KrisProjectReceiptWizard(models.TransientModel):
         for wiz in self:
             wiz.net_amount = wiz.amount - wiz.equipment_cost_in_installment
 
-    def _fill_allocation_proportionally(self):
-        base = self.project_id.maintenance_deduction_amount
-        net = self.net_amount
-        for line in self.allocation_ids:
-            if base and line.allocation_line_id:
-                ratio = line.allocation_line_id.estimated_amount / base
-                line.amount = net * ratio
-            else:
-                line.amount = 0.0
+    # def _fill_allocation_proportionally(self):
+    #     base = self.project_id.maintenance_deduction_amount
+    #     net = self.net_amount
+    #     for line in self.allocation_ids:
+    #         if base and line.allocation_line_id:
+    #             ratio = line.allocation_line_id.estimated_amount / base
+    #             line.amount = net * ratio
+    #         else:
+    #             line.amount = 0.0
 
-    @api.onchange("amount", "equipment_cost_in_installment")
-    def _onchange_amount(self):
-        self._fill_allocation_proportionally()
+    # @api.onchange("amount", "equipment_cost_in_installment")
+    # def _onchange_amount(self):
+    #     self._fill_allocation_proportionally()
+
+    # @api.onchange("installment_id")
+    # def _onchange_installment_id(self):
+    #     if self.installment_id:
+    #         self.amount = self.installment_id.amount
+    #         self.extra_income = self.installment_id.extra_income
+    #         self._fill_allocation_proportionally()
 
     @api.onchange("installment_id")
     def _onchange_installment_id(self):
         if self.installment_id:
             self.amount = self.installment_id.amount
-            self.extra_income = self.installment_id.extra_income
-            self._fill_allocation_proportionally()
+            inst_alloc_by_line = {
+                ia.allocation_line_id.id: ia.amount
+                for ia in self.installment_id.allocation_ids
+            }
+            for line in self.allocation_ids:
+                line.amount = inst_alloc_by_line.get(line.allocation_line_id.id, 0.0)
 
     def action_save(self):
         self.ensure_one()
