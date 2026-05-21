@@ -120,6 +120,12 @@
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
                         </group>
                     </group>
+                    <group name="attachment" string="Attachment for Disbursement Request">
+                        <field name="attachment_ids"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            widget="many2many_binary">
+                        </field>
+                    </group>
                     <notebook>
                         <page string="Request Lines" name="lines">
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
@@ -170,7 +176,7 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <page string="Attachments" name="attachment">
+                        <!-- <page string="Attachments" name="attachment">
                             <field name="attachment_ids"
                                    context="{'default_res_model': 'disbursement.request'}">
                                 <tree>
@@ -180,7 +186,7 @@
                                     <field name="create_uid" string="Uploaded By"/>
                                 </tree>
                             </field>
-                        </page>
+                        </page> -->
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
