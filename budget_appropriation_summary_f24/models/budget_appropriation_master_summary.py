@@ -39,9 +39,40 @@ class BudgetAppropriationMasterSummary(models.Model):
         returns one row per department plus a grand-total row.
         """
         self.ensure_one()
+        config = self.env.ref(
+            "budget_appropriation_summary_f24.f24_config_default",
+            raise_if_not_found=False,
+        )
+        selected = config and config.department_analytic_ids
+        selected_ids = set(selected.ids) if selected else set()
+        # Expand selected parents to include their entire subtree, so compilations
+        # tied to sub-departments roll up under the configured parent.
+        subtree = (
+            self.env["account.analytic.account"].search(
+                [("id", "child_of", list(selected_ids))]
+            )
+            if selected_ids
+            else None
+        )
+        subtree_ids = set(subtree.ids) if subtree else set()
+
+        def _rollup_target(dept):
+            """Highest ancestor of `dept` that is in the selected set (or dept itself)."""
+            if not selected_ids:
+                return dept
+            for ancestor_id in (
+                int(x) for x in (dept.parent_path or "").strip("/").split("/") if x
+            ):
+                if ancestor_id in selected_ids:
+                    return self.env["account.analytic.account"].browse(ancestor_id)
+            return dept  # unreachable when dept ∈ subtree
+
         grouped = defaultdict(list)
         for comp in self.compilation_ids:
-            grouped[comp.department_analytic_id].append(comp)
+            dept = comp.department_analytic_id
+            if selected_ids and dept.id not in subtree_ids:
+                continue
+            grouped[_rollup_target(dept)].append(comp)
 
         def _row(dept, comps):
             reserve_15 = sum(c.code_0702000002 for c in comps)

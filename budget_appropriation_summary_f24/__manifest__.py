@@ -9,8 +9,11 @@
         "budget_appropriation_summary",
     ],
     "data": [
+        "security/ir.model.access.csv",
+        "data/f24_config_data.xml",
         "report/report_compilation_f24.xml",
         "views/budget_appropriation_master_summary_views.xml",
+        "views/budget_appropriation_summary_f24_config_views.xml",
     ],
     "application": False,
     "installable": True,

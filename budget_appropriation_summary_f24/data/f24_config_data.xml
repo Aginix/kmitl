@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="f24_config_default" model="budget.appropriation.summary.f24.config">
+        <field name="name">F24 Report Configuration</field>
+    </record>
+</odoo>
