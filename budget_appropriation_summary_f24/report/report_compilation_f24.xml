@@ -40,9 +40,9 @@
             .f24 tfoot th.dept {
                 text-align: center;
             }
-            .f24 col.dept { width: 12%; }
-            .f24 col.money { width: 5.17%; }
-            .f24 col.pct { width: 3.45%; }
+            .f24 col.dept { width: auto; }
+            .f24 col.money { width: 40pt; }
+            .f24 col.pct { width: 24pt; }
         </style>
         <div class="page landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
