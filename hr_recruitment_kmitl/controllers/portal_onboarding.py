@@ -102,11 +102,33 @@ class PortalOnboardingController(http.Controller):
                 )
             return items
 
+        job = applicant.job_id
+        employee_type_label = (
+            dict(job._fields["kmitl_employee_type"].selection).get(
+                job.kmitl_employee_type
+            )
+            if job
+            else ""
+        )
+        gender_label = (
+            dict(applicant._fields["gender"].selection).get(applicant.gender)
+            if applicant.gender
+            else ""
+        )
+        marital_label = (
+            dict(applicant._fields["marital"].selection).get(applicant.marital)
+            if applicant.marital
+            else ""
+        )
+
         return {
             "onboarding": onboarding,
             "applicant": applicant,
             "age": self._compute_age(applicant.birthday),
             "page_name": "onboarding",
+            "employee_type_label": employee_type_label,
+            "gender_label": gender_label,
+            "marital_label": marital_label,
             "education_items": education_items,
             "health_family_attachments": prepare_attachment_items(
                 onboarding.health_family_attachment_ids
