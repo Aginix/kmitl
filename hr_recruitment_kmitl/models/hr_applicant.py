@@ -294,6 +294,7 @@ class HrApplicant(models.Model):
             "academic_standing_id": "ตำแหน่งทางวิชาการ",
             "academic_position_institution": "สถาบันที่ได้รับแต่งตั้ง",
             "academic_position_date": "วันที่ได้รับแต่งตั้ง",
+            "academic_position_file": "เอกสารแนบการได้รับตำแหน่งทางวิชาการ",
         },
         "support": {
             "has_ocsc_exam": "สถานะการสอบ ก.พ.",
