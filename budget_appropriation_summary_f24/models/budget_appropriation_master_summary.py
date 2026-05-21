@@ -75,7 +75,9 @@ class BudgetAppropriationMasterSummary(models.Model):
             grouped[_rollup_target(dept)].append(comp)
 
         def _row(dept, comps):
-            reserve_15 = sum(c.code_0702000002 for c in comps)
+            # "สำรองจ่าย 15%" = deducted reserve codes 0702000002 + 0702000003;
+            # compilation.deducted_reserve_amount already sums both.
+            reserve_15 = sum(c.deducted_reserve_amount for c in comps)
             treasury = sum(c.treasury_replenishment_amount for c in comps)
             ma = sum(c.maintenance_amount for c in comps)
             # TODO: replace with real MA allocated % when upstream field exists.
