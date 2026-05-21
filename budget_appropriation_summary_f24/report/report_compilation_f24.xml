@@ -98,8 +98,9 @@
                                 <t t-foreach="f24['columns']" t-as="col">
                                     <td class="num" contenteditable="false">
                                         <t t-set="v" t-value="row[col['key']]"/>
-                                        <t t-if="v" t-out="'{:,.2f}'.format(v)"/>
-                                        <t t-else="">-</t>
+                                        <t t-if="not v">-</t>
+                                        <t t-elif="col['type'] == 'pct'" t-out="'{:,.2f}'.format(v)"/>
+                                        <t t-else="" t-out="'{:,.0f}'.format(v)"/>
                                     </td>
                                 </t>
                             </tr>
@@ -111,8 +112,9 @@
                             <t t-foreach="f24['columns']" t-as="col">
                                 <th class="num" contenteditable="false">
                                     <t t-set="v" t-value="f24['total'][col['key']]"/>
-                                    <t t-if="v" t-out="'{:,.2f}'.format(v)"/>
-                                    <t t-else="">-</t>
+                                    <t t-if="not v">-</t>
+                                    <t t-elif="col['type'] == 'pct'" t-out="'{:,.2f}'.format(v)"/>
+                                    <t t-else="" t-out="'{:,.0f}'.format(v)"/>
                                 </th>
                             </t>
                         </tr>
