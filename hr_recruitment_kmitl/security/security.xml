@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- res.partner: portal user can write own partner (needed for portal.profile related fields) -->
+    <record id="rule_res_partner_portal_own" model="ir.rule">
+        <field name="name">Res Partner: portal user can write own record</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+        <field name="domain_force">[('id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <!-- portal.profile: own-only for internal/portal, read-all for recruiter -->
+    <record id="rule_portal_profile_own" model="ir.rule">
+        <field name="name">Portal Profile: own record only</field>
+        <field name="model_id" ref="model_portal_profile" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_portal_profile_recruiter" model="ir.rule">
+        <field name="name">Portal Profile: recruiter sees all</field>
+        <field name="model_id" ref="model_portal_profile" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- portal.work.history -->
+    <record id="rule_portal_work_history_own" model="ir.rule">
+        <field name="name">Portal Work History: own records only</field>
+        <field name="model_id" ref="model_portal_work_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field
+            name="domain_force"
+        >[('profile_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_portal_work_history_recruiter" model="ir.rule">
+        <field name="name">Portal Work History: recruiter sees all</field>
+        <field name="model_id" ref="model_portal_work_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- portal.education.history -->
+    <record id="rule_portal_education_history_own" model="ir.rule">
+        <field name="name">Portal Education History: own records only</field>
+        <field name="model_id" ref="model_portal_education_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field
+            name="domain_force"
+        >[('profile_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_portal_education_history_recruiter" model="ir.rule">
+        <field name="name">Portal Education History: recruiter sees all</field>
+        <field name="model_id" ref="model_portal_education_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- hr.applicant -->
+    <record id="rule_hr_applicant_own" model="ir.rule">
+        <field name="name">HR Applicant: own records only</field>
+        <field name="model_id" ref="hr_recruitment.model_hr_applicant" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_hr_applicant_recruiter" model="ir.rule">
+        <field name="name">HR Applicant: recruiter sees all</field>
+        <field name="model_id" ref="hr_recruitment.model_hr_applicant" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- hr.applicant.education.history -->
+    <record id="rule_hr_applicant_education_history_own" model="ir.rule">
+        <field name="name">HR Applicant Education History: own records only</field>
+        <field name="model_id" ref="model_hr_applicant_education_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field
+            name="domain_force"
+        >[('applicant_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_hr_applicant_education_history_recruiter" model="ir.rule">
+        <field name="name">HR Applicant Education History: recruiter sees all</field>
+        <field name="model_id" ref="model_hr_applicant_education_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- hr.applicant.work.history -->
+    <record id="rule_hr_applicant_work_history_own" model="ir.rule">
+        <field name="name">HR Applicant Work History: own records only</field>
+        <field name="model_id" ref="model_hr_applicant_work_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field
+            name="domain_force"
+        >[('applicant_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_hr_applicant_work_history_recruiter" model="ir.rule">
+        <field name="name">HR Applicant Work History: recruiter sees all</field>
+        <field name="model_id" ref="model_hr_applicant_work_history" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- hr.onboarding: rewrite existing rule to cover both groups, drop email branch -->
+    <record id="rule_hr_onboarding_portal" model="ir.rule">
+        <field name="name">HR Onboarding: own records only</field>
+        <field name="model_id" ref="model_hr_onboarding" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field
+            name="domain_force"
+        >[('applicant_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_hr_onboarding_recruiter" model="ir.rule">
+        <field name="name">HR Onboarding: recruiter sees all</field>
+        <field name="model_id" ref="model_hr_onboarding" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- hr.onboarding.family -->
+    <record id="rule_hr_onboarding_family_own" model="ir.rule">
+        <field name="name">HR Onboarding Family: own records only</field>
+        <field name="model_id" ref="model_hr_onboarding_family" />
+        <field
+            name="groups"
+            eval="[(4, ref('base.group_portal')), (4, ref('base.group_user'))]"
+        />
+        <field
+            name="domain_force"
+        >[('onboarding_id.applicant_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_hr_onboarding_family_recruiter" model="ir.rule">
+        <field name="name">HR Onboarding Family: recruiter sees all</field>
+        <field name="model_id" ref="model_hr_onboarding_family" />
+        <field
+            name="groups"
+            eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"
+        />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

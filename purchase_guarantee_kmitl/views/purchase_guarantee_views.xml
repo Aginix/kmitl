@@ -93,7 +93,7 @@
             </xpath>
 
             <!-- Add form name -->
-            <xpath expr="//div[@class='oe_button_box']" position="after">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="after">
                 <h2>Purchase Guarantee Form</h2>
             </xpath>
 

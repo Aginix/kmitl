@@ -129,11 +129,6 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
                     type_total += amount
                     compare_type_total += compare_amount
 
-            # Calculate category percentages
-            for cat in categories:
-                cat["percentage"] = round((cat["amount"] / type_total) * 100, 2) if type_total else 0
-                cat["compare_percentage"] = round((cat["compare_amount"] / compare_type_total) * 100, 2) if compare_type_total else 0
-
             if type_total or compare_type_total:
                 diff_type = type_total - compare_type_total
                 diff_type_pct = round((diff_type / compare_type_total) * 100, 2) if compare_type_total else 0
@@ -148,12 +143,15 @@ class BudgetAppropriationSummaryF7WExpense(models.AbstractModel):
                     "categories": categories,
                 })
 
-        # Calculate type percentages
+        # Calculate percentages against grand totals
         total_amount = sum(t["amount"] for t in expense_types)
         compare_total_amount = sum(t["compare_amount"] for t in expense_types)
         for t in expense_types:
             t["percentage"] = round((t["amount"] / total_amount) * 100, 2) if total_amount else 0
             t["compare_percentage"] = round((t["compare_amount"] / compare_total_amount) * 100, 2) if compare_total_amount else 0
+            for cat in t["categories"]:
+                cat["percentage"] = round((cat["amount"] / total_amount) * 100, 2) if total_amount else 0
+                cat["compare_percentage"] = round((cat["compare_amount"] / compare_total_amount) * 100, 2) if compare_total_amount else 0
 
         # Summary with comparison
         diff_total = total_amount - compare_total_amount

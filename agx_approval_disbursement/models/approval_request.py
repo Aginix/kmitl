@@ -27,6 +27,29 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
+    attachment_ids = fields.One2many(
+        domain=[("is_disbursement_evidence", "=", False)],
+    )
+
+    disbursement_attachment_ids = fields.Many2many(
+        comodel_name='ir.attachment',
+        relation='approval_request_disbursement_attachment_rel',
+        column1='request_id',
+        column2='attachment_id',
+        string='Disbursement Attachments',
+    )
+
+    has_active_disbursement = fields.Boolean(
+        compute="_compute_has_active_disbursement",
+    )
+
+    @api.depends("disbursement_request_ids.state")
+    def _compute_has_active_disbursement(self):
+        for record in self:
+            record.has_active_disbursement = any(
+                d.state != "cancel" for d in record.disbursement_request_ids
+            )
+
     @api.depends("disbursement_request_ids")
     def _compute_disbursement_request(self):
         for record in self:
@@ -47,9 +70,18 @@ class ApprovalRequest(models.Model):
             else:
                 record.billing_status = "no"
 
+    def write(self, vals):
+        result = super().write(vals)
+        if "disbursement_attachment_ids" in vals:
+            self.disbursement_attachment_ids.filtered(
+                lambda a: not a.is_disbursement_evidence
+            ).write({"is_disbursement_evidence": True})
+        return result
+
     def _prepare_disbursement_request_vals(self):
         """Prepare vals for a single multi-partner DR from all approval lines."""
         return {
+            "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
             "partner_type": "multi",
             "line_ids": [
@@ -69,6 +101,7 @@ class ApprovalRequest(models.Model):
 
     def action_create_disbursement_request(self):
         self.ensure_one()
+        self.action_bill()
         vals = self._prepare_disbursement_request_vals()
         disbursement = self.env["disbursement.request"].create(vals)
 

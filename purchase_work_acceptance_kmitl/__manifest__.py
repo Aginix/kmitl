@@ -1,6 +1,6 @@
 {
     "name": "Purchase Work Acceptance Kmitl",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": """ Purchase Work Acceptance Kmitl Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
@@ -16,6 +16,7 @@
         'thai_date_utils',
         'l10n_th_amount_to_text',
         'purchase_kmitl',
+        'purchase_order_received_qty_percent',
     ],
     "data": [
         "security/ir.model.access.csv",

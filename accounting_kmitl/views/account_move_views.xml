@@ -12,16 +12,10 @@
                 <attribute name="statusbar_visible">draft,submitted,posted</attribute>
             </xpath>
 
-            <!-- Hidden fields for tier validation -->
-            <xpath expr="//field[@name='id']" position="after">
-                <field name="validation_status" invisible="1"/>
-                <field name="need_validation" invisible="1"/>
-            </xpath>
-
             <!-- Submit and Reset to Draft buttons -->
             <xpath expr="//button[@name='action_post'][2]" position="after">
-                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                <button name="action_draft" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', 'in', ['validated', 'rejected', 'pending'])]}" />
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                <button name="action_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'submitted')]}"/>
             </xpath>
 
             <!-- Pass analytic distribution as default to new lines -->
@@ -48,13 +42,12 @@
                 }</attribute>
             </xpath>
 
-            <!-- Budget fields on main form (before notebook) -->
-            <xpath expr="//notebook" position="before">
-                <group string="Budget">
+            <!-- Budget fields on main form (before invoice_tab notebook) -->
+            <xpath expr="//page[@id='invoice_tab']/.." position="before">
+                <group name="budget_root" string="Budget">
                     <group name="budget_info">
                         <field name="budget_commitment_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                         <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
-                        <field name="analytic_distribution" invisible="1"/>
                     </group>
                     <group name="analytic_dimensions">
                         <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
@@ -62,7 +55,6 @@
                         <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
                         <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
                         <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
-                        <field name="budget_account_id" invisible="1"/>
                     </group>
                 </group>
             </xpath>

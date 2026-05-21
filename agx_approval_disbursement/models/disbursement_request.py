@@ -14,6 +14,11 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
+    reference = fields.Reference(
+        selection_add=[('approval.request', 'Approval Request')],
+        ondelete={'approval.request': 'set null'},
+    )
+
     def action_view_approval_request(self):
         self.ensure_one()
         if not self.approval_request_id:

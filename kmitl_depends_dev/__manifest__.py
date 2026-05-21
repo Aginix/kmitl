@@ -10,6 +10,7 @@
                 'account_asset_kmitl', 'account_asset_number_kmitl', 'account_asset_operating_unit_access_all',
                 'account_asset_batch', 'account_asset_subcomponent_kmitl',
                 'account_fiscal_year_all_user', 'account_fiscal_year_enhance',
+                'account_usability',
                 'disbursement', 'accounting_kmitl',
                 'analytic_operating_unit_tree', 'base_tier_validation_comment', 'budget_account_mass_edit',
                 'budget_analytic_account', 'budget_appropriation_operating_unit',
@@ -32,7 +33,12 @@
                 'purchase_guarantee_kmitl',
                 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
                 'purchase_operating_unit_access_all', 'purchase_order_disbursement',
-                'purchase_order_disbursement_budget'],
+                'purchase_order_disbursement_budget', 'web_responsive',
+                'advance_payment_disbursement', 'agx_approval_disbursement',
+                'disbursement_accounting_kmitl', 'disbursement_finance_kmitl',
+                'disbursement_sarabun', 'purchase_order_disbursement_auto_submit',
+                'purchase_request_approval_disbursement_budget',
+                'purchase_work_acceptance_disbursement', 'web_chatter_position'],
     'data': [
 
     ],

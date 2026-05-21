@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Tree View -->
+    <record id="hr_onboarding_view_tree" model="ir.ui.view">
+        <field name="name">hr.onboarding.tree</field>
+        <field name="model">hr.onboarding</field>
+        <field name="arch" type="xml">
+            <tree
+                string="Onboarding"
+                default_order="submitted_date desc, create_date desc"
+                decoration-muted="state == 'draft'"
+                decoration-success="state == 'submitted'"
+            >
+                <field name="name" />
+                <field name="applicant_id" />
+                <field name="state" />
+                <field name="submitted_date" />
+                <field name="create_date" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="hr_onboarding_view_search" model="ir.ui.view">
+        <field name="name">hr.onboarding.search</field>
+        <field name="model">hr.onboarding</field>
+        <field name="arch" type="xml">
+            <search string="Onboarding">
+                <field name="name" />
+                <field name="applicant_id" />
+                <filter
+                    string="Draft"
+                    name="filter_draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    string="Submitted"
+                    name="filter_submitted"
+                    domain="[('state', '=', 'submitted')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="State"
+                        name="group_state"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="Submitted Date"
+                        name="group_submitted_date"
+                        context="{'group_by': 'submitted_date'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="hr_onboarding_view_form" model="ir.ui.view">
+        <field name="name">hr.onboarding.form</field>
+        <field name="model">hr.onboarding</field>
+        <field name="arch" type="xml">
+            <form string="Onboarding">
+                <header>
+                    <button
+                        name="action_submit"
+                        type="object"
+                        string="Submit"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '=', 'submitted')]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,submitted"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="applicant_id"
+                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                            />
+                        </group>
+                        <group>
+                            <field name="submitted_date" readonly="1" />
+                        </group>
+                        <group>
+                            <field
+                                name="blood_type"
+                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                            />
+                            <field name="can_start_on_time" />
+                            <field name="starting_date" />
+                            <field
+                                name="starting_date_attachment_file"
+                                filename="starting_date_attachment_filename"
+                            />
+                            <field
+                                name="starting_date_attachment_filename"
+                                invisible="1"
+                            />
+                            <field
+                                name="starting_date_note"
+                                nolabel="1"
+                                placeholder="Notes..."
+                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                            />
+                        </group>
+                        <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Family" name="family">
+                            <field
+                                name="family_member_ids"
+                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                            >
+                                <tree editable="bottom">
+                                    <field name="relation_id" />
+                                    <field name="prefix_id" />
+                                    <field name="first_name" />
+                                    <field name="middle_name" />
+                                    <field name="last_name" />
+                                    <field name="identification_id" />
+                                    <field name="date_of_birth" />
+                                    <field name="job" />
+                                    <field name="phone" />
+                                    <field name="status" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Royal Decoration" name="royal_decoration">
+                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                                <group>
+                                    <field name="royal_decoration_id" />
+                                    <field name="royal_decoration_level" />
+                                    <field name="royal_decoration_year" />
+                                    <field name="royal_decoration_agency" />
+                                </group>
+                                <group>
+                                    <field
+                                        name="royal_decoration_proof_file"
+                                        filename="royal_decoration_proof_filename"
+                                    />
+                                    <field
+                                        name="royal_decoration_proof_filename"
+                                        invisible="1"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Benefits" name="benefits">
+                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                                <group string="Health Insurance">
+                                    <field
+                                        name="health_employee_file"
+                                        filename="health_employee_filename"
+                                    />
+                                    <field
+                                        name="health_employee_filename"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="health_family_attachment_ids"
+                                        widget="many2many_binary"
+                                    />
+                                </group>
+                                <group string="Accident Insurance">
+                                    <field
+                                        name="accident_employee_file"
+                                        filename="accident_employee_filename"
+                                    />
+                                    <field
+                                        name="accident_employee_filename"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="accident_family_attachment_ids"
+                                        widget="many2many_binary"
+                                    />
+                                </group>
+                            </group>
+                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                                <group string="Provident Fund">
+                                    <field
+                                        name="provident_fund_file"
+                                        filename="provident_fund_filename"
+                                    />
+                                    <field
+                                        name="provident_fund_filename"
+                                        invisible="1"
+                                    />
+                                </group>
+                                <group string="Declarations">
+                                    <field
+                                        name="beneficiary_declaration_file"
+                                        filename="beneficiary_declaration_filename"
+                                    />
+                                    <field
+                                        name="beneficiary_declaration_filename"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="letter_of_consent_file"
+                                        filename="letter_of_consent_filename"
+                                    />
+                                    <field
+                                        name="letter_of_consent_filename"
+                                        invisible="1"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Confirmation" name="confirmation">
+                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                                <group string="Background Check &amp; Bank">
+                                    <field name="background_check_location_type" />
+                                    <field name="krungthai_bank_account" />
+                                </group>
+                                <group string="Supporting Documents">
+                                    <field
+                                        name="salary_book_file"
+                                        filename="salary_book_filename"
+                                    />
+                                    <field name="salary_book_filename" invisible="1" />
+                                    <field
+                                        name="medical_certificate_file"
+                                        filename="medical_certificate_filename"
+                                    />
+                                    <field
+                                        name="medical_certificate_filename"
+                                        invisible="1"
+                                    />
+                                </group>
+                            </group>
+                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                                <group string="PDPA &amp; Final Confirmation">
+                                    <field name="pdpa_consent" />
+                                    <field name="final_confirm" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_hr_onboarding" model="ir.actions.act_window">
+        <field name="name">Onboarding</field>
+        <field name="res_model">hr.onboarding</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="hr_onboarding_view_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No onboarding records yet
+            </p>
+            <p>
+                Onboarding records are created from hired applicants.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem
+        id="menu_hr_onboarding"
+        name="Onboarding"
+        parent="hr_recruitment.menu_crm_case_categ0_act_job"
+        action="action_hr_onboarding"
+        sequence="20"
+    />
+</odoo>

@@ -571,7 +571,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__name
 msgid "Number"
-msgstr ""
+msgstr "เลขที่ใบขอเบิก"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_needaction_counter
@@ -1239,3 +1239,13 @@ msgstr "ไม่สามารถยกเลิกใบขอเบิกท
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Are you sure you want to approve? This will obligate and consume the budget."
 msgstr "ยืนยันการอนุมัติ? การอนุมัติจะตัดและใช้งบประมาณ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Attachment for Disbursement Request"
+msgstr "เอกสารประกอบใบขอเบิก"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"

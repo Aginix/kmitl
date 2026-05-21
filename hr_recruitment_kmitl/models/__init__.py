@@ -2,8 +2,12 @@ from . import portal_education_history
 from . import portal_profile
 from . import portal_work_history
 from . import res_partner
+from . import res_users
 from . import hr_job
 from . import hr_job_old_code
 from . import hr_applicant
+from . import mail_thread_applicant_child
 from . import hr_applicant_education
 from . import hr_applicant_work
+from . import hr_onboarding
+from . import hr_onboarding_family

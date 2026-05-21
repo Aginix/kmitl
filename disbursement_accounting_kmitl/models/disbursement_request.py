@@ -8,6 +8,14 @@ from odoo.fields import Command
 class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
 
+    state = fields.Selection(
+        selection_add=[
+            ("bills_posted", "Bills Posted"),
+            ("cancel",),
+        ],
+        ondelete={"bills_posted": "set default"},
+    )
+
     pipeline_status = fields.Selection(
         selection_add=[
             ("bill_draft", "Bill Draft"),
@@ -23,10 +31,12 @@ class DisbursementRequest(models.Model):
         selection_add=[
             ("bill_draft", "Bill Draft"),
             ("bill_posted", "Bill Posted"),
+            ("bills_posted", "Bills Posted"),
         ],
         ondelete={
             "bill_draft": "set default",
             "bill_posted": "set default",
+            "bills_posted": "set default",
         },
     )
 
@@ -53,6 +63,11 @@ class DisbursementRequest(models.Model):
         compute="_compute_bill_count",
     )
 
+    move_line_count = fields.Integer(
+        string="Move Line Count",
+        compute="_compute_move_line_count",
+    )
+
     @api.depends("bill_ids", "bill_ids.state")
     def _compute_bill_count(self):
         """Compute the number of bills linked to this request.
@@ -64,19 +79,29 @@ class DisbursementRequest(models.Model):
                 lambda b: b.state != "cancel"
             )
             total = len(active_bills)
-            draft = len(active_bills.filtered(lambda b: b.state == "draft"))
+            unposted = len(active_bills.filtered(
+                lambda b: b.state in ("draft", "submitted")
+            ))
             posted = len(active_bills.filtered(lambda b: b.state == "posted"))
             record.bill_count = total
-            record.bill_draft_count = draft
+            record.bill_draft_count = unposted
             record.bill_status_display = (
                 _("ตั้งหนี้แล้ว %s/%s", posted, total) if total else ""
             )
+
+    @api.depends("bill_ids", "bill_ids.state", "bill_ids.line_ids")
+    def _compute_move_line_count(self):
+        for rec in self:
+            active = rec.bill_ids.filtered(lambda b: b.state != "cancel")
+            rec.move_line_count = len(active.line_ids.filtered(
+                lambda l: l.display_type not in ("line_section", "line_note")
+            ))
 
     @api.depends("bill_ids", "bill_ids.state")
     def _compute_pipeline_status(self):
         super()._compute_pipeline_status()
         for rec in self:
-            if rec.state != "approved":
+            if rec.state not in ("approved", "bills_posted"):
                 continue
             active_bills = rec.bill_ids.filtered(lambda b: b.state != "cancel")
             if not active_bills:
@@ -86,6 +111,16 @@ class DisbursementRequest(models.Model):
             else:
                 rec.pipeline_status = "bill_draft"
 
+    @api.depends("state", "pipeline_status")
+    def _compute_display_status(self):
+        super()._compute_display_status()
+        for rec in self:
+            if rec.state == "bills_posted":
+                rec.display_status = "bills_posted"
+
+    # ------------------------------------------------------------------
+    # Bill creation
+    # ------------------------------------------------------------------
     def _create_bill(self):
         """Create vendor bill(s) from disbursement request."""
         self.ensure_one()
@@ -99,8 +134,6 @@ class DisbursementRequest(models.Model):
             bills = self._create_single_bill()
         else:
             bills = self._create_multi_bills()
-
-        bills.action_submit()
 
         for bill in bills:
             bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
@@ -122,7 +155,9 @@ class DisbursementRequest(models.Model):
             Command.create(self._prepare_bill_line_vals(line))
             for line in self.line_ids
         ]
-        bill = self.env["account.move"].create(
+        bill = self.env["account.move"].with_context(
+            auto_submit_on_create=True
+        ).create(
             self._prepare_bill_vals(
                 self.partner_id, self.partner_bank_id, invoice_lines
             )
@@ -148,7 +183,9 @@ class DisbursementRequest(models.Model):
                 for line in lines
             ]
             partner_bank = lines[0].partner_bank_id
-            bill = self.env["account.move"].create(
+            bill = self.env["account.move"].with_context(
+            auto_submit_on_create=True
+        ).create(
                 self._prepare_bill_vals(partner, partner_bank, invoice_lines)
             )
             self._apply_wht_to_bill(bill, lines)
@@ -191,6 +228,74 @@ class DisbursementRequest(models.Model):
         ):
             if request_line.wht_tax_id:
                 invoice_line.wht_tax_id = request_line.wht_tax_id
+
+    # ------------------------------------------------------------------
+    # Tier-gated actions
+    # ------------------------------------------------------------------
+    def action_create_bill(self):
+        self.ensure_one()
+        existing_bills = self.bill_ids.filtered(lambda b: b.state != "cancel")
+        if existing_bills:
+            raise UserError(
+                _(
+                    "Cannot create new bill: existing bill(s) %s are still "
+                    "in progress. Cancel them first before creating a new one."
+                )
+                % ", ".join(existing_bills.mapped("name"))
+            )
+        bills = self._create_bill()
+        if len(bills) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "account.move",
+                "res_id": bills.id,
+                "view_mode": "form",
+                "target": "current",
+            }
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Vendor Bills"),
+            "res_model": "account.move",
+            "domain": [("id", "in", bills.ids)],
+            "view_mode": "tree,form",
+            "target": "current",
+        }
+
+    def action_post_bills(self):
+        """Post all unposted bills and transition DR state to bills_posted."""
+        for record in self:
+            if record.state != "approved":
+                raise UserError(
+                    _("Only approved disbursement requests can post bills.")
+                )
+            unposted_bills = record.bill_ids.filtered(
+                lambda b: b.state in ("draft", "submitted")
+            )
+            if not unposted_bills:
+                raise UserError(_("No bills to post."))
+            unposted_bills.action_post()
+            record.state = "bills_posted"
+        return True
+
+    # ------------------------------------------------------------------
+    # Views
+    # ------------------------------------------------------------------
+    def action_view_move_lines(self):
+        """Open a tree of move.line aggregated from this DR's active bills."""
+        self.ensure_one()
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "disbursement_accounting_kmitl."
+            "action_disbursement_move_lines"
+        )
+        action["domain"] = [
+            ("move_id", "in", self.bill_ids.ids),
+            ("move_id.state", "!=", "cancel"),
+            ("display_type", "not in", ("line_section", "line_note")),
+        ]
+        action["context"] = {
+            "default_disbursement_request_id": self.id,
+        }
+        return action
 
     def action_view_bill(self):
         """Open the linked vendor bill(s)"""
@@ -236,22 +341,3 @@ class DisbursementRequest(models.Model):
             if draft_bills:
                 draft_bills.button_cancel()
         return super().action_cancel()
-
-    def action_create_bill(self):
-        bills = self._create_bill()
-        if len(bills) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "account.move",
-                "res_id": bills.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Vendor Bills"),
-            "res_model": "account.move",
-            "domain": [("id", "in", bills.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }

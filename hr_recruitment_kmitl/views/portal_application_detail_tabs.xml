@@ -13,6 +13,12 @@
                             <t t-set="value" t-value="tab['full_name']" />
                         </t>
                     </div>
+                    <div class="col-12">
+                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                            <t t-set="label">ชื่อ - นามสกุล (ภาษาอังกฤษ)</t>
+                            <t t-set="value" t-value="tab['full_name_en']" />
+                        </t>
+                    </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">สัญชาติ</t>
@@ -29,6 +35,12 @@
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">วัน/เดือน/ปีเกิด</t>
                             <t t-set="value" t-value="tab['birthday']" />
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                            <t t-set="label">เพศ</t>
+                            <t t-set="value" t-value="tab['gender']" />
                         </t>
                     </div>
                     <div class="col-md-6">
@@ -109,58 +121,137 @@
     </template>
     <template id="application_view_tab_education">
         <t t-set="tab" t-value="view_data['tabs']['education']" />
-        <t t-if="tab">
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body p-4 p-md-5">
-                    <t t-call="hr_recruitment_kmitl.application_tab_intro">
-                        <t t-set="title">2. ประวัติการศึกษา (Education History)</t>
-                        <t t-set="description">แสดงวุฒิการศึกษาที่ใช้ในการสมัครงาน</t>
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <t t-call="hr_recruitment_kmitl.application_tab_intro">
+                    <t t-set="title">2. ประวัติการศึกษา (Education History)</t>
+                    <t t-set="description">แสดงวุฒิการศึกษาที่ใช้ในการสมัครงาน</t>
+                </t>
+                <t t-if="tab">
+                    <t t-foreach="tab" t-as="edu">
+                        <div
+                            t-attf-class="border rounded-12 overflow-hidden #{'mt-3' if not edu_first else ''}"
+                        >
+                            <div class="row g-0">
+                                <div
+                                    class="col-lg-3 d-flex align-items-center justify-content-center p-3 border-end"
+                                >
+                                    <div class="text-center">
+                                        <div
+                                            class="rounded-circle border border-2 border-primary text-primary d-inline-flex align-items-center justify-content-center mb-2"
+                                            style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;"
+                                        >
+                                            <t t-esc="edu_index + 1" />
+                                        </div>
+                                        <h6 class="mb-0 fw-bold">
+                                            <t t-esc="edu.get('level') or '-'" />
+                                        </h6>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9 p-3">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_readonly_field"
+                                            >
+                                                <t t-set="label">หลักสูตร</t>
+                                                <t
+                                                    t-set="value"
+                                                    t-value="edu.get('program')"
+                                                />
+                                            </t>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_readonly_field"
+                                            >
+                                                <t t-set="label">สาขา/วิชาเอก</t>
+                                                <t
+                                                    t-set="value"
+                                                    t-value="edu.get('major')"
+                                                />
+                                            </t>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_readonly_field"
+                                            >
+                                                <t t-set="label">สถาบัน/มหาวิทยาลัย</t>
+                                                <t
+                                                    t-set="value"
+                                                    t-value="edu.get('institution')"
+                                                />
+                                            </t>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_readonly_field"
+                                            >
+                                                <t t-set="label">ประเทศ</t>
+                                                <t
+                                                    t-set="value"
+                                                    t-value="edu.get('country')"
+                                                />
+                                            </t>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_readonly_field"
+                                            >
+                                                <t t-set="label">สำเร็จการศึกษาเมื่อ</t>
+                                                <t
+                                                    t-set="value"
+                                                    t-value="edu.get('graduation_date')"
+                                                />
+                                            </t>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_document_item"
+                                            >
+                                                <t
+                                                    t-set="label"
+                                                >ใบรับรอง (Certificate)</t>
+                                                <t
+                                                    t-set="filename"
+                                                    t-value="edu.get('certificate_filename')"
+                                                />
+                                                <t
+                                                    t-set="download_url"
+                                                    t-value="edu.get('certificate_url')"
+                                                />
+                                            </t>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <t
+                                                t-call="hr_recruitment_kmitl.application_document_item"
+                                            >
+                                                <t
+                                                    t-set="label"
+                                                >ผลการเรียนรายวิชา (Transcript)</t>
+                                                <t
+                                                    t-set="filename"
+                                                    t-value="edu.get('transcript_filename')"
+                                                />
+                                                <t
+                                                    t-set="download_url"
+                                                    t-value="edu.get('transcript_url')"
+                                                />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </t>
-                    <h6 class="fw-bold text-dark mb-4">
-                        <t t-esc="tab.get('level') or tab.get('level_label') or '-'" />
-                    </h6>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <t t-call="hr_recruitment_kmitl.application_readonly_field">
-                                <t t-set="label">หลักสูตร</t>
-                                <t t-set="value" t-value="tab.get('program')" />
-                            </t>
-                        </div>
-                        <div class="col-md-6">
-                            <t t-call="hr_recruitment_kmitl.application_readonly_field">
-                                <t t-set="label">สาขา/วิชาเอก</t>
-                                <t t-set="value" t-value="tab.get('major')" />
-                            </t>
-                        </div>
-                        <div class="col-md-6">
-                            <t t-call="hr_recruitment_kmitl.application_readonly_field">
-                                <t t-set="label">สถาบัน/มหาวิทยาลัย</t>
-                                <t t-set="value" t-value="tab.get('institution')" />
-                            </t>
-                        </div>
-                        <div class="col-md-6">
-                            <t t-call="hr_recruitment_kmitl.application_readonly_field">
-                                <t t-set="label">ประเทศ</t>
-                                <t t-set="value" t-value="tab.get('country')" />
-                            </t>
-                        </div>
-                        <div class="col-md-6">
-                            <t t-call="hr_recruitment_kmitl.application_readonly_field">
-                                <t t-set="label">สำเร็จการศึกษาเมื่อ</t>
-                                <t t-set="value" t-value="tab.get('graduation_date')" />
-                            </t>
-                        </div>
+                </t>
+                <t t-else="">
+                    <div class="text-secondary">
+                        ไม่มีข้อมูลการศึกษา
                     </div>
-                </div>
+                </t>
             </div>
-        </t>
-        <t t-else="">
-            <div class="card border rounded-4 shadow-none">
-                <div class="card-body p-4 text-secondary">
-                    ไม่มีข้อมูลการศึกษา
-                </div>
-            </div>
-        </t>
+        </div>
     </template>
     <template id="application_view_tab_work_history">
         <t t-set="tab" t-value="view_data['tabs']['work_history']" />
@@ -242,7 +333,10 @@
     </template>
     <template id="application_view_tab_academic">
         <t t-set="tab" t-value="view_data['tabs']['academic']" />
-        <div class="card shadow-sm border-0 rounded-4">
+        <div
+            class="card shadow-sm border-0 rounded-4"
+            t-if="tab['job_role'] == 'academic'"
+        >
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
                     <t t-set="title">4. ข้อมูลทางวิชาการและราชการ</t>
@@ -250,19 +344,13 @@
                 </t>
                 <h6 class="fw-bold text-dark mb-4">ตำแหน่งทางวิชาการ</h6>
                 <div class="row g-4">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ตำแหน่งทางวิชาการ</t>
                             <t t-set="value" t-value="tab['academic_standing_id']" />
                         </t>
                     </div>
-                    <div class="col-md-4">
-                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
-                            <t t-set="label">วันที่ได้รับแต่งตั้ง</t>
-                            <t t-set="value" t-value="tab['academic_position_date']" />
-                        </t>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">สถาบันที่ได้รับแต่งตั้ง</t>
                             <t
@@ -271,40 +359,131 @@
                             />
                         </t>
                     </div>
+                    <div class="col-md-6">
+                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                            <t t-set="label">วันที่ได้รับแต่งตั้ง</t>
+                            <t t-set="value" t-value="tab['academic_position_date']" />
+                        </t>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                        <t
+                            t-set="label"
+                        >หลักฐานตำแหน่งทางวิชาการ (Academic Position Proof)</t>
+                        <t
+                            t-set="filename"
+                            t-value="tab['academic_position_file']['filename']"
+                        />
+                        <t
+                            t-set="download_url"
+                            t-value="tab['academic_position_file']['download_url']"
+                        />
+                    </t>
                 </div>
             </div>
         </div>
-        <div class="card shadow-sm border-0 rounded-4 mt-3">
+        <div
+            class="card shadow-sm border-0 rounded-4 mt-3"
+            t-if="tab['job_role'] == 'support'"
+        >
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
-                    <t t-set="title">การสอบ ก.พ.</t>
+                    <t t-set="title">4. การสอบ ก.พ. (OCSC Exam)</t>
                     <t t-set="description">ผลการสอบที่ใช้ในใบสมัครนี้</t>
                 </t>
                 <div class="row g-4">
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
-                            <t t-set="label">สอบผ่าน ก.พ.</t>
+                            <t t-set="label">สถานะการสอบ ก.พ.</t>
                             <t t-set="value" t-value="tab['has_ocsc_exam']" />
                         </t>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ระดับการสอบ</t>
                             <t t-set="value" t-value="tab['ocsc_exam_level']" />
                         </t>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">วันที่สอบผ่าน</t>
                             <t t-set="value" t-value="tab['ocsc_exam_date']" />
                         </t>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">เลขที่ใบรับรอง</t>
                             <t t-set="value" t-value="tab['ocsc_exam_number']" />
                         </t>
                     </div>
+                </div>
+                <div class="mt-3">
+                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                        <t t-set="label">หลักฐานการสอบ ก.พ. (OCSC Exam Proof)</t>
+                        <t
+                            t-set="filename"
+                            t-value="tab['ocsc_exam_file']['filename']"
+                        />
+                        <t
+                            t-set="download_url"
+                            t-value="tab['ocsc_exam_file']['download_url']"
+                        />
+                    </t>
+                </div>
+            </div>
+        </div>
+        <div
+            class="card shadow-sm border-0 rounded-4 mt-3"
+            t-if="tab['job_role'] == 'academic'"
+        >
+            <div class="card-body p-4 p-md-5">
+                <t t-call="hr_recruitment_kmitl.application_tab_intro">
+                    <t t-set="title">ผลสอบภาษาอังกฤษ (English Test Result)</t>
+                </t>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                            <t t-set="label">ประเภทการสอบ (Test Type)</t>
+                            <t t-set="value" t-value="tab['english_test_type']" />
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                            <t t-set="label">คะแนน (Score)</t>
+                            <t t-set="value" t-value="tab['english_test_score']" />
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                            <t t-set="label">วันที่สอบ (Test Date)</t>
+                            <t t-set="value" t-value="tab['english_test_date']" />
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <t t-call="hr_recruitment_kmitl.application_readonly_field">
+                            <t t-set="label">เลขที่ใบรับรอง (Certificate Number)</t>
+                            <t
+                                t-set="value"
+                                t-value="tab['english_test_certificate_number']"
+                            />
+                        </t>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <t t-call="hr_recruitment_kmitl.application_document_item">
+                        <t
+                            t-set="label"
+                        >ไฟล์แนบผลสอบภาษาอังกฤษ (English Test Result Attachment)</t>
+                        <t
+                            t-set="filename"
+                            t-value="tab['english_score_file']['filename']"
+                        />
+                        <t
+                            t-set="download_url"
+                            t-value="tab['english_score_file']['download_url']"
+                        />
+                    </t>
                 </div>
             </div>
         </div>

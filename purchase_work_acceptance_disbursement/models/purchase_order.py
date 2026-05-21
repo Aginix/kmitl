@@ -16,7 +16,7 @@ class PurchaseOrder(models.Model):
         currency_field="currency_id",
     )
 
-    @api.depends("wa_ids.state", "wa_ids.is_disbursed", "wa_ids.fines_total")
+    @api.depends("order_line.wa_line_ids.wa_id.state", "order_line.wa_line_ids.wa_id.is_disbursed", "order_line.wa_line_ids.wa_id.fines_total")
     def _compute_wa_fines_total(self):
         for order in self:
             was = self.env["work.acceptance"].search([
@@ -26,7 +26,7 @@ class PurchaseOrder(models.Model):
             ])
             order.wa_fines_total = sum(was.mapped("fines_total"))
 
-    @api.depends("wa_ids.state", "wa_ids.is_disbursed")
+    @api.depends("order_line.wa_line_ids.wa_id.state", "order_line.wa_line_ids.wa_id.is_disbursed")
     def _compute_pending_wa_count(self):
         for order in self:
             order.pending_wa_count = self.env["work.acceptance"].search_count([

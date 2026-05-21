@@ -23,4 +23,40 @@
         </field>
     </record>
 
+    <record id="view_account_analytic_account_search" model="ir.ui.view">
+        <field name="name">account.analytic.account.search.inherit.kmitl</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_search"/>
+        <field name="arch" type="xml">
+            <filter name="inactive" position="after">
+                <separator/>
+                <filter
+                    string="Activity (ด้าน/แผนงาน/กิจกรรม)"
+                    name="plan_activities"
+                    domain="[('root_plan_id', '=', %(account_analytic_kmitl.analytic_plan_activities)d)]"
+                />
+                <filter
+                    string="Departments (หน่วยงาน)"
+                    name="plan_departments"
+                    domain="[('root_plan_id', '=', %(account_analytic_kmitl.analytic_plan_departments)d)]"
+                />
+                <filter
+                    string="Fund (กองทุน)"
+                    name="plan_funds"
+                    domain="[('root_plan_id', '=', %(account_analytic_kmitl.analytic_plan_funds)d)]"
+                />
+                <filter
+                    string="ประเภทแหล่งเงิน"
+                    name="plan_sources"
+                    domain="[('root_plan_id', '=', %(account_analytic_kmitl.analytic_plan_sources)d)]"
+                />
+            </filter>
+            <search position="inside">
+                <searchpanel>
+                    <field name="parent_id" string="Parent" icon="fa-sitemap" limit="0"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
 </odoo>
