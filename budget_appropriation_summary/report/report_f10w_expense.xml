@@ -46,8 +46,14 @@
             p,
             span,
             div {
-                font-size: 13pt;
+                font-size: 14pt;
                 line-height: 1.1;
+            }
+            @media print {
+                @page {
+                    size: A4 landscape;
+                    padding: 6mm 0mm !important;
+                }
             }
         </style>
         <div class="page f10w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
@@ -68,7 +74,7 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 30%;">แผนงาน/กิจกรรม</th>
+                            <th class="text-center" style="width: 33%;">แผนงาน/กิจกรรม</th>
                             <t t-foreach="o.f10w_expense_data['columns']" t-as="column">
                                 <th class="text-center"><t t-out="column['name']"/></th>
                             </t>
@@ -81,15 +87,15 @@
                                 <td t-esc="row['name']"/>
                                 <t t-foreach="o.f10w_expense_data['columns']" t-as="column">
                                     <td class="text-end" contenteditable="false">
-                                        <t t-out="'{0:,.2f}'.format(row['columns'][column['code']])"/>
+                                        <t t-out="'{0:,.0f}'.format(row['columns'][column['code']])"/>
                                     </td>
                                 </t>
                                 <td class="text-end fw-bold" contenteditable="false">
                                     <t t-if="row['level'] in [0, 1]">
-                                        <t t-out="'{0:,.2f}'.format(row['total'])"/>
+                                        <t t-out="'{0:,.0f}'.format(row['total'])"/>
                                     </t>
                                     <t t-else="">
-                                        <t t-out="'{0:,.2f}'.format(row['total'])"/>
+                                        <t t-out="'{0:,.0f}'.format(row['total'])"/>
                                     </t>
                                 </td>
                             </tr>
@@ -100,11 +106,11 @@
                             </td>
                             <t t-foreach="o.f10w_expense_data['columns']" t-as="column">
                                 <td class="text-end" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(o.f10w_expense_data['column_totals'][column['code']])"/>
+                                    <t t-out="'{0:,.0f}'.format(o.f10w_expense_data['column_totals'][column['code']])"/>
                                 </td>
                             </t>
                             <td class="text-end" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f10w_expense_data['summary']['total_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f10w_expense_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
                     </tbody>

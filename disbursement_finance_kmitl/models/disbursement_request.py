@@ -84,8 +84,6 @@ class DisbursementRequest(models.Model):
         "bill_ids",
         "bill_ids.state",
         "bill_ids.payment_state",
-        "payment_ids",
-        "payment_ids.state",
     )
     def _compute_pipeline_status(self):
         super()._compute_pipeline_status()

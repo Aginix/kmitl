@@ -284,6 +284,9 @@ class HrApplicant(models.Model):
         "emergency_contact_name": "ชื่อผู้ติดต่อฉุกเฉิน",
         "emergency_contact_relation": "ความสัมพันธ์ผู้ติดต่อฉุกเฉิน",
         "emergency_contact_phone": "เบอร์ติดต่อฉุกเฉิน",
+        "emergency_contact_email": "อีเมลติดต่อฉุกเฉิน",
+        "address_address": "ที่อยู่ตามทะเบียนบ้าน",
+        "current_address": "ที่อยู่ปัจจุบัน",
     }
 
     ROLE_REQUIRED_FIELDS = {
@@ -291,6 +294,7 @@ class HrApplicant(models.Model):
             "academic_standing_id": "ตำแหน่งทางวิชาการ",
             "academic_position_institution": "สถาบันที่ได้รับแต่งตั้ง",
             "academic_position_date": "วันที่ได้รับแต่งตั้ง",
+            "academic_position_file": "เอกสารแนบการได้รับตำแหน่งทางวิชาการ",
         },
         "support": {
             "has_ocsc_exam": "สถานะการสอบ ก.พ.",
@@ -332,6 +336,22 @@ class HrApplicant(models.Model):
             if not val or (isinstance(val, str) and val.strip() == "-"):
                 missing.append(label)
         # Common required: education, work history, documents
+        if profile.work_history_ids:
+            for i, work in enumerate(profile.work_history_ids, start=1):
+                fields = []
+                if not work.company_name:
+                    fields.append("ชื่อสถานที่ทำงาน")
+                if not work.job_title:
+                    fields.append("ตำแหน่ง")
+                if not work.salary:
+                    fields.append("เงินเดือน")
+                if not work.date_start:
+                    fields.append("วันที่เริ่มงาน")
+                if not work.date_end:
+                    fields.append("วันที่สิ้นสุดงาน")
+                if fields:
+                    company = work.company_name or f"งานที่ {i}"
+                    missing.append(f"{company}: กรุณากรอก {', '.join(fields)}")
         if not profile.education_history_ids:
             missing.append("ประวัติการศึกษา")
         else:
@@ -590,3 +610,124 @@ class HrApplicant(models.Model):
             ]
             action["res_id"] = onboardings.id
         return action
+
+    def create_employee_from_applicant(self):
+        action = super().create_employee_from_applicant()
+        self.ensure_one()
+        context = dict(action.get("context") or {})
+        context.update(self._employee_default_context())
+        action["context"] = context
+        return action
+
+    def _employee_default_context(self):
+        """Build default_* context keys to pre-fill the new employee form."""
+        self.ensure_one()
+        ctx = {}
+        scalar_map = {
+            "first_name": "default_firstname",
+            "middle_name": "default_middlename",
+            "last_name": "default_lastname",
+            "first_name_en": "default_firstname_secondary",
+            "middle_name_en": "default_middlename_secondary",
+            "last_name_en": "default_lastname_secondary",
+            "identification_id": "default_identification_id",
+            "birthday": "default_birthday",
+            "gender": "default_gender",
+            "marital": "default_marital",
+            "partner_mobile": "default_mobile_phone",
+            "email_from": "default_private_email",
+        }
+        for src, dest in scalar_map.items():
+            val = getattr(self, src, False)
+            if val:
+                ctx[dest] = val
+        if self.nationality_id:
+            ctx["default_country_id"] = self.nationality_id.id
+        if self.academic_standing_id:
+            ctx["default_academic_standing_id"] = self.academic_standing_id.id
+        if self.job_id and self.job_id.role:
+            ctx["default_role"] = self.job_id.role
+        return ctx
+
+    def _update_employee_from_applicant(self):
+        for applicant in self:
+            employee = applicant.emp_id
+            if not employee:
+                continue
+            applicant._sync_employee_prefix(employee)
+            applicant._sync_employee_education_history(employee)
+            onboarding = applicant.onboarding_ids[:1]
+            if onboarding:
+                applicant._sync_employee_relatives(employee, onboarding)
+                applicant._sync_employee_decoration(employee, onboarding)
+        return super()._update_employee_from_applicant()
+
+    def _sync_employee_prefix(self, employee):
+        # applicant_title is res.partner.title; employee prefix_id is
+        # hr.employee.prefix. Match by name when possible.
+        if not self.applicant_title or not hasattr(employee, "prefix_id"):
+            return
+        prefix = (
+            self.env["hr.employee.prefix"]
+            .sudo()
+            .search([("name", "=", self.applicant_title.name)], limit=1)
+        )
+        if prefix:
+            employee.sudo().prefix_id = prefix.id
+
+    def _sync_employee_education_history(self, employee):
+        if not self.education_history_ids or not hasattr(
+            employee, "education_history_ids"
+        ):
+            return
+        Edu = self.env["hr.employee.education.history"].sudo()
+        year_keys = {key for key, _label in Edu.year_selection()}
+        for edu in self.education_history_ids:
+            vals = {"employee_id": employee.id}
+            if edu.education_level_id:
+                vals["education_level_id"] = edu.education_level_id.id
+            if edu.graduation_date:
+                year = str(edu.graduation_date.year)
+                if year in year_keys:
+                    vals["graduation_year"] = year
+            Edu.create(vals)
+
+    def _sync_employee_relatives(self, employee, onboarding):
+        if not onboarding.family_member_ids or not hasattr(employee, "relative_ids"):
+            return
+        Relative = self.env["hr.employee.relative"].sudo()
+        for member in onboarding.family_member_ids:
+            Relative.create(
+                {
+                    "employee_id": employee.id,
+                    "relation_id": member.relation_id.id,
+                    "identification_id": member.identification_id,
+                    "prefix_id": member.prefix_id.id if member.prefix_id else False,
+                    "firstname": member.first_name,
+                    "middlename": member.middle_name,
+                    "lastname": member.last_name,
+                    "date_of_birth": member.date_of_birth,
+                    "job": member.job,
+                    "phone": member.phone,
+                    "status": member.status,
+                }
+            )
+
+    def _sync_employee_decoration(self, employee, onboarding):
+        if not onboarding.royal_decoration_id or not hasattr(
+            employee, "decoration_ids"
+        ):
+            return
+        # Onboarding has no effective date; fall back to the applicant's
+        # creation date (or today) to satisfy the required field on
+        # hr.employee.decoration. HR can correct it afterwards.
+        effective_date = (
+            self.create_date.date() if self.create_date else fields.Date.today()
+        )
+        self.env["hr.employee.decoration"].sudo().create(
+            {
+                "employee_id": employee.id,
+                "relation_id": onboarding.royal_decoration_id.id,
+                "effective_date": effective_date,
+            }
+        )

@@ -6,7 +6,7 @@
             p,
             span,
             div {
-                font-size: 7.5pt;
+                font-size: 8pt;
                 line-height: 1.1;
             }
             .table {
@@ -47,10 +47,10 @@
                         <tr style="height:0; visibility:collapse; line-height:0;">
                             <th style="width: 80pt;"/>
                             <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
-                                <th style="width: 30pt;"/>
+                                <th style="width: 34pt;"/>
                                 <th style="width: 18pt;"/>
                             </t>
-                            <th style="width: 50pt;"/>
+                            <th style="width: 34pt;"/>
                         </tr>
                         <tr>
                             <th class="text-center" rowspan="2" style="width: 10%;">หน่วยงาน</th>
