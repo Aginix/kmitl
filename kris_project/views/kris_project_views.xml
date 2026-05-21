@@ -185,33 +185,33 @@
                                 <group string="1. Project Value">
                                     <field
                                         name="project_value"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                                     />
                                     <field
                                         name="equipment_cost"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
-                                    />
-                                    <field
-                                        name="operating_expense"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                                     />
                                     <field
                                         name="extra_value"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                    />
+                                    <field
+                                        name="operating_expense"
+                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                                     />
                                 </group>
                                 <group string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
                                         name="maintenance_deduction_type"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                                         widget="radio"
                                     />
                                     <field
                                         name="maintenance_deduction_pct"
                                         attrs="{
                                             'invisible': [('maintenance_deduction_type', '!=', 'custom')],
-                                            'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]
+                                            'readonly': [('state', 'in', ['done', 'cancel'])]
                                         }"
                                     />
                                     <field name="maintenance_deduction_amount" readonly="1"/>

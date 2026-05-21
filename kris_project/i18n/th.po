@@ -1053,7 +1053,7 @@ msgstr "ยืนยัน"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "In Progress"
-msgstr "อยู่ระหว่างดำเนินการ"
+msgstr "อยู่ระยะเวลาโครงการ"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -1356,7 +1356,7 @@ msgstr "เลือกแม่แบบ..."
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "Done"
-msgstr "เสร็จสิ้น"
+msgstr "โครงการเสร็จสิ้น"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__private
