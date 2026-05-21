@@ -127,9 +127,9 @@ class KrisProjectInstallment(models.Model):
         for rec in self:
             rec.maintenance_fee = sum(rec.allocation_ids.mapped("amount"))
 
-    @api.depends("received_from_employer", "maintenance_fee", "extra_deduction")
+    @api.depends("received_from_employer", "maintenance_fee", "extra_deduction", 'extra_income')
     def _compute_amount_net(self):
         for rec in self:
             rec.amount_net = (
-                rec.received_from_employer - rec.maintenance_fee - rec.extra_deduction
+                rec.received_from_employer - rec.maintenance_fee - rec.extra_deduction - rec.extra_income
             )
