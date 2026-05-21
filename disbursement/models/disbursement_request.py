@@ -161,6 +161,7 @@ class DisbursementRequest(models.Model):
         "res_id",
         string="Document Attachments",
         domain=[("res_model", "=", "disbursement.request")],
+        states=READONLY_STATES,
     )
 
     amount_untaxed = fields.Monetary(
