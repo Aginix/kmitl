@@ -122,7 +122,6 @@
                     </group>
                     <group name="attachment" string="Attachment for Disbursement Request">
                         <field name="attachment_ids"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
                             widget="many2many_binary">
                         </field>
                     </group>
