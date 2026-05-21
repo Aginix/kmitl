@@ -10,8 +10,7 @@
                         <field name="name" invisible="1"/>
                         <field
                             name="department_analytic_ids"
-                            widget="many2many_tags"
-                            options="{'no_create': True, 'no_quick_create': True}"
+                            widget="many2many_checkboxes"
                         />
                     </group>
                 </sheet>

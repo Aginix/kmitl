@@ -16,7 +16,10 @@ class BudgetAppropriationSummaryF24Config(models.Model):
         column1="config_id",
         column2="analytic_id",
         string="หน่วยงานในรายงาน F24",
-        domain=[("root_plan_id.code", "=", "departments")],
+        domain=[
+            ("root_plan_id.code", "=", "departments"),
+            ("parent_id", "=", False),
+        ],
         help=(
             "เลือกหน่วยงานหลัก (คณะ/วิทยาลัย/โรงเรียน) ที่จะปรากฏในรายงาน F24 "
             "รายงานจะรวมข้อมูลของทุกหน่วยงานย่อยที่อยู่ใต้หน่วยงานที่เลือก "
