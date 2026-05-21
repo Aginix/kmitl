@@ -74,7 +74,7 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 30%;">แผนงาน/กิจกรรม</th>
+                            <th class="text-center" style="width: 33%;">แผนงาน/กิจกรรม</th>
                             <t t-foreach="o.f10w_expense_data['columns']" t-as="column">
                                 <th class="text-center"><t t-out="column['name']"/></th>
                             </t>
