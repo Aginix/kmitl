@@ -111,6 +111,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
     def _onchange_installment_id(self):
         if self.installment_id:
             self.amount = self.installment_id.amount
+            self.extra_income = self.installment_id.extra_income
             inst_alloc_by_line = {
                 ia.allocation_line_id.id: ia.amount
                 for ia in self.installment_id.allocation_ids
@@ -178,11 +179,14 @@ class KrisProjectReceiptWizardLine(models.TransientModel):
     @api.depends(
         "allocation_line_id",
         "allocation_line_id.estimated_amount",
+        "allocation_line_id.receipt_allocation_ids.amount",
         "amount",
     )
     def _compute_remaining_amount(self):
         for line in self:
             alloc = line.allocation_line_id
-            line.remaining_amount = (
-                alloc.estimated_amount - line.amount if alloc else 0.0
-            )
+            if not alloc:
+                line.remaining_amount = 0.0
+                continue
+            already_received = sum(alloc.receipt_allocation_ids.mapped("amount"))
+            line.remaining_amount = alloc.estimated_amount - already_received - line.amount
