@@ -14,32 +14,39 @@
     <template id="report_compilation_f24_content">
         <style>
             .f24 {
-                font-size: 11pt;
+                font-size: 9pt;
                 border-color: #000 !important;
+                table-layout: fixed;
+                width: 100%;
             }
             .f24 th, .f24 td {
                 border-color: #000 !important;
+                word-wrap: break-word;
             }
             .f24 thead th {
                 text-align: center;
                 vertical-align: middle;
                 font-weight: bold;
+                font-size: 9pt;
             }
-            .f24 tbody td.num {
+            .f24 td.num, .f24 tfoot th.num {
                 text-align: right;
                 white-space: nowrap;
+                font-variant-numeric: tabular-nums;
             }
             .f24 tfoot th {
-                text-align: right;
-                white-space: nowrap;
                 font-weight: bold;
             }
             .f24 tfoot th.dept {
                 text-align: center;
             }
+            .f24 col.dept { width: 12%; }
+            .f24 col.money { width: 5.17%; }
+            .f24 col.pct { width: 3.45%; }
         </style>
         <div class="page landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center">
                 <h3>F24 สรุปงบประมาณรายจ่ายแยกตามหน่วยงาน</h3>
                 <h3>ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/></h3>
@@ -47,6 +54,12 @@
             <t t-set="f24" t-value="o.get_f24_report_data()"/>
             <div class="mt-3">
                 <table class="table table-sm table-bordered f24">
+                    <colgroup>
+                        <col class="dept"/>
+                        <t t-foreach="f24['columns']" t-as="col">
+                            <col t-att-class="col['type']"/>
+                        </t>
+                    </colgroup>
                     <thead>
                         <tr>
                             <th rowspan="2">หน่วยงาน</th>
@@ -82,50 +95,26 @@
                         <t t-foreach="f24['rows']" t-as="row">
                             <tr>
                                 <td contenteditable="false" t-out="row['department_name']"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['reserve_15']) if row['reserve_15'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['treasury']) if row['treasury'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['ma']) if row['ma'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['ma_allocated_pct']) if row['ma_allocated_pct'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['recurrent']) if row['recurrent'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['capital']) if row['capital'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['external']) if row['external'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_1']) if row['total_1'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['education']) if row['education'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['education_pct']) if row['education_pct'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['academic']) if row['academic'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['academic_pct']) if row['academic_pct'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['industrial']) if row['industrial'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['industrial_pct']) if row['industrial_pct'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['social']) if row['social'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['social_pct']) if row['social_pct'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_2']) if row['total_2'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_pct']) if row['total_pct'] else '-'"/>
-                                <td class="num" contenteditable="false" t-out="'{:,.2f}'.format(row['total_1_2']) if row['total_1_2'] else '-'"/>
+                                <t t-foreach="f24['columns']" t-as="col">
+                                    <td class="num" contenteditable="false">
+                                        <t t-set="v" t-value="row[col['key']]"/>
+                                        <t t-if="v" t-out="'{:,.2f}'.format(v)"/>
+                                        <t t-else="">-</t>
+                                    </td>
+                                </t>
                             </tr>
                         </t>
                     </tbody>
                     <tfoot>
                         <tr>
                             <th class="dept" contenteditable="false" t-out="f24['total']['department_name']"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['reserve_15']) if f24['total']['reserve_15'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['treasury']) if f24['total']['treasury'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['ma']) if f24['total']['ma'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['ma_allocated_pct']) if f24['total']['ma_allocated_pct'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['recurrent']) if f24['total']['recurrent'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['capital']) if f24['total']['capital'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['external']) if f24['total']['external'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_1']) if f24['total']['total_1'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['education']) if f24['total']['education'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['education_pct']) if f24['total']['education_pct'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['academic']) if f24['total']['academic'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['academic_pct']) if f24['total']['academic_pct'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['industrial']) if f24['total']['industrial'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['industrial_pct']) if f24['total']['industrial_pct'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['social']) if f24['total']['social'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['social_pct']) if f24['total']['social_pct'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_2']) if f24['total']['total_2'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_pct']) if f24['total']['total_pct'] else '-'"/>
-                            <th contenteditable="false" t-out="'{:,.2f}'.format(f24['total']['total_1_2']) if f24['total']['total_1_2'] else '-'"/>
+                            <t t-foreach="f24['columns']" t-as="col">
+                                <th class="num" contenteditable="false">
+                                    <t t-set="v" t-value="f24['total'][col['key']]"/>
+                                    <t t-if="v" t-out="'{:,.2f}'.format(v)"/>
+                                    <t t-else="">-</t>
+                                </th>
+                            </t>
                         </tr>
                     </tfoot>
                 </table>

@@ -4,6 +4,31 @@ from collections import defaultdict
 from odoo import models
 
 
+# (key, type) — type drives template formatting: "money" / "pct".
+# Keep ordering aligned with the table header.
+F24_NUMERIC_COLUMNS = [
+    ("reserve_15", "money"),
+    ("treasury", "money"),
+    ("ma", "money"),
+    ("ma_allocated_pct", "pct"),
+    ("recurrent", "money"),
+    ("capital", "money"),
+    ("external", "money"),
+    ("total_1", "money"),
+    ("education", "money"),
+    ("education_pct", "pct"),
+    ("academic", "money"),
+    ("academic_pct", "pct"),
+    ("industrial", "money"),
+    ("industrial_pct", "pct"),
+    ("social", "money"),
+    ("social_pct", "pct"),
+    ("total_2", "money"),
+    ("total_pct", "pct"),
+    ("total_1_2", "money"),
+]
+
+
 class BudgetAppropriationMasterSummary(models.Model):
     _inherit = "budget.appropriation.master.summary"
 
@@ -22,11 +47,12 @@ class BudgetAppropriationMasterSummary(models.Model):
             reserve_15 = sum(c.code_0702000002 for c in comps)
             treasury = sum(c.treasury_replenishment_amount for c in comps)
             ma = sum(c.maintenance_amount for c in comps)
-            # TODO: replace with real MA allocated % when upstream field exists
+            # TODO: replace with real MA allocated % when upstream field exists.
+            # Until then, 0.0 will render as '-' (same as a true 0 — flagged in PR).
             ma_allocated_pct = 0.0
             recurrent = sum(c.recurrent_budget_amount for c in comps)
             capital = sum(c.capital_budget_amount for c in comps)
-            # TODO: replace mock once external_funding_amount reflects real data
+            # TODO: replace mock once external_funding_amount has real data.
             external = 0.0
             total_1 = reserve_15 + treasury + ma + recurrent + capital + external
             edu = sum(c.education_total for c in comps)
@@ -38,13 +64,11 @@ class BudgetAppropriationMasterSummary(models.Model):
             def _pct(x):
                 return (x / total_2 * 100) if total_2 else 0.0
 
-            edu_pct = _pct(edu)
-            aca_pct = _pct(aca)
-            ind_pct = _pct(ind)
-            soc_pct = _pct(soc)
+            edu_pct, aca_pct, ind_pct, soc_pct = (
+                _pct(edu), _pct(aca), _pct(ind), _pct(soc),
+            )
             return {
                 "department_name": dept.name if dept else "",
-                "department_code": dept.code if dept else "",
                 "reserve_15": reserve_15,
                 "treasury": treasury,
                 "ma": ma,
@@ -73,38 +97,21 @@ class BudgetAppropriationMasterSummary(models.Model):
             )
         ]
 
-        sum_keys = (
-            "reserve_15",
-            "treasury",
-            "ma",
-            "recurrent",
-            "capital",
-            "external",
-            "total_1",
-            "education",
-            "academic",
-            "industrial",
-            "social",
-            "total_2",
-            "total_1_2",
-        )
-        total = {k: sum(r[k] for r in rows) for k in sum_keys}
+        money_keys = [k for k, t in F24_NUMERIC_COLUMNS if t == "money"]
+        total = {k: sum(r[k] for r in rows) for k in money_keys}
         total_2 = total["total_2"]
 
         def _pct(x):
             return (x / total_2 * 100) if total_2 else 0.0
 
-        total.update(
-            {
-                "department_name": "รวม",
-                "department_code": "",
-                "ma_allocated_pct": 0.0,
-                "education_pct": _pct(total["education"]),
-                "academic_pct": _pct(total["academic"]),
-                "industrial_pct": _pct(total["industrial"]),
-                "social_pct": _pct(total["social"]),
-            }
-        )
+        total.update({
+            "department_name": "รวม",
+            "ma_allocated_pct": 0.0,
+            "education_pct": _pct(total["education"]),
+            "academic_pct": _pct(total["academic"]),
+            "industrial_pct": _pct(total["industrial"]),
+            "social_pct": _pct(total["social"]),
+        })
         total["total_pct"] = (
             total["education_pct"]
             + total["academic_pct"]
@@ -112,11 +119,8 @@ class BudgetAppropriationMasterSummary(models.Model):
             + total["social_pct"]
         )
 
-        return {
-            "rows": rows,
-            "total": total,
-            "fiscal_year": self.account_fiscal_year_id.name or "",
-        }
+        columns = [{"key": k, "type": t} for k, t in F24_NUMERIC_COLUMNS]
+        return {"columns": columns, "rows": rows, "total": total}
 
     def action_open_f24_report(self):
         return self._action_open_individual_report("f24")
