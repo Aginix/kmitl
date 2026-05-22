@@ -377,7 +377,7 @@
                             </div>
                             <field
                                 name="receipt_ids"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             >
                                 <tree create="0">
                                     <field name="project_id" invisible="1"/>
