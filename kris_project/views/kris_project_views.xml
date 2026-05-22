@@ -341,6 +341,7 @@
                                     <field name="state" widget="badge"
                                         decoration-info="state == 'pending'"
                                         decoration-success="state == 'received'"
+                                        invisible="1"
                                     />
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
