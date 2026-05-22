@@ -89,14 +89,12 @@ class BudgetAppropriationMasterSummary(models.Model):
             reserve_15 = sum(c.deducted_reserve_amount for c in comps)
             treasury = sum(c.treasury_replenishment_amount for c in comps)
             ma = sum(c.maintenance_amount for c in comps)
-            # TODO: replace with real MA allocated % when upstream field exists.
-            # Until then, 0.0 will render as '-' (same as a true 0 — flagged in PR).
-            ma_allocated_pct = 0.0
             recurrent = sum(c.recurrent_budget_amount for c in comps)
             capital = sum(c.capital_budget_amount for c in comps)
             # TODO: replace mock once external_funding_amount has real data.
             external = 0.0
             total_1 = reserve_15 + treasury + ma + recurrent + capital + external
+            ma_allocated_pct = (ma / total_1 * 100) if total_1 else 0.0
             edu = sum(c.education_total for c in comps)
             aca = sum(c.academic_total for c in comps)
             ind = sum(c.industrial_total for c in comps)
@@ -146,9 +144,12 @@ class BudgetAppropriationMasterSummary(models.Model):
         def _pct(x):
             return (x / total_2 * 100) if total_2 else 0.0
 
+        total_1 = total["total_1"]
         total.update({
             "department_name": "รวม",
-            "ma_allocated_pct": 0.0,
+            "ma_allocated_pct": (
+                (total["ma"] / total_1 * 100) if total_1 else 0.0
+            ),
             "education_pct": _pct(total["education"]),
             "academic_pct": _pct(total["academic"]),
             "industrial_pct": _pct(total["industrial"]),
