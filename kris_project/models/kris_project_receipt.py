@@ -67,6 +67,10 @@ class KrisProjectReceipt(models.Model):
         string="สกุลเงิน",
         readonly=True,
     )
+    project_state = fields.Selection(
+        related="project_id.state",
+        string="Project State",
+    )
 
     def action_delete(self):
         self.ensure_one()

@@ -382,6 +382,7 @@
                             >
                                 <tree create="0">
                                     <field name="project_id" invisible="1"/>
+                                    <field name="project_state" invisible="1"/>
                                     <field name="name"/>
                                     <field name="installment_id"/>
                                     <field name="date"/>
@@ -395,7 +396,8 @@
                                         type="object"
                                         icon="fa-trash"
                                         string="Delete"
-                                        column_invisible="parent.state in ('done', 'cancel')"
+                                        confirm="ต้องการลบรายการรับเงินนี้หรือไม่?"
+                                        attrs="{'invisible': [('project_state', 'in', ['done', 'cancel'])]}"
                                     />
                                 </tree>
                             </field>
