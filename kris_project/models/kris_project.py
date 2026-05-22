@@ -413,7 +413,7 @@ class KrisProject(models.Model):
     def action_add_receipt(self):
         self.ensure_one()
         return {
-            "name": "Revenue Record",
+            "name": _("Revenue Record"),
             "type": "ir.actions.act_window",
             "res_model": "kris.project.receipt.wizard",
             "view_mode": "form",
@@ -424,7 +424,7 @@ class KrisProject(models.Model):
     def action_add_installment(self):
         self.ensure_one()
         return {
-            "name": "Add Installment",
+            "name": _("Add Installment"),
             "type": "ir.actions.act_window",
             "res_model": "kris.project.installment",
             "view_mode": "form",

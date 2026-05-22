@@ -222,33 +222,33 @@
                                 <group string="1. Project Value">
                                     <field
                                         name="project_value"
-                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                     />
                                     <field
                                         name="equipment_cost"
-                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                     />
                                     <field
                                         name="extra_value"
-                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                     />
                                     <field
                                         name="operating_expense"
-                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                     />
                                 </group>
                                 <group string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
                                         name="maintenance_deduction_type"
-                                        attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                         widget="radio"
                                     />
                                     <field
                                         name="maintenance_deduction_pct"
                                         attrs="{
                                             'invisible': [('maintenance_deduction_type', '!=', 'custom')],
-                                            'readonly': [('state', 'in', ['done', 'cancel'])]
+                                            'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]
                                         }"
                                     />
                                     <field name="maintenance_deduction_amount" readonly="1"/>
@@ -264,7 +264,7 @@
                                 </group>
                             </group>
                             <div class="mb-3"
-                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                                attrs="{'invisible': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             >
                                 <field
                                     name="allocation_template_id"
@@ -287,7 +287,7 @@
                             </div>
                             <field
                                 name="allocation_line_ids"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -315,7 +315,7 @@
                                 The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees. Please check the allocation for each period.
                             </div>
                             <div class="mb-3"
-                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                                attrs="{'invisible': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             >
                                 <button
                                     name="action_add_installment"
@@ -326,7 +326,7 @@
                             </div>
                             <field
                                 name="installment_ids"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             >
                                 <tree create="0">
                                     <field name="sequence" widget="handle"/>
