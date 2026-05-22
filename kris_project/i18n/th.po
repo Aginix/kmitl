@@ -820,8 +820,12 @@ msgid "บันทึกข้อมูลโครงการบริกา�
 msgstr ""
 
 #. module: kris_project
+#. odoo-python
+#: code:addons/kris_project/models/kris_project.py:0
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
+#, python-format
 msgid "Revenue Record"
 msgstr "บันทึกรายรับ"
 
@@ -1329,7 +1333,10 @@ msgid "Responsible"
 msgstr "เจ้าหน้าที่ KRIS"
 
 #. module: kris_project
+#. odoo-python
+#: code:addons/kris_project/models/kris_project.py:0
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#, python-format
 msgid "Add Installment"
 msgstr "เพิ่มงวด"
 
