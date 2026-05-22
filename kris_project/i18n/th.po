@@ -933,8 +933,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__item_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__name
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__name
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Allocator"
 msgstr "ผู้รับจัดสรร"
@@ -1012,6 +1014,8 @@ msgstr "ยกเลิก"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__remaining_amount
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__remaining_amount
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__remaining_amount
 msgid "Remaining Amount"
 msgstr "ยอดคงเหลือที่จัดสรรได้"
 
@@ -1456,3 +1460,11 @@ msgstr "เลขประจำตัวผู้เสียภาษี"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 msgid "Client/Funding Organization"
 msgstr "ผู้ว่าจ้าง/หน่วยงานผู้ให้ทุน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_value
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__extra_income
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__extra_income
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__extra_income
+msgid "Extra Value"
+msgstr "ค่า Extra"
