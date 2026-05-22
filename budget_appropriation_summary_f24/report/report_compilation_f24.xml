@@ -51,8 +51,8 @@
             </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center">
-                <h3>สรุปงบประมาณรายจ่ายแยกตามหน่วยงาน</h3>
-                <h3>ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/></h3>
+                <h3>สรุปงบประมาณรายจ่าย ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/></h3>
+                <h3>จำแนกตามหน่วยงาน</h3>
                 <h3>ส่วนงานวิชาการ</h3>
             </div>
             <t t-set="f24" t-value="o.get_f24_report_data()"/>
