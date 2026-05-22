@@ -2,6 +2,7 @@
 from collections import defaultdict
 
 from odoo import models
+from odoo.tools.pdf import merge_pdf
 
 
 # (key, type) — type drives template formatting: "money" / "pct".
@@ -31,6 +32,14 @@ F24_NUMERIC_COLUMNS = [
 
 class BudgetAppropriationMasterSummary(models.Model):
     _inherit = "budget.appropriation.master.summary"
+
+    def _get_merged_pdf(self):
+        merged = super()._get_merged_pdf()
+        report = self.env.ref(
+            "budget_appropriation_summary_f24.action_report_compilation_f24"
+        )
+        f24_pdf, __ = report._render_qweb_pdf(report.id, self.ids)
+        return merge_pdf([merged, f24_pdf])
 
     def get_f24_report_data(self):
         """Prepare F24 report data grouped by department.
