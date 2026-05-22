@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "depends": ["kris_project", "account_analytic_kmitl"],
     "data": ["views/kris_project_views.xml"],
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "installable": True,
     "auto_install": False,
 }

@@ -60,7 +60,7 @@ class KrisProjectInstallment(models.Model):
         string="Extra Deduction",
     )
     extra_income = fields.Monetary(
-        string="ค่า Extra",
+        string="Extra Value",
     )
     amount_net = fields.Monetary(
         string="Net Amount",

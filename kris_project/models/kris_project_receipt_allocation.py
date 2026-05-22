@@ -25,6 +25,9 @@ class KrisProjectReceiptAllocation(models.Model):
         readonly=True,
     )
     amount = fields.Monetary(string="Amount")
+    remaining_amount = fields.Monetary(
+        string="Remaining Amount",
+    )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="receipt_id.currency_id",

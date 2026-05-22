@@ -144,7 +144,7 @@ class KrisProject(models.Model):
         states=READONLY_STATES,
     )
     extra_value = fields.Monetary(
-        string="ค่า Extra",
+        string="Extra Value",
         tracking=True,
         states=READONLY_STATES,
     )

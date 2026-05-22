@@ -44,7 +44,7 @@ class KrisProjectReceipt(models.Model):
         tracking=True,
     )
     extra_income = fields.Monetary(
-        string="ค่า Extra",
+        string="Extra Value",
         default=0.0,
         tracking=True,
     )

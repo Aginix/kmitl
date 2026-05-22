@@ -43,7 +43,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
         compute="_compute_net_amount",
     )
     extra_income = fields.Monetary(
-        string="ค่า Extra",
+        string="Extra Value",
     )
     allocation_ids = fields.One2many(
         comodel_name="kris.project.receipt.wizard.line",
@@ -86,27 +86,6 @@ class KrisProjectReceiptWizard(models.TransientModel):
         for wiz in self:
             wiz.net_amount = wiz.amount - wiz.equipment_cost_in_installment
 
-    # def _fill_allocation_proportionally(self):
-    #     base = self.project_id.maintenance_deduction_amount
-    #     net = self.net_amount
-    #     for line in self.allocation_ids:
-    #         if base and line.allocation_line_id:
-    #             ratio = line.allocation_line_id.estimated_amount / base
-    #             line.amount = net * ratio
-    #         else:
-    #             line.amount = 0.0
-
-    # @api.onchange("amount", "equipment_cost_in_installment")
-    # def _onchange_amount(self):
-    #     self._fill_allocation_proportionally()
-
-    # @api.onchange("installment_id")
-    # def _onchange_installment_id(self):
-    #     if self.installment_id:
-    #         self.amount = self.installment_id.amount
-    #         self.extra_income = self.installment_id.extra_income
-    #         self._fill_allocation_proportionally()
-
     @api.onchange("installment_id")
     def _onchange_installment_id(self):
         if self.installment_id:
@@ -139,6 +118,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
                     "receipt_id": receipt.id,
                     "allocation_line_id": line.allocation_line_id.id,
                     "amount": line.amount,
+                    "remaining_amount": line.remaining_amount,
                 }
             )
         return {"type": "ir.actions.act_window_close"}
@@ -167,7 +147,7 @@ class KrisProjectReceiptWizardLine(models.TransientModel):
     )
     amount = fields.Monetary(string="Amount")
     remaining_amount = fields.Monetary(
-        string="จำนวนเงินคงค้าง",
+        string="Remaining Amount",
         compute="_compute_remaining_amount",
     )
     currency_id = fields.Many2one(
