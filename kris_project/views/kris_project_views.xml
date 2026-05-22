@@ -389,6 +389,13 @@
                                     <field name="net_amount" sum="รวม"/>
                                     <field name="note"/>
                                     <field name="currency_id" invisible="1"/>
+                                    <button
+                                        name="action_delete"
+                                        type="object"
+                                        icon="fa-trash"
+                                        string="Delete"
+                                        column_invisible="parent.state in ('done', 'cancel')"
+                                    />
                                 </tree>
                             </field>
                         </page>

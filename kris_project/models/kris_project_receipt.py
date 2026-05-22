@@ -68,6 +68,11 @@ class KrisProjectReceipt(models.Model):
         readonly=True,
     )
 
+    def action_delete(self):
+        self.ensure_one()
+        self.unlink()
+        return False
+
     def unlink(self):
         allocation_lines = self.allocation_ids.mapped("allocation_line_id")
         result = super().unlink()
