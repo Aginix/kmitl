@@ -46,10 +46,14 @@
         </style>
         <div class="page landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F24-W-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center">
-                <h3>F24 สรุปงบประมาณรายจ่ายแยกตามหน่วยงาน</h3>
+                <h3>สรุปงบประมาณรายจ่ายแยกตามหน่วยงาน</h3>
                 <h3>ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/></h3>
+                <h3>ส่วนงานวิชาการ</h3>
             </div>
             <t t-set="f24" t-value="o.get_f24_report_data()"/>
             <div class="mt-3">
