@@ -68,6 +68,13 @@ class KrisProjectReceipt(models.Model):
         readonly=True,
     )
 
+    def unlink(self):
+        allocation_lines = self.allocation_ids.mapped("allocation_line_id")
+        result = super().unlink()
+        if allocation_lines:
+            allocation_lines._compute_actual_amount()
+        return result
+
     @api.depends("amount", "equipment_cost_in_installment")
     def _compute_net_amount(self):
         for rec in self:

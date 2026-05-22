@@ -9,7 +9,7 @@
         <field name="name">kris.project.receipt.form</field>
         <field name="model">kris.project.receipt</field>
         <field name="arch" type="xml">
-            <form string="Revenue Record" create="false" delete="false">
+            <form string="Revenue Record">
                 <field name="currency_id" invisible="1"/>
                 <group>
                     <field name="project_id" readonly="1"/>
@@ -32,9 +32,6 @@
                         <field name="currency_id" invisible="1"/>
                     </tree>
                 </field>
-                <footer>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
             </form>
         </field>
     </record>
