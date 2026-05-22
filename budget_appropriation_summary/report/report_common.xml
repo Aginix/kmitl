@@ -46,8 +46,8 @@
                     right: 5mm;
                 }
             }
-            /* Hide on screen — Odoo's _prepare_html extracts class="header"
-               for wkhtmltopdf's --header-html so it repeats per PDF page. */
+            /* Hide on screen. Odoo's _prepare_html extracts class="header"
+               into wkhtmltopdf's header-html so it repeats per PDF page. */
             .report-page-label-header {
                 display: none;
             }
@@ -56,8 +56,8 @@
 
     <!-- Reusable page label. Two elements: the positioned .report-page-label
          drives HTML preview + browser print; the class="header" sibling is
-         extracted by wkhtmltopdf into --header-html so it repeats per PDF
-         page (styles must be inline — header is rendered standalone). -->
+         extracted by wkhtmltopdf into header-html so it repeats per PDF
+         page (styles must be inline; header is rendered standalone). -->
     <template id="report_page_label">
         <div class="report-page-label" contenteditable="false">
             <t t-out="page_label"/>
