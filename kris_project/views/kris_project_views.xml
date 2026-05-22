@@ -395,8 +395,6 @@
                                         name="action_delete"
                                         type="object"
                                         icon="fa-trash"
-                                        string="Delete"
-                                        confirm="ต้องการลบรายการรับเงินนี้หรือไม่?"
                                         attrs="{'invisible': [('project_state', 'in', ['done', 'cancel'])]}"
                                     />
                                 </tree>
