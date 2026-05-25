@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_trial_balance_kmitl" model="ir.actions.report">
+        <field name="name">Trial Balance (KMITL)</field>
+        <field name="model">trial.balance.report.wizard.kmitl</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">accounting_kmitl_reports.trial_balance_kmitl</field>
+        <field name="report_file">accounting_kmitl_reports.trial_balance_kmitl</field>
+        <field name="paperformat_id" ref="paperformat_trial_balance_kmitl" />
+        <field name="binding_model_id" eval="False" />
+    </record>
+</odoo>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="trial_balance_kmitl">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="header" style="border-bottom: 1px solid #000;">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 70px; border: none; vertical-align: top;">
+                                <img
+                                    t-if="res_company.logo"
+                                    t-att-src="image_data_uri(res_company.logo)"
+                                    style="max-height: 60px; max-width: 60px;"
+                                    alt="Logo"
+                                />
+                            </td>
+                            <td style="border: none; text-align: center; vertical-align: middle;">
+                                <div style="font-size: 11pt; font-weight: bold;">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+                                <div style="font-size: 10pt; font-style: italic;">King Mongkut's Institute of Technology Ladkrabang</div>
+                                <div style="font-size: 12pt; font-weight: bold; margin-top: 4px;">Trial Balance</div>
+                                <div style="font-size: 9pt;">
+                                    ตั้งแต่ <t t-out="kmitl_date_from_th" /> ถึง <t t-out="kmitl_date_to_th" />
+                                </div>
+                            </td>
+                            <td style="width: 70px; border: none;" />
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer" style="text-align: right; font-size: 8pt;">
+                    <span class="page" />/<span class="topage" />
+                </div>
+
+                <div class="article">
+                    <style>
+                        table.kmitl-trial-balance {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 8pt;
+                        }
+                        table.kmitl-trial-balance th,
+                        table.kmitl-trial-balance td {
+                            border: 1px solid #000;
+                            padding: 2px 4px;
+                        }
+                        table.kmitl-trial-balance thead th {
+                            background-color: #f0f0f0;
+                            text-align: center;
+                            font-weight: bold;
+                        }
+                        table.kmitl-trial-balance td.text-right {
+                            text-align: right;
+                        }
+                        table.kmitl-trial-balance tfoot td {
+                            font-weight: bold;
+                            background-color: #f0f0f0;
+                        }
+                    </style>
+                    <table class="kmitl-trial-balance">
+                        <thead style="display: table-header-group;">
+                            <tr>
+                                <th rowspan="2" style="width: 28%;">Account title</th>
+                                <th colspan="2">Opening Balance</th>
+                                <th colspan="2">During the year</th>
+                                <th colspan="2">Balance</th>
+                            </tr>
+                            <tr>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                            </tr>
+                        </thead>
+                        <tfoot style="display: table-footer-group;">
+                            <tr>
+                                <td>Remains</td>
+                                <td class="text-right" t-out="kmitl_zero" />
+                                <td class="text-right" t-out="kmitl_zero" />
+                                <td class="text-right" t-out="kmitl_total_debit" />
+                                <td class="text-right" t-out="kmitl_total_credit" />
+                                <td class="text-right" t-out="kmitl_zero" />
+                                <td class="text-right" t-out="kmitl_zero" />
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            <tr t-foreach="kmitl_rows" t-as="row">
+                                <td>
+                                    <t t-out="row['code']" /> - <t t-out="row['name']" />
+                                </td>
+                                <td class="text-right" t-out="row['opening_debit']" />
+                                <td class="text-right" t-out="row['opening_credit']" />
+                                <td class="text-right" t-out="row['debit']" />
+                                <td class="text-right" t-out="row['credit']" />
+                                <td class="text-right" t-out="row['ending_debit']" />
+                                <td class="text-right" t-out="row['ending_credit']" />
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
