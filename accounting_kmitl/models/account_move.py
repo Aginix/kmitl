@@ -9,10 +9,6 @@ class AccountMove(models.Model):
     _inherit = ["account.move", "budget.commitment.mixin",
                 "analytic.distribution.mixin"]
 
-    # Tier validation: submitted -> posted
-    _state_from = ["submitted"]
-    _state_to = ["posted"]
-
     # Budget commitment mixin configuration
     _commitment_id_field = "budget_commitment_id"
     _commitment_account_id_field = "budget_account_id"
@@ -38,37 +34,30 @@ class AccountMove(models.Model):
     )
 
     # --- Compute ---
-    @api.depends("date", "auto_post", "state", "validation_status")
+    @api.depends("date", "auto_post", "state")
     def _compute_hide_post_button(self):
-        """Show Post button only when submitted AND validated.
+        """Show Post button only when state=submitted.
 
-        For outbound payment moves, also require bank export to be done.
+        Draft entries must be submitted (locked) before posting.
         """
         super()._compute_hide_post_button()
         for move in self:
-            if move.validation_status == "validated" and move.state == "submitted":
-                payment = move.payment_id
-                if payment and payment.payment_type == "outbound":
-                    move.hide_post_button = payment.export_status == "draft"
-                else:
-                    move.hide_post_button = False
+            if move.state == "submitted":
+                move.hide_post_button = False
             else:
                 move.hide_post_button = True
 
     # --- Actions ---
     def action_submit(self):
-        """Submit the journal entry and auto-trigger tier validation."""
+        """Submit (lock) the journal entry; assign sequence number."""
         for move in self:
             if move.state != "draft":
                 raise UserError(_("Only draft entries can be submitted."))
         self.write({"state": "submitted"})
-        # Assign sequence number on submit (standard Odoo only assigns on post)
+        # Assign sequence number on submit
         for move in self.sorted(lambda m: (m.date, m.ref or "", m.id)):
             if not move.name or move.name == "/":
                 move._set_next_sequence()
-        for move in self:
-            if move.need_validation and move.state == "submitted":
-                move.request_validation()
         return True
 
     def action_draft(self):
@@ -172,6 +161,14 @@ class AccountMove(models.Model):
                     lines_without.write(
                         {"analytic_distribution": move.analytic_distribution}
                     )
+        # Auto-submit vendor bills when caller requests it (e.g., DR flow)
+        if self.env.context.get("auto_submit_on_create"):
+            bills_to_submit = moves.filtered(
+                lambda m: m.move_type in ("in_invoice", "in_refund")
+                and m.state == "draft"
+            )
+            if bills_to_submit:
+                bills_to_submit.action_submit()
         return moves
 
     def _inverse_analytic_distribution(self):
@@ -190,4 +187,3 @@ class AccountMove(models.Model):
             self.line_ids.update(
                 {"analytic_distribution": self.analytic_distribution}
             )
-

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_create_onboarding" model="ir.actions.server">
+        <field name="name">Create Onboarding</field>
+        <field name="model_id" ref="hr_recruitment.model_hr_applicant" />
+        <field name="state">code</field>
+        <field name="code">
+for record in records:
+    if not record.old_code:
+        raise UserError("Please set Old Code before creating onboarding")
+    if record.onboarding_ids:
+        raise UserError("Onboarding already exists for this applicant")
+    onboarding = env['hr.onboarding'].create({
+        'applicant_id': record.id,
+    })
+        </field>
+    </record>
+</odoo>

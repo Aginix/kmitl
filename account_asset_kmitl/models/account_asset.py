@@ -102,6 +102,11 @@ class AccountAsset(models.Model):
         domain=[("root_plan_id.code", "=", "activities")],
     )
 
+    location = fields.Char(
+        tracking=True,
+        string="Location",
+    )
+
     def _default_access_uid(self):
         return _generate_random_code(8)
 

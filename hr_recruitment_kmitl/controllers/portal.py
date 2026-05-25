@@ -4,6 +4,8 @@ from odoo import fields, http
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.http import request
 
+from .profile import must_set_email
+
 
 class HrRecruitmentPortal(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
@@ -11,16 +13,16 @@ class HrRecruitmentPortal(CustomerPortal):
         if "application_count" in counters:
             domain = self._get_applications_domain()
             values["application_count"] = (
-                request.env["hr.applicant"].sudo().search_count(domain)
+                request.env["hr.applicant"]
+                .with_context(active_test=False)
+                .search_count(domain)
             )
         return values
 
     def _get_applications_domain(self):
         partner = request.env.user.partner_id
         return [
-            "|",
             ("partner_id", "=", partner.id),
-            ("email_from", "=ilike", partner.email or ""),
             ("active", "in", [True, False]),
         ]
 
@@ -42,10 +44,8 @@ class HrRecruitmentPortal(CustomerPortal):
         return dict(field.selection).get(value, value)
 
     def _get_profile(self, partner):
-        return (
-            request.env["portal.profile"]
-            .sudo()
-            .search([("partner_id", "=", partner.id)], limit=1)
+        return request.env["portal.profile"].search(
+            [("partner_id", "=", partner.id)], limit=1
         )
 
     def _compute_age(self, birthday):
@@ -89,20 +89,15 @@ class HrRecruitmentPortal(CustomerPortal):
             )
         return items
 
-    def _prepare_education_item(self, application, profile):
+    def _prepare_education_items(self, application, profile):
         records = getattr(application, "education_history_ids", False)
+        education_model = "hr.applicant.education.history"
         if not records and profile:
             records = profile.education_history_ids
+            education_model = "portal.education.history"
 
         if not records:
-            return {
-                "level": "-",
-                "program": "-",
-                "major": "-",
-                "institution": "-",
-                "country": "-",
-                "graduation_date": "-",
-            }
+            return []
 
         sorted_records = records.sorted(
             key=lambda r: (
@@ -113,19 +108,45 @@ class HrRecruitmentPortal(CustomerPortal):
             ),
             reverse=True,
         )
-        rec = sorted_records[0]
 
-        return {
-            "level": rec.education_level_id.name if rec.education_level_id else "-",
-            "program": getattr(rec, "program", "") or "-",
-            "major": getattr(rec, "major", "") or "-",
-            "institution": getattr(rec, "institution", "") or "-",
-            "country": rec.country_id.name
-            if getattr(rec, "country_id", False)
-            else "-",
-            "graduation_date": self._format_date(getattr(rec, "graduation_date", False))
-            or "-",
-        }
+        items = []
+        for rec in sorted_records:
+            certificate_filename = getattr(rec, "certificate_filename", "")
+            transcript_filename = getattr(rec, "transcript_filename", "")
+            items.append(
+                {
+                    "level": rec.education_level_id.name
+                    if rec.education_level_id
+                    else "-",
+                    "program": getattr(rec, "program", "") or "-",
+                    "major": getattr(rec, "major", "") or "-",
+                    "institution": getattr(rec, "institution", "") or "-",
+                    "country": rec.country_id.name
+                    if getattr(rec, "country_id", False)
+                    else "-",
+                    "graduation_date": self._format_date(
+                        getattr(rec, "graduation_date", False)
+                    )
+                    or "-",
+                    "certificate_filename": certificate_filename,
+                    "certificate_url": (
+                        "/web/content?model=%s&id=%d&field=certificate_file"
+                        "&filename_field=certificate_filename&download=true"
+                        % (education_model, rec.id)
+                    )
+                    if certificate_filename
+                    else False,
+                    "transcript_filename": transcript_filename,
+                    "transcript_url": (
+                        "/web/content?model=%s&id=%d&field=transcript_file"
+                        "&filename_field=transcript_filename&download=true"
+                        % (education_model, rec.id)
+                    )
+                    if transcript_filename
+                    else False,
+                }
+            )
+        return items
 
     def _prepare_work_history_items(self, application, profile):
         records = getattr(application, "work_history_ids", False)
@@ -157,49 +178,143 @@ class HrRecruitmentPortal(CustomerPortal):
             )
         return items
 
+    def _prepare_academic_tab(self, application, academic_source):
+        english_test_type_map = {
+            "toefl_paper": "TOEFL (Paper-Based)",
+            "toefl_computer": "TOEFL (Computer-Based)",
+            "toefl_internet": "TOEFL (Internet-Based)",
+            "ielts": "IELTS",
+            "cutep": "CU-TEP",
+            "kmitl_tep": "KMITL-TEP",
+        }
+        english_test_type = getattr(academic_source, "english_test_type", False)
+
+        def _file(field_name, filename_field):
+            filename = getattr(application, filename_field, "")
+            if not filename:
+                return {"filename": "", "download_url": False}
+            return {
+                "filename": filename,
+                "download_url": self._applicant_file_url(
+                    application, field_name, filename_field
+                ),
+            }
+
+        return {
+            "job_role": application.job_id.role if application.job_id else False,
+            "academic_standing_id": academic_source.academic_standing_id.name
+            if getattr(academic_source, "academic_standing_id", False)
+            else "-",
+            "academic_position_date": self._format_date(
+                getattr(academic_source, "academic_position_date", False)
+            )
+            or "-",
+            "academic_position_institution": getattr(
+                academic_source, "academic_position_institution", ""
+            )
+            or "-",
+            "academic_position_file": _file(
+                "academic_position_file", "academic_position_filename"
+            ),
+            "has_ocsc_exam": "ผ่าน"
+            if getattr(academic_source, "has_ocsc_exam", False)
+            else "ไม่ผ่าน / ไม่มีข้อมูล",
+            "ocsc_exam_level": self._selection_label(
+                academic_source,
+                "ocsc_exam_level",
+                getattr(academic_source, "ocsc_exam_level", False),
+            )
+            or "-",
+            "ocsc_exam_date": self._format_date(
+                getattr(academic_source, "ocsc_exam_date", False)
+            )
+            or "-",
+            "ocsc_exam_number": getattr(academic_source, "ocsc_exam_number", "") or "-",
+            "ocsc_exam_file": _file("ocsc_exam_file", "ocsc_exam_filename"),
+            "english_test_type": english_test_type_map.get(english_test_type, "-"),
+            "english_test_score": getattr(academic_source, "english_test_score", "")
+            or "-",
+            "english_test_date": self._format_date(
+                getattr(academic_source, "english_test_date", False)
+            )
+            or "-",
+            "english_test_certificate_number": getattr(
+                academic_source, "english_test_certificate_number", ""
+            )
+            or "-",
+            "english_score_file": _file("english_score_file", "english_score_filename"),
+        }
+
+    def _applicant_file_url(self, application, field_name, filename_field):
+        return (
+            "/web/content?model=hr.applicant&id=%d&field=%s"
+            "&filename_field=%s&download=true"
+            % (application.id, field_name, filename_field)
+        )
+
     def _prepare_document_items(self, application):
-        documents = []
-        attachment_fields = [
-            ("resume_attachment_id", "Resume / CV"),
-            ("transcript_attachment_id", "Transcript"),
-            ("certificate_attachment_id", "Certificate"),
-            ("other_attachment_id", "Other Document"),
+        role = application.job_id.role if application.job_id else False
+        gender = application.gender
+
+        document_specs = [
+            ("photo_file", "photo_filename", "รูปถ่าย (Photo)", True),
+            (
+                "id_card_file",
+                "id_card_filename",
+                "สำเนาบัตรประจำตัวประชาชน",
+                True,
+            ),
+            (
+                "household_registration_file",
+                "household_registration_filename",
+                "สำเนาทะเบียนบ้าน",
+                True,
+            ),
+            (
+                "military_certificate_file",
+                "military_certificate_filename",
+                "สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร "
+                "(ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางทหารอื่น ๆ)",
+                gender == "male",
+            ),
+            (
+                "resume_file",
+                "resume_filename",
+                "ประวัติการทำงาน (Resume)",
+                role == "academic",
+            ),
+            (
+                "work_certificate_file",
+                "work_certificate_filename",
+                "หนังสือรับรองการทำงาน",
+                role == "academic",
+            ),
+            (
+                "other_documents_file",
+                "other_documents_filename",
+                "สำเนาเอกสารอื่น ๆ เช่น การเปลี่ยนชื่อ นามสกุล",
+                True,
+            ),
         ]
 
-        for field_name, label in attachment_fields:
+        documents = []
+        for field_name, filename_field, label, include in document_specs:
+            if not include:
+                continue
             if field_name not in application._fields:
                 continue
-            attachment = application[field_name]
-            if attachment:
-                documents.append(
-                    {
-                        "label": label,
-                        "filename": attachment.name or label,
-                        "download_url": "/web/content/%s?download=true" % attachment.id,
-                    }
-                )
-
-        if not documents:
-            attachments = (
-                request.env["ir.attachment"]
-                .sudo()
-                .search(
-                    [
-                        ("res_model", "=", "hr.applicant"),
-                        ("res_id", "=", application.id),
-                    ],
-                    order="create_date asc",
-                )
+            filename = getattr(application, filename_field, "")
+            documents.append(
+                {
+                    "label": label,
+                    "filename": filename or "-",
+                    "download_url": self._applicant_file_url(
+                        application, field_name, filename_field
+                    )
+                    if filename
+                    else False,
+                }
             )
-            for attachment in attachments:
-                documents.append(
-                    {
-                        "label": attachment.name or "Document",
-                        "filename": attachment.name or "-",
-                        "download_url": "/web/content/%s?download=true" % attachment.id,
-                    }
-                )
-
         return documents
 
     def _prepare_view_data(self, application, all_stages):
@@ -243,10 +358,13 @@ class HrRecruitmentPortal(CustomerPortal):
             "-",
         )
 
+        title_name = (
+            application.applicant_title.name if application.applicant_title else ""
+        )
         full_name = " ".join(
             part
             for part in [
-                application.applicant_title or "",
+                title_name or "",
                 application.first_name or "",
                 application.middle_name or "",
                 application.last_name or "",
@@ -259,6 +377,43 @@ class HrRecruitmentPortal(CustomerPortal):
                 partner.name if partner else False,
                 "-",
             )
+
+        title_name_en = (
+            application.applicant_title.with_context(lang="en_US").name
+            if application.applicant_title
+            else ""
+        )
+        full_name_en = " ".join(
+            part
+            for part in [
+                title_name_en or "",
+                application.first_name_en or "",
+                application.middle_name_en or "",
+                application.last_name_en or "",
+            ]
+            if part
+        )
+        if not full_name_en and profile:
+            title_name_en = (
+                profile.title.with_context(lang="en_US").name if profile.title else ""
+            )
+            full_name_en = " ".join(
+                part
+                for part in [
+                    title_name_en or "",
+                    profile.first_name_en or "",
+                    profile.middle_name_en or "",
+                    profile.last_name_en or "",
+                ]
+                if part
+            )
+
+        gender_labels = {"male": "ชาย (Male)", "female": "หญิง (Female)"}
+        gender_value = self._first_non_empty(
+            application.gender,
+            profile.gender if profile else False,
+        )
+        gender_display = gender_labels.get(gender_value, "")
 
         registered_address = self._first_non_empty(
             getattr(application, "address_address", False),
@@ -307,6 +462,8 @@ class HrRecruitmentPortal(CustomerPortal):
             "tabs": {
                 "personal": {
                     "full_name": full_name or "-",
+                    "full_name_en": full_name_en or "-",
+                    "gender": gender_display or "-",
                     "identification_id": self._first_non_empty(
                         getattr(application, "identification_id", False),
                         profile.identification_id if profile else False,
@@ -345,36 +502,9 @@ class HrRecruitmentPortal(CustomerPortal):
                         "-",
                     ),
                 },
-                "education": self._prepare_education_item(application, profile),
+                "education": self._prepare_education_items(application, profile),
                 "work_history": self._prepare_work_history_items(application, profile),
-                "academic": {
-                    "academic_standing_id": academic_source.academic_standing_id.name
-                    if getattr(academic_source, "academic_standing_id", False)
-                    else "-",
-                    "academic_position_date": self._format_date(
-                        getattr(academic_source, "academic_position_date", False)
-                    )
-                    or "-",
-                    "academic_position_institution": getattr(
-                        academic_source, "academic_position_institution", ""
-                    )
-                    or "-",
-                    "has_ocsc_exam": "Yes"
-                    if getattr(academic_source, "has_ocsc_exam", False)
-                    else "No",
-                    "ocsc_exam_level": self._selection_label(
-                        academic_source,
-                        "ocsc_exam_level",
-                        getattr(academic_source, "ocsc_exam_level", False),
-                    )
-                    or "-",
-                    "ocsc_exam_date": self._format_date(
-                        getattr(academic_source, "ocsc_exam_date", False)
-                    )
-                    or "-",
-                    "ocsc_exam_number": getattr(academic_source, "ocsc_exam_number", "")
-                    or "-",
-                },
+                "academic": self._prepare_academic_tab(application, academic_source),
                 "skills": {
                     "foreign_language_skills": getattr(
                         skills_source, "foreign_language_skills", ""
@@ -397,7 +527,9 @@ class HrRecruitmentPortal(CustomerPortal):
         website=True,
     )
     def portal_my_applications(self, page=1, sortby=None, **kw):
-        HrApplicant = request.env["hr.applicant"].sudo()
+        if must_set_email():
+            return request.redirect("/my/profile")
+        HrApplicant = request.env["hr.applicant"].with_context(active_test=False)
         domain = self._get_applications_domain()
 
         sortings = {
@@ -441,10 +573,11 @@ class HrRecruitmentPortal(CustomerPortal):
         website=True,
     )
     def portal_my_application(self, application_id, **kw):
+        if must_set_email():
+            return request.redirect("/my/profile")
         partner = request.env.user.partner_id
         application = (
             request.env["hr.applicant"]
-            .sudo()
             .with_context(active_test=False)
             .browse(application_id)
         )
@@ -452,15 +585,7 @@ class HrRecruitmentPortal(CustomerPortal):
         if not application.exists():
             return request.redirect("/my")
 
-        partner_match = (
-            application.partner_id and application.partner_id.id == partner.id
-        )
-        email_match = (
-            application.email_from
-            and partner.email
-            and application.email_from.lower() == partner.email.lower()
-        )
-        if not partner_match and not email_match:
+        if not (application.partner_id and application.partner_id.id == partner.id):
             return request.redirect("/my")
 
         stage_domain = [

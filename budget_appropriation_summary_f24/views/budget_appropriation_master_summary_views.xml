@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_budget_appropriation_master_summary_form_f24" model="ir.ui.view">
+        <field name="name">budget.appropriation.master.summary.form.f24</field>
+        <field name="model">budget.appropriation.master.summary</field>
+        <field name="inherit_id" ref="budget_appropriation_summary.view_budget_appropriation_master_summary_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_open_f24_report"
+                    string="F24 สรุปงบประมาณตามหน่วยงาน"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

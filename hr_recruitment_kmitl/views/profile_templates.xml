@@ -56,10 +56,16 @@
                 <!-- Error messages -->
                 <div t-if="error_message" class="alert alert-danger" role="alert">
                     <t t-foreach="error_message" t-as="err">
-                        <t t-esc="err" />
+                        <t t-out="err" />
                         <br />
                     </t>
                 </div>
+                <!-- Force email update notice for Thai ID accounts -->
+                <div t-if="email_editable" class="alert alert-warning" role="alert">
+                    <strong>กรุณาเปลี่ยนอีเมลของท่าน</strong>
+                    <br /> ท่านเข้าสู่ระบบด้วย ThaID
+                    อีเมลปัจจุบันของท่านยังเป็นเลขบัตรประชาชน กรุณากรอกอีเมลจริงในช่อง "อีเมล
+                    (Email)" ด้านล่าง แล้วบันทึกข้อมูลก่อนใช้งานส่วนอื่น </div>
                 <div class="card border-secondary mb-4">
                     <div class="card-body p-4 d-flex align-items-center">
                         <t
@@ -70,26 +76,37 @@
                             t-set="initials"
                             t-value="''.join([w[0].upper() for w in user_name.split()[:2]])"
                         />
-                        <div
-                            class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 me-4 border border-primary p-3 flex-shrink-0 bg-primary-light text-primary"
-                        >
-                            <t t-esc="initials" />
-                        </div>
+                        <t t-if="request.env.user.partner_id.image_128">
+                            <img
+                                t-att-src="'data:image/png;base64,%s' % request.env.user.partner_id.image_128.decode()"
+                                class="rounded-circle me-4 flex-shrink-0 border border-primary object-fit-cover"
+                                style="width: 64px; height: 64px;"
+                                alt="Profile photo"
+                            />
+                        </t>
+                        <t t-else="">
+                            <div
+                                class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 me-4 border border-primary flex-shrink-0 bg-primary-light text-primary"
+                                style="width: 64px; height: 64px;"
+                            >
+                                <t t-out="initials" />
+                            </div>
+                        </t>
                         <div>
                             <h5 class="fw-bold mb-1 text-dark">
-                                <t t-esc="request.env.user.name" />
+                                <t t-out="request.env.user.name" />
                             </h5>
                             <div class="text-secondary small d-flex flex-wrap gap-3">
                                 <span class="d-flex align-items-center">
                                     <i class="fa fa-envelope-o me-2" />
                                     <t
-                                        t-esc="request.env.user.email or 'ไม่มีข้อมูลอีเมล'"
+                                        t-out="request.env.user.email or 'ไม่มีข้อมูลอีเมล'"
                                     />
                                 </span>
                                 <span class="d-flex align-items-center">
                                     <i class="fa fa-phone me-2" />
                                     <t
-                                        t-esc="request.env.user.partner_id.phone or request.env.user.partner_id.mobile or 'ไม่มีข้อมูลเบอร์โทร'"
+                                        t-out="request.env.user.partner_id.phone or request.env.user.partner_id.mobile or 'ไม่มีข้อมูลเบอร์โทร'"
                                     />
                                 </span>
                             </div>
@@ -232,21 +249,16 @@
                                             <label
                                                 class="col-form-label"
                                                 for="title"
-                                            >คำนำหน้า
-                                                (Title)
-                                                *</label>
-                                            <select
-                                                name="title"
-                                                class="form-select"
-                                                required="required"
-                                            >
+                                            >คำนำหน้า (Title)</label>
+                                            <span class="text-danger ms-1">*</span>
+                                            <select name="title" class="form-select">
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="titles or []" t-as="t">
                                                     <option
                                                         t-att-value="t.id"
                                                         t-att-selected="t.id == profile.title.id or None"
                                                     >
-                                                        <t t-esc="t.name" />
+                                                        <t t-out="t.name" />
                                                     </option>
                                                 </t>
                                             </select>
@@ -255,24 +267,20 @@
                                             <label
                                                 class="col-form-label"
                                                 for="first_name"
-                                            >ชื่อจริง
-                                                (First Name TH)
-                                                *</label>
+                                            >ชื่อจริง (First Name TH)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="first_name"
                                                 class="form-control"
                                                 t-att-value="profile.first_name or ''"
-                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-3">
                                             <label
                                                 class="col-form-label"
                                                 for="middle_name"
-                                            >ชื่อกลาง
-                                                (Middle Name
-                                                TH)</label>
+                                            >ชื่อกลาง (Middle Name TH)</label>
                                             <input
                                                 type="text"
                                                 name="middle_name"
@@ -284,15 +292,13 @@
                                             <label
                                                 class="col-form-label"
                                                 for="last_name"
-                                            >นามสกุล
-                                                (Last Name TH)
-                                                *</label>
+                                            >นามสกุล (Last Name TH)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="last_name"
                                                 class="form-control"
                                                 t-att-value="profile.last_name or ''"
-                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -302,23 +308,20 @@
                                             <label
                                                 class="col-form-label"
                                                 for="first_name_en"
-                                            >First
-                                                Name (EN)
-                                                *</label>
+                                            >First Name (EN)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="first_name_en"
                                                 class="form-control"
                                                 t-att-value="profile.first_name_en or ''"
-                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-3">
                                             <label
                                                 class="col-form-label"
                                                 for="middle_name_en"
-                                            >Middle
-                                                Name (EN)</label>
+                                            >Middle Name (EN)</label>
                                             <input
                                                 type="text"
                                                 name="middle_name_en"
@@ -330,15 +333,13 @@
                                             <label
                                                 class="col-form-label"
                                                 for="last_name_en"
-                                            >Last
-                                                Name (EN)
-                                                *</label>
+                                            >Last Name (EN)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="last_name_en"
                                                 class="form-control"
                                                 t-att-value="profile.last_name_en or ''"
-                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -348,13 +349,11 @@
                                             <label
                                                 class="col-form-label"
                                                 for="nationality_id"
-                                            >สัญชาติ
-                                                (Nationality)
-                                                *</label>
+                                            >สัญชาติ (Nationality)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <select
                                                 name="nationality_id"
                                                 class="form-select"
-                                                required="required"
                                             >
                                                 <option value="">-- เลือก --</option>
                                                 <t
@@ -365,7 +364,7 @@
                                                         t-att-value="country.id"
                                                         t-att-selected="country.id == profile.nationality_id.id or None"
                                                     >
-                                                        <t t-esc="country.name" />
+                                                        <t t-out="country.name" />
                                                     </option>
                                                 </t>
                                             </select>
@@ -374,15 +373,14 @@
                                             <label
                                                 class="col-form-label"
                                                 for="identification_id"
-                                            >เลขบัตรประชาชน
-                                                (Identification No.)
-                                                *</label>
+                                            >เลขบัตรประชาชน(Identification
+                                                No./Passport No.)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="identification_id"
                                                 class="form-control"
                                                 t-att-value="profile.identification_id or ''"
-                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -392,16 +390,14 @@
                                             <label
                                                 class="col-form-label"
                                                 for="birthday"
-                                            >วัน/เดือน/ปี
-                                                เกิด (Birthday)
-                                                *</label>
+                                            >วัน/เดือน/ปี เกิด (Birthday)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="date"
                                                 name="birthday"
                                                 id="birthday"
                                                 class="form-control"
                                                 t-att-value="profile.birthday or ''"
-                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-2">
@@ -422,22 +418,25 @@
                                             <label
                                                 class="col-form-label"
                                                 for="gender"
-                                            >เพศ (Gender) *</label>
+                                            >เพศ (Gender)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <select
                                                 name="gender"
                                                 id="gender"
                                                 class="form-select"
-                                                required="required"
                                             >
                                                 <option value="">-- เลือก --</option>
                                                 <option
                                                     value="male"
                                                     t-att-selected="profile.gender == 'male' or None"
-                                                >ชาย (Male)</option>
+                                                >
+                                                    ชาย (Male)</option>
                                                 <option
                                                     value="female"
                                                     t-att-selected="profile.gender == 'female' or None"
-                                                >หญิง (Female)</option>
+                                                >หญิง
+                                                    (Female)
+                                                </option>
                                             </select>
                                         </div>
                                     </div>
@@ -447,28 +446,27 @@
                                             <label
                                                 class="col-form-label"
                                                 for="phone"
-                                            >หมายเลขโทรศัพท์
-                                                (Phone) *</label>
+                                            >หมายเลขโทรศัพท์ (Phone)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="tel"
                                                 name="phone"
                                                 class="form-control"
                                                 t-att-value="profile.phone or ''"
-                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label
                                                 class="col-form-label"
                                                 for="email"
-                                            >อีเมล (Email)
-                                                *</label>
+                                            >อีเมล (Email)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="email"
                                                 name="email"
                                                 class="form-control"
                                                 t-att-value="profile.email or ''"
-                                                required="required"
+                                                t-att-readonly="not email_editable and 'readonly' or None"
                                             />
                                         </div>
                                     </div>
@@ -482,15 +480,13 @@
                                             <label
                                                 class="col-form-label"
                                                 for="address_street"
-                                            >
-                                                ที่อยู่
-                                                *</label>
+                                            >ที่อยู่</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="address_street"
                                                 class="form-control"
                                                 t-att-value="profile.address_street or ''"
-                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -499,14 +495,11 @@
                                             <label
                                                 class="col-form-label"
                                                 for="address_zip_id"
-                                            >ที่ตั้ง
-                                                (ZIP
-                                                Location)
-                                                *</label>
+                                            >ที่ตั้ง (ZIP Location)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <select
                                                 name="address_zip_id"
                                                 class="form-select"
-                                                required="required"
                                             >
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="zips or []" t-as="z">
@@ -514,7 +507,7 @@
                                                         t-att-value="z.id"
                                                         t-att-selected="z.id == profile.address_zip_id.id or None"
                                                     >
-                                                        <t t-esc="z.display_name" />
+                                                        <t t-out="z.display_name" />
                                                     </option>
                                                 </t>
                                             </select>
@@ -548,8 +541,8 @@
                                                 <label
                                                     class="col-form-label"
                                                     for="current_street"
-                                                >
-                                                    ที่อยู่</label>
+                                                >ที่อยู่</label>
+                                                <span class="text-danger ms-1">*</span>
                                                 <input
                                                     type="text"
                                                     name="current_street"
@@ -563,9 +556,8 @@
                                                 <label
                                                     class="col-form-label"
                                                     for="current_zip_id"
-                                                >ที่ตั้ง
-                                                    (ZIP
-                                                    Location)</label>
+                                                >ที่ตั้ง (ZIP Location)</label>
+                                                <span class="text-danger ms-1">*</span>
                                                 <select
                                                     name="current_zip_id"
                                                     class="form-select"
@@ -578,7 +570,7 @@
                                                             t-att-value="z.id"
                                                             t-att-selected="z.id == profile.current_zip_id.id or None"
                                                         >
-                                                            <t t-esc="z.display_name" />
+                                                            <t t-out="z.display_name" />
                                                         </option>
                                                     </t>
                                                 </select>
@@ -600,15 +592,12 @@
                                             <label
                                                 class="col-form-label"
                                                 for="marital"
-                                            >สถานภาพสมรส
-                                                (Marital
-                                                Status)
-                                                *</label>
+                                            >สถานภาพสมรส (Marital Status)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <select
                                                 name="marital"
                                                 id="marital"
                                                 class="form-select"
-                                                required="required"
                                             >
                                                 <option value="">-- เลือก --</option>
                                                 <option
@@ -644,8 +633,8 @@
                                             <label
                                                 class="col-form-label"
                                                 for="spouse_prefix"
-                                            >คำนำหน้า
-                                                (Title)</label>
+                                            >คำนำหน้า (Title)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <select
                                                 name="spouse_prefix"
                                                 class="form-select"
@@ -656,7 +645,7 @@
                                                         t-att-value="t.id"
                                                         t-att-selected="t.id == profile.spouse_prefix.id or None"
                                                     >
-                                                        <t t-esc="t.name" />
+                                                        <t t-out="t.name" />
                                                     </option>
                                                 </t>
                                             </select>
@@ -665,9 +654,8 @@
                                             <label
                                                 class="col-form-label"
                                                 for="spouse_first_name"
-                                            >ชื่อจริง
-                                                (First
-                                                Name)</label>
+                                            >ชื่อจริง (First Name)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="spouse_first_name"
@@ -693,9 +681,8 @@
                                             <label
                                                 class="col-form-label"
                                                 for="spouse_last_name"
-                                            >นามสกุล
-                                                (Last
-                                                Name)</label>
+                                            >นามสกุล (Last Name)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="spouse_last_name"
@@ -718,28 +705,26 @@
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_name"
-                                            >Name
-                                                *</label>
+                                            >Name</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="emergency_contact_name"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_name or ''"
-                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_relation"
-                                            >Relation
-                                                *</label>
+                                            >Relation</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
                                                 name="emergency_contact_relation"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_relation or ''"
-                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -748,28 +733,26 @@
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_phone"
-                                            >Phone
-                                                *</label>
+                                            >Phone</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="tel"
                                                 name="emergency_contact_phone"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_phone or ''"
-                                                required="required"
                                             />
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label
                                                 class="col-form-label"
                                                 for="emergency_contact_email"
-                                            >Email
-                                                *</label>
+                                            >Email</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="email"
                                                 name="emergency_contact_email"
                                                 class="form-control"
                                                 t-att-value="profile.emergency_contact_email or ''"
-                                                required="required"
                                             />
                                         </div>
                                     </div>
@@ -788,13 +771,14 @@
                                         >Congenital
                                             Disease /
                                             โรคประจำตัว</label>
+                                        <!-- prettier-ignore-start -->
                                         <textarea
                                             name="congenital_disease"
                                             class="form-control"
                                             rows="3"
-                                        ><t
-                                                t-esc="profile.congenital_disease or ''"
-                                            /></textarea>
+                                            xml:space="preserve"
+                                        ><t t-out="profile.congenital_disease or ''"/></textarea>
+                                        <!-- prettier-ignore-end -->
                                     </div>
                                 </div>
                             </div>
@@ -816,6 +800,7 @@
                                             >วุฒิการศึกษาสูงสุด (Highest
                                                 Education
                                                 Level)</label>
+                                            <span class="text-danger ms-1">*</span>
                                             <select
                                                 name="highest_education"
                                                 id="highest_education"
@@ -918,96 +903,136 @@
                             <div class="card shadow-sm border-0 rounded-4 mb-4">
                                 <div class="card-body p-4 p-md-5">
                                     <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                                        <t t-set="title">ประวัติการทำงาน
-                                            (Work History)</t>
+                                        <t
+                                            t-set="title"
+                                        >ประวัติการทำงาน (Work History)</t>
                                     </t>
-                                    <table class="table table-sm" id="wh-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Company</th>
-                                                <th>Job Title / Description</th>
-                                                <th>เงินเดือนสุดท้าย (Last Salary)</th>
-                                                <th>Start Date</th>
-                                                <th>End Date</th>
-                                                <th />
-                                            </tr>
-                                        </thead>
-                                        <tbody id="wh-tbody">
-                                            <t
-                                                t-foreach="profile.work_history_ids"
-                                                t-as="wh"
-                                            >
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="hidden"
-                                                            name="wh_id"
-                                                            t-att-value="wh.id"
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            name="wh_company_name"
-                                                            class="form-control form-control-sm"
-                                                            t-att-value="wh.company_name"
-                                                            required="required"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            name="wh_job_title"
-                                                            class="form-control form-control-sm"
-                                                            t-att-value="wh.job_title"
-                                                            required="required"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            name="wh_salary"
-                                                            class="form-control form-control-sm"
-                                                            step="0.01"
-                                                            t-att-value="wh.salary"
-                                                            required="required"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="date"
-                                                            name="wh_date_start"
-                                                            class="form-control form-control-sm"
-                                                            t-att-value="wh.date_start"
-                                                            required="required"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="date"
-                                                            name="wh_date_end"
-                                                            class="form-control form-control-sm"
-                                                            t-att-value="wh.date_end or ''"
-                                                        />
-                                                    </td>
-                                                    <td>
+                                    <div id="wh-list" class="d-flex flex-column gap-4">
+                                        <t
+                                            t-foreach="profile.work_history_ids"
+                                            t-as="wh"
+                                        >
+                                            <div class="card border rounded-4">
+                                                <div class="card-body p-4">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center mb-4"
+                                                    >
+                                                        <h5
+                                                            class="fw-bold text-dark mb-0"
+                                                        >
+                                                            ประวัติการทำงาน
+                                                        </h5>
                                                         <button
                                                             type="button"
-                                                            class="btn btn-sm btn-outline-danger btn-wh-remove"
+                                                            class="btn btn-outline-danger btn-sm rounded-pill btn-wh-remove"
                                                         >
-                                                            <i class="fa fa-trash" />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </t>
-                                        </tbody>
-                                    </table>
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-success"
-                                        id="btn-wh-add"
-                                    >
-                                        <i
-                                            class="fa fa-plus-circle me-1"
-                                        /> Add Work History </button>
+                                                            <i
+                                                                class="fa fa-trash me-1"
+                                                            /> ลบ </button>
+                                                    </div>
+                                                    <input
+                                                        type="hidden"
+                                                        name="wh_id"
+                                                        t-att-value="wh.id"
+                                                    />
+                                                    <!-- Row 1 -->
+                                                    <div class="row g-3 mb-1">
+                                                        <div class="col-lg-6">
+                                                            <label
+                                                                class="col-form-label"
+                                                            >Company</label>
+                                                            <span
+                                                                class="text-danger ms-1"
+                                                            >*</span>
+                                                            <input
+                                                                type="text"
+                                                                name="wh_company_name"
+                                                                class="form-control"
+                                                                t-att-value="wh.company_name"
+                                                                placeholder="ชื่อบริษัท"
+                                                            />
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <label
+                                                                class="col-form-label"
+                                                            >Job Title
+                                                                /
+                                                                Description</label>
+                                                            <span
+                                                                class="text-danger ms-1"
+                                                            >*</span>
+                                                            <input
+                                                                type="text"
+                                                                name="wh_job_title"
+                                                                class="form-control"
+                                                                t-att-value="wh.job_title"
+                                                                placeholder="ตำแหน่ง / ลักษณะงาน"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <!-- Row 2 -->
+                                                    <div class="row g-3">
+                                                        <div class="col-lg-4">
+                                                            <label
+                                                                class="col-form-label"
+                                                            >เงินเดือนสุดท้าย
+                                                                (Last
+                                                                Salary)</label>
+                                                            <span
+                                                                class="text-danger ms-1"
+                                                            >*</span>
+                                                            <input
+                                                                type="number"
+                                                                name="wh_salary"
+                                                                class="form-control"
+                                                                step="0.01"
+                                                                t-att-value="wh.salary"
+                                                                placeholder="เงินเดือนสุดท้าย"
+                                                            />
+                                                        </div>
+                                                        <div class="col-lg-4">
+                                                            <label
+                                                                class="col-form-label"
+                                                            >Start Date</label>
+                                                            <span
+                                                                class="text-danger ms-1"
+                                                            >*</span>
+                                                            <input
+                                                                type="date"
+                                                                name="wh_date_start"
+                                                                class="form-control"
+                                                                t-att-value="wh.date_start"
+                                                            />
+                                                        </div>
+                                                        <div class="col-lg-4">
+                                                            <label
+                                                                class="col-form-label"
+                                                            >End Date</label>
+                                                            <span
+                                                                class="text-danger ms-1"
+                                                            >*</span>
+                                                            <input
+                                                                type="date"
+                                                                name="wh_date_end"
+                                                                class="form-control"
+                                                                t-att-value="wh.date_end or ''"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-primary rounded-pill px-4"
+                                            id="btn-wh-add"
+                                        >
+                                            <i
+                                                class="fa fa-plus me-2"
+                                            /> เพิ่มประวัติการทำงาน </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1169,7 +1194,7 @@
                                                         t-att-value="standing.id"
                                                         t-att-selected="standing.id == profile.academic_standing_id.id or None"
                                                     >
-                                                        <t t-esc="standing.name" />
+                                                        <t t-out="standing.name" />
                                                     </option>
                                                 </t>
                                             </select>
@@ -1215,9 +1240,8 @@
                                                 <t
                                                     t-set="name"
                                                 >doc_academic_position</t>
-                                                <t
-                                                    t-set="label"
-                                                >แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ</t>
+                                                <t t-set="label">
+                                                    แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ</t>
                                                 <t
                                                     t-set="description"
                                                 >ไฟล์ PDF หรือรูปภาพ</t>
@@ -1235,94 +1259,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="mb-4">
-                                <h6
-                                    class="fw-bold mb-3"
-                                >Minimum English Test Scores</h6>
-
-                                <div
-                                    class="table-responsive rounded-3 border overflow-hidden"
-                                >
-                                    <table class="table table-sm align-middle mb-0">
-                                        <thead class="bg-light border-bottom">
-                                            <tr>
-                                                <th
-                                                    class="px-4 py-3 fw-semibold"
-                                                >Test Type</th>
-                                                <th
-                                                    class="px-4 py-3 fw-semibold"
-                                                >Format</th>
-                                                <th
-                                                    class="px-4 py-3 fw-semibold text-end"
-                                                >Minimum
-                                                    Score</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody class="text-secondary">
-                                            <tr>
-                                                <td class="px-4 py-3">TOEFL</td>
-                                                <td class="px-4 py-3">Paper-Based</td>
-                                                <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold"
-                                                >
-                                                    500</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td class="px-4 py-3">TOEFL</td>
-                                                <td
-                                                    class="px-4 py-3"
-                                                >Computer-Based</td>
-                                                <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold"
-                                                >
-                                                    173</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td class="px-4 py-3">TOEFL</td>
-                                                <td
-                                                    class="px-4 py-3"
-                                                >Internet-Based (iBT)</td>
-                                                <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold"
-                                                >
-                                                    61</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td class="px-4 py-3">IELTS</td>
-                                                <td class="px-4 py-3">-</td>
-                                                <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold"
-                                                >
-                                                    5.0</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td class="px-4 py-3">CU-TEP</td>
-                                                <td class="px-4 py-3">-</td>
-                                                <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold"
-                                                >
-                                                    60</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td class="px-4 py-3">KMITL-TEP</td>
-                                                <td class="px-4 py-3">-</td>
-                                                <td
-                                                    class="px-4 py-3 text-end text-primary fw-semibold"
-                                                >B1
-                                                    Level</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
                             <div class="card shadow-sm border-0 rounded-4">
                                 <div class="card-body p-4 p-md-5">
                                     <t t-call="hr_recruitment_kmitl.section_tab_intro">
@@ -1331,6 +1267,107 @@
                                         >คะแนนสอบภาษาอังกฤษ (English Proficiency
                                             Scores)</t>
                                     </t>
+                                    <div class="row g-4 mb-4">
+                                        <div class="col-md-5">
+                                            <h6
+                                                class="fw-bold mb-3"
+                                            >Minimum English Test Scores</h6>
+                                            <div
+                                                class="table-responsive rounded-3 border overflow-hidden"
+                                            >
+                                                <table
+                                                    class="table table-sm align-middle mb-0"
+                                                >
+                                                    <thead
+                                                        class="bg-light border-bottom"
+                                                    >
+                                                        <tr>
+                                                            <th
+                                                                class="px-4 py-3 fw-semibold"
+                                                            >Test
+                                                                Type</th>
+                                                            <th
+                                                                class="px-4 py-3 fw-semibold"
+                                                            >Format</th>
+                                                            <th
+                                                                class="px-4 py-3 fw-semibold text-end"
+                                                            >Minimum
+                                                                Score</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="text-secondary">
+                                                        <tr>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >TOEFL</td>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >Paper-Based</td>
+                                                            <td
+                                                                class="px-4 py-3 text-end text-primary fw-semibold"
+                                                            >
+                                                                500</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >TOEFL</td>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >Computer-Based</td>
+                                                            <td
+                                                                class="px-4 py-3 text-end text-primary fw-semibold"
+                                                            >
+                                                                173</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >TOEFL</td>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >Internet-Based
+                                                                (iBT)</td>
+                                                            <td
+                                                                class="px-4 py-3 text-end text-primary fw-semibold"
+                                                            >
+                                                                61</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >IELTS</td>
+                                                            <td class="px-4 py-3">-</td>
+                                                            <td
+                                                                class="px-4 py-3 text-end text-primary fw-semibold"
+                                                            >
+                                                                5.0</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >CU-TEP</td>
+                                                            <td class="px-4 py-3">-</td>
+                                                            <td
+                                                                class="px-4 py-3 text-end text-primary fw-semibold"
+                                                            >
+                                                                60</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td
+                                                                class="px-4 py-3"
+                                                            >KMITL-TEP</td>
+                                                            <td class="px-4 py-3">-</td>
+                                                            <td
+                                                                class="px-4 py-3 text-end text-primary fw-semibold"
+                                                            >B1
+                                                                Level</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="row g-4 mb-4">
                                         <div class="col-md-6">
                                             <label
@@ -1344,27 +1381,35 @@
                                                 <option
                                                     value="toefl_paper"
                                                     t-att-selected="profile.english_test_type == 'toefl_paper' or None"
-                                                >TOEFL (Paper-Based)</option>
+                                                >
+                                                    TOEFL (Paper-Based)</option>
                                                 <option
                                                     value="toefl_computer"
                                                     t-att-selected="profile.english_test_type == 'toefl_computer' or None"
-                                                >TOEFL (Computer-Based)</option>
+                                                >
+                                                    TOEFL (Computer-Based)</option>
                                                 <option
                                                     value="toefl_internet"
                                                     t-att-selected="profile.english_test_type == 'toefl_internet' or None"
-                                                >TOEFL (Internet-Based)</option>
+                                                >
+                                                    TOEFL (Internet-Based)</option>
                                                 <option
                                                     value="ielts"
                                                     t-att-selected="profile.english_test_type == 'ielts' or None"
-                                                >IELTS</option>
+                                                >
+                                                    IELTS
+                                                </option>
                                                 <option
                                                     value="cutep"
                                                     t-att-selected="profile.english_test_type == 'cutep' or None"
-                                                >CU-TEP</option>
+                                                >
+                                                    CU-TEP
+                                                </option>
                                                 <option
                                                     value="kmitl_tep"
                                                     t-att-selected="profile.english_test_type == 'kmitl_tep' or None"
-                                                >KMITL-TEP</option>
+                                                >
+                                                    KMITL-TEP</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
@@ -1444,66 +1489,57 @@
                                         <t t-set="title">ทักษะและความสนใจ
                                             (Skills &amp; Interests)</t>
                                     </t>
-                                    <label
-                                        class="col-form-label"
-                                        for="foreign_language_skills"
-                                    >Foreign
-                                        Language
-                                        Skills /
-                                        ทักษะภาษาต่างประเทศ</label>
-                                    <textarea
-                                        name="foreign_language_skills"
-                                        class="form-control"
-                                        rows="3"
-                                    ><t
-                                            t-esc="profile.foreign_language_skills or ''"
-                                        /></textarea>
+                                    <!-- prettier-ignore-start -->
+                                    <div class="mb-3">
+                                        <label
+                                            class="col-form-label"
+                                            for="foreign_language_skills"
+                                        >Foreign Language Skills /
+                                            ทักษะภาษาต่างประเทศ</label>
+                                        <textarea
+                                            name="foreign_language_skills"
+                                            class="form-control"
+                                            rows="3"
+                                            xml:space="preserve"
+                                        ><t t-out="profile.foreign_language_skills or ''"/></textarea>
+                                    </div>
                                     <div class="mb-3">
                                         <label
                                             class="col-form-label"
                                             for="computer_skills"
-                                        >Computer
-                                            Skills
-                                            /
-                                            ทักษะคอมพิวเตอร์</label>
+                                        >Computer Skills / ทักษะคอมพิวเตอร์</label>
                                         <textarea
                                             name="computer_skills"
                                             class="form-control"
                                             rows="3"
-                                        ><t
-                                                t-esc="profile.computer_skills or ''"
-                                            /></textarea>
+                                            xml:space="preserve"
+                                        ><t t-out="profile.computer_skills or ''"/></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
                                             class="col-form-label"
                                             for="other_abilities"
-                                        >Other
-                                            Abilities
-                                            /
-                                            ความสามารถอื่นๆ</label>
+                                        >Other Abilities / ความสามารถอื่นๆ</label>
                                         <textarea
                                             name="other_abilities"
                                             class="form-control"
                                             rows="3"
-                                        ><t
-                                                t-esc="profile.other_abilities or ''"
-                                            /></textarea>
+                                            xml:space="preserve"
+                                        ><t t-out="profile.other_abilities or ''"/></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
                                             class="col-form-label"
                                             for="interests"
-                                        >Interests /
-                                            ความสนใจ</label>
+                                        >Interests / ความสนใจ</label>
                                         <textarea
                                             name="interests"
                                             class="form-control"
                                             rows="3"
-                                        ><t
-                                                t-esc="profile.interests or ''"
-                                            /></textarea>
+                                            xml:space="preserve"
+                                        ><t t-out="profile.interests or ''"/></textarea>
                                     </div>
+                                    <!-- prettier-ignore-end -->
                                 </div>
                             </div>
                         </div>
@@ -1523,10 +1559,22 @@
                                             t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_photo</t>
-                                            <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
+                                            <t
+                                                t-set="label"
+                                            >รูปถ่ายหน้าตรง (1 นิ้ว)<span
+                                                    class="text-danger ms-1"
+                                                >*</span></t>
                                             <t
                                                 t-set="description"
                                             >ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="profile.photo_filename"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=photo_file&amp;filename_field=photo_filename&amp;download=true' % profile.id if profile.photo_filename else False"
+                                            />
                                         </t>
                                         <!-- ID Card -->
                                         <t
@@ -1535,7 +1583,9 @@
                                             <t t-set="name">doc_id_card</t>
                                             <t
                                                 t-set="label"
-                                            >สำเนาบัตรประจำตัวประชาชน</t>
+                                            >สำเนาบัตรประจำตัวประชาชน<span
+                                                    class="text-danger ms-1"
+                                                >*</span></t>
                                             <t
                                                 t-set="description"
                                             >เซ็นรับรองสำเนาถูกต้องด้วย</t>
@@ -1555,7 +1605,9 @@
                                             <t
                                                 t-set="name"
                                             >doc_household_registration</t>
-                                            <t t-set="label">สำเนาทะเบียนบ้าน</t>
+                                            <t t-set="label">สำเนาทะเบียนบ้าน<span
+                                                    class="text-danger ms-1"
+                                                >*</span></t>
                                             <t
                                                 t-set="description"
                                             >เซ็นรับรองสำเนาถูกต้องด้วย</t>
@@ -1593,12 +1645,13 @@
                                                 <t
                                                     t-set="name"
                                                 >doc_military_certificate</t>
+                                                <!-- prettier-ignore -->
                                                 <t
                                                     t-set="label"
                                                 >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
-                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร<br
-                                                    /> (ใบ สด.8 สด.9
-                                                    หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ)</t>
+                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร <br
+                                                    /> (ใบ สด.8
+                                                    สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ) </t>
                                                 <t t-set="description">เฉพาะเพศชาย</t>
                                                 <t
                                                     t-set="existing_filename"
@@ -1679,10 +1732,10 @@
                             class="rounded-circle border border-2 border-primary text-primary d-inline-flex align-items-center justify-content-center mb-2"
                             style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;"
                         >
-                            <t t-esc="section_index" />
+                            <t t-out="section_index" />
                         </div>
                         <h6 class="mb-0 fw-bold">
-                            <t t-esc="edu_label" />
+                            <t t-out="edu_label" />
                         </h6>
                     </div>
                 </div>
@@ -1702,7 +1755,7 @@
                                         t-att-value="sub_lv.id"
                                         t-att-selected="edu_rec and sub_lv.id == edu_rec.education_level_id.id or None"
                                     >
-                                        <t t-esc="sub_lv.name" />
+                                        <t t-out="sub_lv.name" />
                                     </option>
                                 </t>
                             </select>
@@ -1711,6 +1764,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label class="col-form-label">Program</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="text"
                                 t-attf-name="#{section_prefix}program"
@@ -1720,6 +1774,7 @@
                         </div>
                         <div class="mb-3 col-md-6">
                             <label class="col-form-label">Major</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="text"
                                 t-attf-name="#{section_prefix}major"
@@ -1731,6 +1786,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Institution</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="text"
                                 t-attf-name="#{section_prefix}institution"
@@ -1740,6 +1796,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Country</label>
+                            <span class="text-danger ms-1">*</span>
                             <select
                                 t-attf-name="#{section_prefix}country_id"
                                 class="form-select"
@@ -1750,13 +1807,14 @@
                                         t-att-value="country.id"
                                         t-att-selected="edu_rec and country.id == edu_rec.country_id.id or None"
                                     >
-                                        <t t-esc="country.name" />
+                                        <t t-out="country.name" />
                                     </option>
                                 </t>
                             </select>
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Graduation Date</label>
+                            <span class="text-danger ms-1">*</span>
                             <input
                                 type="date"
                                 t-attf-name="#{section_prefix}graduation_date"
@@ -1772,7 +1830,7 @@
                                 <t
                                     t-set="description"
                                 >อัปโหลดไฟล์ PDF, รูปภาพ หรือเอกสาร</t>
-                                <t t-set="required" t-value="False" />
+                                <t t-set="required" t-value="True" />
                                 <t
                                     t-set="name"
                                     t-valuef="#{section_prefix}certificate_file"
@@ -1793,7 +1851,7 @@
                                 <t
                                     t-set="description"
                                 >อัปโหลดไฟล์ PDF, รูปภาพ หรือเอกสาร</t>
-                                <t t-set="required" t-value="False" />
+                                <t t-set="required" t-value="True" />
                                 <t
                                     t-set="name"
                                     t-valuef="#{section_prefix}transcript_file"

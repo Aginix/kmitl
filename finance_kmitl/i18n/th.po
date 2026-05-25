@@ -117,8 +117,28 @@ msgstr "การเบิกจ่ายเงิน"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__kmitl_payment_type_id
-msgid "Payment Type (KMITL)"
-msgstr "ประเภทการจ่ายเงิน (KMITL)"
+msgid "Operation Type"
+msgstr "ประเภทธุรกรรม"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payer"
+msgstr "ผู้ชำระเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payee"
+msgstr "ผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payer Bank Account"
+msgstr "บัญชีธนาคารผู้ชำระเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payee Bank Account"
+msgstr "บัญชีธนาคารผู้รับเงิน"
 
 #. module: finance_kmitl
 #: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_type

@@ -12,6 +12,9 @@
         </style>
         <div class="page f4-p" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F4-P-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center">
                 <h3 class="fw-bold">
@@ -43,7 +46,7 @@
                         <tr style="font-weight: bold">
                             <td class="ps-3" colspan="2">2. เงินรายได้</td>
                             <td class="text-end" contenteditable="false">
-                                <t t-out="'{0:,.2f} บาท'.format(o.f4p_revenue_data['summary']['total_amount'])"/>
+                                <t t-out="'{0:,.0f} บาท'.format(o.f4p_revenue_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
                         <t t-set="row_no" t-value="1"/>
@@ -59,7 +62,7 @@
                                         <t t-esc="'- {}'.format(dept['name'])"/>
                                     </td>
                                     <td class="text-end" contenteditable="false">
-                                        <t t-out="'{0:,.2f}'.format(dept['amount'])"/>
+                                        <t t-out="'{0:,.0f}'.format(dept['amount'])"/>
                                     </td>
                                     <td/>
                                 </tr>
@@ -67,7 +70,7 @@
                             <tr>
                                 <td class="text-end">รวม</td>
                                 <td class="text-end fw-bold" style="border-bottom: 1px solid black;" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(row['amount'])"/>
+                                    <t t-out="'{0:,.0f}'.format(row['amount'])"/>
                                 </td>
                                 <td/>
                             </tr>
@@ -81,7 +84,7 @@
                                 รวมรายรับทั้งสิ้น
                             </td>
                             <td class="text-end fw-bold" style="border-bottom: 3px double black;" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['total_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f4p_revenue_data['summary']['total_amount'])"/>
                             </td>
                             <td/>
                         </tr>

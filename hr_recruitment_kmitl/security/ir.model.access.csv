@@ -1,19 +1,38 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_portal_profile_user,portal.profile user,model_portal_profile,base.group_user,1,1,1,1
-access_portal_profile_portal,portal.profile portal,model_portal_profile,base.group_portal,1,1,1,0
+access_res_partner_portal,res.partner portal,base.model_res_partner,base.group_portal,1,1,0,0
+access_portal_profile_user,portal.profile user,model_portal_profile,base.group_user,1,1,0,0
+access_portal_profile_portal,portal.profile portal,model_portal_profile,base.group_portal,1,1,0,0
+access_portal_profile_recruiter,portal.profile recruiter,model_portal_profile,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 access_portal_work_history_user,portal.work.history user,model_portal_work_history,base.group_user,1,1,1,1
-access_portal_work_history_portal,portal.work.history portal,model_portal_work_history,base.group_portal,1,1,1,0
+access_portal_work_history_portal,portal.work.history portal,model_portal_work_history,base.group_portal,1,1,1,1
+access_portal_work_history_recruiter,portal.work.history recruiter,model_portal_work_history,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 access_portal_education_history_user,portal.education.history user,model_portal_education_history,base.group_user,1,1,1,1
-access_portal_education_history_portal,portal.education.history portal,model_portal_education_history,base.group_portal,1,1,1,0
+access_portal_education_history_portal,portal.education.history portal,model_portal_education_history,base.group_portal,1,1,1,1
+access_portal_education_history_recruiter,portal.education.history recruiter,model_portal_education_history,hr_recruitment.group_hr_recruitment_user,1,0,0,0
+access_hr_applicant_user,hr.applicant user,hr_recruitment.model_hr_applicant,base.group_user,1,0,0,0
 access_hr_applicant_portal,hr.applicant.portal,hr_recruitment.model_hr_applicant,base.group_portal,1,0,0,0
 access_hr_recruitment_stage_portal,hr.recruitment.stage.portal,hr_recruitment.model_hr_recruitment_stage,base.group_portal,1,0,0,0
 access_hr_job_portal,hr.job.portal,hr.model_hr_job,base.group_portal,1,0,0,0
 access_hr_department_portal,hr.department.portal,hr.model_hr_department,base.group_portal,1,0,0,0
-access_hr_applicant_education_history,access_hr_applicant_education_history,model_hr_applicant_education_history,base.group_user,1,0,0,0
-access_hr_applicant_work_history,access_hr_applicant_work_history,model_hr_applicant_work_history,base.group_user,1,0,0,0
+access_hr_applicant_education_history_portal,access_hr_applicant_education_history portal,model_hr_applicant_education_history,base.group_portal,1,0,0,0
+access_hr_applicant_education_history_hr,access_hr_applicant_education_history hr,model_hr_applicant_education_history,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_hr_applicant_work_history_portal,access_hr_applicant_work_history portal,model_hr_applicant_work_history,base.group_portal,1,0,0,0
+access_hr_applicant_work_history_hr,access_hr_applicant_work_history hr,model_hr_applicant_work_history,hr_recruitment.group_hr_recruitment_user,1,1,1,1
 access_hr_job_category_user,hr.job.category user,model_hr_job_category,base.group_user,1,0,0,0
 access_hr_job_category_hr,hr.job.category hr,model_hr_job_category,hr.group_hr_manager,1,1,1,1
 access_hr_job_old_code_hr_user,hr.job.old.code.hr.user,model_hr_job_old_code,hr_recruitment.group_hr_recruitment_user,1,1,1,1
 access_hr_job_old_code_public,hr.job.old.code public,model_hr_job_old_code,,1,0,0,0
 access_hr_recruitment_degree_public,hr.recruitment.degree.public,hr_recruitment.model_hr_recruitment_degree,,1,0,0,0
 access_resource_education_level_portal,resource.education.level portal,hr_employee_education_history.model_resource_education_level,base.group_portal,1,0,0,0
+access_hr_employee_academic_standing_portal,hr.employee.academic.standing portal,hr_employee_academic_standing_thailand.model_hr_employee_academic_standing,base.group_portal,1,0,0,0
+access_hr_onboarding_user,hr.onboarding user,model_hr_onboarding,base.group_user,1,1,1,0
+access_hr_onboarding_portal,hr.onboarding portal,model_hr_onboarding,base.group_portal,1,1,0,0
+access_hr_onboarding_recruiter,hr.onboarding recruiter,model_hr_onboarding,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_hr_onboarding_family_user,hr.onboarding.family user,model_hr_onboarding_family,base.group_user,1,1,1,0
+access_hr_onboarding_family_portal,hr.onboarding.family portal,model_hr_onboarding_family,base.group_portal,1,1,1,1
+access_hr_onboarding_family_recruiter,hr.onboarding.family recruiter,model_hr_onboarding_family,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+access_hr_employee_relative_relation_portal,hr.employee.relative.relation portal,hr_employee_relative.model_hr_employee_relative_relation,base.group_portal,1,0,0,0
+access_hr_employee_prefix_user,hr.employee.prefix user,kmitl_hr_employee_full_name.model_hr_employee_prefix,base.group_user,1,0,0,0
+access_hr_employee_prefix_portal,hr.employee.prefix portal,kmitl_hr_employee_full_name.model_hr_employee_prefix,base.group_portal,1,0,0,0
+access_hr_employee_decoration_relation_user,hr.employee.decoration.relation user,hr_employee_decoration.model_hr_employee_decoration_relation,base.group_user,1,0,0,0
+access_hr_employee_decoration_relation_portal,hr.employee.decoration.relation portal,hr_employee_decoration.model_hr_employee_decoration_relation,base.group_portal,1,0,0,0

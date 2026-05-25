@@ -39,7 +39,7 @@
             <xpath expr="//field[@name='procurement_type_id']" position="attributes">
                 <attribute
                     name="domain"
-                >[('is_construction', '=', is_construction)]</attribute>
+                >([('is_construction', '=', True)] if is_construction else [('is_purchase', '=', True)])</attribute>
             </xpath>
 
         </field>
@@ -73,12 +73,21 @@
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <tree string="Constructions">
-                <field name="name" />
+                <field name="main_sarabun_document_id" optional="show"/>
                 <field name="project_id" />
+                <field name="name" optional="hide"/>
+                <field name="title" optional="hide"/>
                 <field name="date_start" />
-                <field name="requested_by" widget="many2one_avatar_user" />
-                <field name="currency_id" invisible="1" />
-                <field name="estimated_cost" />
+                <field name="user_id" optional="hide"/>
+                <field name="requested_by" widget="many2one_avatar_user" optional="show"/>
+                <field name="procurement_type_id" optional="hide"/>
+                <field name="procurement_method_id" optional="hide"/>
+                <field name="account_fiscal_year_id" optional="hide"/>
+                <field name="operating_unit_id" optional="hide"/>
+                <field name="department_id" optional="show"/>
+                <field name="activity_ids" optional="hide"/>
+                <field name="origin" optional="hide"/>
+                <field name="estimated_cost" optional="show"/>
                 <field
                     name="state"
                     widget="badge"
@@ -87,6 +96,14 @@
                     decoration-warning="state == 'to_approve'"
                     decoration-danger="state == 'rejected'"
                 />
+                <field name="egp_status" optional="show"/>
+                <field name="main_exception_id" optional="hide"/>
+                <field name="budget_account_id" optional="hide"/>
+                <field name="department_analytic_id" optional="hide"/>
+                <field name="source_analytic_id" optional="show"/>
+                <field name="fund_analytic_id" optional="hide"/>
+                <field name="activity_analytic_id" optional="show"/>
+                <field name="currency_id" invisible="1" />
             </tree>
         </field>
     </record>

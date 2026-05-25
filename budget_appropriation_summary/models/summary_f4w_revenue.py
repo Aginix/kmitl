@@ -16,6 +16,11 @@ class BudgetAppropriationSummaryF4WRevenue(models.AbstractModel):
         ("43500", "รายได้จากการรับบริจาค หรือ เงินอุดหนุน"),
     ]
 
+    # หน่วยงานรหัสนี้ (และหน่วยงานภายใต้) ให้หัก deduct เข้า 43300 แทน 43100 (ก)
+    SERVICE_REVENUE_DEPT_CODE = "99"
+    DEFAULT_DEDUCT_CATEGORY = "43100 (ก)"
+    SERVICE_REVENUE_CATEGORY = "43300"
+
     @api.model
     def get_data(self, summary_id):
         summary = self.env["budget.appropriation.master.summary"].browse(summary_id)
@@ -144,11 +149,18 @@ class BudgetAppropriationSummaryF4WRevenue(models.AbstractModel):
                         break
 
         # Deduct lines do not specify activity/fund, so subtract them directly
-        # from each department's "43100 (ก)" cell instead of matching by account.
+        # from each department's revenue category cell instead of matching by
+        # account. Dept "99" (and its sub-depts) deducts from 43300; others
+        # deduct from 43100 (ก).
         for line in appropriations.mapped("deduct_line_ids"):
             top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
             if top_dept_id and top_dept_id in dept_map:
-                key = (top_dept_id, "43100 (ก)")
+                cat_code = (
+                    self.SERVICE_REVENUE_CATEGORY
+                    if dept_map[top_dept_id]["code"] == self.SERVICE_REVENUE_DEPT_CODE
+                    else self.DEFAULT_DEDUCT_CATEGORY
+                )
+                key = (top_dept_id, cat_code)
                 totals[key] = totals.get(key, 0) - line.balance
 
         return totals

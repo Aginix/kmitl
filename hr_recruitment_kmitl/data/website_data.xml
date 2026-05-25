@@ -22,6 +22,18 @@
 
     </data>
 
+    <function model="ir.model.fields" name="formbuilder_whitelist">
+        <value>hr.applicant</value>
+        <value
+            eval="[
+            'exam_fee_file',
+            'exam_fee_filename',
+            'medical_certificate_file',
+            'medical_certificate_filename',
+        ]"
+        />
+    </function>
+
     <record id="ir_cron_close_expired_jobs" model="ir.cron">
         <field name="name">Close Expired Job Postings</field>
         <field name="model_id" ref="hr.model_hr_job" />

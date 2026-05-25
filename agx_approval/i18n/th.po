@@ -30,6 +30,11 @@ msgid "<span>Budget</span>"
 msgstr "<span>งบประมาณ</span>"
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "<span>Total</span>"
+msgstr "<span>รวม</span>"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction
 msgid "Action Needed"
 msgstr ""
@@ -337,6 +342,7 @@ msgstr "แบบร่าง"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__product_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__product_id
 msgid "Expense"
 msgstr "รหัสค่าใช้จ่าย"
 
@@ -593,8 +599,9 @@ msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__partner_id
-msgid "Partner"
-msgstr "คู่ค้า/บุคลากร"
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__partner_id
+msgid "Payee"
+msgstr "ผู้รับเงิน"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__payment_type
@@ -656,7 +663,7 @@ msgstr "จองงบประมาณ"
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "Reset to draft"
-msgstr "รีเซ็ท"
+msgstr "ตีกลับ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__user_id
@@ -718,12 +725,19 @@ msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
+msgid "To Verify"
+msgstr "ขอการอนุมัติ"
+
+#. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "To Verify"
 msgstr "จองงบประมาณ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__total_amount
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
 msgid "Total"
 msgstr "จำนวนเงิน"
 
@@ -814,3 +828,29 @@ msgstr "ถ้าหากไม่พบชื่อผู้ขายที่
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "Attachment for Approval Request"
 msgstr "เอกสารประกอบคำขออนุมัติ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__actual_amount
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__actual_amount
+msgid "Actual Amount"
+msgstr "ยอดเบิกจริง"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
+#, python-format
+msgid "Update actual amount"
+msgstr "แก้ไขยอดเบิกจริง"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard
+msgid "Update Actual Amount Wizard"
+msgstr "แก้ไขยอดเบิกจริง"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard_line
+msgid "Update Actual Amount Wizard Line"
+msgstr ""
+
