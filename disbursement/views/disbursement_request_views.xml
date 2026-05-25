@@ -14,7 +14,14 @@
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="ref" />
                 <field name="amount_total" />
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ('submitted', 'signed')" decoration-primary="state in ('verified', 'bill_draft', 'bill_posted', 'payment_draft')" decoration-success="state in ('approved', 'payment_posted', 'done')" />
+                <field name="display_status" widget="badge"
+                    decoration-info="display_status == 'draft'"
+                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
+                    decoration-primary="display_status in ('verified', 'bill_posted')"
+                    decoration-success="display_status in ('approved', 'payment_posted', 'done')"
+                    decoration-danger="display_status == 'cancel'" />
+                <field name="state" invisible="1" />
+                <field name="pipeline_status" invisible="1" />
                 <field name="main_exception_id" />
                 <field name="budget_commitment_id" optional="hide" />
                 <field name="source_analytic_id" optional="show" />
@@ -33,16 +40,11 @@
                     <button name="action_sign" string="Sign" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_manager" />
-                    <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_create_payment"
-                            string="Create Payment"
-                            type="object"
-                            class="oe_highlight"
-                            attrs="{'invisible': ['|', ('state', '!=', 'bill_posted'), ('payment_count', '>', 0)]}"
-                            groups="account.group_account_invoice"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel', 'bill_posted', 'payment_draft', 'payment_posted'))]}" groups="disbursement.group_disbursement_officer" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done" />
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
+                    <field name="state" invisible="1"/>
+                    <field name="pipeline_status" invisible="1"/>
+                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
                 </header>
                 <!-- Budget Consumed Banner -->
                 <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">
@@ -61,32 +63,6 @@
                 </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_bill" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_count', '=', 0)]}">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">ใบตั้งหนี้ <field name="bill_count" nolabel="1" /></span>
-                                <span class="o_stat_text text-muted small"><field name="bill_status_display" nolabel="1" /></span>
-                            </div>
-                        </button>
-                        <field name="bill_draft_count" invisible="1" />
-                        <button name="action_view_payments"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-money"
-                                attrs="{'invisible': [('payment_count', '=', 0)]}">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">รายการจ่ายเงิน <field name="payment_count" nolabel="1" /></span>
-                                <span class="o_stat_text text-muted small"><field name="payment_status_display" nolabel="1" /></span>
-                            </div>
-                        </button>
-                        <button name="action_view_payment_moves"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-book"
-                                attrs="{'invisible': [('payment_move_count', '=', 0)]}">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">รายการล้างหนี้ <field name="payment_move_count" nolabel="1" /></span>
-                            </div>
-                        </button>
                         <button name="open_preview" type="object" class="oe_stat_button" icon="fa-globe">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Preview</span>
@@ -144,6 +120,13 @@
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
                         </group>
                     </group>
+
+                    <group name="attachment" string="Attachment for Disbursement Request">
+                        <field name="attachment_ids"
+                            widget="many2many_binary">
+                        </field>
+                    </group>
+                    
                     <notebook>
                         <page string="Request Lines" name="lines">
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
@@ -194,17 +177,6 @@
                             </group>
                             <div class="oe_clear" />
                         </page>
-                        <page string="Attachments" name="attachment">
-                            <field name="attachment_ids"
-                                   context="{'default_res_model': 'disbursement.request'}">
-                                <tree>
-                                    <field name="name" string="File Name"/>
-                                    <field name="type"/>
-                                    <field name="create_date" string="Upload Date"/>
-                                    <field name="create_uid" string="Uploaded By"/>
-                                </tree>
-                            </field>
-                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -227,16 +199,17 @@
                 <field name="account_fiscal_year_id" />
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
+                <filter string="Pre-approval" name="pre_approval" domain="[('pipeline_status', '=', 'pre_approval')]" />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
                 <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]" />
                 <filter string="Signed" name="signed" domain="[('state', '=', 'signed')]" />
                 <filter string="Verified" name="verified" domain="[('state', '=', 'verified')]" />
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
-                <filter string="Bill Draft" name="bill_draft" domain="[('state', '=', 'bill_draft')]" />
-                <filter string="Bill Posted" name="bill_posted" domain="[('state', '=', 'bill_posted')]" />
-                <filter string="Payment Draft" name="payment_draft" domain="[('state', '=', 'payment_draft')]" />
-                <filter string="Payment Posted" name="payment_posted" domain="[('state', '=', 'payment_posted')]" />
-                <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
+                <filter string="Bill Draft" name="bill_draft" domain="[('pipeline_status', '=', 'bill_draft')]" />
+                <filter string="Bill Posted" name="bill_posted" domain="[('pipeline_status', '=', 'bill_posted')]" />
+                <filter string="Payment Draft" name="payment_draft" domain="[('pipeline_status', '=', 'payment_draft')]" />
+                <filter string="Payment Posted" name="payment_posted" domain="[('pipeline_status', '=', 'payment_posted')]" />
+                <filter string="Done" name="done" domain="[('pipeline_status', '=', 'done')]" />
                 <separator />
                 <filter string="Multi-Partner" name="multi_partner" domain="[('partner_type', '=', 'multi')]" />
                 <separator />
@@ -252,18 +225,18 @@
         </field>
     </record>
 
-    <!-- Action -->
+    <!-- Action: default to requester queue (DRs not yet approved) -->
     <record id="action_disbursement_request" model="ir.actions.act_window">
         <field name="name">Disbursement Requests</field>
         <field name="res_model">disbursement.request</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{}</field>
+        <field name="context">{"search_default_pre_approval": 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create a new Disbursement Request
+                ไม่มีใบขอเบิกที่อยู่ระหว่างขออนุมัติ
             </p>
             <p>
-                Disbursement requests are used to hold information before creating bills.
+                ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / verified)
             </p>
         </field>
     </record>

@@ -22,6 +22,9 @@
         </style>
         <div class="page landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F2-W-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center">
                 <h3>สรุปเปรียบเทียบประมาณการรายรับ</h3>
@@ -68,15 +71,15 @@
                         <tr class="revenue" style="font-weight: bold;">
                             <td>2. เงินรายได้</td>
                             <td class="text-end border-bottom" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['compare_total_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f2_revenue_data['summary']['compare_total_amount'])"/>
                             </td>
                             <td class="text-end border-bottom" contenteditable="false">100.0</td>
                             <td class="text-end border-bottom" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['total_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f2_revenue_data['summary']['total_amount'])"/>
                             </td>
                             <td class="text-end border-bottom" contenteditable="false">100.0</td>
                             <td class="text-end border-bottom" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['diff_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f2_revenue_data['summary']['diff_amount'])"/>
                             </td>
                             <td class="text-end border-bottom" contenteditable="false">
                                 <t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['diff_percentage'])"/>
@@ -86,17 +89,17 @@
                             <tr>
                                 <td class="ps-4" t-out="row['name']"/>
                                 <td class="text-end" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(row['compare_amount'])"/>
+                                    <t t-out="'{0:,.0f}'.format(row['compare_amount'])"/>
                                 </td>
                                 <td class="text-end" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(row['compare_percentage'])"/>
                                 </td>
                                 <td class="text-end" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(row['amount'])"/>
+                                    <t t-out="'{0:,.0f}'.format(row['amount'])"/>
                                 </td>
                                 <td class="text-end" contenteditable="false" t-out="row['percentage']"/>
                                 <td class="text-end" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(row['diff_amount'])"/>
+                                    <t t-out="'{0:,.0f}'.format(row['diff_amount'])"/>
                                 </td>
                                 <td class="text-end" contenteditable="false">
                                     <t t-out="'{0:,.2f}'.format(row['diff_percentage'])"/>
@@ -108,15 +111,15 @@
                         <tr style="padding-top: 48pt">
                             <th class="text-center">รวมรายได้ทั้งสิ้น</th>
                             <th class="text-end" contenteditable="false">
-                                <strong><t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['compare_total_amount'])"/></strong>
+                                <strong><t t-out="'{0:,.0f}'.format(o.f2_revenue_data['summary']['compare_total_amount'])"/></strong>
                             </th>
                             <th class="text-end" contenteditable="false">100.0</th>
                             <th class="text-end" contenteditable="false">
-                                <strong><t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['total_amount'])"/></strong>
+                                <strong><t t-out="'{0:,.0f}'.format(o.f2_revenue_data['summary']['total_amount'])"/></strong>
                             </th>
                             <th class="text-end" contenteditable="false">100.0</th>
                             <th class="text-end" contenteditable="false">
-                                <strong><t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['diff_amount'])"/></strong>
+                                <strong><t t-out="'{0:,.0f}'.format(o.f2_revenue_data['summary']['diff_amount'])"/></strong>
                             </th>
                             <th class="text-end" contenteditable="false">
                                 <strong><t t-out="'{0:,.2f}'.format(o.f2_revenue_data['summary']['diff_percentage'])"/></strong>

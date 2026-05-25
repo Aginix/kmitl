@@ -6,7 +6,7 @@
             p,
             span,
             div {
-                font-size: 7.5pt;
+                font-size: 8pt;
                 line-height: 1.1;
             }
             .table {
@@ -22,9 +22,17 @@
             h3 {
               font-weight: bold;
             }
+            .page.landscape {
+                width: 297mm;
+                padding: 0mm 8mm !important;
+                margin: 10mm 0mm  !important;
+            }
         </style>
         <div class="page f11w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F11-W-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center">
                 <h3>
@@ -33,30 +41,32 @@
                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                 <h3>จําแนกตามหน่วยงานและกองทุน</h3>
             </div>
-            <div style="height: 24pt;"/>
             <div>
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr style="height:0; visibility:collapse; line-height:0;">
                             <th style="width: 80pt;"/>
                             <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
-                                <th style="width: 30pt;"/>
+                                <th style="width: 34pt;"/>
                                 <th style="width: 18pt;"/>
                             </t>
-                            <th style="width: 50pt;"/>
+                            <th style="width: 34pt;"/>
+                            <th style="width: 18pt;"/>
                         </tr>
                         <tr>
                             <th class="text-center" rowspan="2" style="width: 10%;">หน่วยงาน</th>
                             <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
                                 <th class="text-center column-name" colspan="2"><t t-out="column['name']"/></th>
                             </t>
-                            <th class="text-center" rowspan="2">รวมทุกกองทุน</th>
+                            <th class="text-center" colspan="2">รวมทุกกองทุน</th>
                         </tr>
                         <tr>
                             <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
                                 <th class="text-center">เงินรายได้</th>
                                 <th class="text-center">%</th>
                             </t>
+                            <th class="text-center">เงินรายได้</th>
+                            <th class="text-center">จัดสรร %</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,6 +89,11 @@
                                 <td class="text-end fw-bold">
                                       <t t-out="'{0:,.0f}'.format(department['total']['amount'])"/>
                                 </td>
+                                <td class="text-center fw-bold">
+                                    <t t-set="grand_total" t-value="o.f11w_expense_data['summary']['total_amount']"/>
+                                    <t t-set="dept_pct" t-value="(department['total']['amount'] / grand_total * 100) if grand_total else 0"/>
+                                    <t t-out="'{0:,.2f}'.format(dept_pct)"/>
+                                </td>
                             </tr>
                             <t t-set="row_no" t-value="row_no + 1"/>
                         </t>
@@ -98,6 +113,9 @@
                             </t>
                             <td class="text-end">
                                 <t t-out="'{0:,.0f}'.format(o.f11w_expense_data['summary']['total_amount'])"/>
+                            </td>
+                            <td class="text-center">
+                                100.00
                             </td>
                         </tr>
                     </tfoot>

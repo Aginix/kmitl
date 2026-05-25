@@ -1,0 +1,166 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* accounting_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-11 00:00+0000\n"
+"PO-Revision-Date: 2026-03-11 07:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: accounting_kmitl
+#: model:ir.model,name:accounting_kmitl.model_account_move
+msgid "Journal Entry"
+msgstr "รายการบันทึกบัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields,field_description:accounting_kmitl.field_account_move__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields.selection,name:accounting_kmitl.selection__account_move__state__submitted
+msgid "Submitted"
+msgstr "ส่งอนุมัติ"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields,field_description:accounting_kmitl.field_account_move__budget_commitment_id
+msgid "Budget Commitment"
+msgstr "ผูกพันงบประมาณ"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields,field_description:accounting_kmitl.field_account_move__budget_account_id
+msgid "Budget Account"
+msgstr "บัญชีงบประมาณ"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields,help:accounting_kmitl.field_account_move__budget_commitment_id
+msgid "Related budget commitment for this journal entry"
+msgstr "ผูกพันงบประมาณที่เกี่ยวข้องกับรายการบันทึกบัญชีนี้"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields,help:accounting_kmitl.field_account_move__budget_account_id
+msgid "Budget account to be used for commitment"
+msgstr "บัญชีงบประมาณที่ใช้สำหรับการผูกพัน"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "Submit"
+msgstr "ยืนยัน"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "Reset to Draft"
+msgstr "ตั้งค่าเป็นฉบับร่าง"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "Budget"
+msgstr "งบประมาณ"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "View"
+msgstr "ดู"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "Budget Commitment"
+msgstr "ผูกพันงบประมาณ"
+
+#. module: accounting_kmitl
+#: code:addons/accounting_kmitl/models/account_move.py:0
+#, python-format
+msgid "Only draft entries can be submitted."
+msgstr "เฉพาะรายการฉบับร่างเท่านั้นที่สามารถส่งอนุมัติได้"
+
+#. module: accounting_kmitl
+#: code:addons/accounting_kmitl/models/account_move.py:0
+#, python-format
+msgid "Only submitted entries can be reset to draft."
+msgstr "เฉพาะรายการที่ส่งอนุมัติแล้วเท่านั้นที่สามารถตั้งค่าเป็นฉบับร่างได้"
+
+#. module: accounting_kmitl
+#: code:addons/accounting_kmitl/models/account_move.py:0
+#, python-format
+msgid "No budget commitment linked to this journal entry"
+msgstr "ไม่มีผูกพันงบประมาณที่เชื่อมโยงกับรายการบันทึกบัญชีนี้"
+
+#. module: accounting_kmitl
+#: model:tier.definition,name:accounting_kmitl.tier_definition_account_move_head_accountant
+msgid "หัวหน้าฝ่ายบัญชี"
+msgstr ""
+
+#. module: accounting_kmitl
+#: model:tier.definition,name:accounting_kmitl.tier_definition_account_move_accountant
+msgid "ผู้จัดทำ/ผู้ตรวจสอบ"
+msgstr ""
+
+#. module: accounting_kmitl
+#: model:ir.module.category,name:accounting_kmitl.module_category_accounting_kmitl
+msgid "KMITL Accounting"
+msgstr "บัญชี KMITL"
+
+#. module: accounting_kmitl
+#: model:res.groups,name:accounting_kmitl.group_accounting_kmitl_user
+msgid "User"
+msgstr "ผู้ใช้งาน"
+
+#. module: accounting_kmitl
+#: model:res.groups,name:accounting_kmitl.group_accounting_kmitl_manager
+msgid "Manager"
+msgstr "ผู้จัดการ"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_root
+msgid "Accounting"
+msgstr "บัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_vendor_bills
+msgid "ใบตั้งเจ้าหนี้"
+msgstr ""
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_vendor_payment_moves
+#: model:ir.actions.act_window,name:accounting_kmitl.action_vendor_payment_moves
+msgid "ใบล้างเจ้าหนี้"
+msgstr ""
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_journal_entries
+msgid "Journal Entries"
+msgstr "รายการบันทึกบัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_reports
+msgid "Reports"
+msgstr "รายงาน"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_config
+msgid "Configuration"
+msgstr "ตั้งค่า"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_config_chart_of_accounts
+msgid "Chart of Accounts"
+msgstr "ผังบัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_config_journals
+msgid "Journals"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_config_taxes
+msgid "Taxes"
+msgstr "ภาษี"

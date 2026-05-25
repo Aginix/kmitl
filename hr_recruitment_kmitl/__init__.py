@@ -37,11 +37,18 @@ def create_job_website_and_menu(cr, registry):
                 "sequence": 30,
             },
             {
+                "name": "Onboarding",
+                "url": "/my/onboarding",
+                "website_id": website.id,
+                "parent_id": default_menu.id,
+                "sequence": 40,
+            },
+            {
                 "name": "Profile",
                 "url": "/my/profile",
                 "website_id": website.id,
                 "parent_id": default_menu.id,
-                "sequence": 40,
+                "sequence": 50,
             },
         ]
     )

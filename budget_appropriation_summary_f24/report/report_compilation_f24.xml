@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_compilation_f24" model="ir.actions.report">
+        <field name="name">F24 สรุปงบประมาณตามหน่วยงาน</field>
+        <field name="model">budget.appropriation.master.summary</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_summary_f24.report_compilation_f24</field>
+        <field name="report_file">budget_appropriation_summary_f24.report_compilation_f24</field>
+        <field name="paperformat_id" ref="budget_appropriation_summary.paperformat_landscape" />
+    </record>
+
+    <!-- Partial template for F24 content -->
+    <template id="report_compilation_f24_content">
+        <style>
+            .f24 {
+                font-size: 9pt;
+                border-color: #000 !important;
+                table-layout: fixed;
+                width: 100%;
+            }
+            .f24 th, .f24 td {
+                border-color: #000 !important;
+                word-wrap: break-word;
+            }
+            .f24 thead th {
+                text-align: center;
+                vertical-align: middle;
+                font-weight: bold;
+                font-size: 9pt;
+            }
+            .f24 td.num, .f24 tfoot th.num {
+                text-align: right;
+                white-space: nowrap;
+                font-variant-numeric: tabular-nums;
+            }
+            .f24 tfoot th {
+                font-weight: bold;
+            }
+            .f24 tfoot th.dept {
+                text-align: center;
+            }
+            .f24 col.dept { width: auto; }
+            .f24 col.money { width: 40pt; }
+            .f24 col.pct { width: 24pt; }
+        </style>
+        <div class="page landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
+            <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F24-W-วง-003'"/>
+            </t>
+            <t t-call="budget_appropriation_summary.report_council_header"/>
+            <div class="text-center">
+                <h3>สรุปงบประมาณรายจ่าย ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name"/></h3>
+                <h3>จำแนกตามหน่วยงาน</h3>
+                <h3>ส่วนงานวิชาการ</h3>
+            </div>
+            <t t-set="f24" t-value="o.get_f24_report_data()"/>
+            <div class="mt-3">
+                <table class="table table-sm table-bordered f24">
+                    <colgroup>
+                        <col class="dept"/>
+                        <t t-foreach="f24['columns']" t-as="col">
+                            <col t-att-class="col['type']"/>
+                        </t>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th rowspan="2">หน่วยงาน</th>
+                            <th rowspan="2">สำรองจ่าย 15%</th>
+                            <th rowspan="2">ชดใช้เงินคงคลัง</th>
+                            <th colspan="2">MA</th>
+                            <th rowspan="2">งบประจำ</th>
+                            <th rowspan="2">งบลงทุน</th>
+                            <th rowspan="2">เงินสนับสนุนภายนอก</th>
+                            <th rowspan="2">รวม (1)</th>
+                            <th colspan="2">ด้านการศึกษา</th>
+                            <th colspan="2">ด้านการวิจัย</th>
+                            <th colspan="2">ด้านตอบโจทย์อุตสาหกรรม</th>
+                            <th colspan="2">ด้านสังคม</th>
+                            <th rowspan="2">รวม (2)</th>
+                            <th rowspan="2">รวมจัดสรร</th>
+                            <th rowspan="2">รวม (1)+(2)</th>
+                        </tr>
+                        <tr>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                            <th>วงเงิน</th>
+                            <th>จัดสรร %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="f24['rows']" t-as="row">
+                            <tr>
+                                <td contenteditable="false" t-out="row['department_name']"/>
+                                <t t-foreach="f24['columns']" t-as="col">
+                                    <td class="num" contenteditable="false">
+                                        <t t-set="v" t-value="row[col['key']]"/>
+                                        <t t-if="not v">-</t>
+                                        <t t-elif="col['type'] == 'pct'" t-out="'{:,.2f}'.format(v)"/>
+                                        <t t-else="" t-out="'{:,.0f}'.format(v)"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="dept" contenteditable="false" t-out="f24['total']['department_name']"/>
+                            <t t-foreach="f24['columns']" t-as="col">
+                                <th class="num" contenteditable="false">
+                                    <t t-set="v" t-value="f24['total'][col['key']]"/>
+                                    <t t-if="not v">-</t>
+                                    <t t-elif="col['type'] == 'pct'" t-out="'{:,.2f}'.format(v)"/>
+                                    <t t-else="" t-out="'{:,.0f}'.format(v)"/>
+                                </th>
+                            </t>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- Main F24 report template -->
+    <template id="report_compilation_f24">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')" />
+                    <t t-call="budget_appropriation_summary.report_common_styles" />
+                    <t t-set="is_landscape" t-value="True" />
+                    <t t-call="budget_appropriation_summary.report_preview_styles" />
+                    <t t-call="budget_appropriation_summary_f24.report_compilation_f24_content" />
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

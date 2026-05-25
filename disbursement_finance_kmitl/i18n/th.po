@@ -1,0 +1,153 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_finance_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-12 00:00+0000\n"
+"PO-Revision-Date: 2026-05-12 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model,name:disbursement_finance_kmitl.model_account_payment
+msgid "Payments"
+msgstr "รายการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model,name:disbursement_finance_kmitl.model_disbursement_request
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_ids
+msgid "Payments"
+msgstr "รายการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_count
+msgid "Payment Count"
+msgstr "จำนวนรายการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_status_display
+msgid "Payment Status"
+msgstr "สถานะการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_move_ids
+msgid "Payment Journal Entries"
+msgstr "รายการบันทึกบัญชีของการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_move_count
+msgid "Payment Move Count"
+msgstr "จำนวนรายการล้างหนี้"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__pipeline_status__payment_draft
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__display_status__payment_draft
+msgid "Payment Draft"
+msgstr "จ่าย - ฉบับร่าง"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__pipeline_status__payment_posted
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__display_status__payment_posted
+msgid "Payment Posted"
+msgstr "จ่าย - ลงบัญชี"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__pipeline_status__done
+#: model:ir.model.fields.selection,name:disbursement_finance_kmitl.selection__disbursement_request__display_status__done
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "Create Payment"
+msgstr "สร้างใบจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "รายการจ่ายเงิน"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_finance_kmitl.view_disbursement_request_form_inherit_finance
+msgid "รายการล้างหนี้"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.ui.menu,name:disbursement_finance_kmitl.menu_finance_disbursement_request
+msgid "Disbursement Requests"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.actions.act_window,name:disbursement_finance_kmitl.action_disbursement_request_finance
+msgid "Disbursement Requests"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
+msgid "ไม่มีใบขอเบิกที่รอทำการจ่ายเงิน"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: model:ir.actions.act_window,help:disbursement_finance_kmitl.action_disbursement_request_finance
+msgid "ใบขอเบิกที่บัญชีตั้งหนี้แล้ว รอเจ้าหน้าที่การเงินสร้างใบจ่าย"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "จ่ายแล้ว %s/%s"
+msgstr ""
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel: there are payments linked to bills. Remove payments first."
+msgstr "ไม่สามารถยกเลิกได้: มีรายการจ่ายเงินผูกอยู่กับใบตั้งหนี้ กรุณาลบรายการจ่ายเงินก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "No posted unpaid bills to pay."
+msgstr "ไม่มีใบตั้งหนี้ที่ลงบัญชีและยังไม่ชำระสำหรับการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "No bank journal found for company %s."
+msgstr "ไม่พบสมุดธนาคารสำหรับบริษัท %s"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Payment <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> created for %(partner)s."
+msgstr "สร้างรายการจ่ายเงิน <a href=\"%(link)s\" target=\"_blank\">%(name)s</a> สำหรับ %(partner)s เรียบร้อยแล้ว"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Payments"
+msgstr "รายการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Payment"
+msgstr "รายการจ่ายเงิน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "Journal Entry"
+msgstr "รายการบันทึกบัญชี"

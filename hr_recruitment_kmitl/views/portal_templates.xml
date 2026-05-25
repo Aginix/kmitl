@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Portal Home Entry -->
-    <template id="portal_my_home_recruitment" name="Portal My Home: Recruitment Applications"
-        inherit_id="portal.portal_my_home" priority="40">
+    <template
+        id="portal_my_home_recruitment"
+        name="Portal My Home: Recruitment Applications"
+        inherit_id="portal.portal_my_home"
+        priority="40"
+    >
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-call="portal.portal_docs_entry">
                 <t t-set="title">My Applications</t>
@@ -17,8 +21,12 @@
         <t t-call="website.layout">
             <div id="wrap" class="pb-5">
 
-                <div class="py-5 overflow-hidden position-relative text-white bg-thai-d-dark">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25" />
+                <div
+                    class="py-5 overflow-hidden position-relative text-white bg-thai-d-dark"
+                >
+                    <div
+                        class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25"
+                    />
                     <div class="container position-relative z-1 py-4">
                         <h1 class="display-5 fw-bold mb-2">ติดตามสถานะการสมัครงาน</h1>
                         <p class="lead text-white-50 mb-0">
@@ -32,11 +40,15 @@
                         <div class="card-body p-4">
 
                             <div class="d-flex align-items-center mb-4">
-                                <div class="rounded-3 p-2 me-3 d-flex align-items-center justify-content-center bg-light border"
-                                    style="width: 45px; height: 45px;">
+                                <div
+                                    class="rounded-3 p-2 me-3 d-flex align-items-center justify-content-center bg-light border"
+                                    style="width: 45px; height: 45px;"
+                                >
                                     <i class="fa fa-line-chart text-primary fs-4" />
                                 </div>
-                                <h4 class="fw-bold m-0 text-dark">สถานะการสมัครงานของคุณ</h4>
+                                <h4
+                                    class="fw-bold m-0 text-dark"
+                                >สถานะการสมัครงานของคุณ</h4>
                             </div>
 
                             <t t-if="applications">
@@ -44,15 +56,25 @@
                                     <table class="table table-hover align-middle mb-0">
                                         <thead class="table-light text-secondary">
                                             <tr>
-                                                <th class="py-3 ps-3 border-0 small fw-bold text-uppercase">ตำแหน่ง</th>
-                                                <th class="py-3 border-0 small fw-bold text-uppercase">หน่วยงาน</th>
-                                                <th class="py-3 border-0 small fw-bold text-uppercase text-center">
+                                                <th
+                                                    class="py-3 ps-3 border-0 small fw-bold text-uppercase"
+                                                >ตำแหน่ง</th>
+                                                <th
+                                                    class="py-3 border-0 small fw-bold text-uppercase"
+                                                >หน่วยงาน</th>
+                                                <th
+                                                    class="py-3 border-0 small fw-bold text-uppercase text-center"
+                                                >
                                                     วันที่สมัคร
                                                 </th>
-                                                <th class="py-3 border-0 small fw-bold text-uppercase text-center">
+                                                <th
+                                                    class="py-3 border-0 small fw-bold text-uppercase text-center"
+                                                >
                                                     สถานะ
                                                 </th>
-                                                <th class="py-3 pe-3 border-0 small fw-bold text-uppercase text-end">
+                                                <th
+                                                    class="py-3 pe-3 border-0 small fw-bold text-uppercase text-end"
+                                                >
                                                     ขั้นตอนล่าสุด
                                                 </th>
                                             </tr>
@@ -60,34 +82,55 @@
 
                                         <tbody class="text-dark">
                                             <t t-foreach="applications" t-as="app">
-                                                <tr class="border-bottom position-relative" style="cursor: pointer;">
+                                                <tr
+                                                    class="border-bottom position-relative"
+                                                    style="cursor: pointer;"
+                                                >
                                                     <td class="py-4 ps-3 fw-bold">
-                                                        <a t-attf-href="/my/application/#{app.id}"
-                                                            class="stretched-link text-decoration-none text-dark">
-                                                            <t t-esc="app.job_id.name or app.name or '-'" />
+                                                        <a
+                                                            t-attf-href="/my/application/#{app.id}"
+                                                            class="stretched-link text-decoration-none text-dark"
+                                                        >
+                                                            <t
+                                                                t-out="app.job_id.name or app.name or '-'"
+                                                            />
                                                         </a>
                                                     </td>
 
                                                     <td class="text-dark">
-                                                        <t t-esc="app.department_id.name or '-'" />
+                                                        <t
+                                                            t-out="app.department_id.name or '-'"
+                                                        />
                                                     </td>
 
                                                     <td class="text-center">
-                                                        <span t-field="app.create_date"
-                                                            t-options='{"widget": "date"}' />
+                                                        <span
+                                                            t-field="app.create_date"
+                                                            t-options='{"widget": "date"}'
+                                                        />
                                                     </td>
 
                                                     <td class="text-center">
-                                                        <t t-call="hr_recruitment_kmitl.application_status_badge">
-                                                            <t t-set="label"
-                                                                t-value="'Hired' if app.application_status == 'hired' else 'Not Progressed' if app.application_status == 'refused' else 'In Progress'" />
-                                                            <t t-set="badge_class"
-                                                                t-value="'success' if app.application_status == 'hired' else 'danger' if app.application_status == 'refused' else 'primary'" />
+                                                        <t
+                                                            t-call="hr_recruitment_kmitl.application_status_badge"
+                                                        >
+                                                            <t
+                                                                t-set="label"
+                                                                t-value="'Hired' if app.application_status == 'hired' else 'Not Progressed' if app.application_status == 'refused' else 'In Progress'"
+                                                            />
+                                                            <t
+                                                                t-set="badge_class"
+                                                                t-value="'success' if app.application_status == 'hired' else 'danger' if app.application_status == 'refused' else 'primary'"
+                                                            />
                                                         </t>
                                                     </td>
 
-                                                    <td class="text-end pe-3 text-secondary">
-                                                        <t t-esc="app.stage_id.name or '-'" />
+                                                    <td
+                                                        class="text-end pe-3 text-secondary"
+                                                    >
+                                                        <t
+                                                            t-out="app.stage_id.name or '-'"
+                                                        />
                                                     </td>
                                                 </tr>
                                             </t>
@@ -95,8 +138,10 @@
                                     </table>
                                 </div>
 
-                                <div class="d-flex justify-content-center mt-4"
-                                    t-if="pager and pager.get('page_count', 0) &gt; 1">
+                                <div
+                                    class="d-flex justify-content-center mt-4"
+                                    t-if="pager and pager.get('page_count', 0) &gt; 1"
+                                >
                                     <t t-call="portal.portal_pager" />
                                 </div>
                             </t>
@@ -106,15 +151,23 @@
                                     <div class="mb-3">
                                         <span
                                             class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light border"
-                                            style="width: 72px; height: 72px;">
-                                            <i class="fa fa-inbox text-secondary fs-3" />
+                                            style="width: 72px; height: 72px;"
+                                        >
+                                            <i
+                                                class="fa fa-inbox text-secondary fs-3"
+                                            />
                                         </span>
                                     </div>
-                                    <h5 class="fw-bold text-dark mb-2">ยังไม่มีใบสมัครงาน</h5>
+                                    <h5
+                                        class="fw-bold text-dark mb-2"
+                                    >ยังไม่มีใบสมัครงาน</h5>
                                     <p class="text-secondary mb-4">
                                         เมื่อคุณส่งใบสมัครแล้ว ระบบจะแสดงรายการและสถานะการพิจารณาที่หน้านี้
                                     </p>
-                                    <a href="/jobs" class="btn btn-primary rounded-pill px-4">
+                                    <a
+                                        href="/jobs"
+                                        class="btn btn-primary rounded-pill px-4"
+                                    >
                                         ดูตำแหน่งงานที่เปิดรับ
                                     </a>
                                 </div>
@@ -135,13 +188,19 @@
                 <!-- Breadcrumb -->
                 <nav class="container py-3">
                     <div class="d-flex align-items-center small text-secondary">
-                        <a href="/my/applications" class="text-secondary text-decoration-none">
-                            <i class="fa fa-chevron-left me-1" style="font-size: 0.7rem;" />
+                        <a
+                            href="/my/applications"
+                            class="text-secondary text-decoration-none"
+                        >
+                            <i
+                                class="fa fa-chevron-left me-1"
+                                style="font-size: 0.7rem;"
+                            />
                             ติดตามใบสมัคร
                         </a>
                         <span class="mx-2">/</span>
                         <span class="fw-bold text-dark">
-                            <t t-esc="view_data['summary']['job_position'] or '-'" />
+                            <t t-out="view_data['summary']['job_position'] or '-'" />
                         </span>
                     </div>
                 </nav>
@@ -151,47 +210,76 @@
                     <!-- Header -->
                     <div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
                         <div class="card-body p-4 position-relative">
-                            <div class="position-absolute start-0 top-0 bottom-0 bg-primary" style="width: 6px;" />
-                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                            <div
+                                class="position-absolute start-0 top-0 bottom-0 bg-primary"
+                                style="width: 6px;"
+                            />
+                            <div
+                                class="d-flex justify-content-between align-items-start flex-wrap gap-3"
+                            >
                                 <div>
                                     <h4 class="fw-bold text-dark mb-2">
-                                        <t t-esc="view_data['summary']['job_position'] or '-'" />
+                                        <t
+                                            t-out="view_data['summary']['job_position'] or '-'"
+                                        />
                                     </h4>
-                                    <div class="text-secondary mb-1" t-if="view_data['summary']['department']">
+                                    <div
+                                        class="text-secondary mb-1"
+                                        t-if="view_data['summary']['department']"
+                                    >
                                         <i class="fa fa-building-o me-1" />
                                         <span>
-                                            <t t-esc="view_data['summary']['department']" />
+                                            <t
+                                                t-out="view_data['summary']['department']"
+                                            />
                                         </span>
                                     </div>
                                     <div class="text-secondary small">
                                         <i class="fa fa-clock-o me-1" />
                                         สมัครเมื่อ:
                                         <span>
-                                            <t t-esc="view_data['summary']['date_applied'] or '-'" />
+                                            <t
+                                                t-out="view_data['summary']['date_applied'] or '-'"
+                                            />
                                         </span>
                                     </div>
                                 </div>
 
-                                <div class="d-flex flex-column align-items-start align-items-md-end gap-2">
-                                    <t t-call="hr_recruitment_kmitl.application_status_badge">
-                                        <t t-set="label" t-value="view_data['summary']['status']['label']" />
-                                        <t t-set="badge_class" t-value="view_data['summary']['status']['class']" />
+                                <div
+                                    class="d-flex flex-column align-items-start align-items-md-end gap-2"
+                                >
+                                    <t
+                                        t-call="hr_recruitment_kmitl.application_status_badge"
+                                    >
+                                        <t
+                                            t-set="label"
+                                            t-value="view_data['summary']['status']['label']"
+                                        />
+                                        <t
+                                            t-set="badge_class"
+                                            t-value="view_data['summary']['status']['class']"
+                                        />
                                     </t>
                                 </div>
                             </div>
 
                             <hr class="my-4" />
 
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div
+                                class="d-flex justify-content-between align-items-center flex-wrap gap-3"
+                            >
                                 <div
-                                    class="bg-light px-3 py-2 rounded-3 text-secondary small d-flex align-items-center">
+                                    class="bg-light px-3 py-2 rounded-3 text-secondary small d-flex align-items-center"
+                                >
                                     <i class="fa fa-lock me-2" />
                                     ใบสมัครนี้ถูกส่งแล้ว ไม่สามารถแก้ไขข้อมูลได้
                                 </div>
 
-                                <a t-if="view_data['summary'].get('job_url')"
+                                <a
+                                    t-if="view_data['summary'].get('job_url')"
                                     t-att-href="view_data['summary']['job_url']"
-                                    class="text-primary fw-bold small text-decoration-none">
+                                    class="text-primary fw-bold small text-decoration-none"
+                                >
                                     <i class="fa fa-external-link me-1" />
                                     ดูประกาศตำแหน่งงานต้นฉบับ
                                 </a>
@@ -204,52 +292,73 @@
                         <div class="card-body p-4">
                             <h6 class="fw-bold text-dark mb-5">สถานะการดำเนินการ</h6>
 
-                            <div class="d-flex justify-content-between position-relative flex-wrap gap-3">
-                                <div class="position-absolute top-50 start-0 translate-middle-y w-100 bg-light"
-                                    style="height: 2px; z-index: 0;" />
+                            <div
+                                class="d-flex justify-content-between position-relative flex-wrap gap-3"
+                            >
+                                <div
+                                    class="position-absolute top-50 start-0 translate-middle-y w-100 bg-light"
+                                    style="height: 2px; z-index: 0;"
+                                />
 
                                 <t t-foreach="view_data['progress']" t-as="stage">
-                                    <div class="text-center position-relative z-1 bg-white px-2 flex-fill"
-                                        t-att-class="'text-center position-relative z-1 bg-white px-2 flex-fill %s' % ('opacity-50' if stage['state'] == 'upcoming' else '')">
+                                    <div
+                                        class="text-center position-relative z-1 bg-white px-2 flex-fill"
+                                        t-att-class="'text-center position-relative z-1 bg-white px-2 flex-fill %s' % ('opacity-50' if stage['state'] == 'upcoming' else '')"
+                                    >
 
                                         <t t-if="stage['state'] == 'done'">
-                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-2"
-                                                style="width: 36px; height: 36px;">
+                                            <div
+                                                class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-2"
+                                                style="width: 36px; height: 36px;"
+                                            >
                                                 <i class="fa fa-check" />
                                             </div>
                                             <div class="small fw-bold">
-                                                <t t-esc="stage['name']" />
+                                                <t t-out="stage['name']" />
                                             </div>
                                         </t>
 
-                                        <t t-elif="stage['state'] in ['current', 'current_hired', 'current_refused']">
-                                            <div t-att-class="'rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm %s' % (
+                                        <t
+                                            t-elif="stage['state'] in ['current', 'current_hired', 'current_refused']"
+                                        >
+                                            <div
+                                                t-att-class="'rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm %s' % (
                                                 'bg-primary text-white' if stage['state'] == 'current'
                                                 else 'bg-success text-white' if stage['state'] == 'current_hired'
                                                 else 'bg-danger text-white'
-                                            )" style="width: 36px; height: 36px;">
-                                                <i t-att-class="'fa %s' % (
+                                            )"
+                                                style="width: 36px; height: 36px;"
+                                            >
+                                                <i
+                                                    t-att-class="'fa %s' % (
                                                     'fa-clock-o' if stage['state'] == 'current'
                                                     else 'fa-check' if stage['state'] == 'current_hired'
                                                     else 'fa-times'
-                                                )" />
+                                                )"
+                                                />
                                             </div>
-                                            <div t-att-class="'small fw-bold %s' % (
+                                            <div
+                                                t-att-class="'small fw-bold %s' % (
                                                 'text-primary' if stage['state'] == 'current'
                                                 else 'text-success' if stage['state'] == 'current_hired'
                                                 else 'text-danger'
-                                            )">
-                                                <t t-esc="stage['name']" />
+                                            )"
+                                            >
+                                                <t t-out="stage['name']" />
                                             </div>
                                         </t>
 
                                         <t t-else="">
-                                            <div class="rounded-circle border border-secondary text-secondary d-flex align-items-center justify-content-center mx-auto mb-2"
-                                                style="width: 36px; height: 36px;">
-                                                <t t-esc="('%02d' % (stage_index + 1))" />
+                                            <div
+                                                class="rounded-circle border border-secondary text-secondary d-flex align-items-center justify-content-center mx-auto mb-2"
+                                                style="width: 36px; height: 36px;"
+                                            >
+                                                <t
+                                                    t-out="('%02d' % (stage_index + 1))"
+                                                />
                                             </div>
                                             <div class="small">
-                                                <t t-esc="stage['name']" />
+                                                <t t-out="stage['name']" />
                                             </div>
                                         </t>
                                     </div>
@@ -260,69 +369,154 @@
 
                     <!-- Tabs -->
                     <div class="mt-3">
-                        <ul class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-4 flex-column flex-lg-row gap-1 mb-4"
-                            id="applicationViewTabs" role="tablist">
+                        <ul
+                            class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-4 flex-column flex-lg-row gap-1 mb-4"
+                            id="applicationViewTabs"
+                            role="tablist"
+                        >
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active w-100 py-2" id="step1-tab" data-bs-toggle="pill"
-                                    data-bs-target="#step1" type="button" role="tab">
+                                <button
+                                    class="nav-link active w-100 py-2"
+                                    id="step1-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#step1"
+                                    type="button"
+                                    role="tab"
+                                >
                                     <i class="fa fa-user-o me-2" /> ข้อมูลส่วนบุคคล
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link w-100 py-2" id="step2-tab" data-bs-toggle="pill"
-                                    data-bs-target="#step2" type="button" role="tab">
-                                    <i class="fa fa-graduation-cap me-2" /> ประวัติการศึกษา
+                                <button
+                                    class="nav-link w-100 py-2"
+                                    id="step2-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#step2"
+                                    type="button"
+                                    role="tab"
+                                >
+                                    <i
+                                        class="fa fa-graduation-cap me-2"
+                                    /> ประวัติการศึกษา
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link w-100 py-2" id="step3-tab" data-bs-toggle="pill"
-                                    data-bs-target="#step3" type="button" role="tab">
+                                <button
+                                    class="nav-link w-100 py-2"
+                                    id="step3-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#step3"
+                                    type="button"
+                                    role="tab"
+                                >
                                     <i class="fa fa-briefcase me-2" /> ประสบการณ์ทำงาน
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link w-100 py-2" id="step4-tab" data-bs-toggle="pill"
-                                    data-bs-target="#step4" type="button" role="tab">
-                                    <i class="fa fa-university me-2" /> ข้อมูลทางวิชาการและราชการ
+                                <button
+                                    class="nav-link w-100 py-2"
+                                    id="step4-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#step4"
+                                    type="button"
+                                    role="tab"
+                                >
+                                    <i
+                                        class="fa fa-university me-2"
+                                    /> ข้อมูลทางวิชาการและราชการ
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link w-100 py-2" id="step5-tab" data-bs-toggle="pill"
-                                    data-bs-target="#step5" type="button" role="tab">
+                                <button
+                                    class="nav-link w-100 py-2"
+                                    id="step5-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#step5"
+                                    type="button"
+                                    role="tab"
+                                >
                                     <i class="fa fa-star-o me-2" /> ความสามารถพิเศษ
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link w-100 py-2" id="step6-tab" data-bs-toggle="pill"
-                                    data-bs-target="#step6" type="button" role="tab">
+                                <button
+                                    class="nav-link w-100 py-2"
+                                    id="step6-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#step6"
+                                    type="button"
+                                    role="tab"
+                                >
                                     <i class="fa fa-folder-open-o me-2" /> เอกสารประกอบ
                                 </button>
                             </li>
                         </ul>
 
                         <div class="tab-content">
-                            <div class="tab-pane fade show active" id="step1" role="tabpanel" tabindex="0">
-                                <t t-call="hr_recruitment_kmitl.application_view_tab_personal" />
+                            <div
+                                class="tab-pane fade show active"
+                                id="step1"
+                                role="tabpanel"
+                                tabindex="0"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.application_view_tab_personal"
+                                />
                             </div>
 
-                            <div class="tab-pane fade" id="step2" role="tabpanel" tabindex="0">
-                                <t t-call="hr_recruitment_kmitl.application_view_tab_education" />
+                            <div
+                                class="tab-pane fade"
+                                id="step2"
+                                role="tabpanel"
+                                tabindex="0"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.application_view_tab_education"
+                                />
                             </div>
 
-                            <div class="tab-pane fade" id="step3" role="tabpanel" tabindex="0">
-                                <t t-call="hr_recruitment_kmitl.application_view_tab_work_history" />
+                            <div
+                                class="tab-pane fade"
+                                id="step3"
+                                role="tabpanel"
+                                tabindex="0"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.application_view_tab_work_history"
+                                />
                             </div>
 
-                            <div class="tab-pane fade" id="step4" role="tabpanel" tabindex="0">
-                                <t t-call="hr_recruitment_kmitl.application_view_tab_academic" />
+                            <div
+                                class="tab-pane fade"
+                                id="step4"
+                                role="tabpanel"
+                                tabindex="0"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.application_view_tab_academic"
+                                />
                             </div>
 
-                            <div class="tab-pane fade" id="step5" role="tabpanel" tabindex="0">
-                                <t t-call="hr_recruitment_kmitl.application_view_tab_skills" />
+                            <div
+                                class="tab-pane fade"
+                                id="step5"
+                                role="tabpanel"
+                                tabindex="0"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.application_view_tab_skills"
+                                />
                             </div>
 
-                            <div class="tab-pane fade" id="step6" role="tabpanel" tabindex="0">
-                                <t t-call="hr_recruitment_kmitl.application_view_tab_documents" />
+                            <div
+                                class="tab-pane fade"
+                                id="step6"
+                                role="tabpanel"
+                                tabindex="0"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.application_view_tab_documents"
+                                />
                             </div>
                         </div>
                     </div>

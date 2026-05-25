@@ -19,6 +19,9 @@
         </style>
         <div class="page f5w" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F5-W-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center" style="font-weight: bold">
                 <h3>สรุปเปรียบเทียบประมาณการรายจ่าย</h3>
@@ -58,11 +61,11 @@
                     <t t-foreach="o.f5w_expense_data['activities']" t-as="activity">
                         <tr>
                             <td class="ps-2 border-0 border-start" t-esc="activity['name']"/>
-                            <td class="text-end border-0 border-start" contenteditable="false"><t t-out="'{0:,.2f}'.format(activity['compare_amount'])"/></td>
+                            <td class="text-end border-0 border-start" contenteditable="false"><t t-out="'{0:,.0f}'.format(activity['compare_amount'])"/></td>
                             <td class="text-end border-0 border-start" contenteditable="false"><t t-out="'{0:,.2f}'.format(activity['compare_percentage'])"/></td>
-                            <td class="text-end border-0 border-start" contenteditable="false"><t t-out="'{0:,.2f}'.format(activity['amount'])"/></td>
+                            <td class="text-end border-0 border-start" contenteditable="false"><t t-out="'{0:,.0f}'.format(activity['amount'])"/></td>
                             <td class="text-end border-0 border-start" contenteditable="false" t-esc="activity['percentage']"/>
-                            <td class="text-end border-0 border-start" contenteditable="false"><t t-out="'{0:,.2f}'.format(activity['diff_amount'])"/></td>
+                            <td class="text-end border-0 border-start" contenteditable="false"><t t-out="'{0:,.0f}'.format(activity['diff_amount'])"/></td>
                             <td class="text-end border-0 border-start border-end" contenteditable="false"><t t-out="'{0:,.2f}'.format(activity['diff_percentage'])"/></td>
                         </tr>
                     </t>
@@ -71,15 +74,15 @@
                     <tr style="padding-top: 60px">
                         <th class="text-center">รวมทั้งสิ้น</th>
                         <th class="text-end fw-bold" contenteditable="false">
-                            <t t-out="'{0:,.2f}'.format(o.f5w_expense_data['summary']['compare_total_amount'])"/>
+                            <t t-out="'{0:,.0f}'.format(o.f5w_expense_data['summary']['compare_total_amount'])"/>
                         </th>
                         <th class="text-end" contenteditable="false">100.0</th>
                         <th class="text-end fw-bold" contenteditable="false">
-                            <t t-out="'{0:,.2f}'.format(o.f5w_expense_data['summary']['total_amount'])"/>
+                            <t t-out="'{0:,.0f}'.format(o.f5w_expense_data['summary']['total_amount'])"/>
                         </th>
                         <th class="text-end" contenteditable="false">100.0</th>
                         <th class="text-end fw-bold" contenteditable="false">
-                            <t t-out="'{0:,.2f}'.format(o.f5w_expense_data['summary']['diff_amount'])"/>
+                            <t t-out="'{0:,.0f}'.format(o.f5w_expense_data['summary']['diff_amount'])"/>
                         </th>
                         <th class="text-end fw-bold" contenteditable="false">
                             <t t-out="'{0:,.2f}'.format(o.f5w_expense_data['summary']['diff_percentage'])"/>

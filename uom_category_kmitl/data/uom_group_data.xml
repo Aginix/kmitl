@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Turn on the "Units of Measure" toggle in General Settings on install.
+         The setting (`product.res_config_settings.group_uom`) is implemented
+         as `implied_group='uom.group_uom'`, which means "enabled" == having
+         uom.group_uom in base.group_user.implied_ids. We add it directly
+         here so installing this module flips that toggle on for every
+         internal user without anyone touching the UI. -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('uom.group_uom'))]"/>
+    </record>
+
+</odoo>

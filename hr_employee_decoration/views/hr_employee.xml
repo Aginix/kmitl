@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_employee_view_form" model="ir.ui.view">
+        <field name="name">hr.employee.view.form.inherit.decoration</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Decoration" groups="hr.group_hr_user">
+                    <field name="decoration_ids">
+                        <tree
+                            default_order="decoration_level asc"
+                            class="hr_employee_decoration"
+                        >
+                            <field name="effective_date" />
+                            <field
+                                name="relation_id"
+                                options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                            />
+                            <field name="decoration_level" invisible="1" />
+                            <field name="published_date" />
+                            <field name="volume" />
+                            <field name="chapter" />
+                            <field name="page" />
+                            <field name="no" />
+                            <field
+                                name="office_order_id"
+                                options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                            />
+                            <field name="department" />
+                            <field name="year" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+            <xpath expr="//field[@name='category_ids']" position="before">
+                <group>
+                    <field
+                        name="highest_decoration_id"
+                        attrs="{'invisible':[('highest_decoration_id', '=', False)]}"
+                    />
+                    <field
+                        name="has_chakrabarti_mala_medal"
+                        string="Chakrabarti Mala Medal"
+                        attrs="{'invisible':[('has_chakrabarti_mala_medal', '=', False)]}"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

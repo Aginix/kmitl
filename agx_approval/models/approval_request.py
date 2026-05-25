@@ -19,7 +19,7 @@ class ApprovalRequest(models.Model):
         "submitted": [("readonly", True)],
         "approved": [("readonly", True)],
         "billed": [("readonly", True)],
-        "cancelled": [("readonly", True)],
+        "rejected": [("readonly", True)],
     }
 
     attachment_ids = fields.One2many(
@@ -53,6 +53,27 @@ class ApprovalRequest(models.Model):
     )
 
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+
+    currency_id = fields.Many2one(
+        string="Currency",
+        comodel_name="res.currency",
+        related="company_id.currency_id",
+        readonly=True,
+    )
+
+    total_amount = fields.Monetary(
+        compute="_compute_total_amount",
+        string="Total Estimated Cost",
+        currency_field="currency_id",
+        store=True,
+    )
+
+    total_actual_amount = fields.Monetary(
+        compute="_compute_total_actual_amount",
+        string="รวมยอดเบิกจริง",
+        currency_field="currency_id",
+        store=True,
+    )
 
     category_id = fields.Many2one(
         string="Category",
@@ -147,7 +168,6 @@ class ApprovalRequest(models.Model):
         "approval.request.line",
         "request_id",
         string="Expense Lines",
-        states=READONLY_STATES,
     )
 
     has_period = fields.Boolean(
@@ -169,7 +189,7 @@ class ApprovalRequest(models.Model):
         ("validated", "Validated"),
         ("approved", "Approved"),
         ("billed", "Billed"),
-        ("cancelled", "Cancelled"),
+        ("rejected", "Rejected"),
     ],
         default="draft",
         string="state"
@@ -186,10 +206,13 @@ class ApprovalRequest(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+        domain=lambda self: self._domain_budget_account_id(),
         copy=False,
         tracking=True,
     )
+
+    def _domain_budget_account_id(self):
+        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
 
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -342,11 +365,18 @@ class ApprovalRequest(models.Model):
             record.state = "validated"
         return True
 
+    def action_bill(self):
+        for record in self:
+            if record.state != "approved":
+                raise UserError(_("Only approved requests can be billed."))
+            record.state = "billed"
+        return True
+
     def action_cancel(self):
         for record in self:
-            if record.state == "cancelled":
-                raise UserError(_("Request is already cancelled."))
-            record.state = "cancelled"
+            if record.state == "rejected":
+                raise UserError(_("Request is already rejected."))
+            record.state = "rejected"
             if record.budget_commitment_id:
                 try:
                     record._cancel_budget_commitment()
@@ -368,7 +398,7 @@ class ApprovalRequest(models.Model):
                 try:
                     record._cancel_budget_commitment()
                     record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
+                        body=_("Budget commitment %s has been rejected")
                         % record.budget_commitment_id.name
                     )
                 except UserError as e:
@@ -377,6 +407,14 @@ class ApprovalRequest(models.Model):
                         % str(e)
                     )
         return True
+
+    def write(self, vals):
+        result = super().write(vals)
+        if vals.get("state") == "approved":
+            for record in self:
+                for line in record.line_ids.filtered(lambda l: not l.actual_amount):
+                    line.actual_amount = line.total_amount
+        return result
 
     # def write(self, values):
     #     if (
@@ -517,8 +555,39 @@ class ApprovalRequest(models.Model):
                 "validated",
                 "approved",
                 "billed",
-                "cancelled"
+                "rejected"
             ):
                 rec.is_editable = False
             else:
                 rec.is_editable = True
+
+    def action_open_actual_amount_wizard(self):
+        self.ensure_one()
+        wizard = self.env["approval.update.actual.amount.wizard"].create({
+            "approval_request_id": self.id,
+            "line_ids": [
+                (0, 0, {
+                    "approval_line_id": line.id,
+                    "actual_amount": line.actual_amount,
+                })
+                for line in self.line_ids
+            ],
+        })
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Update actual amount"),
+            "res_model": "approval.update.actual.amount.wizard",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    @api.depends("line_ids.total_amount")
+    def _compute_total_amount(self):
+        for rec in self:
+            rec.total_amount = sum(rec.line_ids.mapped("total_amount"))
+
+    @api.depends("line_ids.actual_amount")
+    def _compute_total_actual_amount(self):
+        for rec in self:
+            rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))

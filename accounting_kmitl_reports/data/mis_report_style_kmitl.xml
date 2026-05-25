@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+
+    <!-- KMITL default style -->
+    <record id="style_kmitl_default" model="mis.report.style">
+        <field name="name">KMITL default</field>
+        <field name="dp_inherit">false</field>
+        <field name="dp">2</field>
+        <field name="hide_empty_inherit">false</field>
+        <field name="hide_empty">true</field>
+    </record>
+
+    <!-- Section header (bold) -->
+    <record id="style_kmitl_section" model="mis.report.style">
+        <field name="name">KMITL section header</field>
+        <field name="font_weight_inherit">false</field>
+        <field name="font_weight">bold</field>
+    </record>
+
+    <!-- Sub-section header (bold + indent) -->
+    <record id="style_kmitl_subsection" model="mis.report.style">
+        <field name="name">KMITL sub-section</field>
+        <field name="font_weight_inherit">false</field>
+        <field name="font_weight">bold</field>
+        <field name="indent_level_inherit">false</field>
+        <field name="indent_level">1</field>
+    </record>
+
+    <!-- Detail line (indented) -->
+    <record id="style_kmitl_detail" model="mis.report.style">
+        <field name="name">KMITL detail</field>
+        <field name="indent_level_inherit">false</field>
+        <field name="indent_level">2</field>
+    </record>
+
+    <!-- Total line (bold, top border) -->
+    <record id="style_kmitl_total" model="mis.report.style">
+        <field name="name">KMITL total</field>
+        <field name="font_weight_inherit">false</field>
+        <field name="font_weight">bold</field>
+    </record>
+
+</odoo>

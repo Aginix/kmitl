@@ -571,7 +571,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__name
 msgid "Number"
-msgstr ""
+msgstr "เลขที่ใบขอเบิก"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_needaction_counter
@@ -1188,3 +1188,64 @@ msgstr "ไม่มีใบตั้งหนี้เชื่อมอยู
 #, python-format
 msgid "The bill must be posted before registering a payment."
 msgstr "ต้อง post ใบตั้งหนี้ก่อนจึงจะบันทึกการจ่ายเงินได้"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__pipeline_status
+msgid "Pipeline Status"
+msgstr "สถานะการดำเนินการ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__display_status
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__pipeline_status__pre_approval
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pre_approval
+msgid "Pre-approval"
+msgstr "รออนุมัติ"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__pipeline_status__approved
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__approved
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: disbursement
+#: model:ir.actions.act_window,help:disbursement.action_disbursement_request
+msgid "ไม่มีใบขอเบิกที่อยู่ระหว่างขออนุมัติ"
+msgstr ""
+
+#. module: disbursement
+#: model:ir.actions.act_window,help:disbursement.action_disbursement_request
+msgid "ใบขอเบิกที่กำลังอยู่ในขั้นตอนการอนุมัติ (draft / submitted / signed / verified)"
+msgstr ""
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot submit a disbursement request with no lines. Please add at least one line."
+msgstr "ไม่สามารถส่งใบขอเบิกที่ไม่มีรายการได้ กรุณาเพิ่มรายการอย่างน้อย 1 รายการ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Cannot cancel an already cancelled request."
+msgstr "ไม่สามารถยกเลิกใบขอเบิกที่ถูกยกเลิกแล้วได้"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Are you sure you want to approve? This will obligate and consume the budget."
+msgstr "ยืนยันการอนุมัติ? การอนุมัติจะตัดและใช้งบประมาณ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Attachment for Disbursement Request"
+msgstr "เอกสารประกอบใบขอเบิก"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"

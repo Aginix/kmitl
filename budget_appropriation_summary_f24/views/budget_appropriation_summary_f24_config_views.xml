@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_budget_appropriation_summary_f24_config_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.summary.f24.config.form</field>
+        <field name="model">budget.appropriation.summary.f24.config</field>
+        <field name="arch" type="xml">
+            <form string="ตั้งค่ารายงาน F24">
+                <sheet>
+                    <group>
+                        <field name="name" invisible="1"/>
+                        <field
+                            name="department_analytic_ids"
+                            widget="many2many_checkboxes"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_f24_config" model="ir.actions.act_window">
+        <field name="name">ตั้งค่ารายงาน F24</field>
+        <field name="res_model">budget.appropriation.summary.f24.config</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="f24_config_default"/>
+    </record>
+
+    <menuitem
+        id="menu_f24_config"
+        name="รายงาน F24"
+        parent="budget.budget_config_reporting_menu"
+        action="action_f24_config"
+        sequence="10"
+        groups="budget.group_budget_manager"
+    />
+</odoo>

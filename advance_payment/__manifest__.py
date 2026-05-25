@@ -10,7 +10,7 @@
         "l10n_th_base_sequence",
         "hr",
         "purchase_request",
-        "account_payment_kmitl",
+        "finance_kmitl",
         "base_exception",
         "account_analytic_kmitl",
     ],

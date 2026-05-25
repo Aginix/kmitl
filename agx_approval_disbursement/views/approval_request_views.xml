@@ -9,12 +9,13 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//header/button[@name='action_to_verify']" position="after">
+                <field name="has_active_disbursement" invisible="1" />
                 <button
                     name="action_create_disbursement_request"
                     string="Create Bill"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': [('state', '!=', 'approved')]}"
+                    attrs="{'invisible': ['|', ('state', 'not in', ['approved', 'billed']), ('has_active_disbursement', '=', True)]}"
                 />
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -32,6 +33,15 @@
                     />
                 </button>
             </xpath>
+            <xpath expr="//group[@name='attachment']" position="after">
+                <group string="Attachment for Disbursement"
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'billed'])]}">
+                    <field name="disbursement_attachment_ids"
+                        widget="many2many_binary"
+                        attrs="{'readonly': [('disbursement_request_count', '>', 0)]}">
+                    </field>
+                </group>
+            </xpath>
         </field>
     </record>
 
@@ -44,7 +54,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='category_id']" position="after">
-                <field name="billing_status" optional="show" />
+                <field name="disbursement_request_ids" optional="show" />
             </xpath>
         </field>
     </record>

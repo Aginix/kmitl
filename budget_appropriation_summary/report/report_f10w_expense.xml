@@ -32,15 +32,35 @@
                 border-top: 0;
                 border-bottom: 0;
             }
+            .table tbody .summary-row {
+                border-top: 1px solid black !important;
+                border-bottom: 1px solid black !important;
+            }
+            .table tfoot .page-bottom-line td {
+                border-top: 1pt solid #000 !important;
+                padding: 0;
+                height: 0;
+                line-height: 0;
+                font-size: 0;
+            }
             p,
             span,
             div {
-                font-size: 13pt;
+                font-size: 14pt;
                 line-height: 1.1;
+            }
+            @media print {
+                @page {
+                    size: A4 landscape;
+                    padding: 6mm 0mm !important;
+                }
             }
         </style>
         <div class="page f10w landscape" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F10-W-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center" style="font-weight: bold">
                 <h3>
@@ -54,7 +74,7 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 30%;">แผนงาน/กิจกรรม</th>
+                            <th class="text-center" style="width: 33%;">แผนงาน/กิจกรรม</th>
                             <t t-foreach="o.f10w_expense_data['columns']" t-as="column">
                                 <th class="text-center"><t t-out="column['name']"/></th>
                             </t>
@@ -67,33 +87,36 @@
                                 <td t-esc="row['name']"/>
                                 <t t-foreach="o.f10w_expense_data['columns']" t-as="column">
                                     <td class="text-end" contenteditable="false">
-                                        <t t-out="'{0:,.2f}'.format(row['columns'][column['code']])"/>
+                                        <t t-out="'{0:,.0f}'.format(row['columns'][column['code']])"/>
                                     </td>
                                 </t>
                                 <td class="text-end fw-bold" contenteditable="false">
                                     <t t-if="row['level'] in [0, 1]">
-                                        <t t-out="'{0:,.2f}'.format(row['total'])"/>
+                                        <t t-out="'{0:,.0f}'.format(row['total'])"/>
                                     </t>
                                     <t t-else="">
-                                        <t t-out="'{0:,.2f}'.format(row['total'])"/>
+                                        <t t-out="'{0:,.0f}'.format(row['total'])"/>
                                     </t>
                                 </td>
                             </tr>
                         </t>
-                    </tbody>
-                    <tfoot>
-                        <tr style="font-weight: bold;">
+                        <tr class="summary-row" style="font-weight: bold;">
                             <td class="text-center">
                                 รวมทั้งสิ้น
                             </td>
                             <t t-foreach="o.f10w_expense_data['columns']" t-as="column">
                                 <td class="text-end" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(o.f10w_expense_data['column_totals'][column['code']])"/>
+                                    <t t-out="'{0:,.0f}'.format(o.f10w_expense_data['column_totals'][column['code']])"/>
                                 </td>
                             </t>
                             <td class="text-end" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f10w_expense_data['summary']['total_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f10w_expense_data['summary']['total_amount'])"/>
                             </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="page-bottom-line">
+                            <td t-att-colspan="2 + len(o.f10w_expense_data['columns'])">&#160;</td>
                         </tr>
                     </tfoot>
                 </table>

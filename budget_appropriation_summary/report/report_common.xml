@@ -30,7 +30,30 @@
                 font-size: 18pt;
                 margin-bottom: 0;
             }
+            .report-page-label {
+                position: absolute;
+                top: 1mm;
+                right: 8mm;
+                font-size: 15pt;
+                font-family: 'THSarabun', Arial, sans-serif;
+                z-index: 10;
+                pointer-events: none;
+            }
+            @media print {
+                .report-page-label {
+                    position: fixed;
+                    top: 2mm;
+                    right: 5mm;
+                }
+            }
         </style>
+    </template>
+
+    <!-- Reusable page label (top-right of every page, persists on print) -->
+    <template id="report_page_label">
+        <div class="report-page-label" contenteditable="false">
+            <t t-out="page_label"/>
+        </div>
     </template>
 
     <!-- Preview styles for A4 paper page effect (set is_landscape before calling) -->
@@ -59,7 +82,7 @@
                 .page:not(.landscape) {
                     width: 210mm;
                     min-height: 297mm;
-                    padding: 25mm 8mm !important;
+                    padding: 6mm 6mm !important;
                 }
                 * {
                     line-height: 1.145;
@@ -130,8 +153,7 @@
                         @media print {
                             @page {
                               size: A4 landscape;
-                              margin: 8mm 15mm;
-                              padding: 24mm 0mm !important;
+                              margin: 8mm 8mm;
                             }
                         }
                     </style>
@@ -141,8 +163,10 @@
                         @media print {
                             @page {
                               size: A4 portrait;
-                              margin: 0 !important;
-                              padding: 14mm 8mm !important;
+                              <!-- margin: 0mm 0mm !important;
+                              padding: 0mm 0mm !important; -->
+                              margin: 2mm 0mm !important;
+                              padding: 16mm 8mm !important;
                             }
                         }
                     </style>

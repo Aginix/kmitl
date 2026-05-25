@@ -4,6 +4,9 @@
     <template id="report_f5p_expense_content">
         <div class="page f5-p" t-att-contenteditable="'true' if o.env.context.get('html_preview', False) else None">
             <t t-call="budget_appropriation_summary.report_print_button"/>
+            <t t-call="budget_appropriation_summary.report_page_label">
+                <t t-set="page_label" t-value="'F5-P-วง-003'"/>
+            </t>
             <t t-call="budget_appropriation_summary.report_council_header"/>
             <div class="text-center fw-bold">
                 <h3>
@@ -59,10 +62,10 @@
                                     0
                                 </td>
                                 <td class="text-end border-2 border-bottom border-black" style="font-weight: bold" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(expense['amount'])"/>
+                                    <t t-out="'{0:,.0f}'.format(expense['amount'])"/>
                                 </td>
                                 <td class="text-end border-2 border-bottom border-black" style="font-weight: bold" contenteditable="false">
-                                    <t t-out="'{0:,.2f}'.format(expense['amount'])"/>
+                                    <t t-out="'{0:,.0f}'.format(expense['amount'])"/>
                                 </td>
                             </tr>
                             <t t-set="category_no" t-value="1"/>
@@ -75,10 +78,10 @@
                                         0
                                     </td>
                                     <td class="text-end border-2 border-bottom border-black" contenteditable="false">
-                                        <t t-out="'{0:,.2f}'.format(category['amount'])"/>
+                                        <t t-out="'{0:,.0f}'.format(category['amount'])"/>
                                     </td>
                                     <td class="text-end border-2 border-bottom border-black" contenteditable="false">
-                                        <t t-out="'{0:,.2f}'.format(category['amount'])"/>
+                                        <t t-out="'{0:,.0f}'.format(category['amount'])"/>
                                     </td>
                                 </tr>
                                 <t t-set="category_no" t-value="category_no + 1"/>
@@ -89,10 +92,10 @@
                                         </td>
                                         <td class="text-end" contenteditable="false">0</td>
                                         <td class="text-end" contenteditable="false">
-                                            <t t-out="'{0:,.2f}'.format(dept['amount'])"/>
+                                            <t t-out="'{0:,.0f}'.format(dept['amount'])"/>
                                         </td>
                                         <td class="text-end" contenteditable="false">
-                                            <t t-out="'{0:,.2f}'.format(dept['amount'])"/>
+                                            <t t-out="'{0:,.0f}'.format(dept['amount'])"/>
                                         </td>
                                     </tr>
                                 </t>
@@ -108,10 +111,10 @@
                             </td>
                             <td class="text-end border-4 border-bottom border-black ps-0 pb-0" contenteditable="false">0</td>
                             <td class="text-end border-4 border-bottom border-black ps-0 pb-0" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f5p_expense_data['summary']['total_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f5p_expense_data['summary']['total_amount'])"/>
                             </td>
                             <td class="text-end border-4 border-bottom border-black ps-0 pb-0" contenteditable="false">
-                                <t t-out="'{0:,.2f}'.format(o.f5p_expense_data['summary']['total_amount'])"/>
+                                <t t-out="'{0:,.0f}'.format(o.f5p_expense_data['summary']['total_amount'])"/>
                             </td>
                         </tr>
                     </tbody>

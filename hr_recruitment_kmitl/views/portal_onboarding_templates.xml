@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Portal Home Entry -->
+    <template
+        id="portal_my_home_onboarding"
+        name="Portal My Home: Onboarding"
+        inherit_id="portal.portal_my_home"
+        priority="40"
+    >
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">My Onboarding</t>
+                <t t-set="url" t-value="'/my/onboarding'" />
+                <t t-set="placeholder_count" t-value="'onboarding_count'" />
+            </t>
+        </xpath>
+    </template>
+    <!-- Onboarding List Page -->
+    <template id="portal_my_onboarding_list" name="My Onboarding List">
+        <t t-call="website.layout">
+            <div id="wrap" class="pb-5">
+                <div
+                    class="py-5 overflow-hidden position-relative text-white bg-thai-d-dark"
+                >
+                    <div
+                        class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25"
+                    />
+                    <div class="container position-relative z-1 py-4">
+                        <h1 class="display-5 fw-bold mb-2">รายงานตัวเข้าปฏิบัติงาน</h1>
+                        <p class="lead text-white-50 mb-0">
+                            กระบวนการจัดทำประวัติพนักงานใหม่สำหรับผู้ผ่านการคัดเลือก
+                        </p>
+                    </div>
+                </div>
+                <div class="container mt-5">
+                    <div class="card shadow-sm border-0 rounded-4 p-4">
+                        <!-- Header -->
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="icon-box bg-primary-light text-primary me-3">
+                                <i class="fa fa-file-text-o fs-5" />
+                            </div>
+                            <div>
+                                <h4
+                                    class="fw-bold text-dark mb-1"
+                                >รายงานตัวเข้าปฏิบัติงาน</h4>
+                                <p class="text-secondary small mb-0">
+                                    คุณมีตำแหน่งที่ผ่านการคัดเลือกและต้องรายงานตัว กรุณาเลือกรายการด้านล่าง
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Pending Section -->
+                        <section class="mb-5">
+                            <h6
+                                class="text-primary fw-bold d-flex align-items-center mb-3"
+                            >
+                                <i class="fa fa-clock-o me-2" />
+                                สิ่งที่ต้องดำเนินการ (รอรายงานตัว)
+                            </h6>
+                            <t t-foreach="pending_onboardings" t-as="ob">
+                                <div
+                                    class="card border-primary-light rounded-4 mb-3 hover-shadow-sm transition-base"
+                                >
+                                    <div class="card-body p-4">
+                                        <div class="row align-items-center g-3">
+                                            <div class="col-auto">
+                                                <div
+                                                    class="rounded-circle bg-primary-light text-primary fw-bold d-flex align-items-center justify-content-center"
+                                                    style="width: 40px; height: 40px;"
+                                                >
+                                                    <t t-out="ob_index + 1" />
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <h5 class="fw-bold text-dark mb-1">
+                                                    <t
+                                                        t-out="ob.applicant_id.job_id.name or '-'"
+                                                    />
+                                                </h5>
+                                                <div class="text-secondary small">
+                                                    <i class="fa fa-building-o me-1" />
+                                                    <t
+                                                        t-out="ob.applicant_id.department_id.name or '-'"
+                                                    />
+                                                </div>
+                                                <div class="text-secondary small mt-1">
+                                                    <i
+                                                        class="fa fa-calendar-check-o me-1"
+                                                    />
+                                                    ผ่านการคัดเลือกเมื่อ: <t
+                                                        t-out="ob.create_date.strftime('%d %b %Y')"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-auto">
+                                                <a
+                                                    t-attf-href="/my/onboarding/form/#{ob.id}"
+                                                    class="btn btn-outline-primary rounded-pill px-4 fw-bold"
+                                                >
+                                                    ทำรายการรายงานตัว
+                                                    <i
+                                                        class="fa fa-chevron-right ms-2"
+                                                    />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                            <!-- Empty State Pending Case -->
+                            <div
+                                t-if="not pending_onboardings"
+                                class="card border-0 bg-light rounded-4 mb-3"
+                            >
+                                <div class="card-body p-4 text-center">
+                                    <div
+                                        class="icon-box bg-white text-primary mx-auto mb-3"
+                                    >
+                                        <i class="fa fa-inbox fs-5" />
+                                    </div>
+                                    <h6
+                                        class="fw-bold text-dark mb-1"
+                                    >ไม่มีรายการที่ต้องรายงานตัว</h6>
+                                    <p class="text-secondary small mb-0">
+                                        เมื่อมีตำแหน่งที่ผ่านการคัดเลือกและต้องดำเนินการ ระบบจะแสดงรายการที่หน้านี้
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                        <!-- Completed Section -->
+                        <section>
+                            <h6
+                                class="text-success fw-bold d-flex align-items-center mb-3"
+                            >
+                                <i class="fa fa-check-square-o me-2" />
+                                ประวัติการรายงานตัว (เสร็จสิ้น)
+                            </h6>
+                            <t t-foreach="submitted_onboardings" t-as="ob">
+                                <div class="card border-secondary rounded-4 mb-3">
+                                    <div class="card-body p-4">
+                                        <div class="row align-items-center g-3">
+                                            <div class="col-auto">
+                                                <div
+                                                    class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                                                    style="width: 40px; height: 40px;"
+                                                >
+                                                    <i class="fa fa-check" />
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <h5 class="fw-bold text-dark mb-1">
+                                                    <t
+                                                        t-out="ob.applicant_id.job_id.name or '-'"
+                                                    />
+                                                </h5>
+                                                <div class="text-secondary small">
+                                                    <i class="fa fa-building-o me-1" />
+                                                    <t
+                                                        t-out="ob.applicant_id.department_id.name or '-'"
+                                                    />
+                                                </div>
+                                                <div class="text-secondary small mt-1">
+                                                    <i class="fa fa-send-o me-1" />
+                                                    ข้อมูลถูกส่งเข้าระบบแล้วเมื่อ: <t
+                                                        t-out="ob.submitted_date.strftime('%d %b %Y')"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-auto">
+                                                <a
+                                                    t-attf-href="/my/onboarding/#{ob.id}"
+                                                    class="btn btn-light border rounded-pill px-4 fw-bold text-secondary"
+                                                >
+                                                    <i class="fa fa-eye me-2" />
+                                                    ดูข้อมูล
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                            <!-- Empty State Completed Case -->
+                            <div
+                                t-if="not submitted_onboardings"
+                                class="card border-0 bg-light rounded-4 mb-3"
+                            >
+                                <div class="card-body p-4 text-center">
+                                    <div
+                                        class="icon-box bg-white text-success mx-auto mb-3"
+                                    >
+                                        <i class="fa fa-folder-open-o fs-5" />
+                                    </div>
+                                    <h6
+                                        class="fw-bold text-dark mb-1"
+                                    >ยังไม่มีประวัติการรายงานตัว</h6>
+                                    <p class="text-secondary small mb-0">
+                                        เมื่อท่านส่งข้อมูลรายงานตัวเรียบร้อยแล้ว ระบบจะแสดงประวัติไว้ในส่วนนี้
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <!-- Onboarding Detail Page -->
+    <template id="portal_my_onboarding_detail" name="My Onboarding Detail">
+        <t t-call="website.layout">
+            <div id="wrap" class="pb-5">
+                <!-- Header (Previous: Breadcrumb) -->
+                <div class="bg-white py-3">
+                    <div
+                        class="container d-flex align-items-center text-secondary gap-2"
+                    >
+                        <a
+                            href="/my/onboarding"
+                            class="text-secondary text-decoration-none d-flex align-items-center small"
+                        >
+                            <i class="fa fa-arrow-left me-2" />
+                            รายงานตัวเข้าปฏิบัติงาน
+                        </a>
+                        <span class="text-secondary">/</span>
+                        <span class="text-dark fw-bold">
+                            เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
+                        </span>
+                    </div>
+                </div>
+                <div class="container py-4">
+                    <!-- Header -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
+                        <div class="card-body p-4 position-relative">
+                            <div
+                                class="position-absolute start-0 top-0 bottom-0 bg-success"
+                                style="width: 6px;"
+                            />
+                            <div class="d-flex flex-column gap-3">
+                                <!-- Status -->
+                                <div class="text-success small fw-bold">
+                                    ส่งข้อมูลรายงานตัวเรียบร้อยแล้ว
+                                </div>
+                                <!-- Title -->
+                                <h4 class="fw-bold text-dark m-0">
+                                    <t t-out="applicant.job_id.name or '-'" />
+                                </h4>
+                                <!-- Meta -->
+                                <div class="d-flex flex-column gap-1 text-secondary">
+                                    <div>
+                                        <i class="fa fa-building-o me-1" />
+                                        <span><t
+                                                t-out="applicant.department_id.name or '-'"
+                                            /></span>
+                                    </div>
+                                    <div class="small">
+                                        <i class="fa fa-calendar-check-o me-1" />
+                                        ผ่านการคัดเลือกเมื่อ: <t
+                                            t-out="onboarding.create_date.strftime('%d %b %Y')"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Lock Notice -->
+                            <div
+                                class="d-flex justify-content-between align-items-center flex-wrap gap-3 rounded-4 px-4 py-3 mt-3 rounded-12 bg-secondary-light"
+                            >
+                                <div
+                                    class="d-flex align-items-center text-secondary small"
+                                >
+                                    <i class="fa fa-lock me-2" />
+                                    <span>
+                                        ข้อมูลรายงานตัวนี้ถูกส่งแล้ว ไม่สามารถแก้ไขข้อมูลได้
+                                    </span>
+                                </div>
+                                <a
+                                    t-if="applicant.job_id"
+                                    t-attf-href="/jobs/detail/#{applicant.job_id.id}"
+                                    target="_blank"
+                                    class="text-primary text-decoration small"
+                                >
+                                    <i class="fa fa-external-link me-1" />
+                                    ดูประกาศตำแหน่งงานต้นฉบับ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tabs -->
+                    <nav
+                        class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-12 flex-column flex-lg-row gap-1 mb-4"
+                        id="view-tabs"
+                        role="tablist"
+                    >
+                        <a
+                            class="nav-link active text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-personal-view"
+                            data-bs-toggle="tab"
+                        >
+                            <i class="fa fa-user" />
+                            <span>ข้อมูลส่วนตัว</span>
+                        </a>
+                        <a
+                            class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-education-view"
+                            data-bs-toggle="tab"
+                        >
+                            <i class="fa fa-graduation-cap" />
+                            <span>การศึกษา</span>
+                        </a>
+                        <a
+                            class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-family-view"
+                            data-bs-toggle="tab"
+                        >
+                            <i class="fa fa-users" />
+                            <span>ข้อมูลครอบครัว</span>
+                        </a>
+                        <a
+                            class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-decoration-view"
+                            data-bs-toggle="tab"
+                        >
+                            <i class="fa fa-certificate" />
+                            <span>เครื่องราชฯ</span>
+                        </a>
+                        <a
+                            class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-work-view"
+                            data-bs-toggle="tab"
+                        >
+                            <i class="fa fa-briefcase" />
+                            <span>การปฏิบัติงาน</span>
+                        </a>
+                        <a
+                            class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-benefit-view"
+                            data-bs-toggle="tab"
+                        >
+                            <i class="fa fa-money" />
+                            <span>สวัสดิการ</span>
+                        </a>
+                        <a
+                            class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                            href="#nav-confirm-view"
+                            data-bs-toggle="tab"
+                        >
+                            <i class="fa fa-check-square-o" />
+                            <span>ยืนยันข้อมูล</span>
+                        </a>
+                    </nav>
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <div
+                            class="tab-pane fade show active"
+                            id="nav-personal-view"
+                            role="tabpanel"
+                        >
+                            <t
+                                t-call="hr_recruitment_kmitl.onboarding_tab_personal_view"
+                            />
+                        </div>
+                        <div
+                            class="tab-pane fade"
+                            id="nav-education-view"
+                            role="tabpanel"
+                        >
+                            <t
+                                t-call="hr_recruitment_kmitl.onboarding_tab_education_view"
+                            />
+                        </div>
+                        <div class="tab-pane fade" id="nav-family-view" role="tabpanel">
+                            <t
+                                t-call="hr_recruitment_kmitl.onboarding_tab_family_view"
+                            />
+                        </div>
+                        <div
+                            class="tab-pane fade"
+                            id="nav-decoration-view"
+                            role="tabpanel"
+                        >
+                            <t
+                                t-call="hr_recruitment_kmitl.onboarding_tab_decoration_view"
+                            />
+                        </div>
+                        <div class="tab-pane fade" id="nav-work-view" role="tabpanel">
+                            <t t-call="hr_recruitment_kmitl.onboarding_tab_work_view" />
+                        </div>
+                        <div
+                            class="tab-pane fade"
+                            id="nav-benefit-view"
+                            role="tabpanel"
+                        >
+                            <t
+                                t-call="hr_recruitment_kmitl.onboarding_tab_benefit_view"
+                            />
+                        </div>
+                        <div
+                            class="tab-pane fade"
+                            id="nav-confirm-view"
+                            role="tabpanel"
+                        >
+                            <t
+                                t-call="hr_recruitment_kmitl.onboarding_tab_confirm_view"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <!-- Onboarding Form Page -->
+    <template id="portal_my_onboarding_form" name="My Onboarding Form">
+        <t t-call="website.layout">
+            <div id="wrap" class="pb-5">
+                <!-- Header (Previous: Breadcrumb) -->
+                <div class="bg-white py-3">
+                    <div
+                        class="container d-flex align-items-center text-secondary gap-2"
+                    >
+                        <a
+                            href="/my/onboarding"
+                            class="text-secondary text-decoration-none d-flex align-items-center small"
+                        >
+                            <i class="fa fa-arrow-left me-2" />
+                            รายงานตัวเข้าปฏิบัติงาน
+                        </a>
+                        <span class="text-secondary">/</span>
+                        <span class="text-dark fw-bold">
+                            ฟอร์มรายงานตัว
+                        </span>
+                    </div>
+                </div>
+                <div class="container py-4">
+                    <!-- Header -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
+                        <div class="card-body p-4 position-relative">
+                            <div
+                                class="position-absolute start-0 top-0 bottom-0 bg-primary"
+                                style="width: 6px;"
+                            />
+                            <div class="d-flex flex-column gap-1">
+                                <div class="text-primary small fw-bold">
+                                    ตำแหน่งที่กำลังรายงานตัว
+                                </div>
+                                <h4 class="fw-bold text-dark m-0">
+                                    <t t-out="applicant.job_id.name or '-'" />
+                                </h4>
+                                <div
+                                    class="text-secondary small d-flex align-items-center"
+                                >
+                                    <i class="fa fa-building-o me-1" />
+                                    <span><t
+                                            t-out="applicant.department_id.name or '-'"
+                                        /></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        t-if="error_message"
+                        class="alert alert-danger"
+                        role="alert"
+                        style="white-space: pre-line"
+                    >
+                        <t t-foreach="error_message" t-as="err">
+                            <t t-out="err" />
+                        </t>
+                    </div>
+                    <form
+                        t-attf-action="/my/onboarding/form/#{onboarding.id}"
+                        method="post"
+                        enctype="multipart/form-data"
+                    >
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            t-att-value="request.csrf_token()"
+                        />
+                        <!-- Tabs Navigation -->
+                        <nav
+                            class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-4 flex-column flex-lg-row gap-1 mb-4"
+                            id="form-tabs"
+                            role="tablist"
+                        >
+                            <a
+                                class="nav-link active text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-personal"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-user" />
+                                <span>ข้อมูลส่วนตัว</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-education"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-graduation-cap" />
+                                <span>การศึกษา</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-family"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-users" />
+                                <span>ข้อมูลครอบครัว</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-decoration"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-certificate" />
+                                <span>เครื่องราชฯ</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-work"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-briefcase" />
+                                <span>การปฏิบัติงาน</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-benefit"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-money" />
+                                <span>สวัสดิการ</span>
+                            </a>
+                            <a
+                                class="nav-link text-nowrap rounded-4 px-3 py-2 d-flex justify-content-center align-items-center gap-2"
+                                href="#nav-confirm"
+                                data-bs-toggle="tab"
+                            >
+                                <i class="fa fa-check-square-o" />
+                                <span>ยืนยันข้อมูล</span>
+                            </a>
+                        </nav>
+                        <!-- Tabs Content -->
+                        <div class="tab-content">
+                            <div
+                                class="tab-pane fade show active"
+                                id="nav-personal"
+                                role="tabpanel"
+                                aria-labelledby="tab-personal-tab"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.onboarding_tab_personal"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="nav-education"
+                                role="tabpanel"
+                                aria-labelledby="tab-education-tab"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.onboarding_tab_education"
+                                />
+                            </div>
+                            <div class="tab-pane fade" id="nav-family">
+                                <t
+                                    t-call="hr_recruitment_kmitl.onboarding_tab_family"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="nav-decoration"
+                                role="tabpanel"
+                                aria-labelledby="tab-decoration-tab"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.onboarding_tab_decoration"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="nav-work"
+                                role="tabpanel"
+                                aria-labelledby="tab-work-tab"
+                            >
+                                <t t-call="hr_recruitment_kmitl.onboarding_tab_work" />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="nav-benefit"
+                                role="tabpanel"
+                                aria-labelledby="tab-benefit-tab"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.onboarding_tab_benefit"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="nav-confirm"
+                                role="tabpanel"
+                                aria-labelledby="tab-confirm-tab"
+                            >
+                                <t
+                                    t-call="hr_recruitment_kmitl.onboarding_tab_confirm"
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
