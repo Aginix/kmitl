@@ -253,6 +253,10 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="item_id"/>
+                                    <field name="department_budget_code_id"
+                                        attrs="{'readonly': [('is_locked', '=', True)]}"
+                                    />
+                                    <field name="is_locked" invisible="1"/>
                                     <field name="allocation_pct" string="Allocation %" readonly="1" sum="รวม"/>
                                     <field name="estimated_amount" sum="รวม"/>
                                     <field name="actual_amount" readonly="1" sum="รวม"/>
