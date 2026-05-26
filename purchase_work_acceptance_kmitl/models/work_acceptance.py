@@ -124,6 +124,21 @@ class WorkAcceptance(models.Model):
         string="Project value",
         store=True,
     )
+    amount_untaxed = fields.Monetary(
+        compute="_compute_amounts",
+        string="Untaxed Amount",
+        store=True,
+    )
+    amount_tax = fields.Monetary(
+        compute="_compute_amounts",
+        string="Tax Amount",
+        store=True,
+    )
+    amount_total = fields.Monetary(
+        compute="_compute_amounts",
+        string="Total Amount",
+        store=True,
+    )
 
     fines_total = fields.Monetary(
         string="Total",
@@ -373,6 +388,32 @@ class WorkAcceptance(models.Model):
     def _compute_price_subtotal(self):
         for rec in self:
             rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
+
+    @api.depends("wa_line_ids", "wa_line_ids.price_subtotal", "wa_line_ids.purchase_line_id")
+    def _compute_amounts(self):
+        for rec in self:
+            amount_untaxed = 0.0
+            amount_tax = 0.0
+            amount_total = 0.0
+            for line in rec.wa_line_ids:
+                taxes = line.purchase_line_id.taxes_id
+                if taxes:
+                    tax_result = taxes.compute_all(
+                        line.price_unit,
+                        rec.currency_id,
+                        line.product_qty,
+                        line.product_id,
+                        rec.partner_id,
+                    )
+                    amount_untaxed += tax_result["total_excluded"]
+                    amount_tax += sum(t["amount"] for t in tax_result["taxes"])
+                    amount_total += tax_result["total_included"]
+                else:
+                    amount_untaxed += line.price_subtotal
+                    amount_total += line.price_subtotal
+            rec.amount_untaxed = amount_untaxed
+            rec.amount_tax = amount_tax
+            rec.amount_total = amount_total
 
     def _action_open_committee_wizard(self):
         self.ensure_one()
