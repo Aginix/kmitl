@@ -15,10 +15,10 @@
                                 />
                             </td>
                             <td style="border: none; text-align: center; vertical-align: middle;">
-                                <div style="font-size: 11pt; font-weight: bold;">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
-                                <div style="font-size: 10pt; font-style: italic;">King Mongkut's Institute of Technology Ladkrabang</div>
-                                <div style="font-size: 12pt; font-weight: bold; margin-top: 4px;">Trial Balance</div>
-                                <div style="font-size: 9pt;">
+                                <div style="font-size: 14pt; font-weight: bold;">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+                                <div style="font-size: 12pt; font-style: italic;">King Mongkut's Institute of Technology Ladkrabang</div>
+                                <div style="font-size: 16pt; font-weight: bold; margin-top: 6px;">Trial Balance</div>
+                                <div style="font-size: 12pt;">
                                     ตั้งแต่ <t t-out="kmitl_date_from_th" /> ถึง <t t-out="kmitl_date_to_th" />
                                 </div>
                             </td>
@@ -27,7 +27,7 @@
                     </table>
                 </div>
 
-                <div class="footer" style="text-align: right; font-size: 8pt;">
+                <div class="footer" style="text-align: right; font-size: 10pt;">
                     <span class="page" />/<span class="topage" />
                 </div>
 
@@ -36,12 +36,12 @@
                         table.kmitl-trial-balance {
                             width: 100%;
                             border-collapse: collapse;
-                            font-size: 8pt;
+                            font-size: 11pt;
                         }
                         table.kmitl-trial-balance th,
                         table.kmitl-trial-balance td {
                             border: 1px solid #000;
-                            padding: 2px 4px;
+                            padding: 4px 6px;
                         }
                         table.kmitl-trial-balance thead th {
                             background-color: #f0f0f0;
