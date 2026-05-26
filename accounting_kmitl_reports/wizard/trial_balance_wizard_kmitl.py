@@ -36,7 +36,9 @@ class TrialBalanceReportWizardKmitl(models.TransientModel):
     def _print_report(self, report_type):
         self.ensure_one()
         data = self._build_report_data()
-        report = self.env.ref(
-            "accounting_kmitl_reports.action_report_trial_balance_kmitl"
-        )
+        if report_type == "qweb-html":
+            xmlid = "accounting_kmitl_reports.action_report_trial_balance_kmitl_html"
+        else:
+            xmlid = "accounting_kmitl_reports.action_report_trial_balance_kmitl"
+        report = self.env.ref(xmlid)
         return report.report_action(self, data=data)

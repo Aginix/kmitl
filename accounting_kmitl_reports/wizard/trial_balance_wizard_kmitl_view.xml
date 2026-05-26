@@ -78,11 +78,16 @@
                         attrs="{'invisible': [('not_only_one_unaffected_earnings_account', '=', True)]}"
                     >
                         <button
-                            name="button_export_pdf"
-                            string="พิมพ์รายงาน (PDF)"
+                            name="button_export_html"
+                            string="ดู (HTML)"
                             type="object"
                             default_focus="1"
                             class="oe_highlight"
+                        />
+                        <button
+                            name="button_export_pdf"
+                            string="พิมพ์ (PDF)"
+                            type="object"
                         />
                         <button string="ยกเลิก" class="oe_link" special="cancel" />
                     </div>
