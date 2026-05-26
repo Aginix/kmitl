@@ -13,46 +13,6 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
         }
     }
 
-    function showValidationError(form, missing, hasProfileMissing) {
-        var result = form.querySelector("#s_website_form_result");
-        if (!result) return;
-        var html =
-            '<div class="alert alert-danger mt-3" role="alert">' +
-            "<strong>กรุณากรอกข้อมูลให้ครบถ้วน:</strong><ul class='mb-0 mt-2'>";
-        for (var i = 0; i < missing.length; i++) {
-            html += "<li>" + missing[i] + "</li>";
-        }
-        html += "</ul>";
-        if (hasProfileMissing) {
-            html +=
-                '<p class="mb-0 mt-2">ข้อมูลส่วนบุคคลบางส่วนยังไม่ครบ กรุณาตรวจสอบ ' +
-                '<a href="/my/profile">แฟ้มประวัติ</a> ก่อนส่งใบสมัคร</p>';
-        }
-        html += "</div>";
-        result.innerHTML = html;
-        result.scrollIntoView({behavior: "smooth"});
-    }
-
-    function navigateToPane(pane) {
-        if (!pane) return;
-        var tabBtn = document.querySelector('[href="#' + pane.id + '"]');
-        if (tabBtn && window.bootstrap && bootstrap.Tab) {
-            new bootstrap.Tab(tabBtn).show();
-        }
-    }
-
-    function checkRequiredLabels(form) {
-        var missing = [];
-        var firstPane = null;
-        form.querySelectorAll("[data-required-label]").forEach(function (el) {
-            if (!el.value || !el.value.trim() || el.value.trim() === "-") {
-                missing.push(el.getAttribute("data-required-label"));
-                if (!firstPane) firstPane = el.closest(".tab-pane");
-            }
-        });
-        return {missing: missing, firstPane: firstPane};
-    }
-
     function checkCertification(form) {
         var el = form.querySelector("#certifyCheck");
         if (el && !el.checked) {
@@ -72,27 +32,24 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
         return {label: label, pane: agreed.closest(".tab-pane")};
     }
 
-    function collectMissing(form) {
-        var result = checkRequiredLabels(form);
-        var missing = result.missing;
-        var firstPane = result.firstPane;
-        var hasProfileMissing = missing.length > 0;
-
-        var cert = checkCertification(form);
-        if (cert.label) {
-            missing.push(cert.label);
-            if (!firstPane) firstPane = cert.pane;
+    function showSubmitTabError(form, missing, firstPane) {
+        if (firstPane && firstPane.id) {
+            var tabBtn = document.querySelector('[href="#' + firstPane.id + '"]');
+            if (tabBtn && window.bootstrap && bootstrap.Tab) {
+                new bootstrap.Tab(tabBtn).show();
+            }
         }
-        var pdpa = checkPdpaConsent(form);
-        if (pdpa.label) {
-            missing.push(pdpa.label);
-            if (!firstPane) firstPane = pdpa.pane;
-        }
-        return {
-            missing: missing,
-            firstPane: firstPane,
-            hasProfileMissing: hasProfileMissing,
-        };
+        var resultEl = form.querySelector("#s_website_form_result");
+        if (!resultEl) return;
+        resultEl.outerHTML =
+            '<div id="s_website_form_result" class="alert alert-danger mt-3" role="alert">' +
+            "<strong>เกิดข้อผิดพลาด</strong>" +
+            '<div class="mt-1" style="white-space: pre-line">' +
+            "กรุณากรอกข้อมูลให้ครบถ้วน:\n• " +
+            missing.join("\n• ") +
+            "</div></div>";
+        var newResult = form.querySelector("#s_website_form_result");
+        if (newResult) newResult.scrollIntoView({behavior: "smooth"});
     }
 
     function initApplyValidation() {
@@ -105,18 +62,43 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
         submitBtn.addEventListener(
             "click",
             function (e) {
-                var result = collectMissing(form);
-                if (result.missing.length) {
+                var missing = [];
+                var firstPane = null;
+                var submitPane = form.querySelector("#nav-submit");
+                if (submitPane) {
+                    submitPane
+                        .querySelectorAll("[data-required-label]")
+                        .forEach(function (el) {
+                            if (
+                                !el.value ||
+                                !el.value.trim() ||
+                                el.value.trim() === "-"
+                            ) {
+                                missing.push(el.getAttribute("data-required-label"));
+                                if (!firstPane) firstPane = submitPane;
+                            }
+                        });
+                }
+                var cert = checkCertification(form);
+                if (cert.label) {
+                    missing.push(cert.label);
+                    if (!firstPane) firstPane = cert.pane;
+                }
+                var pdpa = checkPdpaConsent(form);
+                if (pdpa.label) {
+                    missing.push(pdpa.label);
+                    if (!firstPane) firstPane = pdpa.pane;
+                }
+                if (missing.length) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
-                    navigateToPane(result.firstPane);
-                    showValidationError(form, result.missing, result.hasProfileMissing);
+                    showSubmitTabError(form, missing, firstPane);
                     return;
                 }
-                // Clear previous errors
                 var resultEl = form.querySelector("#s_website_form_result");
-                if (resultEl) resultEl.innerHTML = "";
-                // After Odoo's validation runs, check for o_has_error in hidden tabs
+                if (resultEl) {
+                    resultEl.outerHTML = '<span id="s_website_form_result"></span>';
+                }
                 setTimeout(function () {
                     switchToTabWithError(form);
                 }, 100);
@@ -130,4 +112,31 @@ odoo.define("hr_recruitment_kmitl.apply_page", function () {
     } else {
         initApplyValidation();
     }
+});
+
+odoo.define("hr_recruitment_kmitl.apply_form_hint", function (require) {
+    "use strict";
+    require("website.s_website_form");
+    var publicWidget = require("web.public.widget");
+    if (!publicWidget.registry.s_website_form) return;
+
+    publicWidget.registry.s_website_form.include({
+        update_status: function (status) {
+            var self = this;
+            var ret = this._super.apply(this, arguments);
+            if (status !== "error") return ret;
+            if (this.$target.data("model_name") !== "hr.applicant") return ret;
+            this.__started.then(function () {
+                var result = self.$target[0].querySelector("#s_website_form_result");
+                if (!result || result.querySelector(".js_profile_hint")) return;
+                var extra = document.createElement("div");
+                extra.className = "mt-2 js_profile_hint";
+                extra.innerHTML =
+                    "ข้อมูลส่วนบุคคลบางส่วนยังไม่ครบ กรุณาตรวจสอบ " +
+                    '<a href="/my/profile">แฟ้มประวัติ</a> ก่อนส่งใบสมัคร';
+                result.appendChild(extra);
+            });
+            return ret;
+        },
+    });
 });

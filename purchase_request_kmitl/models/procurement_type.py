@@ -25,3 +25,7 @@ class ProcurementType(models.Model):
     description = fields.Text(
         translate=True,
     )
+    is_purchase = fields.Boolean(
+        string="Is Purchase",
+        default=True
+    )

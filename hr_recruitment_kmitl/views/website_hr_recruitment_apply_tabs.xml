@@ -27,7 +27,6 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="name"
-                        data-required-label="ชื่อ - นามสกุล"
                     />
                 </div>
             </div>
@@ -55,7 +54,6 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="name_en"
-                        data-required-label="ชื่อ - นามสกุล (ภาษาอังกฤษ)"
                     />
                 </div>
             </div>
@@ -80,7 +78,6 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="nationality_id"
-                        data-required-label="สัญชาติ"
                     />
                 </div>
             </div>
@@ -105,7 +102,6 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="identification_id"
-                        data-required-label="เลขบัตรประชาชน"
                     />
                 </div>
             </div>
@@ -130,7 +126,6 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="birthday"
-                        data-required-label="วัน/เดือน/ปี เกิด"
                     />
                 </div>
             </div>
@@ -154,7 +149,6 @@
                         name="gender_display"
                         readonly="readonly"
                         t-att-value="default.get('gender', '')"
-                        data-required-label="เพศ"
                     />
                 </div>
             </div>
@@ -179,7 +173,6 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="email"
-                        data-required-label="อีเมล"
                     />
                 </div>
             </div>
@@ -204,7 +197,6 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="phone"
-                        data-required-label="โทรศัพท์"
                     />
                 </div>
             </div>
@@ -230,8 +222,9 @@
                         rows="4"
                         readonly="readonly"
                         required=""
-                        data-required-label="ที่อยู่ตามทะเบียนบ้าน"
-                    ><t t-esc="default.get('address_address') or ''" /></textarea>
+                    >
+                        <t t-esc="default.get('address_address') or ''" />
+                    </textarea>
                     <!-- prettier-ignore-end -->
                 </div>
                 <label
@@ -249,8 +242,9 @@
                         name="current_address_from"
                         readonly="readonly"
                         required=""
-                        data-required-label="ที่อยู่ปัจจุบัน"
-                    ><t t-esc="default.get('current_address') or ''" /></textarea>
+                    >
+                        <t t-esc="default.get('current_address') or ''" />
+                    </textarea>
                     <!-- prettier-ignore-end -->
                 </div>
             </div>
@@ -281,7 +275,6 @@
                         readonly="readonly"
                         data-fill-with="emergency_contact_name"
                         t-att-value="default.get('emergency_contact_name', '')"
-                        data-required-label="ชื่อผู้ติดต่อฉุกเฉิน"
                     />
                 </div>
             </div>
@@ -307,7 +300,6 @@
                         readonly="readonly"
                         data-fill-with="emergency_contact_relation"
                         t-att-value="default.get('emergency_contact_relation', '')"
-                        data-required-label="ความสัมพันธ์ผู้ติดต่อฉุกเฉิน"
                     />
                 </div>
             </div>
@@ -333,7 +325,6 @@
                         readonly="readonly"
                         data-fill-with="emergency_contact_phone"
                         t-att-value="default.get('emergency_contact_phone', '')"
-                        data-required-label="เบอร์ติดต่อฉุกเฉิน"
                     />
                 </div>
             </div>
@@ -359,7 +350,6 @@
                         readonly="readonly"
                         data-fill-with="emergency_contact_email"
                         t-att-value="default.get('emergency_contact_email', '')"
-                        data-required-label="อีเมลติดต่อฉุกเฉิน"
                     />
                 </div>
             </div>
@@ -384,7 +374,9 @@
                         class="form-control s_website_form_input text-muted"
                         name="congenital_disease"
                         readonly="readonly"
-                    ><t t-esc="default.get('congenital_disease') or ''" /></textarea>
+                    >
+                        <t t-esc="default.get('congenital_disease') or ''" />
+                    </textarea>
                     <!-- prettier-ignore-end -->
                 </div>
             </div>
@@ -446,12 +438,6 @@
                 <t t-set="best_edu_rec" t-value="candidate" />
             </t>
         </t>
-        <!-- Validation: must have education data -->
-        <input
-            type="hidden"
-            data-required-label="ประวัติการศึกษา"
-            t-att-value="'1' if education_by_level else ''"
-        />
         <t t-if="education_by_level">
             <!-- Hidden fields for form submission (best/highest education) -->
             <t t-set="default_level_id" t-value="best_edu_rec.education_level_id.id" />
@@ -836,7 +822,6 @@
                             type="hidden"
                             name="academic_standing_id"
                             t-att-value="academic_standing_value"
-                            data-required-label="ตำแหน่งทางวิชาการ"
                         />
                     </div>
                     <div class="col-md-6">
@@ -853,7 +838,6 @@
                             type="hidden"
                             name="academic_position_institution"
                             t-att-value="academic_position_institution_value"
-                            data-required-label="สถาบันที่ได้รับแต่งตั้ง"
                         />
                     </div>
                 </div>
@@ -877,7 +861,6 @@
                             type="hidden"
                             name="academic_position_date"
                             t-att-value="academic_position_date_value"
-                            data-required-label="วันที่ได้รับแต่งตั้ง"
                         />
                     </div>
                 </div>
@@ -919,7 +902,6 @@
                             type="hidden"
                             name="has_ocsc_exam"
                             t-att-value="has_ocsc_exam_value"
-                            data-required-label="สถานะการสอบ ก.พ."
                         />
                     </div>
                     <div class="col-md-6">
@@ -936,7 +918,6 @@
                             type="hidden"
                             name="ocsc_exam_level"
                             t-att-value="ocsc_exam_level_value"
-                            t-att-data-required-label="'ระดับการสอบ ก.พ.' if has_ocsc_exam_value == 'true' else False"
                         />
                     </div>
                 </div>
@@ -960,7 +941,6 @@
                             type="hidden"
                             name="ocsc_exam_date"
                             t-att-value="ocsc_exam_date_value"
-                            t-att-data-required-label="'วันที่สอบผ่าน ก.พ.' if has_ocsc_exam_value == 'true' else False"
                         />
                     </div>
                     <div class="col-md-6">
@@ -977,7 +957,6 @@
                             type="hidden"
                             name="ocsc_exam_number"
                             t-att-value="ocsc_exam_number_value"
-                            t-att-data-required-label="'เลขที่ใบรับรอง ก.พ.' if has_ocsc_exam_value == 'true' else False"
                         />
                     </div>
                 </div>
@@ -1169,22 +1148,6 @@
             <t t-set="title">6. เอกสารประกอบ (Supporting Documents)</t>
             <t t-set="description">แสดงเอกสารจากแฟ้มประวัติ (Master Profile)</t>
         </t>
-        <!-- Validation: required documents -->
-        <input
-            type="hidden"
-            data-required-label="รูปถ่าย"
-            t-att-value="profile.photo_filename or ''"
-        />
-        <input
-            type="hidden"
-            data-required-label="สำเนาบัตรประจำตัวประชาชน"
-            t-att-value="profile.id_card_filename or ''"
-        />
-        <input
-            type="hidden"
-            data-required-label="สำเนาทะเบียนบ้าน"
-            t-att-value="profile.household_registration_filename or ''"
-        />
         <div class="d-flex flex-column gap-3">
             <!-- Photo -->
             <t t-call="hr_recruitment_kmitl.application_document_item">
@@ -1215,11 +1178,6 @@
             </t>
             <!-- Military Certificate (male only) -->
             <t t-if="profile.gender == 'male'">
-                <input
-                    type="hidden"
-                    data-required-label="สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร"
-                    t-att-value="profile.military_certificate_filename or ''"
-                />
                 <t t-call="hr_recruitment_kmitl.application_document_item">
                     <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
                         หรือได้รับการยกเว้นการเกณฑ์ทหาร

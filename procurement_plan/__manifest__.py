@@ -4,7 +4,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["web", "budget"],
+    "depends": ["web", "budget", "purchase_request_kmitl"],
     "data": [
         "data/account.analytic.plan.csv",
         "data/sequence.xml",

@@ -870,13 +870,17 @@
                 <div class="row">
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label">อัตราเลขที่ (Employee No.)</label>
-                        <div class="form-control bg-light">-</div>
+                        <div class="form-control bg-light"><t
+                                t-out="applicant.old_code or '-'"
+                            /></div>
                     </div>
                     <div class="mb-3 col-lg-6">
                         <label
                             class="col-form-label"
                         >ประเภทพนักงาน (Employee Type)</label>
-                        <div class="form-control bg-light">พนักงานสถาบัน</div>
+                        <div class="form-control bg-light"><t
+                                t-out="employee_type_label or '-'"
+                            /></div>
                     </div>
                 </div>
                 <div class="row">
@@ -885,12 +889,14 @@
                             class="col-form-label"
                         >เข้าปฏิบัติงาน สังกัด (Department / School /
                             Faculty)</label>
-                        <div class="form-control bg-light">คณะวิศวกรรมศาสตร์</div>
+                        <div class="form-control bg-light"><t
+                                t-out="applicant.job_id.department_id.name or '-'"
+                            /></div>
                     </div>
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label">ตำแหน่ง (Position)</label>
                         <div class="form-control bg-light">
-                            เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ งานการเงินและบัญชี)
+                            <t t-out="applicant.job_id.name or '-'" />
                         </div>
                     </div>
                 </div>
@@ -911,7 +917,10 @@
                     <div class="col-12 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ตำแหน่งทางวิชาการ (Academic Position)</t>
-                            <t t-set="value">ศาสตราจารย์</t>
+                            <t
+                                t-set="value"
+                                t-value="applicant.academic_standing_id.name or ''"
+                            />
                         </t>
                     </div>
                 </div>
@@ -921,16 +930,20 @@
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">แต่งตั้งเมื่อ (Appointed Date)</t>
-                            <t t-set="value">01/01/2565</t>
+                            <t
+                                t-set="value"
+                                t-value="applicant.academic_position_date and applicant.academic_position_date.strftime('%d/%m/%Y') or ''"
+                            />
                         </t>
                     </div>
 
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">สถาบันที่ได้รับ (Institution)</t>
-                            <t t-set="value">
-                                สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
-                            </t>
+                            <t
+                                t-set="value"
+                                t-value="applicant.academic_position_institution or ''"
+                            />
                         </t>
                     </div>
                 </div>
@@ -942,9 +955,12 @@
                             <t t-set="label">สำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ</t>
                             <t
                                 t-set="filename"
-                                t-value="'academic_position_order.pdf'"
+                                t-value="applicant.academic_position_filename or 'academic_position_order.pdf'"
                             />
-                            <t t-set="download_url" t-value="False" />
+                            <t
+                                t-set="download_url"
+                                t-value="applicant.academic_position_file and ('/web/content?model=hr.applicant&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % applicant.id) or False"
+                            />
                         </t>
                     </div>
                 </div>
@@ -2217,13 +2233,13 @@
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">อัตราเลขที่ (Employee No.)</t>
-                            <t t-set="value">-</t>
+                            <t t-set="value" t-value="applicant.old_code or '-'" />
                         </t>
                     </div>
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ประเภทพนักงาน (Employee Type)</t>
-                            <t t-set="value">พนักงานสถาบัน</t>
+                            <t t-set="value" t-value="employee_type_label or '-'" />
                         </t>
                     </div>
                 </div>
@@ -2233,14 +2249,16 @@
                             <t
                                 t-set="label"
                             >เข้าปฏิบัติงาน สังกัด (Department / School / Faculty)</t>
-                            <t t-set="value">คณะวิศวกรรมศาสตร์</t>
+                            <t
+                                t-set="value"
+                                t-value="applicant.job_id.department_id.name or '-'"
+                            />
                         </t>
                     </div>
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ตำแหน่ง (Position)</t>
-                            <t t-set="value">เจ้าหน้าที่บริหารงานทั่วไป (ปฏิบัติงานประจำ
-                                งานการเงินและบัญชี)</t>
+                            <t t-set="value" t-value="applicant.job_id.name or '-'" />
                         </t>
                     </div>
                 </div>
@@ -2261,7 +2279,10 @@
                     <div class="col-12 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">ตำแหน่งทางวิชาการ (Academic Position)</t>
-                            <t t-set="value">ศาสตราจารย์</t>
+                            <t
+                                t-set="value"
+                                t-value="applicant.academic_standing_id.name or ''"
+                            />
                         </t>
                     </div>
                 </div>
@@ -2271,16 +2292,20 @@
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">แต่งตั้งเมื่อ (Appointed Date)</t>
-                            <t t-set="value">01/01/2565</t>
+                            <t
+                                t-set="value"
+                                t-value="applicant.academic_position_date and applicant.academic_position_date.strftime('%d/%m/%Y') or ''"
+                            />
                         </t>
                     </div>
 
                     <div class="col-lg-6 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">สถาบันที่ได้รับ (Institution)</t>
-                            <t t-set="value">
-                                สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
-                            </t>
+                            <t
+                                t-set="value"
+                                t-value="applicant.academic_position_institution or ''"
+                            />
                         </t>
                     </div>
                 </div>
@@ -2292,9 +2317,12 @@
                             <t t-set="label">สำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ</t>
                             <t
                                 t-set="filename"
-                                t-value="'academic_position_order.pdf'"
+                                t-value="applicant.academic_position_filename or 'academic_position_order.pdf'"
                             />
-                            <t t-set="download_url" t-value="False" />
+                            <t
+                                t-set="download_url"
+                                t-value="applicant.academic_position_file and ('/web/content?model=hr.applicant&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % applicant.id) or False"
+                            />
                         </t>
                     </div>
                 </div>
@@ -2315,7 +2343,10 @@
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">
                                 ท่านสามารถเริ่มปฏิบัติงานในระยะเวลาที่ประกาศกำหนดหรือไม่?</t>
-                            <t t-set="value">ใช่ (Yes)</t>
+                            <t
+                                t-set="value"
+                                t-value="{'yes': 'ใช่ (Yes)', 'no': 'ไม่ใช่ (No)'}.get(onboarding.can_start_on_time, '-')"
+                            />
                         </t>
                     </div>
                 </div>
@@ -2326,7 +2357,10 @@
                                 t-set="label"
                             >วันแรกที่เริ่มปฏิบัติงาน (ค.ศ.) (The First date of
                                 work)</t>
-                            <t t-set="value">2026-06-01</t>
+                            <t
+                                t-set="value"
+                                t-value="onboarding.starting_date and onboarding.starting_date.strftime('%Y-%m-%d') or '-'"
+                            />
                         </t>
                     </div>
                 </div>
@@ -2338,7 +2372,10 @@
                             >ไม่สามารถเริ่มปฏิบัติงานตามระยะเวลาในประกาศได้
                                 แบบหนังสือชี้แจงเหตุผล
                                 เรียนอธิการบดี พร้อมทั้งระบุวันที่ปฏิบัติงานได้ (เฉพาะกรณีขอเลื่อน)</t>
-                            <t t-set="value">-</t>
+                            <t
+                                t-set="value"
+                                t-value="onboarding.starting_date_note or '-'"
+                            />
                         </t>
                     </div>
                     <div class="col-12 mb-3">
@@ -2733,7 +2770,7 @@
                                             name="background_check_location_type_view"
                                             id="background_check_police_hq_view"
                                             value="police_hq"
-                                            checked="checked"
+                                            t-att-checked="'checked' if onboarding.background_check_location_type == 'police_hq' else None"
                                             disabled="disabled"
                                         />
                                         <label
@@ -2752,6 +2789,7 @@
                                             name="background_check_location_type_view"
                                             id="background_check_local_view"
                                             value="local_police"
+                                            t-att-checked="'checked' if onboarding.background_check_location_type == 'local_police' else None"
                                             disabled="disabled"
                                         />
                                         <label
@@ -2760,42 +2798,6 @@
                                         >
                                             สะดวกไปตรวจที่สถานีตำรวจในเขตพื้นที่สามารถเยี่ยมบ้าน
                                         </label>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                value="-"
-                                                disabled="disabled"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div class="form-check">
-                                        <input
-                                            class="form-check-input"
-                                            type="radio"
-                                            name="background_check_location_type_view"
-                                            id="background_check_other_view"
-                                            value="other"
-                                            disabled="disabled"
-                                        />
-                                        <label
-                                            class="form-check-label"
-                                            for="background_check_other_view"
-                                        >
-                                            อื่น ๆ
-                                        </label>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                value="-"
-                                                disabled="disabled"
-                                            />
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2814,13 +2816,19 @@
                                     <t
                                         t-set="label"
                                     >บัญชีเงินเดือนธนาคารกรุงไทย (Krungthai Bank)</t>
-                                    <t t-set="value">123-4-56789-0</t>
+                                    <t
+                                        t-set="value"
+                                        t-value="onboarding.krungthai_bank_account or '-'"
+                                    />
                                 </t>
                             </div>
                             <div class="mb-3 col-lg-6">
                                 <t t-call="hr_recruitment_kmitl.input_readonly_field">
                                     <t t-set="label">ชื่อ-นามสกุล</t>
-                                    <t t-set="value">สมชาย ใจดี</t>
+                                    <t
+                                        t-set="value"
+                                        t-value="applicant.partner_name or applicant.name or '-'"
+                                    />
                                 </t>
                             </div>
                         </div>
