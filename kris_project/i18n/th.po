@@ -1273,8 +1273,8 @@ msgstr "สามารถรีเซ็ตได้เฉพาะโครง
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__department_id
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
-msgid "Department"
-msgstr "หน่วยงาน"
+msgid "Leader Department"
+msgstr "หน่วยงานของหัวหน้าโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__government

@@ -123,9 +123,11 @@ class KrisProject(models.Model):
     )
     department_id = fields.Many2one(
         comodel_name="hr.department",
-        string="Department",
+        string="Leader Department",
+        related="leader_id.department_id",
+        store=True,
+        readonly=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     # --- Financial fields ---
     project_value = fields.Monetary(

@@ -166,6 +166,7 @@
                                 name="leader_id"
                                 attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
+                            <field name="department_id" readonly="1"/>
                             <field
                                 name="user_id"
                                 widget="many2one_avatar_user"

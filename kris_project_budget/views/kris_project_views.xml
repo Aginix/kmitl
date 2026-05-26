@@ -7,7 +7,7 @@
         <field name="model">kris.project</field>
         <field name="inherit_id" ref="kris_project.view_kris_project_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='leader_id']" position="after">
+            <xpath expr="//field[@name='user_id']" position="after">
                 <field
                     name="department_analytic_id"
                     attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
