@@ -1,0 +1,331 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_approval_sarabun
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-12 08:04+0000\n"
+"PO-Revision-Date: 2026-05-12 15:05+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: agx_approval_sarabun
+#: model:ir.actions.report,print_report_name:agx_approval_sarabun.action_report_approval_request
+#: model:ir.actions.report,print_report_name:agx_approval_sarabun.report_approval_request
+msgid "'Approval Request - %s' % (object.name)"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid "<i class=\"fa fa-download\"/> Download"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid ""
+"<i class=\"fa fa-fw fa-comments\"/>\n"
+"                                            <b>Send message</b>"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid "<i class=\"fa fa-print\"/> Print"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "<span class=\"ms-2\">สังกัด</span>"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid ""
+"<strong class=\"text-muted\">\n"
+"                                        Request Owner\n"
+"                                    </strong>"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.model.fields,field_description:agx_approval_sarabun.field_approval_request__access_warning
+msgid "Access warning"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.actions.report,name:agx_approval_sarabun.report_approval_request
+#: model:ir.model,name:agx_approval_sarabun.model_approval_request
+msgid "Approval Request"
+msgstr "คำขออนุมัติค่าใช้จ่าย"
+
+#. module: agx_approval_sarabun
+#: model:ir.actions.report,name:agx_approval_sarabun.action_report_approval_request
+msgid "Approval Request Report"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_approval_requests
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_home_approval_request
+msgid "Approval Requests"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#. odoo-python
+#: code:addons/agx_approval_sarabun/models/approval_request.py:0
+#, python-format
+msgid "Approved via Sarabun document: %s"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_approval_requests
+msgid "Category"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid "Contact"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.model.fields,help:agx_approval_sarabun.field_approval_request__access_url
+msgid "Customer Portal URL"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#. odoo-python
+#: code:addons/agx_approval_sarabun/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_approval_requests
+#, python-format
+msgid "Date"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_approval_requests
+msgid "Department"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid "Download"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid "History"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "Logo"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.model.fields,field_description:agx_approval_sarabun.field_approval_request__main_sarabun_document_id
+msgid "Main Sarabun Document"
+msgstr "เลขที่หนังสือ"
+
+#. module: agx_approval_sarabun
+#. odoo-python
+#: code:addons/agx_approval_sarabun/models/approval_request.py:0
+#, python-format
+msgid "No reason provided"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.model.fields,field_description:agx_approval_sarabun.field_approval_request__access_url
+msgid "Portal Access URL"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_approval_request_page
+msgid "Print"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#. odoo-python
+#: code:addons/agx_approval_sarabun/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_approval_requests
+#, python-format
+msgid "Reference"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#. odoo-python
+#: code:addons/agx_approval_sarabun/models/approval_request.py:0
+#, python-format
+msgid "Rejected via Sarabun. Reason: %s"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.model.fields,field_description:agx_approval_sarabun.field_approval_request__sarabun_document_count
+msgid "Sarabun Document Count"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.model.fields,field_description:agx_approval_sarabun.field_approval_request__sarabun_document_ids
+msgid "Sarabun Documents"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model:ir.model.fields,field_description:agx_approval_sarabun.field_approval_request__access_token
+msgid "Security Token"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_approval_requests
+msgid "State"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#. odoo-python
+#: code:addons/agx_approval_sarabun/models/approval_request.py:0
+#, python-format
+msgid "Submitted to Sarabun for approval: %s"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.portal_my_approval_requests
+msgid "There are no approval requests."
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_budget
+msgid "กองทุน"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "จำนวนเงิน"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_budget
+msgid "ด้าน/แผนงาน/กิจกรรม"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "บันทึกข้อความ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "ประเภท"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "ผู้ขอ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "ผู้ขออนุมัติ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "ผู้รับผิดชอบ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "รวมทั้งสิ้น"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_budget
+msgid "รหัสงบประมาณค่าใช้จ่าย"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "ระยะเวลา"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "รายการ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "รายการค่าใช้จ่าย"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "รายละเอียด"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "รายละเอียดงบประมาณ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "ลงชื่อ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "ลำดับ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "วันที่"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.approval_request_view_form_sarabun
+msgid "สร้างเอกสาร"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.approval_request_view_form_sarabun
+msgid "หนังสือ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_budget
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "หน่วยงาน"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "เรียน"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "เรื่อง"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_document
+msgid "เลขที่เอกสาร"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_budget
+msgid "เลขที่ใบจองงบประมาณ"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.view_sarabun_document_form
+msgid "เอกสารต้นทาง"
+msgstr ""
+
+#. module: agx_approval_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_approval_sarabun.report_approval_request_budget
+msgid "แหล่งเงิน"
+msgstr ""

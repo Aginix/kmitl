@@ -54,7 +54,7 @@ class PurchaseOrder(models.Model):
     payment_type = fields.Selection(
         [
             ("direct", "Direct paid"),
-            ("loan", "Loan"),
+            ("advance", "Advance"),
             ("prepaid", "Prepaid"),
         ],
         tracking=True,

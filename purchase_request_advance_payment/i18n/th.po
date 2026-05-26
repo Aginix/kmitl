@@ -1,0 +1,87 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_advance_payment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-02 09:21+0000\n"
+"PO-Revision-Date: 2026-04-02 09:21+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_request_advance_payment
+#: model:ir.model,name:purchase_request_advance_payment.model_advance_payment
+msgid "Advance Payment"
+msgstr "สัญญายืมเงิน"
+
+#. module: purchase_request_advance_payment
+#: model:ir.model.fields,field_description:purchase_request_advance_payment.field_purchase_request__advance_payment_count
+msgid "Advance Payment Count"
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#. odoo-python
+#: code:addons/purchase_request_advance_payment/models/purchase_request.py:0
+#, python-format
+msgid "An advance payment already exists for this purchase request."
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#. odoo-python
+#: code:addons/purchase_request_advance_payment/models/purchase_request.py:0
+#, python-format
+msgid "Only approved purchase requests can create advance payments."
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#. odoo-python
+#: code:addons/purchase_request_advance_payment/models/purchase_request.py:0
+#, python-format
+msgid "Payment type must be 'Advance' to create an advance payment."
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#: model:ir.model,name:purchase_request_advance_payment.model_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_advance_payment
+#. odoo-python
+#: code:addons/purchase_request_advance_payment/models/purchase_request.py:0
+#, python-format
+msgid ""
+"สร้างสัญญายืมเงิน <a "
+"href='/web#id=%(id)s&amp;model=advance.payment'><b>%(name)s</b></a> แล้ว "
+"จำนวน <b>%(amount)s %(currency)s</b>"
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#: model_terms:ir.ui.view,arch_db:purchase_request_advance_payment.view_purchase_request_form_advance_payment
+msgid "สร้างสัญญาเงินยืม"
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#: model:ir.model.fields,field_description:purchase_request_advance_payment.field_purchase_request__advance_payment_id
+msgid "สัญญายืมเงิน"
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#. odoo-python
+#: code:addons/purchase_request_advance_payment/models/advance_payment.py:0
+#, python-format
+msgid ""
+"สัญญายืมเงิน <a "
+"href='/web#id=%(id)s&amp;model=advance.payment'><b>%(name)s</b></a> "
+"ได้รับการเบิกจ่ายแล้ว จำนวน <b>%(amount)s %(currency)s</b>"
+msgstr ""
+
+#. module: purchase_request_advance_payment
+#: model_terms:ir.ui.view,arch_db:purchase_request_advance_payment.view_purchase_request_form_advance_payment
+msgid "สัญญาเงินยืม"
+msgstr ""

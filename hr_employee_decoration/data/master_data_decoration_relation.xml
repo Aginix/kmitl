@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- hr.employee.decoration.relation -->
+    <record model="hr.employee.decoration.relation" id="425">
+        <field name="name">เหรียญจักรพรรดิมาลา</field>
+        <field name="abbreviation">ร.จ.พ.</field>
+        <field name="level">58</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="271">
+        <field name="name">เหรียญเงินดิเรกคุณาภรณ์</field>
+        <field name="abbreviation">ร.ง.ภ.</field>
+        <field name="level">57</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="261">
+        <field name="name">เหรียญเงินมงกุฎไทย</field>
+        <field name="abbreviation">ร.ง.ม.</field>
+        <field name="level">56</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="251">
+        <field name="name">เหรียญเงินช้างเผือก</field>
+        <field name="abbreviation">ร.ง.ช.</field>
+        <field name="level">55</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="272">
+        <field name="name">เหรียญทองดิเรกคุณาภรณ์</field>
+        <field name="abbreviation">ร.ท.ภ.</field>
+        <field name="level">54</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="262">
+        <field name="name">เหรียญทองมงกุฎไทย</field>
+        <field name="abbreviation">ร.ท.ม.</field>
+        <field name="level">53</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="252">
+        <field name="name">เหรียญทองช้างเผือก</field>
+        <field name="abbreviation">ร.ท.ช.</field>
+        <field name="level">52</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="421">
+        <field name="name">เหรียญดุษฎีมาลาหรือเข็มศิลปวิทยา</field>
+        <field name="abbreviation">ร.ด.ม.(ศ)</field>
+        <field name="level">49</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="273">
+        <field name="name">เบญจมดิเรกคุณาภรณ์</field>
+        <field name="abbreviation">บ.ภ.</field>
+        <field name="level">35</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="263">
+        <field name="name">เบญจมาภรณ์มงกุฎไทย</field>
+        <field name="abbreviation">บ.ม.</field>
+        <field name="level">34</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="253">
+        <field name="name">เบญจมาภรณ์ช้างเผือก</field>
+        <field name="abbreviation">บ.ช.</field>
+        <field name="level">33</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="274">
+        <field name="name">จตุตถดิเรกคุณาภรณ์</field>
+        <field name="abbreviation">จ.ภ.</field>
+        <field name="level">30</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="264">
+        <field name="name">จัตุรถาภรณ์มงกุฎไทย</field>
+        <field name="abbreviation">จ.ม.</field>
+        <field name="level">29</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="254">
+        <field name="name">จัตุรถาภรณ์ช้างเผือก</field>
+        <field name="abbreviation">จ.ช.</field>
+        <field name="level">28</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="275">
+        <field name="name">ตติยดิเรกคุณาภรณ์</field>
+        <field name="abbreviation">ต.ภ.</field>
+        <field name="level">25</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="265">
+        <field name="name">ตริตาภรณ์มงกุฎไทย</field>
+        <field name="abbreviation">ต.ม.</field>
+        <field name="level">24</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="255">
+        <field name="name">ตริตาภรณ์ช้างเผือก</field>
+        <field name="abbreviation">ต.ช.</field>
+        <field name="level">23</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="276">
+        <field name="name">ทุติยดิเรกคุณาภรณ์</field>
+        <field name="abbreviation">ท.ภ.</field>
+        <field name="level">17</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="266">
+        <field name="name">ทวีติยาภรณ์มงกุฎไทย</field>
+        <field name="abbreviation">ท.ม.</field>
+        <field name="level">16</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="256">
+        <field name="name">ทวีติยาภรณ์ช้างเผือก</field>
+        <field name="abbreviation">ท.ช.</field>
+        <field name="level">15</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="277">
+        <field name="name">ปฐมดิเรกคุณาภรณ์</field>
+        <field name="abbreviation">ป.ภ.</field>
+        <field name="level">12</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="267">
+        <field name="name">ประถมภรณ์มงกุฎไทย</field>
+        <field name="abbreviation">ป.ม.</field>
+        <field name="level">11</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="257">
+        <field name="name">ประถมภรณ์ช้างเผือก</field>
+        <field name="abbreviation">ป.ช.</field>
+        <field name="level">10</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="268">
+        <field name="name">มหาวชิรมงกุฎ</field>
+        <field name="abbreviation">ม.ว.ม.</field>
+        <field name="level">9</field>
+    </record>
+    <record model="hr.employee.decoration.relation" id="258">
+        <field name="name">มหาปรมารภรณ์ช้างเผือก</field>
+        <field name="abbreviation">ม.ป.ช.</field>
+        <field name="level">8</field>
+    </record>
+</odoo>

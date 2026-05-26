@@ -23,6 +23,11 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         ("43500", "รายได้จากการรับบริจาค หรือ เงินอุดหนุน"),
     ]
 
+    # หน่วยงานรหัสนี้ (และหน่วยงานภายใต้) ให้หัก deduct เข้า 43300 แทน 43100 (ก)
+    SERVICE_REVENUE_DEPT_CODE = "99"
+    DEFAULT_DEDUCT_CATEGORY = "43100 (ก)"
+    SERVICE_REVENUE_CATEGORY = "43300"
+
     @api.model
     def get_data(self, summary_id):
         """
@@ -62,7 +67,7 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
             compare_amount = compare_totals.get(code, 0)
             diff_amount = amount - compare_amount
             diff_percentage = (
-                round((diff_amount / compare_amount) * 100, 2)
+                round(((amount - compare_amount) / compare_amount) * 100, 2)
                 if compare_amount
                 else 0
             )
@@ -145,8 +150,12 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
         }
 
     def _build_category_totals(self, summary):
-        """Build category_code -> balance mapping from all compilations."""
-        lines = summary.revenue_appropriation_ids.mapped("line_ids")
+        """Build category_code -> balance mapping. Deduct lines are subtracted
+        directly from a revenue category because they do not specify
+        activity/fund and cannot be classified by account. Dept "99" (and its
+        sub-depts) deducts from 43300; other depts deduct from 43100 (ก)."""
+        appropriations = summary.revenue_appropriation_ids
+        lines = appropriations.mapped("line_ids")
 
         account_totals = {}
         for line in lines:
@@ -160,7 +169,28 @@ class BudgetAppropriationSummaryF2Revenue(models.AbstractModel):
                 account_totals.get(acc_id, 0) for acc_id in account_ids
             )
 
+        for line in appropriations.mapped("deduct_line_ids"):
+            top_dept_code = self._extract_top_level_dept_code(
+                line.department_analytic_id
+            )
+            cat_code = (
+                self.SERVICE_REVENUE_CATEGORY
+                if top_dept_code == self.SERVICE_REVENUE_DEPT_CODE
+                else self.DEFAULT_DEDUCT_CATEGORY
+            )
+            totals[cat_code] -= line.balance
+
         return totals
+
+    def _extract_top_level_dept_code(self, department):
+        """Return the code of the top-level ancestor department, or None."""
+        if not (department and department.parent_path):
+            return None
+        try:
+            top_id = int(department.parent_path.split("/")[0])
+        except (ValueError, IndexError):
+            return None
+        return self.env["account.analytic.account"].browse(top_id).code
 
     def _get_accounts_in_category(self, category_code):
         """Get all budget.account IDs in category hierarchy using parent_path."""

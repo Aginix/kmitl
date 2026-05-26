@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+
+    <!-- Profit & Loss (งบกำไรขาดทุน) -->
+    <record id="report_pl_kmitl" model="mis.report">
+        <field name="name">งบกำไรขาดทุน</field>
+        <field name="style_id" ref="style_kmitl_default" />
+    </record>
+
+    <!-- รายได้ (Income) -->
+    <record id="kpi_pl_income" model="mis.report.kpi">
+        <field name="report_id" ref="report_pl_kmitl" />
+        <field name="name">income</field>
+        <field name="description">รายได้</field>
+        <field name="expression">-balp[('account_type', 'like', 'income%')][]</field>
+        <field name="auto_expand_accounts">true</field>
+        <field name="auto_expand_accounts_style_id" ref="style_kmitl_detail" />
+        <field name="style_id" ref="style_kmitl_section" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="sequence">10</field>
+        <field name="split_after" eval="True" />
+    </record>
+
+    <!-- ค่าใช้จ่าย (Expense) -->
+    <record id="kpi_pl_expense" model="mis.report.kpi">
+        <field name="report_id" ref="report_pl_kmitl" />
+        <field name="name">expense</field>
+        <field name="description">ค่าใช้จ่าย</field>
+        <field name="expression">balp[('account_type', 'like', 'expense%')][]</field>
+        <field name="auto_expand_accounts">true</field>
+        <field name="auto_expand_accounts_style_id" ref="style_kmitl_detail" />
+        <field name="style_id" ref="style_kmitl_section" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="sequence">20</field>
+        <field name="split_after" eval="True" />
+    </record>
+
+    <!-- กำไร(ขาดทุน)สุทธิ (Net Profit/Loss) -->
+    <record id="kpi_pl_net" model="mis.report.kpi">
+        <field name="report_id" ref="report_pl_kmitl" />
+        <field name="name">net_profit_loss</field>
+        <field name="description">กำไร(ขาดทุน)สุทธิ</field>
+        <field name="expression">income - expense</field>
+        <field name="auto_expand_accounts">false</field>
+        <field name="style_id" ref="style_kmitl_total" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">none</field>
+        <field name="sequence">30</field>
+    </record>
+
+</odoo>

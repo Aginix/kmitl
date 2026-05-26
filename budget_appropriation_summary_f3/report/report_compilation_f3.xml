@@ -41,6 +41,9 @@
                         </svg>
                         พิมพ์รายงาน </button>
                 </t>
+                <t t-call="budget_appropriation_summary.report_page_label">
+                    <t t-set="page_label" t-value="'F3-P-วง-003'"/>
+                </t>
                 <div class="report-header mb-2" contenteditable="false">
                     <h4>สรุปประมาณการรายรับ - รายจ่าย</h4>
                     <h4> ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
@@ -292,15 +295,6 @@
                     outline: none;
                 }
 
-                .f3-page-label {
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    font-size: 10pt;
-                    color: #333;
-                    pointer-events: none;
-                }
-
                 .f3-print-btn {
                     position: absolute;
                     top: 20px;
@@ -326,12 +320,19 @@
                 @media print {
                     html, body {
                         background: white !important;
-                        margin: 0;
-                        padding: 0;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        width: auto !important;
+                        height: auto !important;
+                    }
+                    .article, main, header, footer, .o_report_layout_standard {
+                        margin: 0 !important;
+                        padding: 0 !important;
                     }
                     .page {
-                        width: auto;
-                        min-height: auto;
+                        width: 100% !important;
+                        min-height: auto !important;
+                        max-width: none !important;
                         margin: 0 !important;
                         padding: 0 !important;
                         box-shadow: none;
@@ -345,11 +346,6 @@
                         margin: 0 !important;
                         padding: 24mm 8mm !important;
                         size: A4;
-                    }
-                    .f3-page-label {
-                        position: fixed;
-                        top: 5mm;
-                        right: 5mm;
                     }
                     .f3-print-btn {
                         display: none !important;
@@ -395,6 +391,23 @@
                 position: relative;
                 text-align: center;
                 cursor: not-allowed;
+            }
+
+            .report-page-label {
+                position: absolute;
+                top: 1mm;
+                right: 8mm;
+                font-size: 15pt;
+                font-family: 'THSarabun', Arial, sans-serif;
+                z-index: 10;
+                pointer-events: none;
+            }
+            @media print {
+                .report-page-label {
+                    position: fixed;
+                    top: 2mm;
+                    right: 5mm;
+                }
             }</style>
     </template>
     <!-- Main report template -->

@@ -7,7 +7,7 @@
     <menuitem id="approval_new_request_menu" name="New Request" sequence="10" parent="approval_approvals_menu" action="action_approval_dashboard"/>
     <menuitem id="approval_my_request_menu" name="My Request" sequence="10" parent="approval_approvals_menu" action="action_approval_request"/>
     <!-- My Manage Tab -->
-    <menuitem id="approval_manage_menu" name="Manage" sequence="20" parent="approval_root_menu" groups="agx_approval.group_approval_manager"/>
+    <menuitem id="approval_manage_menu" name="Manage Approval" sequence="20" parent="approval_root_menu" groups="agx_approval.group_approval_manager"/>
     <menuitem id="approval_all_approval_menu" name="All Approval" sequence="10" parent="approval_manage_menu" action="action_approval_request"/>
     <!-- My Setting Tab -->
     <menuitem id="approval_setting_menu" name="Settings" sequence="30" parent="approval_root_menu" groups="agx_approval.group_approval_manager"/>

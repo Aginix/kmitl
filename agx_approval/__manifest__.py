@@ -4,10 +4,13 @@
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account", "hr", "budget_product", "budget"],
+    "license": "LGPL-3",
+    "depends": ["account", "hr", "budget_product", "budget", "base_exception"],
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
+        "wizard/approval_request_exception_confirm_view.xml",
+        "wizard/update_actual_amount_wizard_views.xml",
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",
         "views/approval_request_views.xml",
@@ -15,5 +18,6 @@
         "data/approval_sequence.xml",
         "data/approval_category_group.xml",
         "data/approval_category.xml",
-    ]
+    ],
+    "license": "LGPL-3",
 }

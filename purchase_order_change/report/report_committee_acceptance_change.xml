@@ -29,7 +29,7 @@
                     t-if="o.is_work_end_extended"
                     name="section_over_time"
                 >
-                    และได้รับอนุมัติให้ต่อสัญญาจากอธิการบดีจากวันที่
+                    และได้รับอนุมัติให้ต่อสัญญาจากวันที่
                     <span
                         class="ub"
                         t-esc="o.format_date_thai(o.po_work_end_original + datetime.timedelta(days=1))"

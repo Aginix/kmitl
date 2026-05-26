@@ -60,6 +60,7 @@ class PurchaseRequest(models.Model):
 
         message = self._purchase_request_approval_create_message_content(approval)
         self.message_post(body=message, message_type="comment")
+        self.button_in_progress()
 
         return {
             "name": _("Purchase Request Approval"),

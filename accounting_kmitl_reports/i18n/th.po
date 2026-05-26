@@ -1,0 +1,40 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* accounting_kmitl_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-12 00:00+0000\n"
+"PO-Revision-Date: 2026-05-12 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: accounting_kmitl_reports
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_trial_balance_kmitl
+msgid "งบทดลอง"
+msgstr ""
+
+#. module: accounting_kmitl_reports
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_pl_kmitl
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_pl_kmitl
+msgid "งบกำไรขาดทุน"
+msgstr ""
+
+#. module: accounting_kmitl_reports
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_bs_kmitl
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_bs_kmitl
+msgid "งบแสดงฐานะการเงิน"
+msgstr ""
+
+#. module: accounting_kmitl_reports
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_cf_kmitl
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_cf_kmitl
+msgid "งบกระแสเงินสด"
+msgstr ""

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+
+    <!-- Balance Sheet (งบแสดงฐานะการเงิน) -->
+    <record id="report_bs_kmitl" model="mis.report">
+        <field name="name">งบแสดงฐานะการเงิน</field>
+        <field name="style_id" ref="style_kmitl_default" />
+    </record>
+
+    <!-- Link P&L as subreport so we can include net profit in equity -->
+    <record id="subreport_pl_for_bs_kmitl" model="mis.report.subreport">
+        <field name="report_id" ref="report_bs_kmitl" />
+        <field name="subreport_id" ref="report_pl_kmitl" />
+        <field name="name">subreport_pl_kmitl</field>
+    </record>
+
+    <!-- สินทรัพย์ (Assets) -->
+    <record id="kpi_bs_asset" model="mis.report.kpi">
+        <field name="report_id" ref="report_bs_kmitl" />
+        <field name="name">asset</field>
+        <field name="description">สินทรัพย์</field>
+        <field name="expression">bale[('account_type', 'like', 'asset%')][]</field>
+        <field name="auto_expand_accounts">true</field>
+        <field name="auto_expand_accounts_style_id" ref="style_kmitl_detail" />
+        <field name="style_id" ref="style_kmitl_section" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="sequence">10</field>
+        <field name="split_after" eval="True" />
+    </record>
+
+    <!-- หนี้สิน (Liabilities) -->
+    <record id="kpi_bs_liability" model="mis.report.kpi">
+        <field name="report_id" ref="report_bs_kmitl" />
+        <field name="name">liability</field>
+        <field name="description">หนี้สิน</field>
+        <field name="expression">-bale[('account_type', 'like', 'liability%')][]</field>
+        <field name="auto_expand_accounts">true</field>
+        <field name="auto_expand_accounts_style_id" ref="style_kmitl_detail" />
+        <field name="style_id" ref="style_kmitl_subsection" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- ส่วนของเจ้าของ (Equity) -->
+    <record id="kpi_bs_equity" model="mis.report.kpi">
+        <field name="report_id" ref="report_bs_kmitl" />
+        <field name="name">equity</field>
+        <field name="description">ส่วนของเจ้าของ</field>
+        <field name="expression">-bale[('account_type', 'like', 'equity%')][]</field>
+        <field name="auto_expand_accounts">true</field>
+        <field name="auto_expand_accounts_style_id" ref="style_kmitl_detail" />
+        <field name="style_id" ref="style_kmitl_subsection" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">sum</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- กำไร(ขาดทุน)ของงวด (from P&L subreport) -->
+    <record id="kpi_bs_period_profit" model="mis.report.kpi">
+        <field name="report_id" ref="report_bs_kmitl" />
+        <field name="name">period_profit</field>
+        <field name="description">กำไร(ขาดทุน)ของงวด</field>
+        <field name="expression">subreport_pl_kmitl.net_profit_loss</field>
+        <field name="auto_expand_accounts">false</field>
+        <field name="style_id" ref="style_kmitl_detail" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">none</field>
+        <field name="sequence">40</field>
+        <field name="split_after" eval="True" />
+    </record>
+
+    <!-- รวมหนี้สินและส่วนของเจ้าของ (Total Liabilities + Equity) -->
+    <record id="kpi_bs_liability_equity_total" model="mis.report.kpi">
+        <field name="report_id" ref="report_bs_kmitl" />
+        <field name="name">liability_equity_total</field>
+        <field name="description">รวมหนี้สินและส่วนของเจ้าของ</field>
+        <field name="expression">liability + equity + period_profit</field>
+        <field name="auto_expand_accounts">false</field>
+        <field name="style_id" ref="style_kmitl_total" />
+        <field name="type">num</field>
+        <field name="compare_method">diff</field>
+        <field name="accumulation_method">none</field>
+        <field name="sequence">50</field>
+    </record>
+
+</odoo>

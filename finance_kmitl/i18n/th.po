@@ -1,0 +1,260 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* finance_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 00:00+0000\n"
+"PO-Revision-Date: 2026-03-10 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.kmitl_payment_type_view_form
+msgid "Account Overrides"
+msgstr "บัญชีที่กำหนดเอง"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid "All payments must have the same bank payment template."
+msgstr "รายการจ่ายเงินทั้งหมดต้องใช้รูปแบบการส่งออกเดียวกัน"
+
+#. module: finance_kmitl
+#: model:ir.actions.report,name:finance_kmitl.action_report_bank_payment_export
+#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
+#: model:report.paperformat,name:finance_kmitl.paperformat_bank_payment_export_report
+msgid "Bank Payment Export"
+msgstr "ส่งออกรายการจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
+msgid "Bank Export Formats"
+msgstr "รูปแบบไฟล์ส่งออก"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_bank_payment_export_line
+msgid "Bank Payment Export Line"
+msgstr "รายการส่งออกการจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
+msgid "Bank Payment Templates"
+msgstr "รูปแบบการจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__journal_id
+msgid "Default journal for this payment type. Leave empty to use the default."
+msgstr "สมุดรายวันเริ่มต้นสำหรับประเภทการจ่ายเงินนี้ เว้นว่างไว้เพื่อใช้ค่าเริ่มต้น"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__direction
+msgid "Direction"
+msgstr "ทิศทาง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_line__epayment_date
+msgid "E-Payment Date"
+msgstr "วันที่ E-Payment"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_line__epayment_note
+msgid "E-Payment Note"
+msgstr "หมายเหตุ E-Payment"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_line__epayment_ref
+msgid "E-Payment Reference"
+msgstr "เลขอ้างอิง E-Payment"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export_line__epayment_status
+msgid "E-Payment Status"
+msgstr "สถานะ E-Payment"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__failed
+msgid "Failed"
+msgstr "ไม่สำเร็จ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_bank_payment_export__account_fiscal_year_id
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.bank_payment_export_view_search_inherit
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__journal_id
+msgid "Journal"
+msgstr "สมุดรายวัน"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_kmitl_payment_type
+msgid "KMITL Payment Type"
+msgstr "ประเภทการจ่ายเงิน (KMITL)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_type__override_account_id
+msgid "Override Account"
+msgstr "บัญชีที่กำหนดเอง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,help:finance_kmitl.field_kmitl_payment_type__override_account_id
+msgid "Override the destination account. Leave empty to use partner's default."
+msgstr "แทนที่บัญชีปลายทาง เว้นว่างไว้เพื่อใช้ค่าเริ่มต้นของคู่ค้า"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_account_payment
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
+msgid "Payment"
+msgstr "การเบิกจ่ายเงิน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__kmitl_payment_type_id
+msgid "Operation Type"
+msgstr "ประเภทธุรกรรม"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payer"
+msgstr "ผู้ชำระเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payee"
+msgstr "ผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payer Bank Account"
+msgstr "บัญชีธนาคารผู้ชำระเงิน"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Payee Bank Account"
+msgstr "บัญชีธนาคารผู้รับเงิน"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_type
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
+msgid "Payment Types (KMITL)"
+msgstr "ประเภทการจ่ายเงิน (KMITL)"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid "Payments have been already exported."
+msgstr "รายการจ่ายเงินถูกส่งออกแล้ว"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__pending
+msgid "Pending"
+msgstr "รอดำเนินการ"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
+msgid "Settings"
+msgstr "ตั้งค่า"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+msgid "Submit"
+msgstr "ส่งอนุมัติ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__bank_payment_export_line__epayment_status__success
+msgid "Success"
+msgstr "สำเร็จ"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid "You can export bank payments state 'submitted' only"
+msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสถานะ 'ส่งอนุมัติ' เท่านั้น"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/bank_payment_export.py:0
+#, python-format
+msgid "You can export bank payments with 1 currency only."
+msgstr "สามารถส่งออกรายการจ่ายเงินที่มีสกุลเงินเดียวเท่านั้น"
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__inbound
+msgid "รับเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.model.fields.selection,name:finance_kmitl.selection__kmitl_payment_type__direction__outbound
+msgid "จ่ายเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.module.category,name:finance_kmitl.module_category_finance_kmitl
+msgid "KMITL Finance"
+msgstr "การเงิน KMITL"
+
+#. module: finance_kmitl
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_in
+msgid "User การเงินรับ (Payment In)"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_user_out
+msgid "User การเงินจ่าย (Payment Out)"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:res.groups,name:finance_kmitl.group_finance_kmitl_manager
+msgid "Manager"
+msgstr "ผู้จัดการ"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_root
+msgid "Finance"
+msgstr "การเงิน"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_outbound
+msgid "จ่ายเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_account_payment_inbound
+msgid "รับเงิน"
+msgstr ""
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_bank_payment_export
+msgid "Bank Payment Export"
+msgstr "ส่งออกข้อมูลจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_withholding_tax_cert
+msgid "Withholding Tax Certificates"
+msgstr "หนังสือรับรองหัก ณ ที่จ่าย (ทวิ 50)"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_payment_settings
+msgid "Settings"
+msgstr "ตั้งค่า"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_payment_template
+msgid "Bank Payment Templates"
+msgstr "เทมเพลตการจ่ายเงินธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_bank_export_format
+msgid "Bank Export Formats"
+msgstr "รูปแบบส่งออกข้อมูลธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_types
+msgid "Payment Types (KMITL)"
+msgstr "ประเภทการจ่ายเงิน (KMITL)"

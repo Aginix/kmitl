@@ -54,6 +54,7 @@ class PurchaseOrder(models.Model):
             "line_ids": [
                 Command.create(line._prepare_disbursement_request_line_vals())
                 for line in self.order_line
+                if not line.display_type
             ],
             "ref": self.name,
         }

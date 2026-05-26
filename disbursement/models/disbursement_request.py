@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import Command, _, api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 
@@ -25,23 +25,11 @@ class DisbursementRequest(models.Model):
     _commitment_id_field = "budget_commitment_id"
     _commitment_account_id_field = "budget_account_id"
 
-    PIPELINE_STATES = (
-        "bill_draft",
-        "bill_posted",
-        "payment_draft",
-        "payment_posted",
-    )
-
     READONLY_STATES = {
         "submitted": [("readonly", True)],
         "signed": [("readonly", True)],
         "verified": [("readonly", True)],
         "approved": [("readonly", True)],
-        "bill_draft": [("readonly", True)],
-        "bill_posted": [("readonly", True)],
-        "payment_draft": [("readonly", True)],
-        "payment_posted": [("readonly", True)],
-        "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
 
@@ -134,55 +122,6 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    bill_ids = fields.One2many(
-        comodel_name="account.move",
-        inverse_name="disbursement_request_id",
-        string="Vendor Bills",
-        readonly=True,
-        copy=False,
-    )
-
-    bill_count = fields.Integer(
-        string="Bill Count",
-        compute="_compute_bill_count",
-    )
-
-    bill_draft_count = fields.Integer(
-        string="Draft Bill Count",
-        compute="_compute_bill_count",
-    )
-
-    bill_status_display = fields.Char(
-        string="Bill Status",
-        compute="_compute_bill_count",
-    )
-
-    # --- Pipeline: Payment tracking ---
-    payment_ids = fields.Many2many(
-        comodel_name="account.payment",
-        compute="_compute_payment_ids",
-        string="Payments",
-    )
-    payment_count = fields.Integer(
-        compute="_compute_payment_ids",
-        string="Payment Count",
-    )
-
-    payment_status_display = fields.Char(
-        string="Payment Status",
-        compute="_compute_payment_ids",
-    )
-
-    payment_move_ids = fields.Many2many(
-        comodel_name="account.move",
-        compute="_compute_payment_ids",
-        string="Payment Journal Entries",
-    )
-    payment_move_count = fields.Integer(
-        compute="_compute_payment_ids",
-        string="Payment Move Count",
-    )
-
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -209,11 +148,20 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    wht_line_ids = fields.One2many(
+        comodel_name="disbursement.request.line",
+        inverse_name="request_id",
+        string="WHT Lines",
+        readonly=True,
+        copy=False,
+    )
+
     attachment_ids = fields.One2many(
         "ir.attachment",
         "res_id",
         string="Document Attachments",
         domain=[("res_model", "=", "disbursement.request")],
+        states=READONLY_STATES,
     )
 
     amount_untaxed = fields.Monetary(
@@ -266,11 +214,6 @@ class DisbursementRequest(models.Model):
             ("signed", "Signed"),
             ("verified", "Verified"),
             ("approved", "Approved"),
-            ("bill_draft", "Bill Draft"),
-            ("bill_posted", "Bill Posted"),
-            ("payment_draft", "Payment Draft"),
-            ("payment_posted", "Payment Posted"),
-            ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
         string="Status",
@@ -278,6 +221,36 @@ class DisbursementRequest(models.Model):
         readonly=True,
         copy=False,
         tracking=True,
+        default="draft",
+    )
+
+    pipeline_status = fields.Selection(
+        selection=[
+            ("pre_approval", "Pre-approval"),
+            ("approved", "Approved"),
+        ],
+        string="Pipeline Status",
+        compute="_compute_pipeline_status",
+        store=True,
+        readonly=True,
+        copy=False,
+        default="pre_approval",
+    )
+
+    display_status = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("submitted", "Submitted"),
+            ("signed", "Signed"),
+            ("verified", "Verified"),
+            ("approved", "Approved"),
+            ("cancel", "Cancelled"),
+        ],
+        string="Status",
+        compute="_compute_display_status",
+        store=True,
+        readonly=True,
+        copy=False,
         default="draft",
     )
 
@@ -303,6 +276,20 @@ class DisbursementRequest(models.Model):
         tracking=True,
         copy=False,
         states=READONLY_STATES,
+    )
+
+    budget_consumed_amount = fields.Monetary(
+        string="Budget Consumed",
+        currency_field="currency_id",
+        copy=False,
+        readonly=True,
+        tracking=True,
+    )
+
+    budget_consumed_date = fields.Datetime(
+        string="Budget Consumed At",
+        copy=False,
+        readonly=True,
     )
 
     # Analytic dimension fields
@@ -596,75 +583,37 @@ class DisbursementRequest(models.Model):
     # -------------------------------------------------------------------------
     # Computed fields
     # -------------------------------------------------------------------------
-    @api.depends("bill_ids", "bill_ids.state")
-    def _compute_bill_count(self):
-        """Compute the number of bills linked to this request"""
-        for record in self:
-            bills = record.bill_ids
-            total = len(bills)
-            draft = len(bills.filtered(lambda b: b.state == "draft"))
-            posted = total - draft
-            record.bill_count = total
-            record.bill_draft_count = draft
-            record.bill_status_display = (
-                _("ตั้งหนี้แล้ว %s/%s", posted, total) if total else ""
+    @api.depends("state")
+    def _compute_pipeline_status(self):
+        """Pipeline status reflects downstream document progress.
+
+        Core only knows pre_approval / approved. Bridge modules
+        (disbursement_accounting_kmitl, disbursement_finance_kmitl) extend
+        the selection and override this compute to add bill_*/payment_*/done.
+        """
+        for rec in self:
+            rec.pipeline_status = (
+                "approved" if rec.state == "approved" else "pre_approval"
             )
 
-    @api.depends("bill_ids", "bill_ids.state", "bill_ids.payment_state")
-    def _compute_payment_ids(self):
-        Payment = self.env["account.payment"]
-        for rec in self:
-            payments = Payment
-            for bill in rec.bill_ids:
-                # Reconciled payments (posted & matched)
-                payments |= bill._get_reconciled_payments()
-                # Draft/submitted payments awaiting posting (KMITL flow)
-                payments |= Payment.search([
-                    ("to_reconcile_payment_line_ids.move_id", "=", bill.id),
-                ])
-            rec.payment_ids = payments
-            total = len(payments)
-            rec.payment_count = total
-            posted = len(payments.filtered(lambda p: p.state == "posted"))
-            rec.payment_status_display = (
-                _("จ่ายแล้ว %s/%s", posted, total) if total else ""
-            )
-            payment_moves = payments.mapped("move_id")
-            rec.payment_move_ids = payment_moves
-            rec.payment_move_count = len(payment_moves)
+    @api.depends("state", "pipeline_status")
+    def _compute_display_status(self):
+        """Unify state + pipeline_status into one user-visible value.
 
-    def _update_state_from_pipeline(self):
-        """Recompute state based on bill/payment status for records in pipeline."""
-        Payment = self.env["account.payment"]
+        Used by the form statusbar so the user sees a single progressive
+        bar from draft → ... → approved → bill_* → payment_* → done. The
+        underlying state and pipeline_status fields still drive button
+        visibility, security, and search filters.
+        """
         for rec in self:
-            if rec.state not in rec.PIPELINE_STATES:
-                continue
-            bills = rec.bill_ids
-            if not bills:
-                continue
-            # All bills fully paid → done
-            if all(b.payment_state == "paid" for b in bills):
-                rec.state = "done"
-                rec.message_post(
-                    body=_("All payments complete. Disbursement done."),
-                    subtype_xmlid="mail.mt_note",
-                )
-                continue
-            # Collect all payments across all bills
-            all_payments = Payment
-            for bill in bills:
-                all_payments |= bill._get_reconciled_payments()
-                all_payments |= Payment.search(
-                    [("to_reconcile_payment_line_ids.move_id", "=", bill.id)]
-                )
-            if all_payments.filtered(lambda p: p.state == "posted"):
-                rec.state = "payment_posted"
-            elif all_payments:
-                rec.state = "payment_draft"
-            elif all(b.state == "posted" for b in bills):
-                rec.state = "bill_posted"
+            if rec.state == "cancel":
+                rec.display_status = "cancel"
+            elif rec.state != "approved":
+                rec.display_status = rec.state
+            elif rec.pipeline_status in (False, "pre_approval", "approved"):
+                rec.display_status = "approved"
             else:
-                rec.state = "bill_draft"
+                rec.display_status = rec.pipeline_status
 
     @api.depends("partner_id", "company_id")
     def _compute_partner_bank_id(self):
@@ -676,12 +625,39 @@ class DisbursementRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to generate sequence number and log budget commitment"""
+        """Override create to generate sequence number and log budget commitment.
+
+        The DR name follows the pattern DR/<fy>/<padding> (e.g. DR/69/0001),
+        mirroring the per-fiscal-year scheme that purchase_request_sequence_kmitl
+        uses. A dedicated ir.sequence is created on first use per fiscal year.
+        """
+        Sequence = self.env["ir.sequence"].sudo()
+        Company = self.env["res.company"]
         for vals in vals_list:
-            if vals.get("name", "/") == "/":
-                vals["name"] = self.env["ir.sequence"].next_by_code(
-                    "disbursement.request"
-                ) or "/"
+            if vals.get("name") and vals["name"] != "/":
+                continue
+
+            date = fields.Date.to_date(
+                vals.get("date") or fields.Date.context_today(self)
+            )
+            company = Company.browse(
+                vals.get("company_id") or self.env.company.id
+            )
+            fy = company.find_daterange_fy(date) if company else False
+            fy_year = fy.name[-2:] if fy else date.strftime("%y")
+
+            seq_code = f"disbursement.request.{fy_year}"
+            if not Sequence.search([("code", "=", seq_code)], limit=1):
+                Sequence.create({
+                    "name": f"Disbursement Request {fy_year}",
+                    "code": seq_code,
+                    "prefix": f"DR/{fy_year}/",
+                    "padding": 4,
+                    "number_increment": 1,
+                })
+
+            vals["name"] = Sequence.next_by_code(seq_code) or "/"
+
         records = super().create(vals_list)
         for rec in records:
             if rec.budget_commitment_id:
@@ -778,118 +754,16 @@ class DisbursementRequest(models.Model):
                 request.line_ids.write(
                     {"analytic_distribution": request.analytic_distribution})
 
-    def _create_bill(self):
-        """Create vendor bill(s) from disbursement request."""
-        self.ensure_one()
-
-        if self.state != "approved":
-            raise UserError(
-                _("Only approved requests can be used to create bills.")
-            )
-
-        if self.partner_type == "single":
-            bills = self._create_single_bill()
-        else:
-            bills = self._create_multi_bills()
-
-        bills.action_submit()
-        self.state = "bill_draft"
-
-        for bill in bills:
-            bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
-            self.message_post(
-                body=_(
-                    'Vendor Bill <a href="%(link)s" target="_blank">'
-                    "%(name)s</a> has been created."
-                )
-                % {"link": bill_link, "name": bill.name},
-                subtype_xmlid="mail.mt_note",
-            )
-
-        return bills
-
-    def _create_single_bill(self):
-        """Create one bill for all lines (single-partner mode)."""
-        self.ensure_one()
-        invoice_lines = [
-            Command.create(self._prepare_bill_line_vals(line))
-            for line in self.line_ids
-        ]
-        bill = self.env["account.move"].create(
-            self._prepare_bill_vals(
-                self.partner_id, self.partner_bank_id, invoice_lines
-            )
-        )
-        self._apply_wht_to_bill(bill, self.line_ids)
-        return bill
-
-    def _create_multi_bills(self):
-        """Group lines by partner, create one bill per partner."""
-        self.ensure_one()
-        partner_lines = {}
-        for line in self.line_ids:
-            partner_lines.setdefault(
-                line.partner_id,
-                self.env["disbursement.request.line"],
-            )
-            partner_lines[line.partner_id] |= line
-
-        bills = self.env["account.move"]
-        for partner, lines in partner_lines.items():
-            invoice_lines = [
-                Command.create(self._prepare_bill_line_vals(line))
-                for line in lines
-            ]
-            partner_bank = lines[0].partner_bank_id
-            bill = self.env["account.move"].create(
-                self._prepare_bill_vals(partner, partner_bank, invoice_lines)
-            )
-            self._apply_wht_to_bill(bill, lines)
-            bills |= bill
-        return bills
-
-    def _prepare_bill_vals(self, partner, partner_bank, invoice_lines):
-        """Prepare values for creating a vendor bill."""
-        return {
-            "disbursement_request_id": self.id,
-            "partner_id": partner.id,
-            "partner_bank_id": partner_bank.id if partner_bank else False,
-            "move_type": "in_invoice",
-            "invoice_date": self.date,
-            "ref": self.ref,
-            "currency_id": self.currency_id.id,
-            "company_id": self.company_id.id,
-            "invoice_line_ids": invoice_lines,
-            "budget_commitment_id": self.budget_commitment_id.id,
-            "budget_account_id": self.budget_account_id.id,
-            "analytic_distribution": self.analytic_distribution,
-        }
-
-    def _prepare_bill_line_vals(self, line):
-        """Prepare values for a single invoice line."""
-        return {
-            "product_id": line.product_id.id,
-            "name": line.name,
-            "account_id": line.account_id.id,
-            "quantity": line.quantity,
-            "price_unit": line.price_unit,
-            "tax_ids": [Command.set(line.tax_ids.ids)],
-            "analytic_distribution": line.analytic_distribution,
-        }
-
-    def _apply_wht_to_bill(self, bill, request_lines):
-        """Apply WHT from request lines to the corresponding bill lines."""
-        for request_line, invoice_line in zip(
-            request_lines, bill.invoice_line_ids
-        ):
-            if request_line.wht_tax_id:
-                invoice_line.wht_tax_id = request_line.wht_tax_id
-
     def action_submit(self):
         """Submit request for approval"""
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be submitted."))
+            if not record.line_ids:
+                raise UserError(
+                    _("Cannot submit a disbursement request with no lines. "
+                      "Please add at least one line.")
+                )
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
             record.state = "submitted"
@@ -923,77 +797,78 @@ class DisbursementRequest(models.Model):
         return True
 
     def _action_approve_budget(self):
-        """Reserve budget commitment on approval"""
+        """Obligate and consume from the pre-linked budget commitment.
+
+        The BC is expected to be set from an upstream process (PR/PO/PA);
+        this method does NOT create a new BC. It posts an obligate and a
+        consume line for the DR amount, leaving the BC open for other DRs.
+        """
         self.ensure_one()
-        if self.budget_commitment_id:
-            return
-        if not self.budget_account_id:
-            return
-        check = self._check_budget_availability(
-            amount=self.amount_total,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-        )
-        if not check["is_sufficient"]:
+        if not self.budget_commitment_id:
             raise UserError(
-                _(
-                    "Insufficient budget. Available: %(available)s, "
-                    "Required: %(required)s"
-                )
+                _("Budget commitment is required before approval. "
+                  "Please link one from the upstream document.")
+            )
+        commitment = self.budget_commitment_id
+        if commitment.state not in ("reserved", "partial"):
+            raise UserError(
+                _("Cannot obligate: commitment %(name)s is in state '%(state)s' "
+                  "(must be 'reserved' or 'partial').")
+                % {"name": commitment.name, "state": commitment.state}
+            )
+        if commitment.available_to_obligate < self.amount_total:
+            raise UserError(
+                _("Insufficient available to obligate on commitment %(name)s. "
+                  "Available: %(available)s, Required: %(required)s")
                 % {
-                    "available": check["available"],
+                    "name": commitment.name,
+                    "available": commitment.available_to_obligate,
                     "required": self.amount_total,
                 }
             )
-        commitment = self._create_budget_commitment(
-            amount=self.amount_total,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-            ref=self.name,
-            description=_("Disbursement Request: %s") % self.name,
-            auto_reserve=True,
-        )
+        first_reserve = commitment.line_ids.filtered(
+            lambda l: l.move_type == "reserve" and l.state == "posted"
+        )[:1]
+        if not first_reserve:
+            raise UserError(
+                _("No active reserve line on commitment %s.") % commitment.name
+            )
+        self.env["budget.commitment.line"].create([
+            {
+                "commitment_id": commitment.id,
+                "move_type": "obligate",
+                "account_id": first_reserve.account_id.id,
+                "analytic_distribution": first_reserve.analytic_distribution,
+                "amount": self.amount_total,
+                "name": _("Obligation: %s") % self.name,
+            },
+            {
+                "commitment_id": commitment.id,
+                "move_type": "consume",
+                "account_id": first_reserve.account_id.id,
+                "analytic_distribution": first_reserve.analytic_distribution,
+                "amount": self.amount_total,
+                "name": _("Consumption: %s") % self.name,
+            },
+        ])
+        self.budget_consumed_amount = self.amount_total
+        self.budget_consumed_date = fields.Datetime.now()
         self.message_post(
-            body=_("Budget committed: %s") % commitment.name,
+            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
+            % {"amount": self.amount_total, "name": commitment.name},
             subtype_xmlid="mail.mt_note",
         )
 
-    def action_done(self):
-        """Mark as done when bill is fully paid"""
-        for record in self:
-            if record.state not in record.PIPELINE_STATES:
-                continue
-            record.state = "done"
-            record.message_post(
-                body=_("Payment complete. Disbursement done."),
-                subtype_xmlid="mail.mt_note",
-            )
-        return True
-
     def action_cancel(self):
-        """Cancel the request"""
+        """Cancel the request.
+
+        Bridge modules override this to add bill/payment-specific guards
+        and cleanup (cancel draft bills, block on posted bills/payments).
+        """
         for record in self:
-            if record.state in ("cancel", "done"):
+            if record.state == "cancel":
                 raise UserError(
-                    _("Cannot cancel a done or already cancelled request.")
-                )
-            posted_bills = record.bill_ids.filtered(
-                lambda b: b.state == "posted"
-            )
-            if posted_bills:
-                raise UserError(
-                    _("Cannot cancel: bill(s) %s already posted. "
-                      "Reverse the bill(s) first.")
-                    % ", ".join(posted_bills.mapped("name"))
-                )
-            if record.bill_ids and record.payment_ids:
-                raise UserError(
-                    _("Cannot cancel: there are payments linked to bills. "
-                      "Remove payments first.")
+                    _("Cannot cancel an already cancelled request.")
                 )
             if record.budget_commitment_id:
                 try:
@@ -1008,11 +883,6 @@ class DisbursementRequest(models.Model):
                         body=_("Warning: %s") % str(e),
                         subtype_xmlid="mail.mt_note",
                     )
-            draft_bills = record.bill_ids.filtered(
-                lambda b: b.state == "draft"
-            )
-            if draft_bills:
-                draft_bills.button_cancel()
             record.state = "cancel"
         return True
 
@@ -1028,218 +898,6 @@ class DisbursementRequest(models.Model):
             record.main_exception_id = False
             record.ignore_exception = False
         return True
-
-    def action_view_bill(self):
-        """Open the linked vendor bill(s)"""
-        self.ensure_one()
-        bills = self.bill_ids
-        if len(bills) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Vendor Bill"),
-                "res_model": "account.move",
-                "res_id": bills.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Vendor Bills"),
-            "res_model": "account.move",
-            "domain": [("id", "in", bills.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
-    def action_create_payment(self):
-        """Create draft payments directly from DR, one per posted unpaid bill."""
-        self.ensure_one()
-        unpaid_bills = self.bill_ids.filtered(
-            lambda b: b.state == "posted"
-            and b.payment_state in ("not_paid", "partial")
-        )
-        if not unpaid_bills:
-            raise UserError(_("No posted unpaid bills to pay."))
-
-        # Find default bank journal and outbound payment type
-        journal = self.env["account.journal"].search(
-            [
-                ("type", "=", "bank"),
-                ("company_id", "=", self.company_id.id),
-            ],
-            limit=1,
-        )
-        if not journal:
-            raise UserError(
-                _("No bank journal found for company %s.")
-                % self.company_id.name
-            )
-        payment_type = self.env.ref(
-            "account_payment_kmitl.payment_type_normal_outbound",
-            raise_if_not_found=False,
-        )
-
-        payments = self.env["account.payment"]
-        for bill in unpaid_bills:
-            # Get payable lines from the bill for reconciliation
-            payable_lines = bill.line_ids.filtered(
-                lambda l: l.account_type == "liability_payable"
-                and not l.reconciled
-            )
-            amount = abs(bill.amount_residual)
-
-            # Compute WHT deduction from bill lines
-            wht_lines = bill.line_ids.filtered("wht_tax_id")
-            write_off_line_vals = []
-            if wht_lines:
-                deduction_list, amount_wht = (
-                    wht_lines._prepare_deduction_list(
-                        fields.Date.context_today(self),
-                        bill.currency_id,
-                    )
-                )
-                if deduction_list and amount_wht:
-                    amount -= amount_wht
-                    for deduct in deduction_list:
-                        write_off_line_vals.append({
-                            "name": deduct["name"],
-                            "account_id": deduct["account_id"],
-                            "partner_id": bill.partner_id.id,
-                            "currency_id": bill.currency_id.id,
-                            "amount_currency": -deduct["amount"],
-                            "balance": -deduct["amount"],
-                            "wht_tax_id": deduct["wht_tax_id"],
-                            "tax_base_amount": deduct["wht_amount_base"],
-                        })
-
-            payment_vals = {
-                "partner_id": bill.partner_id.id,
-                "amount": amount,
-                "currency_id": bill.currency_id.id,
-                "journal_id": journal.id,
-                "payment_type": "outbound",
-                "partner_type": "supplier",
-                "ref": _("%s - %s", self.name, bill.name),
-                "analytic_distribution": bill.analytic_distribution,
-            }
-            if write_off_line_vals:
-                payment_vals["write_off_line_vals"] = write_off_line_vals
-            if payment_type:
-                payment_vals["kmitl_payment_type_id"] = payment_type.id
-            if bill.budget_commitment_id:
-                payment_vals["budget_commitment_id"] = (
-                    bill.budget_commitment_id.id
-                )
-            if bill.budget_account_id:
-                payment_vals["budget_account_id"] = bill.budget_account_id.id
-
-            payment = self.env["account.payment"].create(payment_vals)
-            # Store bill lines for deferred reconciliation on post
-            payment.to_reconcile_payment_line_ids = payable_lines
-            # Propagate analytic to payment move lines
-            if bill.analytic_distribution:
-                payment.move_id.line_ids.write(
-                    {"analytic_distribution": bill.analytic_distribution}
-                )
-            payments |= payment
-
-        self.state = "payment_draft"
-
-        # Log
-        for payment in payments:
-            pay_link = (
-                "/web#id=%d&model=account.payment&view_type=form" % payment.id
-            )
-            self.message_post(
-                body=_(
-                    'Payment <a href="%(link)s" target="_blank">'
-                    "%(name)s</a> created for %(partner)s.",
-                    link=pay_link,
-                    name=payment.name,
-                    partner=payment.partner_id.name,
-                ),
-                subtype_xmlid="mail.mt_note",
-            )
-
-        if len(payments) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "account.payment",
-                "res_id": payments.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Payments"),
-            "res_model": "account.payment",
-            "domain": [("id", "in", payments.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
-    def action_view_payments(self):
-        """Open related payment(s)."""
-        self.ensure_one()
-        if self.payment_count == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Payment"),
-                "res_model": "account.payment",
-                "res_id": self.payment_ids.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Payments"),
-            "res_model": "account.payment",
-            "domain": [("id", "in", self.payment_ids.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
-    def action_view_payment_moves(self):
-        """Open journal entries linked to payments."""
-        self.ensure_one()
-        moves = self.payment_move_ids
-        if len(moves) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Journal Entry"),
-                "res_model": "account.move",
-                "res_id": moves.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("รายการล้างหนี้"),
-            "res_model": "account.move",
-            "domain": [("id", "in", moves.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
-
-    def action_create_bill(self):
-        bills = self._create_bill()
-
-        if len(bills) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "account.move",
-                "res_id": bills.id,
-                "view_mode": "form",
-                "target": "current",
-            }
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Vendor Bills"),
-            "res_model": "account.move",
-            "domain": [("id", "in", bills.ids)],
-            "view_mode": "tree,form",
-            "target": "current",
-        }
 
     def _compute_access_url(self):
         """Compute the portal URL for the disbursement request."""
