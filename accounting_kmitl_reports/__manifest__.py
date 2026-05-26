@@ -17,6 +17,7 @@
         "account_financial_report",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "data/mis_report_style_kmitl.xml",
         "data/mis_report_pl_kmitl.xml",
         "data/mis_report_bs_kmitl.xml",
