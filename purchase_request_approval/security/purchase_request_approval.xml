@@ -34,7 +34,7 @@
         <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
-        <field name="perm_unlink" eval="True" />
+        <field name="perm_unlink" eval="False" />
         <field name="domain_force">[('requested_by','=',user.id)]</field>
     </record>
     <record id="purchase_request_approval_user_all_rule" model="ir.rule">
@@ -47,7 +47,7 @@
         <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
-        <field name="perm_unlink" eval="True" />
+        <field name="perm_unlink" eval="False" />
         <field name="domain_force">[(1,'=',1)]</field>
     </record>
     <record id="purchase_request_approval_manager_rule" model="ir.rule">
