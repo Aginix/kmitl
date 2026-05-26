@@ -43,6 +43,11 @@ class KrisProjectReceipt(models.Model):
         string="Amount",
         tracking=True,
     )
+    extra_income = fields.Monetary(
+        string="Extra Value",
+        default=0.0,
+        tracking=True,
+    )
     net_amount = fields.Monetary(
         string="Net Amount",
         compute="_compute_net_amount",
@@ -62,6 +67,22 @@ class KrisProjectReceipt(models.Model):
         string="สกุลเงิน",
         readonly=True,
     )
+    project_state = fields.Selection(
+        related="project_id.state",
+        string="Project State",
+    )
+
+    def action_delete(self):
+        self.ensure_one()
+        self.unlink()
+        return False
+
+    def unlink(self):
+        allocation_lines = self.allocation_ids.mapped("allocation_line_id")
+        result = super().unlink()
+        if allocation_lines:
+            allocation_lines._compute_actual_amount()
+        return result
 
     @api.depends("amount", "equipment_cost_in_installment")
     def _compute_net_amount(self):

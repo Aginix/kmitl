@@ -1,6 +1,7 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -58,6 +59,9 @@ class KrisProjectInstallment(models.Model):
     extra_deduction = fields.Monetary(
         string="Extra Deduction",
     )
+    extra_income = fields.Monetary(
+        string="Extra Value",
+    )
     amount_net = fields.Monetary(
         string="Net Amount",
         compute="_compute_amount_net",
@@ -103,14 +107,29 @@ class KrisProjectInstallment(models.Model):
                 rec.amount - rec.deduction_guarantee - rec.deduction_advance
             )
 
+    @api.constrains("extra_income", "project_id")
+    def _check_extra_income_total(self):
+        for rec in self:
+            project = rec.project_id
+            if not project:
+                continue
+            total_extra = sum(project.installment_ids.mapped("extra_income"))
+            if total_extra > project.extra_value + 1e-9:
+                raise ValidationError(
+                    _(
+                        "ยอดค่า Extra รวมทุกงวด (%.2f บาท) เกินจากยอดค่า Extra โครงการ (%.2f บาท)"
+                    )
+                    % (total_extra, project.extra_value)
+                )
+
     @api.depends("allocation_ids.amount")
     def _compute_maintenance_fee(self):
         for rec in self:
             rec.maintenance_fee = sum(rec.allocation_ids.mapped("amount"))
 
-    @api.depends("received_from_employer", "maintenance_fee", "extra_deduction")
+    @api.depends("received_from_employer", "maintenance_fee", "extra_deduction", 'extra_income')
     def _compute_amount_net(self):
         for rec in self:
             rec.amount_net = (
-                rec.received_from_employer - rec.maintenance_fee - rec.extra_deduction
+                rec.received_from_employer - rec.maintenance_fee - rec.extra_deduction - rec.extra_income
             )

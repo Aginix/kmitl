@@ -115,17 +115,19 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    leader_id = fields.Many2one(
+    manager_id = fields.Many2one(
         comodel_name="hr.employee",
-        string="Project Leader",
+        string="Project Manager",
         tracking=True,
         states=READONLY_STATES,
     )
     department_id = fields.Many2one(
         comodel_name="hr.department",
-        string="Department",
+        string="Leader Department",
+        compute="_compute_department_id",
+        store=True,
+        readonly=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     # --- Financial fields ---
     project_value = fields.Monetary(
@@ -140,6 +142,11 @@ class KrisProject(models.Model):
     )
     operating_expense = fields.Monetary(
         string="Operating Expense",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    extra_value = fields.Monetary(
+        string="Extra Value",
         tracking=True,
         states=READONLY_STATES,
     )
@@ -254,6 +261,11 @@ class KrisProject(models.Model):
         compute="_compute_totals",
         store=True,
     )
+    over_revenue = fields.Monetary(
+        string="Over Revenue",
+        compute="_compute_totals",
+        store=True,
+    )
     # --- Standard fields ---
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -281,13 +293,18 @@ class KrisProject(models.Model):
     warn_installment_total_mismatch = fields.Boolean(
         compute="_compute_warnings",
     )
+    warn_extra_overshoot = fields.Boolean(
+        compute="_compute_warnings",
+    )
 
     @api.depends(
         "maintenance_deduction_amount",
         "allocation_line_ids.estimated_amount",
         "installment_ids.maintenance_fee",
+        "installment_ids.extra_income",
         "total_installment_amount",
         "project_value",
+        "extra_value",
     )
     def _compute_warnings(self):
         prec = self.env["decimal.precision"].precision_get("Account")
@@ -318,9 +335,15 @@ class KrisProject(models.Model):
                     )
                     != 0
                 )
+                extra_total = sum(rec.installment_ids.mapped("extra_income"))
+                rec.warn_extra_overshoot = (
+                    float_compare(extra_total, rec.extra_value, precision_digits=prec)
+                    > 0
+                )
             else:
                 rec.warn_installment_maintenance_mismatch = False
                 rec.warn_installment_total_mismatch = False
+                rec.warn_extra_overshoot = False
 
     @api.depends("operating_expense")
     def _compute_allocatable_value(self):
@@ -354,7 +377,14 @@ class KrisProject(models.Model):
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
-            rec.revenue_remaining = rec.project_value - rec.total_received_amount
+            diff = rec.project_value - rec.total_received_amount
+            rec.revenue_remaining = max(0.0, diff)
+            rec.over_revenue = max(0.0, -diff)
+
+    @api.depends("manager_id", "manager_id.department_id")
+    def _compute_department_id(self):
+        for rec in self:
+            rec.department_id = rec.manager_id.department_id
 
     @api.depends("date_contract_start", "date_contract_end")
     def _compute_project_duration(self):
@@ -390,7 +420,7 @@ class KrisProject(models.Model):
     def action_add_receipt(self):
         self.ensure_one()
         return {
-            "name": "Revenue Record",
+            "name": _("Revenue Record"),
             "type": "ir.actions.act_window",
             "res_model": "kris.project.receipt.wizard",
             "view_mode": "form",
@@ -401,7 +431,7 @@ class KrisProject(models.Model):
     def action_add_installment(self):
         self.ensure_one()
         return {
-            "name": "Add Installment",
+            "name": _("Add Installment"),
             "type": "ir.actions.act_window",
             "res_model": "kris.project.installment",
             "view_mode": "form",

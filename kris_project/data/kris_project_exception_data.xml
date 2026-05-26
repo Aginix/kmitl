@@ -78,7 +78,7 @@ if self.state == 'draft' and self.installment_ids and self.warn_installment_main
 if self.state == 'in_progress' and self.installment_ids and any(i.state != 'received' for i in self.installment_ids):
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
     <record id="kris_excep_revenue_remaining" model="exception.rule">
@@ -106,7 +106,7 @@ if self.state == 'in_progress' and self.revenue_remaining > 0:
 if self.state in ('draft', 'in_progress') and self.receipt_ids:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
 </odoo>
