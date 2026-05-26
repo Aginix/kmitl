@@ -14,10 +14,10 @@
                                     alt="Logo"
                                 />
                             </td>
-                            <td style="border: none; text-align: center; vertical-align: middle;">
-                                <div style="font-size: 14pt; font-weight: bold;">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
-                                <div style="font-size: 12pt; font-style: italic;">King Mongkut's Institute of Technology Ladkrabang</div>
-                                <div style="font-size: 16pt; font-weight: bold; margin-top: 6px;">Trial Balance</div>
+                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+                                <div style="font-size: 12pt; font-style: italic; margin-bottom: 12px;">King Mongkut's Institute of Technology Ladkrabang</div>
+                                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">Trial Balance</div>
                                 <div style="font-size: 12pt;">
                                     ตั้งแต่ <t t-out="kmitl_date_from_th" /> ถึง <t t-out="kmitl_date_to_th" />
                                 </div>
