@@ -47,7 +47,7 @@ class KrisProjectAllocationTemplateLine(models.Model):
     )
     sequence = fields.Integer(string="Sequence", default=10)
     allocation_pct = fields.Float(string="Allocation %", digits=(5, 2))
-    department_budget_code_id = fields.Many2one(
+    department_analytic_id = fields.Many2one(
         comodel_name="account.analytic.account",
         string="รหัสงบประมาณหน่วยงาน",
         domain=[("root_plan_id.code", "=", "departments")],

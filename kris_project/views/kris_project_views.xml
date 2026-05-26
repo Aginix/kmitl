@@ -253,7 +253,7 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="item_id"/>
-                                    <field name="department_budget_code_id"
+                                    <field name="department_analytic_id"
                                         attrs="{'readonly': [('is_locked', '=', True)]}"
                                     />
                                     <field name="is_locked" invisible="1"/>
