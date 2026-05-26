@@ -1319,8 +1319,8 @@ msgid "Advance Deduction"
 msgstr "หักเงินล่วงหน้า"
 
 #. module: kris_project
-#: model:ir.model.fields,field_description:kris_project.field_kris_project__leader_id
-msgid "Project Leader"
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__manager_id
+msgid "Project Manager"
 msgstr "หัวหน้าโครงการ"
 
 #. module: kris_project

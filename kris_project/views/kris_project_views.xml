@@ -163,7 +163,7 @@
                                 attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field
-                                name="leader_id"
+                                name="manager_id"
                                 attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                             />
                             <field name="department_id" readonly="1"/>
@@ -440,7 +440,7 @@
                 <field name="contract_number" optional="show"/>
                 <field name="project_category_id" optional="show"/>
                 <field name="project_type_id" optional="show"/>
-                <field name="leader_id" optional="show"/>
+                <field name="manager_id" optional="show"/>
                 <field name="user_id" optional="show"/>
                 <field name="client_name" optional="show"/>
                 <field name="account_fiscal_year_id" optional="show"/>
@@ -468,7 +468,7 @@
                 <field name="name" string="Project Number"/>
                 <field name="project_name" string="Project Name"/>
                  <field name="client_name"/>
-                <field name="leader_id"/>
+                <field name="manager_id"/>
                 <field name="project_category_id"/>
                 <field name="project_type_id"/>
                 <separator/>

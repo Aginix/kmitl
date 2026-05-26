@@ -115,9 +115,9 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    leader_id = fields.Many2one(
+    manager_id = fields.Many2one(
         comodel_name="hr.employee",
-        string="Project Leader",
+        string="Project Manager",
         tracking=True,
         states=READONLY_STATES,
     )
@@ -381,10 +381,10 @@ class KrisProject(models.Model):
             rec.revenue_remaining = max(0.0, diff)
             rec.over_revenue = max(0.0, -diff)
 
-    @api.depends("leader_id", "leader_id.department_id")
+    @api.depends("manager_id", "manager_id.department_id")
     def _compute_department_id(self):
         for rec in self:
-            rec.department_id = rec.leader_id.department_id
+            rec.department_id = rec.manager_id.department_id
 
     @api.depends("date_contract_start", "date_contract_end")
     def _compute_project_duration(self):
