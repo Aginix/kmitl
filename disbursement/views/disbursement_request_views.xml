@@ -242,7 +242,7 @@
     </record>
 
     <!-- Root menu for Disbursement app -->
-    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="45" web_icon="disbursement,static/description/icon.png"/>
+    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="5" web_icon="disbursement,static/description/icon.png"/>
 
     <!-- Disbursement Requests submenu -->
     <menuitem id="menu_disbursement_request" name="Disbursement Requests" parent="menu_disbursement_root" action="action_disbursement_request" sequence="10" groups="disbursement.group_disbursement_user"/>
