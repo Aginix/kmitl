@@ -4,6 +4,13 @@ from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
+ACADEMIC_ONLY_FIELDS = (
+    "academic_standing_id",
+    "rank_id",
+    "rank_nobility_id",
+    "profession_id",
+)
+
 
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
@@ -49,18 +56,19 @@ class HrEmployee(models.Model):
         "profession_id",
         "education_level_id",
         "role",
+        "job_id",
+        "position_level_relation_id",
     )
     def _compute_academic_standing_title(self):
         def get_value(value):
             return value + " " if value else ""
 
+        dr_education = self.env.ref(
+            "hr_employee_education_history.Q01", raise_if_not_found=False
+        )
+
         def get_academic_standing_for_academic_role(rec):
-            title_dr = False
-            if (
-                self.env.ref("hr_employee_education_history.Q01").id
-                == rec.education_level_id.id
-            ):
-                title_dr = True
+            title_dr = bool(dr_education and dr_education == rec.education_level_id)
 
             rec.academic_standing_title = (
                 "{academic}{rank}{dr}{profession}{rank_nobility}".format(
@@ -126,14 +134,22 @@ class HrEmployee(models.Model):
             if rec.role == "academic":
                 get_academic_standing_for_academic_role(rec)
             elif rec.role == "support":
-                rec.academic_standing_id = False
                 get_academic_standing_for_support_role(rec)
             else:
-                rec.academic_standing_id = False
-                rec.rank_id = False
-                rec.rank_nobility_id = False
-                rec.profession_id = False
                 rec.academic_standing_title = ""
                 rec.academic_standing_title_abbreviation = ""
                 rec.academic_standing_title_en = ""
                 rec.academic_standing_title_abbreviation_en = ""
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if "role" in vals and vals.get("role") != "academic":
+                for fname in ACADEMIC_ONLY_FIELDS:
+                    vals[fname] = False
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if "role" in vals and vals.get("role") != "academic":
+            vals = {**vals, **{fname: False for fname in ACADEMIC_ONLY_FIELDS}}
+        return super().write(vals)
