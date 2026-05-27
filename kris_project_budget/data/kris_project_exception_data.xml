@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="kris_excep_extra_value_no_payee" model="exception.rule">
+        <field name="name">ต้องระบุผู้รับค่า Extra</field>
+        <field name="description">เมื่อมีค่า Extra ต้องระบุผู้รับค่า Extra</field>
+        <field name="sequence">15</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.extra_value &gt; 0 and not self.extra_analytic_id:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

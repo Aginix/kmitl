@@ -132,6 +132,7 @@
                     <field name="exceptions_summary"/>
                 </div>
                 <sheet>
+                    <field name="can_edit" invisible="1"/>
                     <field name="warn_allocation_mismatch" invisible="1"/>
                     <field name="warn_installment_maintenance_mismatch" invisible="1"/>
                     <field name="warn_installment_total_mismatch" invisible="1"/>
@@ -144,7 +145,7 @@
                             <field
                                 name="project_name"
                                 placeholder="Project Name..."
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </h1>
                     </div>
@@ -154,43 +155,49 @@
                             <field
                                 name="project_category_id"
                                 widget="selection"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field
                                 name="project_type_id"
                                 widget="radio"
                                 domain="[('category_id', '=', project_category_id)]"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field
                                 name="manager_id"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field name="department_id" readonly="1"/>
                             <field
                                 name="user_id"
                                 widget="many2one_avatar_user"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
                         <group string="Contract Information">
                             <field
                                 name="contract_number"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
-                            <label for="date_contract_start" string="Date Start" />
-                            <div name="date_contract_start_div" class="o_row">
-                                <field name="date_contract_start" attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}" />
-                                <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
-                                <field name="date_contract_end" attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}" />
-                            </div>
+                            <field
+                                name="date_contract_start"
+                                widget="daterange"
+                                options='{"related_end_date": "date_contract_end"}'
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                            />
+                            <field
+                                name="date_contract_end"
+                                widget="daterange"
+                                options='{"related_start_date": "date_contract_start"}'
+                                invisible="1"
+                            />
                             <label for="project_duration"/>
                             <div>
                                 <field name="project_duration" class="oe_inline"/> Day
                             </div>
                             <field
                                 name="account_fiscal_year_id"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
                     </group>
@@ -198,19 +205,19 @@
                         <group string="Client/Funding Organization">
                             <field
                                 name="client_name"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field
                                 name="client_location"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field
                                 name="client_tax_number"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field
                                 name="client_org_type"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
                     </group>
@@ -221,33 +228,33 @@
                                 <group string="1. Project Value">
                                     <field
                                         name="project_value"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                     <field
                                         name="equipment_cost"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                     <field
                                         name="extra_value"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                     <field
                                         name="operating_expense"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                 </group>
                                 <group string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
                                         name="maintenance_deduction_type"
-                                        attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
                                         widget="radio"
                                     />
                                     <field
                                         name="maintenance_deduction_pct"
                                         attrs="{
                                             'invisible': [('maintenance_deduction_type', '!=', 'custom')],
-                                            'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]
+                                            'readonly': [('can_edit', '=', False)]
                                         }"
                                     />
                                     <field name="maintenance_deduction_amount" readonly="1"/>
@@ -263,7 +270,7 @@
                                 </group>
                             </group>
                             <div class="mb-3"
-                                attrs="{'invisible': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'invisible': [('can_edit', '=', False)]}"
                             >
                                 <field
                                     name="allocation_template_id"
@@ -286,7 +293,7 @@
                             </div>
                             <field
                                 name="allocation_line_ids"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -314,7 +321,7 @@
                                 The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees. Please check the allocation for each period.
                             </div>
                             <div class="mb-3"
-                                attrs="{'invisible': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'invisible': [('can_edit', '=', False)]}"
                             >
                                 <button
                                     name="action_add_installment"
@@ -325,7 +332,7 @@
                             </div>
                             <field
                                 name="installment_ids"
-                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             >
                                 <tree create="0">
                                     <field name="sequence" widget="handle"/>
