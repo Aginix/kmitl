@@ -11,7 +11,12 @@ class BankPaymentExportLine(models.Model):
     # -------------------------------------------------------------------------
     @api.model
     def _domain_payment_id(self):
-        method_manual_out = self.env.ref("account.account_payment_method_manual_out")
+        method_manual_out = self.env.ref(
+            "account.account_payment_method_manual_out",
+            raise_if_not_found=False,
+        )
+        if not method_manual_out:
+            return "[('id', '=', 0)]"
         domain = (
             "[('export_status', '=', 'draft'), "
             "('state', '=', 'submitted'), "

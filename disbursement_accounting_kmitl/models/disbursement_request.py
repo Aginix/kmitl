@@ -204,8 +204,6 @@ class DisbursementRequest(models.Model):
             "currency_id": self.currency_id.id,
             "company_id": self.company_id.id,
             "invoice_line_ids": invoice_lines,
-            "budget_commitment_id": self.budget_commitment_id.id,
-            "budget_account_id": self.budget_account_id.id,
             "analytic_distribution": self.analytic_distribution,
         }
 
