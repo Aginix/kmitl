@@ -12,7 +12,7 @@ class ApprovalRequest(models.Model):
         "mail.thread",
         "mail.activity.mixin",
     ]
-    _order = "name"
+    _order = "name desc"
 
     READONLY_STATES = {
         "to_verify": [("readonly", True)],
@@ -96,6 +96,7 @@ class ApprovalRequest(models.Model):
         string="Name",
         default="/",
         required=True,
+        copy=False,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -168,6 +169,7 @@ class ApprovalRequest(models.Model):
         "approval.request.line",
         "request_id",
         string="Expense Lines",
+        copy=True,
     )
 
     has_period = fields.Boolean(
@@ -192,6 +194,7 @@ class ApprovalRequest(models.Model):
         ("rejected", "Rejected"),
     ],
         default="draft",
+        copy=False,
         string="state"
     )
 
@@ -207,7 +210,6 @@ class ApprovalRequest(models.Model):
         "budget.account",
         string="Budget Account",
         domain=lambda self: self._domain_budget_account_id(),
-        copy=False,
         tracking=True,
     )
 
