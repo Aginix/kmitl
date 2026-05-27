@@ -64,6 +64,12 @@ msgid "Bill Posted"
 msgstr "ตั้งหนี้ - ลงบัญชี"
 
 #. module: disbursement_accounting_kmitl
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__state__bills_posted
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bills_posted
+msgid "Bills Posted"
+msgstr "ตั้งหนี้ครบ"
+
+#. module: disbursement_accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
 msgid "Create Bill"
 msgstr "สร้างใบตั้งหนี้"
