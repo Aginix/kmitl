@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Tier validation moved to disbursement.request; remove legacy
-         account.move tier definitions that previously gated bill posting. -->
-    <delete model="tier.definition" id="tier_definition_account_move_accountant"/>
-    <delete model="tier.definition" id="tier_definition_account_move_head_accountant"/>
 
 </odoo>

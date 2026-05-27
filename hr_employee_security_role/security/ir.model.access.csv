@@ -1,11 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 hr.access_hr_employee_user,hr.employee user,hr.model_hr_employee,hr.group_hr_user,1,0,0,0
-hr.access_hr_central_user,hr.employee central_user,hr.model_hr_employee,group_hr_central_user,1,1,1,1
+access_hr_central_user,hr.employee central_user,hr.model_hr_employee,group_hr_central_user,1,1,1,1
 
 hr.access_hr_department_user,hr.department user,hr.model_hr_department,hr.group_hr_user,1,0,0,0
-hr.access_hr_department_manager,hr.department manager,hr.model_hr_department,hr.group_hr_manager,1,1,1,1
+access_hr_department_manager,hr.department manager,hr.model_hr_department,hr.group_hr_manager,1,1,1,1
 
 hr.access_hr_work_location_manager,access_hr_work_location_manager,hr.model_hr_work_location,group_hr_central_user,1,1,1,1
 
 hr.access_hr_departure_reason,hr.departure.reason user,hr.model_hr_departure_reason,hr.group_hr_user,1,0,0,0
-hr.access_hr_departure_reason_manager,hr.departure.reason manager,hr.model_hr_departure_reason,hr.group_hr_manager,1,1,1,1
+access_hr_departure_reason_manager,hr.departure.reason manager,hr.model_hr_departure_reason,hr.group_hr_manager,1,1,1,1

@@ -2,6 +2,7 @@
     "name": "HR Employee Security Role",
     "version": "16.0.1.1.1",
     "summary": "HR Employee Security Role",
+    "description": "HR Employee Security Role",
     "website": "https://github.com/aginix/kmitl-odoo",
     "author": "Nopparut, Aginix Technologies",
     "maintainers": ["nopparuts"],

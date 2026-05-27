@@ -396,6 +396,7 @@
                                         name="action_delete"
                                         type="object"
                                         icon="fa-trash"
+                                        title="Delete"
                                         attrs="{'invisible': [('project_state', 'in', ['done', 'cancel'])]}"
                                     />
                                 </tree>

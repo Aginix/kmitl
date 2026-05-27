@@ -2,6 +2,7 @@
     "name": "Office Order",
     "version": "16.0.1.0.1",
     "summary": "Office Order management App",
+    "description": "Office Order management App",
     "website": "https://github.com/aginix/kmitl-odoo",
     "author": "Nopparut, Aginix Technologies",
     "maintainers": ["nopparuts"],
