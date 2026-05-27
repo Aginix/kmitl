@@ -1,4 +1,5 @@
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class UpdateActualAmountWizard(models.TransientModel):
@@ -18,6 +19,14 @@ class UpdateActualAmountWizard(models.TransientModel):
     )
 
     def action_save(self):
+        over_limit = self.line_ids.filtered(
+            lambda l: l.actual_amount > l.total_amount
+        )
+        if over_limit:
+            raise UserError(_(
+                "Actual amount cannot exceed the approved amount on the "
+                "following line(s): %s"
+            ) % ", ".join(over_limit.mapped("product_id.name")))
         for line in self.line_ids:
             line.approval_line_id.actual_amount = line.actual_amount
         return {"type": "ir.actions.act_window_close"}
@@ -62,7 +71,7 @@ class UpdateActualAmountWizardLine(models.TransientModel):
 
     total_amount = fields.Monetary(
         related="approval_line_id.total_amount",
-        string="Total",
+        string="Requested Amount",
         currency_field="currency_id",
         readonly=True,
     )

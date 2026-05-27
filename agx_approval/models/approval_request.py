@@ -203,6 +203,13 @@ class ApprovalRequest(models.Model):
         help="Related budget commitment for this approval request",
     )
 
+    budget_commitment_amount = fields.Monetary(
+        related="budget_commitment_id.amount",
+        string="Reserved Amount",
+        currency_field="currency_id",
+        readonly=True,
+    )
+
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
@@ -343,7 +350,6 @@ class ApprovalRequest(models.Model):
             line._update_analytic_distribution("sources")
     
     def action_to_verify(self):
-        # TODO: validate budget commitment before submit
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be verified."))
@@ -351,7 +357,6 @@ class ApprovalRequest(models.Model):
         return True
 
     def action_submit(self):
-        # TODO: validate budget commitment before submit
         for record in self:
             if record.state != "to_verify":
                 raise UserError(_("Only To Verify requests can be submitted."))
@@ -363,6 +368,15 @@ class ApprovalRequest(models.Model):
             if record.state != "submitted":
                 raise UserError(_("Only submitted requests can be validated."))
             record.state = "validated"
+        return True
+
+    def action_approve(self):
+        for record in self:
+            if record.state not in ("submitted", "validated"):
+                raise UserError(
+                    _("Only submitted or validated requests can be approved.")
+                )
+            record.state = "approved"
         return True
 
     def action_bill(self):
@@ -416,20 +430,6 @@ class ApprovalRequest(models.Model):
                     line.actual_amount = line.total_amount
         return result
 
-    # def write(self, values):
-    #     if (
-    #         "budget_commitment_id" in values
-    #         and values.get("budget_commitment_id") != self.budget_commitment_id.id
-    #     ):
-    #         self._log_budget_commitment_unlinked()
-
-    #     res = super().write(values)
-
-    #     if "budget_commitment_id" in values and values.get("budget_commitment_id"):
-    #         self._log_budget_commitment_linked()
-
-    #     return res
-
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -465,7 +465,7 @@ class ApprovalRequest(models.Model):
     def action_open_budget_commitment(self):
         self.ensure_one()
         if not self.budget_commitment_id:
-            raise UserError("ยังไม่มี Budget Commitment สำหรับเอกสารนี้")
+            raise UserError(_("ยังไม่มี Budget Commitment สำหรับเอกสารนี้"))
 
         return {
             "type": "ir.actions.act_window",
