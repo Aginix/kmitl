@@ -30,12 +30,12 @@ if self.state == 'draft' and self.warn_allocation_mismatch:
     </record>
 
     <record id="kris_excep_no_allocation_lines" model="exception.rule">
-        <field name="name">ไม่มีรายการจัดสรรรายได้</field>
-        <field name="description">กรุณาระบุรายการจัดสรรรายได้อย่างน้อย 1 รายการ</field>
+        <field name="name">ไม่ได้ระบุรหัสงบประมาณหน่วยงาน</field>
+        <field name="description">กรุณาระบุรหัสงบประมาณหน่วยงานในรายการจัดสรรรายได้ทุกรายการ</field>
         <field name="sequence">25</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and not self.allocation_line_ids:
+if self.state == 'draft' and self.allocation_line_ids and any(not line.department_analytic_id for line in self.allocation_line_ids):
     failed = True
         </field>
         <field name="active" eval="True"/>
