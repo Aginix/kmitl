@@ -26,35 +26,31 @@
                         <div style="height: 1px" />
                         <div class="page-header mt-5 mb-5">
                             <h3 class="text-center fw-bolder" style="line-height: 1.575;">
-                                บันทึกข้อความ
+                                ใบขออนุมัติ
                             </h3>
                         </div>
 
                         <!-- Document Info -->
                         <div class="row">
                             <div class="col-8">
-                                เลขที่เอกสาร
-                                <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
+                                เลขที่
+                                <span class="ms-2 fw-normal" t-out="o.name" />
                             </div>
                             <div class="col">
                                 วันที่
-                                <span class="ms-2 fw-normal" t-esc="o.format_date_thai(o.main_sarabun_document_id.date)" />
+                                <span class="ms-2 fw-normal" t-field="o.date" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 หน่วยงาน
-                                <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
+                                <span class="ms-2" t-field="o.department_id" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                เรื่อง                                <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                เรียน                                <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
+                                เรื่อง
+                                <span class="ms-2" t-field="o.category_id" />
                             </div>
                         </div>
 
@@ -88,9 +84,9 @@
                         <div class="row" t-if="o.has_period">
                             <div class="col">
                                 ระยะเวลา
-                                <span class="fw-bolder text-decoration-underline" t-esc="o.format_date_thai(o.date_start)" />
+                                <span class="fw-bolder text-decoration-underline" t-field="o.date_start" />
                                 -
-                                <span class="fw-bolder text-decoration-underline" t-esc="o.format_date_thai(o.date_end)" />
+                                <span class="fw-bolder text-decoration-underline" t-field="o.date_end" />
                             </div>
                         </div>
 
@@ -134,20 +130,7 @@
                         <!-- Budget Details -->
                         <div class="my-4" />
                         <p>รายละเอียดงบประมาณ</p>
-                        <t t-call="agx_approval_sarabun.report_approval_request_budget" />
-
-                        <!-- Signature Section -->
-                        <div class="my-5" style="height: 10px" />
-                        <div class="my-5">
-                            <div class="my-2 d-inline-block">
-                                <div>ลงชื่อ                                    <t t-out="'.' * 80" />
- ผู้ขออนุมัติ</div>
-                                <div class="text-center my-2">
-                                    (                                    <span t-field="o.owner_id" />
- )
-                                </div>
-                            </div>
-                        </div>
+                        <t t-call="agx_approval.report_approval_request_budget" />
                     </div>
                 </t>
             </t>

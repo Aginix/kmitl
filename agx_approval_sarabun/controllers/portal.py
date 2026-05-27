@@ -102,7 +102,7 @@ class ApprovalRequestPortal(CustomerPortal):
             return self._show_report(
                 model=approval_request_sudo,
                 report_type=report_type,
-                report_ref="agx_approval_sarabun.action_report_approval_request",
+                report_ref="agx_approval.action_report_approval_request",
                 download=download,
             )
 
@@ -149,7 +149,7 @@ class ApprovalRequestPortal(CustomerPortal):
 
         if report_type == "html":
             report = request.env.ref(
-                "agx_approval_sarabun.report_approval_request"
+                "agx_approval.action_report_approval_request"
             )
             html = request.env["ir.actions.report"]._render_qweb_html(
                 report.id, [approval_request_sudo.id]
@@ -163,7 +163,7 @@ class ApprovalRequestPortal(CustomerPortal):
             )
         elif report_type == "pdf":
             report = request.env.ref(
-                "agx_approval_sarabun.report_approval_request"
+                "agx_approval.action_report_approval_request"
             )
             pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
                 report.id, [approval_request_sudo.id]

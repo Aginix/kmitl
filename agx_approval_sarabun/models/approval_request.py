@@ -87,5 +87,5 @@ class ApprovalRequest(models.Model):
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Approval Request report."""
         return self.env.ref(
-            "agx_approval_sarabun.action_report_approval_request"
+            "agx_approval.action_report_approval_request"
         )
