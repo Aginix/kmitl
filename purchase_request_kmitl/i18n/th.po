@@ -2028,8 +2028,8 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "คำขอซื้อขอจ้าง"
-msgstr ""
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_request_kmitl
 #: model:product.template,name:purchase_request_kmitl.product_type_002_product_template
@@ -2108,8 +2108,8 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__account_fiscal_year_id
-msgid "ปีงบประมาณ"
-msgstr ""
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_1
@@ -2182,8 +2182,8 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "รายละเอียดคำขอซื้อขอจ้าง"
-msgstr ""
+msgid "Purchase Request Details"
+msgstr "รายละเอียดคำขอซื้อขอจ้าง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__advance

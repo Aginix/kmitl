@@ -18,15 +18,18 @@ msgstr ""
 #. module: purchase_request_budget_procurement
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget_procurement.view_procurement_plan_form_purchase_request
 msgid "<span class=\"o_stat_text\">Purchase Requests</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">คำขอซื้อขอจ้าง</span>"
 
 #. module: purchase_request_budget_procurement
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget_procurement.view_purchase_request_form_procurement_plan
-msgid "<span class=\"o_stat_text\">แผนจัดซื้อจัดจ้าง</span>"
-msgstr ""
+msgid "<span class=\"o_stat_text\">Procurement Plan</span>"
+msgstr "<span class=\"o_stat_text\">แผนจัดซื้อจัดจ้าง</span>"
 
 #. module: purchase_request_budget_procurement
 #: model:ir.model,name:purchase_request_budget_procurement.model_procurement_plan
+#: model:exception.rule,description:purchase_request_budget_procurement.pr_exception_procurement_plan_1
+#: model:exception.rule,description:purchase_request_budget_procurement.pr_exception_procurement_plan_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget_procurement.view_purchase_request_form_inherit_account_fiscal_year_procurement_plan
 msgid "Procurement Plan"
 msgstr "แผนจัดซื้อจัดจ้าง"
 
@@ -52,32 +55,25 @@ msgstr ""
 
 #. module: purchase_request_budget_procurement
 #: model:exception.rule,name:purchase_request_budget_procurement.pr_exception_procurement_plan_budget
-msgid "ข้อมูลการใช้งบประมาณไม่ตรงกับแผนจัดซื้อจัดจ้าง"
-msgstr ""
+msgid "The budget allocation information does not match the procurement plan."
+msgstr "ข้อมูลการใช้งบประมาณไม่ตรงกับแผนจัดซื้อจัดจ้าง"
 
 #. module: purchase_request_budget_procurement
 #: model:exception.rule,name:purchase_request_budget_procurement.pr_exception_procurement_plan_1
-msgid "มูลค่าของการขอซื้อขอจ้างไม่สามารถเกินแผนจัดซื้อจัดจ้างได้"
-msgstr ""
+msgid "The value of the procurement request cannot exceed the procurement plan."
+msgstr "มูลค่าของการขอซื้อขอจ้างไม่สามารถเกินแผนจัดซื้อจัดจ้างได้"
 
 #. module: purchase_request_budget_procurement
 #: model:ir.model.fields,field_description:purchase_request_budget_procurement.field_purchase_request__procurement_plan_id
-msgid "รายการแผนจัดซื้อจัดจ้าง"
-msgstr ""
+msgid "Procurement Plan"
+msgstr "รายการแผนจัดซื้อจัดจ้าง"
 
 #. module: purchase_request_budget_procurement
 #: model:ir.model.fields,field_description:purchase_request_budget_procurement.field_purchase_request__use_procurement_plan
-msgid "เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง"
-msgstr ""
+msgid "Use Procurement Plan"
+msgstr "เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง"
 
 #. module: purchase_request_budget_procurement
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget_procurement.view_purchase_request_form_inherit_account_fiscal_year_procurement_plan
 msgid "Purchase Request Form"
 msgstr "แบบคำขอซื้อ/จ้าง (พ.1)"
-
-#. module: purchase_request_budget_procurement
-#: model:exception.rule,description:purchase_request_budget_procurement.pr_exception_procurement_plan_1
-#: model:exception.rule,description:purchase_request_budget_procurement.pr_exception_procurement_plan_budget
-#: model_terms:ir.ui.view,arch_db:purchase_request_budget_procurement.view_purchase_request_form_inherit_account_fiscal_year_procurement_plan
-msgid "แผนจัดซื้อจัดจ้าง"
-msgstr ""

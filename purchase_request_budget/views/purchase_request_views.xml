@@ -42,7 +42,7 @@
             </xpath>
 
             <xpath expr="//notebook" position="before">
-                <group string="การใช้งบประมาณ">
+                <group string="Budget Details">
                     <field name="is_budget_editable" invisible="1" />
                     <field name="analytic_distribution" invisible="1" />
 
