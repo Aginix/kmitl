@@ -27,9 +27,24 @@ msgid "Status"
 msgstr "สถานะ"
 
 #. module: accounting_kmitl
+#: model:ir.model.fields.selection,name:account.selection__account_move__state__draft
+msgid "Draft"
+msgstr "ฉบับร่าง"
+
+#. module: accounting_kmitl
 #: model:ir.model.fields.selection,name:accounting_kmitl.selection__account_move__state__submitted
 msgid "Submitted"
-msgstr "ส่งอนุมัติ"
+msgstr "ยืนยันแล้ว"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields.selection,name:account.selection__account_move__state__posted
+msgid "Posted"
+msgstr "บันทึกแล้ว"
+
+#. module: accounting_kmitl
+#: model:ir.model.fields.selection,name:account.selection__account_move__state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
 
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
@@ -43,18 +58,13 @@ msgstr "ตั้งค่าเป็นฉบับร่าง"
 
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
-msgid "Budget"
-msgstr "งบประมาณ"
+msgid "Accounting Dimensions"
+msgstr "มิติทางบัญชี"
 
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
-msgid "View"
-msgstr "ดู"
-
-#. module: accounting_kmitl
-#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
-msgid "Budget Commitment"
-msgstr "ผูกพันงบประมาณ"
+msgid "Additional Information"
+msgstr "ข้อมูลเพิ่มเติม"
 
 #. module: accounting_kmitl
 #: code:addons/accounting_kmitl/models/account_move.py:0

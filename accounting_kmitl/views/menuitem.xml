@@ -81,5 +81,19 @@
         action="account.action_tax_form"
         sequence="30"
     />
+    <menuitem
+        id="menu_config_payment_methods"
+        name="Payment Methods"
+        parent="menu_accounting_config"
+        action="action_account_payment_method"
+        sequence="40"
+    />
+    <menuitem
+        id="menu_config_payment_method_lines"
+        name="Payment Method Lines"
+        parent="menu_accounting_config"
+        action="action_account_payment_method_line"
+        sequence="50"
+    />
 
 </odoo>
