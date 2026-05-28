@@ -1321,8 +1321,8 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__account_fiscal_year_id
-msgid "ปีงบประมาณ"
-msgstr ""
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_sign

@@ -426,3 +426,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__work_end_display
 msgid "Work End"
 msgstr "วันที่สิ้นสุดงาน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Fines Details"
+msgstr "ค่าปรับและค่าควบคุมงาน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Fines"
+msgstr "ค่าปรับล่าช้า"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Contract Details"
+msgstr "รายละเอียดสัญญา/ใบสั่งซื้อ/จ้าง"
