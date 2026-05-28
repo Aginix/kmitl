@@ -22,6 +22,12 @@ class ApprovalRequestLine(models.Model):
         required=True
     )
 
+    partner_bank_id = fields.Many2one(
+        string="Recipient Bank",
+        comodel_name="res.partner.bank",
+        domain="[('partner_id', '=', partner_id)]",
+    )
+
     allowed_product_ids = fields.Many2many(
         string='Allowed Product IDs',
         compute='_compute_allowed_product_ids',
@@ -77,3 +83,15 @@ class ApprovalRequestLine(models.Model):
     def _compute_allowed_product_ids(self):
         for record in self:
             record.allowed_product_ids = record.request_id.category_id.allowed_product_ids
+
+    def _get_masked_acc_number(self):
+        self.ensure_one()
+        acc = self.partner_bank_id.acc_number or ""
+        digit_positions = [i for i, c in enumerate(acc) if c.isdigit()]
+        if len(digit_positions) <= 7:
+            return acc
+        keep = set(digit_positions[:3]) | set(digit_positions[-4:])
+        return "".join(
+            c if (not c.isdigit() or i in keep) else "X"
+            for i, c in enumerate(acc)
+        )

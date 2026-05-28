@@ -96,36 +96,92 @@
                             <div class="col">รายการค่าใช้จ่าย</div>
                         </div>
 
-                        <table class="table table-bordered table-sm mb-4">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">ลำดับ</th>
-                                    <th class="text-center">ผู้ขอ</th>
-                                    <th class="text-center">รายการ</th>
-                                    <th class="text-end">จำนวนเงิน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="row_no" t-value="1" />
-                                <t t-set="total" t-value="0" />
-                                <t t-foreach="o.line_ids" t-as="line">
+                        <t t-set="partners" t-value="o.line_ids.mapped('partner_id')" />
+                        <t t-set="grand_total" t-value="sum(o.line_ids.mapped('total_amount'))" />
+
+                        <!-- Single payee: flat table -->
+                        <t t-if="len(partners) &lt;= 1">
+                            <table class="table table-bordered table-sm mb-4">
+                                <thead>
                                     <tr>
-                                        <td class="text-center" t-out="row_no" />
-                                        <td t-out="line.partner_id.name" />
-                                        <td t-out="line.product_id.name" />
-                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                        <th class="text-center">ลำดับ</th>
+                                        <th class="text-center">ผู้ขอ</th>
+                                        <th class="text-center">รายการ</th>
+                                        <th class="text-end">จำนวนเงิน</th>
                                     </tr>
-                                    <t t-set="row_no" t-value="row_no + 1" />
-                                    <t t-set="total" t-value="total + line.total_amount" />
-                                </t>
-                                <tr>
-                                    <td colspan="3" class="text-center fw-bolder">
-                                        รวมทั้งสิ้น
-                                    </td>
-                                    <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(total)" />
-                                </tr>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <t t-set="row_no" t-value="1" />
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                        <tr>
+                                            <td class="text-center" t-out="row_no" />
+                                            <td t-out="line.partner_id.name" />
+                                            <td t-out="line.product_id.name" />
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                        </tr>
+                                        <t t-set="row_no" t-value="row_no + 1" />
+                                    </t>
+                                    <tr>
+                                        <td colspan="3" class="text-center fw-bolder">
+                                            รวมทั้งสิ้น
+                                        </td>
+                                        <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Multi-payee: grouped tables per partner -->
+                        <t t-if="len(partners) &gt; 1">
+                            <t t-set="global_row_no" t-value="1" />
+                            <t t-foreach="partners" t-as="partner">
+                                <t t-set="partner_lines" t-value="o.line_ids.filtered(lambda l: l.partner_id == partner)" />
+                                <t t-set="partner_bank_line" t-value="partner_lines.filtered(lambda l: l.partner_bank_id)[:1]" />
+                                <div class="row mt-3 mb-2">
+                                    <div class="col">
+                                        <strong>ผู้รับเงิน: <span t-out="partner.name" /></strong>
+                                    </div>
+                                </div>
+                                <div class="row mb-2" t-if="partner_bank_line">
+                                    <div class="col">
+                                        ธนาคาร <span class="ms-2" t-out="partner_bank_line.partner_bank_id.bank_id.name" />
+                                        <span class="ms-3">เลขที่บัญชี</span>
+                                        <span class="ms-2" t-out="partner_bank_line._get_masked_acc_number()" />
+                                    </div>
+                                </div>
+                                <table class="table table-bordered table-sm mb-4">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">ลำดับ</th>
+                                            <th class="text-center">ผู้ขอ</th>
+                                            <th class="text-center">รายการ</th>
+                                            <th class="text-end">จำนวนเงิน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="partner_lines" t-as="line">
+                                            <tr>
+                                                <td class="text-center" t-out="global_row_no" />
+                                                <td t-out="line.partner_id.name" />
+                                                <td t-out="line.product_id.name" />
+                                                <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                            </tr>
+                                            <t t-set="global_row_no" t-value="global_row_no + 1" />
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <table class="table table-bordered table-sm mb-4">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" class="text-center fw-bolder">
+                                            รวมทั้งสิ้น
+                                        </td>
+                                        <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
 
                         <!-- Budget Details -->
                         <div class="my-4" />
