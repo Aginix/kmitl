@@ -93,6 +93,13 @@ class AdvancePayment(models.Model):
         compute="_compute_reference_state",
     )
 
+    can_edit = fields.Boolean(compute="_compute_can_edit")
+
+    @api.depends("state")
+    def _compute_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec.state == "draft"
+
     is_requester = fields.Boolean(compute="_compute_is_requester")
 
     @api.depends("requested_by")

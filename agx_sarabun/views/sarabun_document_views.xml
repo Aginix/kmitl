@@ -78,6 +78,7 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
                 </header>
                 <sheet>
+                    <field name="can_edit" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="open_preview" icon="fa-search-plus" string="เปิดเอกสาร" />
                     </div>
@@ -143,7 +144,7 @@
                         <page name="content" string="Content" attrs="{'invisible': [('has_delegated_report', '=', True)]}">
                             <field name="content" placeholder="Enter document content..." class="oe-bordered-editor" options="{'codeview': true, 'dynamic_placeholder': true}" />
                             <label for="attachment_ids" string="Attachments"/>
-                            <field name="attachment_ids" widget="many2many_binary" attrs="{'readonly': [('state', 'not in', ['draft'])]}" class="w-100" />
+                            <field name="attachment_ids" widget="many2many_binary" attrs="{'readonly': [('can_edit', '=', False)]}" class="w-100" />
                         </page>
                         <!-- Report Preview page - shown when origin has delegated report -->
                         <page name="report_preview" string="Document Preview" attrs="{'invisible': [('has_delegated_report', '=', False)]}">
@@ -151,10 +152,10 @@
                         </page>
                         <page string="Routing" name="routing">
                             <group>
-                                <field name="route_template_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="route_template_id" options="{'no_create': True}" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                             </group>
                             <!-- Route Definition (editable in draft, readonly with status after sent) -->
-                            <field name="routing_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                            <field name="routing_line_ids" attrs="{'readonly': [('can_edit', '=', False)]}">
                                 <tree string="Routing" editable="bottom" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'">
                                     <field name="sequence" widget="handle"/>
                                     <field name="routing_type"/>
@@ -174,7 +175,7 @@
                         <page string="References" name="references">
                             <span />
                             <group string="Referenced Documents">
-                                <field name="referenced_document_ids" colspan="2" nolabel="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                <field name="referenced_document_ids" colspan="2" nolabel="1" attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <tree>
                                         <field name="name"/>
                                         <field name="subject"/>
@@ -184,7 +185,7 @@
                                 </field>
                             </group>
                             <group string="Other References">
-                                <field name="reference_ids" colspan="2" nolabel="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                <field name="reference_ids" colspan="2" nolabel="1" attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <tree editable="bottom">
                                         <field name="res_model"/>
                                         <field name="res_id"/>

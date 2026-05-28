@@ -90,6 +90,13 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         default="draft",
     )
+    can_edit = fields.Boolean(compute="_compute_can_edit")
+
+    @api.depends("state")
+    def _compute_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec.state == "draft"
+
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",

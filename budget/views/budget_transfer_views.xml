@@ -19,6 +19,7 @@
                 </header>
 
                 <sheet>
+                    <field name="can_edit" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="%(action_budget_move)d" type="action" class="oe_stat_button" icon="fa-exchange" attrs="{'invisible': [('budget_move_ids', '=', [])]}" context="{'search_default_transfer_id': id}">
                             <field name="budget_move_ids" widget="statinfo" string="Budget Moves"/>
@@ -33,10 +34,10 @@
 
                     <group>
                         <group name="transfer_info">
-                            <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                             <field name="transfer_type"/>
-                            <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="department_analytic_id" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                            <field name="source_analytic_id" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                         </group>
                         <group name="meta_info">
                             <field name="user_id"/>
@@ -60,7 +61,7 @@
                     </div>
 
                     <group name="transfer_reason" colspan="8">
-                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('state', 'not in', ['draft'])]}" colspan="2"/>
+                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('can_edit', '=', False)]}" colspan="2"/>
                     </group>
 
                     <!-- Transfer Lines -->
@@ -68,7 +69,7 @@
                         <page name="transfer_lines" string="Transfer Details">
                             <group attrs="{'invisible': [('state', 'not in', ['draft'])]}">
                                 <separator string="Transfer FROM (Source)" />
-                                <field name="from_line_ids" nolabel="1" colspan="2" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                <field name="from_line_ids" nolabel="1" colspan="2" attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <tree decoration-info="1" create="1" delete="1">
                                         <field name="sequence" widget="handle"/>
                                         <field name="budget_account_id" required="1"/>
@@ -84,7 +85,7 @@
                                     </tree>
                                 </field>
                                 <separator string="Transfer TO (Destination)" />
-                                <field name="to_line_ids" nolabel="1" colspan="2" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                <field name="to_line_ids" nolabel="1" colspan="2" attrs="{'readonly': [('can_edit', '=', False)]}">
                                     <tree decoration-success="1" create="1" delete="1">
                                         <field name="sequence" widget="handle"/>
                                         <field name="budget_account_id" required="1"/>

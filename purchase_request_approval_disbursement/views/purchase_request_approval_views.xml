@@ -9,6 +9,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//button[@name='button_to_approve']" position="after">
+                <field name="can_edit" invisible="1" />
                 <field name="use_purchase_order" invisible="1" />
                 <field name="purchase_count" invisible="1" />
                 <button
@@ -72,7 +73,7 @@
                     <group>
                         <field
                             name="use_purchase_order"
-                            attrs="{'readonly': [('state', 'not in', ['draft'])]}"
+                            attrs="{'readonly': [('can_edit', '=', False)]}"
                         />
                         <div class="alert alert-info mt16" role="alert" colspan="2"
                             attrs="{'invisible': [('use_purchase_order', '=', False)]}">
