@@ -6,7 +6,7 @@
         id="menu_accounting_root"
         name="Accounting"
         web_icon="accounting_kmitl,static/description/icon.png"
-        sequence="55"
+        sequence="7"
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
 

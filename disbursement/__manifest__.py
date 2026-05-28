@@ -13,6 +13,7 @@
         "finance_kmitl",
         "base_exception",
         "l10n_th_account_tax",
+        "l10n_th_amount_to_text",
         "base_fontawesome",
         "partner_type_aginix",
     ],

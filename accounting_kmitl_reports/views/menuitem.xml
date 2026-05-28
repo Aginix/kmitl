@@ -37,7 +37,7 @@
         id="menu_report_trial_balance_kmitl"
         name="งบทดลอง"
         parent="accounting_kmitl.menu_accounting_reports"
-        action="account_financial_report.action_trial_balance_wizard"
+        action="action_trial_balance_wizard_kmitl"
         sequence="5"
     />
     <menuitem
