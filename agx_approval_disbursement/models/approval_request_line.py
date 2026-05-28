@@ -16,5 +16,5 @@ class ApprovalRequestLine(models.Model):
             "price_unit": self.actual_amount,
             "account_id": account.id if account else False,
             "analytic_distribution": self.request_id.analytic_distribution,
-            "partner_bank_id": self.partner_bank_id.id or False,
+            "partner_bank_id": self._get_payee_bank().id or False,
         }

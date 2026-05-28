@@ -96,11 +96,10 @@
                             <div class="col">รายการค่าใช้จ่าย</div>
                         </div>
 
-                        <t t-set="partners" t-value="o.line_ids.mapped('partner_id')" />
                         <t t-set="grand_total" t-value="sum(o.line_ids.mapped('total_amount'))" />
 
                         <!-- Single payee: flat table -->
-                        <t t-if="len(partners) &lt;= 1">
+                        <t t-if="len(o.payee_ids) &lt;= 1">
                             <table class="table table-bordered table-sm mb-4">
                                 <thead>
                                     <tr>
@@ -131,25 +130,24 @@
                             </table>
                         </t>
 
-                        <!-- Multi-payee: grouped tables per partner -->
-                        <t t-if="len(partners) &gt; 1">
+                        <!-- Multi-payee: grouped tables per payee -->
+                        <t t-if="len(o.payee_ids) &gt; 1">
                             <t t-set="global_row_no" t-value="1" />
-                            <t t-foreach="partners" t-as="partner">
-                                <t t-set="partner_lines" t-value="o.line_ids.filtered(lambda l: l.partner_id == partner)" />
-                                <t t-set="partner_bank_line" t-value="partner_lines.filtered(lambda l: l.partner_bank_id)[:1]" />
+                            <t t-foreach="o.payee_ids" t-as="payee">
+                                <t t-set="payee_lines" t-value="o.line_ids.filtered(lambda l: l.partner_id == payee.partner_id)" />
                                 <div class="row mt-3 mb-2">
                                     <div class="col">
-                                        <strong>ผู้รับเงิน: <span t-out="partner.name" /></strong>
+                                        <strong>ผู้รับเงิน: <span t-out="payee.partner_id.name" /></strong>
                                     </div>
                                 </div>
-                                <div class="row mb-2" t-if="partner_bank_line">
+                                <div class="row mb-2" t-if="payee.partner_bank_id">
                                     <div class="col">
-                                        ธนาคาร <span class="ms-2" t-out="partner_bank_line.partner_bank_id.bank_id.name" />
+                                        ธนาคาร <span class="ms-2" t-out="payee.partner_bank_id.bank_id.name" />
                                         <span class="ms-3">เลขที่บัญชี</span>
-                                        <span class="ms-2" t-out="partner_bank_line._get_masked_acc_number()" />
+                                        <span class="ms-2" t-out="payee._get_masked_acc_number()" />
                                     </div>
                                 </div>
-                                <table class="table table-bordered table-sm mb-4">
+                                <table class="table table-bordered table-sm mb-4" t-if="payee_lines">
                                     <thead>
                                         <tr>
                                             <th class="text-center">ลำดับ</th>
@@ -159,7 +157,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <t t-foreach="partner_lines" t-as="line">
+                                        <t t-foreach="payee_lines" t-as="line">
                                             <tr>
                                                 <td class="text-center" t-out="global_row_no" />
                                                 <td t-out="line.partner_id.name" />

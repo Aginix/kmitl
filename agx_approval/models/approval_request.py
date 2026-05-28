@@ -172,6 +172,16 @@ class ApprovalRequest(models.Model):
         copy=True,
     )
 
+    payee_ids = fields.One2many(
+        "approval.request.payee",
+        "request_id",
+        string="Payees",
+        compute="_compute_payee_ids",
+        store=True,
+        readonly=False,
+        copy=True,
+    )
+
     has_period = fields.Boolean(
         related='category_id.has_period'
     )
@@ -355,6 +365,11 @@ class ApprovalRequest(models.Model):
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be verified."))
+            missing = record.payee_ids.filtered(lambda p: not p.partner_bank_id)
+            if missing:
+                raise UserError(_(
+                    "Please select a recipient bank for all payees: %s"
+                ) % ", ".join(missing.mapped("partner_id.name")))
             record.state = "to_verify"
         return True
 
@@ -593,3 +608,26 @@ class ApprovalRequest(models.Model):
     def _compute_total_actual_amount(self):
         for rec in self:
             rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))
+
+    @api.depends("line_ids.partner_id")
+    def _compute_payee_ids(self):
+        for rec in self:
+            seen = set()
+            partners_in_order = []
+            for line in rec.line_ids:
+                pid = line.partner_id.id
+                if pid and pid not in seen:
+                    seen.add(pid)
+                    partners_in_order.append(line.partner_id)
+            existing_by_partner = {
+                payee.partner_id.id: payee for payee in rec.payee_ids
+            }
+            commands = []
+            for payee in rec.payee_ids:
+                if payee.partner_id.id not in seen:
+                    commands.append((2, payee.id))
+            for partner in partners_in_order:
+                if partner.id not in existing_by_partner:
+                    commands.append((0, 0, {"partner_id": partner.id}))
+            if commands:
+                rec.payee_ids = commands
