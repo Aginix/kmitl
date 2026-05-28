@@ -62,7 +62,7 @@
             <!-- Move narration field out of other_tab_entry page to main form, wrapped in a new group -->
             <xpath expr="//page[@id='invoice_tab']/.." position="before">
                 <group name="narration_group" string="Additional Information">
-                    <field name="narration" widget="text" placeholder="Add an internal note..." nolabel="1" colspan="2"/>
+                    <field name="narration" placeholder="Add an internal note..." nolabel="1" colspan="2"/>
                 </group>
             </xpath>
             <xpath expr="//page[@id='other_tab_entry']/field[@name='narration']" position="replace"/>

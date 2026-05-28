@@ -44,6 +44,22 @@
         sequence="20"
     />
 
+    <!-- All Journal Items (account.move.line) under Journal Entries -->
+    <record id="action_account_move_lines_all" model="ir.actions.act_window">
+        <field name="name">Journal Items</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">tree,pivot,graph,kanban,form</field>
+        <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
+        <field name="context">{'search_default_group_by_move': 1, 'create': 0}</field>
+    </record>
+    <menuitem
+        id="menu_journal_items_all"
+        name="Journal Items"
+        parent="menu_journal_entries"
+        action="action_account_move_lines_all"
+        sequence="10"
+    />
+
     <!-- Reports submenu (placeholder — extend ผ่านโมดูล report ในอนาคต) -->
     <menuitem
         id="menu_accounting_reports"
