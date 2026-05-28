@@ -628,6 +628,13 @@ class ApprovalRequest(models.Model):
                     commands.append((2, payee.id))
             for partner in partners_in_order:
                 if partner.id not in existing_by_partner:
-                    commands.append((0, 0, {"partner_id": partner.id}))
+                    banks = partner.bank_ids.filtered(
+                        lambda b: not b.company_id
+                        or b.company_id == rec.company_id
+                    )
+                    commands.append((0, 0, {
+                        "partner_id": partner.id,
+                        "partner_bank_id": banks[:1].id if banks else False,
+                    }))
             if commands:
                 rec.payee_ids = commands
