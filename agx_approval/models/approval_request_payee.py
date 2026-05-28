@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ApprovalRequestPayee(models.Model):
@@ -16,6 +16,7 @@ class ApprovalRequestPayee(models.Model):
     partner_id = fields.Many2one(
         string="Payee",
         comodel_name="res.partner",
+        required=True,
     )
 
     partner_bank_id = fields.Many2one(
@@ -30,6 +31,13 @@ class ApprovalRequestPayee(models.Model):
         related="partner_bank_id.bank_id",
         readonly=True,
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        vals_list = [v for v in vals_list if v.get("partner_id")]
+        if not vals_list:
+            return self.browse()
+        return super().create(vals_list)
 
     def _get_masked_acc_number(self):
         self.ensure_one()
