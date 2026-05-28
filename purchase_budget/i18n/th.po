@@ -22,8 +22,8 @@ msgstr ""
 
 #. module: purchase_budget
 #: model_terms:ir.ui.view,arch_db:purchase_budget.view_purchase_order_form
-msgid "<span class=\"o_stat_text\">แผนจัดซื้อจัดจ้าง</span>"
-msgstr ""
+msgid "<span class=\"o_stat_text\">Procurement Plan</span>"
+msgstr "<span class=\"o_stat_text\">แผนจัดซื้อจัดจ้าง</span>"
 
 #. module: purchase_budget
 #: model_terms:ir.ui.view,arch_db:purchase_budget.view_purchase_order_form
@@ -92,6 +92,7 @@ msgstr ""
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__fund_analytic_id
+#: model_terms:ir.ui.view,arch_db:purchase_budget.view_purchase_order_form
 msgid "Fund"
 msgstr "กองทุน"
 
@@ -102,6 +103,7 @@ msgstr ""
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__activity_analytic_id
+#: model_terms:ir.ui.view,arch_db:purchase_budget.view_purchase_order_form
 msgid "Activity"
 msgstr "ด้าน/แผนงาน/กิจกรรม"
 
@@ -112,6 +114,7 @@ msgstr ""
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:purchase_budget.view_purchase_order_form
 msgid "Department"
 msgstr "ส่วนงาน"
 
@@ -123,11 +126,12 @@ msgstr ""
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__procurement_plan_analytic_id
 #: model_terms:ir.ui.view,arch_db:purchase_budget.view_purchase_order_form
-msgid "แผนจัดซื้อจัดจ้าง"
-msgstr ""
+msgid "Procurement Plan"
+msgstr "แผนจัดซื้อจัดจ้าง"
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__source_analytic_id
+#: model_terms:ir.ui.view,arch_db:purchase_budget.view_purchase_order_form
 msgid "Source"
 msgstr "แหล่งเงิน"
 

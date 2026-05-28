@@ -22,7 +22,6 @@
         "data/sarabun_route_template_data.xml",
         "views/portal_templates.xml",
         "views/purchase_request_views.xml",
-        "views/sarabun_document_views.xml",
         "reports/paperformat_purchase_request.xml",
         "reports/report_purchase_request.xml"
     ],
