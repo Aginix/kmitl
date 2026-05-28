@@ -922,6 +922,19 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         return f"Disbursement Request-{self.name}"
 
+    @api.model
+    def _get_masked_acc_number(self, acc_number):
+        """Mask a bank account number, keeping the first 3 and last 4 digits."""
+        acc = acc_number or ""
+        digit_positions = [i for i, c in enumerate(acc) if c.isdigit()]
+        if len(digit_positions) <= 7:
+            return acc
+        keep = set(digit_positions[:3]) | set(digit_positions[-4:])
+        return "".join(
+            c if (not c.isdigit() or i in keep) else "X"
+            for i, c in enumerate(acc)
+        )
+
     def open_preview(self):
         """Open preview in portal."""
         self.ensure_one()
