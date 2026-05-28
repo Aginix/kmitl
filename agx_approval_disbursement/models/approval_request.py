@@ -104,6 +104,7 @@ class ApprovalRequest(models.Model):
         self.action_bill()
         vals = self._prepare_disbursement_request_vals()
         disbursement = self.env["disbursement.request"].create(vals)
+        self._copy_attachments_to_disbursement(disbursement)
 
         link = self._get_record_url()
         disbursement.message_post(
@@ -147,6 +148,25 @@ class ApprovalRequest(models.Model):
                 ("id", "in", self.disbursement_request_ids.ids)
             ]
         return action
+
+    def _copy_attachments_to_disbursement(self, disbursement):
+        """Clone AR attachments to the given DR.
+
+        Includes both the request-side attachment_ids (filtered to
+        non-evidence on this model) and the disbursement_attachment_ids
+        many2many that gathers DR-evidence files staged on the AR.
+
+        Each clone gets its own ir.attachment row pointing at the same
+        SHA1-hashed file in the Odoo filestore, so no binary is duplicated
+        on disk.
+        """
+        self.ensure_one()
+        attachments = self.attachment_ids | self.disbursement_attachment_ids
+        for attachment in attachments:
+            attachment.copy({
+                "res_model": "disbursement.request",
+                "res_id": disbursement.id,
+            })
 
     def _get_record_url(self):
         return "/web#id={}&model={}&view_type=form".format(self.id, self._name)

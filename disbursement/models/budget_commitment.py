@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class BudgetCommitment(models.Model):
@@ -24,10 +24,19 @@ class BudgetCommitment(models.Model):
 
     def action_view_disbursement_requests(self):
         self.ensure_one()
-        return {
+        action = {
+            "name": _("Disbursement Requests"),
             "res_model": "disbursement.request",
             "type": "ir.actions.act_window",
-            "view_mode": "form",
-            "view_type": "form",
-            "res_id": self.disbursement_request_ids[0].id,
         }
+        if len(self.disbursement_request_ids) == 1:
+            action.update({
+                "view_mode": "form",
+                "res_id": self.disbursement_request_ids.id,
+            })
+        else:
+            action.update({
+                "view_mode": "tree,form",
+                "domain": [("id", "in", self.disbursement_request_ids.ids)],
+            })
+        return action

@@ -12,8 +12,10 @@
                 <attribute name="statusbar_visible">draft,submitted,posted</attribute>
             </xpath>
 
-            <!-- Submit and Reset to Draft buttons -->
-            <xpath expr="//button[@name='action_post'][2]" position="after">
+            <!-- Submit and Reset to Draft buttons.
+                 Anchor on the second action_post button (the "Confirm" variant
+                 for non-entry move types) via the unique attrs discriminator. -->
+            <xpath expr="//button[@name='action_post' and contains(@attrs, 'display_inactive_currency_warning')]" position="after">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                 <button name="action_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'submitted')]}"/>
             </xpath>
@@ -46,27 +48,15 @@
             <xpath expr="//page[@id='invoice_tab']/.." position="before">
                 <group name="budget_root" string="Budget">
                     <group name="budget_info">
-                        <field name="budget_commitment_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                         <field name="analytic_distribution" widget="analytic_distribution" invisible="1"/>
                     </group>
                     <group name="analytic_dimensions">
-                        <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
-                        <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
-                        <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
-                        <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
-                        <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
+                        <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                        <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                        <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                        <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     </group>
                 </group>
-            </xpath>
-
-            <!-- Budget commitment button in header button box -->
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_budget_commitment" type="object" class="oe_stat_button" icon="fa-calculator" attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">View</span>
-                        <span class="o_stat_text">Budget Commitment</span>
-                    </div>
-                </button>
             </xpath>
 
         </field>

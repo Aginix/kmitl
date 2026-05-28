@@ -20,8 +20,6 @@
         "views/approval_request_views.xml",
         "views/sarabun_document_views.xml",
         "views/portal_templates.xml",
-        "reports/paperformat_approval_request.xml",
-        "reports/report_approval_request.xml",
     ],
     "assets": {
         "web.assets_frontend": [
