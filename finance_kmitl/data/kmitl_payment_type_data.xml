@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    NOTE: Override accounts below are matched by KMITL chart-of-accounts code
+    "2150000006" (deposit liability). If this code is absent in the installed
+    chart, the override_account_id field is left empty (graceful no-op).
+    Admins can manually set the override account on each kmitl.payment.type
+    record after install via the Settings menu.
+-->
 <odoo noupdate="1">
 
     <record id="payment_type_normal_inbound" model="kmitl.payment.type">

@@ -3,7 +3,7 @@
     <menuitem
         id="budget_root_menu"
         name="Budgeting"
-        sequence="10"
+        sequence="1"
         groups="budget.group_budget_user"
         web_icon="budget,static/description/icon.png">
 

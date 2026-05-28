@@ -49,7 +49,7 @@ class ApprovalRequestLine(models.Model):
     )
 
     total_amount = fields.Monetary(
-        string="Total",
+        string="Requested Amount",
         currency_field='currency_id',
         required=True,
     )

@@ -111,8 +111,8 @@ class KrisProjectDashboard(models.Model):
         # --- top_leaders: top 10 by total received amount ---
         leader_amounts = defaultdict(float)
         for receipt in receipts:
-            if receipt.project_id.leader_id:
-                leader_amounts[receipt.project_id.leader_id.name] += receipt.amount
+            if receipt.project_id.manager_id:
+                leader_amounts[receipt.project_id.manager_id.name] += receipt.amount
         top_leaders_list = [
             {"name": n, "amount": a}
             for n, a in sorted(

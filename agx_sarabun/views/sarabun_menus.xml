@@ -3,7 +3,7 @@
     <!-- Main Menu -->
     <menuitem id="menu_sarabun_root"
         name="e-Sarabun"
-        sequence="50"
+        sequence="2"
         web_icon="agx_sarabun,static/description/icon.png"
         groups="group_sarabun_user"/>
 
