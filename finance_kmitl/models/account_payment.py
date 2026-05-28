@@ -125,32 +125,3 @@ class AccountPayment(models.Model):
             "kmitl_payment_type_id",
         )
 
-    # --- Budget commitment (delegates to account.move via _inherits) ---
-
-    @api.onchange("budget_commitment_id")
-    def _onchange_budget_commitment_id(self):
-        """Auto-populate budget account and analytic distribution
-        from budget commitment.
-
-        Note: budget fields live on account.move and are accessed here
-        via _inherits delegation. The onchange must be defined on
-        account.payment because _inherits does not cascade onchange handlers.
-        """
-        if self.budget_commitment_id:
-            self.budget_account_id = self.budget_commitment_id.account_id
-            commitment = self.budget_commitment_id
-            analytic_accounts = {}
-            if commitment.activity_analytic_id:
-                analytic_accounts[commitment.activity_analytic_id.id] = 100
-                self.activity_analytic_id = commitment.activity_analytic_id
-            if commitment.department_analytic_id:
-                analytic_accounts[commitment.department_analytic_id.id] = 100
-                self.department_analytic_id = commitment.department_analytic_id
-            if commitment.fund_analytic_id:
-                analytic_accounts[commitment.fund_analytic_id.id] = 100
-                self.fund_analytic_id = commitment.fund_analytic_id
-            if commitment.source_analytic_id:
-                analytic_accounts[commitment.source_analytic_id.id] = 100
-                self.source_analytic_id = commitment.source_analytic_id
-            if analytic_accounts:
-                self.analytic_distribution = analytic_accounts
