@@ -19,7 +19,15 @@ class KrisProjectReceiptAllocation(models.Model):
         required=True,
         ondelete="cascade",
     )
+    name = fields.Char(
+        related="allocation_line_id.name",
+        string="Allocator",
+        readonly=True,
+    )
     amount = fields.Monetary(string="Amount")
+    remaining_amount = fields.Monetary(
+        string="Remaining Amount",
+    )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="receipt_id.currency_id",

@@ -366,23 +366,23 @@ class DisbursementRequest(models.Model):
                 rec.budget_account_id = budget.account_id
                 rec.analytic_distribution = budget.analytic_distribution
 
-    @api.constrains("analytic_distribution")
+    @api.constrains("analytic_distribution", "state")
     def _check_analytic_distribution_complete(self):
-        required_plan_codes = {"activities", "departments", "funds", "sources"}
-        # for rec in self:
-        #     if rec.state == "cancel":
-        #         continue
-        #     if not rec.analytic_distribution:
-        #         raise ValidationError(_("Analytic distribution is required."))
-        #     account_ids = [int(k) for k in rec.analytic_distribution.keys()]
-        #     accounts = self.env["account.analytic.account"].browse(account_ids)
-        #     present_codes = set(accounts.mapped("root_plan_id.code"))
-        #     missing = required_plan_codes - present_codes
-        #     if missing:
-        #         raise ValidationError(
-        #             _("Missing required analytic dimensions: %s")
-        #             % ", ".join(missing)
-        #         )
+        required_plan_codes = set(self._analytic_keys.keys())
+        for rec in self:
+            if rec.state in ("draft", "cancel"):
+                continue
+            if not rec.analytic_distribution:
+                raise ValidationError(_("Analytic distribution is required."))
+            account_ids = [int(k) for k in rec.analytic_distribution.keys()]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            present_codes = set(accounts.mapped("root_plan_id.code"))
+            missing = required_plan_codes - present_codes
+            if missing:
+                raise ValidationError(
+                    _("Missing required analytic dimensions: %s")
+                    % ", ".join(sorted(missing))
+                )
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
@@ -804,6 +804,22 @@ class DisbursementRequest(models.Model):
         consume line for the DR amount, leaving the BC open for other DRs.
         """
         self.ensure_one()
+        commitment = self._check_commitment_obligable()
+        first_reserve = self._get_commitment_reserve_line(commitment)
+        self.env["budget.commitment.line"].create(
+            self._prepare_budget_obligate_lines(commitment, first_reserve)
+        )
+        self.budget_consumed_amount = self.amount_total
+        self.budget_consumed_date = fields.Datetime.now()
+        self.message_post(
+            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
+            % {"amount": self.amount_total, "name": commitment.name},
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def _check_commitment_obligable(self):
+        """Validate the linked commitment can absorb this DR's amount."""
+        self.ensure_one()
         if not self.budget_commitment_id:
             raise UserError(
                 _("Budget commitment is required before approval. "
@@ -826,6 +842,10 @@ class DisbursementRequest(models.Model):
                     "required": self.amount_total,
                 }
             )
+        return commitment
+
+    def _get_commitment_reserve_line(self, commitment):
+        """Return the first active reserve line on the commitment."""
         first_reserve = commitment.line_ids.filtered(
             lambda l: l.move_type == "reserve" and l.state == "posted"
         )[:1]
@@ -833,31 +853,23 @@ class DisbursementRequest(models.Model):
             raise UserError(
                 _("No active reserve line on commitment %s.") % commitment.name
             )
-        self.env["budget.commitment.line"].create([
-            {
-                "commitment_id": commitment.id,
-                "move_type": "obligate",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": self.amount_total,
-                "name": _("Obligation: %s") % self.name,
-            },
-            {
-                "commitment_id": commitment.id,
-                "move_type": "consume",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": self.amount_total,
-                "name": _("Consumption: %s") % self.name,
-            },
-        ])
-        self.budget_consumed_amount = self.amount_total
-        self.budget_consumed_date = fields.Datetime.now()
-        self.message_post(
-            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
-            % {"amount": self.amount_total, "name": commitment.name},
-            subtype_xmlid="mail.mt_note",
-        )
+        return first_reserve
+
+    def _prepare_budget_obligate_lines(self, commitment, reserve_line):
+        """Build the obligate + consume commitment lines for this DR."""
+        self.ensure_one()
+        common = {
+            "commitment_id": commitment.id,
+            "account_id": reserve_line.account_id.id,
+            "analytic_distribution": reserve_line.analytic_distribution,
+            "amount": self.amount_total,
+        }
+        return [
+            dict(common, move_type="obligate",
+                 name=_("Obligation: %s") % self.name),
+            dict(common, move_type="consume",
+                 name=_("Consumption: %s") % self.name),
+        ]
 
     def action_cancel(self):
         """Cancel the request.

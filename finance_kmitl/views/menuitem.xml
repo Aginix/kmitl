@@ -6,7 +6,7 @@
         id="menu_payment_root"
         name="Finance"
         web_icon="finance_kmitl,static/description/icon.png"
-        sequence="60"
+        sequence="8"
         groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
     />
 

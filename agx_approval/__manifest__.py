@@ -18,6 +18,8 @@
         "data/approval_sequence.xml",
         "data/approval_category_group.xml",
         "data/approval_category.xml",
+        "reports/paperformat_approval_request.xml",
+        "reports/report_approval_request.xml",
     ],
     "license": "LGPL-3",
 }
