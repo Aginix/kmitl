@@ -2,15 +2,19 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools import formatLang
 
 _logger = logging.getLogger(__name__)
 
 
 class KrisProjectAllocationLine(models.Model):
     _name = "kris.project.allocation.line"
+    _inherit = ["kris.project.child.tracking.mixin"]
     _description = "KRIS Project Allocation Line"
     _order = "sequence, id"
+
+    _tracking_label = "การจัดสรรรายได้"
+    _tracking_fields = {"item_id", "estimated_amount"}
+    _tracking_monetary_fields = {"estimated_amount"}
 
     project_id = fields.Many2one(
         comodel_name="kris.project",
@@ -94,70 +98,3 @@ class KrisProjectAllocationLine(models.Model):
                     % base
                 )
 
-    def _format_amount(self, amount):
-        return formatLang(self.env, amount, currency_obj=self.currency_id)
-
-    _TRACKED_FIELDS = {"item_id", "estimated_amount"}
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        if not self.env.context.get("skip_message_post"):
-            for rec in records:
-                if rec.project_id:
-                    body = _("เพิ่มการจัดสรรรายได้: %s จำนวน %s") % (
-                        rec.name,
-                        rec._format_amount(rec.estimated_amount),
-                    )
-                    rec.project_id.message_post(
-                        body=body, subtype_xmlid="mail.mt_note"
-                    )
-        return records
-
-    def write(self, vals):
-        tracked = set(vals) & self._TRACKED_FIELDS
-        old_values = {}
-        if tracked and not self.env.context.get("skip_message_post"):
-            for rec in self:
-                old_values[rec.id] = {f: rec[f] for f in tracked}
-        result = super().write(vals)
-        for rec in self:
-            if rec.id not in old_values or not rec.project_id:
-                continue
-            changes = []
-            for field_name, old_val in old_values[rec.id].items():
-                new_val = rec[field_name]
-                if old_val != new_val:
-                    label = rec._fields[field_name].string
-                    if field_name == "estimated_amount":
-                        old_val = rec._format_amount(old_val)
-                        new_val = rec._format_amount(new_val)
-                    elif field_name == "item_id":
-                        old_val = old_val.display_name or ""
-                        new_val = new_val.display_name or ""
-                    changes.append(
-                        _("%(label)s: %(old)s → %(new)s")
-                        % {"label": label, "old": old_val, "new": new_val}
-                    )
-            if changes:
-                body = _("แก้ไขการจัดสรรรายได้ %s") % rec.name
-                body += "<ul>%s</ul>" % "".join(
-                    "<li>%s</li>" % c for c in changes
-                )
-                rec.project_id.message_post(
-                    body=body, subtype_xmlid="mail.mt_note"
-                )
-        return result
-
-    def unlink(self):
-        messages = []
-        if not self.env.context.get("skip_message_post"):
-            for rec in self:
-                if rec.project_id:
-                    messages.append(
-                        (rec.project_id, _("ลบการจัดสรรรายได้: %s") % rec.name)
-                    )
-        result = super().unlink()
-        for project, body in messages:
-            project.message_post(body=body, subtype_xmlid="mail.mt_note")
-        return result

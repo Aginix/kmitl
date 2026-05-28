@@ -425,8 +425,9 @@ class KrisProject(models.Model):
         if not self.allocation_template_id:
             raise UserError(_("Please select an allocation template first."))
         base_amount = self.maintenance_deduction_amount
-        self.allocation_line_ids.with_context(skip_message_post=True).unlink()
-        self.allocation_line_ids = [
+        skip_ctx = self.with_context(skip_message_post=True)
+        skip_ctx.allocation_line_ids.unlink()
+        skip_ctx.allocation_line_ids = [
             (
                 0,
                 0,

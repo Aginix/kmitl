@@ -1,3 +1,4 @@
+from . import kris_project_tracking_mixin
 from . import kris_project_type
 from . import kris_project_allocation_template
 from . import kris_project
