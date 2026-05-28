@@ -624,7 +624,7 @@ class ApprovalRequest(models.Model):
             }
             commands = []
             for payee in rec.payee_ids:
-                if payee.partner_id.id not in seen:
+                if not payee.partner_id or payee.partner_id.id not in seen:
                     commands.append((2, payee.id))
             for partner in partners_in_order:
                 if partner.id not in existing_by_partner:

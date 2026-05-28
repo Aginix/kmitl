@@ -16,7 +16,6 @@ class ApprovalRequestPayee(models.Model):
     partner_id = fields.Many2one(
         string="Payee",
         comodel_name="res.partner",
-        required=True,
     )
 
     partner_bank_id = fields.Many2one(
