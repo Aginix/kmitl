@@ -191,9 +191,9 @@
                                     title="Arrow"
                                 />
                                 <field name="date_contract_end"
-                                    readonly="1"
                                     widget="daterange"
-                                    options='{"related_start_date": "date_contract_start"}' />
+                                    options='{"related_start_date": "date_contract_start"}'
+                                    attrs="{'readonly': [('can_edit', '=', False)]}" />
                             </div>
                             <label for="project_duration"/>
                             <div>
