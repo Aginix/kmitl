@@ -176,9 +176,6 @@ class ApprovalRequest(models.Model):
         "approval.request.payee",
         "request_id",
         string="Payees",
-        compute="_compute_payee_ids",
-        store=True,
-        readonly=False,
         copy=True,
     )
 
@@ -445,6 +442,8 @@ class ApprovalRequest(models.Model):
             for record in self:
                 for line in record.line_ids.filtered(lambda l: not l.actual_amount):
                     line.actual_amount = line.total_amount
+        if "line_ids" in vals:
+            self._sync_payees()
         return result
 
     @api.model_create_multi
@@ -459,6 +458,7 @@ class ApprovalRequest(models.Model):
         for rec in lines:
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
+        lines._sync_payees()
         return lines
 
     def _log_budget_commitment_linked(self):
@@ -609,8 +609,7 @@ class ApprovalRequest(models.Model):
         for rec in self:
             rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))
 
-    @api.depends("line_ids.partner_id")
-    def _compute_payee_ids(self):
+    def _sync_payees(self):
         for rec in self:
             seen = set()
             partners_in_order = []
@@ -619,15 +618,15 @@ class ApprovalRequest(models.Model):
                 if pid and pid not in seen:
                     seen.add(pid)
                     partners_in_order.append(line.partner_id)
-            existing_by_partner = {
-                payee.partner_id.id: payee for payee in rec.payee_ids
-            }
+            existing_partner_ids = set()
             commands = []
             for payee in rec.payee_ids:
                 if not payee.partner_id or payee.partner_id.id not in seen:
                     commands.append((2, payee.id))
+                else:
+                    existing_partner_ids.add(payee.partner_id.id)
             for partner in partners_in_order:
-                if partner.id not in existing_by_partner:
+                if partner.id not in existing_partner_ids:
                     banks = partner.bank_ids.filtered(
                         lambda b: not b.company_id
                         or b.company_id == rec.company_id
@@ -638,3 +637,7 @@ class ApprovalRequest(models.Model):
                     }))
             if commands:
                 rec.payee_ids = commands
+
+    @api.onchange("line_ids")
+    def _onchange_line_ids_sync_payees(self):
+        self._sync_payees()
