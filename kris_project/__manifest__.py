@@ -11,11 +11,13 @@
         "hr",
         "account_fiscal_year",
         "base_exception",
+        "tracking_manager",
     ],
     "data": [
         "data/sequence.xml",
         "data/kris_project_type_data.xml",
         "data/kris_project_allocation_data.xml",
+        "data/kris_project_tracking_data.xml",
         "data/kris_project_exception_data.xml",
         "security/security.xml",
         "security/ir.model.access.csv",

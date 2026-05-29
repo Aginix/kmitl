@@ -98,3 +98,4 @@ class KrisProjectAllocationLine(models.Model):
                     )
                     % base
                 )
+
