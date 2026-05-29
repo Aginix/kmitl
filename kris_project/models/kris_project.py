@@ -371,9 +371,9 @@ class KrisProject(models.Model):
     def _compute_project_duration(self):
         for rec in self:
             if rec.date_contract_start and rec.date_contract_end:
-                rec.project_duration = max(
-                    0, (rec.date_contract_end - rec.date_contract_start).days
-                )
+                rec.project_duration = (
+                    rec.date_contract_end - rec.date_contract_start
+                ).days
             else:
                 rec.project_duration = 0
 

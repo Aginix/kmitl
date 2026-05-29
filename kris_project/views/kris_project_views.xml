@@ -165,6 +165,7 @@
                             />
                             <field
                                 name="manager_id"
+                                required="1"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field name="department_id" readonly="1"/>
