@@ -69,6 +69,10 @@
                         <tree editable="bottom">
                             <field name="sequence" widget="handle"/>
                             <field name="item_id"/>
+                            <field name="department_analytic_id"
+                                attrs="{'required': [('is_locked', '=', True)]}"
+                            />
+                            <field name="is_locked"/>
                             <field name="allocation_pct" string="Allocation %"/>
                         </tree>
                     </field>

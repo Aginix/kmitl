@@ -29,6 +29,18 @@ if self.state == 'draft' and self.warn_allocation_mismatch:
         <field name="active" eval="True"/>
     </record>
 
+    <record id="kris_excep_no_allocation_lines" model="exception.rule">
+        <field name="name">ไม่ได้ระบุรหัสงบประมาณหน่วยงาน</field>
+        <field name="description">กรุณาระบุรหัสงบประมาณหน่วยงานในรายการจัดสรรรายได้ทุกรายการ</field>
+        <field name="sequence">25</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.allocation_line_ids and any(not line.department_analytic_id for line in self.allocation_line_ids):
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
     <record id="kris_excep_no_installments" model="exception.rule">
         <field name="name">There is no work period.</field>
         <field name="description">Please specify at least one work phase.</field>
