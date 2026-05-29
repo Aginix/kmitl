@@ -464,6 +464,7 @@
                 <field name="account_fiscal_year_id" optional="show"/>
                 <field name="project_value" sum="รวม" optional="show"/>
                 <field name="total_received_amount" sum="รวม" optional="show"/>
+                <field name="main_exception_id" optional="hide"/>
                 <field name="state" widget="badge"
                     decoration-info="state == 'draft'"
                     decoration-primary="state == 'in_progress'"
