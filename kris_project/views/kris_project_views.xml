@@ -496,6 +496,11 @@
                 <filter name="cancel" string="Cancel" domain="[('state', '=', 'cancel')]"/>
                 <separator/>
                 <filter
+                    name="has_exceptions"
+                    string="มี Exception"
+                    domain="[('main_exception_id', '!=', False)]"
+                />
+                <filter
                     name="my_projects"
                     string="My Project"
                     domain="[('user_id', '=', uid)]"
