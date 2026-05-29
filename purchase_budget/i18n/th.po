@@ -109,8 +109,8 @@ msgstr "ด้าน/แผนงาน/กิจกรรม"
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__procurement_plan_id
-msgid "รายการแผนจัดซื้อจัดจ้าง"
-msgstr ""
+msgid "Procurement Plan"
+msgstr "รายการแผนจัดซื้อจัดจ้าง"
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__department_analytic_id
@@ -120,8 +120,8 @@ msgstr "ส่วนงาน"
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__use_procurement_plan
-msgid "เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง"
-msgstr ""
+msgid "Use Procurement Plan"
+msgstr "เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง"
 
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__procurement_plan_analytic_id
