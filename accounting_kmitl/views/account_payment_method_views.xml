@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- account.payment.method -->
+    <record id="view_account_payment_method_tree" model="ir.ui.view">
+        <field name="name">account.payment.method.tree</field>
+        <field name="model">account.payment.method</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="payment_type"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_account_payment_method_form" model="ir.ui.view">
+        <field name="name">account.payment.method.form</field>
+        <field name="model">account.payment.method</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="payment_type"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_account_payment_method" model="ir.actions.act_window">
+        <field name="name">Payment Methods</field>
+        <field name="res_model">account.payment.method</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- account.payment.method.line -->
+    <record id="view_account_payment_method_line_tree" model="ir.ui.view">
+        <field name="name">account.payment.method.line.tree</field>
+        <field name="model">account.payment.method.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="payment_type"/>
+                <field name="available_payment_method_ids" invisible="1"/>
+                <field name="payment_method_id"/>
+                <field name="journal_id"/>
+                <field name="payment_account_id"/>
+                <field name="company_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_account_payment_method_line_form" model="ir.ui.view">
+        <field name="name">account.payment.method.line.form</field>
+        <field name="model">account.payment.method.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                            <field name="payment_type"/>
+                            <field name="available_payment_method_ids" invisible="1"/>
+                            <field name="payment_method_id"/>
+                        </group>
+                        <group>
+                            <field name="journal_id"/>
+                            <field name="payment_account_id"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_account_payment_method_line" model="ir.actions.act_window">
+        <field name="name">Payment Method Lines</field>
+        <field name="res_model">account.payment.method.line</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

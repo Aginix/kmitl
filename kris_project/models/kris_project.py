@@ -434,6 +434,8 @@ class KrisProject(models.Model):
                     "sequence": tl.sequence,
                     "item_id": tl.item_id.id,
                     "estimated_amount": base_amount * tl.allocation_pct / 100.0,
+                    "department_analytic_id": tl.department_analytic_id.id,
+                    "is_locked": tl.is_locked,
                 },
             )
             for tl in self.allocation_template_id.line_ids
