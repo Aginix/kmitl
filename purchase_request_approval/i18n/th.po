@@ -1406,8 +1406,8 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
-msgid "สร้างหนังสือ"
-msgstr ""
+msgid "Create Sarabun"
+msgstr "สร้างหนังสือ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__department_analytic_id
@@ -1416,8 +1416,8 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
-msgid "หนังสือ"
-msgstr ""
+msgid "Sarabun Document"
+msgstr "หนังสือ"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
