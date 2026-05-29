@@ -4,11 +4,13 @@
         <field name="name">ค่าปรับ</field>
         <field
             name="property_account_expense_id"
-            eval="env['account.account'].search([('code', '=', '4310000003')], limit=1).id"
+            model="account.account"
+            search="[('code', '=', '4310000003')]"
         />
         <field
             name="property_account_income_id"
-            eval="env['account.account'].search([('code', '=', '4310000003')], limit=1).id"
+            model="account.account"
+            search="[('code', '=', '4310000003')]"
         />
     </record>
 </odoo>
