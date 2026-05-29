@@ -13,11 +13,10 @@
                     <div class="container kmitl-nav-spacing position-relative z-1 py-4">
                         <div class="row align-items-center">
                             <div class="col-lg-8 text-white">
-                                <h1 class="display-4 fw-bold mb-3">
-                                    ร่วมขับเคลื่อนนวัตกรรม
-                                    <br />
-                                    ไปกับ
-                                    <span class="text-primary">KMITL</span>
+                                <h1
+                                    class="display-4 fw-bold mb-3"
+                                > ร่วมขับเคลื่อนนวัตกรรม <br />
+                                    ไปกับ <span class="text-primary">KMITL</span>
                                 </h1>
                                 <p class="lead text-white-50 mb-4 fs-6">
                                     ค้นหาโอกาสในการทำงานและเติบโตไปพร้อมกับสถาบันเทคโนโลยีชั้นนำของประเทศ
@@ -93,9 +92,11 @@
                         <div
                             class="d-flex flex-column flex-md-row gap-4 align-items-start"
                         >
-                            <div class="flex-shrink-0 pt-1">
+                            <!-- TODO: Uncomment when job logo is available -->
+                            <!-- <div class="flex-shrink-0 pt-1">
                                 <div
-                                    class="rounded-circle d-flex align-items-center justify-content-center job-card__logo-wrap bg-primary-light"
+                                    class="rounded-circle d-flex align-items-center justify-content-center job-card__logo-wrap
+                            bg-primary-light"
                                 >
                                     <img
                                         src="https://www.eng.kmitl.ac.th/storage/2024/06/About-4-B.png"
@@ -104,7 +105,7 @@
                                         loading="lazy"
                                     />
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="flex-grow-1 w-100">
                                 <h4 class="fw-bold text-dark mb-3">
                                     <span t-field="job.name" />
@@ -133,8 +134,9 @@
                                         class="d-flex align-items-center"
                                     >
                                         <i class="fa fa-user-o me-2 text-primary" />
-                                        <t t-out="job.no_of_recruitment" /> อัตรา
-                                    </span>
+                                        <t
+                                            t-out="job.no_of_recruitment"
+                                        /> อัตรา </span>
                                     <span
                                         t-if="job.role"
                                         class="d-flex align-items-center"
@@ -175,8 +177,7 @@
                                         <span t-if="job.salary_min and job.salary_max">
                                             <t
                                                 t-out="'{:,.0f}'.format(job.salary_min)"
-                                            /> -
-                                            <t
+                                            /> - <t
                                                 t-out="'{:,.0f}'.format(job.salary_max)"
                                             />
                                         </span>
@@ -257,17 +258,15 @@
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
-                        </span>
-                    Departments
-                    </h6>
+                        </span> Departments </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
                                 t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/office/%s' % office_id if office_id else ''}#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
                                 t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not department_id else ' text-secondary'}"
                             >
-                            All Departments
-                        </a>
+                                All Departments
+                            </a>
                         </li>
                         <t t-foreach="departments" t-as="department">
                             <li class="nav-item">
@@ -300,17 +299,16 @@
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-map-marker" />
-                        </span>
-                    Office Location
-                    </h6>
+                        </span> Office
+                        Location </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
                                 t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
                                 t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not office_id else ' text-secondary'}"
                             >
-                            All Offices
-                        </a>
+                                All Offices
+                            </a>
                         </li>
                         <t t-foreach="offices" t-as="thisoffice">
                             <li class="nav-item">
@@ -319,9 +317,9 @@
                                     t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if office_id and office_id == thisoffice.id else ' text-secondary'}"
                                 >
                                     <span t-field="thisoffice.city" />
-                                    <t t-if="thisoffice.country_id">
-                                    ,
-                                        <span t-field="thisoffice.country_id.name" />
+                                    <t t-if="thisoffice.country_id"> , <span
+                                            t-field="thisoffice.country_id.name"
+                                        />
                                     </t>
                                 </a>
                             </li>
@@ -351,9 +349,7 @@
                     <h6 class="fw-bold text-dark mb-4 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
-                        </span>
-                        Role
-                    </h6>
+                        </span> Role </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -404,9 +400,8 @@
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
-                        </span>
-                        Education Level
-                    </h6>
+                        </span> Education
+                        Level </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -451,9 +446,7 @@
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
-                        </span>
-                        Categories
-                    </h6>
+                        </span> Categories </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -498,9 +491,7 @@
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
-                        </span>
-                        Employee Type
-                    </h6>
+                        </span> Employee Type </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -555,17 +546,16 @@
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-briefcase" />
-                        </span>
-                    Employment Type
-                    </h6>
+                        </span> Employment
+                        Type </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
                                 t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }"
                                 t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not contract_type_id else ' text-secondary'}"
                             >
-                            All Types
-                        </a>
+                                All Types
+                            </a>
                         </li>
                         <t t-foreach="employment_types" t-as="employment_type">
                             <li class="nav-item">

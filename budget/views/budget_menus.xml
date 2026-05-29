@@ -3,7 +3,7 @@
     <menuitem
         id="budget_root_menu"
         name="Budgeting"
-        sequence="10"
+        sequence="1"
         groups="budget.group_budget_user"
         web_icon="budget,static/description/icon.png">
 
@@ -59,6 +59,7 @@
                 <menuitem id="action_budget_account_analytic_account_menu_action" name="Analytic Accounts" action="analytic.action_account_analytic_account_form" sequence="100" />
                 <menuitem id="action_budget_account_analytic_plan_menu_action" name="Analytic Plans" action="analytic.account_analytic_plan_action" sequence="101" />
             </menuitem>
+            <menuitem id="budget_config_reporting_menu" name="รายงาน" sequence="50" />
         </menuitem>
     </menuitem>
 </odoo>

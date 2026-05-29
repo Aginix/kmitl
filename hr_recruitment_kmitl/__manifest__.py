@@ -45,6 +45,7 @@
     "assets": {
         "web.assets_frontend": [
             "hr_recruitment_kmitl/static/src/scss/theme.scss",
+            "hr_recruitment_kmitl/static/src/xml/website_form.xml",
             "hr_recruitment_kmitl/static/src/js/profile_page.js",
             "hr_recruitment_kmitl/static/src/js/apply_page.js",
             "hr_recruitment_kmitl/static/src/js/onboarding_family.js",

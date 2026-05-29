@@ -378,6 +378,15 @@ class PortalProfile(CustomerPortal):
                 vals["date_start"] = False
             if not vals["date_end"]:
                 vals["date_end"] = False
+
+            # Skip rows with all empty values
+            if (
+                self._is_empty_text(vals.get("company_name"))
+                and self._is_empty_text(vals.get("job_title"))
+                and self._is_empty_date(vals.get("date_start"))
+                and self._is_empty_date(vals.get("date_end"))
+            ):
+                continue
             if wh_id:
                 rec = WorkHistory.search(
                     [("id", "=", wh_id), ("profile_id", "=", profile.id)], limit=1
@@ -421,3 +430,16 @@ class PortalProfile(CustomerPortal):
             vals[field] = field in post
 
         return vals
+
+    # ---------------------------------------------------
+    # FIELD VALIDATION (Odoo-safe)
+    # ---------------------------------------------------
+    def _is_empty_text(self, value):
+        return (
+            value is False
+            or value is None
+            or (isinstance(value, str) and not value.strip())
+        )
+
+    def _is_empty_date(self, value):
+        return value is False or value is None

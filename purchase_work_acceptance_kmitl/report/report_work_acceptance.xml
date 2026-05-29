@@ -137,11 +137,9 @@
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th style="text-align: center">
+                                    <th colspan="3" style="text-align: center">
                                         ตามใบสั่งซื้อ/จ้าง
                                     </th>
-                                    <th style="text-align: center">ตามใบส่งของ</th>
-                                    <th style="text-align: center">ตามที่รับจริง</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -158,16 +156,9 @@
                                             <span t-field="line.product_uom" />
                                         </td>
                                         <td
-                                            class="text-end"
+                                            colspan="3"
+                                            class="text-center"
                                             t-out="'{0:,.2f}'.format(line.purchase_line_id.product_qty)"
-                                        />
-                                        <td
-                                            class="text-end"
-                                            t-out="'{0:,.2f}'.format(line.product_qty)"
-                                        />
-                                        <td
-                                            class="text-end"
-                                            t-out="'{0:,.2f}'.format(line.product_qty)"
                                         />
                                         <td
                                             class="text-end"
@@ -184,30 +175,28 @@
                                     >
                                         (
                                         <t
-                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
-    sum(o.wa_line_ids.mapped('price_subtotal'))
-)"
+                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
                                         />
                                         )
                                     </td>
                                     <td class="text-center">รวมเป็นเงิน</td>
                                     <td
                                         class="text-end"
-                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                        t-esc="'{0:,.2f}'.format(o.amount_untaxed)"
                                     />
                                 </tr>
                                 <tr>
                                     <td class="text-center">ภาษีมูลค่าเพิ่ม</td>
                                     <td
                                         class="text-end"
-                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                        t-esc="'{0:,.2f}'.format(o.amount_tax)"
                                     />
                                 </tr>
                                 <tr>
                                     <td class="text-center">รวมเป็นเงินทั้งสิ้น</td>
                                     <td
                                         class="text-end"
-                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                        t-esc="'{0:,.2f}'.format(o.amount_total)"
                                     />
                                 </tr>
                             </tbody>

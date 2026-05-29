@@ -120,6 +120,13 @@
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
                         </group>
                     </group>
+
+                    <group name="attachment" string="Attachment for Disbursement Request">
+                        <field name="attachment_ids"
+                            widget="many2many_binary">
+                        </field>
+                    </group>
+                    
                     <notebook>
                         <page string="Request Lines" name="lines">
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
@@ -169,17 +176,6 @@
                                 <field name="amount_wht" />
                             </group>
                             <div class="oe_clear" />
-                        </page>
-                        <page string="Attachments" name="attachment">
-                            <field name="attachment_ids"
-                                   context="{'default_res_model': 'disbursement.request'}">
-                                <tree>
-                                    <field name="name" string="File Name"/>
-                                    <field name="type"/>
-                                    <field name="create_date" string="Upload Date"/>
-                                    <field name="create_uid" string="Uploaded By"/>
-                                </tree>
-                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -246,7 +242,7 @@
     </record>
 
     <!-- Root menu for Disbursement app -->
-    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="45" web_icon="disbursement,static/description/icon.png"/>
+    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="5" web_icon="disbursement,static/description/icon.png"/>
 
     <!-- Disbursement Requests submenu -->
     <menuitem id="menu_disbursement_request" name="Disbursement Requests" parent="menu_disbursement_root" action="action_disbursement_request" sequence="10" groups="disbursement.group_disbursement_user"/>

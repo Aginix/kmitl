@@ -76,7 +76,7 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase_no_rfq.purchase_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//span[@class='o_form_label']" position="attributes">
+            <xpath expr="//span[hasclass('o_form_label')]" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
         </field>

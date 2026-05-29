@@ -1,39 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
+<odoo>
 
-    <!-- Tier definitions for bills only (not payment moves) -->
-    <record id="tier_definition_account_move_accountant" model="tier.definition">
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="name">ผู้จัดทำ/ผู้ตรวจสอบ</field>
-        <field name="sequence">20</field>
-        <field name="review_type">group</field>
-        <field name="reviewer_group_id" ref="account.group_account_manager"/>
-        <field name="definition_type">domain</field>
-        <field name="definition_domain">[("payment_id", "=", False)]</field>
-        <field name="approve_sequence">True</field>
-        <field name="has_comment">False</field>
-        <field name="active">True</field>
-        <field name="notify_on_create">True</field>
-        <field name="notify_on_accepted">True</field>
-        <field name="notify_on_rejected">True</field>
-        <field name="notify_on_restarted">True</field>
-    </record>
-
-    <record id="tier_definition_account_move_head_accountant" model="tier.definition">
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="name">ผู้อำนวยการคลัง</field>
-        <field name="sequence">10</field>
-        <field name="review_type">group</field>
-        <field name="reviewer_group_id" ref="account.group_account_manager"/>
-        <field name="definition_type">domain</field>
-        <field name="definition_domain">[("payment_id", "=", False)]</field>
-        <field name="approve_sequence">True</field>
-        <field name="has_comment">False</field>
-        <field name="active">True</field>
-        <field name="notify_on_create">True</field>
-        <field name="notify_on_accepted">True</field>
-        <field name="notify_on_rejected">True</field>
-        <field name="notify_on_restarted">True</field>
-    </record>
+    <!-- Tier validation moved to disbursement.request; remove legacy
+         account.move tier definitions that previously gated bill posting. -->
+    <delete model="tier.definition" id="tier_definition_account_move_accountant"/>
+    <delete model="tier.definition" id="tier_definition_account_move_head_accountant"/>
 
 </odoo>
