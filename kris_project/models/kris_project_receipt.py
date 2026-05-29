@@ -8,14 +8,8 @@ _logger = logging.getLogger(__name__)
 class KrisProjectReceipt(models.Model):
     _name = "kris.project.receipt"
     _description = "KRIS Project Receipt"
-    _inherit = ["mail.thread", "kris.project.child.tracking.mixin"]
+    _inherit = ["mail.thread"]
     _order = "date desc, id desc"
-
-    _tracking_label = "รายรับ"
-    _tracking_fields = {
-        "name", "date", "amount", "equipment_cost_in_installment", "extra_income",
-    }
-    _tracking_monetary_fields = {"amount", "equipment_cost_in_installment", "extra_income"}
 
     project_id = fields.Many2one(
         comodel_name="kris.project",

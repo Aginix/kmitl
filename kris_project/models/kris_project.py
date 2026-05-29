@@ -425,9 +425,8 @@ class KrisProject(models.Model):
         if not self.allocation_template_id:
             raise UserError(_("Please select an allocation template first."))
         base_amount = self.maintenance_deduction_amount
-        skip_ctx = self.with_context(skip_message_post=True)
-        skip_ctx.allocation_line_ids.unlink()
-        skip_ctx.allocation_line_ids = [
+        self.allocation_line_ids.unlink()
+        self.allocation_line_ids = [
             (
                 0,
                 0,
@@ -439,7 +438,3 @@ class KrisProject(models.Model):
             )
             for tl in self.allocation_template_id.line_ids
         ]
-        self.message_post(
-            body=_("ใช้แม่แบบการจัดสรร: %s") % self.allocation_template_id.name,
-            subtype_xmlid="mail.mt_note",
-        )

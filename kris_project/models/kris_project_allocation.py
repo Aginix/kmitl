@@ -8,13 +8,8 @@ _logger = logging.getLogger(__name__)
 
 class KrisProjectAllocationLine(models.Model):
     _name = "kris.project.allocation.line"
-    _inherit = ["kris.project.child.tracking.mixin"]
     _description = "KRIS Project Allocation Line"
     _order = "sequence, id"
-
-    _tracking_label = "การจัดสรรรายได้"
-    _tracking_fields = {"item_id", "estimated_amount"}
-    _tracking_monetary_fields = {"estimated_amount"}
 
     project_id = fields.Many2one(
         comodel_name="kris.project",
