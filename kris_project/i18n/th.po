@@ -1476,3 +1476,14 @@ msgstr "ผู้ว่าจ้าง/หน่วยงานผู้ให�
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__extra_income
 msgid "Extra Value"
 msgstr "ค่า Extra"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
+msgid "Extra Payee"
+msgstr "ผู้รับค่า Extra"

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KRIS Project",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL",
     "summary": "Academic service and research project revenue tracking for KRIS",
     "author": "Aginix Technologies",
@@ -12,6 +12,7 @@
         "account_fiscal_year",
         "base_exception",
         "tracking_manager",
+        "account_analytic_kmitl",
     ],
     "data": [
         "data/sequence.xml",

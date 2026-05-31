@@ -135,6 +135,12 @@ class KrisProject(models.Model):
         string="Extra Value",
         tracking=True,
     )
+    extra_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Extra Payee",
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
+    )
     allocatable_value = fields.Monetary(
         string="Allocatable Value",
         compute="_compute_allocatable_value",
@@ -191,6 +197,12 @@ class KrisProject(models.Model):
         comodel_name="res.users",
         string="Responsible",
         default=lambda self: self.env.user,
+        tracking=True,
+    )
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Department",
+        domain=[("root_plan_id.code", "=", "departments")],
         tracking=True,
     )
     # --- One2many ---
