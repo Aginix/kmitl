@@ -17,6 +17,30 @@ if self.state == 'draft' and self.project_value &lt;= 0:
         <field name="active" eval="True"/>
     </record>
 
+    <record id="kris_excep_extra_value_no_payee" model="exception.rule">
+        <field name="name">ต้องระบุผู้รับค่า Extra</field>
+        <field name="description">เมื่อมีค่า Extra ต้องระบุผู้รับค่า Extra</field>
+        <field name="sequence">15</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.extra_value &gt; 0 and not self.extra_analytic_id:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_department_analytic" model="exception.rule">
+        <field name="name">ต้องมีส่วนงาน</field>
+        <field name="description">จำเป็นต้องระบุส่วนงาน</field>
+        <field name="sequence">16</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.department_analytic_id:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
     <record id="kris_excep_allocation_mismatch" model="exception.rule">
         <field name="name">The allocated total does not match the maintenance fee.</field>
         <field name="description">The total allocated revenue does not equal the value minus maintenance fees.</field>
