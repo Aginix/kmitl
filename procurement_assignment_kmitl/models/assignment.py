@@ -26,6 +26,12 @@ class AssignedOfficerMixin:
       * the two group hooks ``_assign_user_group`` / ``_assign_manager_group``.
     """
 
+    # Empty slots: a plain mixin without ``__slots__`` would add a ``__dict__``
+    # to the instance layout of the consuming Odoo model, breaking the
+    # ``cls.__bases__`` reassignment Odoo performs in ``_prepare_setup``
+    # ("object layout differs"). Odoo models are slotted, so we must be too.
+    __slots__ = ()
+
     # Override per consuming model.
     _assign_user_group = None  # group allowed to self-claim unassigned work
     _assign_manager_group = None  # group allowed to assign others / unassign
