@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- PA has no Assigned Officer of its own; it derives from its parent PR
+         (request_id.assigned_to). See docs/adr/0001. -->
+    <record
+        id="view_purchase_request_approval_search_assignment"
+        model="ir.ui.view"
+    >
+        <field name="name">purchase.request.approval.search.assignment</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='approved']" position="after">
+                <separator />
+                <filter
+                    name="assigned_to_me"
+                    string="มอบหมายให้ฉัน (Assigned to me)"
+                    domain="[('request_id.assigned_to', '=', uid)]"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
