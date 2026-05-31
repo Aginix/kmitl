@@ -460,7 +460,7 @@
         <field name="name">kris.project.tree</field>
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-danger="main_exception_id">
                 <field name="name"/>
                 <field name="project_name"/>
                 <field name="contract_number" optional="show"/>
