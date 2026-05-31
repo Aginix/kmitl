@@ -54,11 +54,7 @@
             <field name="name">KRIS Project Viewer: Managed Projects</field>
             <field name="model_id" ref="model_kris_project"/>
             <field name="groups" eval="[(4, ref('group_kris_project_viewer'))]"/>
-            <field name="domain_force">[('manager_id.user_id', '=', user.id)]</field>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+            <field name="domain_force">[('manager_id.user_id', '=', user.id)]</field>        </record>
 
         <!-- Officer & Manager: full access -->
         <record id="kris_project_full_rule" model="ir.rule">
@@ -76,11 +72,7 @@
             <field name="name">KRIS Project Installment Viewer: Managed Projects</field>
             <field name="model_id" ref="model_kris_project_installment"/>
             <field name="groups" eval="[(4, ref('group_kris_project_viewer'))]"/>
-            <field name="domain_force">[('project_id.manager_id.user_id', '=', user.id)]</field>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+            <field name="domain_force">[('project_id.manager_id.user_id', '=', user.id)]</field>        </record>
 
         <record id="kris_project_installment_full_rule" model="ir.rule">
             <field name="name">KRIS Project Installment: Full Access</field>
@@ -97,11 +89,7 @@
             <field name="name">KRIS Project Receipt Viewer: Managed Projects</field>
             <field name="model_id" ref="model_kris_project_receipt"/>
             <field name="groups" eval="[(4, ref('group_kris_project_viewer'))]"/>
-            <field name="domain_force">[('project_id.manager_id.user_id', '=', user.id)]</field>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+            <field name="domain_force">[('project_id.manager_id.user_id', '=', user.id)]</field>        </record>
 
         <record id="kris_project_receipt_full_rule" model="ir.rule">
             <field name="name">KRIS Project Receipt: Full Access</field>
@@ -118,11 +106,7 @@
             <field name="name">KRIS Project Allocation Viewer: Managed Projects</field>
             <field name="model_id" ref="model_kris_project_allocation_line"/>
             <field name="groups" eval="[(4, ref('group_kris_project_viewer'))]"/>
-            <field name="domain_force">[('project_id.manager_id.user_id', '=', user.id)]</field>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+            <field name="domain_force">[('project_id.manager_id.user_id', '=', user.id)]</field>        </record>
 
         <record id="kris_project_allocation_full_rule" model="ir.rule">
             <field name="name">KRIS Project Allocation: Full Access</field>
@@ -139,11 +123,7 @@
             <field name="name">KRIS Project Installment Allocation Viewer: Managed Projects</field>
             <field name="model_id" ref="model_kris_project_installment_allocation"/>
             <field name="groups" eval="[(4, ref('group_kris_project_viewer'))]"/>
-            <field name="domain_force">[('installment_id.project_id.manager_id.user_id', '=', user.id)]</field>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+            <field name="domain_force">[('installment_id.project_id.manager_id.user_id', '=', user.id)]</field>        </record>
 
         <record id="kris_project_installment_allocation_full_rule" model="ir.rule">
             <field name="name">KRIS Project Installment Allocation: Full Access</field>
@@ -160,11 +140,7 @@
             <field name="name">KRIS Project Receipt Allocation Viewer: Managed Projects</field>
             <field name="model_id" ref="model_kris_project_receipt_allocation"/>
             <field name="groups" eval="[(4, ref('group_kris_project_viewer'))]"/>
-            <field name="domain_force">[('receipt_id.project_id.manager_id.user_id', '=', user.id)]</field>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+            <field name="domain_force">[('receipt_id.project_id.manager_id.user_id', '=', user.id)]</field>        </record>
 
         <record id="kris_project_receipt_allocation_full_rule" model="ir.rule">
             <field name="name">KRIS Project Receipt Allocation: Full Access</field>
