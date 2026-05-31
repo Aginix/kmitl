@@ -547,8 +547,8 @@ msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: kris_project
-#: model:res.groups,name:kris_project.group_kris_project_user
-msgid "User"
+#: model:res.groups,name:kris_project.group_kris_project_viewer
+msgid "Viewer"
 msgstr ""
 
 #. module: kris_project

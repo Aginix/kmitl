@@ -6,7 +6,7 @@
         id="menu_kris_project_root"
         name="KRIS Project"
         sequence="50"
-        groups="kris_project.group_kris_project_user"
+        groups="kris_project.group_kris_project_viewer,kris_project.group_kris_project_officer"
         web_icon="kris_project,static/description/icon.png"
     />
 
@@ -17,7 +17,7 @@
         parent="menu_kris_project_root"
         action="action_kris_project_dashboard"
         sequence="1"
-        groups="kris_project.group_kris_project_user"
+        groups="kris_project.group_kris_project_viewer,kris_project.group_kris_project_officer"
     />
 
     <!-- Projects menu -->
@@ -27,7 +27,7 @@
         parent="menu_kris_project_root"
         action="action_kris_project"
         sequence="10"
-        groups="kris_project.group_kris_project_user"
+        groups="kris_project.group_kris_project_viewer,kris_project.group_kris_project_officer"
     />
 
     <!-- Configuration menu -->
