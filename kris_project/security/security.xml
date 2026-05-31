@@ -20,11 +20,14 @@
             <field name="comment">Read-only access to projects the user manages (manager_id).</field>
         </record>
 
-        <!-- Officer: KRIS staff, full access to all projects -->
+        <!-- Officer: KRIS staff, full access to all projects.
+             Implies viewer so the three roles form a single implication
+             chain (manager > officer > viewer > base.group_user), which
+             makes Settings > Users render one ordered role dropdown. -->
         <record id="group_kris_project_officer" model="res.groups">
             <field name="name">Officer</field>
             <field name="category_id" ref="module_category_kris_project"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_kris_project_viewer'))]"/>
         </record>
 
         <!-- Manager: KRIS admin, full access + configuration -->
