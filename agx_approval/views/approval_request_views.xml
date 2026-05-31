@@ -68,7 +68,7 @@
                     </group>
                     <group string="Budget">
                         <div colspan="2" class="alert alert-success my-2" role="alert" attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
-                            <i class="fa fa-check-circle me-1"/>
+                            <i class="fa fa-check-circle me-1" title="Budget Reserved"/>
                             <strong>Budget Reserved:</strong>
                             <field name="budget_commitment_id" readonly="1" nolabel="1" class="oe_inline ms-1"/>
                             <span class="mx-1">—</span>
