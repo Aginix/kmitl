@@ -129,6 +129,9 @@ class KrisProject(models.Model):
     )
     operating_expense = fields.Monetary(
         string="Operating Expense",
+        compute="_compute_operating_expense",
+        store=True,
+        readonly=False,
         tracking=True,
     )
     extra_value = fields.Monetary(
@@ -389,9 +392,10 @@ class KrisProject(models.Model):
             else:
                 rec.project_duration = 0
 
-    @api.onchange("project_value", "equipment_cost")
-    def _onchange_operating_expense_suggest(self):
-        self.operating_expense = self.project_value - self.equipment_cost
+    @api.depends("project_value", "equipment_cost")
+    def _compute_operating_expense(self):
+        for rec in self:
+            rec.operating_expense = rec.project_value - rec.equipment_cost
 
     @api.onchange("project_category_id")
     def _onchange_project_category_id(self):
