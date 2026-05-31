@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api
 from odoo.exceptions import AccessError, UserError
+from odoo.tools.misc import str2bool
 
 # The "To Do" activity scheduled on a document when an officer is assigned.
 ASSIGN_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
@@ -31,26 +32,28 @@ class AssignedOfficerMixin:
 
     # -- guards ------------------------------------------------------------
     def _assignment_takeover_allowed(self):
-        param = (
-            self.env["ir.config_parameter"].sudo().get_param(TAKEOVER_PARAM)
+        return str2bool(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(TAKEOVER_PARAM, default=False)
         )
-        return param in ("True", "true", "1")
 
     def _assignment_is_manager(self):
         return self.env.user.has_group(self._assign_manager_group)
 
+    def _assignment_can_claim(self):
+        """Whether the current user may self-assign this single record."""
+        self.ensure_one()
+        if not self.assigned_to:
+            return True
+        if self.assigned_to == self.env.user:
+            return False
+        return self._assignment_is_manager() or self._assignment_takeover_allowed()
+
     @api.depends("assigned_to")
     def _compute_assignment_can_assign_me(self):
-        takeover = self._assignment_takeover_allowed()
-        is_manager = self._assignment_is_manager()
-        me = self.env.user
         for rec in self:
-            if not rec.assigned_to:
-                rec.assignment_can_assign_me = True
-            elif rec.assigned_to == me:
-                rec.assignment_can_assign_me = False
-            else:
-                rec.assignment_can_assign_me = is_manager or takeover
+            rec.assignment_can_assign_me = rec._assignment_can_claim()
 
     # -- activity bookkeeping ---------------------------------------------
     def _assignment_activity_summary(self):
@@ -80,17 +83,14 @@ class AssignedOfficerMixin:
     def action_assignment_assign_me(self):
         me = self.env.user
         for rec in self:
-            if (
-                rec.assigned_to
-                and rec.assigned_to != me
-                and not rec._assignment_is_manager()
-                and not rec._assignment_takeover_allowed()
-            ):
+            if rec.assigned_to == me:
+                continue
+            if not rec._assignment_can_claim():
                 raise UserError(
                     _("This document is already assigned to %s.")
                     % rec.assigned_to.display_name
                 )
-            if rec.assigned_to and rec.assigned_to != me:
+            if rec.assigned_to:
                 rec._assignment_clear_activity(rec.assigned_to)
             rec.assigned_to = me
         return True

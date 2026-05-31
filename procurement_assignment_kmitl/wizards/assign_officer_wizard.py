@@ -34,12 +34,8 @@ class AssignOfficerWizard(models.TransientModel):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        res_model = res.get("res_model") or self.env.context.get(
-            "default_res_model"
-        )
-        res_id = res.get("res_id") or self.env.context.get("default_res_id")
-        if res_model and res_id and "user_id" in fields_list:
-            record = self.env[res_model].browse(res_id)
+        if res.get("res_model") and res.get("res_id") and "user_id" in fields_list:
+            record = self.env[res["res_model"]].browse(res["res_id"])
             if record.assigned_to:
                 res["user_id"] = record.assigned_to.id
         return res
