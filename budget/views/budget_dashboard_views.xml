@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <!-- Landing page: budget overview (cards + recent movements) -->
+    <record id="action_budget_overview" model="ir.actions.client">
+        <field name="name">ภาพรวมงบประมาณ</field>
+        <field name="tag">budget_overview</field>
+    </record>
+
+    <menuitem
+        id="budget_overview_menu"
+        name="ภาพรวม"
+        parent="budget_root_menu"
+        action="action_budget_overview"
+        sequence="1"
+    />
+
+    <!-- Detailed monitoring report (drill-down target of the overview cards) -->
     <record id="action_budget_dashboard" model="ir.actions.client">
         <field name="name">ตรวจสอบงบประมาณ</field>
         <field name="tag">budget_dashboard</field>

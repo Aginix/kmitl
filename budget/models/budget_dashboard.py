@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict
 
 from odoo import api, models
+from odoo.tools import format_date
 
 _logger = logging.getLogger(__name__)
 
@@ -40,6 +41,19 @@ class BudgetDashboard(models.AbstractModel):
     _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
     # Fixed display order for the top-level expense budget categories.
     _ROOT_ORDER = ("51000", "52000", "53000", "54000", "55000", "07020")
+    # Rows shown per recent-movement table on the overview landing page.
+    _RECENT_LIMIT = 6
+    _OVERVIEW_KEYS = (
+        "initial",
+        "adjustment",
+        "current",
+        "cap",
+        "reserved",
+        "obligated",
+        "consumed",
+        "used",
+        "remaining",
+    )
 
     @api.model
     def get_dashboard_data(self, fiscal_year_id, root_account_id=None, filters=None):
@@ -165,6 +179,211 @@ class BudgetDashboard(models.AbstractModel):
             for child in reversed(kids):
                 stack.append((child, level + 1))
         return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+
+    @api.model
+    def get_overview_data(self, fiscal_year_id, source_id=None):
+        """Landing-page payload: per-category cards + recent movements.
+
+        Cards reuse ``get_dashboard_data`` and keep only the root rows
+        (``level == 0``), so each category figure matches the detailed
+        monitoring report exactly and a card can drill into it unchanged.
+        Recent movements are plain searches (never ``sudo``) so the global
+        operating-unit record rules scope them to the current user.
+        """
+        currency_id = self.env.company.currency_id.id
+        data = {"currency_id": currency_id, "cards": [], "totals": {}, "recent": {}}
+        if not fiscal_year_id:
+            return data
+
+        filters = {"source_analytic_id": source_id} if source_id else {}
+        rows = self.get_dashboard_data(fiscal_year_id, None, filters)["rows"]
+        cards = [row for row in rows if row["level"] == 0]
+
+        totals = dict.fromkeys(self._OVERVIEW_KEYS, 0.0)
+        for card in cards:
+            for key in self._OVERVIEW_KEYS:
+                totals[key] += card.get(key, 0.0)
+
+        self._attach_breakdowns(cards, fiscal_year_id, source_id)
+        data["cards"] = cards
+        data["totals"] = totals
+        data["recent"] = self._recent_movements(fiscal_year_id)
+        return data
+
+    def _recent_movements(self, fiscal_year_id):
+        """Latest documents of each type for the selected fiscal year.
+
+        Scoped by fiscal year so the feed matches the cards; every header
+        model stores ``account_fiscal_year_id``. Source is deliberately NOT
+        applied here: it is a line-level dimension (the cards sum it from
+        lines), and transfer-generated moves carry no header source, so a
+        header-level source filter would silently drop real documents. Each
+        model's ``_order`` is already ``date desc``.
+        """
+        limit = self._RECENT_LIMIT
+        domain = [("account_fiscal_year_id", "=", fiscal_year_id)]
+
+        def fmt(value):
+            return format_date(self.env, value) if value else ""
+
+        commitments = self.env["budget.commitment"].search(domain, limit=limit)
+        moves = self.env["budget.move"].search(domain, limit=limit)
+        transfers = self.env["budget.transfer"].search(domain, limit=limit)
+        return {
+            "commitment": [
+                {
+                    "id": c.id,
+                    "name": c.name,
+                    "date": fmt(c.date),
+                    "amount": c.amount,
+                    "state": c.state,
+                }
+                for c in commitments
+            ],
+            "move": [
+                {
+                    "id": m.id,
+                    "name": m.name,
+                    "date": fmt(m.date),
+                    "amount": m.total_amount,
+                    "move_type": m.move_type,
+                    "state": m.state,
+                }
+                for m in moves
+            ],
+            "transfer": [
+                {
+                    "id": t.id,
+                    "name": t.name,
+                    "date": fmt(t.date),
+                    "amount": t.amount,
+                    "state": t.state,
+                }
+                for t in transfers
+            ],
+        }
+
+    def _attach_breakdowns(self, cards, fiscal_year_id, source_id):
+        """Attach top-level fund & activity breakdowns to each category card.
+
+        For every root category we show how its current budget (a) and usage
+        (e = Σreserve) split across the first-level funds and activities, so a
+        card gives an at-a-glance picture of where the budget sits. Figures
+        reuse the card's own definitions (remaining = current - used).
+        """
+        if not cards:
+            return
+        card_ids = {c["id"] for c in cards}
+        for dim, attr in (
+            ("fund_analytic_id", "funds"),
+            ("activity_analytic_id", "activities"),
+        ):
+            breakdown = self._dim_breakdown(dim, fiscal_year_id, source_id, card_ids)
+            for card in cards:
+                card[attr] = breakdown.get(card["id"], [])
+
+    def _dim_breakdown(self, dim, fiscal_year_id, source_id, card_ids):
+        """Per-root breakdown over the top-level nodes of one analytic dim.
+
+        current comes from posted appropriation/entry move lines; used is the
+        net reservation (``move_type == 'reserve'`` on active commitments).
+        Both the budget account and the dimension value are rolled up to their
+        respective roots (``parent_path[0]``) before accumulation.
+        """
+        move_dom = [
+            ("parent_state", "=", "posted"),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("move_type", "in", ("appropriation", "entry")),
+        ]
+        cl_dom = [
+            ("state", "=", "posted"),
+            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("move_type", "=", "reserve"),
+        ]
+        if source_id:
+            move_dom.append(("source_analytic_id", "=", source_id))
+            cl_dom.append(("source_analytic_id", "=", source_id))
+
+        cur_groups = self.env["budget.move.line"].read_group(
+            move_dom, ["balance"], ["account_id", dim], lazy=False
+        )
+        used_groups = self.env["budget.commitment.line"].read_group(
+            cl_dom, ["amount"], ["account_id", dim], lazy=False
+        )
+
+        all_groups = cur_groups + used_groups
+        root_of = self._root_category_map(
+            {g["account_id"][0] for g in all_groups if g.get("account_id")}
+        )
+        top_of = self._top_level_map(
+            {g[dim][0] for g in all_groups if g.get(dim)}
+        )
+
+        current = defaultdict(lambda: defaultdict(float))
+        used = defaultdict(lambda: defaultdict(float))
+        for groups, field, target in (
+            (cur_groups, "balance", current),
+            (used_groups, "amount", used),
+        ):
+            for grp in groups:
+                acc = grp.get("account_id")
+                if not acc:
+                    continue
+                root = root_of.get(acc[0])
+                if root not in card_ids:
+                    continue
+                dval = grp.get(dim)
+                # untagged lines bucket under id 0 ("ไม่ระบุ") so the rows
+                # still reconcile with the card total.
+                top = top_of.get(dval[0], dval[0]) if dval else 0
+                target[root][top] += grp.get(field) or 0.0
+
+        top_ids = {
+            tid for buckets in (current, used) for d in buckets.values() for tid in d if tid
+        }
+        info = {
+            a.id: (a.code, a.name)
+            for a in self.env["account.analytic.account"].browse(list(top_ids))
+        }
+        info[0] = ("", "ไม่ระบุ")
+
+        result = {}
+        for root in set(current) | set(used):
+            items = []
+            for tid in set(current[root]) | set(used[root]):
+                cur = current[root].get(tid, 0.0)
+                usd = used[root].get(tid, 0.0)
+                code, name = info.get(tid, ("", ""))
+                items.append(
+                    {
+                        "id": tid,
+                        "code": code,
+                        "name": name,
+                        "current": cur,
+                        "used": usd,
+                        "remaining": cur - usd,
+                    }
+                )
+            items.sort(key=lambda x: (-x["current"], x["code"]))
+            result[root] = items
+        return result
+
+    def _root_category_map(self, account_ids):
+        """budget.account id -> its root category id (parent_path[0])."""
+        out = {}
+        for acc in self.env["budget.account"].browse(list(account_ids)):
+            ids = self._ancestor_ids(acc)
+            out[acc.id] = ids[0] if ids else acc.id
+        return out
+
+    def _top_level_map(self, analytic_ids):
+        """analytic account id -> its top-level ancestor id (parent_path[0])."""
+        out = {}
+        for rec in self.env["account.analytic.account"].browse(list(analytic_ids)):
+            path = (rec.parent_path or "").strip("/").split("/")
+            out[rec.id] = int(path[0]) if path and path[0] else rec.id
+        return out
 
     # ------------------------------------------------------------------
     # helpers
