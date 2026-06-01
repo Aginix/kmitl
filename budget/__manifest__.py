@@ -27,8 +27,16 @@
         "views/budget_transfer_views.xml",
         "wizard/budget_commitment_line_wizard_views.xml",
         "views/budget_menus.xml",
+        "views/budget_dashboard_views.xml",
         "views/res_config_settings_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "budget/static/src/dashboard/budget_dashboard.js",
+            "budget/static/src/dashboard/budget_dashboard.xml",
+            "budget/static/src/dashboard/budget_dashboard.scss",
+        ],
+    },
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",

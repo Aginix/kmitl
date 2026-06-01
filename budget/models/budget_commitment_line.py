@@ -114,7 +114,7 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
-        store=False,
+        store=True,
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -122,7 +122,7 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        store=False,
+        store=True,
     )
 
     _analytic_keys = {
