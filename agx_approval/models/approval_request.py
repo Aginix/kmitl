@@ -12,7 +12,7 @@ class ApprovalRequest(models.Model):
         "mail.thread",
         "mail.activity.mixin",
     ]
-    _order = "name"
+    _order = "name desc"
 
     READONLY_STATES = {
         "to_verify": [("readonly", True)],
@@ -68,6 +68,13 @@ class ApprovalRequest(models.Model):
         store=True,
     )
 
+    total_actual_amount = fields.Monetary(
+        compute="_compute_total_actual_amount",
+        string="รวมยอดเบิกจริง",
+        currency_field="currency_id",
+        store=True,
+    )
+
     category_id = fields.Many2one(
         string="Category",
         comodel_name="approval.category",
@@ -89,6 +96,7 @@ class ApprovalRequest(models.Model):
         string="Name",
         default="/",
         required=True,
+        copy=False,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -161,7 +169,14 @@ class ApprovalRequest(models.Model):
         "approval.request.line",
         "request_id",
         string="Expense Lines",
-        states=READONLY_STATES,
+        copy=True,
+    )
+
+    payee_ids = fields.One2many(
+        "approval.request.payee",
+        "request_id",
+        string="Payees",
+        copy=True,
     )
 
     has_period = fields.Boolean(
@@ -186,6 +201,7 @@ class ApprovalRequest(models.Model):
         ("rejected", "Rejected"),
     ],
         default="draft",
+        copy=False,
         string="state"
     )
 
@@ -197,11 +213,17 @@ class ApprovalRequest(models.Model):
         help="Related budget commitment for this approval request",
     )
 
+    budget_commitment_amount = fields.Monetary(
+        related="budget_commitment_id.amount",
+        string="Reserved Amount",
+        currency_field="currency_id",
+        readonly=True,
+    )
+
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
         domain=lambda self: self._domain_budget_account_id(),
-        copy=False,
         tracking=True,
     )
 
@@ -337,15 +359,18 @@ class ApprovalRequest(models.Model):
             line._update_analytic_distribution("sources")
     
     def action_to_verify(self):
-        # TODO: validate budget commitment before submit
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be verified."))
+            missing = record.payee_ids.filtered(lambda p: not p.partner_bank_id)
+            if missing:
+                raise UserError(_(
+                    "Please select a recipient bank for all payees: %s"
+                ) % ", ".join(missing.mapped("partner_id.name")))
             record.state = "to_verify"
         return True
 
     def action_submit(self):
-        # TODO: validate budget commitment before submit
         for record in self:
             if record.state != "to_verify":
                 raise UserError(_("Only To Verify requests can be submitted."))
@@ -357,6 +382,15 @@ class ApprovalRequest(models.Model):
             if record.state != "submitted":
                 raise UserError(_("Only submitted requests can be validated."))
             record.state = "validated"
+        return True
+
+    def action_approve(self):
+        for record in self:
+            if record.state not in ("submitted", "validated"):
+                raise UserError(
+                    _("Only submitted or validated requests can be approved.")
+                )
+            record.state = "approved"
         return True
 
     def action_bill(self):
@@ -402,19 +436,15 @@ class ApprovalRequest(models.Model):
                     )
         return True
 
-    # def write(self, values):
-    #     if (
-    #         "budget_commitment_id" in values
-    #         and values.get("budget_commitment_id") != self.budget_commitment_id.id
-    #     ):
-    #         self._log_budget_commitment_unlinked()
-
-    #     res = super().write(values)
-
-    #     if "budget_commitment_id" in values and values.get("budget_commitment_id"):
-    #         self._log_budget_commitment_linked()
-
-    #     return res
+    def write(self, vals):
+        result = super().write(vals)
+        if vals.get("state") == "approved":
+            for record in self:
+                for line in record.line_ids.filtered(lambda l: not l.actual_amount):
+                    line.actual_amount = line.total_amount
+        if "line_ids" in vals:
+            self._sync_payees()
+        return result
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -428,6 +458,7 @@ class ApprovalRequest(models.Model):
         for rec in lines:
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
+        lines._sync_payees()
         return lines
 
     def _log_budget_commitment_linked(self):
@@ -451,7 +482,7 @@ class ApprovalRequest(models.Model):
     def action_open_budget_commitment(self):
         self.ensure_one()
         if not self.budget_commitment_id:
-            raise UserError("ยังไม่มี Budget Commitment สำหรับเอกสารนี้")
+            raise UserError(_("ยังไม่มี Budget Commitment สำหรับเอกสารนี้"))
 
         return {
             "type": "ir.actions.act_window",
@@ -547,7 +578,66 @@ class ApprovalRequest(models.Model):
             else:
                 rec.is_editable = True
 
+    def action_open_actual_amount_wizard(self):
+        self.ensure_one()
+        wizard = self.env["approval.update.actual.amount.wizard"].create({
+            "approval_request_id": self.id,
+            "line_ids": [
+                (0, 0, {
+                    "approval_line_id": line.id,
+                    "actual_amount": line.actual_amount,
+                })
+                for line in self.line_ids
+            ],
+        })
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Update actual amount"),
+            "res_model": "approval.update.actual.amount.wizard",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):
         for rec in self:
             rec.total_amount = sum(rec.line_ids.mapped("total_amount"))
+
+    @api.depends("line_ids.actual_amount")
+    def _compute_total_actual_amount(self):
+        for rec in self:
+            rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))
+
+    def _sync_payees(self):
+        for rec in self:
+            seen = set()
+            partners_in_order = []
+            for line in rec.line_ids:
+                pid = line.partner_id.id
+                if pid and pid not in seen:
+                    seen.add(pid)
+                    partners_in_order.append(line.partner_id)
+            existing_partner_ids = set()
+            commands = []
+            for payee in rec.payee_ids:
+                if not payee.partner_id or payee.partner_id.id not in seen:
+                    commands.append((2, payee.id))
+                else:
+                    existing_partner_ids.add(payee.partner_id.id)
+            for partner in partners_in_order:
+                if partner.id not in existing_partner_ids:
+                    banks = partner.bank_ids.filtered(
+                        lambda b: not b.company_id
+                        or b.company_id == rec.company_id
+                    )
+                    commands.append((0, 0, {
+                        "partner_id": partner.id,
+                        "partner_bank_id": banks[:1].id if banks else False,
+                    }))
+            if commands:
+                rec.payee_ids = commands
+
+    @api.onchange("line_ids")
+    def _onchange_line_ids_sync_payees(self):
+        self._sync_payees()

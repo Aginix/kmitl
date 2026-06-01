@@ -26,35 +26,31 @@
                         <div style="height: 1px" />
                         <div class="page-header mt-5 mb-5">
                             <h3 class="text-center fw-bolder" style="line-height: 1.575;">
-                                บันทึกข้อความ
+                                ใบขออนุมัติ
                             </h3>
                         </div>
 
                         <!-- Document Info -->
                         <div class="row">
                             <div class="col-8">
-                                เลขที่เอกสาร
-                                <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
+                                เลขที่
+                                <span class="ms-2 fw-normal" t-out="o.name" />
                             </div>
                             <div class="col">
                                 วันที่
-                                <span class="ms-2 fw-normal" t-esc="o.format_date_thai(o.main_sarabun_document_id.date)" />
+                                <span class="ms-2 fw-normal" t-field="o.date" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 หน่วยงาน
-                                <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
+                                <span class="ms-2" t-field="o.department_id" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                เรื่อง                                <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                เรียน                                <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
+                                เรื่อง
+                                <span class="ms-2" t-field="o.category_id" />
                             </div>
                         </div>
 
@@ -88,9 +84,9 @@
                         <div class="row" t-if="o.has_period">
                             <div class="col">
                                 ระยะเวลา
-                                <span class="fw-bolder text-decoration-underline" t-esc="o.format_date_thai(o.date_start)" />
+                                <span class="fw-bolder text-decoration-underline" t-field="o.date_start" />
                                 -
-                                <span class="fw-bolder text-decoration-underline" t-esc="o.format_date_thai(o.date_end)" />
+                                <span class="fw-bolder text-decoration-underline" t-field="o.date_end" />
                             </div>
                         </div>
 
@@ -100,54 +96,95 @@
                             <div class="col">รายการค่าใช้จ่าย</div>
                         </div>
 
-                        <table class="table table-bordered table-sm mb-4">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">ลำดับ</th>
-                                    <th class="text-center">ผู้ขอ</th>
-                                    <th class="text-center">รายการ</th>
-                                    <th class="text-end">จำนวนเงิน</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="row_no" t-value="1" />
-                                <t t-set="total" t-value="0" />
-                                <t t-foreach="o.line_ids" t-as="line">
+                        <t t-set="grand_total" t-value="sum(o.line_ids.mapped('total_amount'))" />
+
+                        <!-- Single payee: flat table -->
+                        <t t-if="len(o.payee_ids) &lt;= 1">
+                            <table class="table table-bordered table-sm mb-4">
+                                <thead>
                                     <tr>
-                                        <td class="text-center" t-out="row_no" />
-                                        <td t-out="line.partner_id.name" />
-                                        <td t-out="line.product_id.name" />
-                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                        <th class="text-center">ลำดับ</th>
+                                        <th class="text-center">ผู้ขอ</th>
+                                        <th class="text-center">รายการ</th>
+                                        <th class="text-end">จำนวนเงิน</th>
                                     </tr>
-                                    <t t-set="row_no" t-value="row_no + 1" />
-                                    <t t-set="total" t-value="total + line.total_amount" />
-                                </t>
-                                <tr>
-                                    <td colspan="3" class="text-center fw-bolder">
-                                        รวมทั้งสิ้น
-                                    </td>
-                                    <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(total)" />
-                                </tr>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <t t-set="row_no" t-value="1" />
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                        <tr>
+                                            <td class="text-center" t-out="row_no" />
+                                            <td t-out="line.partner_id.name" />
+                                            <td t-out="line.product_id.name" />
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                        </tr>
+                                        <t t-set="row_no" t-value="row_no + 1" />
+                                    </t>
+                                    <tr>
+                                        <td colspan="3" class="text-center fw-bolder">
+                                            รวมทั้งสิ้น
+                                        </td>
+                                        <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Multi-payee: grouped tables per payee -->
+                        <t t-if="len(o.payee_ids) &gt; 1">
+                            <t t-set="global_row_no" t-value="1" />
+                            <t t-foreach="o.payee_ids" t-as="payee">
+                                <t t-set="payee_lines" t-value="o.line_ids.filtered(lambda l: l.partner_id == payee.partner_id)" />
+                                <div class="row mt-3 mb-2">
+                                    <div class="col">
+                                        <strong>ผู้รับเงิน: <span t-out="payee.partner_id.name" /></strong>
+                                    </div>
+                                </div>
+                                <div class="row mb-2" t-if="payee.partner_bank_id">
+                                    <div class="col">
+                                        ธนาคาร <span class="ms-2" t-out="payee.partner_bank_id.bank_id.name" />
+                                        <span class="ms-3">เลขที่บัญชี</span>
+                                        <span class="ms-2" t-out="payee._get_masked_acc_number()" />
+                                    </div>
+                                </div>
+                                <table class="table table-bordered table-sm mb-4" t-if="payee_lines">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">ลำดับ</th>
+                                            <th class="text-center">ผู้ขอ</th>
+                                            <th class="text-center">รายการ</th>
+                                            <th class="text-end">จำนวนเงิน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="payee_lines" t-as="line">
+                                            <tr>
+                                                <td class="text-center" t-out="global_row_no" />
+                                                <td t-out="line.partner_id.name" />
+                                                <td t-out="line.product_id.name" />
+                                                <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                            </tr>
+                                            <t t-set="global_row_no" t-value="global_row_no + 1" />
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <table class="table table-bordered table-sm mb-4">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" class="text-center fw-bolder">
+                                            รวมทั้งสิ้น
+                                        </td>
+                                        <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
 
                         <!-- Budget Details -->
                         <div class="my-4" />
                         <p>รายละเอียดงบประมาณ</p>
-                        <t t-call="agx_approval_sarabun.report_approval_request_budget" />
-
-                        <!-- Signature Section -->
-                        <div class="my-5" style="height: 10px" />
-                        <div class="my-5">
-                            <div class="my-2 d-inline-block">
-                                <div>ลงชื่อ                                    <t t-out="'.' * 80" />
- ผู้ขออนุมัติ</div>
-                                <div class="text-center my-2">
-                                    (                                    <span t-field="o.owner_id" />
- )
-                                </div>
-                            </div>
-                        </div>
+                        <t t-call="agx_approval.report_approval_request_budget" />
                     </div>
                 </t>
             </t>

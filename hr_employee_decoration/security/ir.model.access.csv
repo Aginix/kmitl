@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_decoration_user,hr.employee.decoration,model_hr_employee_decoration,base.group_user,1,0,0,0
+access_hr_employee_decoration_employee,hr.employee.decoration,model_hr_employee_decoration,hr.group_hr_user,1,1,1,1
+access_hr_employee_decoration_relation_employee,hr.employee.decoration.relation,model_hr_employee_decoration_relation,hr.group_hr_user,1,0,0,0
+access_hr_employee_decoration_relation_employee_manager,hr.employee.decoration.relation,model_hr_employee_decoration_relation,hr.group_hr_manager,1,1,1,1

@@ -14,10 +14,10 @@ class PortalWorkHistory(models.Model):
         ondelete="cascade",
         index=True,
     )
-    company_name = fields.Char(string="Company", required=True)
-    job_title = fields.Char(string="Job Title / Description", required=True)
+    company_name = fields.Char(string="Company")
+    job_title = fields.Char(string="Job Title / Description")
     salary = fields.Float(required=True)
-    date_start = fields.Date(string="Start Date", required=True)
+    date_start = fields.Date(string="Start Date")
     date_end = fields.Date(string="End Date")
     duration = fields.Char(compute="_compute_duration")
 

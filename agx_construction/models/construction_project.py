@@ -38,6 +38,12 @@ class ConstructionProject(models.Model):
         compute="_compute_purchase_order_ids",
     )
 
+    main_sarabun_document_id = fields.Many2one(
+        comodel_name="sarabun.document",
+        string="Main Sarabun Document",
+        related='purchase_request_ids.main_sarabun_document_id'
+    )
+
     def _compute_purchase_order_ids(self):
         for record in self:
             record.purchase_order_ids = record.purchase_request_ids.mapped(

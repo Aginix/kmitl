@@ -4,7 +4,7 @@ from odoo import api, models
 class ApprovalRequest(models.Model):
     _name = "approval.request"
     _inherit = ["approval.request", "base.exception"]
-    _order = "main_exception_id asc, name"
+    _order = "main_exception_id asc, name desc"
 
     @api.model
     def _reverse_field(self):

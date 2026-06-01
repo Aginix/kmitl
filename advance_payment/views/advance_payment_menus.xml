@@ -2,7 +2,7 @@
 <odoo>
     <menuitem id="menu_advance_payment_root"
         name="สัญญายืมเงิน"
-        sequence="50"
+        sequence="6"
         web_icon="advance_payment,static/description/icon.png"
         groups="advance_payment.group_advance_payment_user"/>
 

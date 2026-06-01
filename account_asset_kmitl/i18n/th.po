@@ -449,7 +449,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_brand
 msgid "Brand"
-msgstr ""
+msgstr "ยี่ห้อ"
 
 #. module: account_asset_management
 #: model:ir.model.fields,help:account_asset_management.field_account_asset_profile__asset_product_item
@@ -835,7 +835,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__employee_id
 msgid "Employee"
-msgstr ""
+msgstr "ผู้รับผิดชอบ"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:res.groups,name:l10n_th_gov_account_asset_management.group_enable_asset_purchase
@@ -950,7 +950,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
 msgid "Guarantee"
-msgstr ""
+msgstr "ระยะเวลารับประกัน"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_guarantee_end
@@ -960,7 +960,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_guarantee_start
 msgid "Guarantee Start"
-msgstr ""
+msgstr "ระยะเวลารับประกัน"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__has_message
@@ -1184,7 +1184,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_location_id model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_search
 msgid "Location"
-msgstr ""
+msgstr "สถานที่ของสินทรัพย์"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__message_main_attachment_id
@@ -1227,7 +1227,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_model
 msgid "Model"
-msgstr ""
+msgstr "รุ่น"
 
 #. module: account_asset_management
 #. odoo-python
@@ -1302,7 +1302,7 @@ msgstr "บันทึกย่อ"
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_remove__note model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_profile_view_form
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_remove_view_form model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Notes"
-msgstr "บันทึกย่อ"
+msgstr "หมายเหตุ"
 
 #. module: account_asset_number
 #. odoo-python
@@ -1358,10 +1358,11 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#. modules: account_asset_management, l10n_th_gov_account_asset_management
+#. modules: account_asset_management, l10n_th_gov_account_asset_management, account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
 msgid "Other Information"
-msgstr ""
+msgstr "ข้อมูลอื่นๆ"
 
 #. module: l10n_th_account_asset_management
 #: model:ir.actions.act_window,name:l10n_th_account_asset_management.action_account_asset_parent model:ir.model,name:l10n_th_account_asset_management.model_account_asset_parent
@@ -2119,3 +2120,8 @@ msgstr "ครุภัณฑ์/สินทรัพย์"
 #: model:ir.ui.menu,name:account_asset_kmitl.menu_asset_registration_root
 msgid "Create Asset"
 msgstr "แบบลงทะเบียนครุภัณฑ์"
+
+#. module: account_asset_kmitl
+#: model:ir.model.fields,field_description:account_asset_kmitl.field_account_asset__location
+msgid "Location"
+msgstr "สถานที่ของสินทรัพย์"

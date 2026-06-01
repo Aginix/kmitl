@@ -33,28 +33,57 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <!-- Hide is_internal_transfer -->
+            <xpath expr="//field[@name='is_internal_transfer']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide bank_payment_template_id (from l10n_th_bank_payment_export) -->
+            <xpath expr="//field[@name='bank_payment_template_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <!-- Add KMITL payment type where payment_type was -->
             <xpath expr="//field[@name='payment_type']" position="after">
                 <field name="kmitl_payment_type_id" domain="[('direction', '=', payment_type)]"/>
+            </xpath>
+
+            <!-- Rename partner_id labels: Customer -> Payer (inbound), Vendor -> Payee (outbound).
+                 Selector cannot use @string (translated attr is forbidden); match via @attrs which
+                 contains the discriminating partner_type value. -->
+            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'customer')]" position="attributes">
+                <attribute name="string">Payer</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'supplier')]" position="attributes">
+                <attribute name="string">Payee</attribute>
+            </xpath>
+
+            <!-- Rename partner_bank_id labels accordingly -->
+            <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'customer')]" position="attributes">
+                <attribute name="string">Payer Bank Account</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'supplier')]" position="attributes">
+                <attribute name="string">Payee Bank Account</attribute>
+            </xpath>
+
+            <!-- Move partner_bank_id directly under partner_id (per direction) -->
+            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'customer')]" position="after">
+                <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'customer')]" position="move"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id'][contains(@attrs, 'supplier')]" position="after">
+                <xpath expr="//field[@name='partner_bank_id'][contains(@attrs, 'supplier')]" position="move"/>
             </xpath>
 
             <!-- Add Budget tab -->
             <xpath expr="//sheet" position="inside">
                 <notebook>
                     <page string="Budget" name="budget">
-                        <group string="Budget">
-                            <group name="budget_info">
-                                <field name="budget_commitment_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                                <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
-                            </group>
-                            <group name="analytic_dimensions">
-                                <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
-                                <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
-                                <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
-                                <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
-                                <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
-                                <field name="budget_account_id" invisible="1"/>
-                            </group>
+                        <group string="Budget" name="budget_info">
+                            <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
+                            <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </page>
                 </notebook>

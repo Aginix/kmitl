@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['purchase', 'disbursement', 'purchase_order_kmitl'],
+    'depends': ['purchase_kmitl', 'disbursement', 'purchase_order_kmitl'],
     "data": [
         "security/ir.model.access.csv",
         "views/disbursement_request_views.xml",

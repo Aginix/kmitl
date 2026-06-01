@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="hr_decoration_action" model="ir.actions.act_window">
+        <field name="name">Decoration</field>
+        <field name="res_model">hr.employee.decoration</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record id="hr_employee_decoration_view_form" model="ir.ui.view">
+        <field name="name">hr.employee.decoration.view.form</field>
+        <field name="model">hr.employee.decoration</field>
+        <field name="arch" type="xml">
+            <form string="HR Employee Decoration">
+                <sheet>
+                    <group>
+                        <group>
+                            <field
+                                name="employee_id"
+                                options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                            />
+                            <field name="effective_date" />
+                            <field
+                                name="relation_id"
+                                options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                            />
+                            <field
+                                name="office_order_id"
+                                options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                            />
+                            <field name="department" />
+                        </group>
+                        <group>
+                            <field name="published_date" />
+                            <field name="volume" />
+                            <field name="chapter" />
+                            <field name="page" />
+                            <field name="no" />
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_employee_decoration_view_tree" model="ir.ui.view">
+        <field name="name">hr.employee.decoration.view.tree</field>
+        <field name="model">hr.employee.decoration</field>
+        <field name="arch" type="xml">
+            <tree
+                name="HR Employee Decoration"
+                default_order="decoration_level asc"
+                class="hr_employee_decoration"
+            >
+                <field name="employee_id" />
+                <field name="effective_date" />
+                <field
+                    name="relation_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                />
+                <field name="decoration_level" invisible="1" />
+                <field name="published_date" />
+                <field name="volume" />
+                <field name="chapter" />
+                <field name="page" />
+                <field name="no" />
+                <field
+                    name="office_order_id"
+                    options="{'limit': 100, 'no_quick_create': True, 'no_create_edit': True, 'no_create': True}"
+                />
+                <field name="department" />
+                <field name="year" invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_employee_decoration_view_search" model="ir.ui.view">
+        <field name="name">hr.employee.decoration.view.search</field>
+        <field name="model">hr.employee.decoration</field>
+        <field name="arch" type="xml">
+            <search string="Decoration">
+                <field name="employee_id" />
+                <field name="relation_id" />
+                <field name="office_order_id" />
+                <field name="department" />
+                <separator />
+                <group expand="1" string="Group by">
+                    <filter
+                        name="department"
+                        string="Department"
+                        context="{'group_by': 'department'}"
+                    />
+                    <filter
+                        name="office_order_id"
+                        string="Office Order"
+                        context="{'group_by': 'office_order_id'}"
+                    />
+                    <filter
+                        name="employee_id"
+                        string="Employee"
+                        context="{'group_by': 'employee_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>
