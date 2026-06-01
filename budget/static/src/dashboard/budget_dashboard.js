@@ -155,9 +155,12 @@ export class BudgetDashboard extends Component {
                 options: async (request) => {
                     const domain = [["root_plan_id.code", "=", dim.code]];
                     if (request) {
+                        // Search stored fields only — display_name is a non-stored
+                        // computed field, so an ilike on it is silently dropped
+                        // (becomes TRUE) and the filter has no effect.
                         domain.push(
                             "|",
-                            ["display_name", "ilike", request],
+                            ["name", "ilike", request],
                             ["code", "ilike", request]
                         );
                     }
