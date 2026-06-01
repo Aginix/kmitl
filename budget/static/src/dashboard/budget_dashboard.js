@@ -14,6 +14,8 @@ const HIER_DIMENSIONS = [
 // แหล่งเงิน is a flat, single, mandatory filter (defaults to source code "2").
 const SOURCE_KEY = "source_analytic_id";
 const DEFAULT_SOURCE_CODE = "2";
+// Fixed display order for the expense budget-category (root) dropdown.
+const ROOT_ORDER = ["51000", "52000", "53000", "54000", "55000", "07020"];
 const VALUE_KEYS = [
     "initial",
     "current",
@@ -70,6 +72,15 @@ export class BudgetDashboard extends Component {
             [["budget_type", "=", "expense"], ["parent_id", "=", false]],
             ["id", "code", "name"],
             { order: "code" }
+        );
+        // Apply the fixed display order; any root not listed is appended (by code).
+        const rootRank = (code) => {
+            const idx = ROOT_ORDER.indexOf(code);
+            return idx === -1 ? ROOT_ORDER.length : idx;
+        };
+        this.rootAccounts.sort(
+            (a, b) =>
+                rootRank(a.code) - rootRank(b.code) || a.code.localeCompare(b.code)
         );
         this.sources = await this.orm.searchRead(
             "account.analytic.account",
