@@ -138,9 +138,16 @@
 
                         <!-- Signature Section -->
                         <div class="my-5" style="height: 10px" />
-                        <t
-                            t-call="agx_approval_sarabun.report_approval_request_sign"
-                        />
+                        <div class="my-5">
+                            <div class="my-2 d-inline-block">
+                                <div>ลงชื่อ                                    <t t-out="'.' * 80" />
+ ผู้ขออนุมัติ</div>
+                                <div class="text-center my-2">
+                                    (                                    <span t-field="o.owner_id" />
+ )
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </t>
             </t>
@@ -188,34 +195,5 @@
                 </tr>
             </tbody>
         </table>
-    </template>
-
-    <template id="report_approval_request_sign">
-        <div class="my-5">
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้รับผิดชอบ</div>
-                <div class="text-center my-2">
-                    ( <span t-field="o.owner_id" />
-                    )
-                </div>
-            </div>
-            <div class="my-5" />
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สร้างคำขอ</div>
-                <div class="text-center my-2">
-                    ( <span t-field="o.user_id" />
-                    )
-                </div>
-            </div>
-            <div class="my-5" />
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /></div>
-                <div class="text-center"> ( <span t-field="o.owner_id" /> ) </div>
-                <div class="text-center"> คณบดี <span
-                        t-out="o.department_id.master_department_id.name" />
-                </div>
-            </div>
-        </div>
-        <div class="my-5" />
     </template>
 </odoo>
