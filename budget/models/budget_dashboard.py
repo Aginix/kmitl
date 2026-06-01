@@ -38,6 +38,8 @@ class BudgetDashboard(models.AbstractModel):
         "activity_analytic_id",
     )
     _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
+    # Fixed display order for the top-level expense budget categories.
+    _ROOT_ORDER = ("51000", "52000", "53000", "54000", "55000", "07020")
 
     @api.model
     def get_dashboard_data(self, fiscal_year_id, root_account_id=None, filters=None):
@@ -144,6 +146,15 @@ class BudgetDashboard(models.AbstractModel):
                 children[acc.parent_id.id].append(acc)
             else:
                 roots.append(acc)
+        # Top-level budget categories follow a fixed display order (mirrors the
+        # dashboard's root dropdown); descendants stay in code order.
+        order = self._ROOT_ORDER
+        roots.sort(
+            key=lambda a: (
+                order.index(a.code) if a.code in order else len(order),
+                a.code,
+            )
+        )
 
         rows = []
         stack = [(acc, 0) for acc in reversed(roots)]
