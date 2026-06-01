@@ -41,6 +41,7 @@
                 <field name="company_id" invisible="1" />
                 <field name="budget_type" invisible="1" />
                 <sheet>
+                    <field name="can_edit" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="open_record_url"
                             icon="fa-external-link" string="Preview" />
@@ -75,7 +76,7 @@
                         <page name="line_ids" string="Appropriation Lines">
                             <separator string="จัดสรรงบประมาณ" />
                             <group>
-                                <field nolabel="1" colspan="2" name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line">
+                                <field nolabel="1" colspan="2" name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('can_edit', '=', False)]}" widget="budget_appropriation_line">
                                     <tree limit="1000">
                                         <field name="id" readonly="1" optional="show" />
                                         <field name="appropriation_id" invisible="1" />
@@ -95,7 +96,7 @@
                             </group>
                             <group attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
                                 <separator string="หัก" />
-                                <field nolabel="1" colspan="2" name="deduct_line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line" context="{'default_deduct': True}">
+                                <field nolabel="1" colspan="2" name="deduct_line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('can_edit', '=', False)]}" widget="budget_appropriation_line" context="{'default_deduct': True}">
                                     <tree limit="1000">
                                         <field name="id" readonly="1" optional="show" />
                                         <field name="appropriation_id" invisible="1" />

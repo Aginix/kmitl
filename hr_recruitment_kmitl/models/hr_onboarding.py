@@ -18,7 +18,13 @@ class HrOnboarding(models.Model):
         default="draft",
         tracking=True,
     )
+    can_edit = fields.Boolean(compute="_compute_can_edit")
     submitted_date = fields.Datetime(readonly=True, tracking=True)
+
+    @api.depends("state")
+    def _compute_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec.state == "draft"
 
     # Blood type
     blood_type = fields.Selection(

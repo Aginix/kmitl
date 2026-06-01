@@ -73,12 +73,12 @@
                         <page string="การดำเนินงาน">
                             <group>
                                 <group string="แผน">
-                                    <field name="procurement_method_id" widget="radio" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
-                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
+                                    <field name="procurement_method_id" widget="radio" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    <field name="purchase_request_eta" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    <field name="approval_signing_eta" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    <field name="acceptance_eta" attrs="{'readonly': [('can_edit', '=', False)]}" />
                                 </group>
                             </group>
                         </page>

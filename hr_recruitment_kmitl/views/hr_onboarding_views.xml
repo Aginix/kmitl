@@ -75,6 +75,7 @@
                     />
                 </header>
                 <sheet>
+                    <field name="can_edit" invisible="1"/>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1" />
@@ -84,7 +85,7 @@
                         <group>
                             <field
                                 name="applicant_id"
-                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
                         <group>
@@ -93,7 +94,7 @@
                         <group>
                             <field
                                 name="blood_type"
-                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field name="can_start_on_time" />
                             <field name="starting_date" />
@@ -109,10 +110,10 @@
                                 name="starting_date_note"
                                 nolabel="1"
                                 placeholder="Notes..."
-                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
-                        <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                        <group attrs="{'readonly': [('can_edit', '=', False)]}">
 
                         </group>
                     </group>
@@ -120,7 +121,7 @@
                         <page string="Family" name="family">
                             <field
                                 name="family_member_ids"
-                                attrs="{'readonly': [('state', '=', 'submitted')]}"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
                             >
                                 <tree editable="bottom">
                                     <field name="relation_id" />
@@ -137,7 +138,7 @@
                             </field>
                         </page>
                         <page string="Royal Decoration" name="royal_decoration">
-                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                            <group attrs="{'readonly': [('can_edit', '=', False)]}">
                                 <group>
                                     <field name="royal_decoration_id" />
                                     <field name="royal_decoration_level" />
@@ -157,7 +158,7 @@
                             </group>
                         </page>
                         <page string="Benefits" name="benefits">
-                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                            <group attrs="{'readonly': [('can_edit', '=', False)]}">
                                 <group string="Health Insurance">
                                     <field
                                         name="health_employee_file"
@@ -187,7 +188,7 @@
                                     />
                                 </group>
                             </group>
-                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                            <group attrs="{'readonly': [('can_edit', '=', False)]}">
                                 <group string="Provident Fund">
                                     <field
                                         name="provident_fund_file"
@@ -219,7 +220,7 @@
                             </group>
                         </page>
                         <page string="Confirmation" name="confirmation">
-                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                            <group attrs="{'readonly': [('can_edit', '=', False)]}">
                                 <group string="Background Check &amp; Bank">
                                     <field name="background_check_location_type" />
                                     <field name="krungthai_bank_account" />
@@ -240,7 +241,7 @@
                                     />
                                 </group>
                             </group>
-                            <group attrs="{'readonly': [('state', '=', 'submitted')]}">
+                            <group attrs="{'readonly': [('can_edit', '=', False)]}">
                                 <group string="PDPA &amp; Final Confirmation">
                                     <field name="pdpa_consent" />
                                     <field name="final_confirm" />

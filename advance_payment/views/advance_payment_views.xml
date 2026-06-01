@@ -101,6 +101,7 @@
                         statusbar_visible="draft,submitted,approved,in_progress,done" />
                 </header>
                 <sheet>
+                    <field name="can_edit" invisible="1"/>
                     <div name="button_box" class="oe_button_box">
                         <button name="action_view_payments"
                             type="object"
@@ -159,13 +160,13 @@
                     </group>
                     <group string="มิติทางบัญชี">
                         <field name="department_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            attrs="{'readonly': [('can_edit', '=', False)]}" />
                         <field name="source_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            attrs="{'readonly': [('can_edit', '=', False)]}" />
                         <field name="fund_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            attrs="{'readonly': [('can_edit', '=', False)]}" />
                         <field name="activity_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            attrs="{'readonly': [('can_edit', '=', False)]}" />
                     </group>
                     <group string="สรุปยอดเงิน" attrs="{'invisible': [('state', '=', 'draft')]}">
                         <field name="amount_used" />

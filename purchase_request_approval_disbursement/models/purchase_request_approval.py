@@ -6,6 +6,13 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseRequestApproval(models.Model):
     _inherit = 'purchase.request.approval'
 
+    can_edit = fields.Boolean(compute="_compute_can_edit")
+
+    @api.depends("state")
+    def _compute_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec.state == "draft"
+
     use_purchase_order = fields.Boolean(
         string='Use Purchase Order',
         default=True,

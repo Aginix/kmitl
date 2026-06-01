@@ -200,6 +200,13 @@ class SarabunDocument(models.Model):
         default="draft",
     )
 
+    can_edit = fields.Boolean(compute="_compute_can_edit")
+
+    @api.depends("state")
+    def _compute_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec.state == "draft"
+
     # === Routing ===
     route_template_id = fields.Many2one(
         comodel_name="sarabun.route.template",
