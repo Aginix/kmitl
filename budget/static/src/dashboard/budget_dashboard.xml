@@ -57,7 +57,8 @@
 
             <div t-if="state.loading" class="o_bd_loading">กำลังโหลด...</div>
 
-            <table t-else="" class="o_bd_table table table-sm">
+            <div t-else="" class="o_bd_table_wrapper">
+            <table class="o_bd_table table table-sm">
                 <thead>
                     <tr>
                         <th class="o_bd_acc">รหัสงบประมาณ</th>
@@ -102,6 +103,7 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </t>
 
