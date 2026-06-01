@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 
 from odoo import api, models
 
@@ -50,11 +51,16 @@ class BudgetDashboard(models.AbstractModel):
         if not accounts:
             return {"rows": [], "currency_id": currency_id}
         account_ids = accounts.ids
-        dim_leaves = [
-            (fname, "=", filters[fname])
-            for fname in self._DIM_FIELDS
-            if filters.get(fname)
-        ]
+        analytic = self.env["account.analytic.account"]
+        # Dimension accounts are hierarchical (account_analytic_parent): a chosen
+        # value matches itself + all descendants via child_of. Source is a flat
+        # classification (exact match). Guarded in case the hierarchy is absent.
+        hier_op = "child_of" if "parent_id" in analytic._fields else "="
+        dim_leaves = []
+        for fname in self._DIM_FIELDS:
+            if filters.get(fname):
+                op = "=" if fname == "source_analytic_id" else hier_op
+                dim_leaves.append((fname, op, filters[fname]))
 
         # --- (a) current pool and (1) initial, from posted move lines ---
         move_base = [
@@ -127,46 +133,56 @@ class BudgetDashboard(models.AbstractModel):
                     for k in keys:
                         node[k] += own[k]
 
-        child_count = {}
+        # Emit rows in depth-first pre-order built from parent_id. Ordering by
+        # code alone is NOT a valid tree order (a deep child can sort before its
+        # parent), which is what made the collapse/indentation render wrong.
+        acc_by_id = {acc.id: acc for acc in accounts}
+        children = defaultdict(list)
+        roots = []
         for acc in accounts:
-            pid = acc.parent_id.id
-            if pid in rolled:
-                child_count[pid] = child_count.get(pid, 0) + 1
+            if acc.parent_id.id in acc_by_id:
+                children[acc.parent_id.id].append(acc)
+            else:
+                roots.append(acc)
 
         rows = []
-        for acc in accounts:
-            r = rolled[acc.id]
-            res_v, obl_v, con_v, cur_v = (
-                r["reserved"],
-                r["obligated"],
-                r["consumed"],
-                r["current"],
-            )
-            in_scope_ancestors = [a for a in self._ancestor_ids(acc) if a in rolled]
-            rows.append(
-                {
-                    "id": acc.id,
-                    "code": acc.code,
-                    "name": acc.name,
-                    "parent_id": acc.parent_id.id if acc.parent_id.id in rolled else False,
-                    "level": max(0, len(in_scope_ancestors) - 1),
-                    "has_children": child_count.get(acc.id, 0) > 0,
-                    "initial": r["initial"],
-                    "adjustment": cur_v - r["initial"],
-                    "current": cur_v,
-                    "cap": r["cap"],
-                    "reserved": res_v - obl_v,  # b
-                    "obligated": obl_v - con_v,  # c
-                    "consumed": con_v,  # d
-                    "used": res_v,  # e = b + c + d
-                    "remaining": cur_v - res_v,  # f
-                }
-            )
-        return {"rows": rows, "currency_id": currency_id}
+        stack = [(acc, 0) for acc in reversed(roots)]
+        while stack:
+            acc, level = stack.pop()
+            kids = children.get(acc.id, [])
+            rows.append(self._make_row(acc, rolled[acc.id], level, bool(kids)))
+            for child in reversed(kids):
+                stack.append((child, level + 1))
+        return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
 
     # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
+    def _make_row(self, account, r, level, has_children):
+        reserved_v, obligated_v, consumed_v, current_v = (
+            r["reserved"],
+            r["obligated"],
+            r["consumed"],
+            r["current"],
+        )
+        return {
+            "id": account.id,
+            "code": account.code,
+            "name": account.name,
+            "parent_id": account.parent_id.id,
+            "level": level,
+            "has_children": has_children,
+            "initial": r["initial"],
+            "adjustment": current_v - r["initial"],
+            "current": current_v,
+            "cap": r["cap"],
+            "reserved": reserved_v - obligated_v,  # b
+            "obligated": obligated_v - consumed_v,  # c
+            "consumed": consumed_v,  # d
+            "used": reserved_v,  # e = b + c + d
+            "remaining": current_v - reserved_v,  # f
+        }
+
     def _dashboard_accounts(self, root_account_id):
         Account = self.env["budget.account"]
         domain = [("budget_type", "=", "expense")]

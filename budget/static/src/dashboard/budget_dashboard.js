@@ -2,15 +2,18 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { AutoComplete } from "@web/core/autocomplete/autocomplete";
 import { Component, onWillStart, useState } from "@odoo/owl";
 
-const DIMENSIONS = [
+// ส่วนงาน / กองทุน / กิจกรรม are hierarchical analytic dimensions (autocomplete).
+const HIER_DIMENSIONS = [
     { key: "department_analytic_id", code: "departments", label: "ส่วนงาน" },
-    { key: "source_analytic_id", code: "sources", label: "แหล่งเงิน" },
     { key: "fund_analytic_id", code: "funds", label: "กองทุน" },
     { key: "activity_analytic_id", code: "activities", label: "กิจกรรม" },
 ];
-
+// แหล่งเงิน is a flat, single, mandatory filter (defaults to source code "2").
+const SOURCE_KEY = "source_analytic_id";
+const DEFAULT_SOURCE_CODE = "2";
 const VALUE_KEYS = [
     "initial",
     "current",
@@ -26,14 +29,27 @@ export class BudgetDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.actionService = useService("action");
-        this.dimensions = DIMENSIONS;
+        this.hierDimensions = HIER_DIMENSIONS;
         this.fiscalYears = [];
         this.rootAccounts = [];
-        this.dimensionOptions = {};
+        this.sources = [];
+
+        // Honour incoming context defaults so a form button can open this report
+        // pre-scoped, e.g. context={'default_fiscal_year_id': ..., 'default_source_analytic_id': ...}.
+        const ctx = (this.props.action && this.props.action.context) || {};
+        const ctxFilters = {};
+        for (const dim of HIER_DIMENSIONS) {
+            if (ctx["default_" + dim.key]) {
+                ctxFilters[dim.key] = ctx["default_" + dim.key];
+            }
+        }
         this.state = useState({
-            fiscalYearId: false,
-            rootAccountId: false,
-            filters: {},
+            fiscalYearId: ctx.default_fiscal_year_id || false,
+            rootAccountId: ctx.default_root_account_id || false,
+            sourceId: ctx.default_source_analytic_id || false,
+            filters: ctxFilters,
+            filterLabels: {},
+            hierOp: "=",
             rows: [],
             collapsed: {},
             hideZero: true,
@@ -55,20 +71,48 @@ export class BudgetDashboard extends Component {
             ["id", "code", "name"],
             { order: "code" }
         );
-        for (const dim of DIMENSIONS) {
-            this.dimensionOptions[dim.key] = await this.orm.searchRead(
-                "account.analytic.account",
-                [["root_plan_id.code", "=", dim.code]],
-                ["id", "display_name"],
-                { order: "display_name" }
-            );
-        }
-        const today = new Date().toISOString().slice(0, 10);
-        const covering = this.fiscalYears.find(
-            (fy) => fy.date_from <= today && fy.date_to >= today
+        this.sources = await this.orm.searchRead(
+            "account.analytic.account",
+            [["root_plan_id.code", "=", "sources"]],
+            ["id", "display_name", "code"],
+            { order: "code" }
         );
-        this.state.fiscalYearId = (covering || this.fiscalYears[0] || {}).id || false;
+        if (!this.state.fiscalYearId) {
+            const today = new Date().toISOString().slice(0, 10);
+            const covering = this.fiscalYears.find(
+                (fy) => fy.date_from <= today && fy.date_to >= today
+            );
+            this.state.fiscalYearId = (covering || this.fiscalYears[0] || {}).id || false;
+        }
+        if (!this.state.sourceId) {
+            const def =
+                this.sources.find((s) => s.code === DEFAULT_SOURCE_CODE) ||
+                this.sources[0];
+            this.state.sourceId = (def || {}).id || false;
+        }
+        // resolve display labels for any context-provided dimension filters
+        for (const dim of HIER_DIMENSIONS) {
+            const id = this.state.filters[dim.key];
+            if (id) {
+                const recs = await this.orm.read(
+                    "account.analytic.account",
+                    [id],
+                    ["display_name"]
+                );
+                this.state.filterLabels[dim.key] = recs.length
+                    ? recs[0].display_name
+                    : "";
+            }
+        }
         await this.load();
+    }
+
+    get effectiveFilters() {
+        const filters = { ...this.state.filters };
+        if (this.state.sourceId) {
+            filters[SOURCE_KEY] = this.state.sourceId;
+        }
+        return filters;
     }
 
     async load() {
@@ -81,13 +125,10 @@ export class BudgetDashboard extends Component {
             const data = await this.orm.call(
                 "budget.dashboard",
                 "get_dashboard_data",
-                [
-                    this.state.fiscalYearId,
-                    this.state.rootAccountId || false,
-                    { ...this.state.filters },
-                ]
+                [this.state.fiscalYearId, this.state.rootAccountId || false, this.effectiveFilters]
             );
             this.state.rows = data.rows || [];
+            this.state.hierOp = data.hier_op || "=";
         } finally {
             this.state.loading = false;
         }
@@ -103,14 +144,59 @@ export class BudgetDashboard extends Component {
         this.load();
     }
 
-    onDimChange(key, ev) {
-        const value = parseInt(ev.target.value) || false;
-        if (value) {
-            this.state.filters[key] = value;
+    onSourceChange(ev) {
+        this.state.sourceId = parseInt(ev.target.value) || false;
+        this.load();
+    }
+
+    sourcesFor(dim) {
+        return [
+            {
+                options: async (request) => {
+                    const domain = [["root_plan_id.code", "=", dim.code]];
+                    if (request) {
+                        domain.push(
+                            "|",
+                            ["display_name", "ilike", request],
+                            ["code", "ilike", request]
+                        );
+                    }
+                    const recs = await this.orm.searchRead(
+                        "account.analytic.account",
+                        domain,
+                        ["id", "display_name"],
+                        { limit: 20, order: "code" }
+                    );
+                    const options = recs.map((r) => ({
+                        label: r.display_name,
+                        accountId: r.id,
+                    }));
+                    options.unshift({ label: "— ทั้งหมด —", accountId: false });
+                    return options;
+                },
+            },
+        ];
+    }
+
+    onDimSelect(dimKey, option) {
+        if (option.accountId) {
+            this.state.filters[dimKey] = option.accountId;
+            this.state.filterLabels[dimKey] = option.label;
         } else {
-            delete this.state.filters[key];
+            delete this.state.filters[dimKey];
+            this.state.filterLabels[dimKey] = "";
         }
         this.load();
+    }
+
+    onDimInput(dimKey, args) {
+        if (!args.inputValue) {
+            this.state.filterLabels[dimKey] = "";
+            if (this.state.filters[dimKey]) {
+                delete this.state.filters[dimKey];
+                this.load();
+            }
+        }
     }
 
     toggleHideZero() {
@@ -163,11 +249,11 @@ export class BudgetDashboard extends Component {
     }
 
     _dimDomain() {
-        return Object.entries(this.state.filters).map(([key, value]) => [
-            key,
-            "=",
-            value,
-        ]);
+        const leaves = [];
+        for (const [key, value] of Object.entries(this.effectiveFilters)) {
+            leaves.push([key, key === SOURCE_KEY ? "=" : this.state.hierOp, value]);
+        }
+        return leaves;
     }
 
     drillBudget(row) {
@@ -211,6 +297,7 @@ export class BudgetDashboard extends Component {
     }
 }
 
+BudgetDashboard.components = { AutoComplete };
 BudgetDashboard.template = "budget.BudgetDashboard";
 
 registry.category("actions").add("budget_dashboard", BudgetDashboard);

@@ -25,6 +25,14 @@
             min-width: 160px;
         }
 
+        .o-autocomplete {
+            min-width: 200px;
+        }
+
+        .o-autocomplete input {
+            width: 100%;
+        }
+
         &.o_bd_check {
             justify-content: flex-end;
 

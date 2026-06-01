@@ -19,19 +19,32 @@
                     <select t-on-change="onRootChange">
                         <option value="">ทั้งหมด</option>
                         <t t-foreach="rootAccounts" t-as="acc" t-key="acc.id">
-                            <option t-att-value="acc.id"><t t-esc="acc.code"/> - <t t-esc="acc.name"/></option>
+                            <option t-att-value="acc.id" t-att-selected="acc.id === state.rootAccountId">
+                                <t t-esc="acc.code"/> - <t t-esc="acc.name"/>
+                            </option>
                         </t>
                     </select>
                 </div>
-                <t t-foreach="dimensions" t-as="dim" t-key="dim.key">
+                <div class="o_bd_filter">
+                    <label>แหล่งเงิน</label>
+                    <select t-on-change="onSourceChange">
+                        <t t-foreach="sources" t-as="src" t-key="src.id">
+                            <option t-att-value="src.id" t-att-selected="src.id === state.sourceId">
+                                <t t-esc="src.display_name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <t t-foreach="hierDimensions" t-as="dim" t-key="dim.key">
                     <div class="o_bd_filter">
                         <label t-esc="dim.label"/>
-                        <select t-on-change="(ev) => this.onDimChange(dim.key, ev)">
-                            <option value="">ทั้งหมด</option>
-                            <t t-foreach="dimensionOptions[dim.key]" t-as="opt" t-key="opt.id">
-                                <option t-att-value="opt.id"><t t-esc="opt.display_name"/></option>
-                            </t>
-                        </select>
+                        <AutoComplete
+                            value="state.filterLabels[dim.key] || ''"
+                            sources="sourcesFor(dim)"
+                            placeholder="dim.label"
+                            onSelect="(option) => this.onDimSelect(dim.key, option)"
+                            onInput="(args) => this.onDimInput(dim.key, args)"
+                        />
                     </div>
                 </t>
                 <div class="o_bd_filter o_bd_check">
