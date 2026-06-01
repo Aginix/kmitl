@@ -12,6 +12,13 @@
         "hr_employee_kmitl_kid",
     ],
     "data": [],
+    "assets": {
+        "web.assets_backend": [
+            "hr_employee_name_detail_kmitl/static/src/**/*.js",
+            "hr_employee_name_detail_kmitl/static/src/**/*.xml",
+            "hr_employee_name_detail_kmitl/static/src/**/*.scss",
+        ],
+    },
     "application": False,
     "installable": True,
     "auto_install": False,

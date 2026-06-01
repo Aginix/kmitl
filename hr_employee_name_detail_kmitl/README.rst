@@ -2,19 +2,29 @@
 HR Employee Name Detail KMITL
 =============================
 
-This module enriches ``hr.employee`` many2one fields so that, once an employee
-is selected, the academic standing title, work email, department (faculty /
-department) and KID are shown as extra lines below the input.
+This module shows extra employee information (academic standing title, work
+email, department as *faculty / department*, and KID) on ``hr.employee``
+many2one fields once an employee is selected.
 
-The behaviour mirrors the partner ``show_address`` pattern: it is gated by the
-``show_employee_detail`` context flag, so the regular display name is unchanged
-everywhere else.
+Two presentations are provided.
 
-Usage
-=====
+Styled detail card (recommended)
+=================================
 
-Add the context flag and ``always_reload`` option on any ``hr.employee``
-many2one field where the detail should appear::
+The ``employee_detail_many2one`` widget renders the detail as an icon-prefixed
+card below the field::
+
+    <field name="employee_id" widget="employee_detail_many2one"/>
+
+No context flag is needed: the widget reads the employee fields directly, so
+empty values are skipped without shifting the layout.
+
+Plain text extra lines
+======================
+
+For places where a custom widget is not desired, ``name_get`` can append the
+same information as plain extra lines (the partner ``show_address`` pattern),
+gated by the ``show_employee_detail`` context flag::
 
     <field name="employee_id"
            context="{'show_employee_detail': 1}"
