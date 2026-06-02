@@ -1,6 +1,7 @@
 from datetime import date
 
 from odoo import Command
+from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -165,3 +166,37 @@ class TestBudgetController(TransactionCase):
         )
         # no fund specified must NOT leak the fund-A appropriation
         self.assertEqual(self._available(self.dimleaf, {}), 0.0)
+
+    def _reserve_multi(self, account_amounts):
+        first = account_amounts[0][0]
+        return self.env["budget.commitment"].create(
+            {
+                "date": date.today(),
+                "account_id": first.id,
+                "amount": sum(amt for _, amt in account_amounts),
+                "account_fiscal_year_id": self.fy.id,
+                "company_id": self.env.company.id,
+                "currency_id": self.env.company.currency_id.id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "move_type": "reserve",
+                            "account_id": account.id,
+                            "amount": amt,
+                            "name": "Reserve",
+                        }
+                    )
+                    for account, amt in account_amounts
+                ],
+            }
+        )
+
+    def test_cross_charge_requires_flag(self):
+        """Multiple budget codes in one reservation need cross_chargeable=True."""
+        with self.assertRaises(ValidationError):
+            self._reserve_multi([(self.child_a, 10_000), (self.child_b, 10_000)])
+        (self.child_a | self.child_b).write({"cross_chargeable": True})
+        commitment = self._reserve_multi(
+            [(self.child_a, 10_000), (self.child_b, 10_000)]
+        )
+        self.assertEqual(len(commitment.line_ids), 2)
