@@ -99,6 +99,7 @@
                         type="object"
                         class="btn-primary"
                         states="draft"
+                        groups="kris_project.group_kris_project_officer"
                     />
                     <button
                         name="action_done"
@@ -112,6 +113,7 @@
                         string="Cancel"
                         type="object"
                         states="draft,in_progress,done"
+                        groups="kris_project.group_kris_project_officer"
                     />
                     <button
                         name="action_draft"
@@ -284,6 +286,7 @@
                             </group>
                             <div class="mb-3"
                                 attrs="{'invisible': [('can_edit', '=', False)]}"
+                                groups="kris_project.group_kris_project_officer"
                             >
                                 <field
                                     name="allocation_template_id"
@@ -341,6 +344,7 @@
                             </div>
                             <div class="mb-3"
                                 attrs="{'invisible': [('can_edit', '=', False)]}"
+                                groups="kris_project.group_kris_project_officer"
                             >
                                 <button
                                     name="action_add_installment"
