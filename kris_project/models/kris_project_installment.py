@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -35,10 +36,13 @@ class KrisProjectInstallment(models.Model):
     state = fields.Selection(
         selection=[
             ("pending", "รอรับเงิน"),
+            ("partial", "รับบางส่วน"),
             ("received", "รับเงินแล้ว"),
         ],
         string="State",
-        default="pending",
+        compute="_compute_state",
+        store=True,
+        readonly=True,
     )
     deduction_guarantee = fields.Monetary(
         string="Guarantee Deduction",
@@ -72,6 +76,16 @@ class KrisProjectInstallment(models.Model):
         inverse_name="installment_id",
         string="Allocation",
     )
+    receipt_ids = fields.One2many(
+        comodel_name="kris.project.receipt",
+        inverse_name="installment_id",
+        string="Receipts",
+    )
+    received_total = fields.Monetary(
+        string="Received Total",
+        compute="_compute_state",
+        store=True,
+    )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="project_id.currency_id",
@@ -99,6 +113,19 @@ class KrisProjectInstallment(models.Model):
                 max_seq = max(project.installment_ids.mapped("sequence") or [0])
                 vals["sequence"] = max_seq + 10
         return super().create(vals_list)
+
+    @api.depends("amount", "receipt_ids.amount")
+    def _compute_state(self):
+        prec = self.env["decimal.precision"].precision_get("Account")
+        for rec in self:
+            total = sum(rec.receipt_ids.mapped("amount"))
+            rec.received_total = total
+            if float_compare(total, 0.0, precision_digits=prec) <= 0:
+                rec.state = "pending"
+            elif float_compare(total, rec.amount, precision_digits=prec) >= 0:
+                rec.state = "received"
+            else:
+                rec.state = "partial"
 
     @api.depends("amount", "deduction_guarantee", "deduction_advance")
     def _compute_received_from_employer(self):

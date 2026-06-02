@@ -72,12 +72,13 @@ class KrisProjectReceiptWizard(models.TransientModel):
             ]
         return res
 
-    @api.depends("project_id", "project_id.receipt_ids.installment_id")
+    @api.depends("project_id", "project_id.installment_ids.state")
     def _compute_available_installment_ids(self):
         for wiz in self:
-            used_ids = wiz.project_id.receipt_ids.mapped("installment_id").ids
+            # Allow splitting a single installment across multiple receipts:
+            # only fully received installments are removed from the choices.
             available = wiz.project_id.installment_ids.filtered(
-                lambda i: i.id not in used_ids
+                lambda i: i.state != "received"
             )
             wiz.available_installment_ids = available
 
