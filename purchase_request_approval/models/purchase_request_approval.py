@@ -218,6 +218,8 @@ class PurchaseRequestApproval(models.Model):
         return self.state == "draft"
 
     def unlink(self):
+        if not self.env.user.has_group("purchase_request.group_purchase_request_manager"):
+            raise UserError(_("You do not have permission to delete purchase approvals."))
         for rec in self:
             if not rec._can_be_deleted():
                 raise UserError(
