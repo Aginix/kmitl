@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_receipt_refund_tree" model="ir.ui.view">
+        <field name="name">receipt.kmitl.refund.tree</field>
+        <field name="model">receipt.kmitl.refund</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancelled'"
+                  decoration-success="state == 'posted'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="receipt_id"/>
+                <field name="department_id"/>
+                <field name="partner_id"/>
+                <field name="refund_method"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-muted="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_receipt_refund_form" model="ir.ui.view">
+        <field name="name">receipt.kmitl.refund.form</field>
+        <field name="model">receipt.kmitl.refund</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit"
+                            type="object"
+                            string="Submit"
+                            class="btn-primary"
+                            states="draft"/>
+                    <button name="action_post"
+                            type="object"
+                            string="Post"
+                            class="btn-primary"
+                            states="submitted"
+                            groups="receipt_kmitl.group_receipt_kmitl_manager"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel"
+                            attrs="{'invisible': [('state','=','posted')]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="receipt_id"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="department_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="refund_method"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="journal_id"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="amount_total"/>
+                            <field name="move_id" attrs="{'invisible': [('move_id','=',False)]}"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids"
+                                   attrs="{'readonly': [('state','!=','draft')]}">
+                                <tree editable="bottom">
+                                    <field name="receipt_line_id"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="original_amount" readonly="1"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Reason" name="reason">
+                            <field name="reason"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_receipt_refund" model="ir.actions.act_window">
+        <field name="name">Receipt Refunds</field>
+        <field name="res_model">receipt.kmitl.refund</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

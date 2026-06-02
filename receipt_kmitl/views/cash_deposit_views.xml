@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_cash_deposit_tree" model="ir.ui.view">
+        <field name="name">receipt.kmitl.cash.deposit.tree</field>
+        <field name="model">receipt.kmitl.cash.deposit</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancelled'"
+                  decoration-success="state == 'confirmed'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="department_id"/>
+                <field name="system_amount" sum="Total"/>
+                <field name="physical_amount" sum="Total"/>
+                <field name="difference_amount" sum="Diff"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'confirmed'"
+                       decoration-muted="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_cash_deposit_form" model="ir.ui.view">
+        <field name="name">receipt.kmitl.cash.deposit.form</field>
+        <field name="model">receipt.kmitl.cash.deposit</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_pull_today_receipts"
+                            type="object"
+                            string="Pull Pending Cash Receipts"
+                            states="draft"/>
+                    <button name="action_confirm"
+                            type="object"
+                            string="Confirm"
+                            class="btn-primary"
+                            states="draft"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel"
+                            states="draft"/>
+                    <button name="action_draft"
+                            type="object"
+                            string="Reset to Draft"
+                            states="cancelled"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="department_id"
+                                   options="{'no_create': True}"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="system_amount"/>
+                            <field name="physical_amount"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="difference_amount"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="confirmed_by"
+                                   attrs="{'invisible': [('state','!=','confirmed')]}"/>
+                            <field name="confirmed_date"
+                                   attrs="{'invisible': [('state','!=','confirmed')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Receipts" name="receipts">
+                            <field name="receipt_ids"
+                                   attrs="{'readonly': [('state','!=','draft')]}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="partner_id"/>
+                                    <field name="payment_method"/>
+                                    <field name="amount_total" sum="Total"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cash_deposit" model="ir.actions.act_window">
+        <field name="name">Cash Deposits</field>
+        <field name="res_model">receipt.kmitl.cash.deposit</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form_receipt_kmitl" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.receipt.kmitl</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block"
+                     data-string="KMITL Receipt"
+                     string="KMITL Receipt"
+                     data-key="receipt_kmitl"
+                     groups="receipt_kmitl.group_receipt_kmitl_manager">
+                    <h2>KMITL Receipt</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label string="Walk-in Partner"
+                                       for="receipt_kmitl_walkin_partner_id"/>
+                                <div class="text-muted">
+                                    Default partner used on receipts when no
+                                    specific partner is selected.
+                                </div>
+                                <div class="content-group mt16">
+                                    <field name="receipt_kmitl_walkin_partner_id"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label string="Default Cash Journal"
+                                       for="receipt_kmitl_default_cash_journal_id"/>
+                                <div class="content-group mt16">
+                                    <field name="receipt_kmitl_default_cash_journal_id"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label string="Default Bank Journal"
+                                       for="receipt_kmitl_default_bank_journal_id"/>
+                                <div class="content-group mt16">
+                                    <field name="receipt_kmitl_default_bank_journal_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_receipt_kmitl_config" model="ir.actions.act_window">
+        <field name="name">KMITL Receipt Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'receipt_kmitl'}</field>
+    </record>
+</odoo>

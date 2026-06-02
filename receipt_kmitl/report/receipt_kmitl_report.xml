@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_receipt_kmitl_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <t t-if="o.state == 'cancelled'">
+                    <div style="position: absolute; top: 300px; left: 200px;
+                                transform: rotate(-30deg); font-size: 96px;
+                                color: red; opacity: 0.3; z-index: 1000;">
+                        CANCELLED
+                    </div>
+                </t>
+
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h2>RECEIPT</h2>
+                        <h3>ใบเสร็จรับเงิน</h3>
+                    </div>
+                </div>
+
+                <div class="row mt32">
+                    <div class="col-6">
+                        <strong>Receipt No. / เลขที่:</strong>
+                        <span t-field="o.name"/>
+                        <br/>
+                        <strong>Date / วันที่:</strong>
+                        <span t-field="o.date"/>
+                        <br/>
+                        <strong>Department / หน่วยงาน:</strong>
+                        <span t-field="o.department_id.display_name"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Customer / ผู้ชำระเงิน:</strong>
+                        <br/>
+                        <span t-esc="o.customer_name or (o.partner_id and o.partner_id.name) or ''"/>
+                        <br/>
+                        <span t-if="o.customer_tax_id">
+                            <strong>Tax ID / เลขประจำตัวผู้เสียภาษี:</strong>
+                            <span t-field="o.customer_tax_id"/>
+                            <br/>
+                        </span>
+                        <span t-if="o.customer_branch_code">
+                            <strong>Branch / สาขา:</strong>
+                            <span t-field="o.customer_branch_code"/>
+                            <br/>
+                        </span>
+                        <span t-if="o.customer_address">
+                            <span t-field="o.customer_address"/>
+                        </span>
+                    </div>
+                </div>
+
+                <table class="table table-bordered mt32">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th>Description / รายการ</th>
+                            <th class="text-right" style="width: 12%;">Qty</th>
+                            <th class="text-right" style="width: 18%;">Unit Price</th>
+                            <th class="text-right" style="width: 20%;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.line_ids" t-as="line">
+                            <td><t t-esc="line_index + 1"/></td>
+                            <td>
+                                <span t-field="line.name"/>
+                                <small class="text-muted">
+                                    (<span t-field="line.receipt_type_id.name"/>)
+                                </small>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="line.quantity"/>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="line.price_unit"
+                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="line.amount"
+                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" class="text-right">Total</th>
+                            <th class="text-right">
+                                <span t-field="o.amount_total"
+                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="row mt32">
+                    <div class="col-6">
+                        <strong>Payment Method / วิธีชำระเงิน:</strong>
+                        <span t-field="o.payment_method"/>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 80px;">
+                    <div class="col-6 text-center">
+                        <div>....................................................</div>
+                        <div>Received by / ผู้รับเงิน</div>
+                        <div t-esc="o.user_id.name or ''"/>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div>....................................................</div>
+                        <div>Authorized by / หัวหน้าหน่วยงาน</div>
+                    </div>
+                </div>
+
+                <div t-if="o.state == 'cancelled'" class="row mt32">
+                    <div class="col-12">
+                        <strong style="color: red;">
+                            CANCELLED on
+                            <span t-field="o.cancelled_date"/>
+                            by
+                            <span t-field="o.cancelled_by.name"/>
+                        </strong>
+                        <br/>
+                        <em><span t-field="o.cancel_reason"/></em>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_receipt_kmitl">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="receipt_kmitl.report_receipt_kmitl_document" t-lang="o.partner_id.lang or 'th_TH'"/>
+            </t>
+        </t>
+    </template>
+</odoo>

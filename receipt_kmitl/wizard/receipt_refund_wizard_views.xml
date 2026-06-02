@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_receipt_refund_wizard_form" model="ir.ui.view">
+        <field name="name">receipt.kmitl.refund.wizard.form</field>
+        <field name="model">receipt.kmitl.refund.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Refund Receipt">
+                <group>
+                    <field name="receipt_id" readonly="1"/>
+                    <field name="refund_method"/>
+                    <field name="journal_id"/>
+                    <field name="reason" placeholder="Reason for refund..."/>
+                </group>
+                <field name="line_ids">
+                    <tree editable="bottom">
+                        <field name="receipt_line_id" readonly="1"/>
+                        <field name="name" readonly="1"/>
+                        <field name="original_amount" readonly="1"/>
+                        <field name="refund"/>
+                        <field name="amount"
+                               attrs="{'readonly': [('refund', '=', False)]}"/>
+                        <field name="currency_id" invisible="1"/>
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_create_refund"
+                            type="object"
+                            string="Create Refund"
+                            class="btn-primary"/>
+                    <button string="Discard" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

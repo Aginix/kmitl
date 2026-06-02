@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_account_journal_form_receipt_kmitl" model="ir.ui.view">
+        <field name="name">account.journal.form.receipt.kmitl</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='advanced_settings']" position="inside">
+                <group string="KMITL Receipt">
+                    <field name="is_receipt_kmitl_journal"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

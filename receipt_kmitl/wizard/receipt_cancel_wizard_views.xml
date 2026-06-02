@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_receipt_cancel_wizard_form" model="ir.ui.view">
+        <field name="name">receipt.kmitl.cancel.wizard.form</field>
+        <field name="model">receipt.kmitl.cancel.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cancel Receipt">
+                <group>
+                    <field name="receipt_id" readonly="1"/>
+                    <field name="reason" placeholder="Reason for cancellation..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm"
+                            type="object"
+                            string="Confirm Cancellation"
+                            class="btn-danger"/>
+                    <button string="Discard" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

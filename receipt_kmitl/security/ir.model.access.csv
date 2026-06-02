@@ -1,0 +1,29 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_receipt_type_cashier,receipt.kmitl.type cashier,model_receipt_kmitl_type,group_receipt_kmitl_cashier,1,0,0,0
+access_receipt_type_central,receipt.kmitl.type central,model_receipt_kmitl_type,group_receipt_kmitl_central_finance,1,1,1,0
+access_receipt_type_manager,receipt.kmitl.type manager,model_receipt_kmitl_type,group_receipt_kmitl_manager,1,1,1,1
+access_receipt_kmitl_cashier,receipt.kmitl cashier,model_receipt_kmitl,group_receipt_kmitl_cashier,1,1,1,1
+access_receipt_kmitl_central,receipt.kmitl central,model_receipt_kmitl,group_receipt_kmitl_central_finance,1,1,1,1
+access_receipt_kmitl_manager,receipt.kmitl manager,model_receipt_kmitl,group_receipt_kmitl_manager,1,1,1,1
+access_receipt_kmitl_line_cashier,receipt.kmitl.line cashier,model_receipt_kmitl_line,group_receipt_kmitl_cashier,1,1,1,1
+access_receipt_kmitl_line_central,receipt.kmitl.line central,model_receipt_kmitl_line,group_receipt_kmitl_central_finance,1,1,1,1
+access_receipt_kmitl_line_manager,receipt.kmitl.line manager,model_receipt_kmitl_line,group_receipt_kmitl_manager,1,1,1,1
+access_cash_deposit_cashier,receipt.kmitl.cash.deposit cashier,model_receipt_kmitl_cash_deposit,group_receipt_kmitl_cashier,1,1,1,1
+access_cash_deposit_central,receipt.kmitl.cash.deposit central,model_receipt_kmitl_cash_deposit,group_receipt_kmitl_central_finance,1,1,1,1
+access_cash_deposit_manager,receipt.kmitl.cash.deposit manager,model_receipt_kmitl_cash_deposit,group_receipt_kmitl_manager,1,1,1,1
+access_allocation_central,receipt.kmitl.allocation central,model_receipt_kmitl_allocation,group_receipt_kmitl_central_finance,1,1,1,1
+access_allocation_manager,receipt.kmitl.allocation manager,model_receipt_kmitl_allocation,group_receipt_kmitl_manager,1,1,1,1
+access_allocation_line_central,receipt.kmitl.allocation.line central,model_receipt_kmitl_allocation_line,group_receipt_kmitl_central_finance,1,1,1,1
+access_allocation_line_manager,receipt.kmitl.allocation.line manager,model_receipt_kmitl_allocation_line,group_receipt_kmitl_manager,1,1,1,1
+access_refund_cashier,receipt.kmitl.refund cashier,model_receipt_kmitl_refund,group_receipt_kmitl_cashier,1,1,1,1
+access_refund_central,receipt.kmitl.refund central,model_receipt_kmitl_refund,group_receipt_kmitl_central_finance,1,1,1,1
+access_refund_manager,receipt.kmitl.refund manager,model_receipt_kmitl_refund,group_receipt_kmitl_manager,1,1,1,1
+access_refund_line_cashier,receipt.kmitl.refund.line cashier,model_receipt_kmitl_refund_line,group_receipt_kmitl_cashier,1,1,1,1
+access_refund_line_central,receipt.kmitl.refund.line central,model_receipt_kmitl_refund_line,group_receipt_kmitl_central_finance,1,1,1,1
+access_refund_line_manager,receipt.kmitl.refund.line manager,model_receipt_kmitl_refund_line,group_receipt_kmitl_manager,1,1,1,1
+access_cancel_wizard,receipt.kmitl.cancel.wizard,model_receipt_kmitl_cancel_wizard,,1,1,1,1
+access_allocation_wizard,receipt.kmitl.allocation.wizard,model_receipt_kmitl_allocation_wizard,,1,1,1,1
+access_allocation_wizard_line,receipt.kmitl.allocation.wizard.line,model_receipt_kmitl_allocation_wizard_line,,1,1,1,1
+access_refund_wizard,receipt.kmitl.refund.wizard,model_receipt_kmitl_refund_wizard,,1,1,1,1
+access_refund_wizard_line,receipt.kmitl.refund.wizard.line,model_receipt_kmitl_refund_wizard_line,,1,1,1,1
+access_account_analytic_account_cashier,account.analytic.account cashier,analytic.model_account_analytic_account,group_receipt_kmitl_cashier,1,0,0,0

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_receipt_type_tree" model="ir.ui.view">
+        <field name="name">receipt.kmitl.type.tree</field>
+        <field name="model">receipt.kmitl.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="suspense_account_id"/>
+                <field name="default_income_account_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_receipt_type_form" model="ir.ui.view">
+        <field name="name">receipt.kmitl.type.form</field>
+        <field name="model">receipt.kmitl.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived"
+                            bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="suspense_account_id"/>
+                            <field name="default_income_account_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_receipt_type" model="ir.actions.act_window">
+        <field name="name">Receipt Types</field>
+        <field name="res_model">receipt.kmitl.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
