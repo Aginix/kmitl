@@ -126,7 +126,7 @@ class KrisProjectDashboard(models.Model):
         )
         for project in projects:
             department_name = (
-                project.department_analytic_id.name
+                project.department_analytic_id.complete_name
                 if project.department_analytic_id
                 else _("(ไม่ระบุ)")
             )
