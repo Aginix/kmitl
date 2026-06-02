@@ -388,7 +388,7 @@ class KrisProject(models.Model):
             if rec.date_contract_start and rec.date_contract_end:
                 rec.project_duration = (
                     rec.date_contract_end - rec.date_contract_start
-                ).days
+                ).days + 1
             else:
                 rec.project_duration = 0
 
