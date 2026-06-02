@@ -18,13 +18,14 @@ class BudgetAccount(models.Model):
         tracking=True,
     )
 
-    @api.constrains("is_project")
-    def _check_is_project_not_procurement_plan(self):
+    def _check_project_procurement_exclusive(self):
         """A project budget code follows the floating-budget path — it reserves only
         when its project is confirmed (ADR-0007) — whereas a procurement-plan code
         auto-reserves the moment its appropriation posts (ADR-0005). A code can be at
-        most one of the two. Guarded on the field's presence so kmitl_project need
-        not depend on the optional procurement_plan module."""
+        most one of the two. Enforced on create/write (not @api.constrains) so it can
+        watch the *optional* ``procurement_plan`` field from either direction without
+        kmitl_project having to depend on that module — and is a no-op when the field
+        is absent."""
         if "procurement_plan" not in self._fields:
             return
         for account in self:
@@ -36,3 +37,15 @@ class BudgetAccount(models.Model):
                     )
                     % account.display_name
                 )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._check_project_procurement_exclusive()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "is_project" in vals or "procurement_plan" in vals:
+            self._check_project_procurement_exclusive()
+        return res

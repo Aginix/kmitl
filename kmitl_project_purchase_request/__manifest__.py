@@ -13,6 +13,9 @@
     ],
     "application": False,
     "installable": True,
-    "auto_install": False,
+    # Glue module: activate automatically whenever both sides are present, so the
+    # "standalone PR may not use a project budget code" rule (ADR-0007) is always
+    # enforced when projects and budget-aware purchase requests coexist.
+    "auto_install": True,
     "license": "LGPL-3",
 }
