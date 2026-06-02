@@ -28,6 +28,22 @@ _Avoid_: allocation (reserve "allocation" for the initial act of appropriating)
 The appropriated pool on a *project-type* budget account (`is_project`) that has been posted but not yet reserved by any project. It carries the four dimensions (activities/departments/funds/sources) but **no `kmitl_project` dimension** — projects are authored later and reserve against it. The procurement-plan path has no floating stage (it reserves the instant its appropriation posts); the project path deliberately does (ADR-0007).
 _Avoid_: unallocated budget, งบคงเหลือ (that is Remaining (f), a different quantity)
 
+**Budgetable (ระบุงบประมาณได้, `budgetable`)**:
+A budget account where budget may be specified — both reserved against and appropriated to. Reservations are restricted to budgetable accounts; it is the flag that marks a node as a legitimate place to control budget.
+_Avoid_: leaf, allocatable
+
+**Cross-charge (ถัวจ่าย, `cross_chargeable`)**:
+Pooling more than one budget code inside a *single* reservation. A reservation normally carries one budget code; it may carry several reserve lines only when every line's budget account is flagged `cross_chargeable`. The flag alone governs eligibility — flagged codes may be pooled together regardless of category.
+_Avoid_: transfer (that is `budget.transfer`, a balanced move *between* accounts; cross-charge moves nothing — it spends several pools in one reservation), virement
+
+**Control Node (โหนดคุมงบ)**:
+The budgetable account at which a reservation's pool is actually controlled — the nearest budgetable ancestor-or-self of the reserved account that carries appropriation. A reservation draws from its control node, and all usage in that node's subtree rolls up to it. Mostly the control node *is* the reserved account itself; for coarsely-budgeted lines (personnel, project) it is an ancestor. Appropriation may sit at or above the reservation node, **never below** it (one-way, up only). The same nearest-funded-ancestor rule applies independently on each hierarchical analytic dimension (resolved from `account.analytic.account` parent paths; flat dimensions like Source match exactly).
+_Avoid_: parent, category (those name tree position, not the control role)
+
+**Available (งบที่จองได้)**:
+Remaining (f) evaluated at the control node — the amount a new reservation may draw. The figure the reservation check enforces and the picker shows on a row.
+_Avoid_: remaining (keep "remaining" for the report column; "available" is the reservation-time check at the control node)
+
 ### Appropriation side (`budget.move`)
 
 **Initial Appropriation (งบประมาณจัดสรรต้นปี)**:

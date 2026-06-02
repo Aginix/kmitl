@@ -157,12 +157,34 @@ class BudgetCommitment(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+    kmitl_project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="โครงการ/กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse="_inverse_kmitl_project_analytic",
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แผนจัดซื้อจัดจ้าง",
+        compute="_compute_analytic_id",
+        inverse="_inverse_procurement_plan_analytic",
+        domain=[("root_plan_id.code", "=", "procurement_plan")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
 
     _analytic_keys = {
         "departments": "department_analytic_id",
         "sources": "source_analytic_id",
         "activities": "activity_analytic_id",
         "funds": "fund_analytic_id",
+        "kmitl_project": "kmitl_project_analytic_id",
+        "procurement_plan": "procurement_plan_analytic_id",
     }
 
     def _inverse_department_analytic(self):
@@ -180,6 +202,14 @@ class BudgetCommitment(models.Model):
     def _inverse_fund_analytic(self):
         for record in self:
             record._update_analytic_distribution("funds")
+
+    def _inverse_kmitl_project_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("kmitl_project")
+
+    def _inverse_procurement_plan_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("procurement_plan")
 
     company_id = fields.Many2one(
         comodel_name="res.company",

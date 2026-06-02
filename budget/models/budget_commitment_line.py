@@ -149,6 +149,16 @@ class BudgetCommitmentLine(models.Model):
         store=True,
         string="แหล่งเงิน",
     )
+    kmitl_project_analytic_id = fields.Many2one(
+        related="commitment_id.kmitl_project_analytic_id",
+        store=True,
+        string="โครงการ/กิจกรรม",
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        related="commitment_id.procurement_plan_analytic_id",
+        store=True,
+        string="แผนจัดซื้อจัดจ้าง",
+    )
     currency_id = fields.Many2one(related="commitment_id.currency_id")
     company_id = fields.Many2one(
         related="commitment_id.company_id",
