@@ -22,6 +22,18 @@ class BudgetCommitment(models.Model):
         states=READONLY_STATES,
     )
 
+    def _sync_state(self):
+        """When a plan's commitment is fully consumed it reaches ``done``;
+        propagate that to the owning procurement plan so it auto-closes once
+        every installment has been disbursed (ADR-0005 / done-when-consumed)."""
+        super()._sync_state()
+        for commitment in self.filtered(
+            lambda c: c.state == "done" and c.procurement_plan_id
+        ):
+            plan = commitment.procurement_plan_id
+            if plan.state == "in_progress":
+                plan.action_done()
+
     def action_view_procurement_plan(self):
         self.ensure_one()
         if not self.procurement_plan_id:

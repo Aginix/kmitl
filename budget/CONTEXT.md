@@ -51,7 +51,7 @@ The per-commitment cap (`commitment.amount`) — the amount a request was approv
 _Avoid_: budget, reserved amount
 
 **Reserve (จองงบ)**:
-Earmarking pool against a commitment the moment it is approved (e.g. a procurement plan reserves its full amount at once). A `reserve` ledger line.
+Earmarking pool against a commitment. For a procurement plan this fires the moment its source budget **appropriation is posted** — the plan reserves its full `total_price` at once (not when the plan is later made *ready*; see ADR-0005). A `reserve` ledger line.
 _Avoid_: allocate, commit
 
 **Obligate (ผูกพัน)**:
@@ -63,5 +63,5 @@ The actual disbursement — money leaves the pool for good. A `consume` ledger l
 _Avoid_: spend, pay, disburse (pick "consume" in code, "เบิกจ่าย" in UI)
 
 **Reserved (b) / Obligated (c) / Disbursed (d) / Used (e) / Remaining (f)**:
-The disbursement waterfall for an account: `b` = reserved-but-not-yet-obligated (`total_reserved − total_obligated`); `c` = obligated-but-not-yet-disbursed (`total_obligated − total_consumed`); `d` = disbursed (`total_consumed`); `e` = total locked = `b + c + d = total_reserved`; `f` = `Current Budget (a) − e`. When obligate and consume fire together (PO), `c` stays ~0; when separated in time (procurement instalments), `c` carries the standing obligation.
+The disbursement waterfall for an account: `b` = reserved-but-not-yet-obligated (`total_reserved − total_obligated`); `c` = obligated-but-not-yet-disbursed (`total_obligated − total_consumed`); `d` = disbursed (`total_consumed`); `e` = total locked = `b + c + d = total_reserved`; `f` = `Current Budget (a) − e`. Both KMITL flows fire obligate and consume **together** — the PO flow, and the procurement-plan flow (per งวด at each disbursement request) — so `c` stays ~0 in practice. The not-yet-disbursed remainder of a reserved procurement plan therefore sits in `b` (reserved-but-not-obligated), **not** `c`. `c` only carries a standing balance if some flow posts an obligate without an immediate matching consume (a capability the ledger supports but no current flow uses).
 _Avoid_: spent (ambiguous between c, d, e)
