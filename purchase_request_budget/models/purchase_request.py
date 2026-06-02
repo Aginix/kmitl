@@ -157,6 +157,26 @@ class PurchaseRequest(models.Model):
 
         return super().button_draft()
 
+    def action_view_budget_dashboard(self):
+        self.ensure_one()
+        root = self.budget_account_id
+        while root.parent_id:
+            root = root.parent_id
+        return {
+            "type": "ir.actions.client",
+            "tag": "budget_dashboard",
+            "name": "สถานะงบประมาณ",
+            "target": "new",
+            "context": {
+                "default_fiscal_year_id": self.account_fiscal_year_id.id or False,
+                "default_root_account_id": root.id if root else False,
+                "default_department_analytic_id": self.department_analytic_id.id or False,
+                "default_source_analytic_id": self.source_analytic_id.id or False,
+                "default_fund_analytic_id": self.fund_analytic_id.id or False,
+                "default_activity_analytic_id": self.activity_analytic_id.id or False,
+            },
+        }
+
     def action_open_budget_commitment(self):
         self.ensure_one()
         if not self.budget_commitment_id:
