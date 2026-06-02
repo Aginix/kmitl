@@ -48,7 +48,10 @@ class BudgetAppropriationLine(models.Model):
             procurement_plan_id = self._create_procurement_plan()
             account_id = procurement_plan_id.analytic_account_id
 
-            distribution = vals['analytic_distribution']
+            # analytic_distribution may be empty/False when the line carries no
+            # dimensions; start from a fresh dict so item assignment never hits a
+            # bool, and copy to avoid mutating the source field value.
+            distribution = dict(vals.get('analytic_distribution') or {})
             distribution[str(account_id.id)] = 100
             vals['analytic_distribution'] = distribution
             vals['procurement_plan_id'] = procurement_plan_id.id
