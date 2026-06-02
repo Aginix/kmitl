@@ -2,6 +2,7 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -299,6 +300,37 @@ class BudgetCommitment(models.Model):
             # Legacy compat
             record.consumed_amount = total_consumed
             record.remaining_amount = record.amount - total_consumed
+
+    def _sync_state(self):
+        """Derive the active band (reserved/partial/done) from line totals.
+
+        Runs only while the commitment is active; draft and cancel are explicit
+        user states and are left untouched, so this never fights action_reserve,
+        action_cancel or action_reset_to_draft. "done" means the reservation has
+        been fully consumed, which keeps multi-installment commitments open until
+        the final draw-down.
+        """
+        for record in self:
+            if record.state in ("draft", "cancel"):
+                continue
+            rounding = record.currency_id.rounding or 0.01
+            reserved = record.total_reserved
+            consumed = record.total_consumed
+            obligated = record.total_obligated
+            if (
+                float_compare(reserved, 0.0, precision_rounding=rounding) > 0
+                and float_compare(consumed, reserved, precision_rounding=rounding) >= 0
+            ):
+                new_state = "done"
+            elif (
+                float_compare(obligated, 0.0, precision_rounding=rounding) > 0
+                or float_compare(consumed, 0.0, precision_rounding=rounding) > 0
+            ):
+                new_state = "partial"
+            else:
+                new_state = "reserved"
+            if record.state != new_state:
+                record.state = new_state
 
     @api.constrains("amount")
     def _check_positive_amount(self):

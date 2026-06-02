@@ -75,7 +75,7 @@
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="budget_type" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="move_type" required="1" />
-                            <field name="appropriation_type" attrs="{'invisible': [('move_type', '!=', 'appropriation')]}" />
+                            <field name="appropriation_type" attrs="{'invisible': [('move_type', '!=', 'appropriation')], 'required': [('move_type', '=', 'appropriation')]}" />
                         </group>
                     </group>
                     <notebook>

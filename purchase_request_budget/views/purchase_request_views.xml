@@ -39,6 +39,16 @@
                         <span>Budget</span>
                     </div>
                 </button>
+                <button
+                    name="action_view_budget_dashboard"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-bar-chart"
+                >
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">สถานะงบ</span>
+                    </div>
+                </button>
             </xpath>
 
             <xpath expr="//notebook" position="before">
