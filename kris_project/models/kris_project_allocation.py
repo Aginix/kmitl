@@ -36,7 +36,7 @@ class KrisProjectAllocationLine(models.Model):
     )
     department_analytic_id = fields.Many2one(
         comodel_name="account.analytic.account",
-        string="รหัสงบประมาณหน่วยงาน",
+        string="Department Budget Code",
         domain=[("root_plan_id.code", "=", "departments")],
     )
     is_locked = fields.Boolean(string="ห้ามแก้ไข")
