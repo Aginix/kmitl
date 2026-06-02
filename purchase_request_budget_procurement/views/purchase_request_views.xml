@@ -45,6 +45,20 @@
                      the prefill onchange still fires from the create context. -->
                 <field name="use_procurement_plan" invisible="1" />
                 <field name="procurement_plan_analytic_id" invisible="1" />
+                <!-- Discoverability: tell users where plan-driven พ.1 come from,
+                     shown only on a fresh, non-plan-linked draft. Direct (non-plan)
+                     PRs are still created here as usual. -->
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    attrs="{'invisible': ['|', ('procurement_plan_id', '!=', False), ('state', '!=', 'draft')]}"
+                >
+                    <i class="fa fa-info-circle me-1" />
+                    ต้องการจัดทำใบ พ.1 จาก<b>แผนจัดซื้อจัดจ้าง</b>?
+                    ให้ไปที่เมนู <b>แผนจัดซื้อจัดจ้าง</b> เลือกแผนที่อยู่สถานะ
+                    <b>"รอดำเนินการ"</b> แล้วกดปุ่ม <b>"สร้างใบขอซื้อ"</b>
+                    — ไม่สามารถเลือกแผนจากในใบ พ.1 นี้ได้
+                </div>
             </xpath>
         </field>
     </record>
