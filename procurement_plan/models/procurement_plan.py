@@ -275,7 +275,7 @@ class ProcurementPlan(models.Model):
             return
         if not self.budget_account_id:
             raise UserError(
-                _("กรุณาระบุรหัสงบประมาณก่อนตั้งสถานะพร้อมดำเนินการ")
+                _("กรุณาระบุรหัสงบประมาณก่อนตั้งสถานะรอดำเนินการ")
             )
         if self.total_price <= 0:
             raise UserError(

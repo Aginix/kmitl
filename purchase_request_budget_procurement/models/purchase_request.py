@@ -125,7 +125,7 @@ class PurchaseRequest(models.Model):
                 raise UserError(
                     _(
                         "แผนจัดซื้อจัดจ้างยังไม่ได้จองงบประมาณ "
-                        "(แผนต้องอยู่สถานะพร้อมดำเนินการ)"
+                        "(แผนต้องอยู่สถานะรอดำเนินการ)"
                     )
                 )
             self.budget_commitment_id = commitment.id
@@ -209,7 +209,7 @@ class PurchaseRequest(models.Model):
             return
         plan.write({"state": "ready"})
         plan.message_post(
-            body=_("ใบขอซื้อ %s ถูกปฏิเสธ แผนกลับสู่สถานะพร้อมดำเนินการ")
+            body=_("ใบขอซื้อ %s ถูกปฏิเสธ แผนกลับสู่สถานะรอดำเนินการ")
             % self.display_name
         )
 
@@ -269,12 +269,12 @@ class ProcurementPlan(models.Model):
             raise UserError(
                 _(
                     "กรุณากรอกแผนการดำเนินงาน (ETA) ให้ครบ แล้วกด "
-                    "'พร้อมดำเนินการ' ก่อนสร้างใบขอซื้อ"
+                    "'รอดำเนินการ' ก่อนสร้างใบขอซื้อ"
                 )
             )
         if self.state != "ready":
             raise UserError(
-                _("สร้างใบขอซื้อได้เฉพาะแผนที่อยู่สถานะพร้อมดำเนินการเท่านั้น")
+                _("สร้างใบขอซื้อได้เฉพาะแผนที่อยู่สถานะรอดำเนินการเท่านั้น")
             )
         if self.purchase_request_ids.filtered(lambda r: r.state != "rejected"):
             raise UserError(
