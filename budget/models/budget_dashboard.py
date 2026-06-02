@@ -182,7 +182,11 @@ class BudgetDashboard(models.AbstractModel):
 
     @api.model
     def get_reservation_grid(
-        self, fiscal_year_id, analytic_distribution, root_account_id=None
+        self,
+        fiscal_year_id,
+        analytic_distribution,
+        root_account_id=None,
+        account_domain=None,
     ):
         """Expense ``budget.account`` hierarchy with the control-node
         ``available`` per budgetable row, for a **fixed** dimension combination.
@@ -193,6 +197,12 @@ class BudgetDashboard(models.AbstractModel):
         combination at each budgetable node — so the figure shown is the figure
         the reservation check will enforce (WYSIWYG). Non-budgetable rows are
         display-only (``available`` is ``None``).
+
+        ``account_domain`` (optional) narrows which rows are **selectable** to
+        the host's own budget-account domain (e.g. purchase.request's
+        ``purchase_ok`` + ``product_id``); rows outside it still show their
+        ``available`` but are flagged ``selectable=False``. When omitted,
+        ``selectable`` mirrors ``budgetable``.
         """
         currency_id = self.env.company.currency_id.id
         if not fiscal_year_id:
@@ -200,6 +210,12 @@ class BudgetDashboard(models.AbstractModel):
         accounts = self._dashboard_accounts(root_account_id)
         if not accounts:
             return {"rows": [], "currency_id": currency_id}
+
+        selectable_ids = None
+        if account_domain:
+            selectable_ids = set(
+                self.env["budget.account"].search(account_domain).ids
+            )
 
         acc_by_id = {acc.id: acc for acc in accounts}
         children = defaultdict(list)
@@ -230,6 +246,11 @@ class BudgetDashboard(models.AbstractModel):
                 if acc.budgetable
                 else None
             )
+            selectable = (
+                acc.budgetable
+                if selectable_ids is None
+                else acc.id in selectable_ids
+            )
             rows.append(
                 {
                     "id": acc.id,
@@ -239,6 +260,7 @@ class BudgetDashboard(models.AbstractModel):
                     "level": level,
                     "has_children": bool(kids),
                     "budgetable": acc.budgetable,
+                    "selectable": selectable,
                     "cross_chargeable": acc.cross_chargeable,
                     "available": available,
                 }

@@ -33,6 +33,13 @@ class PurchaseRequest(models.Model):
     def _domain_budget_account_id(self):
         return [("purchase_ok", "=", True), ("product_id", "!=", False)]
 
+    def _reservation_account_domain(self):
+        # Only purchasable, product-backed budget codes are selectable for a PR,
+        # matching the budget_account_id field domain — so the picker cannot
+        # offer (nor apply_reservation_selection write) an account the PR would
+        # reject or that would leave its lines product-less.
+        return super()._reservation_account_domain() + self._domain_budget_account_id()
+
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="Activity",
@@ -96,7 +103,7 @@ class PurchaseRequest(models.Model):
 
     product_id = fields.Many2one(related=False, readonly=False)
 
-    @api.depends("state")
+    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_is_budget_editable(self):
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:

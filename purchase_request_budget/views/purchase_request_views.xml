@@ -61,6 +61,10 @@
                         attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
+                    <button name="action_open_reservation_picker" type="object"
+                        string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)" class="btn-link"
+                        icon="fa-sitemap"
+                        attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
                     <field name="budget_account_id" invisible="1" />
                     <field
                         name="activity_analytic_id"

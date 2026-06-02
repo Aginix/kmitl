@@ -4,15 +4,17 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Component, onWillStart, useState } from "@odoo/owl";
 
-// Reservation picker (จองงบประมาณ): shows the budget.account hierarchy with the
-// control-node available per budgetable row for the commitment's FIXED
-// dimension combination, and lets the user enter the amount to reserve on the
-// far-right column. Normally one budget code; multiple are allowed only when
-// every code is cross_chargeable (the backend constraint enforces it).
-//
-// Opened as a client action (target:"new") from the budget.commitment form,
-// mirroring action_view_budget_dashboard. On confirm it writes reserve lines
-// via budget.commitment.apply_reservation_selection.
+// Reservation picker (จองงบประมาณ): the budget.account hierarchy with the
+// control-node available per budgetable row for a FIXED dimension combination.
+// Host-agnostic — driven entirely by context:
+//   res_model / res_id          the document to write back to
+//   fiscal_year_id              scopes availability
+//   analytic_distribution       the fixed dimension combination
+//   root_account_id             optional subtree to show
+//   select_only                 true on hosts that carry a single budget code
+//                               (PR/PO/DR) -> pick one row; false on
+//                               budget.commitment -> enter amount(s) -> lines
+// On confirm it calls <res_model>.apply_reservation_selection(selections).
 export class BudgetReservationPicker extends Component {
     setup() {
         this.orm = useService("orm");
@@ -20,13 +22,18 @@ export class BudgetReservationPicker extends Component {
         this.notification = useService("notification");
 
         const ctx = (this.props.action && this.props.action.context) || {};
-        this.commitmentId = ctx.commitment_id;
+        this.resModel = ctx.res_model;
+        this.resId = ctx.res_id;
         this.fiscalYearId = ctx.fiscal_year_id || false;
         this.analyticDistribution = ctx.analytic_distribution || {};
+        this.rootAccountId = ctx.root_account_id || false;
+        this.accountDomain = ctx.account_domain || false;
+        this.selectMode = !!ctx.select_only;
 
         this.state = useState({
             rows: [],
-            amounts: {}, // { [accountId]: number }
+            amounts: {}, // amount mode: { [accountId]: number }
+            selectedId: false, // select mode: a single account id
             collapsed: {},
             loading: false,
             currencyId: false,
@@ -44,7 +51,12 @@ export class BudgetReservationPicker extends Component {
             const data = await this.orm.call(
                 "budget.dashboard",
                 "get_reservation_grid",
-                [this.fiscalYearId, this.analyticDistribution, false]
+                [
+                    this.fiscalYearId,
+                    this.analyticDistribution,
+                    this.rootAccountId,
+                    this.accountDomain,
+                ]
             );
             this.state.rows = data.rows || [];
             this.state.currencyId = data.currency_id;
@@ -84,6 +96,14 @@ export class BudgetReservationPicker extends Component {
         }
     }
 
+    // --- select mode ---
+    selectRow(row) {
+        if (row.selectable) {
+            this.state.selectedId = row.id;
+        }
+    }
+
+    // --- amount mode ---
     onAmountInput(row, ev) {
         const value = parseFloat(ev.target.value);
         if (value > 0) {
@@ -108,13 +128,18 @@ export class BudgetReservationPicker extends Component {
     }
 
     get selections() {
+        if (this.selectMode) {
+            return this.state.selectedId
+                ? [{ account_id: this.state.selectedId }]
+                : [];
+        }
         return Object.entries(this.state.amounts)
             .filter(([, amount]) => amount > 0)
             .map(([id, amount]) => ({ account_id: parseInt(id), amount }));
     }
 
     get hasBlocking() {
-        return this.state.rows.some((row) => this.isOver(row));
+        return !this.selectMode && this.state.rows.some((row) => this.isOver(row));
     }
 
     format(value) {
@@ -126,7 +151,7 @@ export class BudgetReservationPicker extends Component {
 
     async confirm() {
         if (!this.selections.length) {
-            this.notification.add("กรุณาระบุงบประมาณอย่างน้อย 1 รหัส", {
+            this.notification.add("กรุณาเลือกงบประมาณอย่างน้อย 1 รหัส", {
                 type: "warning",
             });
             return;
@@ -137,10 +162,11 @@ export class BudgetReservationPicker extends Component {
             });
             return;
         }
-        // Lets the backend cross-charge / availability constraints raise to the
-        // user (caught and shown by the web client).
-        await this.orm.call("budget.commitment", "apply_reservation_selection", [
-            [this.commitmentId],
+        // The host's apply_reservation_selection performs the write; its
+        // cross-charge / single-code / availability constraints raise to the
+        // user (the web client surfaces them).
+        await this.orm.call(this.resModel, "apply_reservation_selection", [
+            [this.resId],
             this.selections,
         ]);
         this.close();
@@ -148,9 +174,9 @@ export class BudgetReservationPicker extends Component {
 
     close() {
         // Close the picker dialog. This client action is launched from a
-        // type="object" form button, so Odoo's doActionButton reloads the
-        // commitment form when the dialog closes (the same mechanism the
-        // obligate/consume wizards rely on) — the new reserve lines then show.
+        // type="object" form button, so Odoo's doActionButton reloads the host
+        // form when the dialog closes (the same mechanism the obligate/consume
+        // wizards rely on) — the new selection then shows.
         this.actionService.doAction({ type: "ir.actions.act_window_close" });
     }
 }

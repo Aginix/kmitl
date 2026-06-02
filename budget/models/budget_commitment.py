@@ -493,9 +493,11 @@ class BudgetCommitment(models.Model):
             "target": "new",
             "name": _("เลือกงบประมาณ"),
             "context": {
-                "commitment_id": self.id,
+                "res_model": "budget.commitment",
+                "res_id": self.id,
                 "fiscal_year_id": self.account_fiscal_year_id.id,
                 "analytic_distribution": self.analytic_distribution or {},
+                "select_only": False,
             },
         }
 

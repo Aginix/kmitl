@@ -463,6 +463,79 @@ class BudgetCommitmentMixin(models.AbstractModel):
         commitment.action_cancel()
         return True
 
+    # --- Reservation picker (host-agnostic) ---
+
+    def _reservation_account_domain(self):
+        """Budget accounts a host may select in the picker (overridable).
+
+        Default: budgetable expense accounts. Hosts narrow it to match their own
+        budget-account field domain (e.g. purchase.request adds
+        ``purchase_ok`` + ``product_id``), so the picker cannot offer — and
+        :meth:`apply_reservation_selection` cannot write — an account the host
+        would reject.
+        """
+        return [("budgetable", "=", True), ("budget_type", "=", "expense")]
+
+    def action_open_reservation_picker(self):
+        """Open the reservation picker on a host document (PR / PO / DR …).
+
+        Scoped to the host's dimension combination + fiscal year so each row
+        shows the control-node available. Hosts carry a single budget account,
+        so the picker runs in select-only mode and writes that account back via
+        :meth:`apply_reservation_selection`.
+        """
+        self.ensure_one()
+        fiscal_year = getattr(self, "account_fiscal_year_id", False)
+        account = self._get_commitment_field_value("account_id")
+        root = account
+        while root and root.parent_id:
+            root = root.parent_id
+        return {
+            "type": "ir.actions.client",
+            "tag": "budget_reservation_picker",
+            "target": "new",
+            "name": _("เลือกงบประมาณ"),
+            "context": {
+                "res_model": self._name,
+                "res_id": self.id,
+                "fiscal_year_id": fiscal_year.id if fiscal_year else False,
+                "analytic_distribution": getattr(self, "analytic_distribution", False)
+                or {},
+                "root_account_id": root.id if root else False,
+                "account_domain": self._reservation_account_domain(),
+                "select_only": True,
+            },
+        }
+
+    def apply_reservation_selection(self, selections):
+        """Host write-back for the picker: set the single budget account field.
+
+        A host document carries one budget account (``_commitment_account_id_field``);
+        the reservation itself is still created later by the host's reserve
+        action. ``selections`` = ``[{"account_id": int, ...}]`` (amount ignored
+        here — the host derives it). Single code only. The account is validated
+        against ``_reservation_account_domain`` server-side, since field domains
+        do not constrain ``write``.
+        """
+        self.ensure_one()
+        selections = [s for s in (selections or []) if s.get("account_id")]
+        if not selections:
+            raise UserError(_("Select a budget code."))
+        if len(selections) > 1:
+            raise UserError(_("This document supports a single budget code."))
+        account_id = selections[0]["account_id"]
+        if not self.env["budget.account"].search_count(
+            self._reservation_account_domain() + [("id", "=", account_id)]
+        ):
+            raise UserError(
+                _("The selected budget code is not allowed for this document.")
+            )
+        field = getattr(
+            self.__class__, "_commitment_account_id_field", "budget_account_id"
+        )
+        self.write({field: account_id})
+        return True
+
     def _obligate_budget_commitment(self):
         """Add an obligate line to the linked commitment."""
         self.ensure_one()
