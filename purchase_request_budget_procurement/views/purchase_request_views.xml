@@ -40,19 +40,11 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
                 <h2>Purchase Request Form</h2>
-                <group string="Procurement Plan">
-                    <field
-                        name="use_procurement_plan"
-                        attrs="{'readonly': [('is_editable','=', False)]}"
-                    />
-                    <field
-                        name="procurement_plan_id"
-                        options="{'no_create_edit': True, 'no_create': True}"
-                        domain="[('state', '=', 'new')]"
-                        attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}"
-                    />
-                    <field name="procurement_plan_analytic_id" invisible="1" />
-                </group>
+                <!-- Plan-driven PRs are created from the procurement plan only
+                     (ADR-0006). The selector is gone; these stay invisible so
+                     the prefill onchange still fires from the create context. -->
+                <field name="use_procurement_plan" invisible="1" />
+                <field name="procurement_plan_analytic_id" invisible="1" />
             </xpath>
         </field>
     </record>
