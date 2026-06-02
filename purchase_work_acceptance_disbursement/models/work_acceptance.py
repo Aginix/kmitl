@@ -53,6 +53,12 @@ class WorkAcceptance(models.Model):
                 ],
                 limit=1,
             )
+            fine_product = self.env["product.product"].search(
+                [
+                    ("name", "=", "ค่าปรับ"),
+                ],
+                limit=1,
+            )
             if not fine_account:
                 raise UserError(
                     _("Account with code '4310000003' not found. Please check your chart of accounts.")
@@ -64,6 +70,7 @@ class WorkAcceptance(models.Model):
                         "name": _("ค่าปรับ"),
                         "quantity": 1,
                         "price_unit": -self.fines_late,
+                        "product_id": fine_product.id,
                         "account_id": fine_account.id,
                         "analytic_distribution": analytic_distribution or False,
                         "tax_ids": [Command.set(fine_tax_ids or [])],
