@@ -21,6 +21,20 @@ class BudgetAppropriationLine(models.Model):
     procurement_plan_id = fields.Many2one(comodel_name="procurement.plan")
 
     def _prepare_procurement_plan_vals(self):
+        # The line's own analytic_distribution holds at most the line-level
+        # dimensions; department/source live on the appropriation header (related
+        # fields) and never sync into it. Build the full 4D distribution from the
+        # convenience fields so the plan — and its reservation — carry every
+        # dimension, not just activity/fund.
+        distribution = dict(self.analytic_distribution or {})
+        for dimension in (
+            self.department_analytic_id,
+            self.source_analytic_id,
+            self.activity_analytic_id,
+            self.fund_analytic_id,
+        ):
+            if dimension:
+                distribution[str(dimension.id)] = 100
         return {
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "description": self.description,
@@ -29,7 +43,7 @@ class BudgetAppropriationLine(models.Model):
             "total_price": self.balance,
             "user_id": self.appropriation_id.user_id.id,
             "budget_account_id": self.account_id.id,
-            "analytic_distribution": self.analytic_distribution,
+            "analytic_distribution": distribution or False,
         }
 
     def _create_procurement_plan(self):
