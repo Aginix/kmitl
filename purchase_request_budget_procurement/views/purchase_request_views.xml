@@ -55,9 +55,17 @@
                 >
                     <i class="fa fa-info-circle me-1" />
                     ต้องการจัดทำใบ พ.1 จาก<b>แผนจัดซื้อจัดจ้าง</b>?
-                    ให้ไปที่เมนู <b>แผนจัดซื้อจัดจ้าง</b> เลือกแผนที่อยู่สถานะ
-                    <b>"รอดำเนินการ"</b> แล้วกดปุ่ม <b>"สร้างใบขอซื้อ"</b>
+                    เลือกแผน แล้วกดปุ่ม <b>"สร้างใบขอซื้อ"</b> จากหน้าแผน
+                    (แผนต้องอยู่สถานะ <b>"รอดำเนินการ"</b>)
                     — ไม่สามารถเลือกแผนจากในใบ พ.1 นี้ได้
+                    <div class="mt-2">
+                        <a
+                            href="/web#action=purchase_request_budget_procurement.action_procurement_plan_ready_for_pr"
+                            class="btn btn-sm btn-primary"
+                        >
+                            <i class="fa fa-external-link me-1" />ไปที่แผนจัดซื้อจัดจ้าง
+                        </a>
+                    </div>
                 </div>
             </xpath>
         </field>

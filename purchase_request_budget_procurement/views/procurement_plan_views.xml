@@ -22,4 +22,13 @@
         </field>
     </record>
 
+    <!-- Plans a พ.1 can be created from (new + ready). Linked from the info
+         alert on the purchase request form so users land on a filtered list. -->
+    <record id="action_procurement_plan_ready_for_pr" model="ir.actions.act_window">
+        <field name="name">แผนจัดซื้อจัดจ้าง</field>
+        <field name="res_model">procurement.plan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', 'in', ['new', 'ready'])]</field>
+    </record>
+
 </odoo>
