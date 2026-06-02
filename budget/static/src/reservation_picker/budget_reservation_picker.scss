@@ -1,0 +1,39 @@
+// Widen the picker dialog to fit the budget-account hierarchy, mirroring the
+// monitoring dashboard's dialog sizing.
+.o_dialog:has(.o_budget_reservation_picker) {
+    .modal-dialog {
+        max-width: 1000px;
+        width: 90vw;
+    }
+}
+
+.o_budget_reservation_picker {
+    max-height: 75vh;
+
+    .o_brp_body {
+        overflow: auto;
+    }
+
+    .o_brp_table {
+        .o_brp_num {
+            width: 180px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .o_brp_group > td {
+            background-color: #fcfcfc;
+            font-weight: 600;
+        }
+
+        .o_brp_toggle {
+            cursor: pointer;
+            width: 1em;
+            display: inline-block;
+        }
+
+        .o_brp_amount {
+            display: inline-block;
+            width: 160px;
+        }
+    }
+}

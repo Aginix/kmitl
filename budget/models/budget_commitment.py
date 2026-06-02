@@ -472,3 +472,75 @@ class BudgetCommitment(models.Model):
             "domain": [("commitment_id", "=", self.id)],
             "context": {"default_commitment_id": self.id},
         }
+
+    # --- Reservation picker widget ---
+
+    def action_open_reservation_picker(self):
+        """Open the budget reservation picker (hierarchy + per-row available).
+
+        The picker is scoped to this commitment's fixed dimension combination,
+        so every row shows the control-node available the reservation check will
+        enforce. On confirm it calls :meth:`apply_reservation_selection`.
+        """
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(
+                _("Budget can only be selected while the reservation is draft.")
+            )
+        return {
+            "type": "ir.actions.client",
+            "tag": "budget_reservation_picker",
+            "target": "new",
+            "name": _("เลือกงบประมาณ"),
+            "context": {
+                "commitment_id": self.id,
+                "fiscal_year_id": self.account_fiscal_year_id.id,
+                "analytic_distribution": self.analytic_distribution or {},
+            },
+        }
+
+    def apply_reservation_selection(self, selections):
+        """Write reserve lines from the picker.
+
+        ``selections`` = ``[{"account_id": int, "amount": float}, ...]``. Replaces
+        the commitment's current reserve lines (re-selection cancels the old
+        ones), copies the header dimensions onto each line, and lifts the cap to
+        cover the total. Cross-charge (>1 code) is gated by the
+        ``cross_chargeable`` constraint on the lines. Draft only.
+        """
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(
+                _("Budget can only be selected while the reservation is draft.")
+            )
+        selections = [
+            s for s in (selections or []) if s.get("account_id") and s.get("amount")
+        ]
+        if not selections:
+            raise UserError(_("Select at least one budget code with an amount."))
+
+        # Re-selection: cancel the existing posted reserve lines first.
+        self.line_ids.filtered(
+            lambda l: l.state == "posted" and l.move_type == "reserve"
+        ).action_cancel()
+
+        total = sum(s["amount"] for s in selections)
+        line_cmds = [
+            (
+                0,
+                0,
+                {
+                    "move_type": "reserve",
+                    "account_id": s["account_id"],
+                    "amount": s["amount"],
+                    "analytic_distribution": self.analytic_distribution,
+                    "name": _("Reservation"),
+                },
+            )
+            for s in selections
+        ]
+        vals = {"line_ids": line_cmds, "account_id": selections[0]["account_id"]}
+        if not self.amount or self.amount < total:
+            vals["amount"] = total
+        self.write(vals)
+        return True
