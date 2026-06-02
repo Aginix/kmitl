@@ -7,7 +7,7 @@
         <field name="model">account.asset</field>
         <field name="inherit_id" ref="account_asset_management.account_asset_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
+            <xpath expr="//page[@name='asset_info']" position="before">
                     <page string="Subcomponents" name="subcomponents">
                         <field 
                             name="subcomponent_ids"

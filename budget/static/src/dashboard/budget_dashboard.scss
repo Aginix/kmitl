@@ -1,0 +1,117 @@
+// Widen the dialog when it hosts the budget dashboard
+.o_dialog:has(.o_budget_dashboard) {
+    .modal-dialog {
+        max-width: 1400px;
+        width: 95vw;
+    }
+}
+
+.o_budget_dashboard {
+    padding: 12px;
+    height: 100%;
+    overflow: auto;
+
+    .o_bd_controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: flex-end;
+        margin-bottom: 12px;
+    }
+
+    .o_bd_filter {
+        display: flex;
+        flex-direction: column;
+        font-size: 13px;
+
+        label {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        select {
+            min-width: 160px;
+        }
+
+        .o-autocomplete {
+            min-width: 200px;
+        }
+
+        .o-autocomplete input {
+            width: 100%;
+        }
+
+        &.o_bd_check {
+            justify-content: flex-end;
+
+            label {
+                font-weight: 400;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+        }
+    }
+
+    .o_bd_table_wrapper {
+        overflow-x: auto;
+    }
+
+    .o_bd_table {
+        min-width: 900px;
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #f8f9fa;
+            white-space: nowrap;
+        }
+
+        .o_bd_acc {
+            min-width: 320px;
+        }
+
+        .o_bd_acc_inner {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .o_bd_num {
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .o_bd_click {
+            cursor: pointer;
+        }
+
+        .o_bd_click:hover {
+            text-decoration: underline;
+        }
+
+        .o_bd_neg {
+            color: #d9534f;
+        }
+
+        .o_bd_group {
+            background: #fcfcfc;
+            font-weight: 600;
+        }
+
+        .o_bd_caret {
+            cursor: pointer;
+            display: inline-block;
+            width: 1em;
+            text-align: center;
+            color: #666;
+        }
+    }
+
+    .o_bd_loading {
+        padding: 24px;
+        text-align: center;
+        color: #888;
+    }
+}

@@ -111,6 +111,47 @@ class PurchaseRequest(models.Model):
 
         return commitment_vals
 
+    def action_reserve_budget(self):
+        """Plan-driven PRs draw down the plan's shared commitment instead of
+        creating their own (D2). Non-plan PRs keep the standard own-commitment
+        behaviour (D4)."""
+        self.ensure_one()
+        if self.use_procurement_plan and self.procurement_plan_id:
+            plan = self.procurement_plan_id
+            commitment = plan.budget_commitment_ids.filtered(
+                lambda c: c.state in ("reserved", "partial")
+            )[:1]
+            if not commitment:
+                raise UserError(
+                    _(
+                        "แผนจัดซื้อจัดจ้างยังไม่ได้จองงบประมาณ "
+                        "(แผนต้องอยู่สถานะพร้อมดำเนินการ)"
+                    )
+                )
+            self.budget_commitment_id = commitment.id
+            if plan.state == "ready":
+                plan.action_in_progress()
+            self.button_to_approve()
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "purchase.request",
+                "view_mode": "form",
+                "res_id": self.id,
+                "target": "current",
+                "context": self.env.context,
+            }
+        return super().action_reserve_budget()
+
+    def _cancel_budget_commitment(self):
+        """Never cancel a shared plan commitment when a plan-driven PR is reset
+        or rejected — just detach this PR from it (D3)."""
+        self.ensure_one()
+        commitment = self.budget_commitment_id
+        if commitment and commitment.procurement_plan_id:
+            self.budget_commitment_id = False
+            return True
+        return super()._cancel_budget_commitment()
+
 
 class ProcurementPlan(models.Model):
     _inherit = "procurement.plan"

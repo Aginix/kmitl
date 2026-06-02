@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="budget.BudgetOverview" owl="1">
+        <div class="o_budget_overview">
+
+            <div class="o_bo_header">
+                <div class="o_bo_title">
+                    <h2>ภาพรวมงบประมาณ</h2>
+                    <span class="o_bo_subtitle">สถานะการใช้จ่ายงบประมาณรายจ่าย</span>
+                </div>
+                <div class="o_bo_filters">
+                    <div class="o_bo_filter">
+                        <label>ปีงบประมาณ</label>
+                        <select t-on-change="onFiscalYearChange">
+                            <t t-foreach="fiscalYears" t-as="fy" t-key="fy.id">
+                                <option t-att-value="fy.id" t-att-selected="fy.id === state.fiscalYearId">
+                                    <t t-esc="fy.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="o_bo_filter">
+                        <label>แหล่งเงิน</label>
+                        <select t-on-change="onSourceChange">
+                            <t t-foreach="sources" t-as="src" t-key="src.id">
+                                <option t-att-value="src.id" t-att-selected="src.id === state.sourceId">
+                                    <t t-esc="src.display_name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="o_bo_loading">กำลังโหลด...</div>
+
+            <t t-else="">
+                <!-- summary KPIs -->
+                <div class="o_bo_kpis">
+                    <div class="o_bo_kpi">
+                        <span class="o_bo_kpi_label">งบปัจจุบัน</span>
+                        <span class="o_bo_kpi_value" t-esc="format(state.totals.current)"/>
+                    </div>
+                    <div class="o_bo_kpi">
+                        <span class="o_bo_kpi_label">ใช้ไปแล้ว</span>
+                        <span class="o_bo_kpi_value o_bo_kpi_used" t-esc="format(state.totals.used)"/>
+                        <span class="o_bo_kpi_sub"><t t-esc="pctLabel(state.totals)"/> ของงบปัจจุบัน</span>
+                    </div>
+                    <div class="o_bo_kpi">
+                        <span class="o_bo_kpi_label">คงเหลือ</span>
+                        <span class="o_bo_kpi_value"
+                              t-att-class="(state.totals.remaining || 0) &lt; 0 ? 'o_bo_neg' : 'o_bo_pos'"
+                              t-esc="format(state.totals.remaining)"/>
+                    </div>
+                </div>
+
+                <!-- cards by budget category -->
+                <h3 class="o_bo_section">ประเภทงบ</h3>
+                <div class="o_bo_cards">
+                    <t t-foreach="state.cards" t-as="card" t-key="card.id">
+                        <div class="o_bo_card" t-att-class="'o_bo_' + cardStatus(card)"
+                             role="button" tabindex="0"
+                             t-on-click="() => this.openCategory(card)"
+                             t-on-keydown="(ev) => this.onCardKey(ev, card)">
+                            <div class="o_bo_card_head">
+                                <span class="o_bo_code" t-esc="card.code"/>
+                                <span class="o_bo_name" t-esc="card.name"/>
+                            </div>
+                            <div class="o_bo_card_remain">
+                                <span class="o_bo_remain_label">คงเหลือ</span>
+                                <span class="o_bo_remain_value" t-esc="format(card.remaining)"/>
+                            </div>
+                            <div class="o_bo_bar">
+                                <div class="o_bo_bar_fill" t-att-style="'width:' + usedPct(card) + '%'"/>
+                            </div>
+                            <div class="o_bo_card_foot">
+                                <span>งบปัจจุบัน <b t-esc="format(card.current)"/></span>
+                                <span>ใช้ไป <b t-esc="format(card.used)"/> (<t t-esc="pctLabel(card)"/>)</span>
+                            </div>
+
+                            <t t-set="funds" t-value="breakdownRows(card.funds)"/>
+                            <t t-set="activities" t-value="breakdownRows(card.activities)"/>
+                            <div class="o_bo_breakdown" t-if="funds.length or activities.length">
+                                <div class="o_bo_bd_group" t-if="funds.length">
+                                    <div class="o_bo_bd_head">
+                                        <span class="o_bo_bd_dim">กองทุน</span>
+                                        <span class="o_bo_bd_h">งบ</span>
+                                        <span class="o_bo_bd_h">คงเหลือ</span>
+                                    </div>
+                                    <t t-foreach="funds" t-as="f" t-key="f.id">
+                                        <div class="o_bo_bd_row">
+                                            <span class="o_bo_bd_name">
+                                                <b t-if="f.code" t-esc="f.code"/> <t t-esc="f.name"/>
+                                            </span>
+                                            <span class="o_bo_bd_cur" t-esc="format(f.current)"/>
+                                            <span class="o_bo_bd_rem"
+                                                  t-att-class="f.remaining &lt; -0.005 ? 'o_bo_neg' : ''"
+                                                  t-esc="format(f.remaining)"/>
+                                        </div>
+                                    </t>
+                                </div>
+                                <div class="o_bo_bd_group" t-if="activities.length">
+                                    <div class="o_bo_bd_head">
+                                        <span class="o_bo_bd_dim">กิจกรรม</span>
+                                        <span class="o_bo_bd_h">งบ</span>
+                                        <span class="o_bo_bd_h">คงเหลือ</span>
+                                    </div>
+                                    <t t-foreach="activities" t-as="a" t-key="a.id">
+                                        <div class="o_bo_bd_row">
+                                            <span class="o_bo_bd_name">
+                                                <b t-if="a.code" t-esc="a.code"/> <t t-esc="a.name"/>
+                                            </span>
+                                            <span class="o_bo_bd_cur" t-esc="format(a.current)"/>
+                                            <span class="o_bo_bd_rem"
+                                                  t-att-class="a.remaining &lt; -0.005 ? 'o_bo_neg' : ''"
+                                                  t-esc="format(a.remaining)"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <div t-if="!state.cards.length" class="o_bo_empty">ไม่มีประเภทงบ</div>
+                </div>
+
+                <!-- recent movements -->
+                <h3 class="o_bo_section">การเคลื่อนไหวล่าสุด</h3>
+                <div class="o_bo_panels">
+
+                    <div class="o_bo_panel">
+                        <div class="o_bo_panel_head">
+                            <span class="o_bo_panel_title">การจองงบประมาณ</span>
+                            <a class="o_bo_viewall" t-on-click="() => this.openList('budget.action_budget_commitment')">
+                                ดูทั้งหมด <i class="fa fa-arrow-right"/>
+                            </a>
+                        </div>
+                        <table class="o_bo_recent">
+                            <tbody>
+                                <t t-foreach="state.recent.commitment" t-as="r" t-key="r.id">
+                                    <tr t-on-click="() => this.openRecord('budget.commitment', r.id)">
+                                        <td class="o_bo_r_main">
+                                            <b t-esc="r.name"/>
+                                            <span class="o_bo_r_date" t-esc="r.date"/>
+                                        </td>
+                                        <td class="o_bo_r_amt" t-esc="format(r.amount)"/>
+                                        <td class="o_bo_r_state">
+                                            <span class="o_bo_badge" t-att-class="'o_bo_badge_' + stateBadge(r.state)"
+                                                  t-esc="stateLabel('budget.commitment', r.state)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr t-if="!state.recent.commitment.length" class="o_bo_r_empty">
+                                    <td colspan="3">ไม่มีรายการ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="o_bo_panel">
+                        <div class="o_bo_panel_head">
+                            <span class="o_bo_panel_title">บัญชีงบประมาณ</span>
+                            <a class="o_bo_viewall" t-on-click="() => this.openList('budget.action_budget_move')">
+                                ดูทั้งหมด <i class="fa fa-arrow-right"/>
+                            </a>
+                        </div>
+                        <table class="o_bo_recent">
+                            <tbody>
+                                <t t-foreach="state.recent.move" t-as="r" t-key="r.id">
+                                    <tr t-on-click="() => this.openRecord('budget.move', r.id)">
+                                        <td class="o_bo_r_main">
+                                            <b t-esc="r.name"/>
+                                            <span class="o_bo_r_date">
+                                                <span class="o_bo_type" t-esc="moveTypeLabel(r.move_type)"/>
+                                                <t t-esc="r.date"/>
+                                            </span>
+                                        </td>
+                                        <td class="o_bo_r_amt" t-esc="format(r.amount)"/>
+                                        <td class="o_bo_r_state">
+                                            <span class="o_bo_badge" t-att-class="'o_bo_badge_' + stateBadge(r.state)"
+                                                  t-esc="stateLabel('budget.move', r.state)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr t-if="!state.recent.move.length" class="o_bo_r_empty">
+                                    <td colspan="3">ไม่มีรายการ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="o_bo_panel">
+                        <div class="o_bo_panel_head">
+                            <span class="o_bo_panel_title">การโอนงบประมาณ</span>
+                            <a class="o_bo_viewall" t-on-click="() => this.openList('budget.action_budget_transfer')">
+                                ดูทั้งหมด <i class="fa fa-arrow-right"/>
+                            </a>
+                        </div>
+                        <table class="o_bo_recent">
+                            <tbody>
+                                <t t-foreach="state.recent.transfer" t-as="r" t-key="r.id">
+                                    <tr t-on-click="() => this.openRecord('budget.transfer', r.id)">
+                                        <td class="o_bo_r_main">
+                                            <b t-esc="r.name"/>
+                                            <span class="o_bo_r_date" t-esc="r.date"/>
+                                        </td>
+                                        <td class="o_bo_r_amt" t-esc="format(r.amount)"/>
+                                        <td class="o_bo_r_state">
+                                            <span class="o_bo_badge" t-att-class="'o_bo_badge_' + stateBadge(r.state)"
+                                                  t-esc="stateLabel('budget.transfer', r.state)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr t-if="!state.recent.transfer.length" class="o_bo_r_empty">
+                                    <td colspan="3">ไม่มีรายการ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -526,3 +526,67 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.total_consumed, 50_000)
         self.assertNotEqual(c1.budget_move_id, c2.budget_move_id)
         self.assertEqual(len(c.budget_move_ids), 2)
+
+    # ====================================================================
+    # 14. Phase 1 — state-machine guards & auto-transitions
+    # ====================================================================
+
+    def test_200_b1_block_obligate_on_draft(self):
+        """B1: a forward obligate is rejected while the commitment is draft."""
+        c = self._create_commitment(100_000)  # stays draft (no action_reserve)
+        with self.assertRaises(UserError):
+            self._add_line(c, "obligate", 50_000)
+
+    def test_201_b3_auto_done_on_full_consume(self):
+        """B3: state auto-advances to done when consumption reaches the reservation."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        self.assertEqual(c.state, "partial")
+        self._add_line(c, "consume", 100_000)
+        self.assertEqual(c.state, "done")
+
+    def test_202_b3_revert_to_reserved_on_cancel(self):
+        """B3: cancelling the only obligation reverts partial -> reserved."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        ob = self._add_line(c, "obligate", 40_000)
+        self.assertEqual(c.state, "partial")
+        ob.action_cancel()
+        self.assertEqual(c.state, "reserved")
+
+    def test_203_b1_reversal_allowed_after_done(self):
+        """B1: a refund (negative consume) is postable after done and reopens it."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        self._add_line(c, "obligate", 100_000)
+        self._add_line(c, "consume", 100_000)
+        self.assertEqual(c.state, "done")
+        # Negative consume = refund: allowed even though state is done.
+        self._add_line(c, "consume", -10_000)
+        self.assertEqual(c.total_consumed, 90_000)
+        self.assertEqual(c.state, "partial")  # auto-reopened by _sync_state
+
+    def test_204_b2_negative_net_total_blocked(self):
+        """B2: a reversal that drives a net total below zero is rejected."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        # Nothing consumed yet; a -10k consume would make total_consumed negative.
+        with self.assertRaises(ValidationError):
+            self._add_line(c, "consume", -10_000)
+
+    def test_205_appropriation_move_defaults_initial(self):
+        """FIX-1: appropriation moves auto-get 'initial'; entry/explicit are untouched."""
+        Move = self.env["budget.move"]
+        appro = Move.create({"move_type": "appropriation", "budget_type": "expense"})
+        self.assertEqual(appro.appropriation_type, "initial")
+        entry = Move.create({"move_type": "entry", "budget_type": "expense"})
+        self.assertFalse(entry.appropriation_type)
+        explicit = Move.create(
+            {
+                "move_type": "appropriation",
+                "budget_type": "expense",
+                "appropriation_type": "supplementary",
+            }
+        )
+        self.assertEqual(explicit.appropriation_type, "supplementary")
