@@ -68,6 +68,14 @@
                             groups="project.group_project_user"
                             attrs="{'invisible': [('state', 'in', ('draft', 'cancel'))]}">
                         </button>
+                        <button
+                            name="action_open_budget_commitments"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-thumb-tack"
+                            attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
+                            <field name="budget_commitment_count" widget="statinfo" string="ผูกพันงบประมาณ" />
+                        </button>
                     </div>
                     <div class="oe_title">
                         <label for="name"/>

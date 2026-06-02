@@ -12,3 +12,4 @@ from . import project_expected_outcome
 from . import project_plan
 from . import exception_rule
 from . import budget_account
+from . import budget_commitment
