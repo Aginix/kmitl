@@ -151,7 +151,9 @@ class KrisProjectDashboard(models.Model):
         # --- filter_options ---
         categories = self.env["kris.project.category"].search([])
         types = self.env["kris.project.type"].search([])
-        fiscal_years = self.env["account.fiscal.year"].search(
+        # sudo: read access to account.fiscal.year is limited to accounting
+        # groups; KRIS officers/viewers need it only as dashboard filter options.
+        fiscal_years = self.env["account.fiscal.year"].sudo().search(
             [], order="date_from desc"
         )
 
