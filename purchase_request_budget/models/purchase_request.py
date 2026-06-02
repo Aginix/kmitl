@@ -35,7 +35,7 @@ class PurchaseRequest(models.Model):
 
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กิจกรรม",
+        string="Activity",
         compute="_compute_analytic_id",
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
@@ -47,7 +47,7 @@ class PurchaseRequest(models.Model):
 
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="ส่วนงาน",
+        string="Department",
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
@@ -59,7 +59,7 @@ class PurchaseRequest(models.Model):
 
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กองทุน",
+        string="Fund",
         compute="_compute_analytic_id",
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
@@ -71,7 +71,7 @@ class PurchaseRequest(models.Model):
 
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="แหล่งเงิน",
+        string="Source",
         compute="_compute_analytic_id",
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],

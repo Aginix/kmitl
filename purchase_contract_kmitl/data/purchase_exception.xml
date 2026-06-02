@@ -1,7 +1,8 @@
 <odoo>
+    <!-- ต้องระบุชื่อสัญญา -->
     <record id="purchase_order_contract_name_exception" model="exception.rule">
-        <field name="name">ต้องระบุชื่อสัญญา</field>
-        <field name="description">ข้อมูลใบสั่งซื้อ/จ้าง/สัญญา</field>
+        <field name="name">The contract name must be specified.</field>
+        <field name="description">Purchase Order Information</field>
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -10,9 +11,10 @@ if not self.contract_name:
         </field>
     </record>
 
+    <!-- ต้องระบุประเภทสัญญา -->
     <record id="purchase_order_contract_type_exception" model="exception.rule">
-        <field name="name">ต้องระบุประเภทสัญญา</field>
-        <field name="description">ข้อมูลใบสั่งซื้อ/จ้าง/สัญญา</field>
+        <field name="name">The type of contract must be specified.</field>
+        <field name="description">Purchase Order Information</field>
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -21,9 +23,10 @@ if not self.contract_type_id:
         </field>
     </record>
 
+    <!-- ต้องระบุค่าปรับต่อวัน -->
     <record id="purchase_order_fines_rate_exception" model="exception.rule">
-        <field name="name">ต้องระบุค่าปรับต่อวัน</field>
-        <field name="description">ข้อมูลใบสั่งซื้อ/จ้าง/สัญญา</field>
+        <field name="name">the fine amount must be specified.</field>
+        <field name="description">Purchase Order Information</field>
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -32,9 +35,10 @@ if self.fines_rate &lt; 0:
         </field>
     </record>
 
+    <!-- วันที่เริ่มงาน ต้องไม่เริ่มก่อนวันที่เริ่มสัญญา -->
     <record id="purchase_order_work_start_must_be_valid_exception" model="exception.rule">
-        <field name="name">วันที่เริ่มงาน ต้องไม่เริ่มก่อนวันที่เริ่มสัญญา</field>
-        <field name="description">ประเภทสัญญางานก่อสร้าง</field>
+        <field name="name">The start date must not be before the start date of the contract.</field>
+        <field name="description">Types of construction contracts</field>
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -43,9 +47,10 @@ if self.work_start &lt; self.date_order_date:
         </field>
     </record>
 
+    <!-- จำเป็นต้องมีเลขที่สัญญา -->
     <record id="purchase_order_contract_number_requried_exception" model="exception.rule">
-        <field name="name">จำเป็นต้องมีเลขที่สัญญา</field>
-        <field name="description">ประเภทสัญญางานก่อสร้าง</field>
+        <field name="name">The contract number is required.</field>
+        <field name="description">Types of construction contracts</field>
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">

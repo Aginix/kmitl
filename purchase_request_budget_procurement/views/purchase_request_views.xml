@@ -17,7 +17,7 @@
                     attrs="{'invisible': [('procurement_plan_id', '=', False)]}"
                 >
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">แผนจัดซื้อจัดจ้าง</span>
+                        <span class="o_stat_text">Procurement Plan</span>
                     </div>
                 </button>
             </xpath>
@@ -40,7 +40,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
                 <h2>Purchase Request Form</h2>
-                <group string="แผนจัดซื้อจัดจ้าง">
+                <group string="Procurement Plan">
                     <field
                         name="use_procurement_plan"
                         attrs="{'readonly': [('is_editable','=', False)]}"

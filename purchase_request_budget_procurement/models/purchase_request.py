@@ -11,13 +11,13 @@ class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     use_procurement_plan = fields.Boolean(
-        string="เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง",
+        string="Use Procurement Plan",
         store=True,
     )
 
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan",
-        string="รายการแผนจัดซื้อจัดจ้าง",
+        string="Procurement Plan",
         domain="",
         tracking=True,
     )
