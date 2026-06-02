@@ -53,6 +53,11 @@ class KrisProject(models.Model):
         self.write({"state": "done", "ignore_exception": False})
 
     def action_cancel(self):
+        for rec in self:
+            if rec.state == "cancel":
+                raise UserError(
+                    _("This project is already cancelled.")
+                )
         if self.detect_exceptions() and not self.ignore_exception:
             return self.with_context(
                 kris_exception_action="action_cancel"
