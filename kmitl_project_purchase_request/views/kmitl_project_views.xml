@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- KMITL project form - add "Create PR" button + พ.1 smart button -->
+    <record id="view_kmitl_project_form_purchase_request" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form.purchase.request</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_create_purchase_request" type="object" string="สร้างใบขอซื้อ" class="btn-primary" attrs="{'invisible': [('can_create_purchase_request', '=', False)]}" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="can_create_purchase_request" invisible="1" />
+                <button name="action_view_purchase_requests" type="object" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('purchase_request_count', '=', 0)]}">
+                    <field name="purchase_request_count" widget="statinfo" string="ใบ พ.1" />
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

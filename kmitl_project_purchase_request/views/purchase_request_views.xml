@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Purchase request form - link back to the source KMITL project -->
+    <record id="view_purchase_request_form_kmitl_project" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (KMITL Project)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="use_project" invisible="1" />
+                <field name="kmitl_project_id" invisible="1" />
+                <button
+                    name="action_view_kmitl_project"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-folder-open-o"
+                    attrs="{'invisible': [('kmitl_project_id', '=', False)]}"
+                >
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">โครงการ/กิจกรรม</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
