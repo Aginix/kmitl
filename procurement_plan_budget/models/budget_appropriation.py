@@ -28,7 +28,17 @@ class BudgetAppropriation(models.Model):
 
     def action_post(self):
         super().action_post()
+        self._reserve_procurement_plans()
         self._log_message_on_linked_documents()
+
+    def _reserve_procurement_plans(self):
+        """Reserve each created procurement plan's budget the moment the
+        appropriation is posted (ADR-0005). super().action_post() has already
+        posted the appropriation move, so the pool is available to lock.
+        ``_reserve_plan_commitment`` is idempotent and skips plans that already
+        hold an active commitment."""
+        for line in self.line_ids.filtered(lambda l: l.procurement_plan_id):
+            line.procurement_plan_id._reserve_plan_commitment()
 
     def _log_message_on_linked_documents(self):
         procurement_lines = self.line_ids.filtered(lambda l: l.procurement_plan_id)
