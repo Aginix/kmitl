@@ -114,7 +114,7 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
-        store=False,
+        store=True,
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -122,7 +122,7 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        store=False,
+        store=True,
     )
 
     _analytic_keys = {
@@ -222,6 +222,20 @@ class BudgetCommitmentLine(models.Model):
                     % {"consumed": total_consumed, "obligated": total_obligated}
                 )
 
+            # B2: over-reversal must never drive a net total below zero.
+            if total_reserved < 0:
+                raise ValidationError(
+                    _("Total reserved cannot be negative (%.2f).") % total_reserved
+                )
+            if total_obligated < 0:
+                raise ValidationError(
+                    _("Total obligated cannot be negative (%.2f).") % total_obligated
+                )
+            if total_consumed < 0:
+                raise ValidationError(
+                    _("Total consumed cannot be negative (%.2f).") % total_consumed
+                )
+
     # --- Immutability ---
 
     def write(self, vals):
@@ -251,6 +265,9 @@ class BudgetCommitmentLine(models.Model):
             # Cascade cancel to linked budget.move
             if line.budget_move_id and line.budget_move_id.state != "cancel":
                 line.budget_move_id.button_cancel()
+        # Re-derive header state band (e.g. partial -> reserved once every
+        # obligate/consume line is cancelled).
+        self.mapped("commitment_id")._sync_state()
 
     def action_post(self):
         for line in self:
@@ -316,17 +333,33 @@ class BudgetCommitmentLine(models.Model):
     def create(self, vals_list):
         lines = super().create(vals_list)
 
+        # B1: forward obligate/consume are only allowed on an active commitment.
+        # Exempt are reserve lines (created with the header while still draft) and
+        # reversal lines (negative amount — refunds / de-obligations, which must
+        # stay postable even after a commitment is fully consumed/"done");
+        # _sync_state re-derives the state band once a reversal lands.
+        blocked = lines.filtered(
+            lambda l: l.state == "posted"
+            and l.move_type in ("obligate", "consume")
+            and l.amount > 0
+            and l.commitment_id.state not in ("reserved", "partial")
+        )
+        if blocked:
+            raise UserError(
+                _(
+                    "Can only obligate or consume a commitment that is "
+                    "reserved or in progress."
+                )
+            )
+
         # Auto-create budget.move for consume lines
         for line in lines.filtered(
             lambda l: l.state == "posted" and l.move_type == "consume"
         ):
             line._create_budget_move()
 
-        # Auto-advance header state when obligate/consume lines are added
-        for line in lines.filtered(
-            lambda l: l.state == "posted" and l.move_type in ("obligate", "consume")
-        ):
-            if line.commitment_id.state == "reserved":
-                line.commitment_id.state = "partial"
+        # Re-derive the header state band (reserved/partial/done) from the
+        # updated line totals.
+        lines.mapped("commitment_id")._sync_state()
 
         return lines

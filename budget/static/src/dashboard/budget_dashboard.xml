@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="budget.BudgetDashboard" owl="1">
+        <div class="o_budget_dashboard">
+            <div class="o_bd_controls">
+                <div class="o_bd_filter">
+                    <label>ปีงบประมาณ</label>
+                    <select t-on-change="onFiscalYearChange">
+                        <t t-foreach="fiscalYears" t-as="fy" t-key="fy.id">
+                            <option t-att-value="fy.id" t-att-selected="fy.id === state.fiscalYearId">
+                                <t t-esc="fy.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <div class="o_bd_filter">
+                    <label>ประเภทงบ</label>
+                    <select t-on-change="onRootChange">
+                        <option value="">ทั้งหมด</option>
+                        <t t-foreach="rootAccounts" t-as="acc" t-key="acc.id">
+                            <option t-att-value="acc.id" t-att-selected="acc.id === state.rootAccountId">
+                                <t t-esc="acc.code"/> - <t t-esc="acc.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <div class="o_bd_filter">
+                    <label>แหล่งเงิน</label>
+                    <select t-on-change="onSourceChange">
+                        <t t-foreach="sources" t-as="src" t-key="src.id">
+                            <option t-att-value="src.id" t-att-selected="src.id === state.sourceId">
+                                <t t-esc="src.display_name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <t t-foreach="hierDimensions" t-as="dim" t-key="dim.key">
+                    <div class="o_bd_filter">
+                        <label t-esc="dim.label"/>
+                        <AutoComplete
+                            value="state.filterLabels[dim.key] || ''"
+                            sources="sourcesFor(dim)"
+                            placeholder="dim.label"
+                            onSelect="(option) => this.onDimSelect(dim.key, option)"
+                            onInput="(args) => this.onDimInput(dim.key, args)"
+                        />
+                    </div>
+                </t>
+                <div class="o_bd_filter o_bd_check">
+                    <label>
+                        <input type="checkbox" t-att-checked="state.hideZero" t-on-change="toggleHideZero"/>
+                        ซ่อนแถวที่ไม่มีความเคลื่อนไหว
+                    </label>
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="o_bd_loading">กำลังโหลด...</div>
+
+            <div t-else="" class="o_bd_table_wrapper">
+            <table class="o_bd_table table table-sm">
+                <thead>
+                    <tr>
+                        <th class="o_bd_acc">รหัสงบประมาณ</th>
+                        <th class="text-end">งบต้นปี</th>
+                        <th class="text-end">ปรับปรุง/โอน</th>
+                        <th class="text-end">งบปัจจุบัน</th>
+                        <th class="text-end">ขอใช้ทั้งหมด</th>
+                        <th class="text-end">เงินจอง</th>
+                        <th class="text-end">ผูกพัน</th>
+                        <th class="text-end">เบิกจ่าย</th>
+                        <th class="text-end">รวมใช้</th>
+                        <th class="text-end">คงเหลือ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="visibleRows" t-as="row" t-key="row.id"
+                        t-att-class="row.has_children ? 'o_bd_group' : ''">
+                        <td class="o_bd_acc">
+                            <div class="o_bd_acc_inner" t-att-style="'padding-left:' + (row.level * 18) + 'px'">
+                                <span class="o_bd_caret" t-on-click="() => this.toggleRow(row)"
+                                      t-esc="row.has_children ? (state.collapsed[row.id] ? '▸' : '▾') : ''"/>
+                                <b t-esc="row.code"/>
+                                <span t-esc="row.name"/>
+                            </div>
+                        </td>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row)" t-esc="format(row.initial)"/>
+                        <td class="text-end o_bd_num" t-esc="format(row.adjustment)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row)">
+                            <b t-esc="format(row.current)"/>
+                        </td>
+                        <td class="text-end o_bd_num" t-esc="format(row.cap)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.reserved)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.obligated)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.consumed)"/>
+                        <td class="text-end o_bd_num" t-esc="format(row.used)"/>
+                        <td class="text-end o_bd_num" t-att-class="row.remaining &lt; 0 ? 'o_bd_neg' : ''">
+                            <b t-esc="format(row.remaining)"/>
+                        </td>
+                    </tr>
+                    <tr t-if="!visibleRows.length">
+                        <td colspan="10" class="text-center text-muted">ไม่มีข้อมูล</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </t>
+
+</templates>
