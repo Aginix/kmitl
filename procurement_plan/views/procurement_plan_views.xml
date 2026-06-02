@@ -6,7 +6,7 @@
         <field name="name">view.procurement.plan.tree</field>
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
-            <tree decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'">
+            <tree create="false" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'">
                 <field name="account_fiscal_year_id" />
                 <field name="name" />
                 <field name="description" />
@@ -29,7 +29,7 @@
         <field name="name">view.procurement.plan.form</field>
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
-            <form string="Procurement Plan">
+            <form string="Procurement Plan" create="false">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,new,ready,in_progress,done" />
                     <button name="action_ready" string="Ready" type="object" class="btn-primary" states="new" />
