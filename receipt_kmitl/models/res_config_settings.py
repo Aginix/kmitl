@@ -13,15 +13,3 @@ class ResConfigSettings(models.TransientModel):
         help="Default partner used on KMITL receipts when no specific "
              "partner is selected.",
     )
-    receipt_kmitl_default_cash_journal_id = fields.Many2one(
-        "account.journal",
-        string="Default Cash Journal",
-        config_parameter="receipt_kmitl.default_cash_journal_id",
-        domain="[('is_receipt_kmitl_journal', '=', True), ('type', '=', 'cash')]",
-    )
-    receipt_kmitl_default_bank_journal_id = fields.Many2one(
-        "account.journal",
-        string="Default Bank Journal",
-        config_parameter="receipt_kmitl.default_bank_journal_id",
-        domain="[('is_receipt_kmitl_journal', '=', True), ('type', '=', 'bank')]",
-    )

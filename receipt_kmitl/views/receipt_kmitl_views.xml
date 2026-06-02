@@ -5,19 +5,19 @@
         <field name="model">receipt.kmitl</field>
         <field name="arch" type="xml">
             <tree decoration-muted="state == 'cancelled'"
-                  decoration-info="state == 'issued'"
-                  decoration-success="state == 'reclassified'">
+                  decoration-info="state == 'confirmed'"
+                  decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_id"/>
                 <field name="partner_id"/>
-                <field name="payment_method"/>
+                <field name="payment_method_id"/>
                 <field name="amount_total" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
+                <field name="deposit_id" optional="show"/>
                 <field name="state" widget="badge"
-                       decoration-info="state == 'issued'"
-                       decoration-warning="state == 'deposited'"
-                       decoration-success="state == 'reclassified'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-success="state == 'posted'"
                        decoration-muted="state == 'cancelled'"/>
             </tree>
         </field>
@@ -29,22 +29,27 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_issue"
+                    <button name="action_confirm"
                             type="object"
-                            string="Issue Receipt"
+                            string="Confirm"
                             class="btn-primary"
                             states="draft"/>
-                    <button name="action_open_cancel_wizard"
+                    <button name="action_post"
                             type="object"
-                            string="Cancel..."
-                            states="issued"
-                            groups="receipt_kmitl.group_receipt_kmitl_cashier"/>
-                    <button name="action_open_refund_wizard"
+                            string="Post"
+                            class="btn-primary"
+                            states="confirmed"
+                            groups="receipt_kmitl.group_receipt_kmitl_central_finance"/>
+                    <button name="action_cancel"
                             type="object"
-                            string="Refund..."
-                            attrs="{'invisible': [('state', 'not in', ['deposited', 'reclassified'])]}"/>
+                            string="Cancel"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'confirmed'])]}"/>
+                    <button name="action_draft"
+                            type="object"
+                            string="Reset to Draft"
+                            states="cancelled"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,issued,deposited,reclassified"/>
+                           statusbar_visible="draft,confirmed,posted"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -57,8 +62,7 @@
                             <field name="date"/>
                             <field name="department_id"
                                    options="{'no_create': True}"/>
-                            <field name="journal_id"/>
-                            <field name="payment_method"/>
+                            <field name="payment_method_id"/>
                             <field name="user_id"/>
                         </group>
                         <group string="Customer">
@@ -74,9 +78,9 @@
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="receipt_type_id"/>
+                                    <field name="product_id"/>
                                     <field name="name"/>
-                                    <field name="suspense_account_id"/>
+                                    <field name="account_id"/>
                                     <field name="quantity"/>
                                     <field name="price_unit"/>
                                     <field name="amount" sum="Total"/>
@@ -87,7 +91,6 @@
                                     <field name="analytic_distribution"
                                            widget="analytic_distribution"
                                            optional="hide"/>
-                                    <field name="income_account_id" optional="hide" readonly="1"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="state" invisible="1"/>
                                 </tree>
@@ -101,13 +104,12 @@
                             <field name="note"/>
                         </page>
                         <page string="Accounting" name="accounting"
-                              attrs="{'invisible': [('move_id', '=', False)]}">
+                              attrs="{'invisible': ['&amp;', ('move_id', '=', False), ('deposit_id', '=', False)]}">
                             <group>
                                 <field name="move_id" readonly="1"/>
-                                <field name="cash_deposit_id" readonly="1"/>
-                                <field name="cancel_reason" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
-                                <field name="cancelled_by" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
-                                <field name="cancelled_date" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                                <field name="deposit_id" readonly="1"/>
+                                <field name="cancel_reason"
+                                       attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                             </group>
                         </page>
                     </notebook>
@@ -130,23 +132,20 @@
                 <field name="partner_id"/>
                 <field name="department_id"/>
                 <field name="customer_name"/>
+                <field name="payment_method_id"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
-                <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
-                <filter string="Deposited" name="deposited" domain="[('state','=','deposited')]"/>
-                <filter string="Reclassified" name="reclassified" domain="[('state','=','reclassified')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
+                <filter string="Posted" name="posted" domain="[('state','=','posted')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <separator/>
-                <filter string="Pending Allocation" name="pending_allocation"
-                        domain="[('state','=','deposited')]"/>
-                <separator/>
-                <filter string="Cash" name="cash" domain="[('payment_method','=','cash')]"/>
-                <filter string="Bank Transfer" name="transfer" domain="[('payment_method','=','transfer')]"/>
+                <filter string="Pending Deposit" name="pending_deposit"
+                        domain="[('state','=','confirmed'),('deposit_id','=',False)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Department" name="group_department" context="{'group_by':'department_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Date" name="group_date" context="{'group_by':'date'}"/>
-                    <filter string="Payment Method" name="group_method" context="{'group_by':'payment_method'}"/>
+                    <filter string="Payment Method" name="group_method" context="{'group_by':'payment_method_id'}"/>
                 </group>
             </search>
         </field>

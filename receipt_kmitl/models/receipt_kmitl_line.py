@@ -15,17 +15,18 @@ class ReceiptKmitlLine(models.Model):
         ondelete="cascade",
     )
     sequence = fields.Integer(default=10)
-    name = fields.Char(string="Description", required=True)
-    receipt_type_id = fields.Many2one(
-        "receipt.kmitl.type",
-        string="Receipt Type",
+    product_id = fields.Many2one(
+        "product.product",
+        string="Product",
         required=True,
+        domain="[('property_account_income_id', '!=', False)]",
     )
-    suspense_account_id = fields.Many2one(
+    name = fields.Char(string="Description", required=True)
+    account_id = fields.Many2one(
         "account.account",
-        string="Suspense Account",
+        string="Income Account",
         required=True,
-        domain="[('deprecated', '=', False)]",
+        domain="[('deprecated', '=', False), ('account_type', '=', 'income')]",
     )
     quantity = fields.Float(default=1.0, required=True, digits="Product Unit of Measure")
     price_unit = fields.Monetary(required=True, currency_field="currency_id")
@@ -44,27 +45,23 @@ class ReceiptKmitlLine(models.Model):
         store=True,
         readonly=True,
     )
-    allocation_line_id = fields.Many2one(
-        "receipt.kmitl.allocation.line",
-        string="Allocation Line",
-        readonly=True,
-        copy=False,
-    )
-    income_account_id = fields.Many2one(
-        "account.account",
-        related="allocation_line_id.income_account_id",
-        string="Income Account (allocated)",
-        store=True,
-        readonly=True,
-    )
 
     @api.depends("quantity", "price_unit")
     def _compute_amount(self):
         for line in self:
             line.amount = (line.quantity or 0.0) * (line.price_unit or 0.0)
 
-    @api.onchange("receipt_type_id")
-    def _onchange_receipt_type_id(self):
+    @api.onchange("product_id")
+    def _onchange_product_id(self):
         for line in self:
-            if line.receipt_type_id and not line.suspense_account_id:
-                line.suspense_account_id = line.receipt_type_id.suspense_account_id
+            if not line.product_id:
+                continue
+            product = line.product_id
+            if not line.name:
+                line.name = product.display_name
+            line.account_id = (
+                product.property_account_income_id
+                or product.categ_id.property_account_income_categ_id
+            )
+            if not line.price_unit:
+                line.price_unit = product.lst_price

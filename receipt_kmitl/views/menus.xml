@@ -22,34 +22,16 @@
               action="action_cash_deposit"
               sequence="20"/>
 
-    <menuitem id="menu_receipt_kmitl_central"
-              name="Central Finance"
-              parent="menu_receipt_kmitl_root"
-              sequence="20"
-              groups="receipt_kmitl.group_receipt_kmitl_central_finance"/>
-
-    <menuitem id="menu_receipt_kmitl_allocations"
-              name="Suspense Allocations"
-              parent="menu_receipt_kmitl_central"
-              action="action_allocation"
-              sequence="10"/>
-
-    <menuitem id="menu_receipt_kmitl_refunds"
-              name="Refunds"
-              parent="menu_receipt_kmitl_central"
-              action="action_receipt_refund"
-              sequence="20"/>
-
     <menuitem id="menu_receipt_kmitl_configuration"
               name="Configuration"
               parent="menu_receipt_kmitl_root"
               sequence="90"
               groups="receipt_kmitl.group_receipt_kmitl_manager"/>
 
-    <menuitem id="menu_receipt_kmitl_types"
-              name="Receipt Types"
+    <menuitem id="menu_receipt_kmitl_payment_methods"
+              name="Payment Methods"
               parent="menu_receipt_kmitl_configuration"
-              action="action_receipt_type"
+              action="action_payment_method"
               sequence="10"/>
 
     <menuitem id="menu_receipt_kmitl_settings"

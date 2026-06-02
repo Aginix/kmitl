@@ -62,24 +62,5 @@
             <field name="groups" eval="[(4, ref('group_receipt_kmitl_central_finance'))]"/>
         </record>
 
-        <record id="allocation_rule_central" model="ir.rule">
-            <field name="name">Allocation: central finance only</field>
-            <field name="model_id" ref="model_receipt_kmitl_allocation"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('group_receipt_kmitl_central_finance'))]"/>
-        </record>
-
-        <record id="refund_rule_cashier" model="ir.rule">
-            <field name="name">Refund: cashier sees own departments</field>
-            <field name="model_id" ref="model_receipt_kmitl_refund"/>
-            <field name="domain_force">[('department_id', 'in', user.kmitl_department_ids.ids)]</field>
-            <field name="groups" eval="[(4, ref('group_receipt_kmitl_cashier'))]"/>
-        </record>
-        <record id="refund_rule_central" model="ir.rule">
-            <field name="name">Refund: central finance sees all</field>
-            <field name="model_id" ref="model_receipt_kmitl_refund"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('group_receipt_kmitl_central_finance'))]"/>
-        </record>
     </data>
 </odoo>

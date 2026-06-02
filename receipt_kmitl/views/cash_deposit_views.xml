@@ -5,16 +5,16 @@
         <field name="model">receipt.kmitl.cash.deposit</field>
         <field name="arch" type="xml">
             <tree decoration-muted="state == 'cancelled'"
-                  decoration-success="state == 'confirmed'">
+                  decoration-info="state == 'submitted'"
+                  decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="department_id"/>
-                <field name="system_amount" sum="Total"/>
-                <field name="physical_amount" sum="Total"/>
-                <field name="difference_amount" sum="Diff"/>
+                <field name="amount_total" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="state" widget="badge"
-                       decoration-success="state == 'confirmed'"
+                       decoration-info="state == 'submitted'"
+                       decoration-success="state == 'posted'"
                        decoration-muted="state == 'cancelled'"/>
             </tree>
         </field>
@@ -26,25 +26,32 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_pull_today_receipts"
+                    <button name="action_pull_pending_receipts"
                             type="object"
-                            string="Pull Pending Cash Receipts"
+                            string="Pull Pending Receipts"
                             states="draft"/>
-                    <button name="action_confirm"
+                    <button name="action_submit"
                             type="object"
-                            string="Confirm"
+                            string="Submit to Treasury"
                             class="btn-primary"
                             states="draft"/>
+                    <button name="action_post"
+                            type="object"
+                            string="Review &amp; Post"
+                            class="btn-primary"
+                            states="submitted"
+                            groups="receipt_kmitl.group_receipt_kmitl_central_finance"/>
                     <button name="action_cancel"
                             type="object"
                             string="Cancel"
-                            states="draft"/>
+                            attrs="{'invisible': [('state', 'in', ['posted', 'cancelled'])]}"/>
                     <button name="action_draft"
                             type="object"
                             string="Reset to Draft"
-                            states="cancelled"/>
+                            attrs="{'invisible': [('state', 'not in', ['submitted', 'cancelled'])]}"
+                            groups="receipt_kmitl.group_receipt_kmitl_central_finance"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,confirmed"/>
+                           statusbar_visible="draft,submitted,posted"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -60,15 +67,12 @@
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
                         </group>
                         <group>
-                            <field name="system_amount"/>
-                            <field name="physical_amount"
-                                   attrs="{'readonly': [('state','!=','draft')]}"/>
-                            <field name="difference_amount"/>
+                            <field name="amount_total"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="confirmed_by"
-                                   attrs="{'invisible': [('state','!=','confirmed')]}"/>
-                            <field name="confirmed_date"
-                                   attrs="{'invisible': [('state','!=','confirmed')]}"/>
+                            <field name="submitted_by"
+                                   attrs="{'invisible': [('state','=','draft')]}"/>
+                            <field name="posted_by"
+                                   attrs="{'invisible': [('state','!=','posted')]}"/>
                         </group>
                     </group>
                     <notebook>
@@ -79,7 +83,7 @@
                                     <field name="name"/>
                                     <field name="date"/>
                                     <field name="partner_id"/>
-                                    <field name="payment_method"/>
+                                    <field name="payment_method_id"/>
                                     <field name="amount_total" sum="Total"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="state"/>

@@ -9,7 +9,7 @@ class ReceiptKmitlCommon(TransactionCase):
         super().setUpClass()
         cls.company = cls.env.company
 
-        # --- Analytic plans / accounts (6D framework relies on existing plans) ---
+        # --- Analytic plans / accounts (6D framework) ---
         AnalyticPlan = cls.env["account.analytic.plan"]
         cls.dept_plan = AnalyticPlan.search([("code", "=", "departments")], limit=1)
         if not cls.dept_plan:
@@ -27,9 +27,6 @@ class ReceiptKmitlCommon(TransactionCase):
         cls.dept_b = Analytic.create(
             {"name": "Department B", "code": "02", "plan_id": cls.dept_plan.id}
         )
-        cls.fund_general = Analytic.create(
-            {"name": "General Fund", "code": "0100", "plan_id": cls.fund_plan.id}
-        )
 
         # --- Accounts ---
         Account = cls.env["account.account"]
@@ -41,19 +38,11 @@ class ReceiptKmitlCommon(TransactionCase):
                 "company_id": cls.company.id,
             }
         )
-        cls.suspense_edu = Account.create(
+        cls.bank_account = Account.create(
             {
-                "code": "213101",
-                "name": "Suspense - Education",
-                "account_type": "liability_current",
-                "company_id": cls.company.id,
-            }
-        )
-        cls.suspense_other = Account.create(
-            {
-                "code": "213199",
-                "name": "Suspense - Other",
-                "account_type": "liability_current",
+                "code": "112001",
+                "name": "Bank Clearing",
+                "account_type": "asset_cash",
                 "company_id": cls.company.id,
             }
         )
@@ -61,6 +50,14 @@ class ReceiptKmitlCommon(TransactionCase):
             {
                 "code": "410101",
                 "name": "Tuition Income",
+                "account_type": "income",
+                "company_id": cls.company.id,
+            }
+        )
+        cls.income_other = Account.create(
+            {
+                "code": "419901",
+                "name": "Other Income",
                 "account_type": "income",
                 "company_id": cls.company.id,
             }
@@ -73,39 +70,53 @@ class ReceiptKmitlCommon(TransactionCase):
                 "name": "KMITL Cash",
                 "type": "cash",
                 "code": "CSHK",
-                "is_receipt_kmitl_journal": True,
                 "default_account_id": cls.cash_account.id,
                 "company_id": cls.company.id,
             }
         )
-        cls.general_journal = Journal.search(
-            [("type", "=", "general"), ("company_id", "=", cls.company.id)], limit=1
-        )
-        if not cls.general_journal:
-            cls.general_journal = Journal.create(
-                {
-                    "name": "Miscellaneous",
-                    "type": "general",
-                    "code": "MISC",
-                    "company_id": cls.company.id,
-                }
-            )
-
-        # --- Receipt types ---
-        Type = cls.env["receipt.kmitl.type"]
-        cls.type_edu = Type.create(
+        cls.bank_journal = Journal.create(
             {
-                "name": "Education",
-                "code": "EDU_TEST",
-                "suspense_account_id": cls.suspense_edu.id,
-                "default_income_account_id": cls.income_tuition.id,
+                "name": "KMITL Bank",
+                "type": "bank",
+                "code": "BNKK",
+                "default_account_id": cls.bank_account.id,
+                "company_id": cls.company.id,
             }
         )
-        cls.type_other = Type.create(
+
+        # --- Payment methods ---
+        Method = cls.env["receipt.kmitl.payment.method"]
+        cls.pm_cash = Method.create(
             {
-                "name": "Other",
-                "code": "OTHER_TEST",
-                "suspense_account_id": cls.suspense_other.id,
+                "name": "Cash",
+                "journal_id": cls.cash_journal.id,
+                "account_id": cls.cash_account.id,
+            }
+        )
+        cls.pm_transfer = Method.create(
+            {
+                "name": "Transfer",
+                "journal_id": cls.bank_journal.id,
+                "account_id": cls.bank_account.id,
+            }
+        )
+
+        # --- Products (income account from CoA level 4) ---
+        Product = cls.env["product.product"]
+        cls.product_tuition = Product.create(
+            {
+                "name": "Tuition Fee",
+                "type": "service",
+                "property_account_income_id": cls.income_tuition.id,
+                "lst_price": 5000.0,
+            }
+        )
+        cls.product_card = Product.create(
+            {
+                "name": "Student Card Fee",
+                "type": "service",
+                "property_account_income_id": cls.income_other.id,
+                "lst_price": 100.0,
             }
         )
 
@@ -116,31 +127,32 @@ class ReceiptKmitlCommon(TransactionCase):
         if not cls.walkin:
             cls.walkin = cls.env["res.partner"].create({"name": "Walk-in (test)"})
 
-        # --- User with both depts ---
-        cls.env.user.write({"kmitl_department_ids": [(6, 0, [cls.dept_a.id, cls.dept_b.id])]})
+        cls.env.user.write(
+            {"kmitl_department_ids": [(6, 0, [cls.dept_a.id, cls.dept_b.id])]}
+        )
 
-    def _make_receipt(self, department=None, lines=None, payment_method="cash"):
+    def _make_receipt(self, department=None, method=None, lines=None):
         department = department or self.dept_a
-        lines = lines or [(self.type_edu, "ค่าลงทะเบียน", 1, 5000.0)]
+        method = method or self.pm_cash
+        lines = lines or [(self.product_tuition, 1, 5000.0)]
         return self.env["receipt.kmitl"].create(
             {
                 "department_id": department.id,
-                "journal_id": self.cash_journal.id,
-                "payment_method": payment_method,
+                "payment_method_id": method.id,
                 "partner_id": self.walkin.id,
                 "line_ids": [
                     (
                         0,
                         0,
                         {
-                            "receipt_type_id": rtype.id,
-                            "name": name,
-                            "suspense_account_id": rtype.suspense_account_id.id,
+                            "product_id": product.id,
+                            "name": product.name,
+                            "account_id": product.property_account_income_id.id,
                             "quantity": qty,
                             "price_unit": price,
                         },
                     )
-                    for (rtype, name, qty, price) in lines
+                    for (product, qty, price) in lines
                 ],
             }
         )

@@ -21,7 +21,8 @@ class CashDeposit(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("confirmed", "Confirmed"),
+            ("submitted", "Submitted"),
+            ("posted", "Posted"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -43,7 +44,7 @@ class CashDeposit(models.Model):
     )
     receipt_ids = fields.One2many(
         "receipt.kmitl",
-        "cash_deposit_id",
+        "deposit_id",
         string="Receipts",
     )
     company_id = fields.Many2one(
@@ -56,36 +57,25 @@ class CashDeposit(models.Model):
         required=True,
         default=lambda self: self.env.company.currency_id,
     )
-    system_amount = fields.Monetary(
-        compute="_compute_amounts",
-        store=True,
-        currency_field="currency_id",
-    )
-    physical_amount = fields.Monetary(
-        string="Physical Amount Counted",
-        currency_field="currency_id",
-        help="Amount counted physically at central finance. "
-             "Informational only — discrepancies must be reconciled via a "
-             "manual journal entry by central finance.",
-    )
-    difference_amount = fields.Monetary(
-        compute="_compute_amounts",
+    amount_total = fields.Monetary(
+        compute="_compute_amount_total",
         store=True,
         currency_field="currency_id",
     )
     note = fields.Text()
-    confirmed_by = fields.Many2one("res.users", readonly=True, copy=False)
-    confirmed_date = fields.Datetime(readonly=True, copy=False)
+    submitted_by = fields.Many2one("res.users", readonly=True, copy=False)
+    submitted_date = fields.Datetime(readonly=True, copy=False)
+    posted_by = fields.Many2one("res.users", readonly=True, copy=False)
+    posted_date = fields.Datetime(readonly=True, copy=False)
 
-    @api.depends("receipt_ids.amount_total", "physical_amount")
-    def _compute_amounts(self):
+    @api.depends("receipt_ids.amount_total")
+    def _compute_amount_total(self):
         for rec in self:
-            rec.system_amount = sum(rec.receipt_ids.mapped("amount_total"))
-            rec.difference_amount = (rec.physical_amount or 0.0) - rec.system_amount
+            rec.amount_total = sum(rec.receipt_ids.mapped("amount_total"))
 
     def _get_sequence(self):
         self.ensure_one()
-        dept_code = (self.department_id.code or "00")
+        dept_code = self.department_id.code or "00"
         ReceiptKmitl = self.env["receipt.kmitl"]
         fy_suffix = ReceiptKmitl._get_fiscal_year_suffix(self.date)
         seq_code = "receipt.kmitl.deposit.%s.%s" % (dept_code, fy_suffix)
@@ -103,44 +93,36 @@ class CashDeposit(models.Model):
             )
         return seq
 
-    def action_pull_today_receipts(self):
-        """Auto-bundle all cash receipts of the same department that are
-        issued, paid by cash, and not yet linked to a deposit."""
+    def action_pull_pending_receipts(self):
+        """Bundle the department's confirmed receipts not yet in any deposit."""
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Can only pull receipts on draft deposits."))
             receipts = self.env["receipt.kmitl"].search(
                 [
                     ("department_id", "=", rec.department_id.id),
-                    ("payment_method", "=", "cash"),
-                    ("state", "=", "issued"),
-                    ("cash_deposit_id", "=", False),
+                    ("state", "=", "confirmed"),
+                    ("deposit_id", "=", False),
                     ("date", "<=", rec.date),
                 ]
             )
             if not receipts:
                 raise UserError(
-                    _("No pending cash receipts found for this department.")
+                    _("No pending confirmed receipts found for this department.")
                 )
-            # we set the back-ref through confirm; here just collect ids
             rec.write({"receipt_ids": [(6, 0, receipts.ids)]})
 
-    def action_confirm(self):
+    def action_submit(self):
+        """Department submits the deposit slip to central finance."""
         for rec in self:
             if rec.state != "draft":
-                raise UserError(_("Only draft deposits can be confirmed."))
+                raise UserError(_("Only draft deposits can be submitted."))
             if not rec.receipt_ids:
-                raise ValidationError(_("Add at least one receipt to deposit."))
+                raise ValidationError(_("Add at least one receipt before submitting."))
             for receipt in rec.receipt_ids:
-                if receipt.state != "issued":
+                if receipt.state != "confirmed":
                     raise ValidationError(
-                        _("Receipt %s is not in issued state.") % receipt.name
-                    )
-                if receipt.payment_method != "cash":
-                    raise ValidationError(
-                        _("Only cash receipts can be deposited; "
-                          "%s uses %s.")
-                        % (receipt.name, receipt.payment_method)
+                        _("Receipt %s must be confirmed.") % receipt.name
                     )
                 if receipt.department_id != rec.department_id:
                     raise ValidationError(
@@ -149,34 +131,48 @@ class CashDeposit(models.Model):
                     )
             if rec.name == "/" or not rec.name:
                 rec.name = rec._get_sequence().next_by_id()
-            rec.receipt_ids.write({"state": "deposited"})
             rec.write(
                 {
-                    "state": "confirmed",
-                    "confirmed_by": self.env.user.id,
-                    "confirmed_date": fields.Datetime.now(),
+                    "state": "submitted",
+                    "submitted_by": self.env.user.id,
+                    "submitted_date": fields.Datetime.now(),
+                }
+            )
+
+    def action_post(self):
+        """Central finance reviews and posts: every receipt in the batch gets
+        its own journal entry (Dr payment-method account / Cr income)."""
+        for rec in self:
+            if rec.state != "submitted":
+                raise UserError(_("Only submitted deposits can be posted."))
+            for receipt in rec.receipt_ids:
+                if receipt.state != "confirmed":
+                    raise ValidationError(
+                        _("Receipt %s is not in confirmed state.") % receipt.name
+                    )
+            rec.receipt_ids.action_post()
+            rec.write(
+                {
+                    "state": "posted",
+                    "posted_by": self.env.user.id,
+                    "posted_date": fields.Datetime.now(),
                 }
             )
 
     def action_cancel(self):
         for rec in self:
-            if rec.state == "confirmed":
-                raise UserError(
-                    _(
-                        "Cannot cancel a confirmed deposit. "
-                        "Create a manual JE adjustment instead."
-                    )
-                )
+            if rec.state == "posted":
+                raise UserError(_("Posted deposits cannot be cancelled."))
             rec.state = "cancelled"
 
     def action_draft(self):
         for rec in self:
-            if rec.state != "cancelled":
-                raise UserError(_("Only cancelled deposits can be reset to draft."))
+            if rec.state not in ("submitted", "cancelled"):
+                raise UserError(_("Only submitted or cancelled deposits can reset."))
             rec.state = "draft"
 
     def unlink(self):
         for rec in self:
-            if rec.state == "confirmed":
-                raise UserError(_("Confirmed deposits cannot be deleted."))
+            if rec.state == "posted":
+                raise UserError(_("Posted deposits cannot be deleted."))
         return super().unlink()

@@ -6,11 +6,8 @@
             are created lazily by the model's _get_receipt_sequence /
             _get_sequence methods at first use.
 
-            Allocation and Refund use per-fiscal-year sequences also created
-            lazily (see suspense_allocation.py / receipt_refund.py).
-
-            This file is kept for clarity and to provide a placeholder if any
-            non-lazy sequence needs to be added later.
+            This file is kept as a placeholder if any non-lazy sequence needs to
+            be added later.
         -->
     </data>
 </odoo>

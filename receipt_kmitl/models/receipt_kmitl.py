@@ -15,9 +15,8 @@ class ReceiptKmitl(models.Model):
     _order = "date desc, id desc"
 
     READONLY_STATES = {
-        "issued": [("readonly", True)],
-        "deposited": [("readonly", True)],
-        "reclassified": [("readonly", True)],
+        "confirmed": [("readonly", True)],
+        "posted": [("readonly", True)],
         "cancelled": [("readonly", True)],
     }
 
@@ -32,9 +31,8 @@ class ReceiptKmitl(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("issued", "Issued"),
-            ("deposited", "Deposited"),
-            ("reclassified", "Reclassified"),
+            ("confirmed", "Confirmed"),
+            ("posted", "Posted"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -56,23 +54,10 @@ class ReceiptKmitl(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    journal_id = fields.Many2one(
-        "account.journal",
-        string="Journal",
+    payment_method_id = fields.Many2one(
+        "receipt.kmitl.payment.method",
+        string="Payment Method",
         required=True,
-        domain=[("is_receipt_kmitl_journal", "=", True)],
-        tracking=True,
-        states=READONLY_STATES,
-    )
-    payment_method = fields.Selection(
-        [
-            ("cash", "Cash"),
-            ("transfer", "Bank Transfer"),
-            ("card", "Card"),
-            ("cheque", "Cheque"),
-        ],
-        required=True,
-        default="cash",
         tracking=True,
         states=READONLY_STATES,
     )
@@ -132,15 +117,13 @@ class ReceiptKmitl(models.Model):
         readonly=True,
         copy=False,
     )
-    cash_deposit_id = fields.Many2one(
+    deposit_id = fields.Many2one(
         "receipt.kmitl.cash.deposit",
         string="Cash Deposit",
         readonly=True,
         copy=False,
     )
     cancel_reason = fields.Text(readonly=True, copy=False)
-    cancelled_by = fields.Many2one("res.users", readonly=True, copy=False)
-    cancelled_date = fields.Datetime(readonly=True, copy=False)
     user_id = fields.Many2one(
         "res.users",
         string="Issued By",
@@ -160,9 +143,10 @@ class ReceiptKmitl(models.Model):
                 return int(param)
             except (TypeError, ValueError):
                 return False
-        return self.env.ref(
+        walkin = self.env.ref(
             "receipt_kmitl.partner_walkin", raise_if_not_found=False
-        ).id or False
+        )
+        return walkin.id if walkin else False
 
     @api.depends("line_ids.amount")
     def _compute_amount_total(self):
@@ -187,25 +171,15 @@ class ReceiptKmitl(models.Model):
             address = ", ".join([p for p in address_parts if p])
             if address:
                 rec.customer_address = address
-            # l10n_th branch code (optional, not required dependency)
             if hasattr(partner, "branch") and partner.branch:
                 rec.customer_branch_code = partner.branch
 
-    @api.constrains("line_ids", "state")
-    def _check_lines_when_issued(self):
-        for rec in self:
-            if rec.state in ("issued", "deposited", "reclassified") and not rec.line_ids:
-                raise ValidationError(_("A receipt must have at least one line."))
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        return super().create(vals_list)
-
+    # -------------------------------------------------------------------------
+    # Sequence
+    # -------------------------------------------------------------------------
     def _get_fiscal_year_suffix(self, date):
-        """Thai fiscal year suffix (2 digits) from a date.
-
-        Thai fiscal year runs Oct → Sep. Returns the Buddhist Era + 543 last 2 digits
-        of the budget year. Example: 2025-10-01 → FY 2569 → '69'."""
+        """Thai fiscal year suffix (2 digits). FY runs Oct → Sep; returns the
+        last 2 digits of the Buddhist Era budget year (e.g. 2025-10 → '69')."""
         budget_year_ce = date.year + (1 if date.month >= 10 else 0)
         budget_year_be = budget_year_ce + 543
         return str(budget_year_be)[-2:]
@@ -232,16 +206,18 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Actions
     # -------------------------------------------------------------------------
-    def action_issue(self):
+    def action_confirm(self):
+        """Issued by the department: validate, assign number, allow printing.
+        No journal entry is created here — central finance posts later."""
         for rec in self:
             if rec.state != "draft":
-                raise UserError(_("Only draft receipts can be issued."))
+                raise UserError(_("Only draft receipts can be confirmed."))
             if not rec.line_ids:
-                raise ValidationError(_("Add at least one line before issuing."))
+                raise ValidationError(_("Add at least one line before confirming."))
             for line in rec.line_ids:
-                if not line.suspense_account_id:
+                if not line.account_id:
                     raise ValidationError(
-                        _("Line '%s' has no suspense account.") % (line.name or "")
+                        _("Line '%s' has no income account.") % (line.name or "")
                     )
                 if line.amount <= 0:
                     raise ValidationError(
@@ -250,24 +226,33 @@ class ReceiptKmitl(models.Model):
                     )
             if not rec.partner_id:
                 rec.partner_id = rec._default_partner_id()
-            # snapshot if blank
             if not rec.customer_name and rec.partner_id:
                 rec._onchange_partner_id()
             if rec.name == "/" or not rec.name:
                 seq = rec._get_receipt_sequence(rec.department_id, rec.date)
                 rec.name = seq.next_by_id()
-            move = rec._create_issue_move()
-            rec.move_id = move.id
-            rec.state = "issued"
+            rec.state = "confirmed"
         return True
 
-    def _create_issue_move(self):
+    def action_post(self):
+        """Posted by central finance (typically via a cash deposit batch).
+        Creates the journal entry: Dr payment-method account / Cr income."""
+        for rec in self:
+            if rec.state != "confirmed":
+                raise UserError(
+                    _("Only confirmed receipts can be posted (%s).") % rec.name
+                )
+            move = rec._create_move()
+            rec.move_id = move.id
+            rec.state = "posted"
+        return True
+
+    def _create_move(self):
         self.ensure_one()
-        AccountMove = self.env["account.move"]
-        cash_account = self.journal_id.default_account_id
-        if not cash_account:
+        method = self.payment_method_id
+        if not method.account_id:
             raise UserError(
-                _("Journal '%s' has no default account.") % self.journal_id.name
+                _("Payment method '%s' has no debit account.") % method.name
             )
         line_vals = [
             (
@@ -275,7 +260,7 @@ class ReceiptKmitl(models.Model):
                 0,
                 {
                     "name": _("Receipt %s") % self.name,
-                    "account_id": cash_account.id,
+                    "account_id": method.account_id.id,
                     "debit": self.amount_total,
                     "credit": 0.0,
                     "partner_id": self.partner_id.id,
@@ -290,7 +275,7 @@ class ReceiptKmitl(models.Model):
                     0,
                     {
                         "name": line.name or self.name,
-                        "account_id": line.suspense_account_id.id,
+                        "account_id": line.account_id.id,
                         "debit": 0.0,
                         "credit": line.amount,
                         "partner_id": self.partner_id.id,
@@ -299,11 +284,11 @@ class ReceiptKmitl(models.Model):
                     },
                 )
             )
-        move = AccountMove.create(
+        move = self.env["account.move"].create(
             {
                 "ref": self.name,
                 "date": self.date,
-                "journal_id": self.journal_id.id,
+                "journal_id": method.journal_id.id,
                 "company_id": self.company_id.id,
                 "line_ids": line_vals,
             }
@@ -311,70 +296,32 @@ class ReceiptKmitl(models.Model):
         move.action_post()
         return move
 
-    def action_open_cancel_wizard(self):
-        self.ensure_one()
-        if self.state != "issued":
-            raise UserError(_("Only issued receipts can be cancelled."))
-        if self.cash_deposit_id:
-            raise UserError(
-                _(
-                    "This receipt has already been included in cash deposit %s. "
-                    "Use Refund instead."
+    def action_cancel(self):
+        for rec in self:
+            if rec.state == "posted":
+                raise UserError(
+                    _("Posted receipts cannot be cancelled. Use a reversal/credit "
+                      "note from Accounting.")
                 )
-                % self.cash_deposit_id.display_name
-            )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Cancel Receipt"),
-            "res_model": "receipt.kmitl.cancel.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"default_receipt_id": self.id},
-        }
+            if rec.deposit_id:
+                raise UserError(
+                    _("Receipt %s is in cash deposit %s; remove it from the deposit "
+                      "first.") % (rec.name, rec.deposit_id.display_name)
+                )
+            rec.state = "cancelled"
+        return True
 
-    def _apply_cancel(self, reason, user):
-        self.ensure_one()
-        if self.move_id and self.move_id.state == "posted":
-            reverse = self.move_id._reverse_moves(
-                default_values_list=[
-                    {
-                        "ref": _("Cancellation of %s") % self.name,
-                        "date": fields.Date.context_today(self),
-                    }
-                ],
-                cancel=False,
-            )
-            reverse.action_post()
-        self.write(
-            {
-                "state": "cancelled",
-                "cancel_reason": reason,
-                "cancelled_by": user.id,
-                "cancelled_date": fields.Datetime.now(),
-            }
-        )
-
-    def action_open_refund_wizard(self):
-        self.ensure_one()
-        if self.state not in ("deposited", "reclassified"):
-            raise UserError(
-                _("Refund is for deposited or reclassified receipts. "
-                  "Use Cancel for receipts not yet deposited.")
-            )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Refund Receipt"),
-            "res_model": "receipt.kmitl.refund.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"default_receipt_id": self.id},
-        }
+    def action_draft(self):
+        for rec in self:
+            if rec.state != "cancelled":
+                raise UserError(_("Only cancelled receipts can be reset to draft."))
+            rec.state = "draft"
+        return True
 
     def unlink(self):
         for rec in self:
-            if rec.state != "draft":
+            if rec.state not in ("draft", "cancelled"):
                 raise UserError(
-                    _("Only draft receipts can be deleted. "
-                      "Use Cancel for issued receipts.")
+                    _("Only draft or cancelled receipts can be deleted.")
                 )
         return super().unlink()

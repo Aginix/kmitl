@@ -65,9 +65,6 @@
                             <td><t t-esc="line_index + 1"/></td>
                             <td>
                                 <span t-field="line.name"/>
-                                <small class="text-muted">
-                                    (<span t-field="line.receipt_type_id.name"/>)
-                                </small>
                             </td>
                             <td class="text-right">
                                 <span t-field="line.quantity"/>
@@ -96,7 +93,7 @@
                 <div class="row mt32">
                     <div class="col-6">
                         <strong>Payment Method / วิธีชำระเงิน:</strong>
-                        <span t-field="o.payment_method"/>
+                        <span t-field="o.payment_method_id.name"/>
                     </div>
                 </div>
 
@@ -114,12 +111,7 @@
 
                 <div t-if="o.state == 'cancelled'" class="row mt32">
                     <div class="col-12">
-                        <strong style="color: red;">
-                            CANCELLED on
-                            <span t-field="o.cancelled_date"/>
-                            by
-                            <span t-field="o.cancelled_by.name"/>
-                        </strong>
+                        <strong style="color: red;">CANCELLED</strong>
                         <br/>
                         <em><span t-field="o.cancel_reason"/></em>
                     </div>
