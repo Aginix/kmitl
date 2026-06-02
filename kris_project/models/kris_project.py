@@ -6,12 +6,6 @@ from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
-READONLY_STATES = {
-    "in_progress": [("readonly", True)],
-    "done": [("readonly", True)],
-    "cancel": [("readonly", True)],
-}
-
 CLIENT_ORG_TYPE_SELECTION = [
     ("government", "Government"),
     ("state_enterprise", "State Enterprise"),
@@ -65,21 +59,18 @@ class KrisProject(models.Model):
         string="Project Name",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     project_category_id = fields.Many2one(
         comodel_name="kris.project.category",
         string="Project Category",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     project_type_id = fields.Many2one(
         comodel_name="kris.project.type",
         string="Project Type",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     state = fields.Selection(
         selection=[
@@ -94,66 +85,60 @@ class KrisProject(models.Model):
         copy=False,
         tracking=True,
     )
+    can_edit = fields.Boolean(
+        compute="_compute_can_edit",
+    )
     client_name = fields.Char(
         string="Client Name",
         tracking=True,
-        states=READONLY_STATES,
     )
     client_location = fields.Char(
         string="Client Location",
         tracking=True,
-        states=READONLY_STATES,
     )
     client_tax_number = fields.Char(
         string="Client Tax Number",
         tracking=True,
-        states=READONLY_STATES,
     )
     client_org_type = fields.Selection(
         selection=CLIENT_ORG_TYPE_SELECTION,
         string="Client Organization",
         tracking=True,
-        states=READONLY_STATES,
     )
     manager_id = fields.Many2one(
         comodel_name="hr.employee",
         string="Project Manager",
-        tracking=True,
-        states=READONLY_STATES,
-    )
-    department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Leader Department",
-        compute="_compute_department_id",
-        store=True,
-        readonly=True,
         tracking=True,
     )
     # --- Financial fields ---
     project_value = fields.Monetary(
         string="Project Value",
         tracking=True,
-        states=READONLY_STATES,
     )
     equipment_cost = fields.Monetary(
         string="Equipment Cost",
         tracking=True,
-        states=READONLY_STATES,
     )
     operating_expense = fields.Monetary(
         string="Operating Expense",
+        compute="_compute_operating_expense",
+        store=True,
+        readonly=False,
         tracking=True,
-        states=READONLY_STATES,
     )
     extra_value = fields.Monetary(
         string="Extra Value",
         tracking=True,
-        states=READONLY_STATES,
+    )
+    extra_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Extra Payee",
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
     )
     allocatable_value = fields.Monetary(
         string="Allocatable Value",
         compute="_compute_allocatable_value",
-        store=True,
     )
     maintenance_deduction_type = fields.Selection(
         selection=[
@@ -164,13 +149,11 @@ class KrisProject(models.Model):
         default="tiered",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     maintenance_deduction_pct = fields.Float(
         string="% หักค่าบำรุง",
         digits=(5, 2),
         tracking=True,
-        states=READONLY_STATES,
     )
     maintenance_deduction_amount = fields.Monetary(
         string="Maintenance Deduction",
@@ -181,23 +164,19 @@ class KrisProject(models.Model):
     allocation_template_id = fields.Many2one(
         comodel_name="kris.project.allocation.template",
         string="แม่แบบการจัดสรร",
-        states=READONLY_STATES,
     )
     # --- Contract fields ---
     contract_number = fields.Char(
         string="Contract Number",
         tracking=True,
-        states=READONLY_STATES,
     )
     date_contract_start = fields.Date(
         string="Date Start",
         tracking=True,
-        states=READONLY_STATES,
     )
     date_contract_end = fields.Date(
         string="Date End",
         tracking=True,
-        states=READONLY_STATES,
     )
     project_duration = fields.Integer(
         string="Duration (Day)",
@@ -208,14 +187,18 @@ class KrisProject(models.Model):
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         tracking=True,
-        states=READONLY_STATES,
     )
     user_id = fields.Many2one(
         comodel_name="res.users",
         string="Responsible",
         default=lambda self: self.env.user,
         tracking=True,
-        states=READONLY_STATES,
+    )
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="Department",
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
     )
     # --- One2many ---
     installment_ids = fields.One2many(
@@ -345,13 +328,18 @@ class KrisProject(models.Model):
                 rec.warn_installment_total_mismatch = False
                 rec.warn_extra_overshoot = False
 
+    @api.depends("state")
+    def _compute_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec.state == "draft"
+
     @api.depends("operating_expense")
     def _compute_allocatable_value(self):
         for rec in self:
             rec.allocatable_value = rec.operating_expense
 
     @api.depends(
-        "allocatable_value",
+        "operating_expense",
         "maintenance_deduction_type",
         "maintenance_deduction_pct",
     )
@@ -359,11 +347,11 @@ class KrisProject(models.Model):
         for rec in self:
             if rec.maintenance_deduction_type == "tiered":
                 rec.maintenance_deduction_amount = _compute_tiered_deduction(
-                    rec.allocatable_value
+                    rec.operating_expense
                 )
             else:
                 rec.maintenance_deduction_amount = (
-                    rec.allocatable_value * rec.maintenance_deduction_pct / 100.0
+                    rec.operating_expense * rec.maintenance_deduction_pct / 100.0
                 )
 
     @api.depends(
@@ -381,24 +369,20 @@ class KrisProject(models.Model):
             rec.revenue_remaining = max(0.0, diff)
             rec.over_revenue = max(0.0, -diff)
 
-    @api.depends("manager_id", "manager_id.department_id")
-    def _compute_department_id(self):
-        for rec in self:
-            rec.department_id = rec.manager_id.department_id
-
     @api.depends("date_contract_start", "date_contract_end")
     def _compute_project_duration(self):
         for rec in self:
             if rec.date_contract_start and rec.date_contract_end:
                 rec.project_duration = (
                     rec.date_contract_end - rec.date_contract_start
-                ).days
+                ).days + 1
             else:
                 rec.project_duration = 0
 
-    @api.onchange("project_value", "equipment_cost")
-    def _onchange_operating_expense_suggest(self):
-        self.operating_expense = self.project_value - self.equipment_cost
+    @api.depends("project_value", "equipment_cost")
+    def _compute_operating_expense(self):
+        for rec in self:
+            rec.operating_expense = rec.project_value - rec.equipment_cost
 
     @api.onchange("project_category_id")
     def _onchange_project_category_id(self):
@@ -440,7 +424,6 @@ class KrisProject(models.Model):
         }
 
     def action_apply_allocation_template(self):
-        """Apply the selected allocation template to create allocation lines."""
         self.ensure_one()
         if not self.allocation_template_id:
             raise UserError(_("Please select an allocation template first."))
@@ -454,6 +437,8 @@ class KrisProject(models.Model):
                     "sequence": tl.sequence,
                     "item_id": tl.item_id.id,
                     "estimated_amount": base_amount * tl.allocation_pct / 100.0,
+                    "department_analytic_id": tl.department_analytic_id.id,
+                    "is_locked": tl.is_locked,
                 },
             )
             for tl in self.allocation_template_id.line_ids

@@ -98,7 +98,7 @@ class StateLeadtimeMixin(models.AbstractModel):
         return result
 
     def unlink(self):
-        logs = self.env['state.leadtime.log'].search([
+        logs = self.env['state.leadtime.log'].sudo().search([
             ('res_model', '=', self._name),
             ('res_id', 'in', self.ids),
         ])

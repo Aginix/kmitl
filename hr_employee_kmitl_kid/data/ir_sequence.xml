@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<odoo noupdate="1">
+    <record id="sequence_hr_employee_kmitl_kid" model="ir.sequence">
+        <field name="name">Employee KID</field>
+        <field name="code">hr.employee.kmitl.kid</field>
+        <field name="implementation">standard</field>
+        <field name="active">True</field>
+        <field name="prefix">K</field>
+        <field name="number_increment">1</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>
