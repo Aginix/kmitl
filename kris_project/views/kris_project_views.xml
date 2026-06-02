@@ -461,19 +461,24 @@
         <field name="name">kris.project.tree</field>
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
-            <tree decoration-danger="main_exception_id">
+            <tree
+                decoration-danger="main_exception_id"
+                decoration-muted="state == 'cancel'"
+            >
+                <field name="currency_id" invisible="1"/>
                 <field name="name"/>
                 <field name="project_name"/>
-                <field name="contract_number" optional="show"/>
+                <field name="contract_number" optional="hide"/>
                 <field name="project_category_id" optional="show"/>
-                <field name="project_type_id" optional="show"/>
+                <field name="project_type_id" optional="hide"/>
                 <field name="manager_id" optional="show"/>
-                <field name="user_id" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="hide"/>
                 <field name="department_analytic_id" optional="show"/>
-                <field name="client_name" optional="show"/>
+                <field name="client_name" optional="hide"/>
                 <field name="account_fiscal_year_id" optional="show"/>
                 <field name="project_value" sum="รวม" optional="show"/>
                 <field name="total_received_amount" sum="รวม" optional="show"/>
+                <field name="revenue_remaining" sum="รวม" optional="hide"/>
                 <field name="main_exception_id" optional="hide"/>
                 <field name="state" widget="badge"
                     decoration-info="state == 'draft'"
@@ -494,10 +499,14 @@
         <field name="model">kris.project</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" string="Project Number"/>
+                <field name="name" string="Project"
+                    filter_domain="['|', '|', '|', ('name', 'ilike', self), ('project_name', 'ilike', self), ('contract_number', 'ilike', self), ('client_name', 'ilike', self)]"/>
                 <field name="project_name" string="Project Name"/>
-                 <field name="client_name"/>
+                <field name="contract_number"/>
+                <field name="client_name"/>
                 <field name="manager_id"/>
+                <field name="department_analytic_id"/>
+                <field name="user_id"/>
                 <field name="project_category_id"/>
                 <field name="project_type_id"/>
                 <separator/>
@@ -516,14 +525,22 @@
                     string="My Project"
                     domain="[('user_id', '=', uid)]"
                 />
+                <separator/>
+                <filter name="contract_start" string="Contract Start Date" date="date_contract_start"/>
                 <!-- Group By -->
                 <group expand="0" string="จัดกลุ่มตาม">
                     <filter name="group_category" string="Project Category" context="{'group_by': 'project_category_id'}"/>
                     <filter name="group_type" string="Project Type" context="{'group_by': 'project_type_id'}"/>
+                    <filter name="group_manager" string="Project Manager" context="{'group_by': 'manager_id'}"/>
                     <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
                     <filter name="group_fiscal_year" string="Fiscal Year" context="{'group_by': 'account_fiscal_year_id'}"/>
                     <filter name="group_department" string="Department" context="{'group_by': 'department_analytic_id'}"/>
                 </group>
+                <searchpanel>
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1"/>
+                    <field name="project_category_id" icon="fa-folder" enable_counters="1"/>
+                    <field name="department_analytic_id" icon="fa-building-o" enable_counters="1"/>
+                </searchpanel>
             </search>
         </field>
     </record>
