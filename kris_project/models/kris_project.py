@@ -110,14 +110,6 @@ class KrisProject(models.Model):
         string="Project Manager",
         tracking=True,
     )
-    department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Leader Department",
-        compute="_compute_department_id",
-        store=True,
-        readonly=True,
-        tracking=True,
-    )
     # --- Financial fields ---
     project_value = fields.Monetary(
         string="Project Value",
@@ -376,11 +368,6 @@ class KrisProject(models.Model):
             diff = rec.project_value - rec.total_received_amount
             rec.revenue_remaining = max(0.0, diff)
             rec.over_revenue = max(0.0, -diff)
-
-    @api.depends("manager_id", "manager_id.department_id")
-    def _compute_department_id(self):
-        for rec in self:
-            rec.department_id = rec.manager_id.department_id
 
     @api.depends("date_contract_start", "date_contract_end")
     def _compute_project_duration(self):
