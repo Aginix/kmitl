@@ -200,3 +200,17 @@ class TestBudgetController(TransactionCase):
             [(self.child_a, 10_000), (self.child_b, 10_000)]
         )
         self.assertEqual(len(commitment.line_ids), 2)
+
+    def test_reservation_grid_shows_control_node_available(self):
+        """The picker feed reports control-node available per budgetable row."""
+        self._appropriate(self.coarse, 100_000)
+        self._reserve(self.child_a, 60_000)
+        grid = self.env["budget.dashboard"].get_reservation_grid(
+            self.fy.id, {}, root_account_id=self.coarse.id
+        )
+        rows = {r["id"]: r for r in grid["rows"]}
+        # both children draw the shared parent pool -> both show 40k
+        self.assertEqual(rows[self.child_a.id]["available"], 40_000)
+        self.assertEqual(rows[self.child_b.id]["available"], 40_000)
+        self.assertTrue(rows[self.child_a.id]["budgetable"])
+        self.assertTrue(rows[self.coarse.id]["has_children"])

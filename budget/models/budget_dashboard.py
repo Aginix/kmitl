@@ -181,6 +181,73 @@ class BudgetDashboard(models.AbstractModel):
         return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
 
     @api.model
+    def get_reservation_grid(
+        self, fiscal_year_id, analytic_distribution, root_account_id=None
+    ):
+        """Expense ``budget.account`` hierarchy with the control-node
+        ``available`` per budgetable row, for a **fixed** dimension combination.
+
+        Feeds the reservation picker widget: unlike ``get_dashboard_data`` (which
+        rolls the tree up and treats dimensions as ``child_of`` filters), this
+        evaluates ``budget.controller.get_available`` for the *exact*
+        combination at each budgetable node — so the figure shown is the figure
+        the reservation check will enforce (WYSIWYG). Non-budgetable rows are
+        display-only (``available`` is ``None``).
+        """
+        currency_id = self.env.company.currency_id.id
+        if not fiscal_year_id:
+            return {"rows": [], "currency_id": currency_id}
+        accounts = self._dashboard_accounts(root_account_id)
+        if not accounts:
+            return {"rows": [], "currency_id": currency_id}
+
+        acc_by_id = {acc.id: acc for acc in accounts}
+        children = defaultdict(list)
+        roots = []
+        for acc in accounts:
+            if acc.parent_id.id in acc_by_id:
+                children[acc.parent_id.id].append(acc)
+            else:
+                roots.append(acc)
+        order = self._ROOT_ORDER
+        roots.sort(
+            key=lambda a: (
+                order.index(a.code) if a.code in order else len(order),
+                a.code,
+            )
+        )
+
+        controller = self.env["budget.controller"]
+        rows = []
+        stack = [(acc, 0) for acc in reversed(roots)]
+        while stack:
+            acc, level = stack.pop()
+            kids = children.get(acc.id, [])
+            available = (
+                controller.get_available(
+                    acc, analytic_distribution, fiscal_year_id
+                )
+                if acc.budgetable
+                else None
+            )
+            rows.append(
+                {
+                    "id": acc.id,
+                    "code": acc.code,
+                    "name": acc.name,
+                    "parent_id": acc.parent_id.id,
+                    "level": level,
+                    "has_children": bool(kids),
+                    "budgetable": acc.budgetable,
+                    "cross_chargeable": acc.cross_chargeable,
+                    "available": available,
+                }
+            )
+            for child in reversed(kids):
+                stack.append((child, level + 1))
+        return {"rows": rows, "currency_id": currency_id}
+
+    @api.model
     def get_overview_data(self, fiscal_year_id, source_id=None):
         """Landing-page payload: per-category cards + recent movements.
 
