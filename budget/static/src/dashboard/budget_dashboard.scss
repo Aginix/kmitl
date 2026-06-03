@@ -83,12 +83,20 @@
             white-space: nowrap;
         }
 
+        // Cells whose figure can be drilled into read as links: brand colour +
+        // a dotted underline at rest, so they stand apart from plain numbers
+        // even without hovering (and not by colour alone). On hover the
+        // underline turns solid with a soft tint to flag the click target.
         .o_bd_click {
             cursor: pointer;
+            color: $o-brand-primary;
+            text-decoration: underline dotted;
+            text-underline-offset: 2px;
         }
 
         .o_bd_click:hover {
-            text-decoration: underline;
+            text-decoration: underline solid;
+            background: rgba($o-brand-primary, 0.08);
         }
 
         .o_bd_neg {
@@ -98,6 +106,29 @@
         .o_bd_group {
             background: #fcfcfc;
             font-weight: 600;
+        }
+
+        // Dimension (breakdown) rows: tint the nested dimension hierarchy so it
+        // reads apart from the budget-account tree, with a shade per depth
+        // (o_bd_dim_0 = outer e.g. activities, o_bd_dim_1 = inner e.g. depts).
+        .o_bd_dim {
+            font-weight: 600;
+
+            .o_bd_acc {
+                color: #1f4e79;
+            }
+        }
+
+        .o_bd_dim_0 {
+            background: #eef4fb;
+        }
+
+        .o_bd_dim_1 {
+            background: #f4f8ec;
+        }
+
+        .o_bd_dim_2 {
+            background: #fbf3ec;
         }
 
         .o_bd_caret {

@@ -21,6 +21,35 @@ class PurchaseRequest(models.Model):
         tracking=True,
     )
 
+    project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        compute="_compute_project_analytic_id",
+        inverse="_inverse_project_analytic",
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+        store=False,
+        string="โครงการ/กิจกรรม (Analytic)",
+    )
+
+    @api.depends("analytic_distribution")
+    def _compute_project_analytic_id(self):
+        for rec in self:
+            account_ids = [int(a) for a in rec.analytic_distribution or {}]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            rec.project_analytic_id = accounts.filtered(
+                lambda a: a.plan_id.code == "kmitl_project"
+            )[:1]
+
+    def _inverse_project_analytic(self):
+        for rec in self:
+            dist = dict(rec.analytic_distribution or {})
+            account_ids = [int(k) for k in dist.keys()]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            for acc in accounts.filtered(lambda a: a.plan_id.code == "kmitl_project"):
+                dist.pop(str(acc.id), None)
+            if rec.project_analytic_id:
+                dist[str(rec.project_analytic_id.id)] = 100
+            rec.analytic_distribution = dist or False
+
     def _domain_budget_account_id(self):
         # Standalone PRs must not draw directly on a project budget code — those
         # are reserved through projects (ADR-0007). Project-driven PRs prefill the
@@ -34,13 +63,15 @@ class PurchaseRequest(models.Model):
             if rec.use_project:
                 rec.is_budget_editable = False
 
-    @api.onchange("use_project", "kmitl_project_id")
-    def _onchange_kmitl_project_id(self):
-        if self.use_project and self.kmitl_project_id:
-            self.account_fiscal_year_id = self.kmitl_project_id.account_fiscal_year_id.id
-            self.budget_account_id = self.kmitl_project_id.budget_account_id.id
-            self.analytic_distribution = self.kmitl_project_id.analytic_distribution
-            self.title = self.kmitl_project_id.name
+    # No _onchange to prefill from the project on purpose. A project-driven พ.1 is
+    # only ever opened through action_create_purchase_request, which already passes
+    # the whole budget context (fiscal year, budget account, analytic_distribution,
+    # title) as context defaults — and _link_to_project re-writes it server-side on
+    # create. analytic_distribution inherits the core analytic.mixin field whose
+    # compute (_compute_analytic_distribution) is a no-op: re-assigning it inside the
+    # new-record onchange cascade makes Odoo recompute it to False, wiping the
+    # dimension fields on the unsaved form (they reappear only after save). Letting
+    # default_get drive the prefill keeps the value stable and the dimensions visible.
 
     def action_view_kmitl_project(self):
         self.ensure_one()

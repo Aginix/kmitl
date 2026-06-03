@@ -141,6 +141,24 @@ class BudgetMoveLine(models.Model):
         string="กองทุน",
         domain=[("root_plan_id.code", "=", "funds")],
     )
+    # Stored mirrors of analytic_distribution for the two dimensions that have no
+    # dedicated column upstream (kmitl_project / procurement_plan). Read-only —
+    # they exist only so the availability engine can match these dimensions with
+    # set-based read_group/child_of. The JSON distribution stays the source of truth.
+    kmitl_project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="โครงการ/กิจกรรม",
+        compute="_compute_extra_dim_analytic",
+        store=True,
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แผนจัดซื้อจัดจ้าง",
+        compute="_compute_extra_dim_analytic",
+        store=True,
+        domain=[("root_plan_id.code", "=", "procurement_plan")],
+    )
     hide_unallocated_balance = fields.Boolean(
         compute="_compute_hide_unallocated_balance", readonly=True
     )
@@ -176,6 +194,26 @@ class BudgetMoveLine(models.Model):
                 # ใช้ department จาก move สำหรับ appropriation
                 line.department_analytic_id = line.move_id.department_analytic_id
             # สำหรับ move types อื่น ให้ผู้ใช้เลือกเอง
+
+    @api.depends("analytic_distribution")
+    def _compute_extra_dim_analytic(self):
+        """Mirror kmitl_project / procurement_plan out of analytic_distribution.
+
+        These two dimensions have no upstream convenience column; the engine
+        needs them as stored columns to match set-based. Derived read-only from
+        the JSON (the source of truth) with a single browse per line.
+        """
+        for line in self:
+            project = plan = False
+            account_ids = [int(raw_id) for raw_id in (line.analytic_distribution or {})]
+            for account in self.env["account.analytic.account"].browse(account_ids):
+                code = account.plan_id.code
+                if code == "kmitl_project":
+                    project = account.id
+                elif code == "procurement_plan":
+                    plan = account.id
+            line.kmitl_project_analytic_id = project
+            line.procurement_plan_analytic_id = plan
 
     def _compute_hide_unallocated_balance(self):
         for line in self:

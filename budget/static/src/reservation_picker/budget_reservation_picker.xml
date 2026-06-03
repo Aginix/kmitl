@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="budget.BudgetDashboard" owl="1">
-        <div class="o_budget_dashboard">
+    <t t-name="budget.BudgetReservationPicker" owl="1">
+        <div class="o_budget_dashboard o_budget_reservation_picker d-flex flex-column">
             <div class="o_bd_controls">
                 <div class="o_bd_filter">
                     <label>ปีงบประมาณ</label>
@@ -17,7 +17,6 @@
                 <div class="o_bd_filter">
                     <label>ประเภทงบ</label>
                     <select t-on-change="onRootChange">
-                        <option value="">ทั้งหมด</option>
                         <t t-foreach="rootAccounts" t-as="acc" t-key="acc.id">
                             <option t-att-value="acc.id" t-att-selected="acc.id === state.rootAccountId">
                                 <t t-esc="acc.code"/> - <t t-esc="acc.name"/>
@@ -47,15 +46,6 @@
                         />
                     </div>
                 </t>
-                <t t-foreach="breakdownOrder" t-as="bd" t-key="bd.key">
-                    <div class="o_bd_filter o_bd_check">
-                        <label>
-                            <input type="checkbox" t-att-checked="state.breakdownDims[bd.key]"
-                                   t-on-change="() => this.toggleBreakdown(bd.key)"/>
-                            <t t-esc="bd.label"/>
-                        </label>
-                    </div>
-                </t>
                 <div class="o_bd_filter o_bd_check">
                     <label>
                         <input type="checkbox" t-att-checked="state.hideZero" t-on-change="toggleHideZero"/>
@@ -66,7 +56,7 @@
 
             <div t-if="state.loading" class="o_bd_loading">กำลังโหลด...</div>
 
-            <div t-else="" class="o_bd_table_wrapper">
+            <div t-else="" class="o_bd_table_wrapper flex-grow-1">
             <table class="o_bd_table table table-sm">
                 <thead>
                     <tr>
@@ -80,38 +70,57 @@
                         <th class="text-end">เบิกจ่าย</th>
                         <th class="text-end">รวมใช้</th>
                         <th class="text-end">คงเหลือ</th>
+                        <th class="text-center o_brp_pick_col">
+                            <t t-if="selectMode">เลือก</t>
+                            <t t-else="">จองงบ</t>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr t-foreach="visibleRows" t-as="row" t-key="row.key"
-                        t-att-class="rowClass(row)">
+                        t-att-class="rowClass(row)"
+                        t-on-click="() => this.onRowClick(row)">
                         <td class="o_bd_acc">
                             <div class="o_bd_acc_inner" t-att-style="'padding-left:' + (row.level * 18) + 'px'">
-                                <span class="o_bd_caret" t-on-click="() => this.toggleRow(row)"
+                                <span class="o_bd_caret" t-on-click.stop="() => this.toggleRow(row)"
                                       t-esc="row.has_children ? (state.collapsed[row.key] ? '▸' : '▾') : ''"/>
                                 <b t-esc="row.code"/>
                                 <span t-esc="row.name"/>
+                                <span t-if="row.cross_chargeable" class="badge text-bg-light ms-1" title="ถัวจ่ายได้">ถัว</span>
                             </div>
                         </td>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row, 'initial')" t-esc="format(row.initial)"/>
+                        <td class="text-end o_bd_num" t-esc="format(row.initial)"/>
                         <td class="text-end o_bd_num" t-esc="format(row.adjustment)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row)">
-                            <b t-esc="format(row.current)"/>
-                        </td>
+                        <td class="text-end o_bd_num"><b t-esc="format(row.current)"/></td>
                         <td class="text-end o_bd_num" t-esc="format(row.cap)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'reserve')" t-esc="format(row.reserved)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'obligate')" t-esc="format(row.obligated)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'consume')" t-esc="format(row.consumed)"/>
+                        <td class="text-end o_bd_num" t-esc="format(row.reserved)"/>
+                        <td class="text-end o_bd_num" t-esc="format(row.obligated)"/>
+                        <td class="text-end o_bd_num" t-esc="format(row.consumed)"/>
                         <td class="text-end o_bd_num" t-esc="format(row.used)"/>
                         <td class="text-end o_bd_num" t-att-class="row.remaining &lt; 0 ? 'o_bd_neg' : ''">
                             <b t-esc="format(row.remaining)"/>
                         </td>
+                        <td class="text-center o_brp_pick_col">
+                            <t t-if="row.selectable">
+                                <span t-if="selectMode" class="o_brp_check"
+                                      t-esc="state.selectedId === row.key ? '●' : '○'"/>
+                                <input t-else="" type="number" min="0" step="0.01"
+                                       class="o_brp_amount form-control form-control-sm text-end"
+                                       t-att-value="state.amounts[row.key] || ''"
+                                       t-on-input="(ev) => this.onAmountInput(row, ev)"/>
+                            </t>
+                        </td>
                     </tr>
                     <tr t-if="!visibleRows.length">
-                        <td colspan="10" class="text-center text-muted">ไม่มีข้อมูล</td>
+                        <td colspan="11" class="text-center text-muted">ไม่มีข้อมูล</td>
                     </tr>
                 </tbody>
             </table>
+            </div>
+
+            <div class="o_brp_footer d-flex justify-content-end gap-2 p-2 border-top">
+                <button class="btn btn-secondary" t-on-click="() => this.close()">ยกเลิก</button>
+                <button class="btn btn-primary" t-on-click="() => this.confirm()">ยืนยัน</button>
             </div>
         </div>
     </t>

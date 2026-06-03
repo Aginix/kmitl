@@ -21,6 +21,21 @@
         </field>
     </record>
 
+    <!-- Expose the project's own analytic account in the budget section -->
+    <record id="view_kmitl_project_form_analytic_account" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form.analytic.account</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+                <attribute name="invisible">0</attribute>
+                <attribute name="string">โครงการ/กิจกรรม (Analytic)</attribute>
+                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'invisible': [('analytic_account_id', '=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <!-- Projects a พ.1 can be created from (reserved: new + in_progress).
          Linked from the info alert on the purchase request form. -->
     <record id="action_kmitl_project_for_pr" model="ir.actions.act_window">
