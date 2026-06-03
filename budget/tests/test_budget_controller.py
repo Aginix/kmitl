@@ -201,16 +201,27 @@ class TestBudgetController(TransactionCase):
         )
         self.assertEqual(len(commitment.line_ids), 2)
 
-    def test_reservation_grid_shows_control_node_available(self):
-        """The picker feed reports control-node available per budgetable row."""
-        self._appropriate(self.coarse, 100_000)
-        self._reserve(self.child_a, 60_000)
+    def test_reservation_grid_reuses_dashboard_columns_and_flags_selectable(self):
+        """The picker feed = dashboard columns + budgetable/selectable flags."""
+        self._appropriate(self.leaf, 100_000)
+        self._reserve(self.leaf, 60_000)
         grid = self.env["budget.dashboard"].get_reservation_grid(
-            self.fy.id, {}, root_account_id=self.coarse.id
+            self.fy.id, {}, root_account_id=self.leaf.id
         )
-        rows = {r["id"]: r for r in grid["rows"]}
-        # both children draw the shared parent pool -> both show 40k
-        self.assertEqual(rows[self.child_a.id]["available"], 40_000)
-        self.assertEqual(rows[self.child_b.id]["available"], 40_000)
-        self.assertTrue(rows[self.child_a.id]["budgetable"])
-        self.assertTrue(rows[self.coarse.id]["has_children"])
+        leaf = {r["id"]: r for r in grid["rows"]}[self.leaf.id]
+        # full dashboard columns are present and correct
+        self.assertEqual(leaf["current"], 100_000)
+        self.assertEqual(leaf["used"], 60_000)
+        self.assertEqual(leaf["remaining"], 40_000)
+        # no account_domain -> selectable mirrors budgetable
+        self.assertTrue(leaf["budgetable"])
+        self.assertTrue(leaf["selectable"])
+        # account_domain narrows selectable
+        grid2 = self.env["budget.dashboard"].get_reservation_grid(
+            self.fy.id,
+            {},
+            root_account_id=self.leaf.id,
+            account_domain=[("id", "=", self.leaf2.id)],
+        )
+        leaf2row = {r["id"]: r for r in grid2["rows"]}[self.leaf.id]
+        self.assertFalse(leaf2row["selectable"])

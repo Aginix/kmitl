@@ -304,26 +304,40 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("budget_account_id")
     def _onchange_budget_account_id(self):
-        default_price = self.env.context.get("default_price_unit", 0)
-        product_id = self.budget_account_id.product_id
+        self._apply_budget_account_product()
 
+    def _apply_budget_account_product(self):
+        """Set the product from the budget account and ensure a PR line.
+
+        Shared by the budget_account_id onchange and the reservation picker:
+        the picker writes via ORM (no onchange fires), so it calls this directly
+        to keep the PR line in sync with the chosen budget code.
+        """
+        product_id = self.budget_account_id.product_id
         if not product_id:
             return
-
         self.product_id = product_id.id
-
         if self.line_ids:
-            for line in self.line_ids:
-                line.product_id = product_id.id
+            self.line_ids.write({"product_id": product_id.id})
         else:
+            default_price = self.env.context.get("default_price_unit", 0)
             self.line_ids = [
                 Command.create(
                     {
                         "product_id": product_id.id,
                         "name": product_id.display_name,
                         "product_uom_id": product_id.uom_id.id,
-                        "price_unit": getattr(self, 'procurement_plan_id', False) and self.procurement_plan_id.total_price or default_price,
+                        "price_unit": getattr(self, "procurement_plan_id", False)
+                        and self.procurement_plan_id.total_price
+                        or default_price,
                         "product_qty": 1.0,
                     }
                 )
             ]
+
+    def apply_reservation_selection(self, selections, dims=None):
+        """Picker write-back: set the budget code + dimensions, then sync the
+        product line (the manual onchange does not fire on an ORM write)."""
+        res = super().apply_reservation_selection(selections, dims=dims)
+        self._apply_budget_account_product()
+        return res

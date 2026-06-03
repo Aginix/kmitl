@@ -490,32 +490,42 @@ class BudgetCommitmentMixin(models.AbstractModel):
         root = account
         while root and root.parent_id:
             root = root.parent_id
+        context = {
+            "res_model": self._name,
+            "res_id": self.id,
+            "select_only": True,
+            "account_domain": self._reservation_account_domain(),
+            "default_fiscal_year_id": fiscal_year.id if fiscal_year else False,
+            "default_root_account_id": root.id if root else False,
+        }
+        # Pre-fill the picker's dimension filter bar from the host's dimensions.
+        for fname in (
+            "department_analytic_id",
+            "source_analytic_id",
+            "fund_analytic_id",
+            "activity_analytic_id",
+        ):
+            value = getattr(self, fname, False)
+            context["default_" + fname] = value.id if value else False
         return {
             "type": "ir.actions.client",
             "tag": "budget_reservation_picker",
             "target": "new",
             "name": _("เลือกงบประมาณ"),
-            "context": {
-                "res_model": self._name,
-                "res_id": self.id,
-                "fiscal_year_id": fiscal_year.id if fiscal_year else False,
-                "analytic_distribution": getattr(self, "analytic_distribution", False)
-                or {},
-                "root_account_id": root.id if root else False,
-                "account_domain": self._reservation_account_domain(),
-                "select_only": True,
-            },
+            "context": context,
         }
 
-    def apply_reservation_selection(self, selections):
-        """Host write-back for the picker: set the single budget account field.
+    def apply_reservation_selection(self, selections, dims=None):
+        """Host write-back for the picker: set the budget account + dimensions.
 
         A host document carries one budget account (``_commitment_account_id_field``);
         the reservation itself is still created later by the host's reserve
         action. ``selections`` = ``[{"account_id": int, ...}]`` (amount ignored
-        here — the host derives it). Single code only. The account is validated
-        against ``_reservation_account_domain`` server-side, since field domains
-        do not constrain ``write``.
+        here — the host derives it). ``dims`` is the dimension combination chosen
+        in the picker (``analytic_distribution`` JSON), written when the host
+        carries that field. Single code only; the account is validated against
+        ``_reservation_account_domain`` server-side, since field domains do not
+        constrain ``write``.
         """
         self.ensure_one()
         selections = [s for s in (selections or []) if s.get("account_id")]
@@ -533,7 +543,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
         field = getattr(
             self.__class__, "_commitment_account_id_field", "budget_account_id"
         )
-        self.write({field: account_id})
+        vals = {field: account_id}
+        if dims is not None and "analytic_distribution" in self._fields:
+            vals["analytic_distribution"] = dims or False
+        self.write(vals)
         return True
 
     def _obligate_budget_commitment(self):

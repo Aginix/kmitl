@@ -1,39 +1,39 @@
-// Widen the picker dialog to fit the budget-account hierarchy, mirroring the
-// monitoring dashboard's dialog sizing.
+// The picker reuses the monitoring dashboard markup (.o_bd_* styles come from
+// budget_dashboard.scss); these rules add the selection affordances and widen
+// the dialog so the full column set fits.
 .o_dialog:has(.o_budget_reservation_picker) {
     .modal-dialog {
-        max-width: 1000px;
-        width: 90vw;
+        max-width: 1200px;
+        width: 95vw;
     }
 }
 
 .o_budget_reservation_picker {
-    max-height: 75vh;
+    max-height: 80vh;
 
-    .o_brp_body {
+    .o_bd_table_wrapper {
         overflow: auto;
     }
 
-    .o_brp_table {
-        .o_brp_num {
-            width: 180px;
-            font-variant-numeric: tabular-nums;
-        }
+    // Whole row is clickable in select mode.
+    tbody tr {
+        cursor: pointer;
+    }
 
-        .o_brp_group > td {
-            background-color: #fcfcfc;
-            font-weight: 600;
-        }
+    tr.o_brp_selected > td {
+        background-color: #e7f1ff !important;
+    }
 
-        .o_brp_toggle {
-            cursor: pointer;
-            width: 1em;
-            display: inline-block;
-        }
+    .o_brp_pick_col {
+        width: 90px;
+    }
 
-        .o_brp_amount {
-            display: inline-block;
-            width: 160px;
-        }
+    .o_brp_check {
+        font-size: 1.1em;
+    }
+
+    .o_brp_amount {
+        width: 120px;
+        display: inline-block;
     }
 }

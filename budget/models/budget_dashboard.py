@@ -182,92 +182,51 @@ class BudgetDashboard(models.AbstractModel):
 
     @api.model
     def get_reservation_grid(
-        self,
-        fiscal_year_id,
-        analytic_distribution,
-        root_account_id=None,
-        account_domain=None,
+        self, fiscal_year_id, filters=None, root_account_id=None, account_domain=None
     ):
-        """Expense ``budget.account`` hierarchy with the control-node
-        ``available`` per budgetable row, for a **fixed** dimension combination.
+        """Reservation picker feed: the full monitoring grid, made selectable.
 
-        Feeds the reservation picker widget: unlike ``get_dashboard_data`` (which
-        rolls the tree up and treats dimensions as ``child_of`` filters), this
-        evaluates ``budget.controller.get_available`` for the *exact*
-        combination at each budgetable node — so the figure shown is the figure
-        the reservation check will enforce (WYSIWYG). Non-budgetable rows are
-        display-only (``available`` is ``None``).
+        Reuses ``get_dashboard_data`` so the picker shows the **same columns**
+        (งบต้นปี / งบปัจจุบัน / เงินจอง / คงเหลือ …) rolled up over the chosen
+        ``filters`` dimension combination, then annotates each row with picker
+        metadata:
 
-        ``account_domain`` (optional) narrows which rows are **selectable** to
-        the host's own budget-account domain (e.g. purchase.request's
-        ``purchase_ok`` + ``product_id``); rows outside it still show their
-        ``available`` but are flagged ``selectable=False``. When omitted,
-        ``selectable`` mirrors ``budgetable``.
+        - ``budgetable`` — a real budget code, not a roll-up node;
+        - ``cross_chargeable`` — may be pooled with others (ถัวจ่าย);
+        - ``selectable`` — inside the host's own budget-account domain
+          (``account_domain``, e.g. purchase.request's purchase_ok + product_id);
+          defaults to ``budgetable`` when no domain is supplied.
+
+        The displayed ``คงเหลือ`` is the rolled-up figure; the authoritative
+        control-node availability (ADR 0005) is enforced by the engine at
+        reserve time.
         """
-        currency_id = self.env.company.currency_id.id
-        if not fiscal_year_id:
-            return {"rows": [], "currency_id": currency_id}
-        accounts = self._dashboard_accounts(root_account_id)
-        if not accounts:
-            return {"rows": [], "currency_id": currency_id}
-
+        data = self.get_dashboard_data(fiscal_year_id, root_account_id, filters or {})
+        rows = data.get("rows", [])
         selectable_ids = None
         if account_domain:
             selectable_ids = set(
                 self.env["budget.account"].search(account_domain).ids
             )
-
-        acc_by_id = {acc.id: acc for acc in accounts}
-        children = defaultdict(list)
-        roots = []
-        for acc in accounts:
-            if acc.parent_id.id in acc_by_id:
-                children[acc.parent_id.id].append(acc)
-            else:
-                roots.append(acc)
-        order = self._ROOT_ORDER
-        roots.sort(
-            key=lambda a: (
-                order.index(a.code) if a.code in order else len(order),
-                a.code,
-            )
-        )
-
-        controller = self.env["budget.controller"]
-        rows = []
-        stack = [(acc, 0) for acc in reversed(roots)]
-        while stack:
-            acc, level = stack.pop()
-            kids = children.get(acc.id, [])
-            available = (
-                controller.get_available(
-                    acc, analytic_distribution, fiscal_year_id
-                )
-                if acc.budgetable
-                else None
-            )
-            selectable = (
-                acc.budgetable
+        accounts = {
+            a.id: a
+            for a in self.env["budget.account"].browse([r["id"] for r in rows])
+        }
+        for row in rows:
+            account = accounts.get(row["id"])
+            budgetable = bool(account and account.budgetable)
+            row["budgetable"] = budgetable
+            row["cross_chargeable"] = bool(account and account.cross_chargeable)
+            row["selectable"] = (
+                budgetable
                 if selectable_ids is None
-                else acc.id in selectable_ids
+                else row["id"] in selectable_ids
             )
-            rows.append(
-                {
-                    "id": acc.id,
-                    "code": acc.code,
-                    "name": acc.name,
-                    "parent_id": acc.parent_id.id,
-                    "level": level,
-                    "has_children": bool(kids),
-                    "budgetable": acc.budgetable,
-                    "selectable": selectable,
-                    "cross_chargeable": acc.cross_chargeable,
-                    "available": available,
-                }
-            )
-            for child in reversed(kids):
-                stack.append((child, level + 1))
-        return {"rows": rows, "currency_id": currency_id}
+        return {
+            "rows": rows,
+            "currency_id": data.get("currency_id"),
+            "hier_op": data.get("hier_op", "="),
+        }
 
     @api.model
     def get_overview_data(self, fiscal_year_id, source_id=None):

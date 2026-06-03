@@ -487,6 +487,10 @@ class BudgetCommitment(models.Model):
             raise UserError(
                 _("Budget can only be selected while the reservation is draft.")
             )
+        account = self.account_id
+        root = account
+        while root and root.parent_id:
+            root = root.parent_id
         return {
             "type": "ir.actions.client",
             "tag": "budget_reservation_picker",
@@ -495,20 +499,25 @@ class BudgetCommitment(models.Model):
             "context": {
                 "res_model": "budget.commitment",
                 "res_id": self.id,
-                "fiscal_year_id": self.account_fiscal_year_id.id,
-                "analytic_distribution": self.analytic_distribution or {},
                 "select_only": False,
+                "default_fiscal_year_id": self.account_fiscal_year_id.id,
+                "default_root_account_id": root.id if root else False,
+                "default_department_analytic_id": self.department_analytic_id.id or False,
+                "default_source_analytic_id": self.source_analytic_id.id or False,
+                "default_fund_analytic_id": self.fund_analytic_id.id or False,
+                "default_activity_analytic_id": self.activity_analytic_id.id or False,
             },
         }
 
-    def apply_reservation_selection(self, selections):
+    def apply_reservation_selection(self, selections, dims=None):
         """Write reserve lines from the picker.
 
         ``selections`` = ``[{"account_id": int, "amount": float}, ...]``. Replaces
         the commitment's current reserve lines (re-selection cancels the old
-        ones), copies the header dimensions onto each line, and lifts the cap to
-        cover the total. Cross-charge (>1 code) is gated by the
-        ``cross_chargeable`` constraint on the lines. Draft only.
+        ones), stamps the chosen dimensions (``dims`` = ``analytic_distribution``)
+        on the header and each line, and lifts the cap to cover the total.
+        Cross-charge (>1 code) is gated by the ``cross_chargeable`` constraint.
+        Draft only.
         """
         self.ensure_one()
         if self.state != "draft":
@@ -526,6 +535,7 @@ class BudgetCommitment(models.Model):
             lambda l: l.state == "posted" and l.move_type == "reserve"
         ).action_cancel()
 
+        distribution = dims if dims is not None else self.analytic_distribution
         total = sum(s["amount"] for s in selections)
         line_cmds = [
             (
@@ -535,13 +545,15 @@ class BudgetCommitment(models.Model):
                     "move_type": "reserve",
                     "account_id": s["account_id"],
                     "amount": s["amount"],
-                    "analytic_distribution": self.analytic_distribution,
+                    "analytic_distribution": distribution,
                     "name": _("Reservation"),
                 },
             )
             for s in selections
         ]
         vals = {"line_ids": line_cmds, "account_id": selections[0]["account_id"]}
+        if dims is not None:
+            vals["analytic_distribution"] = dims or False
         if not self.amount or self.amount < total:
             vals["amount"] = total
         self.write(vals)
