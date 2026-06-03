@@ -1,5 +1,6 @@
 .o_budget_status_card {
     width: 100%;
+    max-width: 24rem;
     background: #ffffff;
     border: 1px solid #dee2e6;
     border-radius: 4px;
@@ -10,73 +11,59 @@
         font-size: 13px;
     }
 
-    .o_bsc_grid {
-        display: grid;
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-
-    .o_bsc_tile {
+    .o_bsc_lines {
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        padding: 12px 16px;
-        border-right: 1px solid #f0f1f3;
+    }
 
-        &:last-child {
-            border-right: none;
+    // One figure per row, label left / amount right, read top to bottom.
+    .o_bsc_row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 9px 16px;
+
+        & + .o_bsc_row {
+            border-top: 1px solid #f0f1f3;
         }
     }
 
     .o_bsc_label {
-        font-size: 11px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
+        font-size: 13px;
         color: #6c757d;
-        white-space: nowrap;
     }
 
     .o_bsc_value {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 600;
         color: #212529;
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
+        text-align: right;
     }
 
-    // Two rows of three on medium screens.
-    @media (max-width: 991px) {
-        .o_bsc_grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
+    // Stronger divider before the totals block.
+    .o_bsc_subtotal {
+        border-top: 1px solid #dee2e6;
 
-        .o_bsc_tile {
-            border-bottom: 1px solid #f0f1f3;
-
-            &:nth-child(3n) {
-                border-right: none;
-            }
-
-            &:nth-last-child(-n + 3) {
-                border-bottom: none;
-            }
+        .o_bsc_label {
+            font-weight: 600;
+            color: #495057;
         }
     }
 
-    // Two columns on narrow screens.
-    @media (max-width: 575px) {
-        .o_bsc_grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+    // Bottom line: the headline result.
+    .o_bsc_total {
+        background: #f8f9fa;
+
+        .o_bsc_label {
+            font-weight: 600;
+            color: #495057;
         }
 
-        .o_bsc_tile {
-            &:nth-child(3n) {
-                border-right: 1px solid #f0f1f3;
-            }
-
-            &:nth-child(2n) {
-                border-right: none;
-            }
+        .o_bsc_value {
+            font-size: 15px;
         }
     }
 }

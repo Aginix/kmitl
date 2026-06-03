@@ -14,28 +14,28 @@
                 </div>
             </t>
             <t t-elif="state.data and state.data.ready">
-                <div class="o_bsc_grid">
-                    <div class="o_bsc_tile">
+                <div class="o_bsc_lines">
+                    <div class="o_bsc_row">
                         <span class="o_bsc_label">Current Budget</span>
                         <span class="o_bsc_value" t-esc="formatAmount(state.data.current)" />
                     </div>
-                    <div class="o_bsc_tile">
+                    <div class="o_bsc_row">
                         <span class="o_bsc_label">Reserved</span>
                         <span class="o_bsc_value" t-esc="formatAmount(state.data.reserved)" />
                     </div>
-                    <div class="o_bsc_tile">
+                    <div class="o_bsc_row">
                         <span class="o_bsc_label">Committed</span>
                         <span class="o_bsc_value" t-esc="formatAmount(state.data.obligated)" />
                     </div>
-                    <div class="o_bsc_tile">
+                    <div class="o_bsc_row">
                         <span class="o_bsc_label">Disbursed</span>
                         <span class="o_bsc_value" t-esc="formatAmount(state.data.consumed)" />
                     </div>
-                    <div class="o_bsc_tile">
+                    <div class="o_bsc_row o_bsc_subtotal">
                         <span class="o_bsc_label">Total Used</span>
                         <span class="o_bsc_value" t-esc="formatAmount(state.data.used)" />
                     </div>
-                    <div class="o_bsc_tile">
+                    <div class="o_bsc_row o_bsc_total">
                         <span class="o_bsc_label">Remaining</span>
                         <span
                             class="o_bsc_value"
