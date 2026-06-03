@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
-    <t t-name="budget.BudgetReservationPicker">
+    <t t-name="budget.BudgetReservationPicker" owl="1">
         <div class="o_budget_reservation_picker d-flex flex-column">
             <div t-if="state.loading" class="text-muted p-3">กำลังโหลด…</div>
             <div t-else="" class="o_brp_body flex-grow-1">
