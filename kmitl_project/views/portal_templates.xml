@@ -66,8 +66,8 @@
                                 </td>
                                 <td>
                                     <span
-                                        t-field="project.department_id.name"
-                                        t-if="project.department_id"
+                                        t-field="project.department_analytic_id.name"
+                                        t-if="project.department_analytic_id"
                                     />
                                     <span t-else="">-</span>
                                 </td>
@@ -131,8 +131,8 @@
                                 </td>
                                 <td>
                                     <span
-                                        t-field="project.department_id.name"
-                                        t-if="project.department_id"
+                                        t-field="project.department_analytic_id.name"
+                                        t-if="project.department_analytic_id"
                                     />
                                     <span t-else="">-</span>
                                 </td>
@@ -222,7 +222,7 @@
                         >หน่วยงาน</label
                     >
                     <div class="col col-lg-9">
-                        <span t-out="kmitl_project.department_id.complete_name" />
+                        <span t-out="kmitl_project.department_analytic_id.name" />
                     </div>
                 </div>
                 <div class="row form-group mb-3">

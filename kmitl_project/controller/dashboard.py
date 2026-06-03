@@ -9,6 +9,23 @@ _logger = logging.getLogger(__name__)
 
 
 class KmitlProjectDashboard(http.Controller):
+    """Project dashboard grouped by the *department* financial dimension
+    (``department_analytic_id``, the ``departments`` analytic plan). Department
+    ids handled here are ``account.analytic.account`` ids."""
+
+    def _departments(self):
+        """Root-level department-dimension accounts (the dashboard's group axis)."""
+        return (
+            request.env["account.analytic.account"]
+            .sudo()
+            .search(
+                [
+                    ("root_plan_id.code", "=", "departments"),
+                    ("parent_id", "=", False),
+                ],
+                order="code",
+            )
+        )
 
     @http.route("/project/dashboard", type="http", auth="public", website=True)
     def dashboard(self, **kw):
@@ -32,8 +49,8 @@ class KmitlProjectDashboard(http.Controller):
         website=True,
     )
     def department_dashboard(self, department_id, **kw):
-        """Department-specific dashboard page"""
-        Department = request.env["hr.department"].sudo()
+        """Department-specific dashboard page (department_id is an analytic account id)"""
+        Department = request.env["account.analytic.account"].sudo()
         department = Department.browse(department_id)
 
         if not department.exists():
@@ -59,7 +76,6 @@ class KmitlProjectDashboard(http.Controller):
     def _prepare_filter_options(self, **kw):
         """Prepare filter options for the dashboard template (JSON for OWL)"""
         FiscalYear = request.env["account.fiscal.year"].sudo()
-        Department = request.env["hr.department"].sudo()
 
         # Fiscal years - sorted descending (newest first)
         fiscal_years = FiscalYear.search([], order="date_from desc")
@@ -69,11 +85,8 @@ class KmitlProjectDashboard(http.Controller):
         if not fiscal_year_id and fiscal_years:
             fiscal_year_id = str(fiscal_years[0].id)
 
-        # Departments - only root level with code (parent_id is null, code is not null)
-        departments = Department.search(
-            [("parent_id", "=", False), ("code", "!=", False)],
-            order="code",
-        )
+        # Departments - root-level accounts of the departments dimension
+        departments = self._departments()
 
         # Convert to JSON for OWL component
         fiscal_years_json = json.dumps([
@@ -95,13 +108,9 @@ class KmitlProjectDashboard(http.Controller):
     def _prepare_dashboard_data(self, fiscal_year_id=None, department_id=None):
         """Prepare all dashboard data for API response"""
         Project = request.env["kmitl.project"].sudo()
-        Department = request.env["hr.department"].sudo()
 
-        # Departments - only root level with code (parent_id is null, code is not null)
-        departments = Department.search(
-            [("parent_id", "=", False), ("code", "!=", False)],
-            order="code",
-        )
+        # Departments - root-level accounts of the departments dimension
+        departments = self._departments()
 
         # Build domain excluding draft and cancel states
         domain = self._build_project_domain(
@@ -142,17 +151,20 @@ class KmitlProjectDashboard(http.Controller):
             domain.append(("account_fiscal_year_id", "=", int(kw["fiscal_year_id"])))
 
         if kw.get("department_id"):
-            # Use parent_path to include all child departments
-            Department = request.env["hr.department"].sudo()
+            # Use parent_path to include all child departments of the dimension
+            Department = request.env["account.analytic.account"].sudo()
             dept = Department.browse(int(kw["department_id"]))
             if dept.exists() and dept.parent_path:
-                # Find all departments under this one (including itself)
                 child_depts = Department.search([
-                    ("parent_path", "=like", dept.parent_path + "%")
+                    ("parent_path", "=like", dept.parent_path + "%"),
+                    ("root_plan_id.code", "=", "departments"),
                 ])
-                domain.append(("department_id", "in", child_depts.ids))
+                domain.append(("department_analytic_id", "in", child_depts.ids))
             else:
-                domain.append(("department_id", "=", int(kw["department_id"])))
+                domain.append(("department_analytic_id", "=", int(kw["department_id"])))
+                domain.append(
+                    ("department_analytic_id.root_plan_id.code", "=", "departments")
+                )
 
         return domain
 
@@ -209,7 +221,7 @@ class KmitlProjectDashboard(http.Controller):
         return {"budget_by_impact": pie_data}
 
     def _prepare_department_budget_table(self, departments, projects):
-        """Prepare department budget table data (hr.department)"""
+        """Prepare department budget table data (departments dimension)"""
         # Get source references
         source_1 = request.env.ref(
             "account_analytic_kmitl.source_1", raise_if_not_found=False
@@ -227,10 +239,10 @@ class KmitlProjectDashboard(http.Controller):
             # Get projects for this department and all child departments (using parent_path)
             dept_projects = projects.filtered(
                 lambda p, d=dept: (
-                    p.department_id and
-                    p.department_id.parent_path and
+                    p.department_analytic_id and
+                    p.department_analytic_id.parent_path and
                     d.parent_path and
-                    p.department_id.parent_path.startswith(d.parent_path)
+                    p.department_analytic_id.parent_path.startswith(d.parent_path)
                 )
             )
 
@@ -293,7 +305,7 @@ class KmitlProjectDashboard(http.Controller):
         return None
 
     def _prepare_department_filter_options(self, department, **kw):
-        """Prepare filter options for department dashboard (hr.department)"""
+        """Prepare filter options for department dashboard (departments dimension)"""
         FiscalYear = request.env["account.fiscal.year"].sudo()
 
         # Fiscal years - sorted descending (newest first)
@@ -318,16 +330,16 @@ class KmitlProjectDashboard(http.Controller):
         }
 
     def _prepare_department_dashboard_data(self, department_id, fiscal_year_id=None):
-        """Prepare department dashboard data for API response (hr.department)"""
+        """Prepare department dashboard data for API response (departments dimension)"""
         Project = request.env["kmitl.project"].sudo()
-        Department = request.env["hr.department"].sudo()
+        Department = request.env["account.analytic.account"].sudo()
 
         department = Department.browse(department_id)
         if not department.exists():
             return {"error": "Department not found"}
 
-        # Build domain for this department (using hr.department)
-        domain = self._build_project_domain_for_hr_department(
+        # Build domain for this department (departments dimension)
+        domain = self._build_project_domain_for_department(
             fiscal_year_id=fiscal_year_id,
             department_id=department_id,
         )
@@ -345,8 +357,8 @@ class KmitlProjectDashboard(http.Controller):
             "projects_table": projects_table,
         }
 
-    def _build_project_domain_for_hr_department(self, fiscal_year_id=None, department_id=None):
-        """Build search domain for hr.department filtering using parent_path"""
+    def _build_project_domain_for_department(self, fiscal_year_id=None, department_id=None):
+        """Build search domain for department-dimension filtering using parent_path"""
         domain = [
             ("active", "=", True),
             ("state", "not in", ["draft", "cancel"]),
@@ -356,17 +368,20 @@ class KmitlProjectDashboard(http.Controller):
             domain.append(("account_fiscal_year_id", "=", int(fiscal_year_id)))
 
         if department_id:
-            # Use parent_path to include all child departments
-            Department = request.env["hr.department"].sudo()
+            # Use parent_path to include all child departments of the dimension
+            Department = request.env["account.analytic.account"].sudo()
             dept = Department.browse(int(department_id))
             if dept.exists() and dept.parent_path:
-                # Find all departments under this one (including itself)
                 child_depts = Department.search([
-                    ("parent_path", "=like", dept.parent_path + "%")
+                    ("parent_path", "=like", dept.parent_path + "%"),
+                    ("root_plan_id.code", "=", "departments"),
                 ])
-                domain.append(("department_id", "in", child_depts.ids))
+                domain.append(("department_analytic_id", "in", child_depts.ids))
             else:
-                domain.append(("department_id", "=", int(department_id)))
+                domain.append(("department_analytic_id", "=", int(department_id)))
+                domain.append(
+                    ("department_analytic_id.root_plan_id.code", "=", "departments")
+                )
 
         return domain
 

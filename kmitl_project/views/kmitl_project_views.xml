@@ -30,7 +30,7 @@
                 <field name="key" optional="show" />
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="project_type"/>
-                <field name="department_id" optional="show" />
+                <field name="department_analytic_id" optional="show" />
                 <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
                 <field name="state" widget="badge" />
             </tree>
@@ -88,8 +88,6 @@
                             <field name="id" invisible="1"/>
                             <field name="account_fiscal_year_id" widget="selection" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="manager_id" widget="many2one_avatar_employee" options="{'no_create_edit': True, 'no_open': True}"/>
-                            <field name="department_id" options="{'no_create_edit': True, 'no_open': True}" groups="!operating_unit.group_multi_operating_unit"/>
-                            <field name="department_id" domain="[('operating_unit_id', 'in', [operating_unit_id, False])]" options="{'no_create_edit': True, 'no_open': True}" groups="operating_unit.group_multi_operating_unit"/>
                             <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
 
                             <field name="active" invisible="1"/>

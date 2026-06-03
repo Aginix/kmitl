@@ -98,12 +98,6 @@ class KmitlProject(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    department_id = fields.Many2one(
-        "hr.department",
-        string="Department",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
-    )
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
         string="Operating Unit",
@@ -350,7 +344,9 @@ class KmitlProject(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        # Stored so the project dashboard can search/group by department dimension
+        # (replaces the removed hr.department department_id).
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -409,13 +405,6 @@ class KmitlProject(models.Model):
         """Update distribution when source changes"""
         for line in self:
             line._update_analytic_distribution("kmitl_project")
-
-    @api.onchange("operating_unit_id")
-    def _onchange_operating_unit_id(self):
-        """Clear department if it doesn't belong to the selected operating unit"""
-        if self.department_id and self.department_id.operating_unit_id:
-            if self.department_id.operating_unit_id != self.operating_unit_id:
-                self.department_id = False
 
     def button_cancel(self):
         self._release_project_commitment()
