@@ -87,7 +87,7 @@
                         <group>
                             <field name="id" invisible="1"/>
                             <field name="account_fiscal_year_id" widget="selection" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="user_id" string="Project Manager" widget="many2one_avatar_user" attrs="{'readonly':[('active','=',False)]}" domain="['|', ('employee_ids.department_id', '=', False), ('employee_ids.department_id', '=', department_id)]"/>
+                            <field name="manager_id" widget="many2one_avatar_employee" options="{'no_create_edit': True, 'no_open': True}"/>
                             <field name="department_id" options="{'no_create_edit': True, 'no_open': True}" groups="!operating_unit.group_multi_operating_unit"/>
                             <field name="department_id" domain="[('operating_unit_id', 'in', [operating_unit_id, False])]" options="{'no_create_edit': True, 'no_open': True}" groups="operating_unit.group_multi_operating_unit"/>
                             <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
@@ -125,6 +125,7 @@
                             </group>
                             <group name="budget" string="งบประมาณ">
                                 <field name="budget_amount" required="1"/>
+                                <field name="budget_remaining" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                                 <field name="budget_account_id" required="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="activity_analytic_id" required="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
                                 <field name="fund_analytic_id" required="1" widget="selection" />

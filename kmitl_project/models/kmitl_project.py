@@ -111,12 +111,13 @@ class KmitlProject(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    user_id = fields.Many2one(
-        "res.users",
+    manager_id = fields.Many2one(
+        "hr.employee",
+        string="หัวหน้าโครงการ",
         tracking=True,
-        default=lambda self: self.env.user,
         readonly=True,
         states={"draft": [("readonly", False)]},
+        help="พนักงานผู้เป็นหัวหน้า/ผู้จัดการโครงการ; สิทธิ์เข้าถึงของผู้ใช้ผูกผ่าน manager_id.user_id",
     )
     creating_user_id = fields.Many2one(
         comodel_name="res.users",
@@ -326,6 +327,11 @@ class KmitlProject(models.Model):
         string="จำนวนผูกพันงบประมาณ",
         compute="_compute_budget_commitment_count",
     )
+    budget_remaining = fields.Float(
+        string="งบประมาณคงเหลือ",
+        compute="_compute_budget_remaining",
+        help="งบประมาณที่จองไว้ของโครงการ หักด้วยยอดที่เบิกจ่าย (ใช้) ไปแล้ว",
+    )
 
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -411,14 +417,6 @@ class KmitlProject(models.Model):
             if self.department_id.operating_unit_id != self.operating_unit_id:
                 self.department_id = False
 
-    @api.onchange("department_id")
-    def _onchange_department_id(self):
-        """Clear user if they don't belong to the selected department"""
-        if self.user_id and self.department_id:
-            user_departments = self.user_id.employee_ids.mapped("department_id")
-            if user_departments and self.department_id not in user_departments:
-                self.user_id = False
-
     def button_cancel(self):
         self._release_project_commitment()
         self.write({"state": "cancel"})
@@ -468,6 +466,23 @@ class KmitlProject(models.Model):
     def _compute_budget_commitment_count(self):
         for rec in self:
             rec.budget_commitment_count = len(rec.budget_commitment_ids)
+
+    @api.depends(
+        "budget_amount",
+        "budget_commitment_ids.state",
+        "budget_commitment_ids.total_consumed",
+    )
+    def _compute_budget_remaining(self):
+        """Money left in the project = reserved budget − what has actually been
+        consumed (เบิกจ่าย) from its commitment. Not the budget-account dashboard
+        status — strictly this project's reservation vs its spend."""
+        for rec in self:
+            used = sum(
+                rec.budget_commitment_ids.filtered(
+                    lambda c: c.state != "cancel"
+                ).mapped("total_consumed")
+            )
+            rec.budget_remaining = rec.budget_amount - used
 
     def action_open_budget_commitments(self):
         self.ensure_one()

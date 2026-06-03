@@ -362,13 +362,13 @@
             <div class="card-body">
                 <div class="row form-group mb-3">
                     <label
-                        for="kmitl_project.user_id"
+                        for="kmitl_project.manager_id"
                         class="form-label required col col-lg-2 text-end"
                         >หัวหน้าโครงการ</label
                     >
                     <div class="col col-lg-9">
-                        <span id="kmitl_project.user_id"
-                            ><t t-out="kmitl_project.user_id.name"
+                        <span id="kmitl_project.manager_id"
+                            ><t t-out="kmitl_project.manager_id.name"
                         /></span>
                     </div>
                 </div>

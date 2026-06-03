@@ -16,6 +16,6 @@ _Avoid_: strategic plan (that names the `project.strategic.plan` it aligns to, n
 The full amount a project earmarks from its floating budget code. Reserved as one shared `budget.commitment` when the project is confirmed (`draft→new`); drawn down by the project's purchase requests and disbursements. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
 _Avoid_: allocation, cost
 
-**Project Budget Remaining (งบประมาณคงเหลือของโครงการ)**:
-The portion of a project's `budget_amount` not yet claimed by its purchase requests = `budget_amount − Σ estimated_cost(non-rejected พ.1)`. It gates further พ.1 creation and is the project-level headroom — distinct from the budget account's disbursement *Remaining (f)*.
+**Project Budget Remaining (งบประมาณคงเหลือ)**:
+A project's reserved `budget_amount` minus what has actually been **consumed (เบิกจ่าย)** from its commitment — the project money still available to spend. It is the project's own reservation-vs-spend, **not** the budget account's disbursement *Remaining (f)*, and **not** the พ.1 planning headroom (`budget_amount − Σ estimated_cost`) that caps how many purchase requests a project may raise.
 _Avoid_: remaining (unqualified — clashes with [budget » Remaining (f)](../budget/CONTEXT.md))

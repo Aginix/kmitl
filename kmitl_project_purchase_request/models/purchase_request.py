@@ -194,22 +194,6 @@ class KmitlProject(models.Model):
                 and remaining > 0
             )
 
-    budget_remaining = fields.Float(
-        string="งบประมาณคงเหลือ",
-        compute="_compute_budget_remaining",
-        help="งบประมาณโครงการที่ยังไม่ถูกจัดสรรให้ใบขอซื้อ "
-        "(budget_amount − ผลรวม estimated_cost ของใบที่ยังไม่ถูกปฏิเสธ)",
-    )
-
-    @api.depends(
-        "budget_amount",
-        "purchase_request_ids.state",
-        "purchase_request_ids.line_ids.estimated_cost",
-    )
-    def _compute_budget_remaining(self):
-        for rec in self:
-            rec.budget_remaining = rec.budget_amount - rec._project_pr_total()
-
     def _project_pr_total(self):
         """Total estimated cost already claimed by the project's non-rejected
         purchase requests."""

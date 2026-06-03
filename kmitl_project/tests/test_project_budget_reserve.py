@@ -97,6 +97,13 @@ class TestProjectBudgetReserve(TransactionCase):
             commitment.analytic_distribution or {},
         )
 
+    def test_budget_remaining_starts_at_full_reserved(self):
+        """budget_remaining = reserved − consumed; right after confirm nothing is
+        consumed, so it equals the full budget_amount."""
+        project = self._make_project(amount=100000.0)
+        project.button_new()
+        self.assertEqual(project.budget_remaining, 100000.0)
+
     def test_reserve_is_idempotent(self):
         """Re-running the reservation does not create a second commitment."""
         project = self._make_project()

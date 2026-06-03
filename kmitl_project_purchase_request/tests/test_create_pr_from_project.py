@@ -89,9 +89,3 @@ class TestCreatePrFromProject(TransactionCase):
         )
         # Projects carry no procurement method — each PR chooses its own.
         self.assertNotIn("default_procurement_method_id", ctx)
-
-    def test_budget_remaining(self):
-        """budget_remaining starts at the full budget_amount when no PRs exist."""
-        project = self._make_project(amount=100000.0)
-        project.button_new()
-        self.assertEqual(project.budget_remaining, 100000.0)
