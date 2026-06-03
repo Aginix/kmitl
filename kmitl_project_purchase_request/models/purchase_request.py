@@ -68,19 +68,17 @@ class PurchaseRequest(models.Model):
                 raise UserError(
                     _("โครงการยังไม่ได้จองงบประมาณ ไม่สามารถดำเนินการได้")
                 )
-            pr_total = sum(
-                sum(pr.line_ids.mapped("estimated_cost"))
-                for pr in project.purchase_request_ids.filtered(
-                    lambda r: r.state != "rejected"
-                )
-            )
+            pr_total = project._project_pr_total()
+            this_pr = sum(self.line_ids.mapped("estimated_cost"))
             if pr_total > project.budget_amount:
                 raise UserError(
                     _(
-                        "ยอดรวมใบขอซื้อของโครงการ (%s) เกินงบประมาณที่จองไว้ (%s)"
+                        "ใบขอซื้อนี้ (%s) เกินงบประมาณคงเหลือของโครงการ "
+                        "(คงเหลือ %s จากงบ %s)"
                     )
                     % (
-                        "{:,.2f}".format(pr_total),
+                        "{:,.2f}".format(this_pr),
+                        "{:,.2f}".format(project.budget_amount - (pr_total - this_pr)),
                         "{:,.2f}".format(project.budget_amount),
                     )
                 )
@@ -119,17 +117,34 @@ class PurchaseRequest(models.Model):
         """A project-driven PR links the project's already-reserved shared
         commitment and starts the project. Unlike a procurement plan, a project may
         hold many PRs against the one commitment (ADR-0007), so there is no
-        one-active-PR constraint."""
+        one-active-PR constraint.
+
+        The project's budget context — budget account, fiscal year, the full
+        analytic distribution (4 financial dimensions + the project's own
+        kmitl_project dimension) and the shared commitment — is written here
+        **server-side** so the พ.1 always carries it. The budget fields are locked
+        and the dimension fields are computed from analytic_distribution, so the
+        live-form context/onchange prefill alone is not a guarantee."""
         self.ensure_one()
         project = self.kmitl_project_id
-        if not self.use_project:
-            self.use_project = True
-        if not self.budget_commitment_id:
-            commitment = project.budget_commitment_ids.filtered(
-                lambda c: c.state in ("reserved", "partial")
-            )[:1]
-            if commitment:
-                self.budget_commitment_id = commitment.id
+        commitment = project.budget_commitment_ids.filtered(
+            lambda c: c.state in ("reserved", "partial")
+        )[:1]
+        vals = {
+            "use_project": True,
+            "budget_account_id": project.budget_account_id.id,
+            "account_fiscal_year_id": project.account_fiscal_year_id.id,
+            "analytic_distribution": project.analytic_distribution or False,
+        }
+        if commitment:
+            vals["budget_commitment_id"] = commitment.id
+        self.write(vals)
+        # write() does not fire the form's _onchange_analytic_distribution, so push
+        # the project's distribution onto any existing lines explicitly.
+        if self.line_ids and project.analytic_distribution:
+            self.line_ids.write(
+                {"analytic_distribution": project.analytic_distribution}
+            )
         if project.state == "new":
             project.button_in_progress()
 
@@ -178,6 +193,22 @@ class KmitlProject(models.Model):
                 and has_commitment
                 and remaining > 0
             )
+
+    budget_remaining = fields.Float(
+        string="งบประมาณคงเหลือ",
+        compute="_compute_budget_remaining",
+        help="งบประมาณโครงการที่ยังไม่ถูกจัดสรรให้ใบขอซื้อ "
+        "(budget_amount − ผลรวม estimated_cost ของใบที่ยังไม่ถูกปฏิเสธ)",
+    )
+
+    @api.depends(
+        "budget_amount",
+        "purchase_request_ids.state",
+        "purchase_request_ids.line_ids.estimated_cost",
+    )
+    def _compute_budget_remaining(self):
+        for rec in self:
+            rec.budget_remaining = rec.budget_amount - rec._project_pr_total()
 
     def _project_pr_total(self):
         """Total estimated cost already claimed by the project's non-rejected

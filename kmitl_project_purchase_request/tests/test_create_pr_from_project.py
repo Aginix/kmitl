@@ -82,5 +82,16 @@ class TestCreatePrFromProject(TransactionCase):
             ctx["default_account_fiscal_year_id"], self.fiscal_year.id
         )
         self.assertEqual(ctx["default_title"], project.name)
+        # The full project analytic distribution (incl. its kmitl_project dimension)
+        # is prefilled so spend is attributed back to the project.
+        self.assertEqual(
+            ctx["default_analytic_distribution"], project.analytic_distribution
+        )
         # Projects carry no procurement method — each PR chooses its own.
         self.assertNotIn("default_procurement_method_id", ctx)
+
+    def test_budget_remaining(self):
+        """budget_remaining starts at the full budget_amount when no PRs exist."""
+        project = self._make_project(amount=100000.0)
+        project.button_new()
+        self.assertEqual(project.budget_remaining, 100000.0)
