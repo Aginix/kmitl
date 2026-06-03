@@ -25,7 +25,11 @@ export class BudgetReservationPicker extends BudgetDashboard {
     }
 
     // Use the picker feed: same dashboard columns + budgetable/selectable flags.
+    // Any filter change reloads the grid, so clear the prior selection here —
+    // the chosen row/amount no longer maps to the new filter combination.
     async load() {
+        this.state.selectedId = false;
+        this.state.amounts = {};
         if (!this.state.fiscalYearId) {
             this.state.rows = [];
             return;
@@ -40,6 +44,7 @@ export class BudgetReservationPicker extends BudgetDashboard {
                     this.effectiveFilters,
                     this.state.rootAccountId || false,
                     this.accountDomain,
+                    this.state.groupByActivity ? "activity_analytic_id" : false,
                 ]
             );
             this.state.rows = data.rows || [];
@@ -87,11 +92,14 @@ export class BudgetReservationPicker extends BudgetDashboard {
     }
 
     // Clicking anywhere on a row selects it (select mode). Toggles off if clicked
-    // again. Non-selectable rows (rollups / out-of-domain) do nothing.
+    // again. Non-selectable rows (rollups, activity group rows, out-of-domain)
+    // do nothing. Keyed by row.key, not the account id: in the activity
+    // breakdown the same account can appear under several activities, and each
+    // displayed row must select independently.
     onRowClick(row) {
         if (this.selectMode && row.selectable) {
             this.state.selectedId =
-                this.state.selectedId === row.id ? false : row.id;
+                this.state.selectedId === row.key ? false : row.key;
         }
     }
 
@@ -109,7 +117,17 @@ export class BudgetReservationPicker extends BudgetDashboard {
         if (row.has_children) {
             parts.push("o_bd_group");
         }
-        if (this.state.selectedId === row.id) {
+        // Activity (breakdown) group rows are display-only — tint them apart.
+        if (row.row_type === "activity") {
+            parts.push("o_bd_activity");
+        }
+        // Pointer affordance + selected highlight only on selectable rows; keyed
+        // by row.key so an activity row (key "a<id>") never matches a selected
+        // account row (key "a<id>-b<id>").
+        if (row.selectable) {
+            parts.push("o_brp_selectable");
+        }
+        if (this.state.selectedId === row.key) {
             parts.push("o_brp_selected");
         }
         return parts.join(" ");
@@ -118,21 +136,33 @@ export class BudgetReservationPicker extends BudgetDashboard {
     onAmountInput(row, ev) {
         const value = parseFloat(ev.target.value);
         if (value > 0) {
-            this.state.amounts[row.id] = value;
+            this.state.amounts[row.key] = value;
         } else {
-            delete this.state.amounts[row.id];
+            delete this.state.amounts[row.key];
         }
     }
 
     get selections() {
+        const byKey = this.rowsByKey;
         if (this.selectMode) {
-            return this.state.selectedId
-                ? [{ account_id: this.state.selectedId }]
-                : [];
+            const row = this.state.selectedId && byKey[this.state.selectedId];
+            return row ? [{ account_id: row.account_id }] : [];
         }
-        return Object.entries(this.state.amounts)
-            .filter(([, amount]) => amount > 0)
-            .map(([id, amount]) => ({ account_id: parseInt(id), amount }));
+        // Rows are keyed by row.key (an account can appear under several
+        // activities in the breakdown), so fold the entered amounts back to one
+        // entry per budget account before writing reserve lines.
+        const byAccount = {};
+        for (const [key, amount] of Object.entries(this.state.amounts)) {
+            const row = byKey[key];
+            if (!row || !(amount > 0)) {
+                continue;
+            }
+            byAccount[row.account_id] = (byAccount[row.account_id] || 0) + amount;
+        }
+        return Object.entries(byAccount).map(([id, amount]) => ({
+            account_id: parseInt(id),
+            amount,
+        }));
     }
 
     // The dimension combination chosen in the filter bar -> analytic_distribution.

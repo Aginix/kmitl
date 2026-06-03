@@ -474,7 +474,12 @@ class BudgetDashboard(models.AbstractModel):
 
     @api.model
     def get_reservation_grid(
-        self, fiscal_year_id, filters=None, root_account_id=None, account_domain=None
+        self,
+        fiscal_year_id,
+        filters=None,
+        root_account_id=None,
+        account_domain=None,
+        breakdown=None,
     ):
         """Reservation picker feed: the full monitoring grid, made selectable.
 
@@ -489,30 +494,43 @@ class BudgetDashboard(models.AbstractModel):
           (``account_domain``, e.g. purchase.request's purchase_ok + product_id);
           defaults to ``budgetable`` when no domain is supplied.
 
+        With ``breakdown`` set (e.g. ``"activity_analytic_id"``) the grid is
+        nested under that dimension; the dimension (activity) group rows are
+        display-only and never selectable — only budget-account rows can be
+        picked.
+
         The displayed ``คงเหลือ`` is the rolled-up figure; the authoritative
         control-node availability (ADR 0005) is enforced by the engine at
         reserve time.
         """
-        data = self.get_dashboard_data(fiscal_year_id, root_account_id, filters or {})
+        data = self.get_dashboard_data(
+            fiscal_year_id, root_account_id, filters or {}, breakdown
+        )
         rows = data.get("rows", [])
         selectable_ids = None
         if account_domain:
             selectable_ids = set(
                 self.env["budget.account"].search(account_domain).ids
             )
+        # Only account rows map to a budget.account; activity (breakdown) group
+        # rows are display-only and can never be picked.
         accounts = {
             a.id: a
-            for a in self.env["budget.account"].browse([r["id"] for r in rows])
+            for a in self.env["budget.account"].browse(
+                [r["id"] for r in rows if r.get("row_type") == "account"]
+            )
         }
         for row in rows:
-            account = accounts.get(row["id"])
+            account = (
+                accounts.get(row["id"]) if row.get("row_type") == "account" else None
+            )
             budgetable = bool(account and account.budgetable)
             row["budgetable"] = budgetable
             row["cross_chargeable"] = bool(account and account.cross_chargeable)
             row["selectable"] = (
                 budgetable
                 if selectable_ids is None
-                else row["id"] in selectable_ids
+                else account is not None and row["id"] in selectable_ids
             )
         return {
             "rows": rows,

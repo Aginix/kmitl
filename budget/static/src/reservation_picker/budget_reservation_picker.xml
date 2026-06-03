@@ -48,6 +48,12 @@
                 </t>
                 <div class="o_bd_filter o_bd_check">
                     <label>
+                        <input type="checkbox" t-att-checked="state.groupByActivity" t-on-change="toggleBreakdown"/>
+                        แจกแจงตามกิจกรรม
+                    </label>
+                </div>
+                <div class="o_bd_filter o_bd_check">
+                    <label>
                         <input type="checkbox" t-att-checked="state.hideZero" t-on-change="toggleHideZero"/>
                         ซ่อนแถวที่ไม่มีความเคลื่อนไหว
                     </label>
@@ -103,10 +109,10 @@
                         <td class="text-center o_brp_pick_col">
                             <t t-if="row.selectable">
                                 <span t-if="selectMode" class="o_brp_check"
-                                      t-esc="state.selectedId === row.id ? '●' : '○'"/>
+                                      t-esc="state.selectedId === row.key ? '●' : '○'"/>
                                 <input t-else="" type="number" min="0" step="0.01"
                                        class="o_brp_amount form-control form-control-sm text-end"
-                                       t-att-value="state.amounts[row.id] || ''"
+                                       t-att-value="state.amounts[row.key] || ''"
                                        t-on-input="(ev) => this.onAmountInput(row, ev)"/>
                             </t>
                         </td>

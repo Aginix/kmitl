@@ -15,8 +15,9 @@
         overflow: auto;
     }
 
-    // Whole row is clickable in select mode.
-    tbody tr {
+    // Whole row is clickable only when selectable; rollup and activity
+    // (breakdown) group rows are display-only and keep the default cursor.
+    tbody tr.o_brp_selectable {
         cursor: pointer;
     }
 
