@@ -212,6 +212,7 @@ msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__cancel
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__cancel
 msgid "Cancelled"
 msgstr "ยกเลิกแล้ว"
@@ -380,6 +381,7 @@ msgid "Download"
 msgstr ""
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__draft
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__draft
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Draft"
@@ -738,6 +740,7 @@ msgid "Submit"
 msgstr "ยืนยัน"
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__submitted
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__submitted
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Submitted"
@@ -817,6 +820,7 @@ msgid "Validate"
 msgstr "ตรวจสอบ"
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__verified
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__verified
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Verified"
@@ -1134,6 +1138,7 @@ msgid "Sign"
 msgstr "ลงนาม"
 
 #. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__signed
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__signed
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Signed"
