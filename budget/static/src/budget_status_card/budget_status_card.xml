@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="budget.BudgetStatusCard" owl="1">
+        <div class="o_budget_status_card">
+            <t t-if="state.loading">
+                <div class="o_bsc_state text-muted">
+                    <i class="fa fa-spinner fa-spin me-2" />Loading budget status...
+                </div>
+            </t>
+            <t t-elif="state.error">
+                <div class="o_bsc_state text-warning">
+                    <i class="fa fa-exclamation-triangle me-2" />Unable to load budget status.
+                </div>
+            </t>
+            <t t-elif="state.data and state.data.ready">
+                <div class="o_bsc_grid">
+                    <div class="o_bsc_tile">
+                        <span class="o_bsc_label">Current Budget</span>
+                        <span class="o_bsc_value" t-esc="formatAmount(state.data.current)" />
+                    </div>
+                    <div class="o_bsc_tile">
+                        <span class="o_bsc_label">Reserved</span>
+                        <span class="o_bsc_value" t-esc="formatAmount(state.data.reserved)" />
+                    </div>
+                    <div class="o_bsc_tile">
+                        <span class="o_bsc_label">Committed</span>
+                        <span class="o_bsc_value" t-esc="formatAmount(state.data.obligated)" />
+                    </div>
+                    <div class="o_bsc_tile">
+                        <span class="o_bsc_label">Disbursed</span>
+                        <span class="o_bsc_value" t-esc="formatAmount(state.data.consumed)" />
+                    </div>
+                    <div class="o_bsc_tile">
+                        <span class="o_bsc_label">Total Used</span>
+                        <span class="o_bsc_value" t-esc="formatAmount(state.data.used)" />
+                    </div>
+                    <div class="o_bsc_tile">
+                        <span class="o_bsc_label">Remaining</span>
+                        <span
+                            class="o_bsc_value"
+                            t-att-class="state.data.remaining &lt; 0 ? 'text-danger' : 'text-success'"
+                            t-esc="formatAmount(state.data.remaining)"
+                        />
+                    </div>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="o_bsc_state text-muted">
+                    Select a budget code to see its status
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -81,7 +81,7 @@
                         <field name="department_analytic_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                         <field name="fund_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}"/>
                         <field name="source_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}"/>
-                        <field name="analytic_distribution" invisible="1"/>
+                        <field name="analytic_distribution" widget="budget_status_card" nolabel="1" colspan="2"/>
                     </group>
                     <button name="action_open_actual_amount_wizard" string="Record Actual Disbursement" help="Use this to adjust the actual disbursement amount when it is lower than the approved amount. Values above the approved amount are not allowed." type="object" class="btn btn-primary my-3" attrs="{'invisible': [('state', '!=', 'approved')]}" />
                     <group name="warning_partner">

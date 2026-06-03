@@ -286,6 +286,107 @@ class BudgetController(models.AbstractModel):
         }
 
     @api.model
+    def get_budget_card(
+        self, fiscal_year_id, account_id, analytic_distribution, company_id=None
+    ):
+        """Six dashboard-aligned figures for one (fiscal year, budget account,
+        dimensions) combination, for the budget status card widget.
+
+        Shapes ``get_budget_status`` into the card payload. ``used`` and
+        ``remaining`` mirror ``budget.dashboard._make_row`` exactly:
+            used      = breakdown['total_used']  (= Sum reserve = b + c + d)
+            remaining = current - used           (may be negative)
+        Deliberately NOT ``status['total_used']`` (clamped net reserve) nor
+        ``available_amount`` (clamped at 0), so the card reconciles with the
+        monitoring dashboard.
+
+        ``fiscal_year_id`` is optional: when falsy it falls back to the fiscal
+        year covering today, matching ``budget.commitment.mixin`` which reserves
+        against today's fiscal year (e.g. approval requests carry no fiscal year
+        field).
+        """
+        company_id = company_id or self.env.company.id
+        currency_id = self.env.company.currency_id.id
+        empty = {
+            "ready": False,
+            "currency_id": currency_id,
+            "current": 0.0,
+            "reserved": 0.0,
+            "obligated": 0.0,
+            "consumed": 0.0,
+            "used": 0.0,
+            "remaining": 0.0,
+        }
+        if not account_id:
+            return empty
+
+        if not fiscal_year_id:
+            today = fields.Date.today()
+            fiscal_year = self.env["account.fiscal.year"].search(
+                [
+                    ("date_from", "<=", today),
+                    ("date_to", ">=", today),
+                    ("company_id", "=", company_id),
+                ],
+                limit=1,
+            )
+            fiscal_year_id = fiscal_year.id if fiscal_year else False
+        if not fiscal_year_id:
+            return empty
+
+        analytic_data = self._distribution_to_analytic_data(
+            int(account_id), analytic_distribution
+        )
+        status = self.get_budget_status(
+            analytic_data, int(fiscal_year_id), company_id
+        )
+        breakdown = status["breakdown"]
+        current = status["appropriated_amount"]
+        used = breakdown["total_used"]
+
+        return {
+            "ready": True,
+            "currency_id": currency_id,
+            "current": current,
+            "reserved": breakdown["reserved_pending"],  # b
+            "obligated": breakdown["obligated_pending"],  # c
+            "consumed": breakdown["consumed"],  # d
+            "used": used,  # e = b + c + d
+            "remaining": current - used,  # f
+        }
+
+    @api.model
+    def _distribution_to_analytic_data(self, account_id, analytic_distribution):
+        """Flatten an ``analytic_distribution`` JSON into the flat target dict
+        that ``get_budget_status`` / ``_get_analytic_key`` compare against.
+
+        Each analytic account is bucketed by its ``root_plan_id.code`` (matching
+        the convenience-field domains), so a sub-plan account still lands in the
+        right dimension slot. Every dimension key is always present (defaulting
+        to ``False``) so the matching helpers, which compare against ``False``
+        for untagged records, behave correctly even for a partial distribution.
+        """
+        data = {
+            "account_id": account_id,
+            "activity_analytic_id": False,
+            "department_analytic_id": False,
+            "fund_analytic_id": False,
+            "source_analytic_id": False,
+        }
+        plan_to_key = {
+            "activities": "activity_analytic_id",
+            "departments": "department_analytic_id",
+            "funds": "fund_analytic_id",
+            "sources": "source_analytic_id",
+        }
+        ids = [int(key) for key in (analytic_distribution or {}).keys()]
+        for account in self.env["account.analytic.account"].browse(ids):
+            key = plan_to_key.get(account.root_plan_id.code)
+            if key:
+                data[key] = account.id
+        return data
+
+    @api.model
     def _get_budget_status_breakdown(
         self, analytic_data, fiscal_year_id, company_id=None
     ):
