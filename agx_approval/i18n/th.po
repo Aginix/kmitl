@@ -352,6 +352,11 @@ msgid "Expense Lines"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__account_fiscal_year_id
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_follower_ids
 msgid "Followers"
 msgstr ""
