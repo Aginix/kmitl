@@ -17,8 +17,8 @@ const DEFAULT_SOURCE_CODE = "2";
 // Dimensions the row axis can be broken down by, in fixed nesting order (outer
 // to inner); the budget-account tree always hangs off the innermost one.
 const BREAKDOWN_ORDER = [
-    { key: "activity_analytic_id", label: "แจกแจงตามกิจกรรม" },
     { key: "department_analytic_id", label: "แจกแจงตามส่วนงาน" },
+    { key: "activity_analytic_id", label: "แจกแจงตามกิจกรรม" },
 ];
 // Fixed display order for the expense budget-category (root) dropdown.
 const ROOT_ORDER = ["51000", "52000", "53000", "54000", "55000", "07020"];

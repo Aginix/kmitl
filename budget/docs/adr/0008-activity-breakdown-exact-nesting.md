@@ -3,8 +3,8 @@
 The budget monitoring dashboard (and the reservation picker, which reuses its
 grid) can optionally nest the budget-account tree under an **ordered list of
 financial dimensions** — `breakdown` is a list of dim fields, e.g.
-`["activity_analytic_id", "department_analytic_id"]` (activities outer,
-departments inner). Each dimension forms a hierarchy level; the account tree
+`["department_analytic_id", "activity_analytic_id"]` (departments outer,
+activities inner). Each dimension forms a hierarchy level; the account tree
 hangs off the innermost one. Under each **exact** dimension node we nest the
 next dimension (or the account tree) only for lines tagged to that exact node —
 never rolled down from an ancestor — so the "exact node" is the exact N-tuple.
