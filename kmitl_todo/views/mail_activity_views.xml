@@ -7,36 +7,37 @@
         <field name="model">mail.activity</field>
         <field name="arch" type="xml">
             <tree
-                string="สิ่งที่ต้องทำ"
+                string="Todos"
                 create="false"
                 edit="false"
+                decoration-bf="is_read_by_me == False"
                 decoration-danger="state == 'overdue'"
                 decoration-warning="state == 'today'"
                 decoration-muted="is_read_by_me == True"
             >
                 <field name="state" widget="badge" optional="show" />
                 <field name="todo_category" optional="show" />
-                <field name="summary" string="เรื่อง" />
-                <field name="res_name" string="ต้นทาง" />
-                <field name="res_model" string="แอป" optional="show" />
-                <field name="operating_unit_id" string="หน่วยงาน" optional="show" />
+                <field name="summary" string="Subject" />
+                <field name="res_name" string="Source" />
+                <field name="res_model" string="App" optional="show" />
+                <field name="operating_unit_id" string="Operating Unit" optional="show" />
                 <field name="responsible_role_id" optional="hide" />
                 <field name="user_id" optional="hide" />
-                <field name="date_deadline" string="กำหนด" />
+                <field name="date_deadline" string="Deadline" />
                 <field name="is_read_by_me" invisible="1" />
                 <button
                     name="action_open_document"
                     type="object"
-                    string="ไปต้นทาง"
+                    string="Open Source"
                     icon="fa-external-link"
                     class="btn-link"
                 />
                 <button
                     name="action_mark_read"
                     type="object"
-                    string="อ่านแล้ว"
+                    string="Mark as Read"
                     icon="fa-check"
-                    attrs="{'invisible': [('todo_category', 'not in', ['fyi', 'acknowledgement'])]}"
+                    attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', True)]}"
                 />
             </tree>
         </field>
@@ -47,21 +48,21 @@
         <field name="name">kmitl.todo.form</field>
         <field name="model">mail.activity</field>
         <field name="arch" type="xml">
-            <form string="สิ่งที่ต้องทำ" create="false" edit="false">
+            <form string="Todo" create="false" edit="false">
                 <header>
                     <button
                         name="action_open_document"
                         type="object"
-                        string="ไปยังข้อมูลต้นทาง"
+                        string="Open Source Document"
                         class="btn-primary"
                         icon="fa-external-link"
                     />
                     <button
                         name="action_mark_read"
                         type="object"
-                        string="ทำเครื่องหมายว่าอ่านแล้ว"
+                        string="Mark as Read"
                         icon="fa-check"
-                        attrs="{'invisible': [('todo_category', 'not in', ['fyi', 'acknowledgement'])]}"
+                        attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', True)]}"
                     />
                 </header>
                 <sheet>
@@ -72,8 +73,8 @@
                         <group>
                             <field name="todo_category" />
                             <field name="activity_type_id" />
-                            <field name="res_name" string="เอกสารต้นทาง" />
-                            <field name="res_model" string="โมเดล" />
+                            <field name="res_name" string="Source Document" />
+                            <field name="res_model" string="Model" />
                         </group>
                         <group>
                             <field name="date_deadline" />
@@ -81,6 +82,7 @@
                             <field name="user_id" />
                             <field name="operating_unit_id" />
                             <field name="responsible_role_id" />
+                            <field name="is_read_by_me" invisible="1" />
                         </group>
                     </group>
                     <field name="note" readonly="1" />
@@ -94,79 +96,75 @@
         <field name="name">kmitl.todo.search</field>
         <field name="model">mail.activity</field>
         <field name="arch" type="xml">
-            <search string="สิ่งที่ต้องทำ">
-                <field name="summary" string="เรื่อง" />
-                <field name="res_name" string="ต้นทาง" />
+            <search string="Todos">
+                <field name="summary" string="Subject" />
+                <field name="res_name" string="Source" />
                 <field name="activity_type_id" />
                 <field name="operating_unit_id" />
                 <filter
                     name="unread"
-                    string="ยังไม่อ่าน"
+                    string="Unread"
                     domain="[('is_read_by_me', '=', False)]"
                 />
                 <separator />
                 <filter
                     name="overdue"
-                    string="เกินกำหนด"
+                    string="Overdue"
                     domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
                 />
                 <filter
                     name="today"
-                    string="วันนี้"
+                    string="Today"
                     domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"
                 />
                 <filter
                     name="planned"
-                    string="ล่วงหน้า"
+                    string="Planned"
                     domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"
                 />
                 <separator />
                 <filter
                     name="personal"
-                    string="ของฉันโดยตรง"
+                    string="Assigned to me"
                     domain="[('user_id', '!=', False)]"
                 />
                 <filter
                     name="group"
-                    string="ของกลุ่ม"
+                    string="Group"
                     domain="[('responsible_role_id', '!=', False)]"
                 />
-                <group expand="0" string="จัดกลุ่ม">
+                <group expand="0" string="Group By">
                     <filter
                         name="group_category"
-                        string="ประเภท"
+                        string="Category"
                         context="{'group_by': 'todo_category'}"
                     />
                     <filter
                         name="group_type"
-                        string="ชนิดกิจกรรม"
+                        string="Activity Type"
                         context="{'group_by': 'activity_type_id'}"
                     />
                     <filter
                         name="group_model"
-                        string="แอปต้นทาง"
+                        string="Source App"
                         context="{'group_by': 'res_model'}"
                     />
                     <filter
                         name="group_ou"
-                        string="หน่วยงาน"
+                        string="Operating Unit"
                         context="{'group_by': 'operating_unit_id'}"
                     />
                     <filter
                         name="group_deadline"
-                        string="กำหนดส่ง"
+                        string="Deadline"
                         context="{'group_by': 'date_deadline'}"
                     />
                 </group>
                 <searchpanel>
-                    <field
-                        name="todo_category"
-                        string="ประเภท"
-                        enable_counters="1"
-                    />
+                    <field name="todo_category" string="Category" enable_counters="1" />
                     <field
                         name="operating_unit_id"
-                        string="หน่วยงาน"
+                        string="Operating Unit"
                         select="multi"
                         enable_counters="1"
                     />
@@ -177,7 +175,7 @@
 
     <!-- ================= Action + menu ================= -->
     <record id="action_my_todos" model="ir.actions.act_window">
-        <field name="name">สิ่งที่ต้องทำ</field>
+        <field name="name">Todos</field>
         <field name="res_model">mail.activity</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('is_my_todo', '=', True)]</field>
@@ -190,16 +188,11 @@
                    (0, 0, {'sequence': 2, 'view_mode': 'form', 'view_id': ref('view_my_todo_form')})]"
         />
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">ไม่มีสิ่งที่ต้องทำค้างอยู่ 🎉</p>
-            <p>งานที่รอคุณดำเนินการจากทุกแอปจะมารวมที่นี่</p>
+            <p class="o_view_nocontent_smiling_face">No pending todos 🎉</p>
+            <p>Work awaiting you from every app shows up here.</p>
         </field>
     </record>
 
-    <menuitem
-        id="menu_my_todos_root"
-        name="สิ่งที่ต้องทำ"
-        action="action_my_todos"
-        sequence="1"
-    />
+    <menuitem id="menu_my_todos_root" name="Todos" action="action_my_todos" sequence="1" />
 
 </odoo>

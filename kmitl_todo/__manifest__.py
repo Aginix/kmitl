@@ -4,7 +4,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "summary": "หน้ารวมสิ่งที่ต้องทำ — unified inbox of pending work, built on mail.activity",
+    "summary": "Unified inbox of pending work from every module, built on mail.activity",
     "depends": [
         "mail",
         "base_user_role",

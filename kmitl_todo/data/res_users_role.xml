@@ -8,7 +8,7 @@
       Operating Unit to find the plan officers of that faculty.
     -->
     <record id="role_procurement_plan_officer" model="res.users.role">
-        <field name="name">เจ้าหน้าที่แผน (Procurement Plan Officer)</field>
+        <field name="name">Procurement Plan Officer</field>
         <field
             name="implied_ids"
             eval="[(6, 0, [ref('procurement_plan.group_procurement_plan_user')])]"

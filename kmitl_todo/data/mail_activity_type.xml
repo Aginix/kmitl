@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
-    <!-- UC1: เจ้าหน้าที่แผนต้องกรอกแผนการดำเนินงานก่อนสร้าง พ.1 -->
+    <!-- UC1: plan officer must complete the operating plan before a PR (พ.1) can be created -->
     <record id="mail_activity_procurement_plan_fill" model="mail.activity.type">
-        <field name="name">กรอกแผนการดำเนินงาน</field>
+        <field name="name">Complete the operating plan</field>
         <field
             name="summary"
-        >กรอกแผนการดำเนินงาน (ETA + วิธีจัดหา) ก่อนสร้าง พ.1</field>
+        >Complete the operating plan (ETAs + procurement method) before creating the purchase request</field>
         <field name="todo_category">execution</field>
         <field name="res_model">procurement.plan</field>
         <field name="icon">fa-pencil-square-o</field>
         <field name="delay_count">0</field>
     </record>
 
-    <!-- UC3: แจ้งผู้ขอเมื่อ พ.1 เปลี่ยนสถานะ (อนุมัติ/ตีกลับ) -->
+    <!-- UC3: notify the requester when the PR (พ.1) changes status (approved/rejected) -->
     <record id="mail_activity_pr_status_fyi" model="mail.activity.type">
-        <field name="name">พ.1 อัปเดตสถานะ</field>
-        <field name="summary">พ.1 มีการอัปเดตสถานะ</field>
+        <field name="name">Purchase request status update</field>
+        <field name="summary">The purchase request changed status</field>
         <field name="todo_category">fyi</field>
         <field name="res_model">purchase.request.approval</field>
         <field name="icon">fa-info-circle</field>

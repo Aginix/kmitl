@@ -20,17 +20,17 @@ class PurchaseRequestApproval(models.Model):
             if rec.requested_by:
                 rec.activity_schedule(
                     PR_STATUS_FYI,
-                    summary=_("พ.1 %(name)s %(status)s")
+                    summary=_("Purchase request %(name)s %(status)s")
                     % {"name": rec.display_name, "status": status_label},
                     user_id=rec.requested_by.id,
                 )
 
     def button_approved(self):
         res = super().button_approved()
-        self._notify_requester_fyi(_("ได้รับการอนุมัติแล้ว"))
+        self._notify_requester_fyi(_("approved"))
         return res
 
     def button_rejected(self):
         res = super().button_rejected()
-        self._notify_requester_fyi(_("ถูกตีกลับ"))
+        self._notify_requester_fyi(_("rejected"))
         return res
