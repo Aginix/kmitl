@@ -98,6 +98,17 @@ class BudgetAccount(models.Model):
         tracking=True,
     )
 
+    cross_chargeable = fields.Boolean(
+        string="ถัวจ่ายได้",
+        help=(
+            "ติ๊กถูกเพื่ออนุญาตให้รหัสนี้ถัวจ่ายร่วมกับรหัสอื่นในใบจองเดียวได้ "
+            "ใบจองจะมีหลายรหัสได้ก็ต่อเมื่อทุกรหัสติ๊กถัวจ่ายได้ด้วยกัน"
+        ),
+        default=False,
+        copy=True,
+        tracking=True,
+    )
+
     children_count = fields.Integer(
         "Children Accounts Count",
         compute="_compute_children_count",

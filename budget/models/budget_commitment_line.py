@@ -149,6 +149,16 @@ class BudgetCommitmentLine(models.Model):
         store=True,
         string="แหล่งเงิน",
     )
+    kmitl_project_analytic_id = fields.Many2one(
+        related="commitment_id.kmitl_project_analytic_id",
+        store=True,
+        string="โครงการ/กิจกรรม",
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        related="commitment_id.procurement_plan_analytic_id",
+        store=True,
+        string="แผนจัดซื้อจัดจ้าง",
+    )
     currency_id = fields.Many2one(related="commitment_id.currency_id")
     company_id = fields.Many2one(
         related="commitment_id.company_id",
@@ -235,6 +245,30 @@ class BudgetCommitmentLine(models.Model):
                 raise ValidationError(
                     _("Total consumed cannot be negative (%.2f).") % total_consumed
                 )
+
+    @api.constrains("account_id", "move_type", "state")
+    def _check_cross_charge(self):
+        """A reservation may span >1 budget code only if all are cross-chargeable.
+
+        ถัวจ่าย (ADR 0006): a single reserve line is always allowed; multiple
+        reserve lines with *different* budget accounts require every one of
+        those accounts to be flagged ``cross_chargeable``.
+        """
+        for commitment in self.mapped("commitment_id"):
+            accounts = commitment.line_ids.filtered(
+                lambda l: l.state == "posted" and l.move_type == "reserve"
+            ).mapped("account_id")
+            if len(accounts) > 1:
+                blocked = accounts.filtered(lambda a: not a.cross_chargeable)
+                if blocked:
+                    raise ValidationError(
+                        _(
+                            "A reservation may use more than one budget code only "
+                            "if every code is marked ถัวจ่ายได้ (cross-chargeable). "
+                            "These are not: %s"
+                        )
+                        % ", ".join(blocked.mapped("display_name"))
+                    )
 
     # --- Immutability ---
 

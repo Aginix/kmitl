@@ -100,6 +100,29 @@
             font-weight: 600;
         }
 
+        // Dimension (breakdown) rows: tint the nested dimension hierarchy so it
+        // reads apart from the budget-account tree, with a shade per depth
+        // (o_bd_dim_0 = outer e.g. activities, o_bd_dim_1 = inner e.g. depts).
+        .o_bd_dim {
+            font-weight: 600;
+
+            .o_bd_acc {
+                color: #1f4e79;
+            }
+        }
+
+        .o_bd_dim_0 {
+            background: #eef4fb;
+        }
+
+        .o_bd_dim_1 {
+            background: #f4f8ec;
+        }
+
+        .o_bd_dim_2 {
+            background: #fbf3ec;
+        }
+
         .o_bd_caret {
             cursor: pointer;
             display: inline-block;
