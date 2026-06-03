@@ -25,4 +25,37 @@
         </field>
     </record>
 
+    <!-- Discoverability: tell users where project-driven พ.1 come from, shown only
+         on a fresh, non-project-linked draft. Project พ.1 are created from the
+         project page (mirrors the procurement-plan alert). -->
+    <record id="view_purchase_request_form_kmitl_project_alert" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (KMITL Project alert)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
+                <field name="use_project" invisible="1" />
+                <field name="kmitl_project_id" invisible="1" />
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    attrs="{'invisible': ['|', ('kmitl_project_id', '!=', False), ('state', '!=', 'draft')]}"
+                >
+                    <i class="fa fa-info-circle me-1" />
+                    ต้องการจัดทำใบ พ.1 จาก<b>โครงการ/กิจกรรม</b>?
+                    เลือกโครงการที่จองงบแล้ว แล้วกดปุ่ม <b>"สร้างใบขอซื้อ"</b> จากหน้าโครงการ
+                    — ไม่สามารถเลือกโครงการจากในใบ พ.1 นี้ได้
+                    <div class="mt-2">
+                        <a
+                            href="/web#action=kmitl_project_purchase_request.action_kmitl_project_for_pr"
+                            class="btn btn-sm btn-primary"
+                        >
+                            <i class="fa fa-external-link me-1" />ไปที่โครงการ/กิจกรรม
+                        </a>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
