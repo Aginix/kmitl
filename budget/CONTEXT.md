@@ -17,8 +17,12 @@ _Avoid_: operating unit, OU
 ### Budget structure
 
 **Budget Account (รหัสงบประมาณ)**:
-A node in the hierarchical chart of budget codes (`budget.account`). Carries a `budget_type` (revenue / expense) and rolls up parent→child. The row axis of any budget report.
+A node in the hierarchical chart of budget codes (`budget.account`). Carries a `budget_type` (revenue / expense) and rolls up parent→child. The default (innermost) row axis of budget reports; the monitoring dashboard can optionally nest it under a financial dimension such as Activity.
 _Avoid_: account (ambiguous with `account.account`), category
+
+**Activity (กิจกรรม, `activity_analytic_id`)**:
+One of the six financial dimensions (the `activities` analytic plan) — a hierarchical program classification whose levels read ด้าน → แผนงาน → กิจกรรม → กิจกรรมย่อย, so a node's kind depends on its depth. Carried on move/commitment lines; used as a report filter and as the optional outer row axis of the monitoring dashboard.
+_Avoid_: ด้าน/แผนงาน/กิจกรรม (the descriptive long form — prefer the short label "กิจกรรม"), program, task
 
 **Budget Pool**:
 The appropriated money available on a budget account for a fiscal year, before any commitment activity. Built up from appropriation and transfer moves.
