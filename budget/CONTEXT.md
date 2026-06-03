@@ -24,6 +24,10 @@ _Avoid_: account (ambiguous with `account.account`), category
 The appropriated money available on a budget account for a fiscal year, before any commitment activity. Built up from appropriation and transfer moves.
 _Avoid_: allocation (reserve "allocation" for the initial act of appropriating)
 
+**Floating Budget (เงินลอย)**:
+The appropriated pool on a *project-type* budget account (`is_project`) that has been posted but not yet reserved by any project. It carries the four dimensions (activities/departments/funds/sources) but **no `kmitl_project` dimension** — projects are authored later and reserve against it. The procurement-plan path has no floating stage (it reserves the instant its appropriation posts); the project path deliberately does (ADR-0007).
+_Avoid_: unallocated budget, งบคงเหลือ (that is Remaining (f), a different quantity)
+
 ### Appropriation side (`budget.move`)
 
 **Initial Appropriation (งบประมาณจัดสรรต้นปี)**:
@@ -51,7 +55,7 @@ The per-commitment cap (`commitment.amount`) — the amount a request was approv
 _Avoid_: budget, reserved amount
 
 **Reserve (จองงบ)**:
-Earmarking pool against a commitment. For a procurement plan this fires the moment its source budget **appropriation is posted** — the plan reserves its full `total_price` at once (not when the plan is later made *ready*; see ADR-0005). A `reserve` ledger line.
+Earmarking pool against a commitment; a `reserve` ledger line. **Timing depends on the allocation path.** For a *procurement plan* it fires the moment its source budget **appropriation is posted** — reserving the full `total_price` at once (not at *ready*; see ADR-0005). For a *project* the appropriation leaves the pool **floating** (see Floating Budget) and the reserve fires later, when the `kmitl.project` is confirmed (`draft→new`), reserving its full `budget_amount` — a deliberate divergence from the procurement-plan timing in ADR-0005 (see ADR-0007).
 _Avoid_: allocate, commit
 
 **Obligate (ผูกพัน)**:

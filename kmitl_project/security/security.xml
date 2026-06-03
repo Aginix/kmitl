@@ -71,7 +71,7 @@
             <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
             <field name="domain_force">[
                 '|',
-                ('user_id', '=', user.id),
+                ('manager_id.user_id', '=', user.id),
                 ('creating_user_id', '=', user.id)
             ]</field>
             <field name="perm_read" eval="True"/>
@@ -107,7 +107,7 @@
             <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
             <field name="domain_force">[
                 '|',
-                ('project_id.user_id', '=', user.id),
+                ('project_id.manager_id.user_id', '=', user.id),
                 ('project_id.creating_user_id', '=', user.id)
             ]</field>
         </record>
@@ -133,7 +133,7 @@
             <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
             <field name="domain_force">[
                 '|',
-                ('project_id.user_id', '=', user.id),
+                ('project_id.manager_id.user_id', '=', user.id),
                 ('project_id.creating_user_id', '=', user.id)
             ]</field>
         </record>
@@ -159,7 +159,7 @@
             <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
             <field name="domain_force">[
                 '|',
-                ('project_id.user_id', '=', user.id),
+                ('project_id.manager_id.user_id', '=', user.id),
                 ('project_id.creating_user_id', '=', user.id)
             ]</field>
         </record>
@@ -185,7 +185,7 @@
             <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
             <field name="domain_force">[
                 '|',
-                ('project_id.user_id', '=', user.id),
+                ('project_id.manager_id.user_id', '=', user.id),
                 ('project_id.creating_user_id', '=', user.id)
             ]</field>
         </record>

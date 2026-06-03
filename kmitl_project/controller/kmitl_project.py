@@ -12,13 +12,13 @@ class KmitlProjectPortal(portal.CustomerPortal):
         """Return domain to filter projects for current user.
 
         Users see projects where they are:
-        - The responsible user (user_id)
+        - The project manager's linked user (manager_id.user_id)
         - The creator (creating_user_id)
         """
         user = request.env.user
         return [
             '|',
-            ('user_id', '=', user.id),
+            ('manager_id.user_id', '=', user.id),
             ('creating_user_id', '=', user.id),
         ]
 

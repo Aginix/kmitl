@@ -98,12 +98,6 @@ class KmitlProject(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    department_id = fields.Many2one(
-        "hr.department",
-        string="Department",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
-    )
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
         string="Operating Unit",
@@ -111,12 +105,13 @@ class KmitlProject(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    user_id = fields.Many2one(
-        "res.users",
+    manager_id = fields.Many2one(
+        "hr.employee",
+        string="หัวหน้าโครงการ",
         tracking=True,
-        default=lambda self: self.env.user,
         readonly=True,
         states={"draft": [("readonly", False)]},
+        help="พนักงานผู้เป็นหัวหน้า/ผู้จัดการโครงการ; สิทธิ์เข้าถึงของผู้ใช้ผูกผ่าน manager_id.user_id",
     )
     creating_user_id = fields.Many2one(
         comodel_name="res.users",
@@ -302,7 +297,8 @@ class KmitlProject(models.Model):
         required=True,
         index=True,
         tracking=True,
-        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
+        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense'),"
+        " ('is_project', '=', True), ('project_type', '=', project_type)]",
         states=READONLY_STATES
     )
 
@@ -313,6 +309,22 @@ class KmitlProject(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
         help="งบประมาณที่ได้รับจัดสรร",
+    )
+
+    budget_commitment_ids = fields.One2many(
+        "budget.commitment",
+        "kmitl_project_id",
+        string="ผูกพันงบประมาณ",
+        readonly=True,
+    )
+    budget_commitment_count = fields.Integer(
+        string="จำนวนผูกพันงบประมาณ",
+        compute="_compute_budget_commitment_count",
+    )
+    budget_remaining = fields.Float(
+        string="งบประมาณคงเหลือ",
+        compute="_compute_budget_remaining",
+        help="งบประมาณที่จองไว้ของโครงการ หักด้วยยอดที่เบิกจ่าย (ใช้) ไปแล้ว",
     )
 
     activity_analytic_id = fields.Many2one(
@@ -332,7 +344,9 @@ class KmitlProject(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        # Stored so the project dashboard can search/group by department dimension
+        # (replaces the removed hr.department department_id).
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -392,34 +406,24 @@ class KmitlProject(models.Model):
         for line in self:
             line._update_analytic_distribution("kmitl_project")
 
-    @api.onchange("operating_unit_id")
-    def _onchange_operating_unit_id(self):
-        """Clear department if it doesn't belong to the selected operating unit"""
-        if self.department_id and self.department_id.operating_unit_id:
-            if self.department_id.operating_unit_id != self.operating_unit_id:
-                self.department_id = False
-
-    @api.onchange("department_id")
-    def _onchange_department_id(self):
-        """Clear user if they don't belong to the selected department"""
-        if self.user_id and self.department_id:
-            user_departments = self.user_id.employee_ids.mapped("department_id")
-            if user_departments and self.department_id not in user_departments:
-                self.user_id = False
-
     def button_cancel(self):
+        self._release_project_commitment()
         self.write({"state": "cancel"})
 
     def button_draft(self):
+        self._release_project_commitment()
         self.write({"state": "draft"})
 
     def button_new(self):
+        for project in self:
+            project._reserve_project_commitment()
         self.write({"state": "new"})
 
     def button_in_progress(self):
         self.write({"state": "in_progress"})
 
     def button_on_hold(self):
+        self._release_project_commitment()
         self.write({"state": "on_hold"})
 
     def button_complete(self):
@@ -447,3 +451,152 @@ class KmitlProject(models.Model):
             'target': 'self',
             'url': '/my/kmitl-project/%s' % self.id
         }
+
+    def _compute_budget_commitment_count(self):
+        for rec in self:
+            rec.budget_commitment_count = len(rec.budget_commitment_ids)
+
+    @api.depends(
+        "budget_amount",
+        "budget_commitment_ids.state",
+        "budget_commitment_ids.total_consumed",
+    )
+    def _compute_budget_remaining(self):
+        """Money left in the project = reserved budget − what has actually been
+        consumed (เบิกจ่าย) from its commitment. Not the budget-account dashboard
+        status — strictly this project's reservation vs its spend."""
+        for rec in self:
+            used = sum(
+                rec.budget_commitment_ids.filtered(
+                    lambda c: c.state != "cancel"
+                ).mapped("total_consumed")
+            )
+            rec.budget_remaining = rec.budget_amount - used
+
+    def action_open_budget_commitments(self):
+        self.ensure_one()
+        return {
+            "name": _("ผูกพันงบประมาณ"),
+            "type": "ir.actions.act_window",
+            "res_model": "budget.commitment",
+            "view_mode": "tree,form",
+            "domain": [("kmitl_project_id", "=", self.id)],
+        }
+
+    @api.model
+    def _create_analytic_account_from_values(self, values):
+        return self.env["account.analytic.account"].create(
+            {
+                "name": values.get("name", _("Unknown Analytic Account")),
+                "code": values.get("code"),
+                "company_id": self.env.company.id,
+                "plan_id": self.env.ref(
+                    "kmitl_project.analytic_plan_project",
+                    raise_if_not_found=True,
+                ).id,
+            }
+        )
+
+    def _ensure_analytic_account(self):
+        """A confirmed project tracks its own ``kmitl_project`` analytic dimension so
+        its reservation and downstream spend are attributable to the project. Create
+        it on demand (kmitl.project, unlike procurement.plan, has no auto-create on
+        write) and let the inverse fold it into ``analytic_distribution``."""
+        self.ensure_one()
+        if self.analytic_account_id:
+            return
+        self.analytic_account_id = self._create_analytic_account_from_values(
+            {"name": self.name, "code": self.key or self.name}
+        ).id
+
+    def _reserve_project_commitment(self):
+        """Reserve one shared budget.commitment for the project's full
+        ``budget_amount`` when it is confirmed (``draft``->``new``), drawing from the
+        floating project-code pool (ADR-0007). Idempotent: skips when an active
+        (non-cancelled) commitment already exists. Blocks on insufficient budget
+        unless ``budget.allow_negative`` is set. The project's purchase requests and
+        disbursements draw this single commitment down."""
+        self.ensure_one()
+        if self.budget_commitment_ids.filtered(lambda c: c.state != "cancel"):
+            return
+        if not self.budget_account_id:
+            raise UserError(_("กรุณาระบุรหัสงบประมาณก่อนจองงบประมาณ"))
+        if self.budget_amount <= 0:
+            raise UserError(_("กรุณาระบุงบประมาณให้มากกว่า 0 ก่อนจองงบประมาณ"))
+        self._ensure_analytic_account()
+        analytic_data = {
+            "account_id": self.budget_account_id.id,
+            "activity_analytic_id": self.activity_analytic_id.id or False,
+            "department_analytic_id": self.department_analytic_id.id or False,
+            "fund_analytic_id": self.fund_analytic_id.id or False,
+            "source_analytic_id": self.source_analytic_id.id or False,
+        }
+        allow_negative = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("budget.allow_negative", False)
+        )
+        if not allow_negative:
+            self.env["budget.controller"].check_budget_availability(
+                analytic_data,
+                self.budget_amount,
+                self.account_fiscal_year_id.id,
+                self.company_id.id,
+            )
+        dist = dict(self.analytic_distribution or {})
+        commitment = self.env["budget.commitment"].create(
+            {
+                "account_id": self.budget_account_id.id,
+                "amount": self.budget_amount,
+                "analytic_distribution": dist or False,
+                "account_fiscal_year_id": self.account_fiscal_year_id.id,
+                "company_id": self.company_id.id,
+                "date": fields.Date.context_today(self),
+                "ref": self.key or self.name,
+                "description": self.name,
+                "kmitl_project_id": self.id,
+                "user_id": self.env.user.id,
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "move_type": "reserve",
+                            "account_id": self.budget_account_id.id,
+                            "analytic_distribution": dist or False,
+                            "amount": self.budget_amount,
+                            "name": _("Initial reservation"),
+                        },
+                    )
+                ],
+            }
+        )
+        commitment.action_reserve()
+        self.message_post(
+            body=_("จองงบประมาณ %s จำนวน %s บาท")
+            % (commitment.name, "{:,.2f}".format(self.budget_amount))
+        )
+
+    def _release_project_commitment(self):
+        """Release the reservation when the project leaves the active band
+        (on hold / cancel / reset to draft). Cancels the commitment only while it is
+        untouched and no draw-down has started; once the project is in progress or
+        any obligate/consume exists, the commitment is kept and a note is posted so
+        in-flight spending is never stranded (ADR-0007)."""
+        for project in self:
+            in_use = project.state == "in_progress"
+            for commitment in project.budget_commitment_ids.filtered(
+                lambda c: c.state in ("reserved", "partial")
+            ):
+                if in_use or commitment.total_obligated or commitment.total_consumed:
+                    project.message_post(
+                        body=_(
+                            "งบประมาณที่จองไว้ (%s) มีการใช้งานแล้ว จึงไม่ยกเลิกการจอง"
+                        )
+                        % commitment.name
+                    )
+                    continue
+                commitment.action_cancel()
+                project.message_post(
+                    body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
+                )
