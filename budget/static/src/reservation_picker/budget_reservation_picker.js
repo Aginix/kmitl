@@ -49,6 +49,43 @@ export class BudgetReservationPicker extends BudgetDashboard {
         }
     }
 
+    // A reservation needs a SPECIFIC value per dimension — drop the
+    // "— ทั้งหมด —" (all) option the dashboard offers for aggregate views.
+    sourcesFor(dim) {
+        const [src] = super.sourcesFor(dim);
+        return [
+            {
+                options: async (request) => {
+                    const opts = await src.options(request);
+                    return opts.filter((o) => o.accountId);
+                },
+            },
+        ];
+    }
+
+    async onWillStart() {
+        await super.onWillStart();
+        // Force a single budget category (no "all") — default to the first.
+        if (!this.state.rootAccountId && this.rootAccounts.length) {
+            this.state.rootAccountId = this.rootAccounts[0].id;
+            await this.load();
+        }
+    }
+
+    // Dimensions the reservation still needs (the filter bar must be complete).
+    get missingDimensions() {
+        const missing = [];
+        for (const dim of this.hierDimensions) {
+            if (!this.state.filters[dim.key]) {
+                missing.push(dim.label);
+            }
+        }
+        if (!this.state.sourceId) {
+            missing.push("แหล่งเงิน");
+        }
+        return missing;
+    }
+
     // Clicking anywhere on a row selects it (select mode). Toggles off if clicked
     // again. Non-selectable rows (rollups / out-of-domain) do nothing.
     onRowClick(row) {
@@ -110,6 +147,13 @@ export class BudgetReservationPicker extends BudgetDashboard {
     }
 
     async confirm() {
+        const missing = this.missingDimensions;
+        if (missing.length) {
+            this.notification.add("กรุณาเลือกมิติให้ครบก่อน: " + missing.join(", "), {
+                type: "warning",
+            });
+            return;
+        }
         if (!this.selections.length) {
             this.notification.add("กรุณาเลือกงบประมาณ", { type: "warning" });
             return;

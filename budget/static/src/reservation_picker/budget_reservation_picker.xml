@@ -17,7 +17,6 @@
                 <div class="o_bd_filter">
                     <label>ประเภทงบ</label>
                     <select t-on-change="onRootChange">
-                        <option value="">ทั้งหมด</option>
                         <t t-foreach="rootAccounts" t-as="acc" t-key="acc.id">
                             <option t-att-value="acc.id" t-att-selected="acc.id === state.rootAccountId">
                                 <t t-esc="acc.code"/> - <t t-esc="acc.name"/>
