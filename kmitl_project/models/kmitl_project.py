@@ -316,6 +316,7 @@ class KmitlProject(models.Model):
         "kmitl_project_id",
         string="ผูกพันงบประมาณ",
         readonly=True,
+        copy=False,
     )
     budget_commitment_count = fields.Integer(
         string="จำนวนผูกพันงบประมาณ",
