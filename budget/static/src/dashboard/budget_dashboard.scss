@@ -83,12 +83,20 @@
             white-space: nowrap;
         }
 
+        // Cells whose figure can be drilled into read as links: brand colour +
+        // a dotted underline at rest, so they stand apart from plain numbers
+        // even without hovering (and not by colour alone). On hover the
+        // underline turns solid with a soft tint to flag the click target.
         .o_bd_click {
             cursor: pointer;
+            color: $o-brand-primary;
+            text-decoration: underline dotted;
+            text-underline-offset: 2px;
         }
 
         .o_bd_click:hover {
-            text-decoration: underline;
+            text-decoration: underline solid;
+            background: rgba($o-brand-primary, 0.08);
         }
 
         .o_bd_neg {

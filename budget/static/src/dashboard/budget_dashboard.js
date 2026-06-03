@@ -2,6 +2,7 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { browser } from "@web/core/browser/browser";
 import { AutoComplete } from "@web/core/autocomplete/autocomplete";
 import { Component, onWillStart, useState } from "@odoo/owl";
 
@@ -33,11 +34,17 @@ const VALUE_KEYS = [
     "used",
     "remaining",
 ];
+// Drill-down opens in a separate browser tab. A dynamic domain cannot survive
+// Odoo's URL hash, so the action is stashed in localStorage under a one-shot
+// key and re-hydrated by the budget_drilldown client action (bottom of file).
+const DRILLDOWN_ACTION = "budget_drilldown";
+const DRILLDOWN_PREFIX = "budget_drill_";
+// Stage labels so each drill tab's breadcrumb names the column it came from.
+const USAGE_LABELS = { reserve: "เงินจอง", obligate: "ผูกพัน", consume: "เบิกจ่าย" };
 
 export class BudgetDashboard extends Component {
     setup() {
         this.orm = useService("orm");
-        this.actionService = useService("action");
         this.hierDimensions = HIER_DIMENSIONS;
         this.breakdownOrder = BREAKDOWN_ORDER;
         this.fiscalYears = [];
@@ -367,44 +374,72 @@ export class BudgetDashboard extends Component {
         return this.breakdownList;
     }
 
-    drillBudget(row) {
-        this.actionService.doAction({
-            type: "ir.actions.act_window",
-            name: this._drillName(row),
-            res_model: "budget.move.line",
-            views: [
-                [false, "list"],
-                [false, "form"],
-            ],
-            domain: [
-                ["parent_state", "=", "posted"],
-                ["account_fiscal_year_id", "=", this.state.fiscalYearId],
-                ["move_type", "in", ["appropriation", "entry"]],
-                ...this._drillLeaves(row),
-                ...this._dimDomain(this._drillExclude),
-            ],
-            target: "current",
-        });
+    // Stash the act_window in localStorage (shared across same-origin tabs) and
+    // open a one-shot client action that re-hydrates it. Done synchronously in
+    // the click gesture so the tab is not blocked, with no server round-trip.
+    _openDrill(name, resModel, domain) {
+        const key =
+            DRILLDOWN_PREFIX + Date.now() + "_" + Math.floor(Math.random() * 1e9);
+        browser.localStorage.setItem(
+            key,
+            JSON.stringify({
+                type: "ir.actions.act_window",
+                name,
+                res_model: resModel,
+                views: [
+                    [false, "list"],
+                    [false, "form"],
+                ],
+                domain,
+                target: "current",
+            })
+        );
+        browser.open(`/web#action=${DRILLDOWN_ACTION}&drill_key=${key}`, "_blank");
     }
 
-    drillUsage(row) {
-        this.actionService.doAction({
-            type: "ir.actions.act_window",
-            name: this._drillName(row),
-            res_model: "budget.commitment.line",
-            views: [
-                [false, "list"],
-                [false, "form"],
-            ],
-            domain: [
-                ["state", "=", "posted"],
-                ["commitment_id.state", "in", ["reserved", "partial", "done"]],
-                ["account_fiscal_year_id", "=", this.state.fiscalYearId],
-                ...this._drillLeaves(row),
-                ...this._dimDomain(this._drillExclude),
-            ],
-            target: "current",
-        });
+    drillBudget(row, appropriationType) {
+        const domain = [
+            ["parent_state", "=", "posted"],
+            ["account_fiscal_year_id", "=", this.state.fiscalYearId],
+        ];
+        let label;
+        if (appropriationType) {
+            // งบต้นปี: only the initial appropriation lines behind the figure.
+            domain.push(["move_type", "=", "appropriation"]);
+            domain.push(["appropriation_type", "=", appropriationType]);
+            label = "งบต้นปี";
+        } else {
+            // งบปัจจุบัน: posted appropriation + entry lines (incl. transfers).
+            domain.push(["move_type", "in", ["appropriation", "entry"]]);
+            label = "งบปัจจุบัน";
+        }
+        domain.push(...this._drillLeaves(row), ...this._dimDomain(this._drillExclude));
+        this._openDrill(
+            `${this._drillName(row)} — ${label}`,
+            "budget.move.line",
+            domain
+        );
+    }
+
+    drillUsage(row, moveType) {
+        // Each usage column drills into only its own commitment-line type:
+        // เงินจอง → reserve, ผูกพัน → obligate, เบิกจ่าย → consume. Note these
+        // cells are net (e.g. ผูกพัน = Σobligate − Σconsume) while the drill
+        // lists the gross lines of that one stage, so the list total need not
+        // equal the cell — the column header documents the figure.
+        const domain = [
+            ["state", "=", "posted"],
+            ["commitment_id.state", "in", ["reserved", "partial", "done"]],
+            ["account_fiscal_year_id", "=", this.state.fiscalYearId],
+            ["move_type", "=", moveType],
+            ...this._drillLeaves(row),
+            ...this._dimDomain(this._drillExclude),
+        ];
+        this._openDrill(
+            `${this._drillName(row)} — ${USAGE_LABELS[moveType]}`,
+            "budget.commitment.line",
+            domain
+        );
     }
 }
 
@@ -412,3 +447,19 @@ BudgetDashboard.components = { AutoComplete };
 BudgetDashboard.template = "budget.BudgetDashboard";
 
 registry.category("actions").add("budget_dashboard", BudgetDashboard);
+
+// One-shot client action that re-hydrates a drill-down opened in a new tab.
+// The dashboard stashed the act_window in localStorage under the key carried in
+// the URL; we consume it once and hand it back to the action service.
+registry.category("actions").add(DRILLDOWN_ACTION, (env, action) => {
+    const key = (action.params && action.params.drill_key) || "";
+    const raw = key && browser.localStorage.getItem(key);
+    if (key) {
+        browser.localStorage.removeItem(key);
+    }
+    // Stale link (e.g. the tab was reloaded after the key was consumed): fall
+    // back to the dashboard rather than leaving a blank screen.
+    return raw
+        ? JSON.parse(raw)
+        : { type: "ir.actions.client", tag: "budget_dashboard" };
+});

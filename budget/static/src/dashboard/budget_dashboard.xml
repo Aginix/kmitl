@@ -93,15 +93,15 @@
                                 <span t-esc="row.name"/>
                             </div>
                         </td>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row)" t-esc="format(row.initial)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row, 'initial')" t-esc="format(row.initial)"/>
                         <td class="text-end o_bd_num" t-esc="format(row.adjustment)"/>
                         <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row)">
                             <b t-esc="format(row.current)"/>
                         </td>
                         <td class="text-end o_bd_num" t-esc="format(row.cap)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.reserved)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.obligated)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.consumed)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'reserve')" t-esc="format(row.reserved)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'obligate')" t-esc="format(row.obligated)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'consume')" t-esc="format(row.consumed)"/>
                         <td class="text-end o_bd_num" t-esc="format(row.used)"/>
                         <td class="text-end o_bd_num" t-att-class="row.remaining &lt; 0 ? 'o_bd_neg' : ''">
                             <b t-esc="format(row.remaining)"/>
