@@ -1010,13 +1010,11 @@ msgid "Approved"
 msgstr "อนุมัติแล้ว"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__bill_draft
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Bill Draft"
 msgstr "รอตั้งหนี้"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__bill_posted
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Bill Posted"
 msgstr "ตั้งหนี้แล้ว"
@@ -1037,7 +1035,6 @@ msgid "Disbursement Head"
 msgstr "หัวหน้าหน่วยงาน"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__done
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Done"
 msgstr "เสร็จสิ้น"
@@ -1104,13 +1101,11 @@ msgid "Payment Count"
 msgstr "จำนวนการจ่ายเงิน"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__payment_draft
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Payment Draft"
 msgstr "รอจ่ายเงิน"
 
 #. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__payment_posted
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Payment Posted"
 msgstr "จ่ายเงินแล้ว"
