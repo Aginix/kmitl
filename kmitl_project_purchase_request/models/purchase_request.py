@@ -63,13 +63,15 @@ class PurchaseRequest(models.Model):
             if rec.use_project:
                 rec.is_budget_editable = False
 
-    @api.onchange("use_project", "kmitl_project_id")
-    def _onchange_kmitl_project_id(self):
-        if self.use_project and self.kmitl_project_id:
-            self.account_fiscal_year_id = self.kmitl_project_id.account_fiscal_year_id.id
-            self.budget_account_id = self.kmitl_project_id.budget_account_id.id
-            self.analytic_distribution = self.kmitl_project_id.analytic_distribution
-            self.title = self.kmitl_project_id.name
+    # No _onchange to prefill from the project on purpose. A project-driven พ.1 is
+    # only ever opened through action_create_purchase_request, which already passes
+    # the whole budget context (fiscal year, budget account, analytic_distribution,
+    # title) as context defaults — and _link_to_project re-writes it server-side on
+    # create. analytic_distribution inherits the core analytic.mixin field whose
+    # compute (_compute_analytic_distribution) is a no-op: re-assigning it inside the
+    # new-record onchange cascade makes Odoo recompute it to False, wiping the
+    # dimension fields on the unsaved form (they reappear only after save). Letting
+    # default_get drive the prefill keeps the value stable and the dimensions visible.
 
     def action_view_kmitl_project(self):
         self.ensure_one()
