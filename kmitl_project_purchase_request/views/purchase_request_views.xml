@@ -34,8 +34,8 @@
             <xpath expr="//field[@name='source_analytic_id']" position="after">
                 <field
                     name="project_analytic_id"
-                    attrs="{'readonly': [('is_budget_editable', '=', False)]}"
-                    options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                    readonly="1"
+                    options="{'no_open': True}"
                 />
             </xpath>
         </field>
