@@ -32,9 +32,12 @@
     ],
     "assets": {
         "web.assets_backend": [
+            # Apache ECharts (vendored) — attaches window.echarts for EChart.
+            "budget/static/lib/echarts/echarts.min.js",
             "budget/static/src/dashboard/budget_dashboard.js",
             "budget/static/src/dashboard/budget_dashboard.xml",
             "budget/static/src/dashboard/budget_dashboard.scss",
+            "budget/static/src/overview/echart.js",
             "budget/static/src/overview/budget_overview.js",
             "budget/static/src/overview/budget_overview.xml",
             "budget/static/src/overview/budget_overview.scss",

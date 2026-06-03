@@ -463,6 +463,174 @@
     .o_bo_badge_warning { background: #f8edda; color: #92561a; }
     .o_bo_badge_success { background: #e4f0e8; color: #1f6b39; }
     .o_bo_badge_danger { background: #f7e4e4; color: #a52a2a; }
+
+    // --- department (ส่วนงาน) multi-select dropdown ----------------------
+    .o_bo_dept_wrap {
+        position: relative;
+    }
+    .o_bo_dept_btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 210px;
+        height: 34px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: var(--bo-ink);
+        border: 1px solid var(--bo-border);
+        border-radius: 8px;
+        background: var(--bo-surface);
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+            border-color: var(--bo-accent);
+            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
+        }
+        i { color: var(--bo-faint); font-size: 11px; }
+    }
+    .o_bo_dept_backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+    }
+    .o_bo_dept_panel {
+        position: absolute;
+        z-index: 1001;
+        top: calc(100% + 4px);
+        left: 0;
+        min-width: 260px;
+        max-width: 360px;
+        background: var(--bo-surface);
+        border: 1px solid var(--bo-border);
+        border-radius: 8px;
+        box-shadow: 0 12px 28px -10px rgba(16, 24, 40, 0.24);
+        padding: 8px;
+    }
+    .o_bo_dept_actions {
+        display: flex;
+        gap: 12px;
+        padding: 4px 6px 8px;
+        border-bottom: 1px solid var(--bo-divider);
+        margin-bottom: 6px;
+
+        a {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bo-accent);
+            cursor: pointer;
+            &:hover { color: var(--bo-ink); }
+        }
+    }
+    .o_bo_dept_list {
+        max-height: 280px;
+        overflow-y: auto;
+    }
+    .o_bo_dept_item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 6px;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--bo-text);
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover { background: #f8fafc; }
+        input { cursor: pointer; }
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    // --- monthly trend chart ---------------------------------------------
+    .o_bo_chart_panel {
+        padding: 16px 18px 8px;
+    }
+    .o_echart {
+        width: 100%;
+        height: 320px;
+    }
+
+    // --- dimension sections (extension: โครงการ/กิจกรรม, แผนจัดซื้อจัดจ้าง) -
+    .o_bo_dim_panel {
+        padding: 4px 0;
+    }
+    .o_bo_dim_table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead th {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--bo-faint);
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--bo-border);
+            white-space: nowrap;
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--bo-divider);
+            transition: background 0.12s ease;
+            &:last-child { border-bottom: none; }
+        }
+        .o_bo_clickable {
+            cursor: pointer;
+            &:hover { background: #f8fafc; }
+        }
+        td {
+            padding: 9px 16px;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+        .o_bo_dim_name {
+            color: var(--bo-text);
+            b {
+                color: var(--bo-ink);
+                font-variant-numeric: tabular-nums;
+                margin-right: 4px;
+            }
+        }
+        .o_bo_dim_num {
+            font-variant-numeric: tabular-nums;
+            color: var(--bo-text);
+            white-space: nowrap;
+        }
+        .o_bo_dim_bar_col {
+            width: 120px;
+        }
+        .o_bo_bar {
+            height: 5px;
+            border-radius: 999px;
+            background: var(--bo-divider);
+            overflow: hidden;
+        }
+        .o_bo_bar_fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--bo-faint);
+        }
+        .o_bo_r_empty td {
+            text-align: center;
+            color: var(--bo-faint);
+            padding: 22px;
+        }
+    }
+
+    // breakdown rows inside category cards become clickable drill-downs
+    .o_bo_bd_clickable {
+        cursor: pointer;
+        margin: 0 -6px;
+        padding-left: 6px;
+        padding-right: 6px;
+        border-radius: 6px;
+        &:hover { background: #f1f5f9; }
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

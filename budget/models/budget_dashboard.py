@@ -61,6 +61,12 @@ class BudgetDashboard(models.AbstractModel):
         "used",
         "remaining",
     )
+    # Monthly time-series move types (จอง / ผูกพัน / เบิกจ่าย) + Thai month labels.
+    _TS_MOVE_TYPES = ("reserve", "obligate", "consume")
+    _THAI_MONTH_ABBR = (
+        "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+        "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
+    )
 
     @api.model
     def get_dashboard_data(
@@ -91,9 +97,19 @@ class BudgetDashboard(models.AbstractModel):
         hier_op = "child_of" if "parent_id" in analytic._fields else "="
         dim_leaves = []
         for fname in self._DIM_FIELDS:
-            if filters.get(fname):
-                op = "=" if fname == "source_analytic_id" else hier_op
-                dim_leaves.append((fname, op, filters[fname]))
+            val = filters.get(fname)
+            if not val:
+                continue
+            is_list = isinstance(val, (list, tuple))
+            # source is flat (exact / "in"); the hierarchical dims use child_of
+            # when the analytic tree exists, else exact / "in" for a value list.
+            if fname == "source_analytic_id":
+                op = "in" if is_list else "="
+            elif is_list:
+                op = "child_of" if hier_op == "child_of" else "in"
+            else:
+                op = hier_op
+            dim_leaves.append((fname, op, val))
 
         # Shared base domains for every column; dim filters apply set-based.
         move_base = [
@@ -633,21 +649,56 @@ class BudgetDashboard(models.AbstractModel):
         }
 
     @api.model
-    def get_overview_data(self, fiscal_year_id, source_id=None):
-        """Landing-page payload: per-category cards + recent movements.
+    def get_overview_departments(self):
+        """Department (ส่วนงาน) options for the overview multi-select filter.
+
+        Returns the top-level departments when the analytic tree is hierarchical
+        (so a faculty stands in for all its sub-departments via ``child_of``);
+        otherwise the full flat list. Mirrors the dashboard's hierarchy guard.
+        """
+        Analytic = self.env["account.analytic.account"]
+        domain = [("root_plan_id.code", "=", "departments")]
+        if "parent_id" in Analytic._fields:
+            domain.append(("parent_id", "=", False))
+        return Analytic.search_read(
+            domain, ["id", "display_name", "code"], order="code"
+        )
+
+    @api.model
+    def get_overview_data(self, fiscal_year_id, source_id=None, department_ids=None):
+        """Landing-page payload: cards + sections + monthly trend + movements.
 
         Cards reuse ``get_dashboard_data`` and keep only the root rows
         (``level == 0``), so each category figure matches the detailed
         monitoring report exactly and a card can drill into it unchanged.
-        Recent movements are plain searches (never ``sudo``) so the global
-        operating-unit record rules scope them to the current user.
+        ``department_ids`` (optional list) scopes every figure to those
+        departments. ``sections`` are extension-contributed dimension tables
+        (see :meth:`_overview_sections`); ``timeseries`` is the monthly usage
+        trend. Recent movements are plain searches (never ``sudo``) so the
+        global operating-unit record rules scope them to the current user.
         """
         currency_id = self.env.company.currency_id.id
-        data = {"currency_id": currency_id, "cards": [], "totals": {}, "recent": {}}
+        data = {
+            "currency_id": currency_id,
+            "cards": [],
+            "totals": {},
+            "recent": {},
+            "sections": [],
+            "timeseries": {},
+            "hier_op": (
+                "child_of"
+                if "parent_id" in self.env["account.analytic.account"]._fields
+                else "="
+            ),
+        }
         if not fiscal_year_id:
             return data
 
-        filters = {"source_analytic_id": source_id} if source_id else {}
+        filters = {}
+        if source_id:
+            filters["source_analytic_id"] = source_id
+        if department_ids:
+            filters["department_analytic_id"] = department_ids
         rows = self.get_dashboard_data(fiscal_year_id, None, filters)["rows"]
         cards = [row for row in rows if row["level"] == 0]
 
@@ -656,11 +707,173 @@ class BudgetDashboard(models.AbstractModel):
             for key in self._OVERVIEW_KEYS:
                 totals[key] += card.get(key, 0.0)
 
-        self._attach_breakdowns(cards, fiscal_year_id, source_id)
+        self._attach_breakdowns(cards, fiscal_year_id, source_id, department_ids)
         data["cards"] = cards
         data["totals"] = totals
         data["recent"] = self._recent_movements(fiscal_year_id)
+        data["sections"] = self._overview_sections(
+            fiscal_year_id, source_id, department_ids
+        )
+        data["timeseries"] = self._overview_timeseries(
+            fiscal_year_id, source_id, department_ids
+        )
         return data
+
+    # ------------------------------------------------------------------
+    # overview sections (open for extension) + monthly trend
+    # ------------------------------------------------------------------
+    def _overview_sections(self, fiscal_year_id, source_id, department_ids=None):
+        """Extra dimension sections shown below the category cards.
+
+        Budget core defines none. A module that owns an analytic dimension
+        appends its section by overriding this method (``super()`` + append) —
+        e.g. ``kmitl_project`` / ``procurement_plan`` — so the overview is open
+        for extension without budget knowing those dimensions. Each section is
+        ``{key, title, drill_dim, items}`` where every item is
+        ``{id, code, name, current, used, remaining}`` (see
+        :meth:`_dim_section_items`). The front end renders them generically.
+        """
+        return []
+
+    def _department_leaf(self, department_ids):
+        """Domain leaf scoping to a department set, hierarchy-aware (or None)."""
+        if not department_ids:
+            return None
+        has_tree = "parent_id" in self.env["account.analytic.account"]._fields
+        return ("department_analytic_id", "child_of" if has_tree else "in", department_ids)
+
+    def _dim_section_items(
+        self, dim_field, fiscal_year_id, source_id, department_ids=None, limit=8
+    ):
+        """Per-node reservation figures for a reservation-based dimension.
+
+        Projects (โครงการ/กิจกรรม) and procurement plans (แผนจัดซื้อจัดจ้าง)
+        earmark a budget by **reserving** it, then spend it down by
+        **consuming** it — they are not appropriated against their own
+        dimension. So a section shows, per node:
+
+            current   (งบ)      = Σ reserve  — the earmark
+            used      (ใช้ไป)    = Σ consume  — เบิกจ่าย
+            remaining (คงเหลือ)  = reserve − consume
+
+        (mirrors each module's "Budget Remaining" definition). Grouped by the
+        exact dimension account (one analytic account per project/plan), sorted
+        by งบ desc, with the tail folded into an aggregated "อื่น ๆ" row so a
+        section stays bounded. Honours the same source / department scope as the
+        cards.
+        """
+        cl_dom = [
+            ("state", "=", "posted"),
+            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("move_type", "in", ("reserve", "consume")),
+            (dim_field, "!=", False),
+        ]
+        if source_id:
+            cl_dom.append(("source_analytic_id", "=", source_id))
+        dep = self._department_leaf(department_ids)
+        if dep:
+            cl_dom.append(dep)
+
+        current, used = defaultdict(float), defaultdict(float)
+        for grp in self.env["budget.commitment.line"].read_group(
+            cl_dom, ["amount"], [dim_field, "move_type"], lazy=False
+        ):
+            rec = grp.get(dim_field)
+            move_type = grp.get("move_type")
+            if not rec or not move_type:
+                continue
+            target = current if move_type == "reserve" else used
+            target[rec[0]] += grp.get("amount") or 0.0
+
+        ids = set(current) | set(used)
+        if not ids:
+            return []
+        info = {
+            a.id: (a.code, a.name)
+            for a in self.env["account.analytic.account"].browse(list(ids))
+        }
+        items = []
+        for analytic_id in ids:
+            cur = current.get(analytic_id, 0.0)
+            usd = used.get(analytic_id, 0.0)
+            code, name = info.get(analytic_id, ("", ""))
+            items.append(
+                {
+                    "id": analytic_id,
+                    "code": code or "",
+                    "name": name or "",
+                    "current": cur,
+                    "used": usd,
+                    "remaining": cur - usd,
+                }
+            )
+        items.sort(key=lambda x: (-x["current"], x["code"]))
+        if len(items) > limit + 1:
+            head, tail = items[:limit], items[limit:]
+            items = head + [
+                {
+                    "id": False,
+                    "code": "",
+                    "name": "อื่น ๆ (%d)" % len(tail),
+                    "current": sum(t["current"] for t in tail),
+                    "used": sum(t["used"] for t in tail),
+                    "remaining": sum(t["remaining"] for t in tail),
+                }
+            ]
+        return items
+
+    def _overview_timeseries(self, fiscal_year_id, source_id, department_ids=None):
+        """Monthly จอง / ผูกพัน / เบิกจ่าย flow across the fiscal year.
+
+        Raw ``Σ amount`` of posted reserve/obligate/consume commitment lines,
+        bucketed by month over the whole fiscal-year span (empty months kept so
+        the x-axis is continuous). Same source / department scope as the cards.
+        """
+        fy = self.env["account.fiscal.year"].browse(fiscal_year_id)
+        if not fy.exists() or not fy.date_from or not fy.date_to:
+            return {}
+        months, labels = [], []
+        year, month = fy.date_from.year, fy.date_from.month
+        end = (fy.date_to.year, fy.date_to.month)
+        while (year, month) <= end:
+            months.append("%04d-%02d" % (year, month))
+            labels.append(
+                "%s %02d" % (self._THAI_MONTH_ABBR[month - 1], (year + 543) % 100)
+            )
+            month += 1
+            if month > 12:
+                month, year = 1, year + 1
+        index = {mk: i for i, mk in enumerate(months)}
+        series = {mt: [0.0] * len(months) for mt in self._TS_MOVE_TYPES}
+
+        cl_dom = [
+            ("state", "=", "posted"),
+            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+        ]
+        if source_id:
+            cl_dom.append(("source_analytic_id", "=", source_id))
+        dep = self._department_leaf(department_ids)
+        if dep:
+            cl_dom.append(dep)
+        for grp in self.env["budget.commitment.line"].read_group(
+            cl_dom, ["amount"], ["date:month", "move_type"], lazy=False
+        ):
+            move_type = grp.get("move_type")
+            rng = (grp.get("__range") or {}).get("date:month") or {}
+            start = rng.get("from")
+            if move_type not in series or not start:
+                continue
+            i = index.get(start[:7])
+            if i is not None:
+                series[move_type][i] = grp.get("amount") or 0.0
+        return {
+            "labels": labels,
+            "reserve": series["reserve"],
+            "obligate": series["obligate"],
+            "consume": series["consume"],
+        }
 
     def _recent_movements(self, fiscal_year_id):
         """Latest documents of each type for the selected fiscal year.
@@ -715,7 +928,9 @@ class BudgetDashboard(models.AbstractModel):
             ],
         }
 
-    def _attach_breakdowns(self, cards, fiscal_year_id, source_id):
+    def _attach_breakdowns(
+        self, cards, fiscal_year_id, source_id, department_ids=None
+    ):
         """Attach top-level fund & activity breakdowns to each category card.
 
         For every root category we show how its current budget (a) and usage
@@ -730,11 +945,15 @@ class BudgetDashboard(models.AbstractModel):
             ("fund_analytic_id", "funds"),
             ("activity_analytic_id", "activities"),
         ):
-            breakdown = self._dim_breakdown(dim, fiscal_year_id, source_id, card_ids)
+            breakdown = self._dim_breakdown(
+                dim, fiscal_year_id, source_id, card_ids, department_ids
+            )
             for card in cards:
                 card[attr] = breakdown.get(card["id"], [])
 
-    def _dim_breakdown(self, dim, fiscal_year_id, source_id, card_ids):
+    def _dim_breakdown(
+        self, dim, fiscal_year_id, source_id, card_ids, department_ids=None
+    ):
         """Per-root breakdown over the top-level nodes of one analytic dim.
 
         current comes from posted appropriation/entry move lines; used is the
@@ -756,6 +975,10 @@ class BudgetDashboard(models.AbstractModel):
         if source_id:
             move_dom.append(("source_analytic_id", "=", source_id))
             cl_dom.append(("source_analytic_id", "=", source_id))
+        dep = self._department_leaf(department_ids)
+        if dep:
+            move_dom.append(dep)
+            cl_dom.append(dep)
 
         cur_groups = self.env["budget.move.line"].read_group(
             move_dom, ["balance"], ["account_id", dim], lazy=False

@@ -3,6 +3,7 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Component, onWillStart, useState } from "@odoo/owl";
+import { EChart } from "./echart";
 
 // แหล่งเงิน is a single, mandatory scope (mirrors the detail report so the
 // card figures equal what the drill-down shows). Defaults to source code "2".
@@ -61,11 +62,18 @@ export class BudgetOverview extends Component {
         this.actionService = useService("action");
         this.fiscalYears = [];
         this.sources = [];
+        this.departments = [];
         this.state = useState({
             fiscalYearId: false,
             sourceId: false,
+            // department (ส่วนงาน) multi-select — defaults to all (no constraint)
+            departmentIds: [],
+            deptOpen: false,
+            hierOp: "=",
             cards: [],
             totals: {},
+            sections: [],
+            timeseries: {},
             recent: { commitment: [], move: [], transfer: [] },
             loading: false,
         });
@@ -93,6 +101,14 @@ export class BudgetOverview extends Component {
         const defSource =
             this.sources.find((s) => s.code === DEFAULT_SOURCE_CODE) || this.sources[0];
         this.state.sourceId = (defSource || {}).id || false;
+        // Top-level departments (server decides top-level vs flat). Default all
+        // checked — i.e. no constraint until the user narrows the selection.
+        this.departments = await this.orm.call(
+            "budget.dashboard",
+            "get_overview_departments",
+            []
+        );
+        this.state.departmentIds = this.departments.map((d) => d.id);
         await this.load();
     }
 
@@ -106,6 +122,7 @@ export class BudgetOverview extends Component {
             const data = await this.orm.call("budget.dashboard", "get_overview_data", [
                 this.state.fiscalYearId,
                 this.state.sourceId || false,
+                this.departmentParam,
             ]);
             const rank = (code) => {
                 const i = ROOT_ORDER.indexOf(code);
@@ -115,6 +132,9 @@ export class BudgetOverview extends Component {
                 (a, b) => rank(a.code) - rank(b.code) || a.code.localeCompare(b.code)
             );
             this.state.totals = data.totals || {};
+            this.state.sections = data.sections || [];
+            this.state.timeseries = data.timeseries || {};
+            this.state.hierOp = data.hier_op || "=";
             this.state.recent = data.recent || { commitment: [], move: [], transfer: [] };
         } finally {
             this.state.loading = false;
@@ -128,6 +148,58 @@ export class BudgetOverview extends Component {
 
     onSourceChange(ev) {
         this.state.sourceId = parseInt(ev.target.value) || false;
+        this.load();
+    }
+
+    // --- department (ส่วนงาน) multi-select ------------------------------
+    get isAllDepartments() {
+        return this.state.departmentIds.length === this.departments.length;
+    }
+
+    // Filter value sent to the server: ``false`` (no constraint) when all or
+    // none are checked, otherwise the explicit subset of department ids.
+    get departmentParam() {
+        const n = this.state.departmentIds.length;
+        if (n === 0 || n === this.departments.length) {
+            return false;
+        }
+        return this.state.departmentIds.slice();
+    }
+
+    get departmentLabel() {
+        const n = this.state.departmentIds.length;
+        if (n === 0 || n === this.departments.length) {
+            return "ทั้งหมด";
+        }
+        return `${n} ส่วนงาน`;
+    }
+
+    toggleDeptOpen() {
+        this.state.deptOpen = !this.state.deptOpen;
+    }
+
+    closeDept() {
+        this.state.deptOpen = false;
+    }
+
+    toggleDepartment(id) {
+        const ids = this.state.departmentIds;
+        const i = ids.indexOf(id);
+        if (i === -1) {
+            ids.push(id);
+        } else {
+            ids.splice(i, 1);
+        }
+        this.load();
+    }
+
+    selectAllDepartments() {
+        this.state.departmentIds = this.departments.map((d) => d.id);
+        this.load();
+    }
+
+    clearDepartments() {
+        this.state.departmentIds = [];
         this.load();
     }
 
@@ -159,6 +231,13 @@ export class BudgetOverview extends Component {
 
     pctLabel(obj) {
         return Math.round(this.usedPct(obj)) + "%";
+    }
+
+    // A breakdown / section row is drillable when it maps to a real analytic
+    // node — not the aggregated "อื่น ๆ" tail (fund/activity id "more", section
+    // id false).
+    isDrillable(item) {
+        return !!item && !!item.id && item.id !== "more";
     }
 
     // Top-level breakdown rows: show the largest few, fold the rest into
@@ -221,6 +300,128 @@ export class BudgetOverview extends Component {
         });
     }
 
+    // Drill a fund / activity breakdown row into the detailed dashboard, scoped
+    // to this category + that dimension value (skips the aggregated "อื่น ๆ"
+    // row). stopPropagation so the row click doesn't also open the card.
+    openBreakdown(card, item, dimKey, ev) {
+        if (ev) {
+            ev.stopPropagation();
+        }
+        if (!item || !item.id || item.id === "more") {
+            return;
+        }
+        const context = {
+            default_fiscal_year_id: this.state.fiscalYearId,
+            default_root_account_id: card.id,
+            default_source_analytic_id: this.state.sourceId || false,
+            ["default_" + dimKey]: item.id,
+        };
+        // The detail dashboard's department filter is single-select; carry it
+        // over only when exactly one department is in scope.
+        if (this.state.departmentIds.length === 1) {
+            context.default_department_analytic_id = this.state.departmentIds[0];
+        }
+        this.actionService.doAction("budget.action_budget_dashboard", {
+            additionalContext: context,
+        });
+    }
+
+    // Department domain leaf for a drill-down, hierarchy-aware (or null when the
+    // department filter is "all").
+    _deptDrillLeaf() {
+        const param = this.departmentParam;
+        if (!param) {
+            return null;
+        }
+        const op = this.state.hierOp === "child_of" ? "child_of" : "in";
+        return ["department_analytic_id", op, param];
+    }
+
+    // Drill a dimension-section row (โครงการ/กิจกรรม, แผนจัดซื้อจัดจ้าง, …) into
+    // its commitment lines, scoped to the active filters.
+    openSectionItem(section, item, ev) {
+        if (ev) {
+            ev.stopPropagation();
+        }
+        if (!item || !item.id) {
+            return; // the aggregated "อื่น ๆ" row (id === false)
+        }
+        const domain = [
+            [section.drill_dim, "=", item.id],
+            ["state", "=", "posted"],
+            ["commitment_id.state", "in", ["reserved", "partial", "done"]],
+            ["account_fiscal_year_id", "=", this.state.fiscalYearId],
+        ];
+        if (this.state.sourceId) {
+            domain.push(["source_analytic_id", "=", this.state.sourceId]);
+        }
+        const dep = this._deptDrillLeaf();
+        if (dep) {
+            domain.push(dep);
+        }
+        this.actionService.doAction({
+            type: "ir.actions.act_window",
+            name: `${item.code || ""} ${item.name || ""}`.trim(),
+            res_model: "budget.commitment.line",
+            views: [
+                [false, "list"],
+                [false, "form"],
+            ],
+            domain,
+            target: "current",
+        });
+    }
+
+    // --- monthly trend (echarts) ----------------------------------------
+    get hasTimeseries() {
+        const ts = this.state.timeseries || {};
+        return ["reserve", "obligate", "consume"].some((k) =>
+            (ts[k] || []).some((v) => Math.abs(v) > 0.005)
+        );
+    }
+
+    _compactNumber(value) {
+        const abs = Math.abs(value || 0);
+        if (abs >= 1e6) {
+            return (value / 1e6).toFixed(1) + "M";
+        }
+        if (abs >= 1e3) {
+            return (value / 1e3).toFixed(0) + "K";
+        }
+        return String(Math.round(value || 0));
+    }
+
+    get timeseriesOption() {
+        const ts = this.state.timeseries || {};
+        const bar = (name, data, color) => ({
+            name,
+            type: "bar",
+            stack: "usage",
+            emphasis: { focus: "series" },
+            itemStyle: { color },
+            data: data || [],
+        });
+        return {
+            tooltip: {
+                trigger: "axis",
+                axisPointer: { type: "shadow" },
+                valueFormatter: (v) => this.format(v),
+            },
+            legend: { data: ["จอง", "ผูกพัน", "เบิกจ่าย"], bottom: 0 },
+            grid: { left: 8, right: 16, top: 16, bottom: 40, containLabel: true },
+            xAxis: { type: "category", data: ts.labels || [] },
+            yAxis: {
+                type: "value",
+                axisLabel: { formatter: (v) => this._compactNumber(v) },
+            },
+            series: [
+                bar("จอง", ts.reserve, "#3b82f6"),
+                bar("ผูกพัน", ts.obligate, "#d97706"),
+                bar("เบิกจ่าย", ts.consume, "#15803d"),
+            ],
+        };
+    }
+
     openRecord(model, id) {
         this.actionService.doAction({
             type: "ir.actions.act_window",
@@ -237,5 +438,6 @@ export class BudgetOverview extends Component {
 }
 
 BudgetOverview.template = "budget.BudgetOverview";
+BudgetOverview.components = { EChart };
 
 registry.category("actions").add("budget_overview", BudgetOverview);
