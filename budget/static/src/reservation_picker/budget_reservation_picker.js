@@ -26,6 +26,8 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.accountDomain = ctx.account_domain || false;
         this.state.selectedId = false;
         this.state.amounts = {};
+        // Reservations pick a specific activity, so show the breakdown by default.
+        this.state.groupByActivity = true;
     }
 
     // Use the picker feed: same dashboard columns + budgetable/selectable flags.
