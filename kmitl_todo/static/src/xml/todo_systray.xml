@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="kmitl_todo.TodoSystray" owl="1">
+        <Dropdown position="'bottom-end'" beforeOpen.bind="fetchData">
+            <t t-set-slot="toggler">
+                <span class="o_kmitl_todo_systray_toggle">
+                    <i class="fa fa-fw fa-check-square-o" role="img" aria-label="Todos" title="สิ่งที่ต้องทำ"/>
+                    <t t-if="state.totalCount > 0">
+                        <span class="badge" t-esc="state.totalCount"/>
+                    </t>
+                </span>
+            </t>
+            <div class="o_kmitl_todo_systray" style="min-width: 340px;">
+                <div class="o_kmitl_todo_systray_header d-flex align-items-center px-3 py-2 border-bottom">
+                    <span class="fw-bold">สิ่งที่ต้องทำ</span>
+                    <span class="ms-auto badge bg-primary text-white" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                </div>
+                <t t-if="state.todos.length === 0">
+                    <div class="text-muted text-center py-4">
+                        <i class="fa fa-check-circle fa-2x mb-2 d-block"/>
+                        <span>ไม่มีสิ่งที่ต้องทำค้างอยู่</span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="o_kmitl_todo_systray_items" style="max-height: 360px; overflow-y: auto;">
+                        <t t-foreach="state.todos" t-as="todo" t-key="todo.id">
+                            <DropdownItem onSelected="() => this.onTodoClick(todo)" class="'o_kmitl_todo_item px-3 py-2'">
+                                <div class="d-flex align-items-start">
+                                    <i t-att-class="'fa me-2 mt-1 text-muted ' + todo.icon"/>
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <div class="fw-semibold text-truncate" t-esc="todo.summary"/>
+                                        <div class="small text-muted d-flex">
+                                            <span class="text-truncate" t-esc="todo.res_name"/>
+                                            <t t-if="todo.date">
+                                                <span class="mx-1">•</span>
+                                                <span t-esc="todo.date"/>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <span t-if="todo.state == 'overdue'" class="badge bg-danger ms-1">เกินกำหนด</span>
+                                    <span t-elif="todo.state == 'today'" class="badge bg-warning ms-1">วันนี้</span>
+                                </div>
+                            </DropdownItem>
+                        </t>
+                    </div>
+                    <div class="border-top px-3 py-2 text-center">
+                        <a href="#" class="text-primary" t-on-click.prevent="onViewAllClick">
+                            <i class="fa fa-list me-1"/>ดูทั้งหมด
+                        </a>
+                    </div>
+                </t>
+            </div>
+        </Dropdown>
+    </t>
+
+</templates>

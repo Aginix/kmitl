@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- ================= Inbox list (L1) ================= -->
+    <record id="view_my_todo_tree" model="ir.ui.view">
+        <field name="name">kmitl.todo.tree</field>
+        <field name="model">mail.activity</field>
+        <field name="arch" type="xml">
+            <tree
+                string="สิ่งที่ต้องทำ"
+                create="false"
+                edit="false"
+                decoration-danger="state == 'overdue'"
+                decoration-warning="state == 'today'"
+                decoration-muted="is_read_by_me == True"
+            >
+                <field name="state" widget="badge" optional="show" />
+                <field name="todo_category" optional="show" />
+                <field name="summary" string="เรื่อง" />
+                <field name="res_name" string="ต้นทาง" />
+                <field name="res_model" string="แอป" optional="show" />
+                <field name="operating_unit_id" string="หน่วยงาน" optional="show" />
+                <field name="responsible_role_id" optional="hide" />
+                <field name="user_id" optional="hide" />
+                <field name="date_deadline" string="กำหนด" />
+                <field name="is_read_by_me" invisible="1" />
+                <button
+                    name="action_open_document"
+                    type="object"
+                    string="ไปต้นทาง"
+                    icon="fa-external-link"
+                    class="btn-link"
+                />
+                <button
+                    name="action_mark_read"
+                    type="object"
+                    string="อ่านแล้ว"
+                    icon="fa-check"
+                    attrs="{'invisible': [('todo_category', 'not in', ['fyi', 'acknowledgement'])]}"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- ================= Inbox compact form ================= -->
+    <record id="view_my_todo_form" model="ir.ui.view">
+        <field name="name">kmitl.todo.form</field>
+        <field name="model">mail.activity</field>
+        <field name="arch" type="xml">
+            <form string="สิ่งที่ต้องทำ" create="false" edit="false">
+                <header>
+                    <button
+                        name="action_open_document"
+                        type="object"
+                        string="ไปยังข้อมูลต้นทาง"
+                        class="btn-primary"
+                        icon="fa-external-link"
+                    />
+                    <button
+                        name="action_mark_read"
+                        type="object"
+                        string="ทำเครื่องหมายว่าอ่านแล้ว"
+                        icon="fa-check"
+                        attrs="{'invisible': [('todo_category', 'not in', ['fyi', 'acknowledgement'])]}"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="summary" readonly="1" /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="todo_category" />
+                            <field name="activity_type_id" />
+                            <field name="res_name" string="เอกสารต้นทาง" />
+                            <field name="res_model" string="โมเดล" />
+                        </group>
+                        <group>
+                            <field name="date_deadline" />
+                            <field name="state" />
+                            <field name="user_id" />
+                            <field name="operating_unit_id" />
+                            <field name="responsible_role_id" />
+                        </group>
+                    </group>
+                    <field name="note" readonly="1" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================= Search + filters + searchpanel ================= -->
+    <record id="view_my_todo_search" model="ir.ui.view">
+        <field name="name">kmitl.todo.search</field>
+        <field name="model">mail.activity</field>
+        <field name="arch" type="xml">
+            <search string="สิ่งที่ต้องทำ">
+                <field name="summary" string="เรื่อง" />
+                <field name="res_name" string="ต้นทาง" />
+                <field name="activity_type_id" />
+                <field name="operating_unit_id" />
+                <filter
+                    name="unread"
+                    string="ยังไม่อ่าน"
+                    domain="[('is_read_by_me', '=', False)]"
+                />
+                <separator />
+                <filter
+                    name="overdue"
+                    string="เกินกำหนด"
+                    domain="[('state', '=', 'overdue')]"
+                />
+                <filter name="today" string="วันนี้" domain="[('state', '=', 'today')]" />
+                <filter
+                    name="planned"
+                    string="ล่วงหน้า"
+                    domain="[('state', '=', 'planned')]"
+                />
+                <separator />
+                <filter
+                    name="personal"
+                    string="ของฉันโดยตรง"
+                    domain="[('user_id', '!=', False)]"
+                />
+                <filter
+                    name="group"
+                    string="ของกลุ่ม"
+                    domain="[('responsible_role_id', '!=', False)]"
+                />
+                <group expand="0" string="จัดกลุ่ม">
+                    <filter
+                        name="group_category"
+                        string="ประเภท"
+                        context="{'group_by': 'todo_category'}"
+                    />
+                    <filter
+                        name="group_type"
+                        string="ชนิดกิจกรรม"
+                        context="{'group_by': 'activity_type_id'}"
+                    />
+                    <filter
+                        name="group_model"
+                        string="แอปต้นทาง"
+                        context="{'group_by': 'res_model'}"
+                    />
+                    <filter
+                        name="group_ou"
+                        string="หน่วยงาน"
+                        context="{'group_by': 'operating_unit_id'}"
+                    />
+                    <filter
+                        name="group_deadline"
+                        string="กำหนดส่ง"
+                        context="{'group_by': 'date_deadline'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field
+                        name="todo_category"
+                        string="ประเภท"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="operating_unit_id"
+                        string="หน่วยงาน"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================= Action + menu ================= -->
+    <record id="action_my_todos" model="ir.actions.act_window">
+        <field name="name">สิ่งที่ต้องทำ</field>
+        <field name="res_model">mail.activity</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_my_todo', '=', True)]</field>
+        <field name="context">{'search_default_unread': 1}</field>
+        <field name="search_view_id" ref="view_my_todo_search" />
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'sequence': 1, 'view_mode': 'tree', 'view_id': ref('view_my_todo_tree')}),
+                   (0, 0, {'sequence': 2, 'view_mode': 'form', 'view_id': ref('view_my_todo_form')})]"
+        />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">ไม่มีสิ่งที่ต้องทำค้างอยู่ 🎉</p>
+            <p>งานที่รอคุณดำเนินการจากทุกแอปจะมารวมที่นี่</p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_my_todos_root"
+        name="สิ่งที่ต้องทำ"
+        action="action_my_todos"
+        sequence="1"
+    />
+
+</odoo>

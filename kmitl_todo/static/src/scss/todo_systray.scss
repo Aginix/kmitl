@@ -1,0 +1,26 @@
+.o_kmitl_todo_systray_toggle {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    .badge {
+        background-color: $o-brand-primary;
+        color: #fff;
+        margin-left: 2px;
+        font-size: 0.7rem;
+    }
+}
+
+.o_kmitl_todo_systray {
+    .o_kmitl_todo_item {
+        border-bottom: 1px solid $border-color;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &:hover {
+            background-color: $dropdown-link-hover-bg;
+        }
+    }
+}

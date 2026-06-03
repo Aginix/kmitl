@@ -12,6 +12,7 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 - [KMITL Project](./kmitl_project/CONTEXT.md) — institutional project/activity planning (โครงการ/กิจกรรม); a project draws from a *floating* project-type budget pool, reserves its full budget when confirmed, then spends like a procurement plan.
 - [Accounting Reports](./accounting_kmitl_reports/CONTEXT.md) — financial-statement reports (Trial Balance, P&L, Balance Sheet, Cash Flow) over the GL (`account.move.line`), filterable by the KMITL accounting dimensions.
 - [Identity & Access](./iam/CONTEXT.md) — standalone app that delegates backend user/role/group/OU/access-right/record-rule administration without granting full Settings (`base.group_system`); a single `IAM Manager` group implying `erp_manager` plus one escalation guard.
+- [Todos](./kmitl_todo/CONTEXT.md) — cross-cutting unified inbox (สิ่งที่ต้องทำ) of everything a user must act on; each Todo is a native `mail.activity` on its source record, surfaced in one consolidated page with a jump-to-source button. Owns no business state.
 
 ## Relationships
 
@@ -19,3 +20,4 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 - **Procurement Plan → Budget**: the plan's single purchase request and its installment disbursement requests draw that one shared commitment down (obligate+consume per งวด) (ADR-0004, ADR-0006).
 - **Budget → KMITL Project**: posting an appropriation on an `is_project` budget code leaves the pool *floating* — it does **not** auto-create a project or reserve (contrast Procurement Plan). A `kmitl.project` reserves its `budget.commitment` for the full `budget_amount` when confirmed (`draft→new`) (ADR-0007).
 - **KMITL Project → Budget**: the project's purchase requests (พ.1) and disbursements draw that one shared commitment down (obligate+consume); a project may hold many PRs, capped at the commitment (ADR-0007).
+- **All contexts → Todos**: a workflow schedules/clears a `mail.activity` (a Todo) at its own state transitions; Todos only aggregates and surfaces them and holds no business state (`kmitl_todo` ADR-0001). v1 source is Procurement Plan only; the next actor is either a single user or a role-in-unit group (`base_user_role` role ∩ operating unit, resolved live — `kmitl_todo` ADR-0002); dynamic `tier.validation` routing is deferred.

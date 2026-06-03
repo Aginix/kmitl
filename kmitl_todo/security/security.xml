@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- A read receipt is private: each user sees and manages only their own. -->
+    <record id="kmitl_todo_read_own_rule" model="ir.rule">
+        <field name="name">Todo read receipts: own only</field>
+        <field name="model_id" ref="model_kmitl_todo_read" />
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    </record>
+</odoo>

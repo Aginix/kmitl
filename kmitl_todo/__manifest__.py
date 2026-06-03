@@ -1,0 +1,35 @@
+{
+    "name": "KMITL Todos (Unified Action Inbox)",
+    "version": "16.0.1.0.0",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL",
+    "summary": "หน้ารวมสิ่งที่ต้องทำ — unified inbox of pending work, built on mail.activity",
+    "depends": [
+        "mail",
+        "base_user_role",
+        "operating_unit",
+        "procurement_plan_operating_unit",
+        "purchase_request_approval",
+    ],
+    "data": [
+        "security/ir.model.access.csv",
+        "security/security.xml",
+        "data/res_users_role.xml",
+        "data/mail_activity_type.xml",
+        "data/mail_activity_type_update.xml",
+        "data/ir_cron.xml",
+        "views/mail_activity_views.xml",
+        "views/procurement_plan_views.xml",
+    ],
+    "assets": {
+        "web.assets_backend": [
+            "kmitl_todo/static/src/js/todo_systray.esm.js",
+            "kmitl_todo/static/src/scss/todo_systray.scss",
+            "kmitl_todo/static/src/xml/todo_systray.xml",
+        ],
+    },
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
+}
