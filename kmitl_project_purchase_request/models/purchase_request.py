@@ -21,6 +21,35 @@ class PurchaseRequest(models.Model):
         tracking=True,
     )
 
+    project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        compute="_compute_project_analytic_id",
+        inverse="_inverse_project_analytic",
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+        store=False,
+        string="โครงการ/กิจกรรม (Analytic)",
+    )
+
+    @api.depends("analytic_distribution")
+    def _compute_project_analytic_id(self):
+        for rec in self:
+            account_ids = [int(a) for a in rec.analytic_distribution or {}]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            rec.project_analytic_id = accounts.filtered(
+                lambda a: a.plan_id.code == "kmitl_project"
+            )[:1]
+
+    def _inverse_project_analytic(self):
+        for rec in self:
+            dist = dict(rec.analytic_distribution or {})
+            account_ids = [int(k) for k in dist.keys()]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            for acc in accounts.filtered(lambda a: a.plan_id.code == "kmitl_project"):
+                dist.pop(str(acc.id), None)
+            if rec.project_analytic_id:
+                dist[str(rec.project_analytic_id.id)] = 100
+            rec.analytic_distribution = dist or False
+
     def _domain_budget_account_id(self):
         # Standalone PRs must not draw directly on a project budget code — those
         # are reserved through projects (ADR-0007). Project-driven PRs prefill the
