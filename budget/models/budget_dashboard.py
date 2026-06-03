@@ -38,15 +38,6 @@ class BudgetDashboard(models.AbstractModel):
         "fund_analytic_id",
         "activity_analytic_id",
     )
-    # analytic dimension field -> its root analytic plan code. Used by the
-    # breakdown to read a non-stored header dimension (cap) out of
-    # ``analytic_distribution``.
-    _DIM_PLAN_CODE = {
-        "department_analytic_id": "departments",
-        "source_analytic_id": "sources",
-        "fund_analytic_id": "funds",
-        "activity_analytic_id": "activities",
-    }
     _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
     # Fixed display order for the top-level expense budget categories.
     _ROOT_ORDER = ("51000", "52000", "53000", "54000", "55000", "07020")
@@ -441,32 +432,38 @@ class BudgetDashboard(models.AbstractModel):
     def _cap_facts_by_account_dim(self, commit_domain, dim):
         """{(account_id, dim_id): Σ cap} per active commitment.
 
-        The header analytic dimension is non-stored, so the value is read from
-        ``analytic_distribution`` (the source of truth). The full cap is
-        attributed to the header account + that dimension value, so summing over
-        the dimension reproduces the flat report's per-account cap exactly.
+        The cap *amount* and *account* come from the commitment header (matching
+        the flat report — cap is keyed on the header account and may exceed
+        reserved). The dimension *key* comes from the commitment's posted
+        ``reserve`` line, whose dimension field is stored, so it is resolved
+        set-based via ``read_group`` and cap always lands on the same dimension
+        node as ``reserved``. Active commitments always carry a posted reserve
+        line (``action_reserve`` requires reserved > 0).
         """
-        plan_code = self._DIM_PLAN_CODE.get(dim)
         commitments = self.env["budget.commitment"].search(commit_domain)
-        analytic_ids = set()
-        for commitment in commitments:
-            analytic_ids.update(
-                int(k) for k in (commitment.analytic_distribution or {})
-            )
-        plan_of = {
-            a.id: a.plan_id.code
-            for a in self.env["account.analytic.account"].browse(
-                list(analytic_ids)
-            )
-        }
+        if not commitments:
+            return {}
+        dim_of = {}
+        for grp in self.env["budget.commitment.line"].read_group(
+            [
+                ("commitment_id", "in", commitments.ids),
+                ("state", "=", "posted"),
+                ("move_type", "=", "reserve"),
+            ],
+            [],
+            ["commitment_id", dim],
+            lazy=False,
+        ):
+            commitment = grp.get("commitment_id")
+            if not commitment:
+                continue
+            dval = grp.get(dim)
+            dim_of[commitment[0]] = dval[0] if dval else 0
         out = defaultdict(float)
         for commitment in commitments:
-            dim_id = 0
-            for k in commitment.analytic_distribution or {}:
-                if plan_of.get(int(k)) == plan_code:
-                    dim_id = int(k)
-                    break
-            out[(commitment.account_id.id, dim_id)] += commitment.amount
+            out[
+                (commitment.account_id.id, dim_of.get(commitment.id, 0))
+            ] += commitment.amount
         return out
 
     def _root_sort_key(self, account):
