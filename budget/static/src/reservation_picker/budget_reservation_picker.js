@@ -4,6 +4,10 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { BudgetDashboard } from "@budget/dashboard/budget_dashboard";
 
+// The activity dimension field; in breakdown mode its value is sourced from the
+// picked row's hierarchy rather than the filter bar.
+const ACTIVITY_KEY = "activity_analytic_id";
+
 // Reservation picker (จองงบประมาณ): the monitoring dashboard made selectable.
 // Extends BudgetDashboard so it reuses the filter bar (dimensions chosen here),
 // the full columns, and the hierarchy. Clicking a row selects that budget code.
@@ -78,9 +82,14 @@ export class BudgetReservationPicker extends BudgetDashboard {
     }
 
     // Dimensions the reservation still needs (the filter bar must be complete).
+    // In the activity breakdown the activity is taken from the picked row, so it
+    // is no longer a required filter.
     get missingDimensions() {
         const missing = [];
         for (const dim of this.hierDimensions) {
+            if (dim.key === ACTIVITY_KEY && this.state.groupByActivity) {
+                continue;
+            }
             if (!this.state.filters[dim.key]) {
                 missing.push(dim.label);
             }
@@ -142,15 +151,38 @@ export class BudgetReservationPicker extends BudgetDashboard {
         }
     }
 
+    // Distinct activities across the currently-picked rows (false = the
+    // "ไม่ระบุ" sentinel / no activity). A reservation maps to ONE activity, so
+    // confirm() enforces this resolves to a single real activity in breakdown
+    // mode; the rest of the engine (cap, obligate/consume) is header-level.
+    _pickedActivityIds() {
+        const byKey = this.rowsByKey;
+        const keys = this.selectMode
+            ? this.state.selectedId
+                ? [this.state.selectedId]
+                : []
+            : Object.keys(this.state.amounts).filter(
+                  (key) => this.state.amounts[key] > 0
+              );
+        const ids = new Set();
+        for (const key of keys) {
+            const row = byKey[key];
+            if (row) {
+                ids.add(row.activity_id || false);
+            }
+        }
+        return ids;
+    }
+
     get selections() {
         const byKey = this.rowsByKey;
         if (this.selectMode) {
             const row = this.state.selectedId && byKey[this.state.selectedId];
             return row ? [{ account_id: row.account_id }] : [];
         }
-        // Rows are keyed by row.key (an account can appear under several
-        // activities in the breakdown), so fold the entered amounts back to one
-        // entry per budget account before writing reserve lines.
+        // One reserve line per budget account (the single reservation activity is
+        // carried by the shared distribution); fold duplicate rows of the same
+        // account together.
         const byAccount = {};
         for (const [key, amount] of Object.entries(this.state.amounts)) {
             const row = byKey[key];
@@ -165,13 +197,24 @@ export class BudgetReservationPicker extends BudgetDashboard {
         }));
     }
 
-    // The dimension combination chosen in the filter bar -> analytic_distribution.
+    // The reservation's analytic_distribution: filter-bar dimensions, but with the
+    // ACTIVITY taken from the picked row's hierarchy in breakdown mode (the picked
+    // rows share one activity, enforced in confirm()), not the filter bar.
     get selectedDistribution() {
         const dist = {};
-        for (const value of Object.values(this.effectiveFilters)) {
-            if (value) {
-                dist[value] = 100.0;
+        for (const [key, value] of Object.entries(this.effectiveFilters)) {
+            if (key === ACTIVITY_KEY || !value) {
+                continue;
             }
+            dist[value] = 100.0;
+        }
+        let activityId = this.effectiveFilters[ACTIVITY_KEY];
+        if (this.state.groupByActivity) {
+            const ids = this._pickedActivityIds();
+            activityId = ids.size === 1 ? [...ids][0] : false;
+        }
+        if (activityId) {
+            dist[activityId] = 100.0;
         }
         return dist;
     }
@@ -187,6 +230,25 @@ export class BudgetReservationPicker extends BudgetDashboard {
         if (!this.selections.length) {
             this.notification.add("กรุณาเลือกงบประมาณ", { type: "warning" });
             return;
+        }
+        // In breakdown mode the activity comes from the picked rows; a reservation
+        // maps to a single activity, so reject the "ไม่ระบุ" sentinel and picks
+        // that span more than one activity (which the engine cannot represent).
+        if (this.state.groupByActivity) {
+            const ids = this._pickedActivityIds();
+            if (!ids.size || ids.has(false)) {
+                this.notification.add(
+                    "กรุณาเลือกรหัสที่อยู่ภายใต้กิจกรรม (ไม่ใช่แถว 'ไม่ระบุ')",
+                    { type: "warning" }
+                );
+                return;
+            }
+            if (ids.size > 1) {
+                this.notification.add("เลือกรหัสได้ทีละกิจกรรมเท่านั้น", {
+                    type: "warning",
+                });
+                return;
+            }
         }
         // The host's apply_reservation_selection writes back; its cross-charge /
         // single-code / domain constraints raise to the user.
