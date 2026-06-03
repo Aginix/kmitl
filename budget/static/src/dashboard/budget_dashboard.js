@@ -63,7 +63,11 @@ export class BudgetDashboard extends Component {
             rows: [],
             collapsed: {},
             hideZero: true,
-            breakdownDims: { activity_analytic_id: false, department_analytic_id: false },
+            breakdownDims: {
+                department_analytic_id: true,
+                activity_analytic_id: true,
+                fund_analytic_id: true,
+            },
             loading: false,
         });
         onWillStart(this.onWillStart.bind(this));
