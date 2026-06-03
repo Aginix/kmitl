@@ -4,6 +4,16 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { BudgetDashboard } from "@budget/dashboard/budget_dashboard";
 
+// The picker always shows the full nesting (no toggles) so a code can be found
+// under the exact ส่วนงาน → กิจกรรม → กองทุน it is allocated to, and a
+// reservation pins that whole tuple. A budget code may be allocated to several
+// funds, so fund is a nesting level here even though the dashboard omits it.
+const PICKER_BREAKDOWN = [
+    "department_analytic_id",
+    "activity_analytic_id",
+    "fund_analytic_id",
+];
+
 // Reservation picker (จองงบประมาณ): the monitoring dashboard made selectable.
 // Extends BudgetDashboard so it reuses the filter bar (dimensions chosen here),
 // the full columns, and the hierarchy. Clicking a row selects that budget code.
@@ -22,12 +32,12 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.accountDomain = ctx.account_domain || false;
         this.state.selectedId = false;
         this.state.amounts = {};
-        // A reservation pins a specific (activity, department) tuple, so show the
-        // full breakdown by default — the user picks the tuple from the hierarchy.
-        this.state.breakdownDims = {
-            activity_analytic_id: true,
-            department_analytic_id: true,
-        };
+    }
+
+    // The picker's breakdown is fixed (always on, no toggles) — the table always
+    // shows the full ส่วนงาน → กิจกรรม → กองทุน → budget-account hierarchy.
+    get breakdownList() {
+        return PICKER_BREAKDOWN;
     }
 
     // Use the picker feed: same dashboard columns + budgetable/selectable flags.
@@ -257,7 +267,7 @@ export class BudgetReservationPicker extends BudgetDashboard {
             const tuples = this._pickedTuples();
             if (tuples.size > 1) {
                 this.notification.add(
-                    "เลือกรหัสได้ทีละชุดมิติ (กิจกรรม/ส่วนงานเดียวกัน) เท่านั้น",
+                    "เลือกรหัสได้ทีละชุดมิติ (ส่วนงาน/กิจกรรม/กองทุนเดียวกัน) เท่านั้น",
                     { type: "warning" }
                 );
                 return;
@@ -265,7 +275,7 @@ export class BudgetReservationPicker extends BudgetDashboard {
             const tuple = tuples.size === 1 ? [...tuples.values()][0] : {};
             if (!tuples.size || fields.some((field) => !tuple[field])) {
                 this.notification.add(
-                    "กรุณาเลือกรหัสที่อยู่ภายใต้กิจกรรม/ส่วนงาน (ไม่ใช่แถว 'ไม่ระบุ')",
+                    "กรุณาเลือกรหัสที่ระบุ ส่วนงาน/กิจกรรม/กองทุน ครบ (ไม่ใช่แถว 'ไม่ระบุ')",
                     { type: "warning" }
                 );
                 return;
