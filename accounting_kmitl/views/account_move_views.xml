@@ -80,6 +80,24 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <!-- Hide standard Register Payment button: payment is handled through
+                 the KMITL disbursement flow, not the native registration wizard -->
+            <xpath expr="//button[@id='account_invoice_payment_btn']" position="attributes">
+                <attribute name="attrs">{'invisible': [(1, '=', 1)]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Hide the batch Register Payment button from the invoice/bill list view -->
+    <record id="view_invoice_tree_hide_register_payment" model="ir.ui.view">
+        <field name="name">account.invoice.tree.hide.register.payment</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_register_payment']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 

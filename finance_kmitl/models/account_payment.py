@@ -20,6 +20,28 @@ class AccountPayment(models.Model):
         string="Lines to Reconcile",
         copy=False,
     )
+    amount_wht = fields.Monetary(
+        string="Withholding Tax",
+        compute="_compute_amount_wht",
+        currency_field="currency_id",
+        help="Total withholding tax withheld on this payment. Derived from the "
+        "payment move lines carrying a WHT tax, so it is visible in every state "
+        "(the native withholding moves are only created on posting).",
+    )
+    amount_before_wht = fields.Monetary(
+        string="Amount Before Withholding",
+        compute="_compute_amount_wht",
+        currency_field="currency_id",
+        help="Gross amount before withholding tax (net amount paid plus the "
+        "withholding tax).",
+    )
+
+    @api.depends("move_id.line_ids.wht_tax_id", "move_id.line_ids.balance", "amount")
+    def _compute_amount_wht(self):
+        for payment in self:
+            wht_lines = payment.move_id.line_ids.filtered("wht_tax_id")
+            payment.amount_wht = sum(abs(line.balance) for line in wht_lines)
+            payment.amount_before_wht = payment.amount + payment.amount_wht
 
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
@@ -54,12 +76,19 @@ class AccountPayment(models.Model):
     def action_submit(self):
         """Submit payment without triggering tier validation.
 
-        Validation is triggered after bank export, not on submit.
+        Validation is triggered after bank export, not on submit. Assign the
+        move sequence on submit so every payment gets a number immediately,
+        instead of some staying unnamed ("Draft") until they are posted
+        (the native name is only assigned for the first move of a period
+        while it is unposted).
         """
         for payment in self:
-            if payment.move_id.state != "draft":
+            move = payment.move_id
+            if move.state != "draft":
                 raise UserError(_("Only draft payments can be submitted."))
-            payment.move_id.state = "submitted"
+            move.state = "submitted"
+            if move.date and (not move.name or move.name == "/"):
+                move._set_next_sequence()
 
     @api.onchange("kmitl_payment_type_id")
     def _onchange_kmitl_payment_type_id(self):

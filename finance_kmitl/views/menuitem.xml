@@ -38,12 +38,14 @@
 
     <menuitem
         id="menu_account_payment_outbound"
-        name="จ่ายเงิน"
+        name="Payment List"
         parent="menu_payment_root"
         action="action_account_payment_outbound"
         sequence="10"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
+    <!-- Receive Money menu temporarily hidden (inbound receipts not in use yet) -->
+    <!--
     <menuitem
         id="menu_account_payment_inbound"
         name="รับเงิน"
@@ -52,11 +54,12 @@
         sequence="15"
         groups="finance_kmitl.group_finance_kmitl_user_in"
     />
+    -->
 
     <!-- Bank Payment Export (outbound-side workflow) -->
     <menuitem
         id="menu_bank_payment_export"
-        name="Bank Payment Export"
+        name="e-Payment List"
         parent="menu_payment_root"
         action="l10n_th_bank_payment_export.action_bank_payment_export"
         sequence="20"
