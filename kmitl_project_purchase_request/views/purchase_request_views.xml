@@ -31,7 +31,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request_budget.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='Budget Details']/field[@name='product_id']" position="before">
+            <xpath expr="//field[@name='source_analytic_id']" position="after">
                 <field
                     name="project_analytic_id"
                     attrs="{'readonly': [('is_budget_editable', '=', False)]}"
