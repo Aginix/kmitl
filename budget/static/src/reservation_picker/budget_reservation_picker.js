@@ -25,6 +25,7 @@ export class BudgetReservationPicker extends BudgetDashboard {
     setup() {
         super.setup();
         this.notification = useService("notification");
+        this.actionService = useService("action");
         const ctx = (this.props.action && this.props.action.context) || {};
         this.resModel = ctx.res_model;
         this.resId = ctx.res_id;
