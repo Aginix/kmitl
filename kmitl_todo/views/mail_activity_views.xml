@@ -108,13 +108,17 @@
                 <filter
                     name="overdue"
                     string="เกินกำหนด"
-                    domain="[('state', '=', 'overdue')]"
+                    domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
                 />
-                <filter name="today" string="วันนี้" domain="[('state', '=', 'today')]" />
+                <filter
+                    name="today"
+                    string="วันนี้"
+                    domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"
+                />
                 <filter
                     name="planned"
                     string="ล่วงหน้า"
-                    domain="[('state', '=', 'planned')]"
+                    domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"
                 />
                 <separator />
                 <filter
