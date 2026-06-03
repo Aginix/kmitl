@@ -77,13 +77,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr t-foreach="visibleRows" t-as="row" t-key="row.id"
+                    <tr t-foreach="visibleRows" t-as="row" t-key="row.key"
                         t-att-class="rowClass(row)"
                         t-on-click="() => this.onRowClick(row)">
                         <td class="o_bd_acc">
                             <div class="o_bd_acc_inner" t-att-style="'padding-left:' + (row.level * 18) + 'px'">
                                 <span class="o_bd_caret" t-on-click.stop="() => this.toggleRow(row)"
-                                      t-esc="row.has_children ? (state.collapsed[row.id] ? '▸' : '▾') : ''"/>
+                                      t-esc="row.has_children ? (state.collapsed[row.key] ? '▸' : '▾') : ''"/>
                                 <b t-esc="row.code"/>
                                 <span t-esc="row.name"/>
                                 <span t-if="row.cross_chargeable" class="badge text-bg-light ms-1" title="ถัวจ่ายได้">ถัว</span>

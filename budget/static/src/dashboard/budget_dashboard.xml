@@ -49,6 +49,12 @@
                 </t>
                 <div class="o_bd_filter o_bd_check">
                     <label>
+                        <input type="checkbox" t-att-checked="state.groupByActivity" t-on-change="toggleBreakdown"/>
+                        แจกแจงตามกิจกรรม
+                    </label>
+                </div>
+                <div class="o_bd_filter o_bd_check">
+                    <label>
                         <input type="checkbox" t-att-checked="state.hideZero" t-on-change="toggleHideZero"/>
                         ซ่อนแถวที่ไม่มีความเคลื่อนไหว
                     </label>
@@ -74,12 +80,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr t-foreach="visibleRows" t-as="row" t-key="row.id"
-                        t-att-class="row.has_children ? 'o_bd_group' : ''">
+                    <tr t-foreach="visibleRows" t-as="row" t-key="row.key"
+                        t-att-class="rowClass(row)">
                         <td class="o_bd_acc">
                             <div class="o_bd_acc_inner" t-att-style="'padding-left:' + (row.level * 18) + 'px'">
                                 <span class="o_bd_caret" t-on-click="() => this.toggleRow(row)"
-                                      t-esc="row.has_children ? (state.collapsed[row.id] ? '▸' : '▾') : ''"/>
+                                      t-esc="row.has_children ? (state.collapsed[row.key] ? '▸' : '▾') : ''"/>
                                 <b t-esc="row.code"/>
                                 <span t-esc="row.name"/>
                             </div>

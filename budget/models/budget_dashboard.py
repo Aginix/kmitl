@@ -38,6 +38,15 @@ class BudgetDashboard(models.AbstractModel):
         "fund_analytic_id",
         "activity_analytic_id",
     )
+    # analytic dimension field -> its root analytic plan code. Used by the
+    # breakdown to read a non-stored header dimension (cap) out of
+    # ``analytic_distribution``.
+    _DIM_PLAN_CODE = {
+        "department_analytic_id": "departments",
+        "source_analytic_id": "sources",
+        "fund_analytic_id": "funds",
+        "activity_analytic_id": "activities",
+    }
     _ACTIVE_COMMITMENT_STATES = ("reserved", "partial", "done")
     # Fixed display order for the top-level expense budget categories.
     _ROOT_ORDER = ("51000", "52000", "53000", "54000", "55000", "07020")
@@ -56,8 +65,16 @@ class BudgetDashboard(models.AbstractModel):
     )
 
     @api.model
-    def get_dashboard_data(self, fiscal_year_id, root_account_id=None, filters=None):
-        """Return ``{"rows": [...], "currency_id": id}`` for the dashboard grid."""
+    def get_dashboard_data(
+        self, fiscal_year_id, root_account_id=None, filters=None, breakdown=None
+    ):
+        """Return ``{"rows": [...], "currency_id": id}`` for the dashboard grid.
+
+        ``breakdown`` (optional) is an analytic dimension field name
+        (e.g. ``"activity_analytic_id"``). When set, the budget-account tree is
+        nested under that dimension's hierarchy — same columns, same roll-up —
+        instead of being the sole row axis. See :meth:`_breakdown_rows`.
+        """
         filters = filters or {}
         currency_id = self.env.company.currency_id.id
         if not fiscal_year_id:
@@ -78,12 +95,41 @@ class BudgetDashboard(models.AbstractModel):
                 op = "=" if fname == "source_analytic_id" else hier_op
                 dim_leaves.append((fname, op, filters[fname]))
 
-        # --- (a) current pool and (1) initial, from posted move lines ---
+        # Shared base domains for every column; dim filters apply set-based.
         move_base = [
             ("parent_state", "=", "posted"),
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("account_id", "in", account_ids),
         ] + dim_leaves
+        cl_base = [
+            ("state", "=", "posted"),
+            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ] + dim_leaves
+        # (3) approved cap = Σ active commitment caps. Header analytic dims are
+        # non-stored, so when a dimension filter is set the matching commitments
+        # are resolved through their stored lines.
+        commit_domain = [
+            ("state", "in", self._ACTIVE_COMMITMENT_STATES),
+            ("account_fiscal_year_id", "=", fiscal_year_id),
+            ("account_id", "in", account_ids),
+        ]
+        if dim_leaves:
+            match = self.env["budget.commitment.line"].search(cl_base).mapped(
+                "commitment_id"
+            )
+            commit_domain.append(("id", "in", match.ids))
+
+        # Optional breakdown: nest the budget-account tree under an analytic
+        # dimension (e.g. activities) instead of using it as the sole row axis.
+        if breakdown:
+            rows = self._breakdown_rows(
+                breakdown, accounts, account_ids, move_base, cl_base, commit_domain
+            )
+            return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+
+        # --- (a) current pool and (1) initial, from posted move lines ---
         current = self._sum_by_account(
             "budget.move.line",
             move_base + [("move_type", "in", ("appropriation", "entry"))],
@@ -100,12 +146,6 @@ class BudgetDashboard(models.AbstractModel):
         )
 
         # --- b/c/d from posted commitment lines of active commitments ---
-        cl_base = [
-            ("state", "=", "posted"),
-            ("commitment_id.state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ] + dim_leaves
         by_type = self._sum_by_account_and_type(
             "budget.commitment.line", cl_base, "amount"
         )
@@ -113,19 +153,6 @@ class BudgetDashboard(models.AbstractModel):
         obligated = by_type.get("obligate", {})
         consumed = by_type.get("consume", {})
 
-        # --- (3) approved cap = Σ active commitment caps ---
-        # Header analytic dims are non-stored, so when a dimension filter is set
-        # the matching commitments are resolved through their stored lines.
-        commit_domain = [
-            ("state", "in", self._ACTIVE_COMMITMENT_STATES),
-            ("account_fiscal_year_id", "=", fiscal_year_id),
-            ("account_id", "in", account_ids),
-        ]
-        if dim_leaves:
-            match = self.env["budget.commitment.line"].search(cl_base).mapped(
-                "commitment_id"
-            )
-            commit_domain.append(("id", "in", match.ids))
         cap = self._sum_by_account("budget.commitment", commit_domain, "amount")
 
         # --- roll own values up the subtree via parent_path ---
@@ -179,6 +206,274 @@ class BudgetDashboard(models.AbstractModel):
             for child in reversed(kids):
                 stack.append((child, level + 1))
         return {"rows": rows, "currency_id": currency_id, "hier_op": hier_op}
+
+    # ------------------------------------------------------------------
+    # multi-dimension breakdown (e.g. activities)
+    # ------------------------------------------------------------------
+    def _breakdown_rows(
+        self, dim, accounts, account_ids, move_base, cl_base, commit_domain
+    ):
+        """Rows for a single-dimension breakdown nested over budget accounts.
+
+        The chosen analytic ``dim`` (e.g. ``activity_analytic_id``) becomes the
+        outer hierarchy. Under every dimension node that has budget tagged
+        *exactly* to it, the budget-account subtree is nested — identical columns
+        and roll-up to the flat report. Both trees roll up independently:
+
+        - a **dimension node** = Σ of its whole subtree across every account
+          (parent activity = itself + all descendant activities);
+        - an **account node** = Σ over its account subtree for that *exact*
+          dimension value (so the same budget account can appear under several
+          activities, each scoped to its own activity).
+
+        Lines with no value for the dimension fall into a sentinel
+        "ไม่ระบุ" root node so totals still reconcile with the flat report.
+        """
+        keys = ("initial", "current", "cap", "reserved", "obligated", "consumed")
+
+        sources = {
+            "current": self._facts_by_account_dim(
+                "budget.move.line",
+                move_base + [("move_type", "in", ("appropriation", "entry"))],
+                "balance",
+                dim,
+            ),
+            "initial": self._facts_by_account_dim(
+                "budget.move.line",
+                move_base
+                + [
+                    ("move_type", "=", "appropriation"),
+                    ("appropriation_type", "=", "initial"),
+                ],
+                "balance",
+                dim,
+            ),
+            "cap": self._cap_facts_by_account_dim(commit_domain, dim),
+        }
+        by_type = self._facts_by_account_dim_type(
+            "budget.commitment.line", cl_base, "amount", dim
+        )
+        sources["reserved"] = by_type.get("reserve", {})
+        sources["obligated"] = by_type.get("obligate", {})
+        sources["consumed"] = by_type.get("consume", {})
+
+        # own[(account_id, dim_id)] = {metric: value}; dim_id 0 = untagged.
+        own = {}
+        for metric in keys:
+            for (acc_id, dim_id), val in sources[metric].items():
+                own.setdefault(
+                    (acc_id, dim_id), dict.fromkeys(keys, 0.0)
+                )[metric] = val
+
+        acc_by_id = {a.id: a for a in accounts}
+        account_id_set = set(account_ids)
+
+        # --- dimension hierarchy: present nodes + their ancestors ---
+        present_dim_ids = {d for (_a, d) in own if d}
+        dim_paths = {}  # dim_id -> [root, ..., self] (ids, root-first)
+        union_dim_ids = set()
+        for rec in self.env["account.analytic.account"].browse(
+            list(present_dim_ids)
+        ):
+            path = [
+                int(x) for x in (rec.parent_path or "").strip("/").split("/") if x
+            ]
+            dim_paths[rec.id] = path or [rec.id]
+            union_dim_ids.update(dim_paths[rec.id])
+
+        dim_parent = {}
+        dim_children = defaultdict(list)
+        seen_child = defaultdict(set)
+        for path in dim_paths.values():
+            for i, node in enumerate(path):
+                parent = path[i - 1] if i else None
+                dim_parent.setdefault(node, parent)
+                if parent is not None and node not in seen_child[parent]:
+                    seen_child[parent].add(node)
+                    dim_children[parent].append(node)
+        dim_rec = {
+            r.id: r
+            for r in self.env["account.analytic.account"].browse(
+                list(union_dim_ids)
+            )
+        }
+
+        # --- dimension group totals: own-total per exact node, rolled up ---
+        dim_own_total = defaultdict(lambda: dict.fromkeys(keys, 0.0))
+        for (_acc_id, dim_id), vals in own.items():
+            tgt = dim_own_total[dim_id]
+            for metric in keys:
+                tgt[metric] += vals[metric]
+        dim_rolled = defaultdict(lambda: dict.fromkeys(keys, 0.0))
+        for dim_id, path in dim_paths.items():
+            own_total = dim_own_total[dim_id]
+            for anc in path:  # ancestors incl. self
+                node = dim_rolled[anc]
+                for metric in keys:
+                    node[metric] += own_total[metric]
+        if 0 in dim_own_total:  # sentinel: no subtree, group == own
+            dim_rolled[0] = dim_own_total[0]
+
+        # --- per exact dimension, roll the budget-account subtree up ---
+        exact_dim_ids = {d for (_a, d) in own}
+
+        def account_tree(dim_id):
+            rolled = {}
+            for acc_id in (acc for (acc, d) in own if d == dim_id):
+                own_acc = own[(acc_id, dim_id)]
+                for anc in self._ancestor_ids(acc_by_id[acc_id]):
+                    if anc not in account_id_set:
+                        continue
+                    node = rolled.setdefault(anc, dict.fromkeys(keys, 0.0))
+                    for metric in keys:
+                        node[metric] += own_acc[metric]
+            children = defaultdict(list)
+            roots = []
+            for acc_id in rolled:
+                pid = acc_by_id[acc_id].parent_id.id
+                (children[pid] if pid in rolled else roots).append(
+                    acc_by_id[acc_id]
+                )
+            roots.sort(key=self._root_sort_key)
+            for kids in children.values():
+                kids.sort(key=lambda a: a.code or "")
+            return rolled, children, roots
+
+        acc_trees = {d: account_tree(d) for d in exact_dim_ids}
+
+        # --- emit rows depth-first ---
+        rows = []
+
+        def emit_accounts(dim_id, account, level, rolled, children):
+            kids = children.get(account.id, [])
+            pid = account.parent_id.id
+            rows.append(
+                {
+                    "id": account.id,
+                    "key": "a%s-b%s" % (dim_id, account.id),
+                    "parent_key": (
+                        "a%s-b%s" % (dim_id, pid)
+                        if pid in rolled
+                        else "a%s" % dim_id
+                    ),
+                    "row_type": "account",
+                    "account_id": account.id,
+                    "activity_id": dim_id or False,
+                    "code": account.code,
+                    "name": account.name,
+                    "level": level,
+                    "has_children": bool(kids),
+                    **self._value_columns(rolled[account.id]),
+                }
+            )
+            for child in kids:
+                emit_accounts(dim_id, child, level + 1, rolled, children)
+
+        def dim_code(dim_id):
+            rec = dim_rec.get(dim_id)
+            return (rec.code or "") if rec else ""
+
+        def emit_dim(dim_id, level):
+            rec = dim_rec.get(dim_id)
+            child_dims = dim_children.get(dim_id, [])
+            tree = acc_trees.get(dim_id)
+            acc_roots = tree[2] if tree else []
+            parent = dim_parent.get(dim_id)
+            rows.append(
+                {
+                    "id": False,
+                    "key": "a%s" % dim_id,
+                    "parent_key": "a%s" % parent if parent else False,
+                    "row_type": "activity",
+                    "activity_id": dim_id or False,
+                    "code": rec.code if rec else "",
+                    "name": rec.name if rec else "ไม่ระบุ",
+                    "level": level,
+                    "has_children": bool(child_dims or acc_roots),
+                    **self._value_columns(dim_rolled[dim_id]),
+                }
+            )
+            for child in sorted(child_dims, key=dim_code):
+                emit_dim(child, level + 1)
+            if tree:
+                rolled, children, _roots = tree
+                for root in acc_roots:
+                    emit_accounts(dim_id, root, level + 1, rolled, children)
+
+        dim_roots = sorted(
+            (d for d, p in dim_parent.items() if p is None), key=dim_code
+        )
+        for dim_id in dim_roots:
+            emit_dim(dim_id, 0)
+        if 0 in exact_dim_ids:  # untagged bucket, shown last
+            emit_dim(0, 0)
+        return rows
+
+    def _facts_by_account_dim(self, model, domain, field, dim):
+        """{(account_id, dim_id): Σ field} grouped by account + dimension."""
+        out = {}
+        for grp in self.env[model].read_group(
+            domain, [field], ["account_id", dim], lazy=False
+        ):
+            account = grp.get("account_id")
+            if not account:
+                continue
+            dval = grp.get(dim)
+            out[(account[0], dval[0] if dval else 0)] = grp.get(field) or 0.0
+        return out
+
+    def _facts_by_account_dim_type(self, model, domain, field, dim):
+        """{move_type: {(account_id, dim_id): Σ field}} for commitment lines."""
+        out = {}
+        for grp in self.env[model].read_group(
+            domain, [field], ["account_id", dim, "move_type"], lazy=False
+        ):
+            account = grp.get("account_id")
+            move_type = grp.get("move_type")
+            if not (account and move_type):
+                continue
+            dval = grp.get(dim)
+            out.setdefault(move_type, {})[
+                (account[0], dval[0] if dval else 0)
+            ] = grp.get(field) or 0.0
+        return out
+
+    def _cap_facts_by_account_dim(self, commit_domain, dim):
+        """{(account_id, dim_id): Σ cap} per active commitment.
+
+        The header analytic dimension is non-stored, so the value is read from
+        ``analytic_distribution`` (the source of truth). The full cap is
+        attributed to the header account + that dimension value, so summing over
+        the dimension reproduces the flat report's per-account cap exactly.
+        """
+        plan_code = self._DIM_PLAN_CODE.get(dim)
+        commitments = self.env["budget.commitment"].search(commit_domain)
+        analytic_ids = set()
+        for commitment in commitments:
+            analytic_ids.update(
+                int(k) for k in (commitment.analytic_distribution or {})
+            )
+        plan_of = {
+            a.id: a.plan_id.code
+            for a in self.env["account.analytic.account"].browse(
+                list(analytic_ids)
+            )
+        }
+        out = defaultdict(float)
+        for commitment in commitments:
+            dim_id = 0
+            for k in commitment.analytic_distribution or {}:
+                if plan_of.get(int(k)) == plan_code:
+                    dim_id = int(k)
+                    break
+            out[(commitment.account_id.id, dim_id)] += commitment.amount
+        return out
+
+    def _root_sort_key(self, account):
+        """Top-level budget categories follow ``_ROOT_ORDER``, then code."""
+        order = self._ROOT_ORDER
+        code = account.code or ""
+        return (order.index(code) if code in order else len(order), code)
 
     @api.model
     def get_reservation_grid(
@@ -436,7 +731,9 @@ class BudgetDashboard(models.AbstractModel):
     # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
-    def _make_row(self, account, r, level, has_children):
+    @staticmethod
+    def _value_columns(r):
+        """Map the six rolled-up sources to the nine displayed money columns."""
         reserved_v, obligated_v, consumed_v, current_v = (
             r["reserved"],
             r["obligated"],
@@ -444,12 +741,6 @@ class BudgetDashboard(models.AbstractModel):
             r["current"],
         )
         return {
-            "id": account.id,
-            "code": account.code,
-            "name": account.name,
-            "parent_id": account.parent_id.id,
-            "level": level,
-            "has_children": has_children,
             "initial": r["initial"],
             "adjustment": current_v - r["initial"],
             "current": current_v,
@@ -459,6 +750,24 @@ class BudgetDashboard(models.AbstractModel):
             "consumed": consumed_v,  # d
             "used": reserved_v,  # e = b + c + d
             "remaining": current_v - reserved_v,  # f
+        }
+
+    def _make_row(self, account, r, level, has_children):
+        # ``key``/``parent_key`` drive the front-end tree (collapse + indent).
+        # A plain budget.account id is unique here, so the key is just ``b<id>``;
+        # the breakdown view qualifies it with the dimension (see _breakdown_rows).
+        pid = account.parent_id.id
+        return {
+            "id": account.id,
+            "key": "b%s" % account.id,
+            "parent_key": "b%s" % pid if pid else False,
+            "row_type": "account",
+            "account_id": account.id,
+            "code": account.code,
+            "name": account.name,
+            "level": level,
+            "has_children": has_children,
+            **self._value_columns(r),
         }
 
     def _dashboard_accounts(self, root_account_id):

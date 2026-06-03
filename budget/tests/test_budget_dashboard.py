@@ -173,6 +173,109 @@ class TestBudgetDashboard(TransactionCase):
         commitment.action_reserve()
         return commitment
 
+    def _post_appropriation_act(
+        self, account, amount, activity, appropriation_type="initial"
+    ):
+        move = self.env["budget.move"].create(
+            {
+                "move_type": "appropriation",
+                "budget_type": "expense",
+                "appropriation_type": appropriation_type,
+                "account_fiscal_year_id": self.fy.id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": account.id,
+                            "balance": amount,
+                            "analytic_distribution": {str(activity.id): 100.0},
+                        }
+                    )
+                ],
+            }
+        )
+        move.action_review()
+        move.action_post()
+        return move
+
+    def _breakdown(self):
+        data = self.env["budget.dashboard"].get_dashboard_data(
+            self.fy.id, self.parent.id, {}, "activity_analytic_id"
+        )
+        return {row["key"]: row for row in data["rows"]}
+
+    def test_activity_breakdown_nests_accounts_and_rolls_up(self):
+        """Activities form the outer tree; the budget-account subtree nests under
+        the exact activity it's tagged to, and both trees roll up."""
+        AA = self.env["account.analytic.account"]
+        Plan = self.env["account.analytic.plan"]
+        plan = Plan.search([("code", "=", "activities")], limit=1) or Plan.create(
+            {"name": "Activities", "code": "activities"}
+        )
+        act_parent = AA.create(
+            {"name": "Develop", "code": "ACT09", "plan_id": plan.id}
+        )
+        act_child = AA.create(
+            {
+                "name": "Higher Ed",
+                "code": "ACT09007",
+                "plan_id": plan.id,
+                "parent_id": act_parent.id,
+            }
+        )
+        self._post_appropriation_act(self.child, 100_000, act_child)
+        self._reserve_with_dist(self.child, 60_000, {str(act_child.id): 100.0})
+
+        rows = self._breakdown()
+        p_key = "a%s" % act_parent.id
+        c_key = "a%s" % act_child.id
+        self.assertIn(p_key, rows)
+        self.assertIn(c_key, rows)
+        parent_act, child_act = rows[p_key], rows[c_key]
+        # outer hierarchy: activity rows, parent at level 0, child nested under it
+        self.assertEqual(parent_act["row_type"], "activity")
+        self.assertEqual(parent_act["level"], 0)
+        self.assertEqual(parent_act["parent_key"], False)
+        self.assertEqual(child_act["level"], 1)
+        self.assertEqual(child_act["parent_key"], p_key)
+        # activity rolls up over its subtree: here parent mirrors its only child
+        self.assertEqual(parent_act["current"], 100_000)
+        self.assertEqual(child_act["current"], 100_000)
+        self.assertEqual(child_act["cap"], 60_000)
+        self.assertEqual(child_act["used"], 60_000)
+        self.assertEqual(child_act["remaining"], 40_000)
+
+        # budget-account subtree nests under the EXACT activity (the child),
+        # itself rolling up over the account tree.
+        acc_root_key = "a%s-b%s" % (act_child.id, self.parent.id)
+        acc_leaf_key = "a%s-b%s" % (act_child.id, self.child.id)
+        self.assertIn(acc_root_key, rows)
+        self.assertIn(acc_leaf_key, rows)
+        self.assertEqual(rows[acc_root_key]["parent_key"], c_key)
+        self.assertEqual(rows[acc_leaf_key]["parent_key"], acc_root_key)
+        leaf = rows[acc_leaf_key]
+        self.assertEqual(leaf["row_type"], "account")
+        self.assertEqual(leaf["account_id"], self.child.id)
+        self.assertEqual(leaf["activity_id"], act_child.id)
+        self.assertEqual(leaf["current"], 100_000)
+        self.assertEqual(leaf["cap"], 60_000)
+        self.assertEqual(leaf["remaining"], 40_000)
+        # exact-activity rule: accounts are NOT nested under the ancestor activity
+        self.assertNotIn("a%s-b%s" % (act_parent.id, self.child.id), rows)
+
+    def test_activity_breakdown_untagged_bucket(self):
+        """Lines with no activity fall into the sentinel root so totals still
+        reconcile with the flat report."""
+        self._post_appropriation(self.child, 50_000, "initial")
+        rows = self._breakdown()
+        self.assertIn("a0", rows)
+        sentinel = rows["a0"]
+        self.assertEqual(sentinel["row_type"], "activity")
+        self.assertEqual(sentinel["activity_id"], False)
+        self.assertEqual(sentinel["current"], 50_000)
+        # the account subtree still nests under the sentinel
+        self.assertIn("a0-b%s" % self.child.id, rows)
+        self.assertEqual(rows["a0-b%s" % self.child.id]["current"], 50_000)
+
     def test_fund_filter_applies_to_commitment_columns(self):
         """A fund filter must narrow the commitment columns (cap/used), not only
         the move-sourced ones — guards against silently-dropped non-stored dims."""

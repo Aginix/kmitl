@@ -100,6 +100,16 @@
             font-weight: 600;
         }
 
+        // Activity (breakdown) rows: tint the outer dimension hierarchy so it
+        // reads apart from the budget-account tree nested under it.
+        .o_bd_activity {
+            background: #eef4fb;
+
+            .o_bd_acc {
+                color: #1f4e79;
+            }
+        }
+
         .o_bd_caret {
             cursor: pointer;
             display: inline-block;

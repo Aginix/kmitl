@@ -55,6 +55,7 @@ export class BudgetDashboard extends Component {
             rows: [],
             collapsed: {},
             hideZero: true,
+            groupByActivity: false,
             loading: false,
         });
         onWillStart(this.onWillStart.bind(this));
@@ -136,7 +137,12 @@ export class BudgetDashboard extends Component {
             const data = await this.orm.call(
                 "budget.dashboard",
                 "get_dashboard_data",
-                [this.state.fiscalYearId, this.state.rootAccountId || false, this.effectiveFilters]
+                [
+                    this.state.fiscalYearId,
+                    this.state.rootAccountId || false,
+                    this.effectiveFilters,
+                    this.state.groupByActivity ? "activity_analytic_id" : false,
+                ]
             );
             this.state.rows = data.rows || [];
             this.state.hierOp = data.hier_op || "=";
@@ -217,30 +223,49 @@ export class BudgetDashboard extends Component {
         this.state.hideZero = !this.state.hideZero;
     }
 
+    // Toggle the activity breakdown: the budget-account tree is nested under the
+    // activity hierarchy. Drop stale collapse state (keys differ between modes).
+    toggleBreakdown() {
+        this.state.groupByActivity = !this.state.groupByActivity;
+        this.state.collapsed = {};
+        this.load();
+    }
+
     toggleRow(row) {
         if (row.has_children) {
-            this.state.collapsed[row.id] = !this.state.collapsed[row.id];
+            this.state.collapsed[row.key] = !this.state.collapsed[row.key];
         }
     }
 
-    get rowsById() {
-        const byId = {};
-        for (const row of this.state.rows) {
-            byId[row.id] = row;
+    rowClass(row) {
+        const parts = [];
+        if (row.has_children) {
+            parts.push("o_bd_group");
         }
-        return byId;
+        if (row.row_type === "activity") {
+            parts.push("o_bd_activity");
+        }
+        return parts.join(" ");
+    }
+
+    get rowsByKey() {
+        const byKey = {};
+        for (const row of this.state.rows) {
+            byKey[row.key] = row;
+        }
+        return byKey;
     }
 
     get visibleRows() {
-        const byId = this.rowsById;
+        const byKey = this.rowsByKey;
         const collapsed = this.state.collapsed;
         const hiddenByCollapse = (row) => {
-            let pid = row.parent_id;
-            while (pid) {
-                if (collapsed[pid]) {
+            let pk = row.parent_key;
+            while (pk) {
+                if (collapsed[pk]) {
                     return true;
                 }
-                pid = byId[pid] ? byId[pid].parent_id : false;
+                pk = byKey[pk] ? byKey[pk].parent_key : false;
             }
             return false;
         };
@@ -262,18 +287,62 @@ export class BudgetDashboard extends Component {
         });
     }
 
-    _dimDomain() {
+    _dimDomain(exclude) {
         const leaves = [];
         for (const [key, value] of Object.entries(this.effectiveFilters)) {
+            if (key === exclude) {
+                continue;
+            }
             leaves.push([key, key === SOURCE_KEY ? "=" : this.state.hierOp, value]);
         }
         return leaves;
     }
 
+    // Per-row account + activity constraints for a drill-down. In breakdown mode
+    // an account row is scoped to its *exact* activity; an activity group row
+    // covers its whole subtree (and every account under the chosen root).
+    _drillLeaves(row) {
+        if (!this.state.groupByActivity) {
+            return [["account_id", "child_of", row.id]];
+        }
+        if (row.row_type === "activity") {
+            // Group row: its whole activity subtree, scoped to the same expense
+            // accounts the report aggregates (the selected root, else every
+            // expense root — never the revenue side).
+            const leaves = [
+                row.activity_id
+                    ? ["activity_analytic_id", "child_of", row.activity_id]
+                    : ["activity_analytic_id", "=", false],
+            ];
+            const accountScope = this.state.rootAccountId
+                ? this.state.rootAccountId
+                : this.rootAccounts.map((r) => r.id);
+            if (!Array.isArray(accountScope) || accountScope.length) {
+                leaves.push(["account_id", "child_of", accountScope]);
+            }
+            return leaves;
+        }
+        // Account row: its account subtree for the exact tagged activity.
+        return [
+            ["account_id", "child_of", row.account_id],
+            row.activity_id
+                ? ["activity_analytic_id", "=", row.activity_id]
+                : ["activity_analytic_id", "=", false],
+        ];
+    }
+
+    _drillName(row) {
+        return `${row.code || ""} ${row.name || ""}`.trim();
+    }
+
+    get _drillExclude() {
+        return this.state.groupByActivity ? "activity_analytic_id" : undefined;
+    }
+
     drillBudget(row) {
         this.actionService.doAction({
             type: "ir.actions.act_window",
-            name: `${row.code} ${row.name}`,
+            name: this._drillName(row),
             res_model: "budget.move.line",
             views: [
                 [false, "list"],
@@ -282,9 +351,9 @@ export class BudgetDashboard extends Component {
             domain: [
                 ["parent_state", "=", "posted"],
                 ["account_fiscal_year_id", "=", this.state.fiscalYearId],
-                ["account_id", "child_of", row.id],
                 ["move_type", "in", ["appropriation", "entry"]],
-                ...this._dimDomain(),
+                ...this._drillLeaves(row),
+                ...this._dimDomain(this._drillExclude),
             ],
             target: "current",
         });
@@ -293,7 +362,7 @@ export class BudgetDashboard extends Component {
     drillUsage(row) {
         this.actionService.doAction({
             type: "ir.actions.act_window",
-            name: `${row.code} ${row.name}`,
+            name: this._drillName(row),
             res_model: "budget.commitment.line",
             views: [
                 [false, "list"],
@@ -303,8 +372,8 @@ export class BudgetDashboard extends Component {
                 ["state", "=", "posted"],
                 ["commitment_id.state", "in", ["reserved", "partial", "done"]],
                 ["account_fiscal_year_id", "=", this.state.fiscalYearId],
-                ["account_id", "child_of", row.id],
-                ...this._dimDomain(),
+                ...this._drillLeaves(row),
+                ...this._dimDomain(this._drillExclude),
             ],
             target: "current",
         });
