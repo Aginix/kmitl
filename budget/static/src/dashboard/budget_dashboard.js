@@ -19,6 +19,7 @@ const DEFAULT_SOURCE_CODE = "2";
 const BREAKDOWN_ORDER = [
     { key: "department_analytic_id", label: "แจกแจงตามส่วนงาน" },
     { key: "activity_analytic_id", label: "แจกแจงตามกิจกรรม" },
+    { key: "fund_analytic_id", label: "แจกแจงตามกองทุน" },
 ];
 // Fixed display order for the expense budget-category (root) dropdown.
 const ROOT_ORDER = ["51000", "52000", "53000", "54000", "55000", "07020"];
