@@ -287,6 +287,11 @@ class ProcurementPlan(models.Model):
             "department_analytic_id": self.department_analytic_id.id or False,
             "fund_analytic_id": self.fund_analytic_id.id or False,
             "source_analytic_id": self.source_analytic_id.id or False,
+            # The source appropriation is tagged with this plan's own
+            # procurement_plan dimension; the check must carry it too, otherwise
+            # the engine pins procurement_plan empty and excludes the very
+            # appropriation being drawn from (→ false "insufficient budget").
+            "procurement_plan_analytic_id": self.analytic_account_id.id or False,
         }
         allow_negative = (
             self.env["ir.config_parameter"]
