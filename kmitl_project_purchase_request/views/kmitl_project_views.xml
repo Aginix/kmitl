@@ -10,8 +10,10 @@
             <xpath expr="//header" position="inside">
                 <button name="action_create_purchase_request" type="object" string="สร้างใบขอซื้อ" class="btn-primary" attrs="{'invisible': [('can_create_purchase_request', '=', False)]}" />
             </xpath>
-            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+            <xpath expr="//sheet" position="inside">
                 <field name="can_create_purchase_request" invisible="1" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button name="action_view_purchase_requests" type="object" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('purchase_request_count', '=', 0)]}">
                     <field name="purchase_request_count" widget="statinfo" string="ใบ พ.1" />
                 </button>
