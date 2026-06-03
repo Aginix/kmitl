@@ -2328,8 +2328,11 @@ msgid "Reserve Budget"
 msgstr ""
 
 #. module: budget
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__reserved
 #: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
 msgid "Reserved"
 msgstr "จองงบประมาณ"
 
@@ -3376,3 +3379,59 @@ msgstr ""
 msgid ""
 "ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง (รายการ: %s)"
 msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Current Budget"
+msgstr "งบปัจจุบัน"
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Committed"
+msgstr "ผูกพัน"
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Disbursed"
+msgstr "เบิกจ่าย"
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Total Used"
+msgstr "รวมใช้"
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Remaining"
+msgstr "คงเหลือ"
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Loading budget status..."
+msgstr "กำลังโหลดสถานะงบประมาณ..."
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Unable to load budget status."
+msgstr "ไม่สามารถโหลดสถานะงบประมาณได้"
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/budget_status_card/budget_status_card.xml:0
+#, python-format
+msgid "Select a budget code to see its status"
+msgstr "เลือกรหัสงบประมาณเพื่อดูสถานะ"
