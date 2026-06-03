@@ -52,6 +52,10 @@
             </xpath>
 
             <xpath expr="//notebook" position="before">
+                <button name="action_open_reservation_picker" type="object"
+                    string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
+                    class="btn btn-primary mb-2" icon="fa-sitemap"
+                    attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
                 <group string="Budget Details">
                     <field name="is_budget_editable" invisible="1" />
                     <field name="analytic_distribution" invisible="1" />
@@ -61,10 +65,6 @@
                         readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
-                    <button name="action_open_reservation_picker" type="object"
-                        string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)" class="btn-link"
-                        icon="fa-sitemap"
-                        attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
                     <field name="budget_account_id" invisible="1" />
                     <field
                         name="activity_analytic_id"
