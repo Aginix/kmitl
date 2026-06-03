@@ -14,6 +14,12 @@ const HIER_DIMENSIONS = [
 // แหล่งเงิน is a flat, single, mandatory filter (defaults to source code "2").
 const SOURCE_KEY = "source_analytic_id";
 const DEFAULT_SOURCE_CODE = "2";
+// Dimensions the row axis can be broken down by, in fixed nesting order (outer
+// to inner); the budget-account tree always hangs off the innermost one.
+const BREAKDOWN_ORDER = [
+    { key: "activity_analytic_id", label: "แจกแจงตามกิจกรรม" },
+    { key: "department_analytic_id", label: "แจกแจงตามส่วนงาน" },
+];
 // Fixed display order for the expense budget-category (root) dropdown.
 const ROOT_ORDER = ["51000", "52000", "53000", "54000", "55000", "07020"];
 const VALUE_KEYS = [
@@ -32,6 +38,7 @@ export class BudgetDashboard extends Component {
         this.orm = useService("orm");
         this.actionService = useService("action");
         this.hierDimensions = HIER_DIMENSIONS;
+        this.breakdownOrder = BREAKDOWN_ORDER;
         this.fiscalYears = [];
         this.rootAccounts = [];
         this.sources = [];
@@ -55,7 +62,7 @@ export class BudgetDashboard extends Component {
             rows: [],
             collapsed: {},
             hideZero: true,
-            groupByActivity: false,
+            breakdownDims: { activity_analytic_id: false, department_analytic_id: false },
             loading: false,
         });
         onWillStart(this.onWillStart.bind(this));
@@ -127,6 +134,13 @@ export class BudgetDashboard extends Component {
         return filters;
     }
 
+    // The enabled breakdown dimensions in fixed nesting order (outer to inner).
+    get breakdownList() {
+        return this.breakdownOrder
+            .filter((dim) => this.state.breakdownDims[dim.key])
+            .map((dim) => dim.key);
+    }
+
     async load() {
         if (!this.state.fiscalYearId) {
             this.state.rows = [];
@@ -134,6 +148,7 @@ export class BudgetDashboard extends Component {
         }
         this.state.loading = true;
         try {
+            const breakdown = this.breakdownList;
             const data = await this.orm.call(
                 "budget.dashboard",
                 "get_dashboard_data",
@@ -141,7 +156,7 @@ export class BudgetDashboard extends Component {
                     this.state.fiscalYearId,
                     this.state.rootAccountId || false,
                     this.effectiveFilters,
-                    this.state.groupByActivity ? "activity_analytic_id" : false,
+                    breakdown.length ? breakdown : false,
                 ]
             );
             this.state.rows = data.rows || [];
@@ -223,10 +238,11 @@ export class BudgetDashboard extends Component {
         this.state.hideZero = !this.state.hideZero;
     }
 
-    // Toggle the activity breakdown: the budget-account tree is nested under the
-    // activity hierarchy. Drop stale collapse state (keys differ between modes).
-    toggleBreakdown() {
-        this.state.groupByActivity = !this.state.groupByActivity;
+    // Toggle one breakdown dimension: the budget-account tree is nested under the
+    // enabled dimensions (in fixed order). Drop stale collapse state (keys differ
+    // between breakdown shapes).
+    toggleBreakdown(dimKey) {
+        this.state.breakdownDims[dimKey] = !this.state.breakdownDims[dimKey];
         this.state.collapsed = {};
         this.load();
     }
@@ -242,8 +258,9 @@ export class BudgetDashboard extends Component {
         if (row.has_children) {
             parts.push("o_bd_group");
         }
-        if (row.row_type === "activity") {
-            parts.push("o_bd_activity");
+        // Dimension (breakdown) rows are tinted, with a shade per nesting depth.
+        if (row.row_type === "dim") {
+            parts.push("o_bd_dim", "o_bd_dim_" + (row.dim_level || 0));
         }
         return parts.join(" ");
     }
@@ -288,9 +305,10 @@ export class BudgetDashboard extends Component {
     }
 
     _dimDomain(exclude) {
+        const skip = new Set(exclude || []);
         const leaves = [];
         for (const [key, value] of Object.entries(this.effectiveFilters)) {
-            if (key === exclude) {
+            if (skip.has(key)) {
                 continue;
             }
             leaves.push([key, key === SOURCE_KEY ? "=" : this.state.hierOp, value]);
@@ -298,45 +316,50 @@ export class BudgetDashboard extends Component {
         return leaves;
     }
 
-    // Per-row account + activity constraints for a drill-down. In breakdown mode
-    // an account row is scoped to its *exact* activity; an activity group row
-    // covers its whole subtree (and every account under the chosen root).
+    // Per-row account + dimension constraints for a drill-down.
+    //   - account row: exact-match EVERY breakdown dimension, then its account
+    //     subtree (the exact tuple it sits under);
+    //   - dimension group row: exact-match the ancestor dimensions, child_of its
+    //     own dimension (its whole subtree), leave deeper dimensions free, and
+    //     scope accounts to the report's expense roots.
     _drillLeaves(row) {
-        if (!this.state.groupByActivity) {
+        const dims = this.breakdownList;
+        if (!dims.length) {
             return [["account_id", "child_of", row.id]];
         }
-        if (row.row_type === "activity") {
-            // Group row: its whole activity subtree, scoped to the same expense
-            // accounts the report aggregates (the selected root, else every
-            // expense root — never the revenue side).
-            const leaves = [
-                row.activity_id
-                    ? ["activity_analytic_id", "child_of", row.activity_id]
-                    : ["activity_analytic_id", "=", false],
-            ];
-            const accountScope = this.state.rootAccountId
-                ? this.state.rootAccountId
-                : this.rootAccounts.map((r) => r.id);
-            if (!Array.isArray(accountScope) || accountScope.length) {
-                leaves.push(["account_id", "child_of", accountScope]);
-            }
+        const dimId = (field) => (row.dims && row.dims[field]) || false;
+        if (row.row_type === "account") {
+            const leaves = dims.map((field) => [field, "=", dimId(field)]);
+            leaves.push(["account_id", "child_of", row.account_id]);
             return leaves;
         }
-        // Account row: its account subtree for the exact tagged activity.
-        return [
-            ["account_id", "child_of", row.account_id],
-            row.activity_id
-                ? ["activity_analytic_id", "=", row.activity_id]
-                : ["activity_analytic_id", "=", false],
-        ];
+        const ownLevel = row.dim_level || 0;
+        const leaves = [];
+        dims.forEach((field, i) => {
+            if (i < ownLevel) {
+                leaves.push([field, "=", dimId(field)]);
+            } else if (i === ownLevel) {
+                const id = dimId(field);
+                leaves.push(id ? [field, "child_of", id] : [field, "=", false]);
+            }
+        });
+        const accountScope = this.state.rootAccountId
+            ? this.state.rootAccountId
+            : this.rootAccounts.map((r) => r.id);
+        if (!Array.isArray(accountScope) || accountScope.length) {
+            leaves.push(["account_id", "child_of", accountScope]);
+        }
+        return leaves;
     }
 
     _drillName(row) {
         return `${row.code || ""} ${row.name || ""}`.trim();
     }
 
+    // Breakdown dimensions are supplied per-row by _drillLeaves, so drop them
+    // from the filter-bar domain to avoid a redundant/over-constraining leaf.
     get _drillExclude() {
-        return this.state.groupByActivity ? "activity_analytic_id" : undefined;
+        return this.breakdownList;
     }
 
     drillBudget(row) {

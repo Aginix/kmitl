@@ -4,10 +4,6 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { BudgetDashboard } from "@budget/dashboard/budget_dashboard";
 
-// The activity dimension field; in breakdown mode its value is sourced from the
-// picked row's hierarchy rather than the filter bar.
-const ACTIVITY_KEY = "activity_analytic_id";
-
 // Reservation picker (จองงบประมาณ): the monitoring dashboard made selectable.
 // Extends BudgetDashboard so it reuses the filter bar (dimensions chosen here),
 // the full columns, and the hierarchy. Clicking a row selects that budget code.
@@ -26,8 +22,12 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.accountDomain = ctx.account_domain || false;
         this.state.selectedId = false;
         this.state.amounts = {};
-        // Reservations pick a specific activity, so show the breakdown by default.
-        this.state.groupByActivity = true;
+        // A reservation pins a specific (activity, department) tuple, so show the
+        // full breakdown by default — the user picks the tuple from the hierarchy.
+        this.state.breakdownDims = {
+            activity_analytic_id: true,
+            department_analytic_id: true,
+        };
     }
 
     // Use the picker feed: same dashboard columns + budgetable/selectable flags.
@@ -42,6 +42,7 @@ export class BudgetReservationPicker extends BudgetDashboard {
         }
         this.state.loading = true;
         try {
+            const breakdown = this.breakdownList;
             const data = await this.orm.call(
                 "budget.dashboard",
                 "get_reservation_grid",
@@ -50,7 +51,7 @@ export class BudgetReservationPicker extends BudgetDashboard {
                     this.effectiveFilters,
                     this.state.rootAccountId || false,
                     this.accountDomain,
-                    this.state.groupByActivity ? "activity_analytic_id" : false,
+                    breakdown.length ? breakdown : false,
                 ]
             );
             this.state.rows = data.rows || [];
@@ -84,12 +85,13 @@ export class BudgetReservationPicker extends BudgetDashboard {
     }
 
     // Dimensions the reservation still needs (the filter bar must be complete).
-    // In the activity breakdown the activity is taken from the picked row, so it
-    // is no longer a required filter.
+    // Dimensions being broken down are taken from the picked row, so they are no
+    // longer required filters.
     get missingDimensions() {
+        const fromRow = new Set(this.breakdownList);
         const missing = [];
         for (const dim of this.hierDimensions) {
-            if (dim.key === ACTIVITY_KEY && this.state.groupByActivity) {
+            if (fromRow.has(dim.key)) {
                 continue;
             }
             if (!this.state.filters[dim.key]) {
@@ -128,13 +130,13 @@ export class BudgetReservationPicker extends BudgetDashboard {
         if (row.has_children) {
             parts.push("o_bd_group");
         }
-        // Activity (breakdown) group rows are display-only — tint them apart.
-        if (row.row_type === "activity") {
-            parts.push("o_bd_activity");
+        // Dimension (breakdown) group rows are display-only — tint them apart,
+        // shaded per nesting depth.
+        if (row.row_type === "dim") {
+            parts.push("o_bd_dim", "o_bd_dim_" + (row.dim_level || 0));
         }
         // Pointer affordance + selected highlight only on selectable rows; keyed
-        // by row.key so an activity row (key "a<id>") never matches a selected
-        // account row (key "a<id>-b<id>").
+        // by row.key so a dimension row never matches a selected account row.
         if (row.selectable) {
             parts.push("o_brp_selectable");
         }
@@ -153,12 +155,14 @@ export class BudgetReservationPicker extends BudgetDashboard {
         }
     }
 
-    // Distinct activities across the currently-picked rows (false = the
-    // "ไม่ระบุ" sentinel / no activity). A reservation maps to ONE activity, so
-    // confirm() enforces this resolves to a single real activity in breakdown
-    // mode; the rest of the engine (cap, obligate/consume) is header-level.
-    _pickedActivityIds() {
+    // The breakdown-dimension tuples across the currently-picked rows, as a
+    // signature -> {field: id} map. A reservation maps to ONE tuple; confirm()
+    // enforces a single, fully-specified tuple. The header-level engine (cap,
+    // obligate/consume copying the header distribution) cannot represent a
+    // reservation that spans several tuples.
+    _pickedTuples() {
         const byKey = this.rowsByKey;
+        const fields = this.breakdownList;
         const keys = this.selectMode
             ? this.state.selectedId
                 ? [this.state.selectedId]
@@ -166,14 +170,22 @@ export class BudgetReservationPicker extends BudgetDashboard {
             : Object.keys(this.state.amounts).filter(
                   (key) => this.state.amounts[key] > 0
               );
-        const ids = new Set();
+        const tuples = new Map();
         for (const key of keys) {
             const row = byKey[key];
-            if (row) {
-                ids.add(row.activity_id || false);
+            if (!row) {
+                continue;
             }
+            const tuple = {};
+            let sig = "";
+            for (const field of fields) {
+                const id = (row.dims && row.dims[field]) || false;
+                tuple[field] = id;
+                sig += field + ":" + id + "|";
+            }
+            tuples.set(sig, tuple);
         }
-        return ids;
+        return tuples;
     }
 
     get selections() {
@@ -199,24 +211,27 @@ export class BudgetReservationPicker extends BudgetDashboard {
         }));
     }
 
-    // The reservation's analytic_distribution: filter-bar dimensions, but with the
-    // ACTIVITY taken from the picked row's hierarchy in breakdown mode (the picked
-    // rows share one activity, enforced in confirm()), not the filter bar.
+    // The reservation's analytic_distribution: filter-bar dimensions, except that
+    // every dimension being broken down is taken from the single picked tuple
+    // (the picked rows share one tuple, enforced in confirm()), not the filter.
     get selectedDistribution() {
+        const fields = this.breakdownList;
+        const fromRow = new Set(fields);
         const dist = {};
         for (const [key, value] of Object.entries(this.effectiveFilters)) {
-            if (key === ACTIVITY_KEY || !value) {
+            if (fromRow.has(key) || !value) {
                 continue;
             }
             dist[value] = 100.0;
         }
-        let activityId = this.effectiveFilters[ACTIVITY_KEY];
-        if (this.state.groupByActivity) {
-            const ids = this._pickedActivityIds();
-            activityId = ids.size === 1 ? [...ids][0] : false;
-        }
-        if (activityId) {
-            dist[activityId] = 100.0;
+        const tuples = this._pickedTuples();
+        if (tuples.size === 1) {
+            const tuple = [...tuples.values()][0];
+            for (const field of fields) {
+                if (tuple[field]) {
+                    dist[tuple[field]] = 100.0;
+                }
+            }
         }
         return dist;
     }
@@ -233,22 +248,26 @@ export class BudgetReservationPicker extends BudgetDashboard {
             this.notification.add("กรุณาเลือกงบประมาณ", { type: "warning" });
             return;
         }
-        // In breakdown mode the activity comes from the picked rows; a reservation
-        // maps to a single activity, so reject the "ไม่ระบุ" sentinel and picks
-        // that span more than one activity (which the engine cannot represent).
-        if (this.state.groupByActivity) {
-            const ids = this._pickedActivityIds();
-            if (!ids.size || ids.has(false)) {
+        // The broken-down dimensions come from the picked rows; a reservation maps
+        // to a single fully-specified tuple, so reject picks under a "ไม่ระบุ"
+        // sentinel or spanning more than one tuple (the engine cannot represent
+        // a multi-tuple reservation).
+        const fields = this.breakdownList;
+        if (fields.length) {
+            const tuples = this._pickedTuples();
+            if (tuples.size > 1) {
                 this.notification.add(
-                    "กรุณาเลือกรหัสที่อยู่ภายใต้กิจกรรม (ไม่ใช่แถว 'ไม่ระบุ')",
+                    "เลือกรหัสได้ทีละชุดมิติ (กิจกรรม/ส่วนงานเดียวกัน) เท่านั้น",
                     { type: "warning" }
                 );
                 return;
             }
-            if (ids.size > 1) {
-                this.notification.add("เลือกรหัสได้ทีละกิจกรรมเท่านั้น", {
-                    type: "warning",
-                });
+            const tuple = tuples.size === 1 ? [...tuples.values()][0] : {};
+            if (!tuples.size || fields.some((field) => !tuple[field])) {
+                this.notification.add(
+                    "กรุณาเลือกรหัสที่อยู่ภายใต้กิจกรรม/ส่วนงาน (ไม่ใช่แถว 'ไม่ระบุ')",
+                    { type: "warning" }
+                );
                 return;
             }
         }

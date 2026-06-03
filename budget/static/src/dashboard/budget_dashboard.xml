@@ -47,12 +47,15 @@
                         />
                     </div>
                 </t>
-                <div class="o_bd_filter o_bd_check">
-                    <label>
-                        <input type="checkbox" t-att-checked="state.groupByActivity" t-on-change="toggleBreakdown"/>
-                        แจกแจงตามกิจกรรม
-                    </label>
-                </div>
+                <t t-foreach="breakdownOrder" t-as="bd" t-key="bd.key">
+                    <div class="o_bd_filter o_bd_check">
+                        <label>
+                            <input type="checkbox" t-att-checked="state.breakdownDims[bd.key]"
+                                   t-on-change="() => this.toggleBreakdown(bd.key)"/>
+                            <t t-esc="bd.label"/>
+                        </label>
+                    </div>
+                </t>
                 <div class="o_bd_filter o_bd_check">
                     <label>
                         <input type="checkbox" t-att-checked="state.hideZero" t-on-change="toggleHideZero"/>
