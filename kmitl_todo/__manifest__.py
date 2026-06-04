@@ -20,6 +20,7 @@
         "data/mail_activity_type_update.xml",
         "data/ir_cron.xml",
         "views/mail_activity_views.xml",
+        "views/kmitl_todo_log_views.xml",
         "views/procurement_plan_views.xml",
     ],
     "assets": {

@@ -32,6 +32,7 @@ export class TodoSystray extends Component {
             });
             this.state.todos = result.todos || [];
             this.state.totalCount = result.total_count || 0;
+            this.formViewId = result.form_view_id || false;
         } catch (error) {
             console.error("Failed to fetch Todo count:", error);
             this.state.todos = [];
@@ -40,14 +41,14 @@ export class TodoSystray extends Component {
     }
 
     onTodoClick(todo) {
-        // Jump to the source record — the load-bearing feature of the inbox.
+        // Open the Todo inside the Todo app (its form), not straight to the
+        // source — the form's "Open Source Document" button does that jump.
         this.action.doAction({
             type: "ir.actions.act_window",
             name: todo.summary || todo.res_name,
-            res_model: todo.res_model,
-            res_id: todo.res_id,
-            view_mode: "form",
-            views: [[false, "form"]],
+            res_model: "mail.activity",
+            res_id: todo.id,
+            views: [[this.formViewId, "form"]],
             target: "current",
         });
     }

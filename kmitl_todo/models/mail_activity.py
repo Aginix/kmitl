@@ -139,6 +139,13 @@ class MailActivity(models.Model):
         self.env["kmitl.todo.read"]._mark_read(self)
         return True
 
+    def _action_done(self, feedback=False, attachment_ids=None):
+        # Snapshot completed Todos to history before core unlinks them (ADR-0004).
+        self.env["kmitl.todo.log"]._log_completed(self.filtered("todo_category"))
+        return super()._action_done(
+            feedback=feedback, attachment_ids=attachment_ids
+        )
+
     # ------------------------------------------------------------------
     # Retention (ADR-0003): read FYI/Acknowledgement Todos are garbage
     # collected once older than a configurable threshold (default 180 days).

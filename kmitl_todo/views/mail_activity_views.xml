@@ -193,6 +193,13 @@
         </field>
     </record>
 
-    <menuitem id="menu_my_todos_root" name="Todos" action="action_my_todos" sequence="1" />
+    <menuitem id="menu_my_todos_root" name="Todos" sequence="1" />
+    <menuitem
+        id="menu_todo_inbox"
+        name="Inbox"
+        parent="menu_my_todos_root"
+        action="action_my_todos"
+        sequence="1"
+    />
 
 </odoo>

@@ -39,6 +39,12 @@ PoC scope (procurement_plan → พ.1)
 * **UC3 FYI** — when a พ.1 (``purchase.request.approval``) is approved or
   rejected (manual *or* Sarabun-auto path), the requester gets an FYI.
 
+The app has two menus: **Inbox** (open Todos) and **Completed** (history). A
+done activity is unlinked by core, so completed Todos are snapshotted into
+``kmitl.todo.log`` for the Completed view (ADR-0004). From the systray, clicking
+a Todo opens it inside the app; the form's *Open Source Document* button makes
+the jump to the originating record.
+
 Configuration
 =============
 

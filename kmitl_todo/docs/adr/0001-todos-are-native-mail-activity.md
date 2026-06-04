@@ -20,3 +20,4 @@ The unified "สิ่งที่ต้องทำ" inbox surfaces pending wor
 - `procurement.plan` inherits only `mail.thread` today; the PoC adds `mail.activity.mixin` to it.
 - The two existing custom inboxes (`sarabun.inbox`, `work.acceptance.inbox`) are left untouched for now; converging them onto activities is a later decision, not a v1 goal.
 - PoC scope is the `procurement_plan → พ.1` slice only; the pattern is meant to be copied to other modules afterward.
+- A done activity is unlinked by core, so there is no native completed-Todo history; completed Todos are snapshotted to a history table — see [ADR-0004](./0004-completed-todos-logged-to-history-table.md).

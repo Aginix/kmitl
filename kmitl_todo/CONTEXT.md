@@ -42,6 +42,10 @@ _Avoid_: treating Mark as Read as completing the work
 Optionally taking a group Todo as your own (sets the activity's `user_id`), so colleagues can see it is being handled.
 _Avoid_: assign (the system never force-assigns a group Todo to one person)
 
+**Completed Todo (history)**:
+A finished Todo, snapshotted into `kmitl.todo.log` at completion — the underlying `mail.activity` is deleted when done, so the log is the only record. Shown in the app's "Completed" view with who completed it and when.
+_Avoid_: archived activity (the activity is gone, not archived)
+
 **Next actor**:
 Who a Todo is for at a given state. Either a single `res.users` (personal Todo), or a *role-in-unit* group — everyone holding a Responsible Role who belongs to the source record's Operating Unit, resolved live (never a stored list). The whole inbox depends on this being determinable from the source record's data.
 _Avoid_: approver (the next actor is not always an approver — see the four Todo types)

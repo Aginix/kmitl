@@ -16,6 +16,7 @@ class ResUsers(models.Model):
         todos = Activity.search(domain, order="date_deadline asc, id desc", limit=limit)
         return {
             "total_count": total,
+            "form_view_id": self.env.ref("kmitl_todo.view_my_todo_form").id,
             "todos": [
                 {
                     "id": a.id,
