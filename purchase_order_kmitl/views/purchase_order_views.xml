@@ -30,7 +30,7 @@
                 />
             </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="department_id" />
+                <field name="department_analytic_id" />
             </xpath>
             <xpath
                 expr="//button[@name='action_rfq_send' and @states='draft']"
@@ -156,7 +156,7 @@
                             widget="res_partner_many2one"
                             context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
                         />
-                        <field name="department_id" readonly="1" />
+                        <field name="department_analytic_id" readonly="1" />
                         <field name="payment_type" readonly="1" />
                     </group>
                 </group>

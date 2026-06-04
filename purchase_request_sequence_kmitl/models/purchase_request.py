@@ -6,6 +6,15 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
 
+    def _get_department_from_distribution(self, analytic_distribution):
+        if not analytic_distribution:
+            return self.env["account.analytic.account"]
+        account_ids = [int(k) for k in analytic_distribution]
+        return self.env["account.analytic.account"].search(
+            [("id", "in", account_ids), ("root_plan_id.code", "=", "departments")],
+            limit=1,
+        )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -13,11 +22,13 @@ class PurchaseRequest(models.Model):
             fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
             fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
-            department = self.env["hr.department"].browse(vals.get("department_id"))
-            short_name = department.short_name
+            dept_account = self._get_department_from_distribution(
+                vals.get("analytic_distribution")
+            )
+            short_name = dept_account.code
 
             if not short_name:
-                raise ValidationError(_("Department short name is missing."))
+                raise ValidationError(_("Department analytic code is missing."))
 
             seq_code = f"purchase.request.{fiscal_year}.{short_name}"
 

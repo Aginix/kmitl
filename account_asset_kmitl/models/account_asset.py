@@ -56,12 +56,6 @@ class AccountAsset(models.Model):
         tracking=True
     )
 
-    department_id = fields.Many2one(
-        "hr.department",
-        string="Department",
-        tracking=True
-    )
-    
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",

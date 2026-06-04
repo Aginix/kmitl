@@ -16,9 +16,10 @@ class ConstructionProject(models.Model):
 
     ref = fields.Char(string="Reference", default="/", readonly=True, copy=False)
 
-    department_id = fields.Many2one(
-        comodel_name="hr.department",
+    department_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
         string="Department",
+        domain=[("root_plan_id.code", "=", "departments")],
         states=READONLY_STATES,
     )
 

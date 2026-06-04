@@ -81,7 +81,7 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
         }
         source_of_asset_name = source_of_asset_labels.get(wizard.source_of_asset, "ทั้งหมด")
         source_name = wizard.source_analytic_id.name if wizard.source_analytic_id else "ทั้งหมด"
-        dept_name = wizard.department_id.complete_name if wizard.department_id else "ทุกหน่วยงาน"
+        dept_name = wizard.department_analytic_id.complete_name if wizard.department_analytic_id else "ทุกหน่วยงาน"
 
         info_rows = [
             f"ประเภท: {profile_name}",
@@ -203,7 +203,7 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
             sheet.write(row, 8, depr_before, num_fmt)
             sheet.write(row, 9, depr_this_month, num_fmt)
             sheet.write(row, 10, depr_carry, num_fmt)
-            sheet.write(row, 11, asset.department_id.complete_name if asset.department_id else "", data_fmt)
+            sheet.write(row, 11, asset.department_analytic_id.complete_name if asset.department_analytic_id else "", data_fmt)
 
             total_purchase += asset.purchase_value or 0.0
             total_depr_year += depr_year

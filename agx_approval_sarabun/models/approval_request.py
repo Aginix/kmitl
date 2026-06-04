@@ -21,6 +21,21 @@ class ApprovalRequest(models.Model):
         copy=False,
     )
 
+    master_department_name = fields.Char(
+        compute="_compute_master_department_name",
+    )
+
+    @api.depends("department_analytic_id")
+    def _compute_master_department_name(self):
+        for rec in self:
+            dept = rec.department_analytic_id
+            if dept and dept.parent_path:
+                root_id = int(dept.parent_path.split("/")[0])
+                root = self.env["account.analytic.account"].browse(root_id)
+                rec.master_department_name = root.name
+            else:
+                rec.master_department_name = False
+
     def _compute_access_url(self):
         """Compute the access URL for portal access."""
         super()._compute_access_url()

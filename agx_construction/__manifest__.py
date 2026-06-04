@@ -5,7 +5,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "license": "LGPL-3",
-    "depends": ["base", "hr", "mail", "purchase_request_sarabun"],
+    "depends": ["base", "mail", "purchase_request_sarabun", "account_analytic_plan_code"],
     "data": [
         "security/ir.model.access.csv",
         "wizard/construction_project_end_wizard_views.xml",

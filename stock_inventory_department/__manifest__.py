@@ -6,7 +6,7 @@
      "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['stock_inventory'],
+    'depends': ['stock_inventory', 'account_analytic_plan_code'],
     "data": [
         "views/stock_inventory_views.xml"
     ],

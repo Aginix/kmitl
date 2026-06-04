@@ -31,6 +31,6 @@ class PurchaseOrder(models.Model):
             "default_purchase_id": self.id,
             "create": True,
             "default_account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "default_department_id": self.department_id.id,
+            "default_department_analytic_id": self.department_analytic_id.id,
         }
         return action

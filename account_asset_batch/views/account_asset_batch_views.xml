@@ -10,7 +10,7 @@
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="contract_number" optional="show" />
                 <field name="purchase_id" optional="show" />
-                <field name="department_id" optional="hide" />
+                <field name="department_analytic_id" optional="hide" />
                 <field name="operating_unit_id" optional="hide" />
                 <field
                     name="state"
@@ -111,7 +111,7 @@
                         />
                         <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                         <field
-                            name="department_id"
+                            name="department_analytic_id"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field name="company_id" groups="base.group_multi_company" />

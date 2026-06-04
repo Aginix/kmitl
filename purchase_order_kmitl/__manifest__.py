@@ -11,7 +11,7 @@
         "purchase_invoice_plan_kmitl",
         "purchase_invoice_plan",
         "account_fiscal_year",
-        "hr",
+        "account_analytic_plan_code",
         "purchase_operating_unit",
         "purchase_request_department",
         "purchase_order_link_purchase_request",

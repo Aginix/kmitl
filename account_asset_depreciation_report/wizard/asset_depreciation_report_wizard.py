@@ -37,9 +37,10 @@ class AssetDepreciationReportWizard(models.TransientModel):
         string="Funding Source",
         domain=[("root_plan_id.code", "=", "sources")],
     )
-    department_id = fields.Many2one(
-        "hr.department",
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
         string="Department",
+        domain=[("root_plan_id.code", "=", "departments")],
     )
     data = fields.Binary(string="Report", readonly=True)
     filename = fields.Char(string="Filename", readonly=True)
@@ -60,8 +61,8 @@ class AssetDepreciationReportWizard(models.TransientModel):
         domain = [("state", "in", ["open", "close"])]
         if self.profile_id:
             domain.append(("profile_id", "=", self.profile_id.id))
-        if self.department_id:
-            domain.append(("department_id", "=", self.department_id.id))
+        if self.department_analytic_id:
+            domain.append(("department_analytic_id", "=", self.department_analytic_id.id))
         if self.source_analytic_id:
             domain.append(("source_analytic_id", "=", self.source_analytic_id.id))
 

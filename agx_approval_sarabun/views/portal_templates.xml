@@ -47,7 +47,7 @@
                                 <span t-field="req.date"/>
                             </td>
                             <td>
-                                <span t-field="req.department_id"/>
+                                <span t-field="req.department_analytic_id"/>
                             </td>
                             <td>
                                 <span t-field="req.category_id"/>

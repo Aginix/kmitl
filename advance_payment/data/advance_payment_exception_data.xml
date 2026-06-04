@@ -33,17 +33,6 @@
         <field name="active" eval="True"/>
     </record>
 
-    <record id="excep_missing_department" model="exception.rule">
-        <field name="name">ไม่ได้ระบุหน่วยงาน</field>
-        <field name="description">กรุณาระบุหน่วยงานก่อนส่งขออนุมัติ</field>
-        <field name="sequence">31</field>
-        <field name="model">advance.payment</field>
-        <field name="exception_type">by_domain</field>
-        <field name="domain">[('department_id', '=', False)]</field>
-        <field name="is_blocking" eval="True"/>
-        <field name="active" eval="True"/>
-    </record>
-
     <record id="excep_missing_analytic" model="exception.rule">
         <field name="name">ไม่ได้ระบุมิติทางบัญชีครบถ้วน</field>
         <field name="description">กรุณาระบุส่วนงาน แหล่งเงิน กองทุน และด้าน/แผนงาน/กิจกรรม ให้ครบถ้วน</field>

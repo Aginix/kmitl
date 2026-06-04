@@ -95,7 +95,7 @@
                             />
                             <span class="ms-2">สังกัด</span>
                             <span
-                                t-field="o.department_id"
+                                t-field="o.department_analytic_id"
                                 class="fw-bolder text-decoration-underline"
                             />
                         </p>
@@ -269,7 +269,7 @@
                 <div>ลงชื่อ <t t-out="'.' * 80" /></div>
                 <div class="text-center">( <span t-field="o.owner_id" /> )</div>
                 <div class="text-center">
-                    คณบดี <span t-out="o.department_id.master_department_id.name" />
+                    คณบดี <span t-out="o.master_department_name" />
                 </div>
             </div>
         </div>

@@ -28,7 +28,6 @@ class AdvancePayment(models.Model):
         "bank_id",
         "reference",
         "requested_by",
-        "department_id",
     }
 
     READONLY_STATES = {
@@ -76,13 +75,6 @@ class AdvancePayment(models.Model):
         related="requested_by.partner_id",
         string="Requestor Partner",
         store=False,
-    )
-
-    department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Department",
-        default=lambda self: self.env.user.employee_id.department_id,
-        states=READONLY_STATES,
     )
 
     is_reference_visible = fields.Boolean(
@@ -299,8 +291,6 @@ class AdvancePayment(models.Model):
     def _onchange_requested_by(self):
         if self.bank_id and self.bank_id.partner_id != self.requested_by.partner_id:
             self.bank_id = False
-        if self.requested_by:
-            self.department_id = self.requested_by.employee_id.department_id
 
     @api.depends("analytic_distribution")
     def _compute_analytic_ids(self):
