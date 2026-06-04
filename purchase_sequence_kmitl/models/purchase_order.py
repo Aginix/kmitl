@@ -6,14 +6,18 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    def _get_department_from_distribution(self, analytic_distribution):
-        if not analytic_distribution:
-            return self.env["account.analytic.account"]
-        account_ids = [int(k) for k in analytic_distribution]
-        return self.env["account.analytic.account"].search(
-            [("id", "in", account_ids), ("root_plan_id.code", "=", "departments")],
-            limit=1,
-        )
+    def _get_department_from_distribution(self, analytic_distribution, department_analytic_id=None):
+        if analytic_distribution:
+            account_ids = [int(k) for k in analytic_distribution]
+            account = self.env["account.analytic.account"].search(
+                [("id", "in", account_ids), ("root_plan_id.code", "=", "departments")],
+                limit=1,
+            )
+            if account:
+                return account
+        if department_analytic_id:
+            return self.env["account.analytic.account"].browse(department_analytic_id)
+        return self.env["account.analytic.account"]
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -23,7 +27,8 @@ class PurchaseOrder(models.Model):
             fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
             dept_account = self._get_department_from_distribution(
-                vals.get("analytic_distribution")
+                vals.get("analytic_distribution"),
+                vals.get("department_analytic_id"),
             )
             short_name = dept_account.code
 
