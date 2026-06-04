@@ -26,6 +26,7 @@
     "assets": {
         "web.assets_backend": [
             "kmitl_todo/static/src/js/todo_systray.esm.js",
+            "kmitl_todo/static/src/js/hide_native_activity_systray.esm.js",
             "kmitl_todo/static/src/scss/todo_systray.scss",
             "kmitl_todo/static/src/xml/todo_systray.xml",
         ],

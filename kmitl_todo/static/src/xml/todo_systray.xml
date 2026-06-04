@@ -11,37 +11,44 @@
                     </t>
                 </span>
             </t>
-            <div class="o_kmitl_todo_systray" style="min-width: 340px;">
+            <div class="o_kmitl_todo_systray" style="min-width: 380px;">
                 <div class="o_kmitl_todo_systray_header d-flex align-items-center px-3 py-2 border-bottom">
                     <span class="fw-bold">Todos</span>
                     <span class="ms-auto badge bg-primary text-white" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
                 </div>
-                <t t-if="state.todos.length === 0">
+                <t t-if="state.groups.length === 0">
                     <div class="text-muted text-center py-4">
                         <i class="fa fa-check-circle fa-2x mb-2 d-block"/>
                         <span>No pending todos</span>
                     </div>
                 </t>
                 <t t-else="">
-                    <div class="o_kmitl_todo_systray_items" style="max-height: 360px; overflow-y: auto;">
-                        <t t-foreach="state.todos" t-as="todo" t-key="todo.id">
-                            <DropdownItem onSelected="() => this.onTodoClick(todo)" class="'o_kmitl_todo_item px-3 py-2'">
-                                <div class="d-flex align-items-start">
-                                    <i t-att-class="'fa me-2 mt-1 text-muted ' + todo.icon"/>
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <div class="fw-semibold text-truncate" t-esc="todo.summary"/>
-                                        <div class="small text-muted d-flex">
-                                            <span class="text-truncate" t-esc="todo.res_name"/>
-                                            <t t-if="todo.date">
-                                                <span class="mx-1">•</span>
-                                                <span t-esc="todo.date"/>
-                                            </t>
+                    <div class="o_kmitl_todo_systray_items" style="max-height: 420px; overflow-y: auto;">
+                        <t t-foreach="state.groups" t-as="group" t-key="group.model">
+                            <div class="o_kmitl_todo_group_header d-flex align-items-center px-3 py-1">
+                                <img t-if="group.icon" t-att-src="group.icon" class="o_kmitl_todo_group_icon me-2" alt=""/>
+                                <span class="fw-semibold text-truncate" t-esc="group.name"/>
+                                <span class="ms-auto badge rounded-pill bg-secondary" t-esc="group.count"/>
+                            </div>
+                            <t t-foreach="group.todos" t-as="todo" t-key="todo.id">
+                                <DropdownItem onSelected="() => this.onTodoClick(todo)" class="'o_kmitl_todo_item px-3 py-2'">
+                                    <div class="d-flex align-items-start">
+                                        <i t-att-class="'fa me-2 mt-1 text-muted ' + todo.icon"/>
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <div class="text-truncate" t-esc="todo.summary"/>
+                                            <div class="small text-muted d-flex">
+                                                <span class="text-truncate" t-esc="todo.res_name"/>
+                                                <t t-if="todo.date">
+                                                    <span class="mx-1">•</span>
+                                                    <span t-esc="todo.date"/>
+                                                </t>
+                                            </div>
                                         </div>
+                                        <span t-if="todo.state == 'overdue'" class="badge bg-danger ms-1">Overdue</span>
+                                        <span t-elif="todo.state == 'today'" class="badge bg-warning ms-1">Today</span>
                                     </div>
-                                    <span t-if="todo.state == 'overdue'" class="badge bg-danger ms-1">Overdue</span>
-                                    <span t-elif="todo.state == 'today'" class="badge bg-warning ms-1">Today</span>
-                                </div>
-                            </DropdownItem>
+                                </DropdownItem>
+                            </t>
                         </t>
                     </div>
                     <div class="border-top px-3 py-2 text-center">

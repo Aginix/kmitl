@@ -45,6 +45,12 @@ done activity is unlinked by core, so completed Todos are snapshotted into
 a Todo opens it inside the app; the form's *Open Source Document* button makes
 the jump to the originating record.
 
+The systray bell groups open Todos by source model (native Activities-menu
+style) with per-model icons and counts. It **replaces** Odoo's native
+Activities menu (removed via a small service), because that menu is
+``user_id``-only and cannot surface role-in-unit group Todos — the unified bell
+covers personal *and* group Todos in one place.
+
 Configuration
 =============
 

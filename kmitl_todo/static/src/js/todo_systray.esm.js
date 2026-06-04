@@ -13,9 +13,10 @@ export class TodoSystray extends Component {
         this.action = useService("action");
 
         this.state = useState({
-            todos: [],
+            groups: [],
             totalCount: 0,
         });
+        this.formViewId = false;
 
         onWillStart(async () => {
             await this.fetchData();
@@ -30,12 +31,12 @@ export class TodoSystray extends Component {
                 args: [],
                 kwargs: {},
             });
-            this.state.todos = result.todos || [];
+            this.state.groups = result.groups || [];
             this.state.totalCount = result.total_count || 0;
             this.formViewId = result.form_view_id || false;
         } catch (error) {
             console.error("Failed to fetch Todo count:", error);
-            this.state.todos = [];
+            this.state.groups = [];
             this.state.totalCount = 0;
         }
     }
