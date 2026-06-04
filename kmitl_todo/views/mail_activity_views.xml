@@ -19,7 +19,7 @@
                 <field name="todo_category" optional="show" />
                 <field name="summary" string="Subject" />
                 <field name="res_name" string="Source" />
-                <field name="res_model" string="App" optional="show" />
+                <field name="res_model_id" string="App" optional="show" />
                 <field name="operating_unit_id" string="Operating Unit" optional="show" />
                 <field name="responsible_role_id" optional="hide" />
                 <field name="user_id" optional="hide" />
@@ -74,7 +74,7 @@
                             <field name="todo_category" />
                             <field name="activity_type_id" />
                             <field name="res_name" string="Source Document" />
-                            <field name="res_model" string="Model" />
+                            <field name="res_model_id" string="App" />
                         </group>
                         <group>
                             <field name="date_deadline" />
@@ -147,7 +147,7 @@
                     <filter
                         name="group_model"
                         string="Source App"
-                        context="{'group_by': 'res_model'}"
+                        context="{'group_by': 'res_model_id'}"
                     />
                     <filter
                         name="group_ou"

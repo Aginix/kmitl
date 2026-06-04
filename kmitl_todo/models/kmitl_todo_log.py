@@ -18,6 +18,7 @@ class KmitlTodoLog(models.Model):
     activity_type_id = fields.Many2one("mail.activity.type", string="Activity Type")
     todo_category = fields.Selection(TODO_CATEGORIES, string="Category", index=True)
     summary = fields.Char()
+    res_model_id = fields.Many2one("ir.model", string="App")
     res_model = fields.Char(string="Source Model", index=True)
     res_id = fields.Many2oneReference(string="Source ID", model_field="res_model")
     res_name = fields.Char(string="Source")
@@ -39,6 +40,7 @@ class KmitlTodoLog(models.Model):
                 "summary": a.summary
                 or a.activity_type_id.display_name
                 or a.res_name,
+                "res_model_id": a.res_model_id.id,
                 "res_model": a.res_model,
                 "res_id": a.res_id,
                 "res_name": a.res_name,

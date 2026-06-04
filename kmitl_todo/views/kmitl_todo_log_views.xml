@@ -11,7 +11,7 @@
                 <field name="todo_category" />
                 <field name="summary" string="Subject" />
                 <field name="res_name" string="Source" />
-                <field name="res_model" string="App" optional="show" />
+                <field name="res_model_id" string="App" optional="show" />
                 <field name="operating_unit_id" optional="show" />
                 <field name="completed_by" />
                 <field name="user_id" optional="hide" />
@@ -56,7 +56,7 @@
                     <filter
                         name="group_model"
                         string="Source App"
-                        context="{'group_by': 'res_model'}"
+                        context="{'group_by': 'res_model_id'}"
                     />
                     <filter
                         name="group_ou"
