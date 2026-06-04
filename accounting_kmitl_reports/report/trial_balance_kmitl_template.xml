@@ -15,11 +15,15 @@
                                 />
                             </td>
                             <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
-                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
-                                <div style="font-size: 12pt; font-style: italic; margin-bottom: 12px;">King Mongkut's Institute of Technology Ladkrabang</div>
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">
+                                    <t t-out="res_company.display_name" />
+                                </div>
                                 <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">Trial Balance</div>
                                 <div style="font-size: 12pt;">
-                                    ตั้งแต่ <t t-out="kmitl_date_from_th" /> ถึง <t t-out="kmitl_date_to_th" />
+                                    <span>From</span>
+                                    <t t-out="date_from_label" />
+                                    <span>to</span>
+                                    <t t-out="date_to_label" />
                                 </div>
                             </td>
                             <td style="width: 70px; border: none;" />
@@ -36,19 +40,20 @@
                         table.kmitl-trial-balance {
                             width: 100%;
                             border-collapse: collapse;
-                            font-size: 11pt;
+                            font-size: 9pt;
                         }
                         table.kmitl-trial-balance th,
                         table.kmitl-trial-balance td {
                             border: 1px solid #000;
-                            padding: 4px 6px;
+                            padding: 3px 5px;
                         }
                         table.kmitl-trial-balance thead th {
                             background-color: #f0f0f0;
                             text-align: center;
                             font-weight: bold;
                         }
-                        table.kmitl-trial-balance td.text-right {
+                        table.kmitl-trial-balance td.text-right,
+                        table.kmitl-trial-balance th.text-right {
                             text-align: right;
                         }
                         table.kmitl-trial-balance tfoot td {
@@ -59,42 +64,51 @@
                     <table class="kmitl-trial-balance">
                         <thead style="display: table-header-group;">
                             <tr>
-                                <th rowspan="2" style="width: 28%;">Account title</th>
-                                <th colspan="2">Opening Balance</th>
-                                <th colspan="2">During the year</th>
-                                <th colspan="2">Balance</th>
+                                <th rowspan="2" style="width: 22%;">Account</th>
+                                <th colspan="3">Opening Balance</th>
+                                <th colspan="3">During the year</th>
+                                <th colspan="3">Ending Balance</th>
                             </tr>
                             <tr>
-                                <th>Debit</th>
-                                <th>Credit</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
+                                <th class="text-right">Debit</th>
+                                <th class="text-right">Credit</th>
+                                <th class="text-right">Balance</th>
+                                <th class="text-right">Debit</th>
+                                <th class="text-right">Credit</th>
+                                <th class="text-right">Balance</th>
+                                <th class="text-right">Debit</th>
+                                <th class="text-right">Credit</th>
+                                <th class="text-right">Balance</th>
                             </tr>
                         </thead>
                         <tfoot style="display: table-footer-group;">
                             <tr>
-                                <td>Remains</td>
-                                <td class="text-right" t-out="kmitl_zero" />
-                                <td class="text-right" t-out="kmitl_zero" />
-                                <td class="text-right" t-out="kmitl_total_debit" />
-                                <td class="text-right" t-out="kmitl_total_credit" />
-                                <td class="text-right" t-out="kmitl_zero" />
-                                <td class="text-right" t-out="kmitl_zero" />
+                                <td>Total</td>
+                                <td class="text-right" t-out="format_amount(totals['opening_debit'])" />
+                                <td class="text-right" t-out="format_amount(totals['opening_credit'])" />
+                                <td class="text-right" t-out="format_amount(totals['opening_balance'])" />
+                                <td class="text-right" t-out="format_amount(totals['period_debit'])" />
+                                <td class="text-right" t-out="format_amount(totals['period_credit'])" />
+                                <td class="text-right" t-out="format_amount(totals['period_balance'])" />
+                                <td class="text-right" t-out="format_amount(totals['ending_debit'])" />
+                                <td class="text-right" t-out="format_amount(totals['ending_credit'])" />
+                                <td class="text-right" t-out="format_amount(totals['ending_balance'])" />
                             </tr>
                         </tfoot>
                         <tbody>
-                            <tr t-foreach="kmitl_rows" t-as="row">
+                            <tr t-foreach="rows" t-as="row">
                                 <td>
                                     <t t-out="row['code']" /> - <t t-out="row['name']" />
                                 </td>
-                                <td class="text-right" t-out="row['opening_debit']" />
-                                <td class="text-right" t-out="row['opening_credit']" />
-                                <td class="text-right" t-out="row['debit']" />
-                                <td class="text-right" t-out="row['credit']" />
-                                <td class="text-right" t-out="row['ending_debit']" />
-                                <td class="text-right" t-out="row['ending_credit']" />
+                                <td class="text-right" t-out="format_amount(row['opening_debit'])" />
+                                <td class="text-right" t-out="format_amount(row['opening_credit'])" />
+                                <td class="text-right" t-out="format_amount(row['opening_balance'])" />
+                                <td class="text-right" t-out="format_amount(row['period_debit'])" />
+                                <td class="text-right" t-out="format_amount(row['period_credit'])" />
+                                <td class="text-right" t-out="format_amount(row['period_balance'])" />
+                                <td class="text-right" t-out="format_amount(row['ending_debit'])" />
+                                <td class="text-right" t-out="format_amount(row['ending_credit'])" />
+                                <td class="text-right" t-out="format_amount(row['ending_balance'])" />
                             </tr>
                         </tbody>
                     </table>
