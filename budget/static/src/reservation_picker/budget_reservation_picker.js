@@ -91,28 +91,21 @@ export class BudgetReservationPicker extends BudgetDashboard {
         // Scope the ประเภทงบ (budget category) dropdown to the categories that
         // actually contain a code the host may pick (its account_domain), so a
         // host never lands on — nor can switch to — a category with nothing
-        // selectable. With no account_domain (e.g. budget.commitment) every
+        // selectable. Root resolution stays server-side (parent_path is a budget
+        // backend concern). With no account_domain (e.g. budget.commitment) every
         // expense category stays, as before.
         if (this.accountDomain) {
-            const accounts = await this.orm.searchRead(
-                "budget.account",
-                this.accountDomain,
-                ["parent_path"]
-            );
             const rootIds = new Set(
-                accounts
-                    .map((a) => parseInt((a.parent_path || "").split("/")[0]))
-                    .filter((id) => id)
+                await this.orm.call("budget.dashboard", "get_selectable_roots", [
+                    this.accountDomain,
+                ])
             );
             this.rootAccounts = this.rootAccounts.filter((acc) =>
                 rootIds.has(acc.id)
             );
             // A context-provided root that is no longer offered is dropped so the
             // default below re-picks a category that has something to select.
-            if (
-                this.state.rootAccountId &&
-                !this.rootAccounts.some((acc) => acc.id === this.state.rootAccountId)
-            ) {
+            if (this.state.rootAccountId && !rootIds.has(this.state.rootAccountId)) {
                 this.state.rootAccountId = false;
             }
         }
