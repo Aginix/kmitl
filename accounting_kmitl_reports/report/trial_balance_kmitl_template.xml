@@ -65,9 +65,9 @@
                         <thead style="display: table-header-group;">
                             <tr>
                                 <th rowspan="2" style="width: 22%;">Account</th>
-                                <th colspan="3">Opening Balance</th>
-                                <th colspan="3">During the year</th>
-                                <th colspan="3">Ending Balance</th>
+                                <th colspan="3">Opening</th>
+                                <th colspan="3">During Period</th>
+                                <th colspan="3">Ending</th>
                             </tr>
                             <tr>
                                 <th class="text-right">Debit</th>
