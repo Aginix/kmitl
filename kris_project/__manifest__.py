@@ -13,6 +13,7 @@
         "base_exception",
         "tracking_manager",
         "account_analytic_kmitl",
+        "hr_employee_name_detail_kmitl",
     ],
     "data": [
         "data/sequence.xml",

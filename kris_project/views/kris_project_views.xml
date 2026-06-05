@@ -170,6 +170,7 @@
                             <field
                                 name="manager_id"
                                 required="1"
+                                widget="employee_detail_many2one"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
 
