@@ -37,6 +37,7 @@ class KrisProjectAllocationLine(models.Model):
         comodel_name="account.analytic.account",
         string="Department Budget Code",
         domain=[("root_plan_id.code", "=", "departments")],
+        index=True,
     )
     is_locked = fields.Boolean(string="ห้ามแก้ไข")
     allocation_pct = fields.Float(

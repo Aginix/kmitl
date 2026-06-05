@@ -8,3 +8,6 @@ from . import kris_project_receipt
 from . import kris_project_receipt_allocation
 from . import kris_project_allocation
 from . import kris_project_dashboard
+from . import kris_project_installment_report
+from . import kris_project_receipt_report
+from . import kris_project_allocation_report

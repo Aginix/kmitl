@@ -32,6 +32,7 @@
         "views/kris_project_allocation_views.xml",
         "views/kris_project_receipt_wizard_views.xml",
         "views/kris_project_views.xml",
+        "views/kris_project_report_views.xml",
         "views/kris_project_dashboard_action.xml",
         "views/kris_project_menus.xml",
     ],
