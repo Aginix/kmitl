@@ -47,6 +47,7 @@ class MailActivity(models.Model):
     todo_category = fields.Selection(
         related="activity_type_id.todo_category",
         store=True,
+        index=True,
         readonly=True,
     )
     # Group Todos have no single assignee (ADR-0002).
@@ -72,12 +73,13 @@ class MailActivity(models.Model):
     # is_my_todo  (the shared inbox domain — ADR-0002)
     # ------------------------------------------------------------------
     def _my_todo_domain(self):
-        """Domain on mail.activity selecting Todos addressed to the current user.
-
-        ``role_ids`` is restricted to ERP managers, so it is read through sudo.
+        """Domain on mail.activity selecting Todos addressed to the current user:
+        personal (user_id) Todos, plus group Todos for a role held in one of the
+        user's operating units that are unclaimed or claimed by this user.
+        A group Todo claimed by someone else (Claim) drops out of my inbox.
         """
         user = self.env.user
-        role_ids = user.sudo().role_ids.ids
+        role_ids = user.kmitl_role_ids.ids
         ou_ids = user.operating_unit_ids.ids
         personal = [("user_id", "=", user.id)]
         if role_ids and ou_ids:
@@ -85,8 +87,10 @@ class MailActivity(models.Model):
                 "|",
                 ("user_id", "=", user.id),
                 "&",
+                "&",
                 ("responsible_role_id", "in", role_ids),
                 ("operating_unit_id", "in", ou_ids),
+                ("user_id", "in", [False, user.id]),
             ]
         return personal
 
@@ -106,6 +110,7 @@ class MailActivity(models.Model):
     # ------------------------------------------------------------------
     # is_read_by_me  (per-user read state — ADR-0003)
     # ------------------------------------------------------------------
+    @api.depends("read_ids")
     @api.depends_context("uid")
     def _compute_is_read_by_me(self):
         read = (
@@ -135,13 +140,33 @@ class MailActivity(models.Model):
     # Actions
     # ------------------------------------------------------------------
     def action_mark_read(self):
-        """Dismiss these Todos for the current user only (ADR-0003)."""
-        self.env["kmitl.todo.read"]._mark_read(self)
+        """Dismiss FYI/Acknowledgement Todos for the current user only (ADR-0003).
+
+        Category-gated server-side so the rule holds beyond the view's attrs.
+        """
+        self.env["kmitl.todo.read"]._mark_read(
+            self.filtered(lambda a: a.todo_category in READABLE_CATEGORIES)
+        )
         return True
 
     def action_mark_unread(self):
-        """Undo a dismissal — bring these Todos back for the current user."""
-        self.env["kmitl.todo.read"]._mark_unread(self)
+        """Undo a dismissal — bring FYI/Acknowledgement Todos back for me."""
+        self.env["kmitl.todo.read"]._mark_unread(
+            self.filtered(lambda a: a.todo_category in READABLE_CATEGORIES)
+        )
+        return True
+
+    def action_claim(self):
+        """รับเรื่อง — take an unclaimed group Todo as your own so colleagues
+        see it is being handled (and it leaves their inbox)."""
+        self.filtered(lambda a: a.responsible_role_id and not a.user_id).write(
+            {"user_id": self.env.uid}
+        )
+        return True
+
+    def action_unclaim(self):
+        """Release a claimed group Todo back to the role-in-unit."""
+        self.filtered("responsible_role_id").write({"user_id": False})
         return True
 
     def _action_done(self, feedback=False, attachment_ids=None):
@@ -163,9 +188,13 @@ class MailActivity(models.Model):
             .get_param("kmitl_todo.fyi_retention_days", 180)
         )
         threshold = fields.Datetime.now() - timedelta(days=days)
+        # Personal Todos only: a group Todo is one shared record, so one member's
+        # read receipt must not delete it for the whole group (ADR-0003). Group
+        # FYI/Ack are not auto-GC'd on first-reader-read.
         stale = self.search(
             [
                 ("todo_category", "in", list(READABLE_CATEGORIES)),
+                ("user_id", "!=", False),
                 ("create_date", "<", threshold),
                 ("read_ids", "!=", False),
             ]

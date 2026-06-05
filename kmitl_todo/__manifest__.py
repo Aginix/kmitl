@@ -11,6 +11,7 @@
         "operating_unit",
         "procurement_plan_operating_unit",
         "purchase_request_approval",
+        "purchase_request_activity_kmitl",
     ],
     "data": [
         "security/ir.model.access.csv",

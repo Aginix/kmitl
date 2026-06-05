@@ -6,7 +6,6 @@ PLAN_OFFICER_ROLE = "kmitl_todo.role_procurement_plan_officer"
 
 class ProcurementPlan(models.Model):
     # Add the activity mixin to procurement.plan (it had only mail.thread).
-    _name = "procurement.plan"
     _inherit = ["procurement.plan", "mail.activity.mixin"]
 
     # ------------------------------------------------------------------
@@ -31,9 +30,6 @@ class ProcurementPlan(models.Model):
             else:
                 plan.activity_schedule(PLAN_FILL_ACTIVITY, user_id=plan.user_id.id)
 
-    def _clear_fill_plan_todo(self):
-        self.activity_feedback([PLAN_FILL_ACTIVITY])
-
     def action_new(self):
         res = super().action_new()
         self._schedule_fill_plan_todo()
@@ -41,15 +37,17 @@ class ProcurementPlan(models.Model):
 
     def action_ready(self):
         res = super().action_ready()
-        self._clear_fill_plan_todo()
+        # Genuine completion: log it to the Completed history.
+        self.activity_feedback([PLAN_FILL_ACTIVITY])
         return res
 
     def action_on_hold(self):
         res = super().action_on_hold()
-        self._clear_fill_plan_todo()
+        # Cancellation, not completion: drop the Todo without a history row.
+        self.activity_unlink([PLAN_FILL_ACTIVITY])
         return res
 
     def action_reset_to_draft(self):
         res = super().action_reset_to_draft()
-        self._clear_fill_plan_todo()
+        self.activity_unlink([PLAN_FILL_ACTIVITY])
         return res

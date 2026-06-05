@@ -14,16 +14,25 @@ class PurchaseRequestApproval(models.Model):
         are called by both the manual and the Sarabun-auto paths, so this fires
         in every case.
         """
-        if not self.env.ref(PR_STATUS_FYI, raise_if_not_found=False):
+        act_type = self.env.ref(PR_STATUS_FYI, raise_if_not_found=False)
+        if not act_type:
             return
         for rec in self:
-            if rec.requested_by:
-                rec.activity_schedule(
-                    PR_STATUS_FYI,
-                    summary=_("Purchase request %(name)s %(status)s")
-                    % {"name": rec.display_name, "status": status_label},
-                    user_id=rec.requested_by.id,
-                )
+            if not rec.requested_by:
+                continue
+            # Supersede: keep only the latest status FYI per requester. Use
+            # unlink (not activity_feedback) so the superseded FYI does not land
+            # in the Completed history as a phantom completion.
+            rec.activity_ids.filtered(
+                lambda a: a.activity_type_id == act_type
+                and a.user_id.id == rec.requested_by.id
+            ).unlink()
+            rec.activity_schedule(
+                PR_STATUS_FYI,
+                summary=_("Purchase request %(name)s %(status)s")
+                % {"name": rec.display_name, "status": status_label},
+                user_id=rec.requested_by.id,
+            )
 
     def button_approved(self):
         res = super().button_approved()
