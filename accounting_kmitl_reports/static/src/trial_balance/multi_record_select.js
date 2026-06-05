@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef } from "@odoo/owl";
-import { useService, useExternalListener } from "@web/core/utils/hooks";
+import { Component, useState, useRef, useExternalListener } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 /**
  * A small reusable multi-select / single-select that searches records with
