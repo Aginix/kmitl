@@ -72,6 +72,8 @@
                     <group>
                         <group>
                             <field name="todo_category" />
+                            <!-- res_model is required by activity_type_id's domain -->
+                            <field name="res_model" invisible="1" />
                             <field name="activity_type_id" />
                             <field name="res_name" string="Source Document" />
                             <field name="res_model_id" string="App" />
