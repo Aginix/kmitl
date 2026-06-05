@@ -12,6 +12,16 @@ import { registry } from "@web/core/registry";
 registry.category("services").add("kmitl_todo.hide_native_activity_menu", {
     dependencies: ["systray_service"],
     start() {
-        registry.category("systray").remove("mail.ActivityMenu");
+        const systray = registry.category("systray");
+        if (systray.contains("mail.ActivityMenu")) {
+            systray.remove("mail.ActivityMenu");
+        } else {
+            // Fail loudly if a future mail refactor renames/relocates the key,
+            // so the native bell doesn't silently reappear next to ours.
+            console.warn(
+                "kmitl_todo: 'mail.ActivityMenu' systray item not found; " +
+                    "the native Activities menu could not be hidden."
+            );
+        }
     },
 });

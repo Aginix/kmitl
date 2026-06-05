@@ -46,6 +46,20 @@
                     icon="fa-undo"
                     attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', False)]}"
                 />
+                <button
+                    name="action_claim"
+                    type="object"
+                    string="Claim"
+                    icon="fa-hand-paper-o"
+                    attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '!=', False)]}"
+                />
+                <button
+                    name="action_unclaim"
+                    type="object"
+                    string="Release"
+                    icon="fa-hand-o-up"
+                    attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '=', False)]}"
+                />
             </tree>
         </field>
     </record>
@@ -77,6 +91,21 @@
                         string="Mark as Unread"
                         icon="fa-undo"
                         attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', False)]}"
+                    />
+                    <button
+                        name="action_claim"
+                        type="object"
+                        string="Claim (รับเรื่อง)"
+                        class="btn-secondary"
+                        icon="fa-hand-paper-o"
+                        attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '!=', False)]}"
+                    />
+                    <button
+                        name="action_unclaim"
+                        type="object"
+                        string="Release"
+                        icon="fa-hand-o-up"
+                        attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '=', False)]}"
                     />
                 </header>
                 <sheet>
@@ -121,6 +150,11 @@
                     name="unread"
                     string="Unread"
                     domain="[('is_read_by_me', '=', False)]"
+                />
+                <filter
+                    name="read"
+                    string="Read / Dismissed"
+                    domain="[('is_read_by_me', '=', True)]"
                 />
                 <separator />
                 <filter
@@ -194,7 +228,9 @@
         <field name="name">Todos</field>
         <field name="res_model">mail.activity</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('is_my_todo', '=', True)]</field>
+        <field
+            name="domain"
+        >[('is_my_todo', '=', True), ('todo_category', '!=', False)]</field>
         <field name="context">{'search_default_unread': 1}</field>
         <field name="search_view_id" ref="view_my_todo_search" />
         <field
@@ -207,6 +243,25 @@
             <p class="o_view_nocontent_smiling_face">No pending todos 🎉</p>
             <p>Work awaiting you from every app shows up here.</p>
         </field>
+    </record>
+
+    <!-- Bulk actions in the list "Action" menu (FYI/Acknowledgement only,
+         enforced server-side in action_mark_read/unread). -->
+    <record id="action_server_mark_read" model="ir.actions.server">
+        <field name="name">Mark as Read</field>
+        <field name="model_id" ref="mail.model_mail_activity" />
+        <field name="binding_model_id" ref="mail.model_mail_activity" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_mark_read()</field>
+    </record>
+    <record id="action_server_mark_unread" model="ir.actions.server">
+        <field name="name">Mark as Unread</field>
+        <field name="model_id" ref="mail.model_mail_activity" />
+        <field name="binding_model_id" ref="mail.model_mail_activity" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_mark_unread()</field>
     </record>
 
     <menuitem id="menu_my_todos_root" name="Todos" sequence="1" />

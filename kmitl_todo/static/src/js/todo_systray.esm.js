@@ -9,7 +9,7 @@ const { Component, useState, onWillStart } = owl;
 
 export class TodoSystray extends Component {
     setup() {
-        this.rpc = useService("rpc");
+        this.orm = useService("orm");
         this.action = useService("action");
 
         this.state = useState({
@@ -26,12 +26,7 @@ export class TodoSystray extends Component {
 
     async fetchData() {
         try {
-            const result = await this.rpc("/web/dataset/call_kw/res.users/get_my_todo_count", {
-                model: "res.users",
-                method: "get_my_todo_count",
-                args: [],
-                kwargs: {},
-            });
+            const result = await this.orm.call("res.users", "get_my_todo_count", []);
             this.state.groups = result.groups || [];
             this.state.totalCount = result.total_count || 0;
             this.treeViewId = result.tree_view_id || false;
@@ -52,6 +47,7 @@ export class TodoSystray extends Component {
             domain: [
                 ["is_my_todo", "=", true],
                 ["is_read_by_me", "=", false],
+                ["todo_category", "!=", false],
                 ["res_model_id", "=", group.model_id],
             ],
             views: [
