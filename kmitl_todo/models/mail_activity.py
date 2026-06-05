@@ -137,6 +137,48 @@ class MailActivity(models.Model):
         return [("id", "in", ids)] if positive else [("id", "not in", ids)]
 
     # ------------------------------------------------------------------
+    # Live updates (bus.bus) — refresh the systray badge in real time
+    # ------------------------------------------------------------------
+    def _kmitl_todo_recipient_partners(self):
+        """Partners whose Todo inbox is affected by these activities: the
+        assignee for personal Todos, and every live role-in-unit member for
+        group Todos (resolved fresh, never a stored list — ADR-0002)."""
+        partners = self.env["res.partner"]
+        for act in self:
+            if act.user_id:
+                partners |= act.user_id.partner_id
+            elif act.responsible_role_id and act.operating_unit_id:
+                users = (
+                    act.responsible_role_id.sudo().user_ids
+                    & act.operating_unit_id.sudo().user_ids
+                )
+                partners |= users.partner_id
+        return partners
+
+    def _kmitl_todo_notify(self, partners=None):
+        """Ping affected users' bus channels so their systray badge refetches."""
+        if partners is None:
+            partners = self._kmitl_todo_recipient_partners()
+        for partner in partners:
+            self.env["bus.bus"]._sendone(
+                partner, "kmitl_todo/updated", {"refresh": True}
+            )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        activities = super().create(vals_list)
+        # Only Todo-categorised activities drive the inbox; skip the rest.
+        activities.filtered("todo_category")._kmitl_todo_notify()
+        return activities
+
+    def unlink(self):
+        # Capture recipients before the records vanish (badge goes down).
+        partners = self.filtered("todo_category")._kmitl_todo_recipient_partners()
+        res = super().unlink()
+        self._kmitl_todo_notify(partners)
+        return res
+
+    # ------------------------------------------------------------------
     # Actions
     # ------------------------------------------------------------------
     def action_mark_read(self):
@@ -147,6 +189,7 @@ class MailActivity(models.Model):
         self.env["kmitl.todo.read"]._mark_read(
             self.filtered(lambda a: a.todo_category in READABLE_CATEGORIES)
         )
+        self._kmitl_todo_notify(self.env.user.partner_id)
         return True
 
     def action_mark_unread(self):
@@ -154,19 +197,24 @@ class MailActivity(models.Model):
         self.env["kmitl.todo.read"]._mark_unread(
             self.filtered(lambda a: a.todo_category in READABLE_CATEGORIES)
         )
+        self._kmitl_todo_notify(self.env.user.partner_id)
         return True
 
     def action_claim(self):
         """รับเรื่อง — take an unclaimed group Todo as your own so colleagues
         see it is being handled (and it leaves their inbox)."""
-        self.filtered(lambda a: a.responsible_role_id and not a.user_id).write(
-            {"user_id": self.env.uid}
-        )
+        to_claim = self.filtered(lambda a: a.responsible_role_id and not a.user_id)
+        # Resolve the group before claiming so every member's badge refreshes.
+        partners = to_claim._kmitl_todo_recipient_partners()
+        to_claim.write({"user_id": self.env.uid})
+        self._kmitl_todo_notify(partners)
         return True
 
     def action_unclaim(self):
         """Release a claimed group Todo back to the role-in-unit."""
-        self.filtered("responsible_role_id").write({"user_id": False})
+        to_release = self.filtered("responsible_role_id")
+        to_release.write({"user_id": False})
+        self._kmitl_todo_notify(to_release._kmitl_todo_recipient_partners())
         return True
 
     def _action_done(self, feedback=False, attachment_ids=None):

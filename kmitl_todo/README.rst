@@ -69,8 +69,10 @@ Known limitations (v1)
   Todos route only by ``base_user_role`` role ∩ Operating Unit.
 * **``base_user_role`` reconciles a user's groups from their roles** — assign
   the role deliberately; it is not just a label.
-* Email / bus notifications are **not** sent for group Todos (v1 relies on the
-  inbox + systray).
+* **Email** notifications are not sent for group Todos. The systray badge does
+  update **live** via ``bus.bus`` (a "kmitl_todo/updated" ping to each affected
+  recipient — assignee for personal Todos, live role∩OU members for group ones)
+  whenever a Todo is created, cleared, read or claimed.
 * The existing ``sarabun.inbox`` / ``work.acceptance.inbox`` are left as-is;
   converging them onto activities is a later step.
 * Module name ``kmitl_todo`` is provisional.

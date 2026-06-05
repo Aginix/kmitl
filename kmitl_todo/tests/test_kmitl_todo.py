@@ -175,6 +175,19 @@ class TestKmitlTodo(TransactionCase):
             "execution Todos must not get a read receipt",
         )
 
+    def test_recipient_partners_personal_and_group(self):
+        """Bus recipients: assignee for personal, live role-in-unit for group."""
+        personal = self.rec.activity_schedule(
+            summary="p", activity_type_id=self.type_fyi.id, user_id=self.officer.id
+        )
+        self.assertEqual(
+            personal._kmitl_todo_recipient_partners(), self.officer.partner_id
+        )
+        group = self._schedule_group()
+        self.assertIn(
+            self.officer.partner_id, group._kmitl_todo_recipient_partners()
+        )
+
     def test_gc_personal_only(self):
         """Retention GC removes read personal FYI, never shared group Todos."""
         self.env["ir.config_parameter"].sudo().set_param(

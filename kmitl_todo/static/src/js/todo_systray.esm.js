@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
+import { useService, useBus } from "@web/core/utils/hooks";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
@@ -22,6 +22,10 @@ export class TodoSystray extends Component {
         onWillStart(async () => {
             await this.fetchData();
         });
+
+        // Live refresh: the server pings "kmitl_todo_updated" (via the bus
+        // notification handler) whenever a Todo addressed to me changes.
+        useBus(this.env.bus, "kmitl_todo_updated", () => this.fetchData());
     }
 
     async fetchData() {
