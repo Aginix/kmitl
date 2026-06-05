@@ -42,10 +42,12 @@ export class EmployeeDetailMany2OneField extends Many2OneField {
             const [dept = {}] = await this.orm.read(
                 "hr.department",
                 [record.department_id[0]],
-                ["complete_name"],
+                ["complete_name", "code"],
                 { context: this.context }
             );
-            department = dept.complete_name;
+            department = dept.code
+                ? `[${dept.code || '-'}] ${dept.complete_name}`
+                : dept.complete_name;
         }
         this.detail.data = {
             academic_standing_title: record.academic_standing_title,

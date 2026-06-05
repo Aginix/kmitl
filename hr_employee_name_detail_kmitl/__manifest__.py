@@ -8,6 +8,7 @@
     "category": "Human Resources",
     "depends": [
         "hr",
+        "hr_department_code_tracking",
         "hr_employee_academic_standing_thailand",
         "hr_employee_kmitl_kid",
     ],
