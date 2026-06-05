@@ -145,13 +145,6 @@ class TrialBalanceReportKmitl(models.AbstractModel):
         account_ids = self._kmitl_apply_account_range(options, company_id, account_ids)
 
         fy_start_date = self._kmitl_fy_start_date(date_from, company)
-        unaffected = self.env["account.account"].search(
-            [
-                ("account_type", "=", "equity_unaffected"),
-                ("company_id", "=", company_id),
-            ],
-            limit=1,
-        )
         leaves = self._kmitl_build_dim_leaves(options.get("dims") or {})
 
         report = self.with_context(kmitl_dim_leaves=leaves)
@@ -166,7 +159,10 @@ class TrialBalanceReportKmitl(models.AbstractModel):
             only_posted,
             False,  # show_partner_details
             hide_account_at_0,
-            unaffected.id,
+            # No unaffected-earnings account: KMITL does not want the
+            # "Undistributed Profits/Losses" row (which the OCA engine would
+            # otherwise always append, even at zero).
+            False,
             fy_start_date,
             False,  # grouped_by
         )
