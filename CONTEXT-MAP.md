@@ -11,6 +11,7 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 - [Procurement Plan](./procurement_plan/CONTEXT.md) — annual procurement planning; each plan is created from an appropriation, reserves its budget at that moment, and is realised through one purchase request + installment disbursements.
 - [KMITL Project](./kmitl_project/CONTEXT.md) — institutional project/activity planning (โครงการ/กิจกรรม); a project draws from a *floating* project-type budget pool, reserves its full budget when confirmed, then spends like a procurement plan.
 - [Accounting Reports](./accounting_kmitl_reports/CONTEXT.md) — financial-statement reports (Trial Balance, P&L, Balance Sheet, Cash Flow) over the GL (`account.move.line`), filterable by the KMITL accounting dimensions.
+- [KMITL User Provisioning](./kmitl_user_provisioning/CONTEXT.md) — gates un-provisioned internal users (no `hr.employee`, no functional group, not admin) to a full-screen "contact admin" landing page on login, without stripping groups.
 
 ## Relationships
 

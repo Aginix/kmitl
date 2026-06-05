@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="kmitl_user_provisioning.ProvisioningNotice" owl="1">
+        <div class="o_provisioning_notice d-flex flex-column align-items-center justify-content-center text-center">
+            <div class="o_provisioning_notice_card">
+                <i class="fa fa-lock o_provisioning_notice_icon mb-4" role="img" aria-label="Locked"/>
+                <h1 class="h3 mb-3">บัญชีของคุณยังไม่ได้รับสิทธิ์การใช้งาน</h1>
+                <p class="text-muted mb-4">
+                    กรุณาติดต่อผู้ดูแลระบบเพื่อขอเปิดสิทธิ์การเข้าใช้งาน
+                </p>
+                <div t-if="state.company.email or state.company.phone"
+                     class="o_provisioning_notice_contact mb-4">
+                    <div class="fw-bold mb-1" t-esc="state.company.name"/>
+                    <div t-if="state.company.email">
+                        <i class="fa fa-envelope-o me-2"/>
+                        <a t-att-href="'mailto:' + state.company.email" t-esc="state.company.email"/>
+                    </div>
+                    <div t-if="state.company.phone">
+                        <i class="fa fa-phone me-2"/>
+                        <span t-esc="state.company.phone"/>
+                    </div>
+                </div>
+                <button class="btn btn-primary" t-on-click="logout">
+                    <i class="fa fa-sign-out me-2"/>ออกจากระบบ
+                </button>
+            </div>
+        </div>
+    </t>
+</templates>
