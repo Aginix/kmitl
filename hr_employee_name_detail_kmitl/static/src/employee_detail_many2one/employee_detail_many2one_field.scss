@@ -1,0 +1,17 @@
+.o_employee_detail {
+    margin-top: 2px;
+    font-size: 0.85em;
+    line-height: 1.5;
+    color: $text-muted;
+
+    .o_employee_detail_line {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+
+        > i {
+            flex: 0 0 auto;
+            opacity: 0.75;
+        }
+    }
+}
