@@ -262,6 +262,25 @@ class ProcurementPlan(models.Model):
     def action_in_progress(self):
         self.write({"state": "in_progress"})
 
+    def action_reserve_budget(self):
+        """Manually reserve (จองงบประมาณ) a plan's budget — an erp_manager-only
+        escape hatch that supplements the automatic reserve fired when the source
+        appropriation is posted (ADR-0005). Lets an admin earmark budget on demand
+        for any plan that holds no active commitment yet, including plans created
+        by hand. Reuses the idempotent ``_reserve_plan_commitment`` so it never
+        double-reserves and never bypasses the availability check."""
+        self.ensure_one()
+        if not self.env.user.has_group("base.group_erp_manager"):
+            raise UserError(
+                _("เฉพาะผู้ดูแลระบบเท่านั้นที่สามารถจองงบประมาณด้วยตนเองได้")
+            )
+        if self.state == "draft":
+            # Leave draft first so the plan's own analytic account is created
+            # (write override) before the reservation tags it as the
+            # procurement_plan dimension.
+            self.action_new()
+        self._reserve_plan_commitment()
+
     def action_done(self):
         self.write({"state": "done"})
 
@@ -405,6 +424,19 @@ class ProcurementPlan(models.Model):
     budget_commitment_count = fields.Integer(
         string="จำนวนผูกพันงบประมาณ", compute="_compute_budget_commitment_count"
     )
+    has_budget_reservation = fields.Boolean(
+        string="จองงบประมาณแล้ว",
+        compute="_compute_has_budget_reservation",
+        help="True when the plan already holds an active (non-cancelled) "
+        "budget commitment; used to hide the manual reserve button.",
+    )
+
+    @api.depends("budget_commitment_ids.state")
+    def _compute_has_budget_reservation(self):
+        for rec in self:
+            rec.has_budget_reservation = bool(
+                rec.budget_commitment_ids.filtered(lambda c: c.state != "cancel")
+            )
 
     budget_account_id = fields.Many2one(
         comodel_name="budget.account",

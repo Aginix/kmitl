@@ -13,7 +13,7 @@ A planned disbursement tranche of a plan. Actual budget consumption happens ง�
 _Avoid_: payment, period
 
 **Reserve (จองงบ)**:
-The plan's full-amount earmark, created the moment its source appropriation is posted — i.e. when the plan reaches state `new`. The single act of จองงบ; nothing downstream reserves again. See [budget » Reserve](../budget/CONTEXT.md).
+The plan's full-amount earmark. Normally created the moment its source appropriation is posted (ADR-0005). An **erp_manager** may also fire the same act by hand via the **จองงบประมาณ** button (`action_reserve_budget`) — used for plans created by hand or any plan still holding no active commitment. Either way it is the single, idempotent act of จองงบ; nothing downstream reserves again. See [budget » Reserve](../budget/CONTEXT.md).
 _Avoid_: allocate
 
 **Ready (the ETA gate)**:

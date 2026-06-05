@@ -32,6 +32,8 @@
             <form string="Procurement Plan" create="false">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,new,ready,in_progress,done" />
+                    <field name="has_budget_reservation" invisible="1" />
+                    <button name="action_reserve_budget" string="จองงบประมาณ" type="object" class="btn-primary" groups="base.group_erp_manager" attrs="{'invisible': ['|', ('has_budget_reservation', '=', True), ('state', 'in', ('done', 'cancel'))]}" confirm="ยืนยันการจองงบประมาณสำหรับแผนนี้?" />
                     <button name="action_ready" string="Ready" type="object" class="btn-primary" states="new" />
                 </header>
                 <sheet>
@@ -155,6 +157,31 @@
                     <field name="procurement_method_id" icon="fa-calendar" select="multi" />
                 </searchpanel>
             </search>
+        </field>
+    </record>
+
+    <!-- Allow erp_manager to create plans by hand (others keep create=false) -->
+    <record id="view_procurement_plan_form_erp_manager" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form.erp.manager</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="view_procurement_plan_form" />
+        <field name="groups_id" eval="[(4, ref('base.group_erp_manager'))]" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">true</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_procurement_plan_tree_erp_manager" model="ir.ui.view">
+        <field name="name">view.procurement.plan.tree.erp.manager</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="view_procurement_plan_tree" />
+        <field name="groups_id" eval="[(4, ref('base.group_erp_manager'))]" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">true</attribute>
+            </xpath>
         </field>
     </record>
 
