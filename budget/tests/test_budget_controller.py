@@ -167,6 +167,34 @@ class TestBudgetController(TransactionCase):
         # no fund specified must NOT leak the fund-A appropriation
         self.assertEqual(self._available(self.dimleaf, {}), 0.0)
 
+    def test_floating_pool_counts_tagged_owner_reserves(self):
+        """A floating-pool check (no ownership tag) must count a reserve that
+        DOES carry one (a project's reserve).
+
+        Project appropriation is untagged (kmitl_project absent); a project's
+        reserve carries its kmitl_project tag. If the tagged reserve were
+        excluded from ``used``, every project would see the full pool and could
+        over-reserve it (ADR-0007). Here 100k pool − a 60k tagged reserve = 40k.
+        """
+        Plan = self.env["account.analytic.plan"]
+        proj_plan = Plan.search(
+            [("code", "=", "kmitl_project")], limit=1
+        ) or Plan.create({"name": "Project", "code": "kmitl_project"})
+        project = self.env["account.analytic.account"].create(
+            {"name": "Proj X", "code": "CTRL_PRJ", "plan_id": proj_plan.id}
+        )
+        self._appropriate(self.dimleaf, 100_000, fund=self.fund_a)
+        self._reserve(
+            self.dimleaf,
+            60_000,
+            dist={str(self.fund_a.id): 100.0, str(project.id): 100.0},
+        )
+        # the 4D floating check (fund only, no kmitl_project) still sees the
+        # tagged reserve as used
+        self.assertEqual(
+            self._available(self.dimleaf, {str(self.fund_a.id): 100.0}), 40_000
+        )
+
     def _reserve_multi(self, account_amounts):
         first = account_amounts[0][0]
         return self.env["budget.commitment"].create(
