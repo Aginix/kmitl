@@ -16,6 +16,7 @@ export class TodoSystray extends Component {
             groups: [],
             totalCount: 0,
         });
+        this.treeViewId = false;
         this.formViewId = false;
 
         onWillStart(async () => {
@@ -33,6 +34,7 @@ export class TodoSystray extends Component {
             });
             this.state.groups = result.groups || [];
             this.state.totalCount = result.total_count || 0;
+            this.treeViewId = result.tree_view_id || false;
             this.formViewId = result.form_view_id || false;
         } catch (error) {
             console.error("Failed to fetch Todo count:", error);
@@ -41,15 +43,21 @@ export class TodoSystray extends Component {
         }
     }
 
-    onTodoClick(todo) {
-        // Open the Todo inside the Todo app (its form), not straight to the
-        // source — the form's "Open Source Document" button does that jump.
+    onGroupClick(group) {
+        // Drill into the Todo app (inbox) filtered to this source model.
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: todo.summary || todo.res_name,
+            name: group.name,
             res_model: "mail.activity",
-            res_id: todo.id,
-            views: [[this.formViewId, "form"]],
+            domain: [
+                ["is_my_todo", "=", true],
+                ["is_read_by_me", "=", false],
+                ["res_model_id", "=", group.model_id],
+            ],
+            views: [
+                [this.treeViewId, "list"],
+                [this.formViewId, "form"],
+            ],
             target: "current",
         });
     }

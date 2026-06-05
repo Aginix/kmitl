@@ -39,6 +39,13 @@
                     icon="fa-check"
                     attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', True)]}"
                 />
+                <button
+                    name="action_mark_unread"
+                    type="object"
+                    string="Mark as Unread"
+                    icon="fa-undo"
+                    attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', False)]}"
+                />
             </tree>
         </field>
     </record>
@@ -63,6 +70,13 @@
                         string="Mark as Read"
                         icon="fa-check"
                         attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', True)]}"
+                    />
+                    <button
+                        name="action_mark_unread"
+                        type="object"
+                        string="Mark as Unread"
+                        icon="fa-undo"
+                        attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', False)]}"
                     />
                 </header>
                 <sheet>

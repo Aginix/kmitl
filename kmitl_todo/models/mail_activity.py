@@ -139,6 +139,11 @@ class MailActivity(models.Model):
         self.env["kmitl.todo.read"]._mark_read(self)
         return True
 
+    def action_mark_unread(self):
+        """Undo a dismissal — bring these Todos back for the current user."""
+        self.env["kmitl.todo.read"]._mark_unread(self)
+        return True
+
     def _action_done(self, feedback=False, attachment_ids=None):
         # Snapshot completed Todos to history before core unlinks them (ADR-0004).
         self.env["kmitl.todo.log"]._log_completed(self.filtered("todo_category"))

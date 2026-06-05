@@ -12,25 +12,17 @@
 }
 
 .o_kmitl_todo_systray {
-    .o_kmitl_todo_group_header {
-        background-color: $gray-100;
-        font-size: 0.85rem;
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-
-    .o_kmitl_todo_group_icon {
-        width: 18px;
-        height: 18px;
-        object-fit: contain;
-    }
-
-    .o_kmitl_todo_item {
+    .o_kmitl_todo_group {
         border-bottom: 1px solid $border-color;
 
         &:hover {
             background-color: $dropdown-link-hover-bg;
         }
+    }
+
+    .o_kmitl_todo_group_icon {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
     }
 }

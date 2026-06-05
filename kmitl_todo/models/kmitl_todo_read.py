@@ -50,3 +50,14 @@ class KmitlTodoRead(models.Model):
         )
         to_create = activities - already.activity_id
         return self.create([{"activity_id": act.id} for act in to_create])
+
+    @api.model
+    def _mark_unread(self, activities):
+        """Drop the current user's read receipt, bringing the Todos back."""
+        rows = self.search(
+            [
+                ("activity_id", "in", activities.ids),
+                ("user_id", "=", self.env.uid),
+            ]
+        )
+        return rows.unlink()
