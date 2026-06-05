@@ -33,6 +33,8 @@ export class TrialBalance extends Component {
             dateTo: false,
             onlyPosted: true,
             hideAt0: true,
+            // Journal/partner/account filters stay collapsed until requested.
+            showAdvanced: false,
             // selections (each an Array<{id, name}>)
             journals: [],
             partners: [],
@@ -159,6 +161,10 @@ export class TrialBalance extends Component {
     onToggleHide(ev) {
         this.state.hideAt0 = ev.target.checked;
         this.load();
+    }
+
+    toggleAdvanced() {
+        this.state.showAdvanced = !this.state.showAdvanced;
     }
 
     // One change handler per selection bucket (bound in the template).

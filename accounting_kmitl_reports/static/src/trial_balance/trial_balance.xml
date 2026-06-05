@@ -155,57 +155,71 @@
                     />
                 </div>
 
-                <!-- Standard filters -->
-                <div class="col-md-3">
-                    <label class="o_form_label">Journals</label>
-                    <MultiRecordSelect
-                        resModel="'account.journal'"
-                        domain="[['company_id', '=', companyId]]"
-                        placeholder="labels.journals"
-                        selected="state.journals"
-                        onChange="(sel) => this.onSelectionChange('journals', sel)"
-                    />
-                </div>
-                <div class="col-md-3">
-                    <label class="o_form_label">Partners</label>
-                    <MultiRecordSelect
-                        resModel="'res.partner'"
-                        placeholder="labels.partners"
-                        selected="state.partners"
-                        onChange="(sel) => this.onSelectionChange('partners', sel)"
-                    />
-                </div>
-                <div class="col-md-3">
-                    <label class="o_form_label">Accounts</label>
-                    <MultiRecordSelect
-                        resModel="'account.account'"
-                        domain="[['company_id', '=', companyId]]"
-                        placeholder="labels.accounts"
-                        selected="state.accounts"
-                        onChange="(sel) => this.onSelectionChange('accounts', sel)"
-                    />
-                </div>
-                <div class="col-md-3">
-                    <label class="o_form_label">Account code range</label>
-                    <div class="d-flex gap-1">
-                        <MultiRecordSelect
-                            resModel="'account.account'"
-                            domain="[['company_id', '=', companyId]]"
-                            placeholder="labels.accountFrom"
-                            single="true"
-                            selected="state.accountFrom"
-                            onChange="(sel) => this.onSelectionChange('accountFrom', sel)"
+                <!-- Standard filters (collapsed by default) -->
+                <div class="col-12">
+                    <button
+                        class="btn btn-link p-0 o_kmitl_tb_more"
+                        t-on-click="toggleAdvanced"
+                    >
+                        <i
+                            t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
                         />
+                        <t t-if="state.showAdvanced">Hide journal / partner / account filters</t>
+                        <t t-else="">More filters</t>
+                    </button>
+                </div>
+                <t t-if="state.showAdvanced">
+                    <div class="col-md-3">
+                        <label class="o_form_label">Journals</label>
                         <MultiRecordSelect
-                            resModel="'account.account'"
+                            resModel="'account.journal'"
                             domain="[['company_id', '=', companyId]]"
-                            placeholder="labels.accountTo"
-                            single="true"
-                            selected="state.accountTo"
-                            onChange="(sel) => this.onSelectionChange('accountTo', sel)"
+                            placeholder="labels.journals"
+                            selected="state.journals"
+                            onChange="(sel) => this.onSelectionChange('journals', sel)"
                         />
                     </div>
-                </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Partners</label>
+                        <MultiRecordSelect
+                            resModel="'res.partner'"
+                            placeholder="labels.partners"
+                            selected="state.partners"
+                            onChange="(sel) => this.onSelectionChange('partners', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Accounts</label>
+                        <MultiRecordSelect
+                            resModel="'account.account'"
+                            domain="[['company_id', '=', companyId]]"
+                            placeholder="labels.accounts"
+                            selected="state.accounts"
+                            onChange="(sel) => this.onSelectionChange('accounts', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Account code range</label>
+                        <div class="d-flex gap-1">
+                            <MultiRecordSelect
+                                resModel="'account.account'"
+                                domain="[['company_id', '=', companyId]]"
+                                placeholder="labels.accountFrom"
+                                single="true"
+                                selected="state.accountFrom"
+                                onChange="(sel) => this.onSelectionChange('accountFrom', sel)"
+                            />
+                            <MultiRecordSelect
+                                resModel="'account.account'"
+                                domain="[['company_id', '=', companyId]]"
+                                placeholder="labels.accountTo"
+                                single="true"
+                                selected="state.accountTo"
+                                onChange="(sel) => this.onSelectionChange('accountTo', sel)"
+                            />
+                        </div>
+                    </div>
+                </t>
             </div>
 
             <!-- Report table -->
