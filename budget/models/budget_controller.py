@@ -54,6 +54,17 @@ class BudgetController(models.AbstractModel):
         "kmitl_project": "kmitl_project_analytic_id",
         "procurement_plan": "procurement_plan_analytic_id",
     }
+    # "Ownership tag" dimensions: they identify the document that owns a
+    # reservation (a project / a procurement plan) and ride on its reserve lines,
+    # but the appropriation pool a project draws from is *untagged* (floating,
+    # ADR-0007). So they are pinned absent on the appropriation (current) side
+    # only; on the usage side a floating check must count every reserve drawing
+    # from the pool whatever its owner, else it ignores other documents' reserves
+    # and overstates what is available — letting projects over-reserve the pool.
+    _POOL_TAG_COLUMNS = (
+        "kmitl_project_analytic_id",
+        "procurement_plan_analytic_id",
+    )
 
     # ------------------------------------------------------------------
     # Public API
@@ -232,32 +243,43 @@ class BudgetController(models.AbstractModel):
             else "="
         )
 
-    def _absent_dim_leaves(self, dims):
+    def _absent_dim_leaves(self, dims, include_pool_tags=True):
         """Require controlled dimensions NOT used by this reservation to be empty.
 
         Without this, a combination that omits a dimension would match
         appropriation/usage carrying *any* value there (cross-dimension leak).
         ``kmitl_project`` and ``procurement_plan`` are mutually exclusive, so the
         unused one is correctly required to be empty.
+
+        ``include_pool_tags=False`` leaves the ownership tags
+        (:attr:`_POOL_TAG_COLUMNS`) unpinned — used on the *usage* side so a
+        floating-pool check counts every reserve drawing from the (untagged)
+        pool whatever document owns it; they stay pinned on the appropriation
+        side. The four real dimensions are pinned either way.
         """
+        skip = () if include_pool_tags else self._POOL_TAG_COLUMNS
         return [
             (column, "=", False)
             for column in self._DIM_COLUMNS.values()
-            if column not in dims
+            if column not in dims and column not in skip
         ]
 
-    def _control_scope(self, controls, dims):
+    def _control_scope(self, controls, dims, include_pool_tags=True):
         """Subtree leaves over the control node on every axis.
 
         ``child_of`` rolls usage/appropriation up to the control node so sibling
         draws cannot double-spend a shared pool; flat analytic dimensions fall
-        back to an exact match. Unused dimensions are pinned empty.
+        back to an exact match. Unused dimensions are pinned empty, except the
+        ownership tags when ``include_pool_tags=False`` (see
+        :meth:`_absent_dim_leaves`).
         """
         dim_op = self._analytic_hier_op()
         leaves = [("account_id", "child_of", controls["account"].id)]
         for column in dims:
             leaves.append((column, dim_op, controls["dims"][column].id))
-        return leaves + self._absent_dim_leaves(dims)
+        return leaves + self._absent_dim_leaves(
+            dims, include_pool_tags=include_pool_tags
+        )
 
     def _sum_current(self, controls, dims, fiscal_year_id, company_id):
         """Σ posted appropriation/entry balance over the control-node subtree."""
@@ -275,7 +297,11 @@ class BudgetController(models.AbstractModel):
             ("account_fiscal_year_id", "=", fiscal_year_id),
             ("company_id", "=", company_id),
         ]
-        domain += self._control_scope(controls, dims)
+        # Count every reserve drawing from the pool regardless of which project /
+        # plan owns it: the floating appropriation is untagged, so pinning the
+        # ownership tags here would drop other documents' reserves and overstate
+        # availability (the over-reservation bug).
+        domain += self._control_scope(controls, dims, include_pool_tags=False)
         groups = self.env["budget.commitment.line"].read_group(
             domain, ["amount"], []
         )

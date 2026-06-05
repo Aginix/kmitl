@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KMITL Project",
-    "version": "16.0.1.2.0",
+    "version": "16.0.1.3.0",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

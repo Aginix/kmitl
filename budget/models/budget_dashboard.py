@@ -649,6 +649,22 @@ class BudgetDashboard(models.AbstractModel):
         }
 
     @api.model
+    def get_selectable_roots(self, account_domain):
+        """Root expense categories that contain at least one account matching
+        ``account_domain``.
+
+        The reservation picker scopes its ประเภทงบ dropdown to these, so a host
+        never opens on — or switches to — a category with nothing selectable.
+        Root resolution lives here, next to the dashboard's other ``parent_path``
+        helpers, reusing :meth:`_root_category_map` rather than reparsing
+        ``parent_path`` in the client.
+        """
+        if not account_domain:
+            return []
+        account_ids = self.env["budget.account"].search(account_domain).ids
+        return list(set(self._root_category_map(account_ids).values()))
+
+    @api.model
     def get_overview_departments(self):
         """Department (ส่วนงาน) options for the overview multi-select filter.
 

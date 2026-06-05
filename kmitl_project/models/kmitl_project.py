@@ -12,7 +12,13 @@ class KmitlProject(models.Model):
     _description = "KMITL Project"
     _order = "id desc"
     _rec_names_search = ["name", "key"]
-    _inherit = ["mail.thread", "mail.activity.mixin", "analytic.mixin", "portal.mixin"]
+    _inherit = [
+        "mail.thread",
+        "mail.activity.mixin",
+        "analytic.mixin",
+        "portal.mixin",
+        "budget.commitment.mixin",
+    ]
 
     READONLY_STATES = {
         "draft": [("readonly", False)],
@@ -294,7 +300,6 @@ class KmitlProject(models.Model):
 
     budget_account_id = fields.Many2one(comodel_name="budget.account",
         string="รหัสงบประมาณ",
-        required=True,
         index=True,
         tracking=True,
         domain="[('budgetable', '=', True), ('budget_type', '=', 'expense'),"
@@ -504,11 +509,31 @@ class KmitlProject(models.Model):
         it on demand (kmitl.project, unlike procurement.plan, has no auto-create on
         write) and let the inverse fold it into ``analytic_distribution``."""
         self.ensure_one()
-        if self.analytic_account_id:
-            return
-        self.analytic_account_id = self._create_analytic_account_from_values(
-            {"name": self.name, "code": self.key or self.name}
-        ).id
+        if not self.analytic_account_id:
+            self.analytic_account_id = self._create_analytic_account_from_values(
+                {"name": self.name, "code": self.key or self.name}
+            ).id
+        # Fold the kmitl_project dimension into analytic_distribution — in both
+        # branches, independent of the create-branch inverse-flush ordering. The
+        # reservation picker rewrites analytic_distribution wholesale (the four
+        # budget dimensions) on (re-)selection, dropping this dimension; refold it
+        # so the reservation always carries the kmitl_project dimension.
+        self._update_analytic_distribution("kmitl_project")
+
+    def _reservation_account_domain(self):
+        """Budget codes selectable in the reservation picker for this project.
+
+        Mirrors the ``budget_account_id`` field domain: budgetable expense codes
+        flagged ``is_project`` whose ``project_type`` matches this project. The
+        picker offers only these (other codes still show, but are not selectable),
+        and the mixin re-checks the chosen code against this same domain
+        server-side in ``apply_reservation_selection`` — so a code outside these
+        conditions can be neither picked nor written."""
+        self.ensure_one()
+        return super()._reservation_account_domain() + [
+            ("is_project", "=", True),
+            ("project_type", "=", self.project_type),
+        ]
 
     def _reserve_project_commitment(self):
         """Reserve one shared budget.commitment for the project's full
