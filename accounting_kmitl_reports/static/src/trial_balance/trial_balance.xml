@@ -47,6 +47,9 @@
         <div class="o_kmitl_trial_balance o_action_manager p-3">
             <div class="o_kmitl_tb_header d-flex align-items-center mb-3">
                 <h2 class="m-0 flex-grow-1">Trial Balance</h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" />Export Excel
+                </button>
                 <button class="btn btn-primary" t-on-click="printPdf">
                     <i class="fa fa-file-pdf-o me-1" />Print PDF
                 </button>

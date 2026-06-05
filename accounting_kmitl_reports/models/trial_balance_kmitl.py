@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.tools import date_utils, format_date
 
 # Dimension plan codes this report can filter on. Order is the display order.
@@ -227,12 +227,11 @@ class TrialBalanceReportKmitl(models.AbstractModel):
     # ``doAction`` it. Filters travel in ``data`` so the PDF mirrors the
     # on-screen report exactly (no persisted record needed).
     # ------------------------------------------------------------------
-    @api.model
-    def action_print_pdf(self, options):
+    def _kmitl_report_action(self, options, report_xmlid):
+        """Anchor a report action on a throwaway carrier record (reusing the
+        standard ``report_action`` plumbing). The figures travel in ``data``
+        so the output mirrors the screen."""
         options = options or {}
-        # A throwaway carrier record anchors the report action (reusing the
-        # standard ``report_action`` plumbing). The figures themselves travel
-        # in ``data`` so the PDF mirrors the screen.
         carrier = self.env["trial.balance.report.wizard.kmitl"].create(
             {
                 "company_id": options.get("company_id") or self.env.company.id,
@@ -240,10 +239,20 @@ class TrialBalanceReportKmitl(models.AbstractModel):
                 "date_to": options.get("date_to"),
             }
         )
-        report = self.env.ref(
-            "accounting_kmitl_reports.action_report_trial_balance_kmitl"
-        )
+        report = self.env.ref(report_xmlid)
         return report.report_action(carrier, data={"options": options})
+
+    @api.model
+    def action_print_pdf(self, options):
+        return self._kmitl_report_action(
+            options, "accounting_kmitl_reports.action_report_trial_balance_kmitl"
+        )
+
+    @api.model
+    def action_export_xlsx(self, options):
+        return self._kmitl_report_action(
+            options, "accounting_kmitl_reports.action_report_trial_balance_kmitl_xlsx"
+        )
 
     # ------------------------------------------------------------------
     # QWeb PDF rendering — reuse the shared compute, do NOT call the OCA
@@ -268,3 +277,96 @@ class TrialBalanceReportKmitl(models.AbstractModel):
             "date_from_label": format_date(self.env, options.get("date_from")),
             "date_to_label": format_date(self.env, options.get("date_to")),
         }
+
+
+class TrialBalanceXlsxKmitl(models.AbstractModel):
+    """XLSX export of the trial balance — shares the compute with the screen
+    and the PDF, so all three stay in sync."""
+
+    _name = "report.accounting_kmitl_reports.trial_balance_xlsx"
+    _description = "KMITL Trial Balance XLSX"
+    _inherit = "report.report_xlsx.abstract"
+
+    # The three balance sections, each with Debit / Credit / Balance keys.
+    _COLUMNS = (
+        ("opening_debit", "opening_credit", "opening_balance"),
+        ("period_debit", "period_credit", "period_balance"),
+        ("ending_debit", "ending_credit", "ending_balance"),
+    )
+
+    def generate_xlsx_report(self, workbook, data, objs):
+        data = data or {}
+        options = data.get("options") or {}
+        report = self.env["report.accounting_kmitl_reports.trial_balance_kmitl"]
+        result = report.get_trial_balance_data(options)
+        rows = result["rows"]
+        totals = result["totals"]
+        company = self.env["res.company"].browse(
+            options.get("company_id") or self.env.company.id
+        )
+
+        sheet = workbook.add_worksheet(_("Trial Balance"))
+        bold = workbook.add_format({"bold": True})
+        head = workbook.add_format(
+            {
+                "bold": True,
+                "bg_color": "#F0F0F0",
+                "border": 1,
+                "align": "center",
+                "valign": "vcenter",
+            }
+        )
+        cell = workbook.add_format({"border": 1})
+        num = workbook.add_format({"border": 1, "num_format": "#,##0.00"})
+        num_bold = workbook.add_format(
+            {"border": 1, "bold": True, "num_format": "#,##0.00"}
+        )
+
+        sheet.merge_range(0, 0, 0, 9, company.display_name, bold)
+        sheet.merge_range(1, 0, 1, 9, _("Trial Balance"), bold)
+        sheet.merge_range(
+            2,
+            0,
+            2,
+            9,
+            "%s %s %s %s"
+            % (
+                _("From"),
+                options.get("date_from") or "",
+                _("to"),
+                options.get("date_to") or "",
+            ),
+        )
+
+        row_top = 4
+        sheet.merge_range(row_top, 0, row_top + 1, 0, _("Account"), head)
+        sheet.merge_range(row_top, 1, row_top, 3, _("Opening"), head)
+        sheet.merge_range(row_top, 4, row_top, 6, _("During Period"), head)
+        sheet.merge_range(row_top, 7, row_top, 9, _("Ending"), head)
+        for i, label in enumerate(
+            [_("Debit"), _("Credit"), _("Balance")] * 3, start=1
+        ):
+            sheet.write(row_top + 1, i, label, head)
+
+        def write_amounts(row_idx, values, fmt):
+            for col, value in enumerate(values, start=1):
+                if not value or abs(value) < 0.005:
+                    sheet.write_blank(row_idx, col, None, fmt)
+                else:
+                    sheet.write_number(row_idx, col, value, fmt)
+
+        r = row_top + 2
+        for row in rows:
+            sheet.write(r, 0, "%s - %s" % (row["code"], row["name"]), cell)
+            write_amounts(
+                r, [row[k] for group in self._COLUMNS for k in group], num
+            )
+            r += 1
+
+        sheet.write(r, 0, _("Total"), num_bold)
+        write_amounts(
+            r, [totals[k] for group in self._COLUMNS for k in group], num_bold
+        )
+
+        sheet.set_column(0, 0, 42)
+        sheet.set_column(1, 9, 15)

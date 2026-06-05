@@ -108,6 +108,11 @@ msgstr "พิมพ์ PDF"
 
 #. module: accounting_kmitl_reports
 #: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Export Excel"
+msgstr "ส่งออก Excel"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
 msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
 

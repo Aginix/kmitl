@@ -17,6 +17,7 @@
         "mis_template_financial_report",
         "mis_builder_cash_flow",
         "account_financial_report",
+        "report_xlsx",
     ],
     "data": [
         "security/ir.model.access.csv",

@@ -194,6 +194,13 @@ export class TrialBalance extends Component {
         ]);
         await this.action.doAction(action);
     }
+
+    async exportXlsx() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_xlsx", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
+    }
 }
 
 TrialBalance.template = "accounting_kmitl_reports.TrialBalance";
