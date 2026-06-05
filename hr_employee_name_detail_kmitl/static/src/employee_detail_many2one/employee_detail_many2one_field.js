@@ -34,14 +34,23 @@ export class EmployeeDetailMany2OneField extends Many2OneField {
             this.detail.data = null;
             return;
         }
-        const records = await this.orm.read(this.relation, [value[0]], DETAIL_FIELDS, {
+        const [record = {}] = await this.orm.read(this.relation, [value[0]], DETAIL_FIELDS, {
             context: this.context,
         });
-        const record = records[0] || {};
+        let department = false;
+        if (record.department_id) {
+            const [dept = {}] = await this.orm.read(
+                "hr.department",
+                [record.department_id[0]],
+                ["complete_name"],
+                { context: this.context }
+            );
+            department = dept.complete_name;
+        }
         this.detail.data = {
             academic_standing_title: record.academic_standing_title,
             work_email: record.work_email,
-            department: record.department_id ? record.department_id[1] : false,
+            department,
             kid: record.kid,
         };
     }
