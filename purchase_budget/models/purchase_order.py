@@ -53,12 +53,12 @@ class PurchaseOrder(models.Model):
     )
 
     use_procurement_plan = fields.Boolean(
-        string="เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง", default=False
+        string="Use Procurement Plan", default=False
     )
 
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan",
-        string="รายการแผนจัดซื้อจัดจ้าง",
+        string="Procurement Plan",
         tracking=True,
         inverse="_inverse_procurement_plan_id",
     )

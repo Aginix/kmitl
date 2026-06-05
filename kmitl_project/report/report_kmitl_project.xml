@@ -72,7 +72,7 @@
                                 หน่วยงาน
                                 <span
                                     class="ms-2"
-                                    t-out="o.department_id.complete_name"
+                                    t-out="o.department_analytic_id.name"
                                 />
                             </div>
                         </div>

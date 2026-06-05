@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-12 00:00+0000\n"
-"PO-Revision-Date: 2026-05-12 00:00+0700\n"
+"POT-Creation-Date: 2026-06-05 00:00+0000\n"
+"PO-Revision-Date: 2026-06-05 00:00+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -17,24 +17,198 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_trial_balance_kmitl
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_trial_balance_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_trial_balance_kmitl
-msgid "งบทดลอง"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Trial Balance"
+msgstr "งบทดลอง"
 
 #. module: accounting_kmitl_reports
-#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_pl_kmitl
 #: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_pl_kmitl
-msgid "งบกำไรขาดทุน"
-msgstr ""
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_pl_kmitl
+msgid "Profit and Loss"
+msgstr "งบกำไรขาดทุน"
 
 #. module: accounting_kmitl_reports
-#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_bs_kmitl
 #: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_bs_kmitl
-msgid "งบแสดงฐานะการเงิน"
-msgstr ""
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_bs_kmitl
+msgid "Balance Sheet"
+msgstr "งบแสดงฐานะการเงิน"
 
 #. module: accounting_kmitl_reports
-#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_cf_kmitl
 #: model:ir.actions.act_window,name:accounting_kmitl_reports.action_report_cf_kmitl
-msgid "งบกระแสเงินสด"
-msgstr ""
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_cf_kmitl
+msgid "Cash Flow Statement"
+msgstr "งบกระแสเงินสด"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "From"
+msgstr "ตั้งแต่"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "to"
+msgstr "ถึง"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Opening"
+msgstr "ยอดยกมา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "During Period"
+msgstr "ระหว่างงวด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Ending"
+msgstr "ยอดคงเหลือ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Debit"
+msgstr "เดบิต"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Credit"
+msgstr "เครดิต"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Balance"
+msgstr "ยอดดุล"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.trial_balance_kmitl
+msgid "Total"
+msgstr "รวม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Print PDF"
+msgstr "พิมพ์ PDF"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Export Excel"
+msgstr "ส่งออก Excel"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Date From"
+msgstr "วันที่เริ่มต้น"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Date To"
+msgstr "วันที่สิ้นสุด"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Posted entries only"
+msgstr "เฉพาะรายการที่ลงบัญชีแล้ว"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Hide accounts at 0"
+msgstr "ซ่อนบัญชีที่ยอดเป็นศูนย์"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Hide journal / partner / account filters"
+msgstr "ซ่อนตัวกรองสมุดรายวัน / คู่ค้า / บัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Account code range"
+msgstr "ช่วงรหัสบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Loading..."
+msgstr "กำลังโหลด..."
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "No data"
+msgstr "ไม่มีข้อมูล"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Funds"
+msgstr "กองทุน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Activities"
+msgstr "กิจกรรม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Journals"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Partners"
+msgstr "คู่ค้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Accounts"
+msgstr "บัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+msgid "From code"
+msgstr "จากรหัส"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.js:0
+msgid "To code"
+msgstr "ถึงรหัส"

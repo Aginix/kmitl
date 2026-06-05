@@ -81,6 +81,7 @@
                         <field name="department_analytic_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                         <field name="fund_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}"/>
                         <field name="source_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}"/>
+                        <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}"/>
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
                     <button name="action_open_actual_amount_wizard" string="Record Actual Disbursement" help="Use this to adjust the actual disbursement amount when it is lower than the approved amount. Values above the approved amount are not allowed." type="object" class="btn btn-primary my-3" attrs="{'invisible': [('state', '!=', 'approved')]}" />
@@ -143,6 +144,7 @@
                 <field name="category_id" />
                 <field name="department_id" />
                 <field name="owner_id" />
+                <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-danger="state == 'rejected'"/>
             </tree>
         </field>
@@ -156,6 +158,7 @@
                 <field name="name" />
                 <field name="department_id" />
                 <field name="category_id" />
+                <field name="account_fiscal_year_id" />
                 <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]" />
                 <filter name="filter_submitted" string="Submitted" domain="[('state', '=', 'submitted')]" />
                 <filter name="filter_validated" string="Validated" domain="[('state', '=', 'validated')]" />

@@ -173,6 +173,206 @@ class TestBudgetDashboard(TransactionCase):
         commitment.action_reserve()
         return commitment
 
+    def _post_appropriation_act(
+        self, account, amount, activity, appropriation_type="initial"
+    ):
+        move = self.env["budget.move"].create(
+            {
+                "move_type": "appropriation",
+                "budget_type": "expense",
+                "appropriation_type": appropriation_type,
+                "account_fiscal_year_id": self.fy.id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": account.id,
+                            "balance": amount,
+                            "analytic_distribution": {str(activity.id): 100.0},
+                        }
+                    )
+                ],
+            }
+        )
+        move.action_review()
+        move.action_post()
+        return move
+
+    def _breakdown(self):
+        data = self.env["budget.dashboard"].get_dashboard_data(
+            self.fy.id, self.parent.id, {}, "activity_analytic_id"
+        )
+        return {row["key"]: row for row in data["rows"]}
+
+    def test_activity_breakdown_nests_accounts_and_rolls_up(self):
+        """Activities form the outer tree; the budget-account subtree nests under
+        the exact activity it's tagged to, and both trees roll up."""
+        AA = self.env["account.analytic.account"]
+        Plan = self.env["account.analytic.plan"]
+        plan = Plan.search([("code", "=", "activities")], limit=1) or Plan.create(
+            {"name": "Activities", "code": "activities"}
+        )
+        act_parent = AA.create(
+            {"name": "Develop", "code": "ACT09", "plan_id": plan.id}
+        )
+        act_child = AA.create(
+            {
+                "name": "Higher Ed",
+                "code": "ACT09007",
+                "plan_id": plan.id,
+                "parent_id": act_parent.id,
+            }
+        )
+        self._post_appropriation_act(self.child, 100_000, act_child)
+        self._reserve_with_dist(self.child, 60_000, {str(act_child.id): 100.0})
+
+        rows = self._breakdown()
+        p_key = "a%s" % act_parent.id
+        c_key = "a%s" % act_child.id
+        self.assertIn(p_key, rows)
+        self.assertIn(c_key, rows)
+        parent_act, child_act = rows[p_key], rows[c_key]
+        # outer hierarchy: dimension rows, parent at level 0, child nested under it
+        self.assertEqual(parent_act["row_type"], "dim")
+        self.assertEqual(parent_act["level"], 0)
+        self.assertEqual(parent_act["parent_key"], False)
+        self.assertEqual(child_act["level"], 1)
+        self.assertEqual(child_act["parent_key"], p_key)
+        # activity rolls up over its subtree: here parent mirrors its only child
+        self.assertEqual(parent_act["current"], 100_000)
+        self.assertEqual(child_act["current"], 100_000)
+        self.assertEqual(child_act["cap"], 60_000)
+        self.assertEqual(child_act["used"], 60_000)
+        self.assertEqual(child_act["remaining"], 40_000)
+
+        # budget-account subtree nests under the EXACT activity (the child),
+        # itself rolling up over the account tree.
+        acc_root_key = "a%s|b%s" % (act_child.id, self.parent.id)
+        acc_leaf_key = "a%s|b%s" % (act_child.id, self.child.id)
+        self.assertIn(acc_root_key, rows)
+        self.assertIn(acc_leaf_key, rows)
+        self.assertEqual(rows[acc_root_key]["parent_key"], c_key)
+        self.assertEqual(rows[acc_leaf_key]["parent_key"], acc_root_key)
+        leaf = rows[acc_leaf_key]
+        self.assertEqual(leaf["row_type"], "account")
+        self.assertEqual(leaf["account_id"], self.child.id)
+        self.assertEqual(leaf["dims"]["activity_analytic_id"], act_child.id)
+        self.assertEqual(leaf["current"], 100_000)
+        self.assertEqual(leaf["cap"], 60_000)
+        self.assertEqual(leaf["remaining"], 40_000)
+        # exact-activity rule: accounts are NOT nested under the ancestor activity
+        self.assertNotIn("a%s|b%s" % (act_parent.id, self.child.id), rows)
+
+    def test_activity_breakdown_untagged_bucket(self):
+        """Lines with no activity fall into the sentinel root so totals still
+        reconcile with the flat report."""
+        self._post_appropriation(self.child, 50_000, "initial")
+        rows = self._breakdown()
+        self.assertIn("a0", rows)
+        sentinel = rows["a0"]
+        self.assertEqual(sentinel["row_type"], "dim")
+        self.assertEqual(sentinel["dims"]["activity_analytic_id"], False)
+        self.assertEqual(sentinel["current"], 50_000)
+        # the account subtree still nests under the sentinel
+        self.assertIn("a0|b%s" % self.child.id, rows)
+        self.assertEqual(rows["a0|b%s" % self.child.id]["current"], 50_000)
+
+    def test_two_dim_breakdown_activities_then_departments(self):
+        """activities › departments › account: each level nests under the exact
+        parent node, rolls up over its subtree, and keys are path-encoded."""
+        AA = self.env["account.analytic.account"]
+        Plan = self.env["account.analytic.plan"]
+        act_plan = Plan.search([("code", "=", "activities")], limit=1) or Plan.create(
+            {"name": "Activities", "code": "activities"}
+        )
+        dept_plan = Plan.search(
+            [("code", "=", "departments")], limit=1
+        ) or Plan.create({"name": "Departments", "code": "departments"})
+        # The outer dimension (activities) has its own parent/child hierarchy,
+        # so the test also covers intra-dimension nesting within the breakdown.
+        act_parent = AA.create(
+            {"name": "Act P", "code": "ACT2D", "plan_id": act_plan.id}
+        )
+        act = AA.create(
+            {
+                "name": "Act C",
+                "code": "ACT2D07",
+                "plan_id": act_plan.id,
+                "parent_id": act_parent.id,
+            }
+        )
+        dept = AA.create({"name": "Dept", "code": "DEP2D", "plan_id": dept_plan.id})
+
+        # appropriation: activity on the line, department on the move header
+        # (which propagates to the line, matching production data flow).
+        move = self.env["budget.move"].create(
+            {
+                "move_type": "appropriation",
+                "budget_type": "expense",
+                "appropriation_type": "initial",
+                "account_fiscal_year_id": self.fy.id,
+                "department_analytic_id": dept.id,
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": self.child.id,
+                            "balance": 100_000,
+                            "analytic_distribution": {str(act.id): 100.0},
+                        }
+                    )
+                ],
+            }
+        )
+        move.action_review()
+        move.action_post()
+        self._reserve_with_dist(
+            self.child, 60_000, {str(act.id): 100.0, str(dept.id): 100.0}
+        )
+
+        data = self.env["budget.dashboard"].get_dashboard_data(
+            self.fy.id,
+            self.parent.id,
+            {},
+            ["activity_analytic_id", "department_analytic_id"],
+        )
+        rows = {r["key"]: r for r in data["rows"]}
+        ap_key = "a%s" % act_parent.id
+        a_key = "a%s" % act.id
+        ad_key = "a%s|p%s" % (act.id, dept.id)
+        acc_root = "a%s|p%s|b%s" % (act.id, dept.id, self.parent.id)
+        acc_leaf = "a%s|p%s|b%s" % (act.id, dept.id, self.child.id)
+        for key in (ap_key, a_key, ad_key, acc_root, acc_leaf):
+            self.assertIn(key, rows)
+        # nesting: act parent(0) › act child(1) › department(2) › acc root(3) › leaf(4)
+        self.assertEqual(rows[ap_key]["row_type"], "dim")
+        self.assertEqual(rows[ap_key]["dim_level"], 0)
+        self.assertEqual(rows[ap_key]["level"], 0)
+        self.assertEqual(rows[ap_key]["parent_key"], False)
+        # intra-dimension hierarchy: the child activity nests under its parent
+        self.assertEqual(rows[a_key]["dim_level"], 0)
+        self.assertEqual(rows[a_key]["level"], 1)
+        self.assertEqual(rows[a_key]["parent_key"], ap_key)
+        # cross-dimension nesting at depth > 0: department under the child activity
+        self.assertEqual(rows[ad_key]["dim_level"], 1)
+        self.assertEqual(rows[ad_key]["level"], 2)
+        self.assertEqual(rows[ad_key]["parent_key"], a_key)
+        self.assertEqual(rows[acc_root]["level"], 3)
+        self.assertEqual(rows[acc_root]["parent_key"], ad_key)
+        self.assertEqual(rows[acc_leaf]["level"], 4)
+        self.assertEqual(rows[acc_leaf]["parent_key"], acc_root)
+        # each level rolls up the whole subtree (single path here)
+        self.assertEqual(rows[ap_key]["current"], 100_000)
+        self.assertEqual(rows[a_key]["current"], 100_000)
+        self.assertEqual(rows[ad_key]["current"], 100_000)
+        self.assertEqual(rows[acc_leaf]["current"], 100_000)
+        # cap co-locates with reserved at the (activity, department) node
+        self.assertEqual(rows[ad_key]["cap"], 60_000)
+        self.assertEqual(rows[ad_key]["used"], 60_000)
+        self.assertEqual(rows[acc_leaf]["cap"], 60_000)
+        self.assertEqual(rows[acc_leaf]["remaining"], 40_000)
+        # the account leaf carries the full dimension tuple
+        self.assertEqual(rows[acc_leaf]["dims"]["activity_analytic_id"], act.id)
+        self.assertEqual(rows[acc_leaf]["dims"]["department_analytic_id"], dept.id)
+
     def test_fund_filter_applies_to_commitment_columns(self):
         """A fund filter must narrow the commitment columns (cap/used), not only
         the move-sourced ones — guards against silently-dropped non-stored dims."""

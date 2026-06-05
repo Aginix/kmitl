@@ -1,6 +1,7 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -88,3 +89,19 @@ class KrisProjectReceipt(models.Model):
     def _compute_net_amount(self):
         for rec in self:
             rec.net_amount = rec.amount - rec.equipment_cost_in_installment
+
+    @api.constrains("extra_income", "project_id")
+    def _check_extra_income_total(self):
+        for rec in self:
+            project = rec.project_id
+            if not project:
+                continue
+            total_extra = sum(project.receipt_ids.mapped("extra_income"))
+            if total_extra > project.extra_value + 1e-9:
+                raise ValidationError(
+                    _(
+                        "ยอดค่า Extra ที่รับจริงรวมทุกใบ (%.2f บาท) "
+                        "เกินจากยอดค่า Extra โครงการ (%.2f บาท)"
+                    )
+                    % (total_extra, project.extra_value)
+                )

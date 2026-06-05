@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KMITL Project",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.3.0",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -28,10 +28,12 @@
         "data/project.impact.csv",
         "data/project.methodology.csv",
         "data/project.strategic.plan.csv",
+        "data/budget_account_project_update.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/menu_views.xml",
         "views/kmitl_project_views.xml",
+        "views/budget_account_views.xml",
         "views/portal_templates.xml",
         "views/portal_dashboard_templates.xml",
         "views/project_evaluation_views.xml",

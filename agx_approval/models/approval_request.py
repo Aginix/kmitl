@@ -1,5 +1,6 @@
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 
 class ApprovalRequest(models.Model):
@@ -271,6 +272,15 @@ class ApprovalRequest(models.Model):
         search="_search_source_analytic_id",
     )
 
+    account_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal Year",
+        tracking=True,
+        store=True,
+        compute="_compute_date_range_fy",
+        search="_search_date_range_fy",
+    )
+
     _analytic_keys = {
         "activities": "activity_analytic_id",
         "departments": "department_analytic_id",
@@ -331,6 +341,41 @@ class ApprovalRequest(models.Model):
                 (query, [[str(account_id) for account_id in account_ids]]),
             )
         ]
+
+    @api.depends("date", "company_id")
+    def _compute_date_range_fy(self):
+        for rec in self:
+            date = fields.Date.to_date(rec.date)
+            company = rec.company_id
+            rec.account_fiscal_year_id = (
+                company and company.find_daterange_fy(date) or False
+            )
+
+    @api.model
+    def _search_date_range_fy(self, operator, value):
+        if operator in ("=", "!=", "in", "not in"):
+            date_range_domain = [("id", operator, value)]
+        else:
+            date_range_domain = [("name", operator, value)]
+
+        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
+
+        domain = [("id", "=", -1)]
+        for date_range in date_ranges:
+            domain = expression.OR(
+                [
+                    domain,
+                    [
+                        "&",
+                        ("date", ">=", date_range.date_from),
+                        ("date", "<=", date_range.date_to),
+                        "|",
+                        ("company_id", "=", False),
+                        ("company_id", "=", date_range.company_id.id),
+                    ],
+                ]
+            )
+        return domain
 
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):

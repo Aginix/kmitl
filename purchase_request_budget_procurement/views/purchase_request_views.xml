@@ -17,7 +17,7 @@
                     attrs="{'invisible': [('procurement_plan_id', '=', False)]}"
                 >
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">แผนจัดซื้อจัดจ้าง</span>
+                        <span class="o_stat_text">Procurement Plan</span>
                     </div>
                 </button>
             </xpath>
@@ -40,19 +40,33 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
                 <h2>Purchase Request Form</h2>
-                <group string="แผนจัดซื้อจัดจ้าง">
-                    <field
-                        name="use_procurement_plan"
-                        attrs="{'readonly': [('is_editable','=', False)]}"
-                    />
-                    <field
-                        name="procurement_plan_id"
-                        options="{'no_create_edit': True, 'no_create': True}"
-                        domain="[('state', '=', 'new')]"
-                        attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}"
-                    />
-                    <field name="procurement_plan_analytic_id" invisible="1" />
-                </group>
+                <!-- Plan-driven PRs are created from the procurement plan only
+                     (ADR-0006). The selector is gone; these stay invisible so
+                     the prefill onchange still fires from the create context. -->
+                <field name="use_procurement_plan" invisible="1" />
+                <field name="procurement_plan_analytic_id" invisible="1" />
+                <!-- Discoverability: tell users where plan-driven พ.1 come from,
+                     shown only on a fresh, non-plan-linked draft. Direct (non-plan)
+                     PRs are still created here as usual. -->
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    attrs="{'invisible': ['|', ('procurement_plan_id', '!=', False), ('state', '!=', 'draft')]}"
+                >
+                    <i class="fa fa-info-circle me-1" />
+                    ต้องการจัดทำใบ พ.1 จาก<b>แผนจัดซื้อจัดจ้าง</b>?
+                    เลือกแผน แล้วกดปุ่ม <b>"สร้างใบขอซื้อ"</b> จากหน้าแผน
+                    (แผนต้องอยู่สถานะ <b>"รอดำเนินการ"</b>)
+                    — ไม่สามารถเลือกแผนจากในใบ พ.1 นี้ได้
+                    <div class="mt-2">
+                        <a
+                            href="/web#action=purchase_request_budget_procurement.action_procurement_plan_ready_for_pr"
+                            class="btn btn-sm btn-primary"
+                        >
+                            <i class="fa fa-external-link me-1" />ไปที่แผนจัดซื้อจัดจ้าง
+                        </a>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>

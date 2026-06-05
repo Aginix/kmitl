@@ -33,9 +33,16 @@ class PurchaseRequest(models.Model):
     def _domain_budget_account_id(self):
         return [("purchase_ok", "=", True), ("product_id", "!=", False)]
 
+    def _reservation_account_domain(self):
+        # Only purchasable, product-backed budget codes are selectable for a PR,
+        # matching the budget_account_id field domain — so the picker cannot
+        # offer (nor apply_reservation_selection write) an account the PR would
+        # reject or that would leave its lines product-less.
+        return super()._reservation_account_domain() + self._domain_budget_account_id()
+
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กิจกรรม",
+        string="Activity",
         compute="_compute_analytic_id",
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
@@ -47,7 +54,7 @@ class PurchaseRequest(models.Model):
 
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="ส่วนงาน",
+        string="Department",
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
@@ -59,7 +66,7 @@ class PurchaseRequest(models.Model):
 
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กองทุน",
+        string="Fund",
         compute="_compute_analytic_id",
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
@@ -71,7 +78,7 @@ class PurchaseRequest(models.Model):
 
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="แหล่งเงิน",
+        string="Source",
         compute="_compute_analytic_id",
         inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
@@ -96,7 +103,7 @@ class PurchaseRequest(models.Model):
 
     product_id = fields.Many2one(related=False, readonly=False)
 
-    @api.depends("state")
+    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_is_budget_editable(self):
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
@@ -297,26 +304,40 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("budget_account_id")
     def _onchange_budget_account_id(self):
-        default_price = self.env.context.get("default_price_unit", 0)
-        product_id = self.budget_account_id.product_id
+        self._apply_budget_account_product()
 
+    def _apply_budget_account_product(self):
+        """Set the product from the budget account and ensure a PR line.
+
+        Shared by the budget_account_id onchange and the reservation picker:
+        the picker writes via ORM (no onchange fires), so it calls this directly
+        to keep the PR line in sync with the chosen budget code.
+        """
+        product_id = self.budget_account_id.product_id
         if not product_id:
             return
-
         self.product_id = product_id.id
-
         if self.line_ids:
-            for line in self.line_ids:
-                line.product_id = product_id.id
+            self.line_ids.write({"product_id": product_id.id})
         else:
+            default_price = self.env.context.get("default_price_unit", 0)
             self.line_ids = [
                 Command.create(
                     {
                         "product_id": product_id.id,
                         "name": product_id.display_name,
                         "product_uom_id": product_id.uom_id.id,
-                        "price_unit": getattr(self, 'procurement_plan_id', False) and self.procurement_plan_id.total_price or default_price,
+                        "price_unit": getattr(self, "procurement_plan_id", False)
+                        and self.procurement_plan_id.total_price
+                        or default_price,
                         "product_qty": 1.0,
                     }
                 )
             ]
+
+    def apply_reservation_selection(self, selections, dims=None):
+        """Picker write-back: set the budget code + dimensions, then sync the
+        product line (the manual onchange does not fire on an ORM write)."""
+        res = super().apply_reservation_selection(selections, dims=dims)
+        self._apply_budget_account_product()
+        return res

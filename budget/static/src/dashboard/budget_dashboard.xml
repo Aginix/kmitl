@@ -47,6 +47,15 @@
                         />
                     </div>
                 </t>
+                <t t-foreach="breakdownOrder" t-as="bd" t-key="bd.key">
+                    <div class="o_bd_filter o_bd_check">
+                        <label>
+                            <input type="checkbox" t-att-checked="state.breakdownDims[bd.key]"
+                                   t-on-change="() => this.toggleBreakdown(bd.key)"/>
+                            <t t-esc="bd.label"/>
+                        </label>
+                    </div>
+                </t>
                 <div class="o_bd_filter o_bd_check">
                     <label>
                         <input type="checkbox" t-att-checked="state.hideZero" t-on-change="toggleHideZero"/>
@@ -74,25 +83,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr t-foreach="visibleRows" t-as="row" t-key="row.id"
-                        t-att-class="row.has_children ? 'o_bd_group' : ''">
+                    <tr t-foreach="visibleRows" t-as="row" t-key="row.key"
+                        t-att-class="rowClass(row)">
                         <td class="o_bd_acc">
                             <div class="o_bd_acc_inner" t-att-style="'padding-left:' + (row.level * 18) + 'px'">
                                 <span class="o_bd_caret" t-on-click="() => this.toggleRow(row)"
-                                      t-esc="row.has_children ? (state.collapsed[row.id] ? '▸' : '▾') : ''"/>
+                                      t-esc="row.has_children ? (state.collapsed[row.key] ? '▸' : '▾') : ''"/>
                                 <b t-esc="row.code"/>
                                 <span t-esc="row.name"/>
                             </div>
                         </td>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row)" t-esc="format(row.initial)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row, 'initial')" t-esc="format(row.initial)"/>
                         <td class="text-end o_bd_num" t-esc="format(row.adjustment)"/>
                         <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillBudget(row)">
                             <b t-esc="format(row.current)"/>
                         </td>
                         <td class="text-end o_bd_num" t-esc="format(row.cap)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.reserved)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.obligated)"/>
-                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row)" t-esc="format(row.consumed)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'reserve')" t-esc="format(row.reserved)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'obligate')" t-esc="format(row.obligated)"/>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillUsage(row, 'consume')" t-esc="format(row.consumed)"/>
                         <td class="text-end o_bd_num" t-esc="format(row.used)"/>
                         <td class="text-end o_bd_num" t-att-class="row.remaining &lt; 0 ? 'o_bd_neg' : ''">
                             <b t-esc="format(row.remaining)"/>

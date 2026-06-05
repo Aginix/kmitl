@@ -30,6 +30,34 @@
                             </t>
                         </select>
                     </div>
+                    <div class="o_bo_filter o_bo_dept" t-if="departments.length">
+                        <label>ส่วนงาน</label>
+                        <div class="o_bo_dept_wrap">
+                            <button class="o_bo_dept_btn" t-on-click="toggleDeptOpen">
+                                <span t-esc="departmentLabel"/>
+                                <i class="fa fa-caret-down"/>
+                            </button>
+                            <t t-if="state.deptOpen">
+                                <div class="o_bo_dept_backdrop" t-on-click="closeDept"/>
+                                <div class="o_bo_dept_panel">
+                                    <div class="o_bo_dept_actions">
+                                        <a t-on-click="selectAllDepartments">เลือกทั้งหมด</a>
+                                        <a t-on-click="clearDepartments">ล้าง</a>
+                                    </div>
+                                    <div class="o_bo_dept_list">
+                                        <t t-foreach="departments" t-as="d" t-key="d.id">
+                                            <label class="o_bo_dept_item">
+                                                <input type="checkbox"
+                                                       t-att-checked="state.departmentIds.includes(d.id)"
+                                                       t-on-change="() => this.toggleDepartment(d.id)"/>
+                                                <span t-esc="d.display_name"/>
+                                            </label>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -53,6 +81,13 @@
                               t-att-class="(state.totals.remaining || 0) &lt; 0 ? 'o_bo_neg' : 'o_bo_pos'"
                               t-esc="format(state.totals.remaining)"/>
                     </div>
+                </div>
+
+                <!-- monthly usage trend (จอง / ผูกพัน / เบิกจ่าย) -->
+                <h3 class="o_bo_section">สถานะการใช้งบประมาณรายเดือน</h3>
+                <div class="o_bo_panel o_bo_chart_panel">
+                    <EChart t-if="hasTimeseries" option="timeseriesOption"/>
+                    <div t-else="" class="o_bo_empty">ไม่มีข้อมูล</div>
                 </div>
 
                 <!-- cards by budget category -->
@@ -89,7 +124,9 @@
                                         <span class="o_bo_bd_h">คงเหลือ</span>
                                     </div>
                                     <t t-foreach="funds" t-as="f" t-key="f.id">
-                                        <div class="o_bo_bd_row">
+                                        <div class="o_bo_bd_row"
+                                             t-att-class="isDrillable(f) ? 'o_bo_bd_clickable' : ''"
+                                             t-on-click="(ev) => this.openBreakdown(card, f, 'fund_analytic_id', ev)">
                                             <span class="o_bo_bd_name">
                                                 <b t-if="f.code" t-esc="f.code"/> <t t-esc="f.name"/>
                                             </span>
@@ -107,7 +144,9 @@
                                         <span class="o_bo_bd_h">คงเหลือ</span>
                                     </div>
                                     <t t-foreach="activities" t-as="a" t-key="a.id">
-                                        <div class="o_bo_bd_row">
+                                        <div class="o_bo_bd_row"
+                                             t-att-class="isDrillable(a) ? 'o_bo_bd_clickable' : ''"
+                                             t-on-click="(ev) => this.openBreakdown(card, a, 'activity_analytic_id', ev)">
                                             <span class="o_bo_bd_name">
                                                 <b t-if="a.code" t-esc="a.code"/> <t t-esc="a.name"/>
                                             </span>
@@ -123,6 +162,48 @@
                     </t>
                     <div t-if="!state.cards.length" class="o_bo_empty">ไม่มีประเภทงบ</div>
                 </div>
+
+                <!-- extension dimension sections (โครงการ/กิจกรรม, แผนจัดซื้อจัดจ้าง, …);
+                     contributed by modules via budget.dashboard._overview_sections -->
+                <t t-foreach="state.sections" t-as="section" t-key="section.key">
+                    <h3 class="o_bo_section" t-esc="section.title"/>
+                    <div class="o_bo_panel o_bo_dim_panel">
+                        <table class="o_bo_dim_table">
+                            <thead>
+                                <tr>
+                                    <th class="o_bo_dim_name_col">ชื่อ</th>
+                                    <th class="text-end">งบ</th>
+                                    <th class="text-end">ใช้ไป</th>
+                                    <th class="text-end">คงเหลือ</th>
+                                    <th class="o_bo_dim_bar_col"/>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="section.items" t-as="item" t-key="item.id || ('agg' + item_index)">
+                                    <tr t-att-class="isDrillable(item) ? 'o_bo_clickable' : ''"
+                                        t-on-click="(ev) => this.openSectionItem(section, item, ev)">
+                                        <td class="o_bo_dim_name">
+                                            <b t-if="item.code" t-esc="item.code"/> <t t-esc="item.name"/>
+                                        </td>
+                                        <td class="text-end o_bo_dim_num" t-esc="format(item.current)"/>
+                                        <td class="text-end o_bo_dim_num" t-esc="format(item.used)"/>
+                                        <td class="text-end o_bo_dim_num"
+                                            t-att-class="item.remaining &lt; -0.005 ? 'o_bo_neg' : ''"
+                                            t-esc="format(item.remaining)"/>
+                                        <td class="o_bo_dim_bar_col">
+                                            <div class="o_bo_bar">
+                                                <div class="o_bo_bar_fill" t-att-style="'width:' + usedPct(item) + '%'"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr t-if="!section.items.length" class="o_bo_r_empty">
+                                    <td colspan="5">ไม่มีข้อมูล</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
 
                 <!-- recent movements -->
                 <h3 class="o_bo_section">การเคลื่อนไหวล่าสุด</h3>
@@ -221,6 +302,10 @@
                 </div>
             </t>
         </div>
+    </t>
+
+    <t t-name="budget.EChart" owl="1">
+        <div t-ref="chart" class="o_echart"/>
     </t>
 
 </templates>

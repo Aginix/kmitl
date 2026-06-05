@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budgeting",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -32,12 +32,18 @@
     ],
     "assets": {
         "web.assets_backend": [
+            # Apache ECharts (vendored) — attaches window.echarts for EChart.
+            "budget/static/lib/echarts/echarts.min.js",
             "budget/static/src/dashboard/budget_dashboard.js",
             "budget/static/src/dashboard/budget_dashboard.xml",
             "budget/static/src/dashboard/budget_dashboard.scss",
+            "budget/static/src/overview/echart.js",
             "budget/static/src/overview/budget_overview.js",
             "budget/static/src/overview/budget_overview.xml",
             "budget/static/src/overview/budget_overview.scss",
+            "budget/static/src/reservation_picker/budget_reservation_picker.js",
+            "budget/static/src/reservation_picker/budget_reservation_picker.xml",
+            "budget/static/src/reservation_picker/budget_reservation_picker.scss",
         ],
     },
     "auto_install": False,

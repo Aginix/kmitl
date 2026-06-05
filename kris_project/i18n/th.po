@@ -1484,6 +1484,12 @@ msgid "Department"
 msgstr "ส่วนงาน"
 
 #. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__department_analytic_id
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__department_analytic_id
+msgid "Department Budget Code"
+msgstr "รหัสงบประมาณหน่วยงาน"
+
+#. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
 msgid "Extra Payee"
 msgstr "ผู้รับค่า Extra"

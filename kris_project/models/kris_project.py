@@ -249,6 +249,11 @@ class KrisProject(models.Model):
         compute="_compute_totals",
         store=True,
     )
+    total_extra_received = fields.Monetary(
+        string="Total Extra Received",
+        compute="_compute_totals",
+        store=True,
+    )
     # --- Standard fields ---
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -358,6 +363,7 @@ class KrisProject(models.Model):
         "installment_ids.amount",
         "receipt_ids.amount",
         "receipt_ids.net_amount",
+        "receipt_ids.extra_income",
         "project_value",
     )
     def _compute_totals(self):
@@ -365,6 +371,7 @@ class KrisProject(models.Model):
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
+            rec.total_extra_received = sum(rec.receipt_ids.mapped("extra_income"))
             diff = rec.project_value - rec.total_received_amount
             rec.revenue_remaining = max(0.0, diff)
             rec.over_revenue = max(0.0, -diff)
@@ -403,6 +410,10 @@ class KrisProject(models.Model):
 
     def action_add_receipt(self):
         self.ensure_one()
+        if self.state in ("done", "cancel"):
+            raise UserError(
+                _("Cannot record revenue on a project that is done or cancelled.")
+            )
         return {
             "name": _("Revenue Record"),
             "type": "ir.actions.act_window",
@@ -414,6 +425,10 @@ class KrisProject(models.Model):
 
     def action_add_installment(self):
         self.ensure_one()
+        if not self.can_edit:
+            raise UserError(
+                _("Installments can only be added while the project is in draft.")
+            )
         return {
             "name": _("Add Installment"),
             "type": "ir.actions.act_window",
@@ -425,6 +440,10 @@ class KrisProject(models.Model):
 
     def action_apply_allocation_template(self):
         self.ensure_one()
+        if not self.can_edit:
+            raise UserError(
+                _("Allocation can only be changed while the project is in draft.")
+            )
         if not self.allocation_template_id:
             raise UserError(_("Please select an allocation template first."))
         base_amount = self.maintenance_deduction_amount
