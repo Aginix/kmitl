@@ -12,7 +12,8 @@ class KrisProjectReceiptReport(models.Model):
     receipt_id = fields.Many2one(
         "kris.project.receipt", string="Receipt", readonly=True
     )
-    project_id = fields.Many2one("kris.project", string="Project", readonly=True)
+    project_id = fields.Many2one("kris.project", string="Project ID", readonly=True)
+    project_name = fields.Char(string="Project Name", readonly=True)
     installment_id = fields.Many2one(
         "kris.project.installment", string="Installment Number", readonly=True
     )
@@ -72,6 +73,7 @@ class KrisProjectReceiptReport(models.Model):
                     r.id                                                   AS id,
                     r.id                                                   AS receipt_id,
                     r.project_id                                           AS project_id,
+                    p.project_name                                         AS project_name,
                     r.installment_id                                       AS installment_id,
                     r.date                                                 AS date,
                     p.state                                                AS project_state,

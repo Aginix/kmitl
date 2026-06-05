@@ -12,7 +12,8 @@ class KrisProjectAllocationReport(models.Model):
     allocation_line_id = fields.Many2one(
         "kris.project.allocation.line", string="Allocation", readonly=True
     )
-    project_id = fields.Many2one("kris.project", string="Project", readonly=True)
+    project_id = fields.Many2one("kris.project", string="Project ID", readonly=True)
+    project_name = fields.Char(string="Project Name", readonly=True)
     item_id = fields.Many2one(
         "kris.project.allocation.item", string="Allocator", readonly=True
     )
@@ -72,6 +73,7 @@ class KrisProjectAllocationReport(models.Model):
                     a.id                                                   AS id,
                     a.id                                                   AS allocation_line_id,
                     a.project_id                                           AS project_id,
+                    p.project_name                                         AS project_name,
                     a.item_id                                              AS item_id,
                     a.name                                                 AS name,
                     p.state                                                AS project_state,

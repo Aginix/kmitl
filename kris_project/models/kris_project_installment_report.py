@@ -13,8 +13,9 @@ class KrisProjectInstallmentReport(models.Model):
         "kris.project.installment", string="Installment", readonly=True
     )
     project_id = fields.Many2one(
-        "kris.project", string="Project", readonly=True
+        "kris.project", string="Project ID", readonly=True
     )
+    project_name = fields.Char(string="Project Name", readonly=True)
     due_date = fields.Date(string="Date Due", readonly=True)
     state = fields.Selection(
         selection=[
@@ -85,6 +86,7 @@ class KrisProjectInstallmentReport(models.Model):
                     i.id                                                   AS id,
                     i.id                                                   AS installment_id,
                     i.project_id                                           AS project_id,
+                    p.project_name                                         AS project_name,
                     i.due_date                                             AS due_date,
                     i.state                                                AS state,
                     p.state                                                AS project_state,
