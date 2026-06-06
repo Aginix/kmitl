@@ -6,6 +6,9 @@ PLAN_OFFICER_ROLE = "kmitl_todo.role_procurement_plan_officer"
 
 class ProcurementPlan(models.Model):
     # Add the activity mixin to procurement.plan (it had only mail.thread).
+    # _name is required: with a multi-element _inherit list and no _name, Odoo
+    # cannot infer the target model and falls back to the class name.
+    _name = "procurement.plan"
     _inherit = ["procurement.plan", "mail.activity.mixin"]
 
     # ------------------------------------------------------------------
