@@ -19,6 +19,13 @@
             action="action_procurement_plan"
         />
         <menuitem
+            id="action_procurement_plan_manual_menu_action"
+            name="สร้างแผนจัดซื้อ (Manual)"
+            action="action_procurement_plan_manual"
+            groups="base.group_erp_manager"
+            sequence="5"
+        />
+        <menuitem
             id="action_procurement_plan_report_menu"
             name="รายงาน"
         >

@@ -160,12 +160,26 @@
         </field>
     </record>
 
-    <!-- Allow erp_manager to create plans by hand (others keep create=false) -->
-    <record id="view_procurement_plan_form_erp_manager" model="ir.ui.view">
-        <field name="name">view.procurement.plan.form.erp.manager</field>
+    <!-- Manual create variant: standalone (primary) views with create enabled,
+         reached only through the erp_manager-only menu below. The default views
+         keep create="false" so plans still normally come from an appropriation. -->
+    <record id="view_procurement_plan_tree_manual" model="ir.ui.view">
+        <field name="name">view.procurement.plan.tree.manual</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="view_procurement_plan_tree" />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">true</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_procurement_plan_form_manual" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form.manual</field>
         <field name="model">procurement.plan</field>
         <field name="inherit_id" ref="view_procurement_plan_form" />
-        <field name="groups_id" eval="[(4, ref('base.group_erp_manager'))]" />
+        <field name="mode">primary</field>
         <field name="arch" type="xml">
             <xpath expr="//form" position="attributes">
                 <attribute name="create">true</attribute>
@@ -173,16 +187,16 @@
         </field>
     </record>
 
-    <record id="view_procurement_plan_tree_erp_manager" model="ir.ui.view">
-        <field name="name">view.procurement.plan.tree.erp.manager</field>
-        <field name="model">procurement.plan</field>
-        <field name="inherit_id" ref="view_procurement_plan_tree" />
-        <field name="groups_id" eval="[(4, ref('base.group_erp_manager'))]" />
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="create">true</attribute>
-            </xpath>
-        </field>
+    <record id="action_procurement_plan_manual" model="ir.actions.act_window">
+        <field name="name">สร้างแผนจัดซื้อ (Manual)</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">procurement.plan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'sequence': 1, 'view_mode': 'tree', 'view_id': ref('view_procurement_plan_tree_manual')}),
+            (0, 0, {'sequence': 2, 'view_mode': 'form', 'view_id': ref('view_procurement_plan_form_manual')}),
+        ]" />
     </record>
 
     <!-- Action procurement.plan -->
