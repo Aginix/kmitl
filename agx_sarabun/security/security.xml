@@ -43,6 +43,24 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
+        <!-- Active/completed actor (READ ONLY) — the visibility fix.
+             actor_user_ids is the holder-set snapshotted at activation, so Position/
+             Unit actors (no user_id of their own) can now read; the state filter
+             keeps waiting/future steps invisible. (DESIGN §6.6 Rule 2) -->
+        <record id="sarabun_document_actor_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Active/Completed Actor (read)</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[
+                ('routing_step_ids.state', 'in', ('active', 'done')),
+                ('routing_step_ids.actor_user_ids', 'in', [user.id])
+            ]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
         <!-- Managers see everything (v1: incl. secrecy-labelled; need-to-know is phase-2) -->
         <record id="sarabun_document_manager_rule" model="ir.rule">
             <field name="name">Sarabun Document: Manager Access</field>
@@ -62,15 +80,26 @@
         <!-- Routing steps: visible to the document's sender, the step's snapshot
              actors, and the actor who acted. (Full Route-visibility on the
              document itself — incl. activating step actors — lands in P4.) -->
+        <!-- A step is readable iff its parent document is readable: an actor who can
+             see the document sees the whole Route (เกษียน trail / who-acts-next).
+             Write/create allowed so the action methods (act_on_step: insert for
+             Direct, reassign for Delegate, stamp on complete) can run as the acting
+             user; the active-step-actor authority check lives in the method, not the
+             rule (DESIGN §6.7/6.8). -->
         <record id="sarabun_routing_step_user_rule" model="ir.rule">
             <field name="name">Sarabun Routing Step: User Access</field>
             <field name="model_id" ref="model_sarabun_routing_step"/>
             <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
             <field name="domain_force">[
-                '|', '|',
-                ('document_id.sender_user_id', '=', user.id),
-                ('actor_user_ids', 'in', user.id),
-                ('acted_by_id', '=', user.id)
+                '|',
+                    ('document_id.sender_user_id', '=', user.id),
+                    '&amp;',
+                        ('document_id.routing_step_ids.state', 'in', ('active', 'done')),
+                        ('document_id.routing_step_ids.actor_user_ids', 'in', [user.id])
             ]</field>
         </record>
         <record id="sarabun_routing_step_manager_rule" model="ir.rule">

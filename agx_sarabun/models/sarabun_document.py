@@ -424,6 +424,7 @@ class SarabunDocument(models.Model):
                 "This document has been signed and cannot be recalled. "
                 "Issue a cancellation หนังสือ instead."
             ))
+        self.routing_step_ids._clear_activities()
         self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
             {"state": "skipped"}
         )
@@ -510,6 +511,7 @@ class SarabunDocument(models.Model):
         if self.state != "circulating":
             return
         self.state = "completed"
+        self.routing_step_ids._clear_activities()  # clear any remaining to-dos
         self._freeze_signed_copy()  # P5
         self.message_post(body=_("All routing completed. Document is now complete."))
         self._call_origin("_on_sarabun_completed", self)
@@ -518,6 +520,7 @@ class SarabunDocument(models.Model):
     def _do_return(self, step, destination="sender_restart", resume_step_id=None):
         """ตีกลับ — send back for revision; destination chosen by the returner."""
         self.ensure_one()
+        self.routing_step_ids._clear_activities()  # drop to-dos before archive/resume
         if destination == "resume_step" and resume_step_id:
             resume = self.env["sarabun.routing.step"].browse(int(resume_step_id))
             later = self.routing_step_ids.filtered(lambda s: s.order >= resume.order)
@@ -539,6 +542,7 @@ class SarabunDocument(models.Model):
     def _do_reject(self, step):
         """ปฏิเสธ — terminal; void the number, skip remaining steps."""
         self.ensure_one()
+        self.routing_step_ids._clear_activities()
         self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
             {"state": "skipped"}
         )

@@ -158,22 +158,44 @@ class SarabunRoutingStep(models.Model):
         self.actor_user_ids = [(6, 0, users.ids)]
 
     def _activate(self):
-        """Make a waiting step active: snapshot holders + notify (P4)."""
+        """Make a waiting step active: snapshot holders + schedule activities."""
         for step in self:
             step.state = "active"
             step._snapshot_holders()
-            step._notify_activation()
+        self._schedule_activities()
 
-    def _notify_activation(self):
-        """Hook: schedule mail.activity for each holder + bus push.
+    def _activity_summary(self):
+        self.ensure_one()
+        labels = dict(VERB_SELECTION)
+        return labels.get(self.verb, self.verb)
 
-        Implemented in P4 (notifications). v1 no-op so the engine runs headless.
-        """
-        return
+    def _schedule_activities(self):
+        """One 'action required' mail.activity per snapshot holder of each active
+        GATING step (§7.2). รับทราบ / for_info steps never raise an activity — they
+        live in the inbox tray only (P4-tray)."""
+        Link = self.env["sarabun.routing.step.activity"]
+        act_type = self.env.ref(
+            "agx_sarabun.mail_activity_sarabun_action", raise_if_not_found=False
+        )
+        for step in self.filtered(lambda s: s.state == "active" and s.gating):
+            doc = step.document_id
+            for usr in step.actor_user_ids:
+                act = doc.activity_schedule(
+                    act_type_xmlid="agx_sarabun.mail_activity_sarabun_action",
+                    summary=step._activity_summary(),
+                    user_id=usr.id,
+                ) if act_type else False
+                if act:
+                    Link.create({"step_id": step.id, "activity_id": act.id, "user_id": usr.id})
 
     def _clear_activities(self):
-        """Hook: clear sibling holders' activities on first-to-act (P4)."""
-        return
+        """Clear every action-required activity tied to these steps (all holders) —
+        first-to-act and on every lifecycle close (§7.2)."""
+        links = self.env["sarabun.routing.step.activity"].search(
+            [("step_id", "in", self.ids)]
+        )
+        links.mapped("activity_id").unlink()
+        links.unlink()
 
     # ----------------------------------------------------------------- acting
     def _check_act_authority(self, actor):
@@ -267,6 +289,7 @@ class SarabunRoutingStep(models.Model):
 
     def _do_delegate(self, actor, note, vals):
         # Reassign THIS step to a new target; it stays active (Delegate ≠ Direct).
+        self._clear_activities()  # drop the original holders' to-dos (§7.4)
         self.write({
             "disposition": "delegate",
             "delegated_to_id": vals.get("user_id") or False,
@@ -277,7 +300,7 @@ class SarabunRoutingStep(models.Model):
             "department_id": vals.get("department_id", self.department_id.id),
         })
         self._snapshot_holders()
-        self._notify_activation()
+        self._schedule_activities()  # fresh to-do for the new holder(s)
 
     def _do_return(self, actor, note, vals):
         self._stamp(actor, note, "return")

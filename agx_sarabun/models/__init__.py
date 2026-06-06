@@ -6,6 +6,7 @@ from . import sarabun_position
 from . import sarabun_document_type
 from . import sarabun_route_template
 from . import sarabun_routing_step
+from . import sarabun_routing_step_activity
 from . import sarabun_document_sequence
 from . import sarabun_reference_line
 from . import sarabun_enclosure
