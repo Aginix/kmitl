@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_route_template_tree" model="ir.ui.view">
+        <field name="name">sarabun.route.template.tree</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="document_type_id"/>
+                <field name="department_id"/>
+                <field name="origin_model"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sarabun_route_template_form" model="ir.ui.view">
+        <field name="name">sarabun.route.template.form</field>
+        <field name="model">sarabun.route.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. PR Approval (&lt; 100k)"/></h1>
+                    </div>
+                    <group>
+                        <group string="Scope (auto-match for from_record)">
+                            <field name="document_type_id"/>
+                            <field name="department_id"/>
+                            <field name="origin_model" placeholder="purchase.request"/>
+                            <field name="condition_domain" placeholder="[('amount_total', '&gt;=', 100000)]"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <separator string="Route Steps (seed)"/>
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="order"/>
+                            <field name="verb"/>
+                            <field name="for_info"/>
+                            <field name="target_mode"/>
+                            <field name="position_id"
+                                   attrs="{'column_invisible': [('parent.id', '=', False)], 'required': [('target_mode', '=', 'position')], 'readonly': [('target_mode', '!=', 'position')]}"/>
+                            <field name="user_id"
+                                   attrs="{'required': [('target_mode', '=', 'person')], 'readonly': [('target_mode', '!=', 'person')]}"/>
+                            <field name="department_id"
+                                   attrs="{'required': [('target_mode', '=', 'unit')], 'readonly': [('target_mode', '!=', 'unit')]}"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sarabun_route_template" model="ir.actions.act_window">
+        <field name="name">Route Templates</field>
+        <field name="res_model">sarabun.route.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

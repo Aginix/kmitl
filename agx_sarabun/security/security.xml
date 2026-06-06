@@ -58,5 +58,38 @@
             <field name="global" eval="True"/>
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
+
+        <!-- Routing steps: visible to the document's sender, the step's snapshot
+             actors, and the actor who acted. (Full Route-visibility on the
+             document itself — incl. activating step actors — lands in P4.) -->
+        <record id="sarabun_routing_step_user_rule" model="ir.rule">
+            <field name="name">Sarabun Routing Step: User Access</field>
+            <field name="model_id" ref="model_sarabun_routing_step"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[
+                '|', '|',
+                ('document_id.sender_user_id', '=', user.id),
+                ('actor_user_ids', 'in', user.id),
+                ('acted_by_id', '=', user.id)
+            ]</field>
+        </record>
+        <record id="sarabun_routing_step_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Routing Step: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_routing_step"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Route templates: all users may read (to select a seed); managers manage. -->
+        <record id="sarabun_route_template_read_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template: Read</field>
+            <field name="model_id" ref="model_sarabun_route_template"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
     </data>
 </odoo>

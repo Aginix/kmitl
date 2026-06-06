@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+"""Route templates — seed-only (ADR-0001).
+
+A template *seeds* a Document's Route at send time; it never owns or constrains
+the flow once seeded. Each template line materialises into one
+``sarabun.routing.step`` (state ``waiting``).
+"""
+from odoo import api, fields, models
+from odoo.tools.safe_eval import safe_eval
+
+TARGET_MODE = [
+    ("position", "Position (ตำแหน่ง)"),
+    ("person", "Person (บุคคล)"),
+    ("unit", "Unit (สารบรรณกลาง)"),
+]
+VERB_SELECTION = [
+    ("acknowledge", "รับทราบ (Acknowledge)"),
+    ("endorse", "เห็นชอบ (Endorse)"),
+    ("sign_approve", "ลงนาม-อนุมัติ (Sign/Approve)"),
+]
+
+
+class SarabunRouteTemplate(models.Model):
+    _name = "sarabun.route.template"
+    _description = "Sarabun Route Template (seed)"
+    _order = "sequence, name"
+
+    name = fields.Char(required=True)
+    active = fields.Boolean(default=True)
+    sequence = fields.Integer(default=10, help="Match priority (lower = higher).")
+    description = fields.Text()
+
+    # Scope (for from_record auto-matching)
+    department_id = fields.Many2one("hr.department", string="Department")
+    document_type_id = fields.Many2one("sarabun.document.type", string="Document Type")
+    origin_model = fields.Char(string="Origin Model")
+    condition_domain = fields.Text(
+        string="Condition Domain",
+        help="Python domain evaluated against the origin record, e.g. "
+        "[('amount_total', '>=', 100000)]. Empty = match all.",
+    )
+
+    line_ids = fields.One2many(
+        "sarabun.route.template.line", "template_id", string="Steps", copy=True
+    )
+
+    def match_origin_record(self, origin_record):
+        self.ensure_one()
+        if not self.condition_domain:
+            return True
+        try:
+            domain = safe_eval(self.condition_domain, {"uid": self.env.uid})
+            return bool(origin_record.filtered_domain(domain))
+        except Exception:
+            return False
+
+    @api.model
+    def find_matching_templates(self, origin_record=False, department_id=False, document_type_id=False):
+        domain = [("active", "=", True)]
+        if origin_record:
+            domain += ["|", ("origin_model", "=", False), ("origin_model", "=", origin_record._name)]
+        if department_id:
+            domain += ["|", ("department_id", "=", False), ("department_id", "=", department_id)]
+        if document_type_id:
+            domain += ["|", ("document_type_id", "=", False), ("document_type_id", "=", document_type_id)]
+        templates = self.search(domain, order="sequence, name")
+        if origin_record:
+            templates = templates.filtered(lambda t: t.match_origin_record(origin_record))
+        return templates
+
+
+class SarabunRouteTemplateLine(models.Model):
+    _name = "sarabun.route.template.line"
+    _description = "Sarabun Route Template Line (seed)"
+    _order = "order, id"
+
+    template_id = fields.Many2one(
+        "sarabun.route.template", required=True, ondelete="cascade"
+    )
+    order = fields.Integer(string="Stage", default=10, help="Steps sharing one order run in parallel.")
+    verb = fields.Selection(VERB_SELECTION, required=True, default="endorse")
+    for_info = fields.Boolean(string="สำเนาเรียน (CC)", help="Non-gating acknowledge (CC).")
+    target_mode = fields.Selection(TARGET_MODE, required=True, default="position")
+    position_id = fields.Many2one("sarabun.position", string="Position")
+    user_id = fields.Many2one("res.users", string="User")
+    department_id = fields.Many2one("hr.department", string="Unit")
+
+    def _seed_vals(self):
+        """Return the dict to create a sarabun.routing.step (state waiting)."""
+        self.ensure_one()
+        return {
+            "order": self.order,
+            "verb": self.verb,
+            "for_info": self.for_info,
+            "target_mode": self.target_mode,
+            "position_id": self.position_id.id,
+            "user_id": self.user_id.id,
+            "department_id": self.department_id.id,
+            "state": "waiting",
+            "created_by_disposition": "seed",
+            "seeded_from_template_line_id": self.id,
+        }

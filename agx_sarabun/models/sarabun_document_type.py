@@ -38,7 +38,12 @@ class SarabunDocumentType(models.Model):
     sequence = fields.Integer(default=10)
     description = fields.Text(string="Description")
 
-    # === Bindings added in later phases (comodels not yet present in P1) ===
+    # Seed route (P2). Numbering sequence (P3) and report template (P5) bindings
+    # are added in their phases.
+    default_route_id = fields.Many2one(
+        comodel_name="sarabun.route.template",
+        string="Default Route",
+        help="Seed template materialised into routing steps at send (ADR-0001).",
+    )
     # sequence_id = fields.Many2one("sarabun.document.sequence")      # P3 register
-    # default_route_id = fields.Many2one("sarabun.route.template")    # P2 seed route
     # report_template_id = fields.Many2one("ir.actions.report")       # P5 cover sheet

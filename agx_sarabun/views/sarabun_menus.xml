@@ -31,4 +31,10 @@
               parent="menu_sarabun_config"
               action="action_sarabun_position"
               sequence="20"/>
+
+    <menuitem id="menu_sarabun_route_template"
+              name="Route Templates"
+              parent="menu_sarabun_config"
+              action="action_sarabun_route_template"
+              sequence="30"/>
 </odoo>

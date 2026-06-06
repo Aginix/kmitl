@@ -28,7 +28,18 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <!-- Workflow buttons (action_send / recall / act) arrive in P2. -->
+                    <button name="action_send" type="object" string="Send"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"/>
+                    <button name="action_act_on_my_step" type="object"
+                            string="Act on My Step" class="oe_highlight"
+                            attrs="{'invisible': [('my_active_step_id', '=', False)]}"/>
+                    <button name="action_recall" type="object" string="Recall"
+                            confirm="Recall this document? Its number will be voided."
+                            attrs="{'invisible': ['|', ('state', '!=', 'circulating'), ('has_signed', '=', True)]}"/>
+                    <button name="action_duplicate_to_draft" type="object"
+                            string="Duplicate to New Draft"
+                            attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,circulating,completed"/>
                 </header>
@@ -72,7 +83,59 @@
                     </group>
                     <!-- helper flags used by attrs -->
                     <field name="is_editable" invisible="1"/>
+                    <field name="has_signed" invisible="1"/>
+                    <field name="my_active_step_id" invisible="1"/>
                     <notebook>
+                        <page string="การเดินเรื่อง (Routing)" name="routing">
+                            <group>
+                                <group>
+                                    <field name="route_template_id"
+                                           attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                                </group>
+                                <group>
+                                    <field name="routing_progress" widget="progressbar"/>
+                                    <field name="pending_ack_count"/>
+                                </group>
+                            </group>
+                            <field name="routing_step_ids"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}">
+                                <tree editable="bottom" decoration-muted="state == 'skipped'"
+                                      decoration-success="state == 'done' and disposition in ('complete','direct')"
+                                      decoration-info="state == 'active'">
+                                    <field name="order"/>
+                                    <field name="verb"/>
+                                    <field name="for_info" string="CC"/>
+                                    <field name="target_mode"/>
+                                    <field name="position_id"
+                                           attrs="{'required': [('target_mode', '=', 'position')], 'readonly': [('target_mode', '!=', 'position')]}"/>
+                                    <field name="user_id"
+                                           attrs="{'required': [('target_mode', '=', 'person')], 'readonly': [('target_mode', '!=', 'person')]}"/>
+                                    <field name="department_id"
+                                           attrs="{'required': [('target_mode', '=', 'unit')], 'readonly': [('target_mode', '!=', 'unit')]}"/>
+                                    <field name="state" readonly="1" widget="badge"/>
+                                    <field name="acted_by_id" readonly="1" optional="show"/>
+                                    <field name="disposition" readonly="1" optional="show"/>
+                                    <field name="signed_as_position_id" readonly="1" optional="hide"/>
+                                    <field name="note" readonly="1" optional="hide"/>
+                                </tree>
+                            </field>
+                            <separator string="ประวัติการเดินเรื่อง (History)"
+                                       attrs="{'invisible': [('archived_step_ids', '=', [])]}"/>
+                            <field name="archived_step_ids" readonly="1"
+                                   attrs="{'invisible': [('archived_step_ids', '=', [])]}">
+                                <tree>
+                                    <field name="attempt_seq"/>
+                                    <field name="order"/>
+                                    <field name="verb"/>
+                                    <field name="target_name"/>
+                                    <field name="state"/>
+                                    <field name="disposition"/>
+                                    <field name="acted_by_id"/>
+                                    <field name="acted_date"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page string="อ้างถึง (References)" name="references">
                             <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
                             <field name="reference_document_ids"

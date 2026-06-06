@@ -10,6 +10,9 @@ minimal; behaviour is added per phase.
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+
+from .sarabun_routing_step import POSITIVE_DISPOSITIONS, VERB_RANK
 
 _logger = logging.getLogger(__name__)
 
@@ -169,6 +172,66 @@ class SarabunDocument(models.Model):
         string="สิ่งที่ส่งมาด้วย (Enclosures)",
     )
 
+    # === Routing (the living Route — ADR-0001) ===
+    route_template_id = fields.Many2one(
+        comodel_name="sarabun.route.template",
+        string="Route Template (seed)",
+        help="Optional template that seeds the steps at send. Not authoritative "
+        "once seeded — the Route lives on the document.",
+    )
+    routing_step_ids = fields.One2many(
+        comodel_name="sarabun.routing.step",
+        inverse_name="document_id",
+        string="Routing",
+        domain=[("active", "=", True)],
+        copy=False,
+        help="The living Route — current attempt's steps.",
+    )
+    archived_step_ids = fields.One2many(
+        comodel_name="sarabun.routing.step",
+        inverse_name="document_id",
+        string="Routing History",
+        domain=[("active", "=", False)],
+        copy=False,
+        help="Frozen steps of closed attempts (kept for the เกษียน trail).",
+    )
+    attempt_seq = fields.Integer(
+        string="Attempt",
+        default=1,
+        readonly=True,
+        copy=False,
+        help="Generation counter bumped on each re-send so prior attempts survive "
+        "as history (ADR-0002 §3.4).",
+    )
+    strongest_verb_done = fields.Selection(
+        selection=[
+            ("none", "None"),
+            ("acknowledge", "รับทราบ"),
+            ("endorse", "เห็นชอบ"),
+            ("sign_approve", "ลงนาม-อนุมัติ"),
+        ],
+        string="Strongest Verb Done",
+        compute="_compute_strongest_verb_done",
+        store=True,
+        default="none",
+        help="Highest verb positively completed so far. Drives the Recall window "
+        "(Recall blocked once a ลงนาม-อนุมัติ step has occurred — ADR-0002).",
+    )
+    has_signed = fields.Boolean(compute="_compute_strongest_verb_done", store=True)
+
+    # current user's actionable step(s) + routing progress (UI)
+    my_active_step_id = fields.Many2one(
+        comodel_name="sarabun.routing.step",
+        compute="_compute_my_active_step",
+        string="My Pending Step",
+    )
+    pending_ack_count = fields.Integer(
+        compute="_compute_routing_progress", string="ค้างรับทราบ",
+    )
+    routing_progress = fields.Float(
+        compute="_compute_routing_progress", string="Routing Progress",
+    )
+
     # === Attachments ===
     attachment_ids = fields.One2many(
         "ir.attachment",
@@ -185,6 +248,7 @@ class SarabunDocument(models.Model):
     )
 
     # === Semantic helpers (computed booleans — accessed as attributes) ===
+    is_draft = fields.Boolean(compute="_compute_state_flags")
     is_circulating = fields.Boolean(compute="_compute_state_flags")
     is_completed = fields.Boolean(compute="_compute_state_flags")
     is_returned = fields.Boolean(compute="_compute_state_flags")
@@ -206,6 +270,7 @@ class SarabunDocument(models.Model):
     @api.depends("state")
     def _compute_state_flags(self):
         for record in self:
+            record.is_draft = record.state == "draft"
             record.is_circulating = record.state == "circulating"
             record.is_completed = record.state == "completed"
             record.is_returned = record.state == "returned"
@@ -225,6 +290,47 @@ class SarabunDocument(models.Model):
                     if origin.exists():
                         ref = origin.display_name
             record.origin_reference = ref
+
+    @api.depends(
+        "routing_step_ids.state",
+        "routing_step_ids.disposition",
+        "routing_step_ids.verb",
+    )
+    def _compute_strongest_verb_done(self):
+        for record in self:
+            done = record.routing_step_ids.filtered(
+                lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
+            )
+            rank = max((VERB_RANK.get(s.verb, 0) for s in done), default=0)
+            record.strongest_verb_done = {
+                0: "none", 1: "acknowledge", 2: "endorse", 3: "sign_approve",
+            }[rank]
+            record.has_signed = rank >= VERB_RANK["sign_approve"]
+
+    @api.depends("routing_step_ids.state", "routing_step_ids.actor_user_ids")
+    def _compute_my_active_step(self):
+        uid = self.env.user
+        for record in self:
+            step = record.routing_step_ids.filtered(
+                lambda s: s.state == "active" and uid in s.actor_user_ids
+            )[:1]
+            record.my_active_step_id = step
+
+    @api.depends("routing_step_ids.state", "routing_step_ids.gating")
+    def _compute_routing_progress(self):
+        for record in self:
+            steps = record.routing_step_ids
+            record.pending_ack_count = len(
+                steps.filtered(lambda s: s.state == "active" and not s.gating)
+            )
+            gating = steps.filtered("gating")
+            if gating:
+                done = gating.filtered(
+                    lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
+                )
+                record.routing_progress = 100.0 * len(done) / len(gating)
+            else:
+                record.routing_progress = 0.0
 
     # === Display ===
     def name_get(self):
@@ -249,8 +355,198 @@ class SarabunDocument(models.Model):
             "target": "current",
         }
 
-    # === Workflow (P2 — ADR-0001/0002) ===
-    # action_send(), action_recall(), _register(), _advance_stage(),
-    # _freeze_signed_copy(), the routing.step engine and the lifecycle state
-    # machine are implemented in later phases. They are intentionally absent in
-    # P1 so the data foundation can be reviewed and installed on its own.
+    # ============================================================ #
+    #  Lifecycle & routing engine (P2 — ADR-0001 / ADR-0002)        #
+    #  Numbering (_register/_void_register) is P3; freeze is P5.     #
+    # ============================================================ #
+
+    # === Send / Recall (lifecycle transitions) ===
+    def action_send(self):
+        """draft|returned → circulating: seed (if needed), register (P3), activate stage 1."""
+        for doc in self:
+            if doc.state not in ("draft", "returned"):
+                raise UserError(_("Only draft or returned documents can be sent."))
+            if doc.state == "draft" and not doc.routing_step_ids:
+                doc._seed_route_from_template()
+            if not doc.routing_step_ids.filtered("gating"):
+                raise UserError(_(
+                    "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
+                ))
+            doc._register()  # P3: atomic per-(ส่วนงาน × type) allocation
+            doc.state = "circulating"
+            doc.message_post(body=_("Document sent for routing."))
+            doc._call_origin("_on_sarabun_circulating", doc)
+            doc._advance_stage()
+        return True
+
+    def action_recall(self):
+        """circulating → cancelled (เรียกคืน) — only before any ลงนาม-อนุมัติ step."""
+        self.ensure_one()
+        if self.state != "circulating":
+            raise UserError(_("Only a circulating document can be recalled."))
+        if self.sender_user_id != self.env.user and not self.env.user.has_group(
+            "agx_sarabun.group_sarabun_manager"
+        ):
+            raise UserError(_("Only the sender may recall this document."))
+        if self.has_signed:
+            raise UserError(_(
+                "This document has been signed and cannot be recalled. "
+                "Issue a cancellation หนังสือ instead."
+            ))
+        self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
+            {"state": "skipped"}
+        )
+        self.state = "cancelled"
+        self._void_register("cancelled")
+        self.message_post(body=_("Document recalled (เรียกคืน)."))
+        self._call_origin("_on_sarabun_cancelled", self)
+        return True
+
+    def action_act_on_my_step(self):
+        """Open the act wizard for the current user's active step."""
+        self.ensure_one()
+        if not self.my_active_step_id:
+            raise UserError(_("You have no pending action on this document."))
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Act on Step"),
+            "res_model": "sarabun.step.act.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_step_id": self.my_active_step_id.id},
+        }
+
+    def action_duplicate_to_draft(self):
+        """rejected → a NEW draft linked to the same origin (1:N — ADR-0002 #8)."""
+        self.ensure_one()
+        new_doc = self.copy({"state": "draft", "name": "/", "attempt_seq": 1})
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.document",
+            "res_id": new_doc.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    # === Stage engine ===
+    def _seed_route_from_template(self):
+        """Materialise the seed template's lines into waiting steps (ADR-0001)."""
+        self.ensure_one()
+        template = self.route_template_id or self.type_id.default_route_id
+        if not template:
+            return
+        self.route_template_id = template
+        self.routing_step_ids = [
+            (0, 0, dict(line._seed_vals(), attempt_seq=self.attempt_seq or 1))
+            for line in template.line_ids
+        ]
+
+    def _shift_stages_from(self, order):
+        """Make room for an inserted stage (เกษียนสั่งการ) at `order`."""
+        self.ensure_one()
+        for step in self.routing_step_ids.filtered(lambda s: s.order >= order):
+            step.order = step.order + 1
+
+    def _stage_complete(self, order):
+        """A stage is passed when every gating step in it is positively done.
+        A stage with no gating step never stalls the Route."""
+        self.ensure_one()
+        gating = self.routing_step_ids.filtered(lambda s: s.order == order and s.gating)
+        if not gating:
+            return True
+        return all(
+            s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS for s in gating
+        )
+
+    def _advance_stage(self):
+        """Activate stages in order; stop at the first stage with unfinished gating;
+        complete the document when all gating is positively done."""
+        self.ensure_one()
+        if self.state != "circulating":
+            return
+        for order in sorted(set(self.routing_step_ids.mapped("order"))):
+            waiting = self.routing_step_ids.filtered(
+                lambda s: s.order == order and s.state == "waiting"
+            )
+            if waiting:
+                waiting._activate()
+            if not self._stage_complete(order):
+                return  # frontier — wait for this stage's gating steps
+        self._complete_document()
+
+    def _complete_document(self):
+        self.ensure_one()
+        if self.state != "circulating":
+            return
+        self.state = "completed"
+        self._freeze_signed_copy()  # P5
+        self.message_post(body=_("All routing completed. Document is now complete."))
+        self._call_origin("_on_sarabun_completed", self)
+
+    # === Negative paths (driven from step dispositions) ===
+    def _do_return(self, step, destination="sender_restart", resume_step_id=None):
+        """ตีกลับ — send back for revision; destination chosen by the returner."""
+        self.ensure_one()
+        if destination == "resume_step" and resume_step_id:
+            resume = self.env["sarabun.routing.step"].browse(int(resume_step_id))
+            later = self.routing_step_ids.filtered(lambda s: s.order >= resume.order)
+            later.write({
+                "state": "waiting",
+                "disposition": False,
+                "acted_by_id": False,
+                "acted_date": False,
+                "signed_as_position_id": False,
+                "actor_user_ids": [(5, 0, 0)],
+            })
+        else:
+            self._bump_attempt_and_archive()
+            self._seed_route_from_template()
+        self.state = "returned"
+        self.message_post(body=_("Document returned for revision (ตีกลับ)."))
+        self._call_origin("_on_sarabun_returned", self)
+
+    def _do_reject(self, step):
+        """ปฏิเสธ — terminal; void the number, skip remaining steps."""
+        self.ensure_one()
+        self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
+            {"state": "skipped"}
+        )
+        self.state = "rejected"
+        self._void_register("rejected")
+        self.message_post(body=_("Document rejected (ปฏิเสธ)."))
+        self._call_origin("_on_sarabun_rejected", self)
+
+    def _bump_attempt_and_archive(self):
+        """Freeze the current attempt's steps as history and start a new attempt."""
+        self.ensure_one()
+        self.routing_step_ids.write({"active": False})
+        self.attempt_seq = (self.attempt_seq or 1) + 1
+
+    # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===
+    def _call_origin(self, method, *args):
+        """Call an origin callback in the actor's transaction. A raising callback
+        rolls the whole action back — no try/except, no sudo safety net (ADR-0004).
+        Full mixin hardening (1:N ownership, active pointer) lands in P6."""
+        self.ensure_one()
+        if not (self.origin_model and self.origin_res_id):
+            return
+        model = self.env.get(self.origin_model)
+        if model is None:
+            return
+        origin = model.browse(self.origin_res_id)
+        if origin.exists() and hasattr(origin, method):
+            getattr(origin, method)(*args)
+
+    # === Numbering / freeze stubs (filled in P3 / P5) ===
+    def _register(self):
+        """P3: assign the official number atomically (per ส่วนงาน × type, พ.ศ.,
+        fiscal-year reset). v1 no-op — name stays '/'."""
+        return
+
+    def _void_register(self, reason):
+        """P3: void the register number as a permanent gap (เลขยกเลิก). v1 no-op."""
+        return
+
+    def _freeze_signed_copy(self):
+        """P5: render cover sheet + origin body → immutable signed_pdf. v1 no-op."""
+        return

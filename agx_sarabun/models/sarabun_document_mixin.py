@@ -111,43 +111,37 @@ class SarabunDocumentMixin(models.AbstractModel):
 
         return action
 
+    # === Lifecycle callbacks (ADR-0004 contract) ===
+    # All run in the actor's transaction; a raising callback rolls the action back
+    # (no swallow). Override in the origin model. Full mixin hardening (1:N
+    # ownership + active_sarabun_document_id) lands in P6.
+
+    def _on_sarabun_circulating(self, document):
+        """Called when the Document is sent (draft/returned → circulating)."""
+        pass
+
     def _on_sarabun_completed(self, document):
-        """
-        Callback when sarabun document routing is completed.
-        Override this to update your record state.
-
-        Args:
-            document: The completed sarabun.document record
-        """
+        """Called when every gating step is positively completed."""
         pass
 
-    def _on_sarabun_rejected(self, document, recipient):
-        """
-        Callback when sarabun document is rejected.
-        Override this to handle rejection.
-
-        Args:
-            document: The sarabun.document record
-            recipient: The sarabun.document.recipient record that rejected
-        """
+    def _on_sarabun_returned(self, document):
+        """Called when the Document is returned for revision (ตีกลับ)."""
         pass
 
-    def _on_sarabun_action(self, document, recipient, action):
-        """
-        Callback for every action on sarabun document.
-        Called for acknowledge, approve, and reject actions.
-        Override this to track all actions on the document.
+    def _on_sarabun_rejected(self, document):
+        """Called when the Document is rejected (ปฏิเสธ, terminal)."""
+        pass
+
+    def _on_sarabun_cancelled(self, document):
+        """Called when the Document is recalled/cancelled (เรียกคืน, terminal)."""
+        pass
+
+    def _on_sarabun_step(self, step, disposition):
+        """Generic per-step callback for every disposition.
 
         Args:
-            document: The sarabun.document record
-            recipient: The sarabun.document.recipient record that performed the action
-            action: The action type ('acknowledge', 'approve', 'reject')
-
-        Example:
-            def _on_sarabun_action(self, document, recipient, action):
-                self.message_post(
-                    body=f"Sarabun action: {action} by {recipient.actioned_by.name}"
-                )
+            step: the ``sarabun.routing.step`` acted on (never the old recipient)
+            disposition: 'complete' / 'direct' / 'delegate' / 'return' / 'reject'
         """
         pass
 
