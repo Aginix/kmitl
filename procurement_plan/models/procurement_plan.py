@@ -324,7 +324,23 @@ class ProcurementPlan(models.Model):
                 self.account_fiscal_year_id.id,
                 self.company_id.id,
             )
+        # Manual plans gather their dimensions through the convenience fields,
+        # which — unlike the appropriation flow — never back-fill
+        # analytic_distribution (those fields compute *from* the JSON and carry
+        # no inverse). Rebuild it from every dimension so both the plan and its
+        # commitment carry the full distribution; idempotent for
+        # appropriation-born plans whose fields already mirror the JSON.
         dist = dict(self.analytic_distribution or {})
+        for analytic in (
+            self.activity_analytic_id,
+            self.department_analytic_id,
+            self.fund_analytic_id,
+            self.source_analytic_id,
+            self.analytic_account_id,
+        ):
+            if analytic:
+                dist[str(analytic.id)] = 100
+        self.analytic_distribution = dist or False
         commitment = self.env["budget.commitment"].create(
             {
                 "account_id": self.budget_account_id.id,
