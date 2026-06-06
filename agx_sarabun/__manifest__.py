@@ -11,8 +11,9 @@
         "hr",
         "thai_date_utils",
         "l10n_th_fonts",  # Thai font rendering for the cover-sheet PDF (P5)
-        "hr_employee_academic_standing_thailand",  # academic_standing_title (signature block)
         "hr_employee_digitized_signature",  # hr.employee.signature image (signature block)
+        # academic prefix (hr_employee_academic_standing_thailand / academic_standing_title)
+        # is deferred to a later phase — see report_cover_sheet.xml.
     ],
     "data": [
         # Security

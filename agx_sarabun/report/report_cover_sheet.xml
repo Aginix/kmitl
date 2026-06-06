@@ -84,7 +84,7 @@
                                         <td t-out="step.order"/>
                                         <td>
                                             <span t-out="step.signed_as_position_id.name or step.target_name"/><br/>
-                                            <small t-out="step.acted_by_id.employee_id.academic_standing_title"/>
+                                            <!-- academic prefix (academic_standing_title) deferred to a later phase -->
                                             <small t-out="step.acted_by_id.employee_id.name or step.acted_by_id.name"/>
                                         </td>
                                         <td t-out="dict(step._fields['verb'].selection).get(step.verb)"/>
@@ -105,8 +105,8 @@
                                 </div>
                                 <div t-else="" style="height:60px;"/>
                                 <div>
-                                    (<span t-out="sig.acted_by_id.employee_id.academic_standing_title"/><span
-                                        t-out="sig.acted_by_id.employee_id.name or sig.acted_by_id.name"/>)
+                                    <!-- academic prefix (academic_standing_title) deferred to a later phase -->
+                                    (<span t-out="sig.acted_by_id.employee_id.name or sig.acted_by_id.name"/>)
                                 </div>
                                 <div t-out="sig.signed_as_position_id.name"/>
                                 <div t-if="sig.acted_date">

@@ -1102,7 +1102,7 @@ snapshot actor — never from a live HR lookup at print time.
 
 | Element | Source | Verified field |
 |---|---|---|
-| Academic prefix | `hr.employee` of the actor | `academic_standing_title` (stored Char compute) — verified in `hr_employee_academic_standing_thailand/models/hr_employee.py:29`; mirrored as `related` on `hr.employee.public` (`hr_employee_public.py:24`) for portal rendering |
+| Academic prefix | `hr.employee` of the actor | `academic_standing_title` (from `hr_employee_academic_standing_thailand`) — **deferred to a later phase**; v1 renders the signer name without the academic prefix and does not depend on that module |
 | Signer name | `hr.employee` of the actor | `name` |
 | Position signed in | `step.signed_as_position_id` (= `position_id` in v1) | `sarabun.position.name` |
 | Digitized signature image | `hr.employee` of the actor | `signature` (`fields.Binary`) — verified in `hr_employee_digitized_signature/models/hr_employee.py:10` (Ecosoft). No `hr.employee.public` mirror exists yet; add a `related` mirror for portal rendering |
@@ -1271,6 +1271,7 @@ engine without the rich compose UI.
 
 | Seam | v1 stance | Phase-2 |
 |---|---|---|
+| Academic prefix (ศ./รศ./ผศ./ดร.) | name only in the block; no `hr_employee_academic_standing_thailand` dependency | prepend `academic_standing_title` to the signer name |
 | Acting capacity (รักษาการ / มอบอำนาจ) | actor added as temp Position holder; `signed_as_position_id` = `position_id` | record true acting capacity; "ลงนามแทน / รักษาการแทน" line in the block |
 | Full memo/circular **compose template** | engine carries the kinds; cover-sheet-wraps-origin only | rich บันทึกข้อความ / หนังสือเวียน body composer |
 | **PKI** digital signature | digitized signature *image* only (§5.2) | cryptographic signing of the frozen ฉบับลงนาม |

@@ -102,7 +102,7 @@ The **immutable PDF snapshot** frozen when a Document reaches `completed`. From 
 _Avoid_: attachment, printout
 
 **Signature block**:
-The rendered authority line on the Document — signer's name with academic prefix (`hr.employee.academic_standing_title`), the Position signed in, the digitized signature image (from `hr_employee_digitized_signature`), and datetime. รักษาการแทน capacity is phase-2.
+The rendered authority line on the Document — the signer's name, the Position signed in, the digitized signature image (from `hr_employee_digitized_signature`), and datetime. The academic prefix (`hr.employee.academic_standing_title`) and รักษาการแทน capacity are phase-2.
 _Avoid_: signature (reserve for the act/data, not the rendered block)
 
 **เกษียน trail**:
