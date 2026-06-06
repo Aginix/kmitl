@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<odoo>
+
+    <!-- Re-home the existing OU action under the IAM app, between Roles (20)
+         and Groups (40). The action carries no group restriction of its own;
+         visibility comes from the implied group_multi_operating_unit. -->
+    <menuitem
+        id="menu_iam_operating_units"
+        name="Operating Units"
+        parent="iam.menu_iam_root"
+        action="operating_unit.action_operating_unit_tree"
+        sequence="30"
+    />
+
+</odoo>
