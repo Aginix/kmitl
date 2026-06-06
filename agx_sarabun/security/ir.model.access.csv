@@ -16,3 +16,7 @@ access_sarabun_route_template_manager,sarabun.route.template.manager,model_sarab
 access_sarabun_route_template_line_user,sarabun.route.template.line.user,model_sarabun_route_template_line,group_sarabun_user,1,0,0,0
 access_sarabun_route_template_line_manager,sarabun.route.template.line.manager,model_sarabun_route_template_line,group_sarabun_manager,1,1,1,1
 access_sarabun_step_act_wizard,sarabun.step.act.wizard,model_sarabun_step_act_wizard,group_sarabun_user,1,1,1,1
+access_sarabun_document_sequence_user,sarabun.document.sequence.user,model_sarabun_document_sequence,group_sarabun_user,1,0,0,0
+access_sarabun_document_sequence_manager,sarabun.document.sequence.manager,model_sarabun_document_sequence,group_sarabun_manager,1,1,1,1
+access_sarabun_document_number_user,sarabun.document.number.user,model_sarabun_document_number,group_sarabun_user,1,1,1,0
+access_sarabun_document_number_manager,sarabun.document.number.manager,model_sarabun_document_number,group_sarabun_manager,1,1,1,1

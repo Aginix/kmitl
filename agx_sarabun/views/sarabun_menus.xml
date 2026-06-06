@@ -37,4 +37,10 @@
               parent="menu_sarabun_config"
               action="action_sarabun_route_template"
               sequence="30"/>
+
+    <menuitem id="menu_sarabun_sequence"
+              name="Registers (ทะเบียน)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_sequence"
+              sequence="40"/>
 </odoo>

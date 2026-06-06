@@ -10,7 +10,7 @@ minimal; behaviour is added per phase.
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 from .sarabun_routing_step import POSITIVE_DISPOSITIONS, VERB_RANK
 
@@ -230,6 +230,37 @@ class SarabunDocument(models.Model):
     )
     routing_progress = fields.Float(
         compute="_compute_routing_progress", string="Routing Progress",
+    )
+
+    # === Numbering / Register (P3 — ADR-0002 §4) ===
+    register_number_id = fields.Many2one(
+        comodel_name="sarabun.document.number",
+        string="Register Number",
+        readonly=True,
+        copy=False,
+        help="The register ledger row assigned by ลงทะเบียน at send.",
+    )
+    numbering_mode = fields.Selection(
+        selection=[
+            ("auto", "Auto (next available)"),
+            ("reserved", "Reserved number"),
+            ("gap", "Fill a gap"),
+            ("manual", "Manual"),
+        ],
+        string="Numbering Mode",
+        default="auto",
+        help="from_record always registers automatically; reserved/gap/manual are "
+        "for manual compose (memo/circular).",
+    )
+    manual_counter = fields.Integer(
+        string="Manual Number",
+        help="The counter to use in manual/gap mode (routed through the same "
+        "atomic allocation + unique backstop).",
+    )
+    reserved_number_id = fields.Many2one(
+        comodel_name="sarabun.document.number",
+        string="Reserved Number",
+        domain="[('state', '=', 'reserved')]",
     )
 
     # === Attachments ===
@@ -537,15 +568,70 @@ class SarabunDocument(models.Model):
         if origin.exists() and hasattr(origin, method):
             getattr(origin, method)(*args)
 
-    # === Numbering / freeze stubs (filled in P3 / P5) ===
+    # === Numbering / Register (P3 — ADR-0002 §4) ===
+    @api.constrains("numbering_mode", "kind")
+    def _check_numbering_mode_scope(self):
+        for doc in self:
+            if doc.kind == "from_record" and doc.numbering_mode != "auto":
+                raise ValidationError(_(
+                    "from_record documents register automatically; "
+                    "reserved/gap/manual numbering is for manual compose only."
+                ))
+
+    def _resolve_sequence(self):
+        """Resolve the register from (sender ส่วนงาน × type). Block on missing —
+        never silently number from a shared/default pool (DESIGN §4.2)."""
+        self.ensure_one()
+        seq = self.env["sarabun.document.sequence"].search([
+            ("sender_department_id", "=", self.sender_department_id.id),
+            ("document_type_id", "=", self.type_id.id),
+            ("active", "=", True),
+        ], limit=1)
+        if not seq:
+            raise UserError(_(
+                "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s' ประเภท '%(type)s'. "
+                "(No register configured for unit '%(unit)s' × type '%(type)s'.) "
+                "Configure a register before sending."
+            ) % {
+                "unit": self.sender_department_id.display_name,
+                "type": self.type_id.name,
+            })
+        return seq
+
     def _register(self):
-        """P3: assign the official number atomically (per ส่วนงาน × type, พ.ศ.,
-        fiscal-year reset). v1 no-op — name stays '/'."""
-        return
+        """ลงทะเบียน — the distinct Register seam (phase-2 clerk gate lands here).
+        Idempotent: a returned document keeps its number on re-send."""
+        self.ensure_one()
+        if self.register_number_id:
+            return
+        seq = self._resolve_sequence()
+        if self.numbering_mode == "reserved":
+            number = self.reserved_number_id
+            if not number or number.state != "reserved" or number.sequence_id != seq:
+                raise UserError(_("Select a valid reserved number for this register."))
+            number.write({
+                "state": "used",
+                "document_id": self.id,
+                "used_date": fields.Datetime.now(),
+            })
+        elif self.numbering_mode in ("manual", "gap"):
+            if not self.manual_counter:
+                raise UserError(_("Enter the number to use."))
+            number = seq.allocate(self, counter=self.manual_counter)
+        else:  # auto
+            number = seq.allocate(self)
+        self.register_number_id = number
+        self.name = number.register_number
 
     def _void_register(self, reason):
-        """P3: void the register number as a permanent gap (เลขยกเลิก). v1 no-op."""
-        return
+        """Void the register number as a permanent gap (เลขยกเลิก) — never reissued."""
+        self.ensure_one()
+        if self.register_number_id:
+            self.register_number_id.write({
+                "state": "voided",
+                "void_reason": reason,
+                "void_date": fields.Datetime.now(),
+            })
 
     def _freeze_signed_copy(self):
         """P5: render cover sheet + origin body → immutable signed_pdf. v1 no-op."""

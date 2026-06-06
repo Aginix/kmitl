@@ -81,6 +81,14 @@
                         <field name="through" placeholder="ผ่าน... (optional)"/>
                         <field name="addressee_position_id"/>
                     </group>
+                    <group name="numbering" string="เลขที่หนังสือ (Numbering)"
+                           attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}">
+                        <field name="numbering_mode"/>
+                        <field name="reserved_number_id"
+                               attrs="{'invisible': [('numbering_mode', '!=', 'reserved')]}"/>
+                        <field name="manual_counter"
+                               attrs="{'invisible': [('numbering_mode', 'not in', ('manual', 'gap'))]}"/>
+                    </group>
                     <!-- helper flags used by attrs -->
                     <field name="is_editable" invisible="1"/>
                     <field name="has_signed" invisible="1"/>

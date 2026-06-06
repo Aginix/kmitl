@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Register (sequence) -->
+    <record id="view_sarabun_sequence_tree" model="ir.ui.view">
+        <field name="name">sarabun.document.sequence.tree</field>
+        <field name="model">sarabun.document.sequence</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="sender_department_id"/>
+                <field name="document_type_id"/>
+                <field name="reset_period"/>
+                <field name="next_counter"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sarabun_sequence_form" model="ir.ui.view">
+        <field name="name">sarabun.document.sequence.form</field>
+        <field name="model">sarabun.document.sequence</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="ทะเบียนหนังสือกองคลัง – บันทึกข้อความ"/></h1>
+                    </div>
+                    <group>
+                        <group string="Resolution key (ส่วนงาน × type)">
+                            <field name="sender_department_id"/>
+                            <field name="document_type_id"/>
+                            <field name="code"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Rendering">
+                            <field name="prefix"/>
+                            <field name="suffix"/>
+                            <field name="padding"/>
+                            <field name="reset_period"/>
+                            <field name="next_counter"/>
+                        </group>
+                    </group>
+                    <separator string="Allocated Numbers"/>
+                    <field name="number_ids">
+                        <tree decoration-muted="state == 'voided'" decoration-info="state == 'reserved'">
+                            <field name="register_number"/>
+                            <field name="counter"/>
+                            <field name="fiscal_year"/>
+                            <field name="state" widget="badge"/>
+                            <field name="document_id"/>
+                            <field name="used_date"/>
+                            <field name="void_reason" optional="show"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sarabun_sequence" model="ir.actions.act_window">
+        <field name="name">Registers</field>
+        <field name="res_model">sarabun.document.sequence</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
