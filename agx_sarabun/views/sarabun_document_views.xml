@@ -40,6 +40,8 @@
                     <button name="action_duplicate_to_draft" type="object"
                             string="Duplicate to New Draft"
                             attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
+                    <button name="action_print_report" type="object" string="พิมพ์ (Print)"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,circulating,completed"/>
                 </header>

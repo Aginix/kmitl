@@ -7,10 +7,12 @@ lifecycle state *machine* (transitions, _register, freeze, callbacks) arrive in
 P2–P5 — see DESIGN.md and IMPLEMENTATION-PLAN.md. Methods here are intentionally
 minimal; behaviour is added per phase.
 """
+import base64
 import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.pdf import merge_pdf
 
 from .sarabun_routing_step import POSITIVE_DISPOSITIONS, VERB_RANK
 
@@ -263,6 +265,15 @@ class SarabunDocument(models.Model):
         domain="[('state', '=', 'reserved')]",
     )
 
+    # === Signing / official record (P5 — DESIGN §5) ===
+    signed_pdf = fields.Binary(
+        string="ฉบับลงนาม (Signed Copy)", attachment=True, copy=False, readonly=True,
+        help="Immutable PDF frozen at completion (cover sheet + origin body merged).",
+    )
+    signed_pdf_filename = fields.Char(copy=False, readonly=True)
+    signed_at = fields.Datetime(string="Frozen At", copy=False, readonly=True)
+    is_frozen = fields.Boolean(compute="_compute_is_frozen")
+
     # === Attachments ===
     attachment_ids = fields.One2many(
         "ir.attachment",
@@ -362,6 +373,11 @@ class SarabunDocument(models.Model):
                 record.routing_progress = 100.0 * len(done) / len(gating)
             else:
                 record.routing_progress = 0.0
+
+    @api.depends("signed_at")
+    def _compute_is_frozen(self):
+        for record in self:
+            record.is_frozen = bool(record.signed_at)
 
     # === Display ===
     def name_get(self):
@@ -637,6 +653,81 @@ class SarabunDocument(models.Model):
                 "void_date": fields.Datetime.now(),
             })
 
+    # === Signing / official record (P5 — DESIGN §5) ===
+    def _signature_steps(self):
+        """Completed ลงนาม-อนุมัติ steps — the signature block(s)."""
+        self.ensure_one()
+        return self.routing_step_ids.filtered(
+            lambda s: s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
+            and s.verb == "sign_approve"
+        ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
+
+    def _kasian_trail_steps(self):
+        """The เกษียน trail rendered onto the document: endorsing/signing lines."""
+        self.ensure_one()
+        return self.routing_step_ids.filtered(
+            lambda s: s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
+            and s.verb in ("endorse", "sign_approve")
+        ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
+
+    def _get_delegated_report_action(self):
+        """The origin's report used as the cover-sheet body (delegation contract)."""
+        self.ensure_one()
+        if self.origin_model and self.origin_res_id:
+            model = self.env.get(self.origin_model)
+            if model is not None:
+                origin = model.browse(self.origin_res_id)
+                if origin.exists() and hasattr(origin, "_get_sarabun_report_action"):
+                    return origin._get_sarabun_report_action()
+        return False
+
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        name = (self.name or "").replace("/", "-") or "sarabun"
+        return f"{name} - {self.subject or ''}".strip()
+
+    def _render_official_pdf(self):
+        """Cover sheet (this module) + origin body (delegated), merged into one PDF.
+        Rendered with sudo — the frozen copy is the system's official record."""
+        self.ensure_one()
+        Report = self.env["ir.actions.report"].sudo()
+        cover_pdf, _dummy = Report._render_qweb_pdf(
+            "agx_sarabun.action_report_sarabun_cover", [self.id]
+        )
+        body_pdf = b""
+        delegated = self._get_delegated_report_action()
+        if delegated and self.origin_res_id:
+            body_pdf, _dummy = Report._render_qweb_pdf(
+                delegated.report_name, [self.origin_res_id]
+            )
+        return merge_pdf([p for p in (cover_pdf, body_pdf) if p])
+
+    def _get_official_pdf(self):
+        """Frozen bytes once completed; a live render before that (§5.4)."""
+        self.ensure_one()
+        if self.is_frozen and self.signed_pdf:
+            return base64.b64decode(self.signed_pdf)
+        return self._render_official_pdf()
+
     def _freeze_signed_copy(self):
-        """P5: render cover sheet + origin body → immutable signed_pdf. v1 no-op."""
-        return
+        """Freeze the immutable ฉบับลงนาม at completion (idempotent, one-way)."""
+        self.ensure_one()
+        if self.is_frozen:
+            return
+        pdf = self._render_official_pdf()
+        self.write({
+            "signed_pdf": base64.b64encode(pdf),
+            "signed_pdf_filename": self._get_report_base_filename() + ".pdf",
+            "signed_at": fields.Datetime.now(),
+        })
+
+    def action_print_report(self):
+        """Open the official PDF (frozen if completed, else a live preview)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/sarabun/document/%s/pdf" % self.id,
+            "target": "new",
+        }

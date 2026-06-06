@@ -2,13 +2,18 @@
 {
     "name": "e-Sarabun",
     "summary": "Electronic Correspondence Management System (สารบรรณอิเล็กทรอนิกส์)",
-    "version": "16.0.4.0.0",
+    "version": "16.0.5.0.0",
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    # P1 (core data model) deps only. portal/bus/iframe/fonts/amount-to-text are
-    # re-added with their phases (P4 notifications/access, P5 signing/report).
-    "depends": ["mail", "hr", "thai_date_utils"],
+    "depends": [
+        "mail",
+        "hr",
+        "thai_date_utils",
+        "l10n_th_fonts",  # Thai font rendering for the cover-sheet PDF (P5)
+        "hr_employee_academic_standing_thailand",  # academic_standing_title (signature block)
+        "hr_employee_digitized_signature",  # hr.employee.signature image (signature block)
+    ],
     "data": [
         # Security
         "security/security.xml",
@@ -16,6 +21,9 @@
         # Master data
         "data/sarabun_activity_data.xml",
         "data/sarabun_document_type.xml",
+        # Reports
+        "report/paperformat.xml",
+        "report/report_cover_sheet.xml",
         # Wizards
         "wizard/sarabun_step_act_wizard_views.xml",
         # Views
