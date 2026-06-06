@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+      Group Todos completed by a role-in-unit are visible to current holders of
+      that role in that operating unit (ADR-0002/0004). This rule is OR-combined
+      with the core's personal rule (mail_activity_todo.todo_log_own_rule), so a
+      user sees their own completions plus the group history of roles they hold.
+      role/OU ids are read via the sudo-computed todo_role_ids (an ir.rule cannot
+      sudo, and role_ids is ERP-manager restricted).
+    -->
+    <record id="todo_log_role_unit_rule" model="ir.rule">
+        <field name="name">Completed Todos: role-in-unit</field>
+        <field name="model_id" ref="mail_activity_todo.model_todo_log" />
+        <field
+            name="domain_force"
+        >['&amp;', ('responsible_role_id', 'in', user.todo_role_ids.ids), ('operating_unit_id', 'in', user.operating_unit_ids.ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    </record>
+</odoo>
