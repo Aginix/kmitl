@@ -1,0 +1,4 @@
+# Copyright 2026 Aginix Technologies
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+from . import hr_department
+from . import res_users
