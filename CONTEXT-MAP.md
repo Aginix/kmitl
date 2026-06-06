@@ -11,6 +11,7 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 - [Procurement Plan](./procurement_plan/CONTEXT.md) — annual procurement planning; each plan is created from an appropriation, reserves its budget at that moment, and is realised through one purchase request + installment disbursements.
 - [KMITL Project](./kmitl_project/CONTEXT.md) — institutional project/activity planning (โครงการ/กิจกรรม); a project draws from a *floating* project-type budget pool, reserves its full budget when confirmed, then spends like a procurement plan.
 - [Accounting Reports](./accounting_kmitl_reports/CONTEXT.md) — financial-statement reports (Trial Balance, P&L, Balance Sheet, Cash Flow) over the GL (`account.move.line`), filterable by the KMITL accounting dimensions.
+- [Identity & Access](./iam/CONTEXT.md) — standalone app that delegates backend user/role/group/OU/access-right/record-rule administration without granting full Settings (`base.group_system`); a single `IAM Manager` group implying `erp_manager` plus one escalation guard.
 
 ## Relationships
 

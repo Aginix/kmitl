@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+     The IAM app is a re-homed menu tree: every leaf points at an action that
+     already exists in core / base_user_role. We add no new act_window records
+     in Phase 1. Core kept these actions buried under Settings > Technical
+     (gated by base.group_no_one / base.group_system on the *menu* only); the
+     underlying ORM rights belong to base.group_erp_manager, so surfacing them
+     here makes them usable by the IAM manager without full Settings. -->
+<odoo>
+
+    <menuitem
+        id="menu_iam_root"
+        name="Identity &amp; Access"
+        web_icon="iam,static/description/icon.png"
+        groups="iam.group_iam_manager"
+        sequence="50"
+    />
+
+    <menuitem
+        id="menu_iam_users"
+        name="Users"
+        parent="menu_iam_root"
+        action="base.action_res_users"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_iam_roles"
+        name="Roles"
+        parent="menu_iam_root"
+        action="base_user_role.action_res_users_role_tree"
+        sequence="20"
+    />
+
+    <!-- sequence 30 is reserved for "Operating Units" added by
+         iam_operating_unit so the OU entry slots between Roles and Groups. -->
+
+    <menuitem
+        id="menu_iam_groups"
+        name="Groups"
+        parent="menu_iam_root"
+        action="base.action_res_groups"
+        sequence="40"
+    />
+
+    <menuitem
+        id="menu_iam_access_control"
+        name="Access Control"
+        parent="menu_iam_root"
+        sequence="50"
+    />
+
+    <menuitem
+        id="menu_iam_access_rights"
+        name="Access Rights"
+        parent="menu_iam_access_control"
+        action="base.ir_access_act"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_iam_record_rules"
+        name="Record Rules"
+        parent="menu_iam_access_control"
+        action="base.action_rule"
+        sequence="20"
+    />
+
+    <menuitem
+        id="menu_iam_config"
+        name="Configuration"
+        parent="menu_iam_root"
+        sequence="100"
+    />
+
+    <!-- Default Access Rights: edit the base.default_user template, whose
+         groups become the defaults applied to every new internal user.
+         Mirrors base_setup's "Default Access Rights" without depending on it;
+         res_id points at the template via its stable xml-id. -->
+    <record id="action_iam_default_user" model="ir.actions.act_window">
+        <field name="name">Default Access Rights</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="base.view_users_form" />
+        <field name="res_id" eval="ref('base.default_user')" />
+        <field name="target">current</field>
+        <field name="context">{'form_view_initial_mode': 'edit'}</field>
+    </record>
+
+    <menuitem
+        id="menu_iam_default_user"
+        name="Default Access Rights"
+        parent="menu_iam_config"
+        action="action_iam_default_user"
+        sequence="10"
+    />
+
+</odoo>
