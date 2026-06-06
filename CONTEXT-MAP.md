@@ -15,6 +15,7 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 - [Accounting Workflow](./accounting_kmitl_workflow/CONTEXT.md) — two-step maker-checker approval every `account.move` passes before posting (Submit by ผู้จัดทำ/ผู้ตรวจสอบ → Approve by ผู้อนุมัติ = post); a custom `workflow_state` + computed `display_state` overlaid on the existing `draft→submitted→posted` flow, plus a journal-items voucher report with a signature block.
 - [Identity & Access](./iam/CONTEXT.md) — standalone app that delegates backend user/role/group/OU/access-right/record-rule administration without granting full Settings (`base.group_system`); a single `IAM Manager` group implying `erp_manager` plus one escalation guard.
 - [Todos](./mail_activity_todo/CONTEXT.md) — cross-cutting unified inbox (สิ่งที่ต้องทำ) of everything a user must act on; each Todo is a native `mail.activity` on its source record, surfaced in one consolidated page with a jump-to-source button. Owns no business state.
+- [e-Saraban](./agx_sarabun/CONTEXT.md) — electronic official-correspondence (งานสารบรรณ); a registered, numbered หนังสือ routed through an approval/endorsement chain. Other modules attach as origin records that spawn a Document.
 
 ## Relationships
 

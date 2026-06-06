@@ -53,10 +53,15 @@ class SarabunDocumentMixin(models.AbstractModel):
             dict: Values for sarabun.document create()
         """
         self.ensure_one()
+        # NOTE (P1): adapter hardening (1:N, active_sarabun_document_id, new
+        # lifecycle callbacks passing a sarabun.routing.step, atomic rollback) is
+        # P6 — see ADR-0004. Here we only keep the contract loadable for the 5
+        # consumer modules and align the type field name (document_type_id → type_id).
+        doc_type = self.env.ref(
+            "agx_sarabun.document_type_from_record", raise_if_not_found=False
+        )
         return {
-            "document_type_id": self.env.ref(
-                "agx_sarabun.document_type_from_record", raise_if_not_found=False
-            ).id,
+            "type_id": doc_type.id if doc_type else False,
             "subject": self._get_sarabun_subject(),
             "origin_model": self._name,
             "origin_res_id": self.id,
