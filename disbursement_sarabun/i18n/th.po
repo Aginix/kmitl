@@ -17,11 +17,6 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: disbursement_sarabun
-#: model:ir.model.fields,field_description:disbursement_sarabun.field_disbursement_request__main_sarabun_document_id
-msgid "Main Sarabun Document"
-msgstr "เอกสารสารบรรณหลัก"
-
-#. module: disbursement_sarabun
 #: model:ir.model.fields,field_description:disbursement_sarabun.field_disbursement_request__sarabun_in_progress
 msgid "Sarabun In Progress"
 msgstr "สารบรรณอยู่ระหว่างดำเนินการ"

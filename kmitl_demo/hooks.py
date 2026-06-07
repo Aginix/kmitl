@@ -239,33 +239,63 @@ def _create_budget_appropriation(
     return move
 
 
-def _process_sarabun_approve(env, origin_record, admin_user, department):
-    """Drive sarabun document from creation through approval."""
-    result = origin_record.action_submit_to_sarabun()
-    doc = env["sarabun.document"].browse(result.get("res_id"))
+def _ensure_sarabun_register(env, department):
+    """Seed a (ส่วนงาน × from_record) register so action_send can allocate a number.
 
-    # Add routing line: admin as approver
-    env["sarabun.routing.line"].create(
+    The rebuilt engine (P3) blocks send when no sarabun.document.sequence exists
+    for the issuing unit × document type, so the demo must provide one.
+    Idempotent — the sequence is unique per (department, type).
+    """
+    doc_type = env.ref("agx_sarabun.document_type_from_record")
+    seq = env["sarabun.document.sequence"].search(
+        [
+            ("sender_department_id", "=", department.id),
+            ("document_type_id", "=", doc_type.id),
+        ],
+        limit=1,
+    )
+    if not seq:
+        seq = env["sarabun.document.sequence"].create(
+            {
+                "name": "ทะเบียนหนังสือ %s" % department.display_name,
+                "code": "REG-FR-%s" % department.id,
+                "sender_department_id": department.id,
+                "document_type_id": doc_type.id,
+            }
+        )
+    return seq
+
+
+def _process_sarabun_approve(env, origin_record, admin_user, department):
+    """Drive a sarabun document from creation through approval (new engine API)."""
+    _ensure_sarabun_register(env, department)
+
+    origin_record.action_submit_to_sarabun()
+    doc = origin_record.active_sarabun_document_id
+
+    # post_init runs as SUPERUSER (no employee department), so set the issuing
+    # unit explicitly; addressee (เรียน) replaces the old free-text recipient.
+    doc.sender_department_id = department.id
+    doc.addressee = "ผู้บริหาร"
+
+    # Seed one ลงนาม-อนุมัติ step targeting the admin (was sarabun.routing.line).
+    env["sarabun.routing.step"].create(
         {
             "document_id": doc.id,
-            "sequence": 100,
-            "routing_type": "approve",
-            "recipient_type": "user",
+            "order": 10,
+            "verb": "sign_approve",
+            "target_mode": "person",
             "user_id": admin_user.id,
+            "state": "waiting",
         }
     )
 
-    # Set required fields
-    doc.recipient = "ผู้บริหาร"
-
-    # Send document
+    # Send: draft → circulating (registers a number, activates stage 1, snapshots).
     doc.action_send()
 
-    # Approve as admin (switch user since post_init runs as SUPERUSER_ID)
-    doc_as_admin = doc.with_user(admin_user)
-    recipient = doc_as_admin.recipient_ids.filtered(lambda r: r.state == "new")
-    role = env.ref("agx_sarabun.role_system_admin")
-    recipient.with_user(admin_user).action_do_approve(signed_as_role_id=role.id)
+    # Act on the now-active step as its snapshot holder (admin).
+    active_step = doc.routing_step_ids.filtered(lambda s: s.state == "active")[:1]
+    active_step.act_on_step("complete", actor=admin_user)
 
     _logger.info(
         "Sarabun %s completed for %s,%s",

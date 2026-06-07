@@ -10,12 +10,12 @@
         <field name="active" eval="True"/>
     </record>
 
-    <!-- Route Template Line: Head of department approves -->
+    <!-- Route Template Line: Head of department signs/approves -->
     <record id="route_template_line_dr_head_approve" model="sarabun.route.template.line">
         <field name="template_id" ref="route_template_disbursement_request"/>
-        <field name="sequence">10</field>
-        <field name="routing_type">approve</field>
-        <field name="recipient_type">user</field>
+        <field name="order">10</field>
+        <field name="verb">sign_approve</field>
+        <field name="target_mode">person</field>
         <field name="user_id" ref="base.user_admin"/>
     </record>
 

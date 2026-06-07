@@ -553,7 +553,7 @@ class SarabunDocument(models.Model):
             self._seed_route_from_template()
         self.state = "returned"
         self.message_post(body=_("Document returned for revision (ตีกลับ)."))
-        self._call_origin("_on_sarabun_returned", self)
+        self._call_origin("_on_sarabun_returned", self, step)
 
     def _do_reject(self, step):
         """ปฏิเสธ — terminal; void the number, skip remaining steps."""
@@ -565,7 +565,7 @@ class SarabunDocument(models.Model):
         self.state = "rejected"
         self._void_register("rejected")
         self.message_post(body=_("Document rejected (ปฏิเสธ)."))
-        self._call_origin("_on_sarabun_rejected", self)
+        self._call_origin("_on_sarabun_rejected", self, step)
 
     def _bump_attempt_and_archive(self):
         """Freeze the current attempt's steps as history and start a new attempt."""
@@ -575,18 +575,22 @@ class SarabunDocument(models.Model):
 
     # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===
     def _call_origin(self, method, *args):
-        """Call an origin callback in the actor's transaction. A raising callback
-        rolls the whole action back — no try/except, no sudo safety net (ADR-0004).
-        Full mixin hardening (1:N ownership, active pointer) lands in P6."""
+        """Dispatch an origin callback in the actor's transaction (ADR-0004 §8.7).
+        sudo() is used because the approver legitimately lacks rights on the origin,
+        but there is NO try/except — a raising callback propagates and rolls the
+        whole action back (correctness over availability; no silent swallow)."""
         self.ensure_one()
         if not (self.origin_model and self.origin_res_id):
             return
         model = self.env.get(self.origin_model)
         if model is None:
             return
-        origin = model.browse(self.origin_res_id)
-        if origin.exists() and hasattr(origin, method):
-            getattr(origin, method)(*args)
+        origin = model.sudo().browse(self.origin_res_id)
+        if not origin.exists():
+            return
+        fn = getattr(origin, method, None)
+        if fn:
+            fn(*args)
 
     # === Numbering / Register (P3 — ADR-0002 §4) ===
     @api.constrains("numbering_mode", "kind")

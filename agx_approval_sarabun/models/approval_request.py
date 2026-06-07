@@ -15,12 +15,6 @@ class ApprovalRequest(models.Model):
         "thai.date.mixin",
     ]
 
-    main_sarabun_document_id = fields.Many2one(
-        comodel_name="sarabun.document",
-        string="Main Sarabun Document",
-        copy=False,
-    )
-
     def _compute_access_url(self):
         """Compute the access URL for portal access."""
         super()._compute_access_url()
@@ -59,12 +53,42 @@ class ApprovalRequest(models.Model):
             body=_("Approved via Sarabun document: %s") % document.name,
         )
 
-    def _on_sarabun_rejected(self, document, recipient):
-        """Called when sarabun document is rejected."""
+    def _on_sarabun_rejected(self, document, step):
+        """Called when the Sarabun document is rejected (ปฏิเสธ, terminal).
+
+        Reject lands the request in its terminal ``rejected`` state
+        (``action_cancel`` sets ``state = "rejected"`` and releases the budget
+        commitment). Recall/cancel is handled separately in
+        ``_on_sarabun_cancelled``. Runs in the actor's transaction — let any
+        error propagate to roll the disposition back.
+        """
         self.action_cancel()
-        reason = recipient.comment if recipient else _("No reason provided")
+        reason = step.note if step and step.note else _("No reason provided")
         self.message_post(
             body=_("Rejected via Sarabun. Reason: %s") % reason,
+        )
+
+    def _on_sarabun_returned(self, document, step):
+        """Called when the Sarabun document is returned for revision (ตีกลับ).
+
+        Returned is revisable: re-open the request to ``draft`` so the user can
+        amend and resubmit. The budget commitment is released by
+        ``action_draft``.
+        """
+        self.action_draft()
+        reason = step.note if step and step.note else _("No reason provided")
+        self.message_post(
+            body=_("Returned via Sarabun for revision. Reason: %s") % reason,
+        )
+
+    def _on_sarabun_cancelled(self, document):
+        """Called when the Sarabun document is recalled/cancelled (เรียกคืน).
+
+        Re-open the request to ``draft`` so it can be revised or resubmitted.
+        """
+        self.action_draft()
+        self.message_post(
+            body=_("Recalled via Sarabun document: %s") % document.name,
         )
 
     def action_submit_to_sarabun(self):
@@ -72,7 +96,6 @@ class ApprovalRequest(models.Model):
         self.ensure_one()
         result = self.action_create_sarabun_document()
         document = self.env["sarabun.document"].browse(result.get("res_id"))
-        self.main_sarabun_document_id = document
         self.message_post(
             body=_("Submitted to Sarabun for approval: %s") % document.name,
         )

@@ -105,12 +105,6 @@ class PurchaseRequestApproval(models.Model):
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 
-    main_sarabun_document_id = fields.Many2one(
-        comodel_name="sarabun.document",
-        string="Main Sarabun Document",
-        copy=False,
-    )
-
     # _sql_constraints = [
     #     (
     #         "request_id_uniq",
@@ -170,10 +164,11 @@ class PurchaseRequestApproval(models.Model):
     def button_approved(self):
         # Check if sarabun routing is pending
         for rec in self:
-            if rec.main_sarabun_document_id and rec.main_sarabun_document_id.state == "sent":
+            document = rec.active_sarabun_document_id
+            if document and document.is_circulating:
                 raise UserError(
-                    _("Cannot manually approve while Sarabun routing is pending. "
-                      "Please wait for the routing to complete or cancel the Sarabun document.")
+                    _("Cannot manually approve while the หนังสือ is still circulating. "
+                      "Please wait for the routing to complete or recall the Sarabun document.")
                 )
         for rec in self:
             message = (
@@ -295,8 +290,8 @@ class PurchaseRequestApproval(models.Model):
         result = self.action_create_sarabun_document()
         document = self.env["sarabun.document"].browse(result.get("res_id"))
 
-        # Link to PA
-        self.main_sarabun_document_id = document
+        # The mixin owns the origin↔document relation (origin_model/origin_res_id);
+        # do not write a per-consumer link here.
 
         # Log to chatter
         self.message_post(
@@ -312,13 +307,13 @@ class PurchaseRequestApproval(models.Model):
             "target": "current",
         }
 
-    def _on_sarabun_sent(self, document):
+    def _on_sarabun_circulating(self, document):
         """
-        Called when sarabun document is sent (routing started).
-        Changes PA state to 'to_approve'.
+        Called when the หนังสือ starts circulating (draft → circulating, number
+        now assigned). Changes PA state to 'to_approve'.
         """
         _logger.info(
-            "Sarabun sent callback for PA %s (id=%s) from document %s",
+            "Sarabun circulating callback for PA %s (id=%s) from document %s",
             self.name, self.id, document.name
         )
         self.write({"state": "to_approve"})
@@ -340,19 +335,49 @@ class PurchaseRequestApproval(models.Model):
             body=_("Approved via Sarabun document: %s") % document.name,
         )
 
-    def _on_sarabun_rejected(self, document, recipient):
+    def _on_sarabun_rejected(self, document, step):
         """
-        Called when sarabun document is rejected.
-        Changes PA state to rejected.
+        Called when the หนังสือ is rejected (ปฏิเสธ, terminal).
+        Changes PA state to rejected. ``step`` is the rejecting routing step.
         """
         _logger.info(
             "Sarabun rejected callback for PA %s (id=%s) from document %s",
             self.name, self.id, document.name
         )
         self.button_rejected()
-        reason = recipient.comment if recipient else _("No reason provided")
+        reason = (step and step.note) or _("No reason provided")
         self.message_post(
             body=_("Rejected via Sarabun. Reason: %s") % reason,
+        )
+
+    def _on_sarabun_returned(self, document, step):
+        """
+        Called when the หนังสือ is returned for revision (ตีกลับ, revisable).
+        Revert the PA to 'validate' so the requester can amend and re-submit.
+        ``step`` is the returning routing step.
+        """
+        _logger.info(
+            "Sarabun returned callback for PA %s (id=%s) from document %s",
+            self.name, self.id, document.name
+        )
+        self.write({"state": "validate"})
+        reason = (step and step.note) or _("No reason provided")
+        self.message_post(
+            body=_("Returned for revision via Sarabun. Reason: %s") % reason,
+        )
+
+    def _on_sarabun_cancelled(self, document):
+        """
+        Called when the หนังสือ is recalled/cancelled (เรียกคืน, terminal).
+        Revert the PA to 'draft' so it can be re-opened.
+        """
+        _logger.info(
+            "Sarabun cancelled callback for PA %s (id=%s) from document %s",
+            self.name, self.id, document.name
+        )
+        self.write({"state": "draft"})
+        self.message_post(
+            body=_("Recalled via Sarabun document: %s") % document.name,
         )
 
     def _get_sarabun_report_action(self):

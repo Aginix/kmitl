@@ -21,7 +21,7 @@
             <field name="estimated_cost" optional="show"/>
             <field name="procurement_type_id" optional="show"/>
             <field name="procurement_method_id" optional="show"/>
-            <field name="main_sarabun_document_id" optional="show"/>
+            <field name="active_sarabun_document_id" optional="show"/>
 
             <field name="activity_ids" widget="list_activity" optional="hide" />
             <field

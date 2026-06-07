@@ -46,14 +46,14 @@
                             เลขที่เอกสาร
                             <span
                                 class="ms-2 fw-normal"
-                                t-out="o.main_sarabun_document_id.name"
+                                t-out="o.active_sarabun_document_id.name"
                             />
                         </div>
                         <div class="col">
                             วันที่
                             <span
                                 class="ms-2 fw-normal"
-                                t-esc="o.format_date_thai(o.main_sarabun_document_id.date)"
+                                t-esc="o.format_date_thai(o.active_sarabun_document_id.date)"
                             />
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                             หน่วยงาน
                             <span
                                 class="ms-2"
-                                t-out="o.main_sarabun_document_id.sender_display"
+                                t-out="o.active_sarabun_document_id.sender_department_id.display_name"
                             />
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                             เรื่อง
                             <span
                                 class="ms-2"
-                                t-out="o.main_sarabun_document_id.subject"
+                                t-out="o.active_sarabun_document_id.subject"
                             />
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                             เรียน
                             <span
                                 class="ms-2"
-                                t-out="o.main_sarabun_document_id.recipient"
+                                t-out="o.active_sarabun_document_id.addressee"
                             />
                         </div>
                     </div>

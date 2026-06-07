@@ -44,25 +44,25 @@
                             </h3>
                         </div>
                         <div class="row">
-                            <div class="col-8"> เลขที่ <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
+                            <div class="col-8"> เลขที่ <span class="ms-2 fw-normal" t-out="o.active_sarabun_document_id.name" />
                             </div>
                             <div class="col"> วันที่ <span
                                     class="ms-2 fw-normal"
-                                    t-esc="o.format_date_thai(o.main_sarabun_document_id.date)"
+                                    t-esc="o.format_date_thai(o.active_sarabun_document_id.date)"
                                 />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> หน่วยงาน <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
+                            <div class="col"> หน่วยงาน <span class="ms-2" t-out="o.active_sarabun_document_id.sender_department_id.display_name" />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> เรื่อง <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
+                            <div class="col"> เรื่อง <span class="ms-2" t-out="o.active_sarabun_document_id.subject" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                เรียน <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
+                                เรียน <span class="ms-2" t-out="o.active_sarabun_document_id.addressee" />
                             </div>
                         </div>
 

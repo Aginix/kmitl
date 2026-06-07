@@ -22,10 +22,24 @@ class SarabunDocumentMixin(models.AbstractModel):
     _name = "sarabun.document.mixin"
     _description = "Sarabun Document Mixin"
 
+    # Owned by the mixin (ADR-0004). The relation lives on the Document
+    # (origin_model + origin_res_id), so 1:N is free; reject→duplicate yields a
+    # second linked Document. This is a *polymorphic* link, so sarabun_document_ids
+    # is a computed pseudo-O2m (search-based) — NOT a real ORM One2many; and
+    # active_sarabun_document_id is non-stored computed, never a stored compute over
+    # a search (§8.4).
     sarabun_document_ids = fields.One2many(
         comodel_name="sarabun.document",
         compute="_compute_sarabun_documents",
-        string="Sarabun Documents",
+        string="หนังสือ (Documents)",
+        help="All หนังสือ spawned from this record (1:N).",
+    )
+    active_sarabun_document_id = fields.Many2one(
+        comodel_name="sarabun.document",
+        compute="_compute_sarabun_documents",
+        string="หนังสือฉบับปัจจุบัน (Active Document)",
+        help="The current live Document (most recent non-terminal one); others are "
+        "superseded (rejected → duplicated). Replaces per-consumer main_sarabun_document_id.",
     )
     sarabun_document_count = fields.Integer(
         compute="_compute_sarabun_documents",
@@ -39,10 +53,13 @@ class SarabunDocumentMixin(models.AbstractModel):
                 [
                     ("origin_model", "=", record._name),
                     ("origin_res_id", "=", record.id),
-                ]
+                ],
+                order="id desc",
             )
             record.sarabun_document_ids = documents
             record.sarabun_document_count = len(documents)
+            live = documents.filtered(lambda d: d.state not in ("rejected", "cancelled"))
+            record.active_sarabun_document_id = live[:1] or documents[:1]
 
     def _prepare_sarabun_document_vals(self):
         """
@@ -53,19 +70,33 @@ class SarabunDocumentMixin(models.AbstractModel):
             dict: Values for sarabun.document create()
         """
         self.ensure_one()
-        # NOTE (P1): adapter hardening (1:N, active_sarabun_document_id, new
-        # lifecycle callbacks passing a sarabun.routing.step, atomic rollback) is
-        # P6 — see ADR-0004. Here we only keep the contract loadable for the 5
-        # consumer modules and align the type field name (document_type_id → type_id).
-        doc_type = self.env.ref(
-            "agx_sarabun.document_type_from_record", raise_if_not_found=False
-        )
-        return {
+        doc_type = self._get_sarabun_document_type()
+        vals = {
             "type_id": doc_type.id if doc_type else False,
             "subject": self._get_sarabun_subject(),
             "origin_model": self._name,
             "origin_res_id": self.id,
         }
+        # The official number is NOT assigned at create — only the issuing ส่วนงาน
+        # is supplied; ลงทะเบียน happens atomically at send (§4). Omit when
+        # unresolved so the document's own default applies.
+        dept = self._get_sarabun_sender_department()
+        if dept:
+            vals["sender_department_id"] = dept.id
+        return vals
+
+    def _get_sarabun_document_type(self):
+        """The from_record sarabun.document.type (binds sequence/route/template).
+        Override to pick a specific type."""
+        return self.env.ref(
+            "agx_sarabun.document_type_from_record", raise_if_not_found=False
+        )
+
+    def _get_sarabun_sender_department(self):
+        """The issuing ส่วนงาน. Defaults to the current user's employee department;
+        override per origin record."""
+        employee = self.env.user.employee_id
+        return employee.department_id if employee else self.env["hr.department"]
 
     def _get_sarabun_subject(self):
         """
@@ -111,10 +142,10 @@ class SarabunDocumentMixin(models.AbstractModel):
 
         return action
 
-    # === Lifecycle callbacks (ADR-0004 contract) ===
+    # === Lifecycle callbacks (ADR-0004 / DESIGN §8.6 contract) ===
     # All run in the actor's transaction; a raising callback rolls the action back
-    # (no swallow). Override in the origin model. Full mixin hardening (1:N
-    # ownership + active_sarabun_document_id) lands in P6.
+    # (no swallow). Override in the origin model. The engine fires the generic
+    # _on_sarabun_step first, then the matching specific callback below.
 
     def _on_sarabun_circulating(self, document):
         """Called when the Document is sent (draft/returned → circulating)."""
@@ -124,12 +155,14 @@ class SarabunDocumentMixin(models.AbstractModel):
         """Called when every gating step is positively completed."""
         pass
 
-    def _on_sarabun_returned(self, document):
-        """Called when the Document is returned for revision (ตีกลับ)."""
+    def _on_sarabun_returned(self, document, step):
+        """Called when the Document is returned for revision (ตีกลับ). ``step`` is
+        the routing step that returned it."""
         pass
 
-    def _on_sarabun_rejected(self, document):
-        """Called when the Document is rejected (ปฏิเสธ, terminal)."""
+    def _on_sarabun_rejected(self, document, step):
+        """Called when the Document is rejected (ปฏิเสธ, terminal). ``step`` is the
+        routing step that rejected it."""
         pass
 
     def _on_sarabun_cancelled(self, document):

@@ -73,7 +73,7 @@
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <tree string="Constructions">
-                <field name="main_sarabun_document_id" optional="show"/>
+                <field name="active_sarabun_document_id" optional="show"/>
                 <field name="project_id" />
                 <field name="name" optional="hide"/>
                 <field name="title" optional="hide"/>

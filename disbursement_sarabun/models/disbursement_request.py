@@ -11,21 +11,19 @@ class DisbursementRequest(models.Model):
     _name = "disbursement.request"
     _inherit = ["disbursement.request", "sarabun.document.mixin"]
 
-    main_sarabun_document_id = fields.Many2one(
-        comodel_name="sarabun.document",
-        string="Main Sarabun Document",
-        copy=False,
-    )
     sarabun_in_progress = fields.Boolean(
         compute="_compute_sarabun_in_progress",
     )
 
-    @api.depends("main_sarabun_document_id", "main_sarabun_document_id.state")
+    @api.depends(
+        "active_sarabun_document_id",
+        "active_sarabun_document_id.state",
+    )
     def _compute_sarabun_in_progress(self):
         for rec in self:
-            rec.sarabun_in_progress = (
-                rec.main_sarabun_document_id
-                and rec.main_sarabun_document_id.state == "sent"
+            rec.sarabun_in_progress = bool(
+                rec.active_sarabun_document_id
+                and rec.active_sarabun_document_id.is_circulating
             )
 
     def _prepare_sarabun_document_vals(self):
@@ -42,7 +40,6 @@ class DisbursementRequest(models.Model):
             return
         result = self.action_create_sarabun_document()
         document = self.env["sarabun.document"].browse(result.get("res_id"))
-        self.main_sarabun_document_id = document
         self.message_post(
             body=_("Sarabun document created: %s") % document.name,
             subtype_xmlid="mail.mt_note",
@@ -70,17 +67,51 @@ class DisbursementRequest(models.Model):
                     subtype_xmlid="mail.mt_note",
                 )
 
-    def _on_sarabun_rejected(self, document, recipient):
-        """Head rejected in Sarabun → stay at submitted, clear main document."""
-        reason = recipient.comment if recipient else _("No reason provided")
+    def _on_sarabun_rejected(self, document, step):
+        """Head rejected in Sarabun (ปฏิเสธ, terminal).
+
+        Stay at ``submitted`` for audit. The 1:N relation is preserved (no
+        clearing of the link); to retry, the rejected document is duplicated to
+        a new draft (ADR-0002). ``step`` is the routing step that rejected.
+        """
+        reason = step.note if step else _("No reason provided")
         for record in self:
-            record.main_sarabun_document_id = False
             record.message_post(
                 body=_("Rejected via Sarabun by %(user)s. Reason: %(reason)s")
                 % {
-                    "user": recipient.actioned_by.name if recipient else _("Unknown"),
+                    "user": step.acted_by_id.name if step else _("Unknown"),
                     "reason": reason,
                 },
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def _on_sarabun_returned(self, document, step):
+        """Head returned in Sarabun (ตีกลับ, revisable).
+
+        The disbursement stays ``submitted`` so the user can revise and resubmit
+        (submit button re-enabled once the document is no longer circulating).
+        ``step`` is the routing step that returned it.
+        """
+        reason = step.note if step else _("No reason provided")
+        for record in self:
+            record.message_post(
+                body=_("Returned via Sarabun by %(user)s. Reason: %(reason)s")
+                % {
+                    "user": step.acted_by_id.name if step else _("Unknown"),
+                    "reason": reason,
+                },
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def _on_sarabun_cancelled(self, document):
+        """Document recalled in Sarabun (เรียกคืน, terminal).
+
+        The disbursement stays ``submitted``; resubmission spawns a new
+        document.
+        """
+        for record in self:
+            record.message_post(
+                body=_("Recalled via Sarabun: %s") % document.name,
                 subtype_xmlid="mail.mt_note",
             )
 
