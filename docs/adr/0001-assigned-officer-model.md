@@ -23,3 +23,6 @@ Hence PA has no assign buttons; its "My Approvals" list filters on `request_id.a
   take-over toggle) is built **concretely** on `purchase.request` and `purchase.order` for now. The
   logic is kept centralized so it can be lifted into a reusable `assignment.mixin` (parameterized by
   per-model user/manager group hooks) when a second, non-purchase consumer appears — deferred, not designed in.
+- No dedicated "My Work" landing menu ships here. Officers find their work via the per-document
+  "Assigned to me" filter; the landing/todo experience is deferred to a future generic
+  `mail_activity_todo` app.

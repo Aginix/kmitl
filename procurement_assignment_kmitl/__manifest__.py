@@ -17,7 +17,6 @@
         "views/purchase_order_views.xml",
         "views/purchase_request_approval_views.xml",
         "views/res_config_settings_views.xml",
-        "views/menus.xml",
     ],
     "installable": True,
     "auto_install": False,

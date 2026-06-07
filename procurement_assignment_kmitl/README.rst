@@ -21,8 +21,9 @@ Features
 * Assigning *another* officer raises a "To Do" activity for them; self-assign
   does not. Reassigning or unassigning clears the previous officer's open
   activity.
-* A top-level **My Work (งานของฉัน)** menu listing the current user's PRs, PAs
-  and POs.
+* An **Assigned to me** search filter on PR, PA and PO so officers can list the
+  documents assigned to them. (A dedicated landing/app page is intentionally
+  left to a future ``mail_activity_todo`` app.)
 * A Purchase setting, *Allow officers to take over already-assigned documents*,
   that relaxes the default "claim unassigned only" rule.
 
