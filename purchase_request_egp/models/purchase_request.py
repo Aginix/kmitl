@@ -66,7 +66,7 @@ class PurchaseRequest(models.Model):
             "purchase_request_kmitl.group_purchase_request_user_all"
         )
         for record in self:
-            record.can_edit_egp = bool(user_in_group and record.egp_status == "waiting")
+            record.can_edit_egp = bool(user_in_group and record.egp_status != "done")
 
     def _hide_create_po_button(self):
         super()._hide_create_po_button()
