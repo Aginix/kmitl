@@ -168,7 +168,9 @@ class BudgetController(models.AbstractModel):
                         "column": column,
                         "plan_name": analytic.plan_id.name,
                         "code": analytic.code or "",
-                        "name": analytic.name or "",
+                        # Full hierarchical name (account_analytic_parent), so a
+                        # dimension reads as its whole path, not just the leaf.
+                        "complete_name": analytic.complete_name or analytic.name or "",
                     }
                 )
         result = {

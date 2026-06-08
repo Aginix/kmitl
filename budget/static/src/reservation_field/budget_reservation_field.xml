@@ -13,7 +13,7 @@
                         <td class="o_brf_dim_label text-muted" t-esc="dim.plan_name"/>
                         <td class="o_brf_dim_value">
                             <b t-esc="dim.code"/>
-                            <t t-esc="dim.name"/>
+                            <t t-esc="dim.complete_name"/>
                         </td>
                     </tr>
                 </table>
