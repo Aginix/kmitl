@@ -1,4 +1,4 @@
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import logging
 
@@ -58,6 +58,8 @@ class ReceiptKmitl(models.Model):
         "receipt.kmitl.payment.method",
         string="Payment Method",
         required=True,
+        check_company=True,
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         tracking=True,
         states=READONLY_STATES,
     )
@@ -123,7 +125,6 @@ class ReceiptKmitl(models.Model):
         readonly=True,
         copy=False,
     )
-    cancel_reason = fields.Text(readonly=True, copy=False)
     user_id = fields.Many2one(
         "res.users",
         string="Issued By",
@@ -155,6 +156,11 @@ class ReceiptKmitl(models.Model):
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
+        self._sync_customer_snapshot()
+
+    def _sync_customer_snapshot(self):
+        """Copy the partner's identity onto the receipt snapshot fields so the
+        printed receipt stays stable even if the partner record changes later."""
         for rec in self:
             if not rec.partner_id:
                 continue
@@ -177,31 +183,47 @@ class ReceiptKmitl(models.Model):
     # -------------------------------------------------------------------------
     # Sequence
     # -------------------------------------------------------------------------
-    def _get_fiscal_year_suffix(self, date):
-        """Thai fiscal year suffix (2 digits). FY runs Oct → Sep; returns the
-        last 2 digits of the Buddhist Era budget year (e.g. 2025-10 → '69')."""
+    def _get_fiscal_year_be(self, date):
+        """Thai fiscal year as the full Buddhist Era budget year.
+        FY runs Oct → Sep, so Oct-Dec belong to the next budget year
+        (e.g. 2025-10 → 2569)."""
         budget_year_ce = date.year + (1 if date.month >= 10 else 0)
-        budget_year_be = budget_year_ce + 543
-        return str(budget_year_be)[-2:]
+        return budget_year_ce + 543
 
-    def _get_receipt_sequence(self, department, date):
-        """Lazy-create per-(dept_code, fiscal_year) ir.sequence."""
+    def _get_fiscal_year_suffix(self, date):
+        """2-digit Buddhist Era fiscal year for display (e.g. 2025-10 → '69')."""
+        return str(self._get_fiscal_year_be(date))[-2:]
+
+    def _get_or_create_dept_fy_sequence(
+        self, department, date, code_ns, name_label, number_prefix
+    ):
+        """Lazy-create a per-(dept_code, fiscal_year) ir.sequence.
+
+        The lookup ``code`` uses the full BE year so it never collides across
+        century rollovers, while the human-facing ``prefix`` keeps the 2-digit
+        year (e.g. ``RC/01/69/0001``)."""
         dept_code = department.code or "00"
-        fy_suffix = self._get_fiscal_year_suffix(date)
-        seq_code = "receipt.kmitl.%s.%s" % (dept_code, fy_suffix)
+        fy_be = self._get_fiscal_year_be(date)
+        fy_suffix = str(fy_be)[-2:]
+        seq_code = "%s.%s.%s" % (code_ns, dept_code, fy_be)
         IrSeq = self.env["ir.sequence"].sudo()
         seq = IrSeq.search([("code", "=", seq_code)], limit=1)
         if not seq:
             seq = IrSeq.create(
                 {
-                    "name": "Receipt %s FY%s" % (dept_code, fy_suffix),
+                    "name": "%s %s FY%s" % (name_label, dept_code, fy_suffix),
                     "code": seq_code,
-                    "prefix": "RC/%s/%s/" % (dept_code, fy_suffix),
+                    "prefix": "%s/%s/%s/" % (number_prefix, dept_code, fy_suffix),
                     "padding": 4,
                     "company_id": False,
                 }
             )
         return seq
+
+    def _get_receipt_sequence(self, department, date):
+        return self._get_or_create_dept_fy_sequence(
+            department, date, "receipt.kmitl", "Receipt", "RC"
+        )
 
     # -------------------------------------------------------------------------
     # Actions
@@ -227,7 +249,7 @@ class ReceiptKmitl(models.Model):
             if not rec.partner_id:
                 rec.partner_id = rec._default_partner_id()
             if not rec.customer_name and rec.partner_id:
-                rec._onchange_partner_id()
+                rec._sync_customer_snapshot()
             if rec.name == "/" or not rec.name:
                 seq = rec._get_receipt_sequence(rec.department_id, rec.date)
                 rec.name = seq.next_by_id()

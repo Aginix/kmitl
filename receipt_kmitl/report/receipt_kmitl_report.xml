@@ -13,34 +13,33 @@
 
                 <div class="row">
                     <div class="col-12 text-center">
-                        <h2>RECEIPT</h2>
-                        <h3>ใบเสร็จรับเงิน</h3>
+                        <h2>Receipt</h2>
                     </div>
                 </div>
 
                 <div class="row mt32">
                     <div class="col-6">
-                        <strong>Receipt No. / เลขที่:</strong>
+                        <strong>Receipt No.:</strong>
                         <span t-field="o.name"/>
                         <br/>
-                        <strong>Date / วันที่:</strong>
+                        <strong>Date:</strong>
                         <span t-field="o.date"/>
                         <br/>
-                        <strong>Department / หน่วยงาน:</strong>
+                        <strong>Department:</strong>
                         <span t-field="o.department_id.display_name"/>
                     </div>
                     <div class="col-6">
-                        <strong>Customer / ผู้ชำระเงิน:</strong>
+                        <strong>Customer:</strong>
                         <br/>
                         <span t-esc="o.customer_name or (o.partner_id and o.partner_id.name) or ''"/>
                         <br/>
                         <span t-if="o.customer_tax_id">
-                            <strong>Tax ID / เลขประจำตัวผู้เสียภาษี:</strong>
+                            <strong>Tax ID:</strong>
                             <span t-field="o.customer_tax_id"/>
                             <br/>
                         </span>
                         <span t-if="o.customer_branch_code">
-                            <strong>Branch / สาขา:</strong>
+                            <strong>Branch:</strong>
                             <span t-field="o.customer_branch_code"/>
                             <br/>
                         </span>
@@ -54,7 +53,7 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">#</th>
-                            <th>Description / รายการ</th>
+                            <th>Description</th>
                             <th class="text-right" style="width: 12%;">Qty</th>
                             <th class="text-right" style="width: 18%;">Unit Price</th>
                             <th class="text-right" style="width: 20%;">Amount</th>
@@ -92,7 +91,7 @@
 
                 <div class="row mt32">
                     <div class="col-6">
-                        <strong>Payment Method / วิธีชำระเงิน:</strong>
+                        <strong>Payment Method:</strong>
                         <span t-field="o.payment_method_id.name"/>
                     </div>
                 </div>
@@ -100,20 +99,18 @@
                 <div class="row" style="margin-top: 80px;">
                     <div class="col-6 text-center">
                         <div>....................................................</div>
-                        <div>Received by / ผู้รับเงิน</div>
+                        <div>Received by</div>
                         <div t-esc="o.user_id.name or ''"/>
                     </div>
                     <div class="col-6 text-center">
                         <div>....................................................</div>
-                        <div>Authorized by / หัวหน้าหน่วยงาน</div>
+                        <div>Authorized by</div>
                     </div>
                 </div>
 
                 <div t-if="o.state == 'cancelled'" class="row mt32">
                     <div class="col-12">
                         <strong style="color: red;">CANCELLED</strong>
-                        <br/>
-                        <em><span t-field="o.cancel_reason"/></em>
                     </div>
                 </div>
             </div>

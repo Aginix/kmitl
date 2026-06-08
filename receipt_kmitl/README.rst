@@ -18,8 +18,9 @@ Key features
 
 * Custom ``receipt.kmitl`` document with multi-line entries
 * Line uses ``product_id`` (standard ``product.product``) whose income account
-  (``property_account_income_id``, a chart-of-accounts level-4 income account)
-  drives the credit; free-text description like a normal invoice line
+  (``property_account_income_id``, falling back to the product category's
+  income account) drives the credit; free-text description like a normal
+  invoice line
 * Configurable payment methods (``receipt.kmitl.payment.method``) — each binds a
   debit GL account and a journal
 * 6D analytic dimensions at the line level via ``analytic.distribution.mixin``
@@ -46,7 +47,7 @@ After install, the Central Finance Manager must:
 2. Open ``Receipts → Configuration → Payment Methods`` and create one method per
    channel, each with a Journal and a Debit Account.
 3. Create products (standard Odoo products) with an Income Account set to the
-   appropriate level-4 chart-of-accounts income account.
+   appropriate income-type account.
 4. For each Cashier, open ``Settings → Users → KMITL Receipt`` and select the
    departments they may operate on.
 

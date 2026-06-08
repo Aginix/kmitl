@@ -1,4 +1,4 @@
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
 
@@ -26,7 +26,14 @@ class ReceiptKmitlLine(models.Model):
         "account.account",
         string="Income Account",
         required=True,
-        domain="[('deprecated', '=', False), ('account_type', '=', 'income')]",
+        check_company=True,
+        domain="[('deprecated', '=', False), ('account_type', '=', 'income'),"
+               " ('company_id', '=', company_id)]",
+    )
+    company_id = fields.Many2one(
+        related="receipt_id.company_id",
+        store=True,
+        readonly=True,
     )
     quantity = fields.Float(default=1.0, required=True, digits="Product Unit of Measure")
     price_unit = fields.Monetary(required=True, currency_field="currency_id")
@@ -37,11 +44,6 @@ class ReceiptKmitlLine(models.Model):
     )
     currency_id = fields.Many2one(
         related="receipt_id.currency_id",
-        store=True,
-        readonly=True,
-    )
-    state = fields.Selection(
-        related="receipt_id.state",
         store=True,
         readonly=True,
     )

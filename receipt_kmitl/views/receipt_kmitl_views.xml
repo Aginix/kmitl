@@ -92,7 +92,6 @@
                                            widget="analytic_distribution"
                                            optional="hide"/>
                                     <field name="currency_id" invisible="1"/>
-                                    <field name="state" invisible="1"/>
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer">
@@ -108,8 +107,6 @@
                             <group>
                                 <field name="move_id" readonly="1"/>
                                 <field name="deposit_id" readonly="1"/>
-                                <field name="cancel_reason"
-                                       attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                             </group>
                         </page>
                     </notebook>

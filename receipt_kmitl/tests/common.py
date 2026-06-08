@@ -1,4 +1,4 @@
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo.tests.common import TransactionCase
 
@@ -101,7 +101,7 @@ class ReceiptKmitlCommon(TransactionCase):
             }
         )
 
-        # --- Products (income account from CoA level 4) ---
+        # --- Products (each carries an income account) ---
         Product = cls.env["product.product"]
         cls.product_tuition = Product.create(
             {

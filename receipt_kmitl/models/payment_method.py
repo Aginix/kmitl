@@ -1,4 +1,4 @@
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import fields, models
 
@@ -15,19 +15,22 @@ class ReceiptPaymentMethod(models.Model):
         "account.journal",
         string="Journal",
         required=True,
-        domain="[('type', 'in', ('cash', 'bank'))]",
+        check_company=True,
+        domain="[('type', 'in', ('cash', 'bank')), ('company_id', '=', company_id)]",
         help="Journal used for the receipt's journal entry.",
     )
     account_id = fields.Many2one(
         "account.account",
         string="Debit Account",
         required=True,
-        domain="[('deprecated', '=', False)]",
+        check_company=True,
+        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
         help="GL account debited when a receipt using this payment method is "
              "posted (e.g. cash on hand, bank clearing).",
     )
     company_id = fields.Many2one(
         "res.company",
+        required=True,
         default=lambda self: self.env.company,
     )
 

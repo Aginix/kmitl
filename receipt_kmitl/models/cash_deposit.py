@@ -1,4 +1,4 @@
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -75,23 +75,9 @@ class CashDeposit(models.Model):
 
     def _get_sequence(self):
         self.ensure_one()
-        dept_code = self.department_id.code or "00"
-        ReceiptKmitl = self.env["receipt.kmitl"]
-        fy_suffix = ReceiptKmitl._get_fiscal_year_suffix(self.date)
-        seq_code = "receipt.kmitl.deposit.%s.%s" % (dept_code, fy_suffix)
-        IrSeq = self.env["ir.sequence"].sudo()
-        seq = IrSeq.search([("code", "=", seq_code)], limit=1)
-        if not seq:
-            seq = IrSeq.create(
-                {
-                    "name": "Cash Deposit %s FY%s" % (dept_code, fy_suffix),
-                    "code": seq_code,
-                    "prefix": "CD/%s/%s/" % (dept_code, fy_suffix),
-                    "padding": 4,
-                    "company_id": False,
-                }
-            )
-        return seq
+        return self.env["receipt.kmitl"]._get_or_create_dept_fy_sequence(
+            self.department_id, self.date, "receipt.kmitl.deposit", "Cash Deposit", "CD"
+        )
 
     def action_pull_pending_receipts(self):
         """Bundle the department's confirmed receipts not yet in any deposit."""
@@ -100,6 +86,7 @@ class CashDeposit(models.Model):
                 raise UserError(_("Can only pull receipts on draft deposits."))
             receipts = self.env["receipt.kmitl"].search(
                 [
+                    ("company_id", "=", rec.company_id.id),
                     ("department_id", "=", rec.department_id.id),
                     ("state", "=", "confirmed"),
                     ("deposit_id", "=", False),
@@ -127,6 +114,16 @@ class CashDeposit(models.Model):
                 if receipt.department_id != rec.department_id:
                     raise ValidationError(
                         _("Receipt %s belongs to a different department.")
+                        % receipt.name
+                    )
+                if receipt.company_id != rec.company_id:
+                    raise ValidationError(
+                        _("Receipt %s belongs to a different company.")
+                        % receipt.name
+                    )
+                if receipt.currency_id != rec.currency_id:
+                    raise ValidationError(
+                        _("Receipt %s uses a different currency than the deposit.")
                         % receipt.name
                     )
             if rec.name == "/" or not rec.name:
@@ -169,7 +166,13 @@ class CashDeposit(models.Model):
         for rec in self:
             if rec.state not in ("submitted", "cancelled"):
                 raise UserError(_("Only submitted or cancelled deposits can reset."))
-            rec.state = "draft"
+            rec.write(
+                {
+                    "state": "draft",
+                    "submitted_by": False,
+                    "submitted_date": False,
+                }
+            )
 
     def unlink(self):
         for rec in self:

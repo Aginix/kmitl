@@ -1,22 +1,20 @@
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
     "name": "Receipt KMITL",
     "version": "16.0.1.0.0",
     "category": "KMITL/Accounting",
-    "license": "LGPL-3",
+    "license": "AGPL-3",
     "author": "KMITL",
     "summary": "Cash receipting and central posting workflow for KMITL",
     "depends": [
         "account",
         "mail",
-        "analytic",
         "account_analytic_kmitl",
     ],
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
-        "data/sequence.xml",
         "data/partner_walkin_data.xml",
         "views/payment_method_views.xml",
         "views/receipt_kmitl_views.xml",
