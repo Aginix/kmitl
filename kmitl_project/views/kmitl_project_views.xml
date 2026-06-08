@@ -128,7 +128,7 @@
                                               'distribution_field': 'analytic_distribution',
                                               'amount_field': 'budget_amount',
                                               'show_status': True,
-                                              'status_states': ['new']}"/>
+                                              'status_invisible': [('state', '!=', 'new')]}"/>
                                 <field name="budget_remaining" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />

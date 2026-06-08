@@ -2,6 +2,7 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { evalDomain } from "@web/views/utils";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { Component, useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 
@@ -48,16 +49,19 @@ export class BudgetReservationField extends Component {
         return this.props.showStatus;
     }
 
-    // The status figures are shown only while the host is in one of these states
-    // (option status_states). Empty/absent → shown in every state. The code and
-    // dimensions are always shown regardless.
+    // Whether the status figures are shown. The optional status_invisible option
+    // is a domain evaluated against the record exactly like an attrs invisible
+    // modifier — the figures are hidden when it matches. The code and dimensions
+    // are always shown regardless.
     get statusVisible() {
         if (!this.showStatus || !this.state.status || !this.fiscalYear) {
             return false;
         }
-        const states = this.props.statusStates;
-        if (states && states.length) {
-            return states.includes(this.props.record.data.state);
+        if (this.props.statusInvisible) {
+            return !evalDomain(
+                this.props.statusInvisible,
+                this.props.record.evalContext
+            );
         }
         return true;
     }
@@ -194,7 +198,7 @@ BudgetReservationField.props = {
     distributionField: { type: String, optional: true },
     amountField: { type: String, optional: true },
     showStatus: { type: Boolean, optional: true },
-    statusStates: { type: Array, optional: true },
+    statusInvisible: { type: [Array, Boolean], optional: true },
 };
 BudgetReservationField.extractProps = ({ attrs }) => {
     const options = attrs.options || {};
@@ -204,8 +208,9 @@ BudgetReservationField.extractProps = ({ attrs }) => {
         amountField: options.amount_field,
         // Status block shown unless explicitly disabled.
         showStatus: options.show_status !== false,
-        // Optional: restrict the status figures to these host states.
-        statusStates: options.status_states,
+        // Optional domain (attrs-invisible semantics): hide the status figures
+        // when it matches the record.
+        statusInvisible: options.status_invisible,
     };
 };
 
