@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-08 04:24+0000\n"
-"PO-Revision-Date: 2026-06-08 04:24+0000\n"
+"POT-Creation-Date: 2026-06-08 09:06+0000\n"
+"PO-Revision-Date: 2026-06-08 09:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -44,6 +44,12 @@ msgid "Assign Procurement Officer"
 msgstr "มอบหมายเจ้าหน้าที่จัดซื้อจัดจ้าง"
 
 #. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+msgid "Assign to me"
+msgstr "รับงาน"
+
+#. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__user_id
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_order__assigned_to
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request__assigned_to
@@ -60,6 +66,12 @@ msgid "Assigned as responsible procurement officer"
 msgstr "ถูกมอบหมายให้เป็นเจ้าหน้าที่จัดซื้อที่รับผิดชอบ"
 
 #. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
+msgid "Assigned to me"
+msgstr "งานที่ได้รับมอบหมาย"
+
+#. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_order__assignment_can_assign_me
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request__assignment_can_assign_me
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request_approval__assignment_can_assign_me
@@ -69,8 +81,8 @@ msgstr "สามารถมอบหมายให้ตัวเองได
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
-msgid "Assign to me"
-msgstr "รับงาน"
+msgid "Assign…"
+msgstr "มอบหมาย..."
 
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assign_officer_wizard_form
@@ -100,7 +112,7 @@ msgstr "ชื่อที่แสดง"
 #. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard____last_update
@@ -156,7 +168,7 @@ msgstr "คำขอซื้อขอจ้าง"
 #. module: procurement_assignment_kmitl
 #: model:ir.model,name:procurement_assignment_kmitl.model_purchase_request_approval
 msgid "Purchase Request Approval"
-msgstr "อนุมัติคำขอซื้อขอจ้าง"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
 
 #. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__res_id
@@ -182,14 +194,9 @@ msgid "Unassign"
 msgstr "ยกเลิกการมอบหมาย"
 
 #. module: procurement_assignment_kmitl
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
-msgid "Unassigned"
-msgstr "ยังไม่ได้มอบหมาย"
-
-#. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_search_assignment
 msgid "Unassigned"
 msgstr "ยังไม่ได้มอบหมาย"
 
@@ -200,18 +207,7 @@ msgid ""
 "document already assigned to someone else. When disabled (default), officers"
 " may only claim unassigned documents; reassigning is a manager action."
 msgstr ""
-"เมื่อเปิดใช้งาน เจ้าหน้าที่จัดซื้อจัดจ้างคนใดก็ได้สามารถใช้ 'รับงาน' เพื่อรับเอกสาร"
-"ที่มอบหมายให้คนอื่นแล้วได้ เมื่อปิดการใช้งาน (ค่าเริ่มต้น) เจ้าหน้าที่จะสามารถรับ"
-"เฉพาะเอกสารที่ยังไม่ได้มอบหมาย การมอบหมายใหม่เป็นสิทธิ์ของผู้จัดการ"
-
-#. module: procurement_assignment_kmitl
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
-msgid "Assign…"
-msgstr "มอบหมาย..."
-
-#. module: procurement_assignment_kmitl
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
-msgid "Assigned to me"
-msgstr "งานที่ได้รับมอบหมาย"
+"เมื่อเปิดใช้งาน เจ้าหน้าที่จัดซื้อจัดจ้างคนใดก็ได้สามารถใช้ 'รับงาน' "
+"เพื่อรับเอกสารที่มอบหมายให้คนอื่นแล้วได้ เมื่อปิดการใช้งาน (ค่าเริ่มต้น) "
+"เจ้าหน้าที่จะสามารถรับเฉพาะเอกสารที่ยังไม่ได้มอบหมาย "
+"การมอบหมายใหม่เป็นสิทธิ์ของผู้จัดการ"
