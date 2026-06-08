@@ -208,7 +208,12 @@
         <field name="code">records.action_mark_unread()</field>
     </record>
 
-    <menuitem id="menu_my_todos_root" name="Todos" sequence="1" />
+    <menuitem
+        id="menu_my_todos_root"
+        name="Todos"
+        sequence="1"
+        web_icon="mail_activity_todo,static/description/icon.png"
+    />
     <menuitem
         id="menu_todo_inbox"
         name="Inbox"
