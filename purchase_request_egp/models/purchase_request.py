@@ -78,7 +78,6 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.is_egp and record.egp_status not in ['in_progress']:
                 raise UserError("ท่านสามารถสร้างใบสั่งซื้อ/จ้างได้เมื่ออยู่ในกระบวนการ e-GP เท่านั้น")
-            record.egp_status = "done"
 
         action = self.env.ref("purchase_request.action_purchase_request_line_make_purchase_order").sudo().read()[0]
         return action
