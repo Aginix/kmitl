@@ -176,6 +176,11 @@ msgid "Unassign"
 msgstr "ยกเลิกการมอบหมาย"
 
 #. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
+msgid "Unassigned"
+msgstr "ยังไม่ได้มอบหมาย"
+
+#. module: procurement_assignment_kmitl
 #: model:ir.model.fields,help:procurement_assignment_kmitl.field_res_config_settings__allow_takeover_assigned
 msgid ""
 "When enabled, any procurement officer can use 'Assign to me' to take over a "
@@ -196,4 +201,4 @@ msgstr "มอบหมาย..."
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
 msgid "Assigned to me"
-msgstr "มอบหมายให้ฉัน"
+msgstr "งานที่ได้รับมอบหมาย"

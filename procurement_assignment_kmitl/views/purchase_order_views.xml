@@ -51,6 +51,14 @@
                     string="Assigned to me"
                     domain="[('assigned_to', '=', uid)]"
                 />
+                <filter
+                    name="unassigned"
+                    string="Unassigned"
+                    domain="[('assigned_to', '=', False)]"
+                />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="assigned_to" />
             </xpath>
             <xpath expr="//filter[@name='representative']" position="after">
                 <filter
@@ -58,6 +66,21 @@
                     string="Assigned Officer"
                     domain="[]"
                     context="{'group_by': 'assigned_to'}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_tree_assignment" model="ir.ui.view">
+        <field name="name">purchase.order.tree.assignment</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field
+                    name="assigned_to"
+                    widget="many2one_avatar_user"
+                    optional="hide"
                 />
             </xpath>
         </field>
