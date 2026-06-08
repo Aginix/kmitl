@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_order_form_assignment" model="ir.ui.view">
+        <field name="name">purchase.order.form.assignment</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[1]" position="before">
+                <button
+                    name="action_assignment_assign_me"
+                    type="object"
+                    string="Assign to me"
+                    class="oe_highlight"
+                    groups="purchase.group_purchase_user"
+                    attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
+                />
+                <button
+                    name="action_assignment_open_wizard"
+                    type="object"
+                    string="Assign…"
+                    groups="purchase.group_purchase_manager"
+                />
+                <button
+                    name="action_assignment_unassign"
+                    type="object"
+                    string="Unassign"
+                    groups="purchase.group_purchase_manager"
+                    attrs="{'invisible': [('assigned_to', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="assignment_can_assign_me" invisible="1" />
+                <field
+                    name="assigned_to"
+                    widget="many2one_avatar_user"
+                    readonly="1"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_search_assignment" model="ir.ui.view">
+        <field name="name">purchase.order.search.assignment</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='order_date']" position="after">
+                <filter
+                    name="assigned_to_me"
+                    string="Assigned to me"
+                    domain="[('assigned_to', '=', uid)]"
+                />
+                <filter
+                    name="unassigned"
+                    string="Unassigned"
+                    domain="[('assigned_to', '=', False)]"
+                />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="assigned_to" />
+            </xpath>
+            <xpath expr="//filter[@name='representative']" position="after">
+                <filter
+                    name="group_assigned_to"
+                    string="Assigned Officer"
+                    domain="[]"
+                    context="{'group_by': 'assigned_to'}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_tree_assignment" model="ir.ui.view">
+        <field name="name">purchase.order.tree.assignment</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field
+                    name="assigned_to"
+                    widget="many2one_avatar_user"
+                    optional="hide"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
