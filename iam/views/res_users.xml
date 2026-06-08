@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<odoo>
+
+    <!-- Surface base_user_effective_permissions' "Effective permissions" button
+         to IAM managers. It ships gated to base.group_no_one (developer mode)
+         only; we add iam.group_iam_manager so a delegated admin can answer
+         "what can this user actually do" without dev mode. Inheriting the OCA
+         view (not base.view_users_form) guarantees the button exists when this
+         xpath runs. Read-only: the button just opens a computed list. -->
+    <record id="view_users_form_iam_effective_perm" model="ir.ui.view">
+        <field name="name">res.users.form.iam.effective-permissions</field>
+        <field name="model">res.users</field>
+        <field
+            name="inherit_id"
+            ref="base_user_effective_permissions.view_users_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//button[@name='action_show_effective_permissions']"
+                position="attributes"
+            >
+                <attribute
+                    name="groups"
+                >base.group_no_one,iam.group_iam_manager</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

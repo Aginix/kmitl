@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<odoo noupdate="1">
+
+    <record id="module_category_iam" model="ir.module.category">
+        <field name="name">Identity &amp; Access</field>
+        <field name="sequence">25</field>
+    </record>
+
+    <!--
+        The single IAM admin group. It implies base.group_erp_manager, which
+        already carries full CRUD on res.users, res.groups, ir.rule,
+        ir.model.access and (via base_user_role) res.users.role(.line) in core.
+        That single implication grants every Phase-1 capability WITHOUT
+        base.group_system (full Settings). The privilege boundary (never
+        being able to mint a new Settings admin) is enforced in Python by
+        res.users._check_iam_no_system_escalation.
+    -->
+    <record id="group_iam_manager" model="res.groups">
+        <field name="name">IAM Manager</field>
+        <field name="category_id" ref="module_category_iam" />
+        <field name="implied_ids" eval="[(4, ref('base.group_erp_manager'))]" />
+        <field name="users" eval="[(4, ref('base.user_admin'))]" />
+        <field
+            name="comment"
+        >Delegated administrator of the Identity &amp; Access app: manages backend users, roles, groups, access rights and record rules. Cannot grant full Settings (Administration) access.</field>
+    </record>
+
+</odoo>
