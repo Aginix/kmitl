@@ -352,6 +352,11 @@ msgid "Expense Lines"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__account_fiscal_year_id
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_follower_ids
 msgid "Followers"
 msgstr ""
@@ -730,16 +735,20 @@ msgstr "ขอการอนุมัติ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "To Verify"
-msgstr "จองงบประมาณ"
+msgid "Verify Request"
+msgstr "ยืนยันคำขอ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
+msgid "Total"
+msgstr "รวม"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount
 #: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__total_amount
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
-msgid "Total"
-msgstr "จำนวนเงิน"
+msgid "Requested Amount"
+msgstr "ยอดขอเบิก"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__total_amount
@@ -838,11 +847,42 @@ msgstr "ยอดเบิกจริง"
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 #: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
 #, python-format
 msgid "Update actual amount"
 msgstr "แก้ไขยอดเบิกจริง"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Record Actual Disbursement"
+msgstr "ขอเบิกจริง"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Budget Reserved:"
+msgstr "จองงบแล้ว:"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_commitment_amount
+msgid "Reserved Amount"
+msgstr "วงเงินที่จอง"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid ""
+"Use this to adjust the actual disbursement amount when it is lower than the "
+"approved amount. Values above the approved amount are not allowed."
+msgstr ""
+"ใช้ปุ่มนี้เพื่อปรับยอดเบิกจริงเมื่อยอดต่ำกว่ายอดที่ขออนุมัติ "
+"ไม่อนุญาตให้กรอกยอดที่สูงกว่ายอดที่ขออนุมัติ"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/wizard/update_actual_amount_wizard.py:0
+#, python-format
+msgid ""
+"Actual amount cannot exceed the approved amount on the following line(s): %s"
+msgstr "ยอดเบิกจริงต้องไม่เกินยอดที่ขออนุมัติในรายการต่อไปนี้: %s"
 
 #. module: agx_approval
 #: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard

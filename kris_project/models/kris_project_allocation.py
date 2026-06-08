@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -33,6 +34,12 @@ class KrisProjectAllocationLine(models.Model):
         store=True,
         readonly=True,
     )
+    department_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="Department Budget Code",
+        domain=[("root_plan_id.code", "=", "departments")],
+    )
+    is_locked = fields.Boolean(string="ห้ามแก้ไข")
     allocation_pct = fields.Float(
         string="Allocation %",
         digits=(5, 2),
@@ -92,3 +99,21 @@ class KrisProjectAllocationLine(models.Model):
                     )
                     % base
                 )
+
+    @api.constrains("estimated_amount", "actual_amount")
+    def _check_actual_not_exceed_estimated(self):
+        prec = self.env["decimal.precision"].precision_get("Account")
+        for line in self:
+            if (
+                float_compare(
+                    line.actual_amount, line.estimated_amount, precision_digits=prec
+                )
+                > 0
+            ):
+                raise ValidationError(
+                    _(
+                        "ยอดจัดสรรจริงของ %s (%.2f บาท) เกินประมาณการ (%.2f บาท)"
+                    )
+                    % (line.name or "", line.actual_amount, line.estimated_amount)
+                )
+

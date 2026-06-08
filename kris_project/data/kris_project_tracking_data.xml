@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="model_kris_project" model="ir.model">
+        <field name="active_custom_tracking" eval="True"/>
+    </record>
+
+    <record id="field_kris_project__allocation_line_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True"/>
+    </record>
+
+    <record id="field_kris_project__installment_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True"/>
+    </record>
+
+</odoo>

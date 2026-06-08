@@ -17,6 +17,30 @@ if self.state == 'draft' and self.project_value &lt;= 0:
         <field name="active" eval="True"/>
     </record>
 
+    <record id="kris_excep_extra_value_no_payee" model="exception.rule">
+        <field name="name">ต้องระบุผู้รับค่า Extra</field>
+        <field name="description">เมื่อมีค่า Extra ต้องระบุผู้รับค่า Extra</field>
+        <field name="sequence">15</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.extra_value &gt; 0 and not self.extra_analytic_id:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_department_analytic" model="exception.rule">
+        <field name="name">ต้องมีส่วนงาน</field>
+        <field name="description">จำเป็นต้องระบุส่วนงาน</field>
+        <field name="sequence">16</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.department_analytic_id:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
     <record id="kris_excep_allocation_mismatch" model="exception.rule">
         <field name="name">The allocated total does not match the maintenance fee.</field>
         <field name="description">The total allocated revenue does not equal the value minus maintenance fees.</field>
@@ -24,6 +48,18 @@ if self.state == 'draft' and self.project_value &lt;= 0:
         <field name="model">kris.project</field>
         <field name="code">
 if self.state == 'draft' and self.warn_allocation_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_allocation_lines" model="exception.rule">
+        <field name="name">ไม่ได้ระบุรหัสงบประมาณหน่วยงาน</field>
+        <field name="description">กรุณาระบุรหัสงบประมาณหน่วยงานในรายการจัดสรรรายได้ทุกรายการ</field>
+        <field name="sequence">25</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.allocation_line_ids and any(not line.department_analytic_id for line in self.allocation_line_ids):
     failed = True
         </field>
         <field name="active" eval="True"/>
@@ -65,6 +101,114 @@ if self.state == 'draft' and self.installment_ids and self.warn_installment_main
         <field name="active" eval="True"/>
     </record>
 
+    <record id="kris_excep_invalid_duration" model="exception.rule">
+        <field name="name">ระยะเวลาโครงการไม่ถูกต้อง</field>
+        <field name="description">ระยะเวลาโครงการต้องมากกว่า 0 วัน</field>
+        <field name="sequence">100</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.project_duration &lt;= 0:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_user" model="exception.rule">
+        <field name="name">ต้องมีเจ้าหน้าที่ KRIS</field>
+        <field name="description">จำเป็นต้องระบุเจ้าหน้าที่ KRIS</field>
+        <field name="sequence">110</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.user_id:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_contract_number" model="exception.rule">
+        <field name="name">ต้องมีเลขที่สัญญา</field>
+        <field name="description">จำเป็นต้องระบุเลขที่สัญญา</field>
+        <field name="sequence">120</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.contract_number:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_date_contract_start" model="exception.rule">
+        <field name="name">ต้องมีวันที่เริ่มต้นสัญญา</field>
+        <field name="description">จำเป็นต้องกรอกวันที่เริ่มต้นสัญญา</field>
+        <field name="sequence">130</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.date_contract_start:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_fiscal_year" model="exception.rule">
+        <field name="name">ต้องมีปีงบประมาณ</field>
+        <field name="description">จำเป็นต้องระบุปีงบประมาณ</field>
+        <field name="sequence">140</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.account_fiscal_year_id:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_client_name" model="exception.rule">
+        <field name="name">ต้องมีชื่อผู้ว่าจ้าง</field>
+        <field name="description">จำเป็นต้องระบุชื่อผู้ว่าจ้าง</field>
+        <field name="sequence">150</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.client_name:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_client_location" model="exception.rule">
+        <field name="name">ต้องมีที่อยู่ของผู้ว่าจ้าง</field>
+        <field name="description">จำเป็นต้องระบุที่อยู่ของผู้ว่าจ้าง</field>
+        <field name="sequence">160</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.client_location:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_client_tax_number" model="exception.rule">
+        <field name="name">ต้องมีเลขประจำตัวผู้เสียภาษีของผู้ว่าจ้าง</field>
+        <field name="description">จำเป็นต้องระบุเลขประจำตัวผู้เสียภาษีของผู้ว่าจ้าง</field>
+        <field name="sequence">170</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.client_tax_number:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_no_client_org_type" model="exception.rule">
+        <field name="name">ต้องมีประเภทองค์กรผู้ว่าจ้าง</field>
+        <field name="description">จำเป็นต้องระบุประเภทองค์กรผู้ว่าจ้าง</field>
+        <field name="sequence">180</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.client_org_type:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
     <!-- ============================================================ -->
     <!-- Done-phase rules (state == 'in_progress')                      -->
     <!-- ============================================================ -->
@@ -78,7 +222,7 @@ if self.state == 'draft' and self.installment_ids and self.warn_installment_main
 if self.state == 'in_progress' and self.installment_ids and any(i.state != 'received' for i in self.installment_ids):
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
     <record id="kris_excep_revenue_remaining" model="exception.rule">
@@ -106,7 +250,7 @@ if self.state == 'in_progress' and self.revenue_remaining > 0:
 if self.state in ('draft', 'in_progress') and self.receipt_ids:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
 </odoo>

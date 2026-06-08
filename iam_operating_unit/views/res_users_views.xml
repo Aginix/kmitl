@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<odoo>
+
+    <!-- Optional (hidden by default) Operating Units column on the Users list.
+         Uses the assigned_operating_unit_ids Many2many (a One2many like
+         operating_unit_ids cannot render in a tree); these are the OUs
+         explicitly assigned to the user. -->
+    <record id="view_users_tree_iam_ou" model="ir.ui.view">
+        <field name="name">res.users.tree.iam-ou</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree" />
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field
+                    name="assigned_operating_unit_ids"
+                    string="Operating Units"
+                    widget="many2many_tags"
+                    optional="hide"
+                    groups="iam.group_iam_manager"
+                />
+            </field>
+        </field>
+    </record>
+
+</odoo>

@@ -2,6 +2,7 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -156,12 +157,34 @@ class BudgetCommitment(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+    kmitl_project_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="โครงการ/กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse="_inverse_kmitl_project_analytic",
+        domain=[("root_plan_id.code", "=", "kmitl_project")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แผนจัดซื้อจัดจ้าง",
+        compute="_compute_analytic_id",
+        inverse="_inverse_procurement_plan_analytic",
+        domain=[("root_plan_id.code", "=", "procurement_plan")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
 
     _analytic_keys = {
         "departments": "department_analytic_id",
         "sources": "source_analytic_id",
         "activities": "activity_analytic_id",
         "funds": "fund_analytic_id",
+        "kmitl_project": "kmitl_project_analytic_id",
+        "procurement_plan": "procurement_plan_analytic_id",
     }
 
     def _inverse_department_analytic(self):
@@ -179,6 +202,14 @@ class BudgetCommitment(models.Model):
     def _inverse_fund_analytic(self):
         for record in self:
             record._update_analytic_distribution("funds")
+
+    def _inverse_kmitl_project_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("kmitl_project")
+
+    def _inverse_procurement_plan_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("procurement_plan")
 
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -300,6 +331,37 @@ class BudgetCommitment(models.Model):
             record.consumed_amount = total_consumed
             record.remaining_amount = record.amount - total_consumed
 
+    def _sync_state(self):
+        """Derive the active band (reserved/partial/done) from line totals.
+
+        Runs only while the commitment is active; draft and cancel are explicit
+        user states and are left untouched, so this never fights action_reserve,
+        action_cancel or action_reset_to_draft. "done" means the reservation has
+        been fully consumed, which keeps multi-installment commitments open until
+        the final draw-down.
+        """
+        for record in self:
+            if record.state in ("draft", "cancel"):
+                continue
+            rounding = record.currency_id.rounding or 0.01
+            reserved = record.total_reserved
+            consumed = record.total_consumed
+            obligated = record.total_obligated
+            if (
+                float_compare(reserved, 0.0, precision_rounding=rounding) > 0
+                and float_compare(consumed, reserved, precision_rounding=rounding) >= 0
+            ):
+                new_state = "done"
+            elif (
+                float_compare(obligated, 0.0, precision_rounding=rounding) > 0
+                or float_compare(consumed, 0.0, precision_rounding=rounding) > 0
+            ):
+                new_state = "partial"
+            else:
+                new_state = "reserved"
+            if record.state != new_state:
+                record.state = new_state
+
     @api.constrains("amount")
     def _check_positive_amount(self):
         for record in self:
@@ -410,3 +472,89 @@ class BudgetCommitment(models.Model):
             "domain": [("commitment_id", "=", self.id)],
             "context": {"default_commitment_id": self.id},
         }
+
+    # --- Reservation picker widget ---
+
+    def action_open_reservation_picker(self):
+        """Open the budget reservation picker (hierarchy + per-row available).
+
+        The picker is scoped to this commitment's fixed dimension combination,
+        so every row shows the control-node available the reservation check will
+        enforce. On confirm it calls :meth:`apply_reservation_selection`.
+        """
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(
+                _("Budget can only be selected while the reservation is draft.")
+            )
+        account = self.account_id
+        root = account
+        while root and root.parent_id:
+            root = root.parent_id
+        return {
+            "type": "ir.actions.client",
+            "tag": "budget_reservation_picker",
+            "target": "new",
+            "name": _("เลือกงบประมาณ"),
+            "context": {
+                "res_model": "budget.commitment",
+                "res_id": self.id,
+                "select_only": False,
+                "default_fiscal_year_id": self.account_fiscal_year_id.id,
+                "default_root_account_id": root.id if root else False,
+                "default_department_analytic_id": self.department_analytic_id.id or False,
+                "default_source_analytic_id": self.source_analytic_id.id or False,
+                "default_fund_analytic_id": self.fund_analytic_id.id or False,
+                "default_activity_analytic_id": self.activity_analytic_id.id or False,
+            },
+        }
+
+    def apply_reservation_selection(self, selections, dims=None):
+        """Write reserve lines from the picker.
+
+        ``selections`` = ``[{"account_id": int, "amount": float}, ...]``. Replaces
+        the commitment's current reserve lines (re-selection cancels the old
+        ones), stamps the chosen dimensions (``dims`` = ``analytic_distribution``)
+        on the header and each line, and lifts the cap to cover the total.
+        Cross-charge (>1 code) is gated by the ``cross_chargeable`` constraint.
+        Draft only.
+        """
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(
+                _("Budget can only be selected while the reservation is draft.")
+            )
+        selections = [
+            s for s in (selections or []) if s.get("account_id") and s.get("amount")
+        ]
+        if not selections:
+            raise UserError(_("Select at least one budget code with an amount."))
+
+        # Re-selection: cancel the existing posted reserve lines first.
+        self.line_ids.filtered(
+            lambda l: l.state == "posted" and l.move_type == "reserve"
+        ).action_cancel()
+
+        distribution = dims if dims is not None else self.analytic_distribution
+        total = sum(s["amount"] for s in selections)
+        line_cmds = [
+            (
+                0,
+                0,
+                {
+                    "move_type": "reserve",
+                    "account_id": s["account_id"],
+                    "amount": s["amount"],
+                    "analytic_distribution": distribution,
+                    "name": _("Reservation"),
+                },
+            )
+            for s in selections
+        ]
+        vals = {"line_ids": line_cmds, "account_id": selections[0]["account_id"]}
+        if dims is not None:
+            vals["analytic_distribution"] = dims or False
+        if not self.amount or self.amount < total:
+            vals["amount"] = total
+        self.write(vals)
+        return True

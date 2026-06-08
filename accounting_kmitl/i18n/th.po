@@ -27,29 +27,24 @@ msgid "Status"
 msgstr "สถานะ"
 
 #. module: accounting_kmitl
+#: model:ir.model.fields.selection,name:account.selection__account_move__state__draft
+msgid "Draft"
+msgstr "ฉบับร่าง"
+
+#. module: accounting_kmitl
 #: model:ir.model.fields.selection,name:accounting_kmitl.selection__account_move__state__submitted
 msgid "Submitted"
-msgstr "ส่งอนุมัติ"
+msgstr "ยืนยันแล้ว"
 
 #. module: accounting_kmitl
-#: model:ir.model.fields,field_description:accounting_kmitl.field_account_move__budget_commitment_id
-msgid "Budget Commitment"
-msgstr "ผูกพันงบประมาณ"
+#: model:ir.model.fields.selection,name:account.selection__account_move__state__posted
+msgid "Posted"
+msgstr "บันทึกแล้ว"
 
 #. module: accounting_kmitl
-#: model:ir.model.fields,field_description:accounting_kmitl.field_account_move__budget_account_id
-msgid "Budget Account"
-msgstr "บัญชีงบประมาณ"
-
-#. module: accounting_kmitl
-#: model:ir.model.fields,help:accounting_kmitl.field_account_move__budget_commitment_id
-msgid "Related budget commitment for this journal entry"
-msgstr "ผูกพันงบประมาณที่เกี่ยวข้องกับรายการบันทึกบัญชีนี้"
-
-#. module: accounting_kmitl
-#: model:ir.model.fields,help:accounting_kmitl.field_account_move__budget_account_id
-msgid "Budget account to be used for commitment"
-msgstr "บัญชีงบประมาณที่ใช้สำหรับการผูกพัน"
+#: model:ir.model.fields.selection,name:account.selection__account_move__state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
 
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
@@ -63,18 +58,13 @@ msgstr "ตั้งค่าเป็นฉบับร่าง"
 
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
-msgid "Budget"
-msgstr "งบประมาณ"
+msgid "Accounting Dimensions"
+msgstr "มิติทางบัญชี"
 
 #. module: accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
-msgid "View"
-msgstr "ดู"
-
-#. module: accounting_kmitl
-#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
-msgid "Budget Commitment"
-msgstr "ผูกพันงบประมาณ"
+msgid "Additional Information"
+msgstr "ข้อมูลเพิ่มเติม"
 
 #. module: accounting_kmitl
 #: code:addons/accounting_kmitl/models/account_move.py:0
@@ -139,6 +129,12 @@ msgstr ""
 #: model:ir.ui.menu,name:accounting_kmitl.menu_journal_entries
 msgid "Journal Entries"
 msgstr "รายการบันทึกบัญชี"
+
+#. module: accounting_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl.menu_journal_items_all
+#: model:ir.actions.act_window,name:accounting_kmitl.action_account_move_lines_all
+msgid "Journal Items"
+msgstr "บรรทัดรายการบัญชี"
 
 #. module: accounting_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl.menu_accounting_reports

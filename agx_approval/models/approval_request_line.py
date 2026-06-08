@@ -49,7 +49,7 @@ class ApprovalRequestLine(models.Model):
     )
 
     total_amount = fields.Monetary(
-        string="Total",
+        string="Requested Amount",
         currency_field='currency_id',
         required=True,
     )
@@ -77,3 +77,10 @@ class ApprovalRequestLine(models.Model):
     def _compute_allowed_product_ids(self):
         for record in self:
             record.allowed_product_ids = record.request_id.category_id.allowed_product_ids
+
+    def _get_payee_bank(self):
+        self.ensure_one()
+        payee = self.request_id.payee_ids.filtered(
+            lambda p: p.partner_id == self.partner_id
+        )[:1]
+        return payee.partner_bank_id

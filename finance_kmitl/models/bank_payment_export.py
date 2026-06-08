@@ -78,15 +78,6 @@ class BankPaymentExport(models.Model):
                 )
             previous_currency = payment.currency_id
 
-    def action_confirm(self):
-        """Trigger tier validation on exported payments after confirm."""
-        res = super().action_confirm()
-        for line in self.export_line_ids:
-            move = line.payment_id.move_id
-            if move.need_validation and move.state == "submitted":
-                move.request_validation()
-        return res
-
     # -------------------------------------------------------------------------
     def _domain_payment_id(self):
         domain = super()._domain_payment_id()

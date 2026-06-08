@@ -6,13 +6,15 @@
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                     <style>
                         * {
-                            font-family: 'THSarabunNew', Arial, sans-serif;
+                            font-family: "THSarabunNew", Arial, sans-serif;
                             --bs-body-font-size: 16pt;
                         }
                         table.budget tr td:first-child {
                             width: 30%;
                         }
-                        p, span, div {
+                        p,
+                        span,
+                        div {
                             font-size: 16pt;
                             line-height: 1.2;
                         }
@@ -20,12 +22,20 @@
 
                     <div class="page">
                         <div style="position: absolute; top: 0px; left: 0px">
-                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo" />
+                            <img
+                                t-if="o.company_id.logo"
+                                t-att-src="image_data_uri(o.company_id.logo)"
+                                style="max-height: 110px"
+                                alt="Logo"
+                            />
                         </div>
                         <div class="oe_structure" />
                         <div style="height: 1px" />
                         <div class="page-header mt-5 mb-5">
-                            <h3 class="text-center fw-bolder" style="line-height: 1.575;">
+                            <h3
+                                class="text-center fw-bolder"
+                                style="line-height: 1.575"
+                            >
                                 บันทึกข้อความ
                             </h3>
                         </div>
@@ -34,63 +44,101 @@
                         <div class="row">
                             <div class="col-8">
                                 เลขที่เอกสาร
-                                <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
+                                <span
+                                    class="ms-2 fw-normal"
+                                    t-out="o.main_sarabun_document_id.name"
+                                />
                             </div>
                             <div class="col">
                                 วันที่
-                                <span class="ms-2 fw-normal" t-esc="o.format_date_thai(o.main_sarabun_document_id.date)" />
+                                <span
+                                    class="ms-2 fw-normal"
+                                    t-esc="o.format_date_thai(o.main_sarabun_document_id.date)"
+                                />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 หน่วยงาน
-                                <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
+                                <span
+                                    class="ms-2"
+                                    t-out="o.main_sarabun_document_id.sender_display"
+                                />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                เรื่อง                                <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
+                                เรื่อง
+                                <span
+                                    class="ms-2"
+                                    t-out="o.main_sarabun_document_id.subject"
+                                />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                เรียน                                <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
+                                เรียน
+                                <span
+                                    class="ms-2"
+                                    t-out="o.main_sarabun_document_id.recipient"
+                                />
                             </div>
                         </div>
 
                         <!-- Request Details -->
                         <div class="my-4" />
-                        <p style="text-indent: 6em;">
+                        <p style="text-indent: 6em">
                             ผู้ขออนุมัติ
-                            <span t-field="o.owner_id" class="fw-bolder text-decoration-underline" />
+                            <span
+                                t-field="o.owner_id"
+                                class="fw-bolder text-decoration-underline"
+                            />
                             <span class="ms-2">สังกัด</span>
-                            <span t-field="o.department_id" class="fw-bolder text-decoration-underline" />
+                            <span
+                                t-field="o.department_id"
+                                class="fw-bolder text-decoration-underline"
+                            />
                         </p>
 
                         <div class="row">
                             <div class="col">
                                 ผู้รับผิดชอบ
-                                <span class="fw-bolder text-decoration-underline" t-field="o.user_id" />
+                                <span
+                                    class="fw-bolder text-decoration-underline"
+                                    t-field="o.user_id"
+                                />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
                                 ประเภท
-                                <span class="fw-bolder text-decoration-underline" t-field="o.category_id" />
+                                <span
+                                    class="fw-bolder text-decoration-underline"
+                                    t-field="o.category_id"
+                                />
                             </div>
                         </div>
                         <div class="row" t-if="o.description">
                             <div class="col">
                                 รายละเอียด
-                                <span class="fw-bolder text-decoration-underline" t-out="o.description" />
+                                <span
+                                    class="fw-bolder text-decoration-underline"
+                                    t-out="o.description"
+                                />
                             </div>
                         </div>
                         <div class="row" t-if="o.has_period">
                             <div class="col">
                                 ระยะเวลา
-                                <span class="fw-bolder text-decoration-underline" t-esc="o.format_date_thai(o.date_start)" />
+                                <span
+                                    class="fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.date_start)"
+                                />
                                 -
-                                <span class="fw-bolder text-decoration-underline" t-esc="o.format_date_thai(o.date_end)" />
+                                <span
+                                    class="fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.date_end)"
+                                />
                             </div>
                         </div>
 
@@ -117,16 +165,25 @@
                                         <td class="text-center" t-out="row_no" />
                                         <td t-out="line.partner_id.name" />
                                         <td t-out="line.product_id.name" />
-                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.total_amount)"
+                                        />
                                     </tr>
                                     <t t-set="row_no" t-value="row_no + 1" />
-                                    <t t-set="total" t-value="total + line.total_amount" />
+                                    <t
+                                        t-set="total"
+                                        t-value="total + line.total_amount"
+                                    />
                                 </t>
                                 <tr>
                                     <td colspan="3" class="text-center fw-bolder">
                                         รวมทั้งสิ้น
                                     </td>
-                                    <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(total)" />
+                                    <td
+                                        class="text-end fw-bolder"
+                                        t-out="'{0:,.2f}'.format(total)"
+                                    />
                                 </tr>
                             </tbody>
                         </table>
@@ -134,20 +191,13 @@
                         <!-- Budget Details -->
                         <div class="my-4" />
                         <p>รายละเอียดงบประมาณ</p>
-                        <t t-call="agx_approval_sarabun.report_approval_request_budget" />
+                        <t
+                            t-call="agx_approval_sarabun.report_approval_request_budget"
+                        />
 
                         <!-- Signature Section -->
                         <div class="my-5" style="height: 10px" />
-                        <div class="my-5">
-                            <div class="my-2 d-inline-block">
-                                <div>ลงชื่อ                                    <t t-out="'.' * 80" />
- ผู้ขออนุมัติ</div>
-                                <div class="text-center my-2">
-                                    (                                    <span t-field="o.owner_id" />
- )
-                                </div>
-                            </div>
-                        </div>
+                        <t t-call="agx_approval_sarabun.report_approval_request_sign" />
                     </div>
                 </t>
             </t>
@@ -195,5 +245,34 @@
                 </tr>
             </tbody>
         </table>
+    </template>
+
+    <template id="report_approval_request_sign">
+        <div class="my-5">
+            <div class="my-2 d-inline-block">
+                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้รับผิดชอบ</div>
+                <div class="text-center my-2">
+                    ( <span t-field="o.owner_id" />
+                    )
+                </div>
+            </div>
+            <div class="my-5" />
+            <div class="my-2 d-inline-block">
+                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สร้างคำขอ</div>
+                <div class="text-center my-2">
+                    ( <span t-field="o.user_id" />
+                    )
+                </div>
+            </div>
+            <div class="my-5" />
+            <div class="my-2 d-inline-block">
+                <div>ลงชื่อ <t t-out="'.' * 80" /></div>
+                <div class="text-center">( <span t-field="o.owner_id" /> )</div>
+                <div class="text-center">
+                    คณบดี <span t-out="o.department_id.master_department_id.name" />
+                </div>
+            </div>
+        </div>
+        <div class="my-5" />
     </template>
 </odoo>

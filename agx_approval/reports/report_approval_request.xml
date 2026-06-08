@@ -1,0 +1,236 @@
+<odoo>
+    <template id="report_approval_request_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <style>
+                        * {
+                            font-family: 'THSarabunNew', Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        table.budget tr td:first-child {
+                            width: 30%;
+                        }
+                        p, span, div {
+                            font-size: 16pt;
+                            line-height: 1.2;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <div style="position: absolute; top: 0px; left: 0px">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo" />
+                        </div>
+                        <div class="oe_structure" />
+                        <div style="height: 1px" />
+                        <div class="page-header mt-5 mb-5">
+                            <h3 class="text-center fw-bolder" style="line-height: 1.575;">
+                                ใบขออนุมัติ
+                            </h3>
+                        </div>
+
+                        <!-- Document Info -->
+                        <div class="row">
+                            <div class="col-8">
+                                เลขที่
+                                <span class="ms-2 fw-normal" t-out="o.name" />
+                            </div>
+                            <div class="col">
+                                วันที่
+                                <span class="ms-2 fw-normal" t-field="o.date" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                หน่วยงาน
+                                <span class="ms-2" t-field="o.department_id" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                เรื่อง
+                                <span class="ms-2" t-field="o.category_id" />
+                            </div>
+                        </div>
+
+                        <!-- Request Details -->
+                        <div class="my-4" />
+                        <p style="text-indent: 6em;">
+                            ผู้ขออนุมัติ
+                            <span t-field="o.owner_id" class="fw-bolder text-decoration-underline" />
+                            <span class="ms-2">สังกัด</span>
+                            <span t-field="o.department_id" class="fw-bolder text-decoration-underline" />
+                        </p>
+
+                        <div class="row">
+                            <div class="col">
+                                ผู้รับผิดชอบ
+                                <span class="fw-bolder text-decoration-underline" t-field="o.user_id" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ประเภท
+                                <span class="fw-bolder text-decoration-underline" t-field="o.category_id" />
+                            </div>
+                        </div>
+                        <div class="row" t-if="o.description">
+                            <div class="col">
+                                รายละเอียด
+                                <span class="fw-bolder text-decoration-underline" t-out="o.description" />
+                            </div>
+                        </div>
+                        <div class="row" t-if="o.has_period">
+                            <div class="col">
+                                ระยะเวลา
+                                <span class="fw-bolder text-decoration-underline" t-field="o.date_start" />
+                                -
+                                <span class="fw-bolder text-decoration-underline" t-field="o.date_end" />
+                            </div>
+                        </div>
+
+                        <!-- Expense Lines Table -->
+                        <div class="my-4" />
+                        <div class="row my-2">
+                            <div class="col">รายการค่าใช้จ่าย</div>
+                        </div>
+
+                        <t t-set="grand_total" t-value="sum(o.line_ids.mapped('total_amount'))" />
+
+                        <!-- Single payee: flat table -->
+                        <t t-if="len(o.payee_ids) &lt;= 1">
+                            <table class="table table-bordered table-sm mb-4">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">ลำดับ</th>
+                                        <th class="text-center">ผู้ขอ</th>
+                                        <th class="text-center">รายการ</th>
+                                        <th class="text-end">จำนวนเงิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="row_no" t-value="1" />
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                        <tr>
+                                            <td class="text-center" t-out="row_no" />
+                                            <td t-out="line.partner_id.name" />
+                                            <td t-out="line.product_id.name" />
+                                            <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                        </tr>
+                                        <t t-set="row_no" t-value="row_no + 1" />
+                                    </t>
+                                    <tr>
+                                        <td colspan="3" class="text-center fw-bolder">
+                                            รวมทั้งสิ้น
+                                        </td>
+                                        <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Multi-payee: grouped tables per payee -->
+                        <t t-if="len(o.payee_ids) &gt; 1">
+                            <t t-set="global_row_no" t-value="1" />
+                            <t t-foreach="o.payee_ids" t-as="payee">
+                                <t t-set="payee_lines" t-value="o.line_ids.filtered(lambda l: l.partner_id == payee.partner_id)" />
+                                <div class="row mt-3 mb-2">
+                                    <div class="col">
+                                        <strong>ผู้รับเงิน: <span t-out="payee.partner_id.name" /></strong>
+                                    </div>
+                                </div>
+                                <div class="row mb-2" t-if="payee.partner_bank_id">
+                                    <div class="col">
+                                        ธนาคาร <span class="ms-2" t-out="payee.partner_bank_id.bank_id.name" />
+                                        <span class="ms-3">เลขที่บัญชี</span>
+                                        <span class="ms-2" t-out="payee._get_masked_acc_number()" />
+                                    </div>
+                                </div>
+                                <table class="table table-bordered table-sm mb-4" t-if="payee_lines">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">ลำดับ</th>
+                                            <th class="text-center">ผู้ขอ</th>
+                                            <th class="text-center">รายการ</th>
+                                            <th class="text-end">จำนวนเงิน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="payee_lines" t-as="line">
+                                            <tr>
+                                                <td class="text-center" t-out="global_row_no" />
+                                                <td t-out="line.partner_id.name" />
+                                                <td t-out="line.product_id.name" />
+                                                <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
+                                            </tr>
+                                            <t t-set="global_row_no" t-value="global_row_no + 1" />
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </t>
+                            <table class="table table-bordered table-sm mb-4">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" class="text-center fw-bolder">
+                                            รวมทั้งสิ้น
+                                        </td>
+                                        <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Budget Details -->
+                        <div class="my-4" />
+                        <p>รายละเอียดงบประมาณ</p>
+                        <t t-call="agx_approval.report_approval_request_budget" />
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_approval_request_budget">
+        <table class="table table-bordered border table-sm budget">
+            <tbody>
+                <tr class="o_field_budget_commitment_id">
+                    <td>เลขที่ใบจองงบประมาณ</td>
+                    <td>
+                        <span t-field="o.budget_commitment_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_budget_account_id">
+                    <td>รหัสงบประมาณค่าใช้จ่าย</td>
+                    <td>
+                        <span t-field="o.budget_account_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_source_analytic_id">
+                    <td>แหล่งเงิน</td>
+                    <td>
+                        <span t-field="o.source_analytic_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_department_analytic_id">
+                    <td>หน่วยงาน</td>
+                    <td>
+                        <span t-field="o.department_analytic_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_activity_analytic_id">
+                    <td>ด้าน/แผนงาน/กิจกรรม</td>
+                    <td>
+                        <span t-field="o.activity_analytic_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_fund_analytic_id">
+                    <td>กองทุน</td>
+                    <td>
+                        <span t-field="o.fund_analytic_id" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+</odoo>

@@ -42,6 +42,9 @@ class KrisProjectReceiptWizard(models.TransientModel):
         string="Net Amount",
         compute="_compute_net_amount",
     )
+    extra_income = fields.Monetary(
+        string="Extra Value",
+    )
     allocation_ids = fields.One2many(
         comodel_name="kris.project.receipt.wizard.line",
         inverse_name="wizard_id",
@@ -69,12 +72,13 @@ class KrisProjectReceiptWizard(models.TransientModel):
             ]
         return res
 
-    @api.depends("project_id", "project_id.receipt_ids.installment_id")
+    @api.depends("project_id", "project_id.installment_ids.state")
     def _compute_available_installment_ids(self):
         for wiz in self:
-            used_ids = wiz.project_id.receipt_ids.mapped("installment_id").ids
+            # Allow splitting a single installment across multiple receipts:
+            # only fully received installments are removed from the choices.
             available = wiz.project_id.installment_ids.filtered(
-                lambda i: i.id not in used_ids
+                lambda i: i.state != "received"
             )
             wiz.available_installment_ids = available
 
@@ -87,6 +91,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
     def _onchange_installment_id(self):
         if self.installment_id:
             self.amount = self.installment_id.amount
+            self.extra_income = self.installment_id.extra_income
             inst_alloc_by_line = {
                 ia.allocation_line_id.id: ia.amount
                 for ia in self.installment_id.allocation_ids
@@ -104,6 +109,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
                 "date": self.date,
                 "equipment_cost_in_installment": self.equipment_cost_in_installment,
                 "amount": self.amount,
+                "extra_income": self.extra_income,
                 "note": self.note,
             }
         )
@@ -113,6 +119,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
                     "receipt_id": receipt.id,
                     "allocation_line_id": line.allocation_line_id.id,
                     "amount": line.amount,
+                    "remaining_amount": line.remaining_amount,
                 }
             )
         return {"type": "ir.actions.act_window_close"}
@@ -140,8 +147,24 @@ class KrisProjectReceiptWizardLine(models.TransientModel):
         readonly=True,
     )
     amount = fields.Monetary(string="Amount")
+    remaining_amount = fields.Monetary(
+        string="Remaining Amount",
+        compute="_compute_remaining_amount",
+    )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="wizard_id.currency_id",
         readonly=True,
     )
+
+    @api.depends(
+        "allocation_line_id",
+        "allocation_line_id.estimated_amount",
+        "allocation_line_id.actual_amount",
+    )
+    def _compute_remaining_amount(self):
+        for line in self:
+            alloc = line.allocation_line_id
+            line.remaining_amount = (
+                alloc.estimated_amount - alloc.actual_amount if alloc else 0.0
+            )

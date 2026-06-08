@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_kmitl_reports.MultiRecordSelect" owl="1">
+        <div class="o_kmitl_ms" t-ref="root">
+            <div class="o_kmitl_ms_box form-control">
+                <span
+                    t-foreach="selected"
+                    t-as="rec"
+                    t-key="rec.id"
+                    class="badge text-bg-primary o_kmitl_ms_tag"
+                >
+                    <t t-esc="rec.name" />
+                    <span
+                        class="o_kmitl_ms_x"
+                        t-on-click="() => this.remove(rec.id)"
+                    >×</span>
+                </span>
+                <input
+                    t-if="inputVisible"
+                    type="text"
+                    class="o_kmitl_ms_input"
+                    t-att-placeholder="props.placeholder"
+                    t-att-value="state.query"
+                    t-on-focus="onFocus"
+                    t-on-input="onInput"
+                />
+            </div>
+            <div
+                class="o_kmitl_ms_dropdown"
+                t-if="state.open and state.options.length"
+            >
+                <div
+                    t-foreach="state.options"
+                    t-as="opt"
+                    t-key="opt.id"
+                    class="o_kmitl_ms_option"
+                    t-on-click="() => this.add(opt)"
+                >
+                    <t t-esc="opt.name" />
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="accounting_kmitl_reports.TrialBalance" owl="1">
+        <div class="o_kmitl_trial_balance o_action_manager p-3">
+            <div class="o_kmitl_tb_header d-flex align-items-center mb-3">
+                <h2 class="m-0 flex-grow-1">Trial Balance</h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" />Export Excel
+                </button>
+                <button class="btn btn-primary" t-on-click="printPdf">
+                    <i class="fa fa-file-pdf-o me-1" />Print PDF
+                </button>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="o_kmitl_tb_filters row g-2 mb-3">
+                <div class="col-md-3">
+                    <label class="o_form_label">Fiscal Year</label>
+                    <select
+                        class="form-select"
+                        t-on-change="onFiscalYearChange"
+                    >
+                        <option value="">/</option>
+                        <option
+                            t-foreach="fiscalYears"
+                            t-as="fy"
+                            t-key="fy.id"
+                            t-att-value="fy.id"
+                            t-att-selected="fy.id === state.fiscalYearId"
+                        >
+                            <t t-esc="fy.name" />
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date From</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateFrom"
+                        t-on-change="onDateFromChange"
+                    />
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date To</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateTo"
+                        t-on-change="onDateToChange"
+                    />
+                </div>
+                <div class="col-md-5 d-flex align-items-end gap-3">
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_tb_posted"
+                            t-att-checked="state.onlyPosted"
+                            t-on-change="onTogglePosted"
+                        />
+                        <label class="form-check-label" for="kmitl_tb_posted">Posted entries only</label>
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_tb_hide0"
+                            t-att-checked="state.hideAt0"
+                            t-on-change="onToggleHide"
+                        />
+                        <label class="form-check-label" for="kmitl_tb_hide0">Hide accounts at 0</label>
+                    </div>
+                </div>
+
+                <!-- KMITL accounting dimensions -->
+                <div class="col-md-3">
+                    <label class="o_form_label">Departments</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'departments']]"
+                        placeholder="labels.departments"
+                        selected="state.departments"
+                        onChange="(sel) => this.onSelectionChange('departments', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Sources</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'sources']]"
+                        placeholder="labels.sources"
+                        selected="state.sources"
+                        onChange="(sel) => this.onSelectionChange('sources', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Funds</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'funds']]"
+                        placeholder="labels.funds"
+                        selected="state.funds"
+                        onChange="(sel) => this.onSelectionChange('funds', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Activities</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'activities']]"
+                        placeholder="labels.activities"
+                        selected="state.activities"
+                        onChange="(sel) => this.onSelectionChange('activities', sel)"
+                    />
+                </div>
+
+                <!-- Standard filters (collapsed by default) -->
+                <div class="col-12">
+                    <button
+                        class="btn btn-link p-0 o_kmitl_tb_more"
+                        t-on-click="toggleAdvanced"
+                    >
+                        <i
+                            t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                        />
+                        <t t-if="state.showAdvanced">Hide journal / partner / account filters</t>
+                        <t t-else="">More filters</t>
+                    </button>
+                </div>
+                <t t-if="state.showAdvanced">
+                    <div class="col-md-3">
+                        <label class="o_form_label">Journals</label>
+                        <MultiRecordSelect
+                            resModel="'account.journal'"
+                            domain="[['company_id', '=', companyId]]"
+                            placeholder="labels.journals"
+                            selected="state.journals"
+                            onChange="(sel) => this.onSelectionChange('journals', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Partners</label>
+                        <MultiRecordSelect
+                            resModel="'res.partner'"
+                            placeholder="labels.partners"
+                            selected="state.partners"
+                            onChange="(sel) => this.onSelectionChange('partners', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Accounts</label>
+                        <MultiRecordSelect
+                            resModel="'account.account'"
+                            domain="[['company_id', '=', companyId]]"
+                            placeholder="labels.accounts"
+                            selected="state.accounts"
+                            onChange="(sel) => this.onSelectionChange('accounts', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Account code range</label>
+                        <div class="d-flex gap-1">
+                            <MultiRecordSelect
+                                resModel="'account.account'"
+                                domain="[['company_id', '=', companyId]]"
+                                placeholder="labels.accountFrom"
+                                single="true"
+                                selected="state.accountFrom"
+                                onChange="(sel) => this.onSelectionChange('accountFrom', sel)"
+                            />
+                            <MultiRecordSelect
+                                resModel="'account.account'"
+                                domain="[['company_id', '=', companyId]]"
+                                placeholder="labels.accountTo"
+                                single="true"
+                                selected="state.accountTo"
+                                onChange="(sel) => this.onSelectionChange('accountTo', sel)"
+                            />
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Report table -->
+            <div class="o_kmitl_tb_table_wrap">
+                <table class="table table-sm table-bordered o_kmitl_tb_table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="o_kmitl_tb_account">Account</th>
+                            <th colspan="3" class="text-center">Opening</th>
+                            <th colspan="3" class="text-center">During Period</th>
+                            <th colspan="3" class="text-center">Ending</th>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Balance</th>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Balance</th>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="state.loading">
+                            <td colspan="10" class="text-center text-muted">Loading...</td>
+                        </tr>
+                        <tr t-elif="!state.rows.length">
+                            <td colspan="10" class="text-center text-muted">No data</td>
+                        </tr>
+                        <tr t-foreach="state.rows" t-as="row" t-key="row.id">
+                            <td>
+                                <t t-esc="row.code" /> - <t t-esc="row.name" />
+                            </td>
+                            <td class="text-end" t-esc="format(row.opening_debit)" />
+                            <td class="text-end" t-esc="format(row.opening_credit)" />
+                            <td class="text-end" t-esc="format(row.opening_balance)" />
+                            <td class="text-end" t-esc="format(row.period_debit)" />
+                            <td class="text-end" t-esc="format(row.period_credit)" />
+                            <td class="text-end" t-esc="format(row.period_balance)" />
+                            <td class="text-end" t-esc="format(row.ending_debit)" />
+                            <td class="text-end" t-esc="format(row.ending_credit)" />
+                            <td class="text-end" t-esc="format(row.ending_balance)" />
+                        </tr>
+                    </tbody>
+                    <tfoot t-if="state.rows.length">
+                        <tr class="fw-bold">
+                            <td>Total</td>
+                            <td class="text-end" t-esc="format(state.totals.opening_debit)" />
+                            <td class="text-end" t-esc="format(state.totals.opening_credit)" />
+                            <td class="text-end" t-esc="format(state.totals.opening_balance)" />
+                            <td class="text-end" t-esc="format(state.totals.period_debit)" />
+                            <td class="text-end" t-esc="format(state.totals.period_credit)" />
+                            <td class="text-end" t-esc="format(state.totals.period_balance)" />
+                            <td class="text-end" t-esc="format(state.totals.ending_debit)" />
+                            <td class="text-end" t-esc="format(state.totals.ending_credit)" />
+                            <td class="text-end" t-esc="format(state.totals.ending_balance)" />
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>

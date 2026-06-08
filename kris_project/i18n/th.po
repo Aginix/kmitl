@@ -547,8 +547,8 @@ msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: kris_project
-#: model:res.groups,name:kris_project.group_kris_project_user
-msgid "User"
+#: model:res.groups,name:kris_project.group_kris_project_viewer
+msgid "Viewer"
 msgstr ""
 
 #. module: kris_project
@@ -614,6 +614,7 @@ msgstr "การจัดสรรตามงวด"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__receipt_allocation_ids
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Allocation based on revenue."
 msgstr "การจัดสรรตามรายรับ"
@@ -671,6 +672,11 @@ msgstr "ข้อมูลโครงการ"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__revenue_remaining
 msgid "Revenue Remaining"
 msgstr "คงเหลือ"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__over_revenue
+msgid "Over Revenue"
+msgstr "รับเกินจากโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__equipment_cost
@@ -815,8 +821,12 @@ msgid "บันทึกข้อมูลโครงการบริกา�
 msgstr ""
 
 #. module: kris_project
+#. odoo-python
+#: code:addons/kris_project/models/kris_project.py:0
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
+#, python-format
 msgid "Revenue Record"
 msgstr "บันทึกรายรับ"
 
@@ -928,8 +938,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__item_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__name
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__name
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Allocator"
 msgstr "ผู้รับจัดสรร"
@@ -1007,6 +1019,8 @@ msgstr "ยกเลิก"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__remaining_amount
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__remaining_amount
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__remaining_amount
 msgid "Remaining Amount"
 msgstr "ยอดคงเหลือที่จัดสรรได้"
 
@@ -1053,7 +1067,7 @@ msgstr "ยืนยัน"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "In Progress"
-msgstr "อยู่ระหว่างดำเนินการ"
+msgstr "อยู่ระยะเวลาโครงการ"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -1259,8 +1273,8 @@ msgstr "สามารถรีเซ็ตได้เฉพาะโครง
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__department_id
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
-msgid "Department"
-msgstr "หน่วยงาน"
+msgid "Leader Department"
+msgstr "หน่วยงานของหัวหน้าโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__government
@@ -1305,8 +1319,8 @@ msgid "Advance Deduction"
 msgstr "หักเงินล่วงหน้า"
 
 #. module: kris_project
-#: model:ir.model.fields,field_description:kris_project.field_kris_project__leader_id
-msgid "Project Leader"
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__manager_id
+msgid "Project Manager"
 msgstr "หัวหน้าโครงการ"
 
 #. module: kris_project
@@ -1320,7 +1334,10 @@ msgid "Responsible"
 msgstr "เจ้าหน้าที่ KRIS"
 
 #. module: kris_project
+#. odoo-python
+#: code:addons/kris_project/models/kris_project.py:0
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#, python-format
 msgid "Add Installment"
 msgstr "เพิ่มงวด"
 
@@ -1356,7 +1373,7 @@ msgstr "เลือกแม่แบบ..."
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "Done"
-msgstr "เสร็จสิ้น"
+msgstr "โครงการเสร็จสิ้น"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__private
@@ -1451,3 +1468,28 @@ msgstr "เลขประจำตัวผู้เสียภาษี"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 msgid "Client/Funding Organization"
 msgstr "ผู้ว่าจ้าง/หน่วยงานผู้ให้ทุน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_value
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__extra_income
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__extra_income
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__extra_income
+msgid "Extra Value"
+msgstr "ค่า Extra"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__department_analytic_id
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__department_analytic_id
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__department_analytic_id
+msgid "Department Budget Code"
+msgstr "รหัสงบประมาณหน่วยงาน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
+msgid "Extra Payee"
+msgstr "ผู้รับค่า Extra"

@@ -75,7 +75,7 @@
                     <field name="sarabun_document_count" invisible="1" />
                     <button
                         name="action_submit_to_sarabun"
-                        string="สร้างหนังสือ"
+                        string="Create Sarabun"
                         type="object"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('state', '!=', 'validate'), ('sarabun_document_count', '>', 0)]}"
@@ -124,7 +124,7 @@
                             class="oe_stat_button"
                             icon="fa-file-text-o"
                             attrs="{'invisible': [('sarabun_document_count', '=', 0)]}"
-                            string="หนังสือ"
+                            string="Sarabun Document"
                         />
                     </div>
                     <widget

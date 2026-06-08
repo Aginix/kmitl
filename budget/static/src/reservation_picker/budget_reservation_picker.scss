@@ -1,0 +1,40 @@
+// The picker reuses the monitoring dashboard markup (.o_bd_* styles come from
+// budget_dashboard.scss); these rules add the selection affordances and widen
+// the dialog so the full column set fits.
+.o_dialog:has(.o_budget_reservation_picker) {
+    .modal-dialog {
+        max-width: 100%;
+        width: 95vw;
+    }
+}
+
+.o_budget_reservation_picker {
+    max-height: 80vh;
+
+    .o_bd_table_wrapper {
+        overflow: auto;
+    }
+
+    // Whole row is clickable only when selectable; rollup and activity
+    // (breakdown) group rows are display-only and keep the default cursor.
+    tbody tr.o_brp_selectable {
+        cursor: pointer;
+    }
+
+    tr.o_brp_selected > td {
+        background-color: #e7f1ff !important;
+    }
+
+    .o_brp_pick_col {
+        width: 90px;
+    }
+
+    .o_brp_check {
+        font-size: 1.1em;
+    }
+
+    .o_brp_amount {
+        width: 120px;
+        display: inline-block;
+    }
+}

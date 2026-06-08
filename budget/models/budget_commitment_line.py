@@ -114,7 +114,7 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
-        store=False,
+        store=True,
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -122,7 +122,7 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        store=False,
+        store=True,
     )
 
     _analytic_keys = {
@@ -148,6 +148,16 @@ class BudgetCommitmentLine(models.Model):
         related="commitment_id.source_analytic_id",
         store=True,
         string="แหล่งเงิน",
+    )
+    kmitl_project_analytic_id = fields.Many2one(
+        related="commitment_id.kmitl_project_analytic_id",
+        store=True,
+        string="โครงการ/กิจกรรม",
+    )
+    procurement_plan_analytic_id = fields.Many2one(
+        related="commitment_id.procurement_plan_analytic_id",
+        store=True,
+        string="แผนจัดซื้อจัดจ้าง",
     )
     currency_id = fields.Many2one(related="commitment_id.currency_id")
     company_id = fields.Many2one(
@@ -222,6 +232,44 @@ class BudgetCommitmentLine(models.Model):
                     % {"consumed": total_consumed, "obligated": total_obligated}
                 )
 
+            # B2: over-reversal must never drive a net total below zero.
+            if total_reserved < 0:
+                raise ValidationError(
+                    _("Total reserved cannot be negative (%.2f).") % total_reserved
+                )
+            if total_obligated < 0:
+                raise ValidationError(
+                    _("Total obligated cannot be negative (%.2f).") % total_obligated
+                )
+            if total_consumed < 0:
+                raise ValidationError(
+                    _("Total consumed cannot be negative (%.2f).") % total_consumed
+                )
+
+    @api.constrains("account_id", "move_type", "state")
+    def _check_cross_charge(self):
+        """A reservation may span >1 budget code only if all are cross-chargeable.
+
+        ถัวจ่าย (ADR 0006): a single reserve line is always allowed; multiple
+        reserve lines with *different* budget accounts require every one of
+        those accounts to be flagged ``cross_chargeable``.
+        """
+        for commitment in self.mapped("commitment_id"):
+            accounts = commitment.line_ids.filtered(
+                lambda l: l.state == "posted" and l.move_type == "reserve"
+            ).mapped("account_id")
+            if len(accounts) > 1:
+                blocked = accounts.filtered(lambda a: not a.cross_chargeable)
+                if blocked:
+                    raise ValidationError(
+                        _(
+                            "A reservation may use more than one budget code only "
+                            "if every code is marked ถัวจ่ายได้ (cross-chargeable). "
+                            "These are not: %s"
+                        )
+                        % ", ".join(blocked.mapped("display_name"))
+                    )
+
     # --- Immutability ---
 
     def write(self, vals):
@@ -251,6 +299,9 @@ class BudgetCommitmentLine(models.Model):
             # Cascade cancel to linked budget.move
             if line.budget_move_id and line.budget_move_id.state != "cancel":
                 line.budget_move_id.button_cancel()
+        # Re-derive header state band (e.g. partial -> reserved once every
+        # obligate/consume line is cancelled).
+        self.mapped("commitment_id")._sync_state()
 
     def action_post(self):
         for line in self:
@@ -316,17 +367,33 @@ class BudgetCommitmentLine(models.Model):
     def create(self, vals_list):
         lines = super().create(vals_list)
 
+        # B1: forward obligate/consume are only allowed on an active commitment.
+        # Exempt are reserve lines (created with the header while still draft) and
+        # reversal lines (negative amount — refunds / de-obligations, which must
+        # stay postable even after a commitment is fully consumed/"done");
+        # _sync_state re-derives the state band once a reversal lands.
+        blocked = lines.filtered(
+            lambda l: l.state == "posted"
+            and l.move_type in ("obligate", "consume")
+            and l.amount > 0
+            and l.commitment_id.state not in ("reserved", "partial")
+        )
+        if blocked:
+            raise UserError(
+                _(
+                    "Can only obligate or consume a commitment that is "
+                    "reserved or in progress."
+                )
+            )
+
         # Auto-create budget.move for consume lines
         for line in lines.filtered(
             lambda l: l.state == "posted" and l.move_type == "consume"
         ):
             line._create_budget_move()
 
-        # Auto-advance header state when obligate/consume lines are added
-        for line in lines.filtered(
-            lambda l: l.state == "posted" and l.move_type in ("obligate", "consume")
-        ):
-            if line.commitment_id.state == "reserved":
-                line.commitment_id.state = "partial"
+        # Re-derive the header state band (reserved/partial/done) from the
+        # updated line totals.
+        lines.mapped("commitment_id")._sync_state()
 
         return lines

@@ -30,6 +30,8 @@
         "account_analytic_kmitl",
         "disbursement",
         "purchase_request_approval_work_acceptance",
+        "agx_approval",
+        "agx_approval_disbursement",
     ],
     "data": [
         "data/company.xml",
@@ -43,6 +45,7 @@
         "data/ir_config_parameter.xml",
         "data/purchase.request.xml",
         "data/purchase.request.dashboard.demo.xml",
+        "data/approval.request.xml",
         "data/account.analytic.account.xml",
         "data/res.users.role.xml",
     ],

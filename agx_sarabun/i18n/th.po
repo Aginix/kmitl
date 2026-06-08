@@ -2723,7 +2723,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
 msgid "เปิดเอกสาร"
-msgstr ""
+msgstr "Preview Document"
 
 #. module: agx_sarabun
 #. odoo-python
@@ -2731,3 +2731,8 @@ msgstr ""
 #, python-format
 msgid "Please specify the Recipient before confirming the documents."
 msgstr ""
+
+#. module: agx_sarabun
+#: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_view_form
+msgid "Original Document"
+msgstr "เอกสารต้นทาง"
