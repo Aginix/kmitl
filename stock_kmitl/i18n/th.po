@@ -30,6 +30,16 @@ msgid "Reason"
 msgstr "เหตุผลสุดวิสัย"
 
 #. module: stock_kmitl
+#: model_terms:ir.ui.view,arch_db:stock_kmitl.view_stock_scrap_form
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: stock_kmitl
+#: model:ir.model.fields,field_description:stock_kmitl.field_stock_scrap__attachment_ids
+msgid "Document Attachments"
+msgstr "แนบเอกสาร"
+
+#. module: stock_kmitl
 #: model:ir.model,name:stock_kmitl.model_stock_scrap
 msgid "Scrap"
 msgstr "เศษซากผลิตภัณฑ์"

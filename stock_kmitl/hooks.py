@@ -7,6 +7,9 @@ _logger = logging.getLogger(__name__)
 
 
 def post_init_hook(cr, registry):
+    # One-time setup at install: rename the first (oldest) warehouse to KMITL
+    # and clear its operating unit. KMITL runs a single warehouse, so only the
+    # oldest one is configured here.
     env = api.Environment(cr, SUPERUSER_ID, {})
 
     warehouse = env["stock.warehouse"].search([], limit=1, order="id asc")

@@ -19,3 +19,8 @@ class StockInventory(models.Model):
         comodel_name="res.users",
         default=lambda self: self.env.user,
     )
+
+    department_id = fields.Many2one(
+        comodel_name="hr.department",
+        string="Department",
+    )

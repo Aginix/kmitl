@@ -2,12 +2,14 @@
 {
     "name": "Stock KMITL",
     "version": "16.0.1.0.0",
-    "summary": "KMITL stock customizations: inventory adjustment defaults & access "
-    "restriction, warehouse initialization, and scrap tracking fields",
+    "summary": "KMITL stock customizations: inventory adjustment defaults, department "
+    "& access restriction, warehouse initialization, and scrap tracking "
+    "(responsible, reason, attachments, hidden scrap location)",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
+        "hr",
         "stock",
         "stock_inventory",
         "stock_operating_unit",

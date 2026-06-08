@@ -9,6 +9,15 @@
             <xpath expr="//group/group" position="inside">
                 <field name="reason"/>
             </xpath>
+            <xpath expr="//group[1]/group[1]" position="inside">
+                <field name="attachment_ids"
+                       widget="many2many_binary"
+                       string="Attachments"
+                       attrs="{'readonly': [('state', '=', 'done')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='scrap_location_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 
@@ -23,6 +32,9 @@
             </xpath>
             <xpath expr="//field[@name='scrap_qty']" position="after">
                 <field name="reason"/>
+            </xpath>
+            <xpath expr="//field[@name='scrap_location_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>

@@ -10,7 +10,6 @@ class StockScrap(models.Model):
         string="Created By",
         readonly=True,
         default=lambda self: self.env.user,
-        states={"done": [("readonly", True)]},
         tracking=True,
     )
 
@@ -21,5 +20,13 @@ class StockScrap(models.Model):
     )
 
     origin = fields.Char(
+        states={"done": [("readonly", True)]},
+    )
+
+    attachment_ids = fields.One2many(
+        "ir.attachment",
+        "res_id",
+        string="Document Attachments",
+        tracking=True,
         states={"done": [("readonly", True)]},
     )
