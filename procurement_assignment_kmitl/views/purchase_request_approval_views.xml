@@ -26,7 +26,7 @@
                     domain="[('request_id.assigned_to', '=', False)]"
                 />
             </xpath>
-            <xpath expr="//field[@name='name']" position="after">
+            <xpath expr="//filter[@name='draft']" position="before">
                 <field name="pr_assigned_to" />
             </xpath>
         </field>
