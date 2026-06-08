@@ -126,11 +126,6 @@
                 </attribute>
             </xpath>
 
-            <!-- Hide analytic field -->
-            <xpath expr="//field[@name='analytic_distribution']" position="attributes">
-                <attribute name="groups">base.group_no_one</attribute>
-            </xpath>
-
             <!-- No invoice/bill: hide invoice/bill fields -->
             <xpath expr="//field[@name='invoice_ids']" position="attributes">
                 <attribute name="invisible">1</attribute>
