@@ -43,9 +43,9 @@
     <record id="view_purchase_order_search_assignment" model="ir.ui.view">
         <field name="name">purchase.order.search.assignment</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.view_purchase_order_filter" />
+        <field name="inherit_id" ref="purchase.purchase_order_view_search" />
         <field name="arch" type="xml">
-            <xpath expr="//filter[@name='my_purchases']" position="after">
+            <xpath expr="//filter[@name='order_date']" position="after">
                 <filter
                     name="assigned_to_me"
                     string="Assigned to me"
@@ -74,7 +74,7 @@
     <record id="view_purchase_order_tree_assignment" model="ir.ui.view">
         <field name="name">purchase.order.tree.assignment</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_tree" />
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='user_id']" position="after">
                 <field

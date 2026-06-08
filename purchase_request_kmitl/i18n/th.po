@@ -277,7 +277,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Assigned to me"
-msgstr ""
+msgstr "งานที่ได้รับมอบหมาย"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search

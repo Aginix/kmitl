@@ -36,6 +36,13 @@
                 <attribute name="readonly">1</attribute>
                 <attribute name="attrs" />
             </xpath>
+            <xpath expr="//filter[@name='assigned_to_me']" position="after">
+                <filter
+                    name="unassigned"
+                    string="Unassigned"
+                    domain="[('assigned_to', '=', False)]"
+                />
+            </xpath>
         </field>
     </record>
 </odoo>

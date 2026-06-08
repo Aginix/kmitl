@@ -182,6 +182,12 @@ msgid "Unassign"
 msgstr "ยกเลิกการมอบหมาย"
 
 #. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+msgid "Unassigned"
+msgstr "ยังไม่ได้มอบหมาย"
+
+#. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
 msgid "Unassigned"
