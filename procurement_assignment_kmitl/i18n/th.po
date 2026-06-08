@@ -69,7 +69,7 @@ msgstr "ถูกมอบหมายให้เป็นเจ้าหน้
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
 msgid "Assigned to me"
-msgstr "งานที่ได้รับมอบหมาย"
+msgstr "งานของฉัน"
 
 #. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_order__assignment_can_assign_me
