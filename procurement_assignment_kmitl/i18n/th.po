@@ -47,6 +47,7 @@ msgstr "มอบหมายเจ้าหน้าที่จัดซื้
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__user_id
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_order__assigned_to
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request__assigned_to
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request_approval__pr_assigned_to
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
 msgid "Assigned Officer"
 msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
@@ -153,6 +154,11 @@ msgid "Purchase Request"
 msgstr "คำขอซื้อขอจ้าง"
 
 #. module: procurement_assignment_kmitl
+#: model:ir.model,name:procurement_assignment_kmitl.model_purchase_request_approval
+msgid "Purchase Request Approval"
+msgstr "อนุมัติคำขอซื้อขอจ้าง"
+
+#. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__res_id
 msgid "Res"
 msgstr "เรคอร์ด"
@@ -177,6 +183,7 @@ msgstr "ยกเลิกการมอบหมาย"
 
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
 msgid "Unassigned"
 msgstr "ยังไม่ได้มอบหมาย"
 

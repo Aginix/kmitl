@@ -20,6 +20,35 @@
                     string="Assigned to me"
                     domain="[('request_id.assigned_to', '=', uid)]"
                 />
+                <filter
+                    name="unassigned"
+                    string="Unassigned"
+                    domain="[('request_id.assigned_to', '=', False)]"
+                />
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="pr_assigned_to" />
+            </xpath>
+        </field>
+    </record>
+
+    <record
+        id="view_purchase_request_approval_tree_assignment"
+        model="ir.ui.view"
+    >
+        <field name="name">purchase.request.approval.tree.assignment</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field
+                    name="pr_assigned_to"
+                    widget="many2one_avatar_user"
+                    optional="hide"
+                />
             </xpath>
         </field>
     </record>
