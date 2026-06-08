@@ -11,9 +11,9 @@
                 create="false"
                 edit="false"
                 decoration-bf="is_read_by_me == False"
-                decoration-danger="state == 'overdue'"
-                decoration-warning="state == 'today'"
                 decoration-muted="is_read_by_me == True"
+                decoration-danger="state == 'overdue' and todo_category in ['approval', 'execution']"
+                decoration-warning="state == 'today' and todo_category in ['approval', 'execution']"
             >
                 <field name="state" widget="badge" optional="show" />
                 <field name="todo_category" optional="show" />
