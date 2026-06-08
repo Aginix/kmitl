@@ -9,11 +9,13 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="before">
+                <field name="has_active_payment" invisible="1"/>
                 <button
                     name="action_create_payment"
                     string="Create Payment"
                     type="object"
                     class="btn-primary"
+                    attrs="{'invisible': [('has_active_payment', '=', True)]}"
                 />
             </xpath>
             <xpath expr="//button[@name='action_view_purchase_order']" position="after">
