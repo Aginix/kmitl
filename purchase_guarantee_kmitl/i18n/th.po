@@ -234,3 +234,4 @@ msgstr "แบบบันทึกข้อมูลหลักประกั
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__name
 msgid "Guarantee Number"
 msgstr "เลขที่หลักประกัน"
+ 
