@@ -10,7 +10,7 @@
                 <button
                     name="action_assignment_assign_me"
                     type="object"
-                    string="รับงาน (Assign to me)"
+                    string="Assign to me"
                     class="oe_highlight"
                     groups="purchase.group_purchase_user"
                     attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
@@ -18,13 +18,13 @@
                 <button
                     name="action_assignment_open_wizard"
                     type="object"
-                    string="มอบหมาย (Assign…)"
+                    string="Assign…"
                     groups="purchase.group_purchase_manager"
                 />
                 <button
                     name="action_assignment_unassign"
                     type="object"
-                    string="ยกเลิกการมอบหมาย (Unassign)"
+                    string="Unassign"
                     groups="purchase.group_purchase_manager"
                     attrs="{'invisible': [('assigned_to', '=', False)]}"
                 />
@@ -48,7 +48,7 @@
             <xpath expr="//filter[@name='my_purchases']" position="after">
                 <filter
                     name="assigned_to_me"
-                    string="มอบหมายให้ฉัน (Assigned to me)"
+                    string="Assigned to me"
                     domain="[('assigned_to', '=', uid)]"
                 />
             </xpath>

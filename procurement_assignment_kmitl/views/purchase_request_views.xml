@@ -10,7 +10,7 @@
                 <button
                     name="action_assignment_assign_me"
                     type="object"
-                    string="รับงาน (Assign to me)"
+                    string="Assign to me"
                     class="oe_highlight"
                     groups="purchase_request.group_purchase_request_user"
                     attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
@@ -18,13 +18,13 @@
                 <button
                     name="action_assignment_open_wizard"
                     type="object"
-                    string="มอบหมาย (Assign…)"
+                    string="Assign…"
                     groups="purchase_request.group_purchase_request_manager"
                 />
                 <button
                     name="action_assignment_unassign"
                     type="object"
-                    string="ยกเลิกการมอบหมาย (Unassign)"
+                    string="Unassign"
                     groups="purchase_request.group_purchase_request_manager"
                     attrs="{'invisible': [('assigned_to', '=', False)]}"
                 />

@@ -12,7 +12,7 @@ class PurchaseRequest(AssignedOfficerMixin, models.Model):
 
     # Reuse the existing (OCA) field, repurposed as the Assigned Officer.
     assigned_to = fields.Many2one(
-        string="เจ้าหน้าที่ผู้รับผิดชอบ",
+        string="Assigned Officer",
         tracking=True,
     )
     assignment_can_assign_me = fields.Boolean(

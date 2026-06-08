@@ -17,7 +17,7 @@
                 <separator />
                 <filter
                     name="assigned_to_me"
-                    string="มอบหมายให้ฉัน (Assigned to me)"
+                    string="Assigned to me"
                     domain="[('request_id.assigned_to', '=', uid)]"
                 />
             </xpath>

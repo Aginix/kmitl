@@ -11,7 +11,7 @@ class AssignOfficerWizard(models.TransientModel):
     res_id = fields.Integer(required=True)
     user_id = fields.Many2one(
         comodel_name="res.users",
-        string="เจ้าหน้าที่ผู้รับผิดชอบ",
+        string="Assigned Officer",
         required=True,
         domain="[('id', 'in', allowed_user_ids)]",
     )

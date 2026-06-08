@@ -12,7 +12,7 @@ class PurchaseOrder(AssignedOfficerMixin, models.Model):
 
     assigned_to = fields.Many2one(
         comodel_name="res.users",
-        string="เจ้าหน้าที่ผู้รับผิดชอบ",
+        string="Assigned Officer",
         copy=False,
         index=True,
         tracking=True,
