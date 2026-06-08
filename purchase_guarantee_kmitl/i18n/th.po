@@ -72,7 +72,7 @@ msgstr ""
 #. module: purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__attachment_ids
 msgid "Document Attachments"
-msgstr ""
+msgstr "เอกสารแนบ"
 
 #. module: purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__document_ref
