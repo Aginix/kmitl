@@ -1,6 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* purchase_guarantee_kmitl
+#   * l10n_th_gov_purchase_guarantee
 #
 msgid ""
 msgstr ""
@@ -26,7 +27,7 @@ msgstr ""
 #. module: purchase_guarantee_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
 msgid "<span class=\"o_stat_text\">Purchase Order</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Purchase Order</span>"
 
 #. module: purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__active
@@ -89,14 +90,22 @@ msgstr "แบบร่าง"
 msgid "File Name"
 msgstr "ชื่อไฟล์"
 
-#. module: purchase_guarantee_kmitl
+#. module: purchase_guarantee_kmitl, l10n_th_gov_purchase_guarantee
 #: model:ir.ui.menu,name:purchase_guarantee_kmitl.kmitl_guarantee_purchase
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.purchase_guarantee_search_view
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.purchase_order_form
 msgid "Guarantee"
 msgstr "หลักประกัน"
 
-#. module: purchase_guarantee_kmitl
+#. module: purchase_guarantee_kmitl, l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__date_due_guarantee
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__date_due_guarantee
 msgid "Guarantee Due Date"
+msgstr "วันที่หมดอายุหลักประกัน"
+
+#. module: l10n_th_gov_purchase_guarantee
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.view_purchase_guarantee_tree
+msgid "Due Date"
 msgstr "วันที่หมดอายุหลักประกัน"
 
 #. module: purchase_guarantee_kmitl
@@ -104,8 +113,9 @@ msgstr "วันที่หมดอายุหลักประกัน"
 msgid "Guarantee Method"
 msgstr "ประเภทการค้ำประกัน"
 
-#. module: purchase_guarantee_kmitl
+#. module: purchase_guarantee_kmitl, l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__date_guarantee_receive
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__date_guarantee_receive
 msgid "Guarantee Receive Date"
 msgstr "วันที่รับหลักประกัน"
 
@@ -219,3 +229,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
 msgid "Purchase Guarantee Form"
 msgstr "แบบบันทึกข้อมูลหลักประกัน"
+
+#. module: l10n_th_gov_purchase_guarantee
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__name
+msgid "Guarantee Number"
+msgstr "เลขที่หลักประกัน"

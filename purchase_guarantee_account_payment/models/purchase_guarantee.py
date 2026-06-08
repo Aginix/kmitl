@@ -61,6 +61,8 @@ class PurchaseGuarantee(models.Model):
 
         payment = self.env["account.payment"].create(vals)
 
+        self.button_lock()
+
         # Re-apply analytic distribution after creation.
         # During _inherits creation, AnalyticDistributionMixin's compute
         # resets analytic_distribution before lines are generated.

@@ -35,19 +35,6 @@
             <!-- Lock: header with state buttons -->
             <xpath expr="//sheet" position="before">
                 <header>
-                    <button
-                        name="button_draft"
-                        states="lock"
-                        string="Draft"
-                        type="object"
-                    />
-                    <button
-                        name="button_lock"
-                        states="draft"
-                        string="Lock"
-                        type="object"
-                        class="oe_highlight"
-                    />
                     <field
                         name="state"
                         widget="statusbar"
