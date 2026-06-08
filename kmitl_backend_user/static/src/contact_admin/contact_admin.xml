@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="kmitl_backend_user.ContactAdmin" owl="1">
+        <div class="o_kmitl_contact_admin" t-if="!state.forwarding">
+            <div class="o_kca_card">
+                <i class="fa fa-lock o_kca_icon" />
+                <h2 class="o_kca_title">บัญชีของคุณยังไม่ได้รับสิทธิ์ใช้งาน</h2>
+                <p class="o_kca_text">
+                    คุณยังไม่มีสิทธิ์เข้าถึงแอปพลิเคชันใด ๆ ในระบบ
+                    กรุณาติดต่อผู้ดูแลระบบเพื่อขอสิทธิ์การเข้าถึง
+                </p>
+                <div t-if="state.admins.length" class="o_kca_admins">
+                    <h5>ผู้ดูแลระบบ</h5>
+                    <ul>
+                        <t t-foreach="state.admins" t-as="admin" t-key="admin.email">
+                            <li>
+                                <span class="o_kca_admin_name" t-esc="admin.name" />
+                                <a t-att-href="'mailto:' + admin.email" t-esc="admin.email" />
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
