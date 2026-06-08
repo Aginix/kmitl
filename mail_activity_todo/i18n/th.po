@@ -6,48 +6,35 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-08 07:47+0000\n"
-"PO-Revision-Date: 2026-06-08 07:47+0000\n"
+"POT-Creation-Date: 2026-06-08 08:23+0000\n"
+"PO-Revision-Date: 2026-06-08 08:23+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: mail_activity_todo
 #: model:ir.model.constraint,message:mail_activity_todo.constraint_todo_read_activity_user_uniq
 msgid "A read receipt already exists for this user and Todo."
-msgstr ""
+msgstr "การอ่านได้ถูกสร้างขึ้นแล้วสำหรับผู้ใช้นี้และงานที่ต้องทำ"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__acknowledgement
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__acknowledgement
 msgid "Acknowledgement"
-msgstr ""
+msgstr "การรับทราบ"
 
-#. modules: mail, mail_activity_todo
-#. odoo-javascript
-#: code:addons/mail/static/src/components/activity_menu_view/activity_menu_view.xml:0
-#: code:addons/mail/static/src/js/views/activity/activity_view.js:0
+#. module: mail_activity_todo
 #: model:ir.model,name:mail_activity_todo.model_mail_activity
-#: model:ir.model.fields,field_description:mail.field_ir_actions_server__activity_type_id
-#: model:ir.model.fields,field_description:mail.field_ir_cron__activity_type_id
-#: model:ir.model.fields.selection,name:mail.selection__ir_actions_act_window_view__view_mode__activity
-#: model:ir.model.fields.selection,name:mail.selection__ir_ui_view__type__activity
-#: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_calendar
-#: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_form_popup
-#: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_search
-#: model_terms:ir.ui.view,arch_db:mail.view_server_action_form_template
-#, python-format
 msgid "Activity"
 msgstr "กิจกรรม"
 
-#. modules: mail, mail_activity_todo
+#. module: mail_activity_todo
 #: model:ir.model,name:mail_activity_todo.model_mail_activity_type
-#: model:ir.model.fields,field_description:mail.field_mail_activity__activity_type_id
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__activity_type_id
-#: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 msgid "Activity Type"
 msgstr "ประเภทกิจกรรม"
@@ -58,13 +45,13 @@ msgstr "ประเภทกิจกรรม"
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
 msgid "App"
-msgstr ""
+msgstr "แอป"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__approval
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__approval
 msgid "Approval"
-msgstr ""
+msgstr "การอนุมัติ"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,help:mail_activity_todo.field_mail_activity__todo_category
@@ -80,154 +67,62 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 msgid "Category"
-msgstr ""
+msgstr "หมวดหมู่"
 
 #. module: mail_activity_todo
 #: model:ir.actions.act_window,name:mail_activity_todo.action_completed_todos
 #: model:ir.ui.menu,name:mail_activity_todo.menu_todo_completed
 msgid "Completed"
-msgstr ""
+msgstr "เสร็จสิ้น"
 
 #. module: mail_activity_todo
 #: model:ir.model,name:mail_activity_todo.model_todo_log
 msgid "Completed Todo (history)"
-msgstr ""
+msgstr "ประวัติงานที่เสร็จสิ้น"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
 msgid "Completed Todos"
-msgstr ""
+msgstr "งานที่เสร็จสิ้น"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__completed_by
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 msgid "Completed by"
-msgstr ""
+msgstr "เสร็จสิ้นโดย"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 msgid "Completed by me"
-msgstr ""
+msgstr "เสร็จสิ้นโดยฉัน"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__completed_date
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
 msgid "Completed on"
-msgstr ""
+msgstr "เสร็จสิ้นเมื่อ"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_fetchmail_server__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_activity__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_alias__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist_remove__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_channel__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_channel_member__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_gateway_allowed__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_guest__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_ice_server__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_link_preview__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_mail__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_message__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_message_schedule__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_message_subtype__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_resend_message__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_resend_partner__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_shortcode__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_template__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_template_reset__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_tracking_value__create_uid
-#: model:ir.model.fields,field_description:mail.field_mail_wizard_invite__create_uid
-#: model:ir.model.fields,field_description:mail.field_res_users_settings__create_uid
-#: model:ir.model.fields,field_description:mail.field_res_users_settings_volumes__create_uid
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__create_uid
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__create_uid
 msgid "Created by"
 msgstr "สร้างโดย"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_fetchmail_server__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_activity__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_activity_type__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_alias__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist_remove__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_channel__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_channel_member__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_gateway_allowed__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_guest__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_ice_server__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_mail__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_message__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_message_schedule__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_message_subtype__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_resend_message__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_resend_partner__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_shortcode__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_template__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_template_reset__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_tracking_value__create_date
-#: model:ir.model.fields,field_description:mail.field_mail_wizard_invite__create_date
-#: model:ir.model.fields,field_description:mail.field_res_users_settings__create_date
-#: model:ir.model.fields,field_description:mail.field_res_users_settings_volumes__create_date
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__create_date
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
 
-#. modules: mail, mail_activity_todo
-#. odoo-javascript
-#: code:addons/mail/static/src/backend_components/activity_list_view_item/activity_list_view_item.xml:0
-#: code:addons/mail/static/src/backend_components/activity_list_view_item/activity_list_view_item.xml:0
-#: code:addons/mail/static/src/xml/web_kanban_activity.xml:0
-#: code:addons/mail/static/src/xml/web_kanban_activity.xml:0
-#: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_search
+#. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
-#, python-format
 msgid "Deadline"
 msgstr "วันครบกำหนด"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_fetchmail_server__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_activity__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_activity_type__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_alias__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist_remove__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_channel__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_channel_member__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_followers__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_gateway_allowed__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_guest__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_ice_server__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_link_preview__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_mail__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_message__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_message_reaction__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_message_schedule__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_message_subtype__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_notification__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_resend_message__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_resend_partner__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_shortcode__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_template__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_template_reset__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_tracking_value__display_name
-#: model:ir.model.fields,field_description:mail.field_mail_wizard_invite__display_name
-#: model:ir.model.fields,field_description:mail.field_res_users_settings__display_name
-#: model:ir.model.fields,field_description:mail.field_res_users_settings_volumes__display_name
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__display_name
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__display_name
 msgid "Display Name"
@@ -237,203 +132,70 @@ msgstr "แสดงชื่อ"
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__execution
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__execution
 msgid "Execution"
-msgstr ""
+msgstr "การดำเนินการ"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__fyi
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__fyi
 msgid "FYI"
-msgstr ""
+msgstr "เพื่อทราบ"
 
-#. modules: mail, mail_activity_todo
-#: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_search
-#: model_terms:ir.ui.view,arch_db:mail.view_mail_alias_search
-#: model_terms:ir.ui.view,arch_db:mail.view_mail_search
+#. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 msgid "Group By"
 msgstr "กลุ่มโดย"
 
-#. modules: mail, mail_activity_todo
-#. odoo-javascript
-#: code:addons/mail/static/src/models_data/emoji_data.js:0
-#: model:ir.model.fields,field_description:mail.field_fetchmail_server__id
-#: model:ir.model.fields,field_description:mail.field_mail_activity__id
-#: model:ir.model.fields,field_description:mail.field_mail_activity_type__id
-#: model:ir.model.fields,field_description:mail.field_mail_alias__id
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist__id
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist_remove__id
-#: model:ir.model.fields,field_description:mail.field_mail_channel__id
-#: model:ir.model.fields,field_description:mail.field_mail_channel_member__id
-#: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session__id
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message__id
-#: model:ir.model.fields,field_description:mail.field_mail_followers__id
-#: model:ir.model.fields,field_description:mail.field_mail_gateway_allowed__id
-#: model:ir.model.fields,field_description:mail.field_mail_guest__id
-#: model:ir.model.fields,field_description:mail.field_mail_ice_server__id
-#: model:ir.model.fields,field_description:mail.field_mail_link_preview__id
-#: model:ir.model.fields,field_description:mail.field_mail_mail__id
-#: model:ir.model.fields,field_description:mail.field_mail_message__id
-#: model:ir.model.fields,field_description:mail.field_mail_message_reaction__id
-#: model:ir.model.fields,field_description:mail.field_mail_message_schedule__id
-#: model:ir.model.fields,field_description:mail.field_mail_message_subtype__id
-#: model:ir.model.fields,field_description:mail.field_mail_notification__id
-#: model:ir.model.fields,field_description:mail.field_mail_resend_message__id
-#: model:ir.model.fields,field_description:mail.field_mail_resend_partner__id
-#: model:ir.model.fields,field_description:mail.field_mail_shortcode__id
-#: model:ir.model.fields,field_description:mail.field_mail_template__id
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview__id
-#: model:ir.model.fields,field_description:mail.field_mail_template_reset__id
-#: model:ir.model.fields,field_description:mail.field_mail_tracking_value__id
-#: model:ir.model.fields,field_description:mail.field_mail_wizard_invite__id
-#: model:ir.model.fields,field_description:mail.field_res_users_settings__id
-#: model:ir.model.fields,field_description:mail.field_res_users_settings_volumes__id
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__id
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__id
-#, python-format
 msgid "ID"
 msgstr "ไอดี"
 
-#. modules: mail, mail_activity_todo
-#. odoo-javascript
-#: code:addons/mail/static/src/models/mailbox.js:0
-#: model:ir.model.fields.selection,name:mail.selection__mail_notification__notification_type__inbox
+#. module: mail_activity_todo
 #: model:ir.ui.menu,name:mail_activity_todo.menu_todo_inbox
-#, python-format
 msgid "Inbox"
 msgstr "กล่องข้อความ"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity__is_my_todo
 msgid "Is My Todo"
-msgstr ""
+msgstr "เป็นงานของฉัน"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 msgid "Last 30 days"
 msgstr ""
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_fetchmail_server____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_activity____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_activity_type____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_alias____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist_remove____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_channel____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_channel_member____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_followers____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_gateway_allowed____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_guest____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_ice_server____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_link_preview____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_mail____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_message____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_message_reaction____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_message_schedule____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_message_subtype____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_notification____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_resend_message____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_resend_partner____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_shortcode____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_template____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_template_reset____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_tracking_value____last_update
-#: model:ir.model.fields,field_description:mail.field_mail_wizard_invite____last_update
-#: model:ir.model.fields,field_description:mail.field_res_users_settings____last_update
-#: model:ir.model.fields,field_description:mail.field_res_users_settings_volumes____last_update
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log____last_update
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read____last_update
 msgid "Last Modified on"
 msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_fetchmail_server__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_activity__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_activity_type__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_alias__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist_remove__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_channel__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_channel_member__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_channel_rtc_session__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_gateway_allowed__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_guest__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_ice_server__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_link_preview__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_mail__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_message__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_message_schedule__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_message_subtype__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_resend_message__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_resend_partner__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_shortcode__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_template__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_template_reset__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_tracking_value__write_uid
-#: model:ir.model.fields,field_description:mail.field_mail_wizard_invite__write_uid
-#: model:ir.model.fields,field_description:mail.field_res_users_settings__write_uid
-#: model:ir.model.fields,field_description:mail.field_res_users_settings_volumes__write_uid
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__write_uid
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__write_uid
 msgid "Last Updated by"
 msgstr "อัปเดตครั้งล่าสุดโดย"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_fetchmail_server__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_activity__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_activity_type__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_alias__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_blacklist_remove__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_channel__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_channel_member__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_gateway_allowed__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_guest__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_ice_server__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_link_preview__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_mail__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_message__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_message_schedule__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_message_subtype__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_resend_message__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_resend_partner__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_shortcode__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_template__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_template_reset__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_tracking_value__write_date
-#: model:ir.model.fields,field_description:mail.field_mail_wizard_invite__write_date
-#: model:ir.model.fields,field_description:mail.field_res_users_settings__write_date
-#: model:ir.model.fields,field_description:mail.field_res_users_settings_volumes__write_date
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__write_date
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__write_date
 msgid "Last Updated on"
 msgstr "อัปเดตครั้งล่าสุดเมื่อ"
 
-#. modules: mail, mail_activity_todo
+#. module: mail_activity_todo
 #. odoo-javascript
-#: code:addons/mail/static/src/components/activity_menu_view/activity_menu_view.xml:0
 #: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
 #, python-format
 msgid "Late"
 msgstr "ล่าช้า"
 
-#. modules: mail, mail_activity_todo
-#. odoo-javascript
-#: code:addons/mail/static/src/components/channel_preview_view/channel_preview_view.xml:0
-#: code:addons/mail/static/src/components/thread_needaction_preview/thread_needaction_preview.xml:0
-#: code:addons/mail/static/src/models/message_action_view.js:0
+#. module: mail_activity_todo
 #: model:ir.actions.server,name:mail_activity_todo.action_server_mark_read
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
-#, python-format
 msgid "Mark as Read"
 msgstr "ทำเครื่องหมายว่าอ่านแล้ว"
 
@@ -442,94 +204,38 @@ msgstr "ทำเครื่องหมายว่าอ่านแล้ว
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
 msgid "Mark as Unread"
-msgstr ""
+msgstr "ทำเครื่องหมายว่ายังไม่อ่าน"
 
 #. module: mail_activity_todo
 #: model_terms:ir.actions.act_window,help:mail_activity_todo.action_completed_todos
 msgid "No completed Todos yet"
-msgstr ""
+msgstr "ยังไม่มีงานที่ทำเสร็จ"
 
 #. module: mail_activity_todo
 #. odoo-javascript
 #: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
 #, python-format
 msgid "No pending todos"
-msgstr ""
+msgstr "ไม่มีงานที่ต้องทำค้างอยู่"
 
 #. module: mail_activity_todo
 #: model_terms:ir.actions.act_window,help:mail_activity_todo.action_my_todos
 msgid "No pending todos 🎉"
-msgstr ""
+msgstr "ไม่มีงานที่ต้องทำค้างอยู่ 🎉"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
 msgid "Open Source"
-msgstr ""
+msgstr "เปิดเอกสารต้นทาง"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
 msgid "Open Source Document"
-msgstr ""
+msgstr "เปิดเอกสารต้นทาง"
 
-#. modules: mail, mail_activity_todo
-#. odoo-javascript
-#: code:addons/mail/static/src/backend_components/activity_list_view/activity_list_view.xml:0
-#: code:addons/mail/static/src/js/views/activity/activity_renderer.js:0
-#: model:ir.model.fields.selection,name:mail.selection__account_asset__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_batch__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_batch_line__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_subcomponent__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__account_journal__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__account_move__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__account_payment__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__advance_payment__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__approval_request__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__bank_payment_export__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation_compilation__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation_master_summary__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__budget_commitment__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__budget_journal__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__budget_move__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__budget_transfer__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__construction_project__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__disbursement_request__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__hr_contract__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__hr_employee__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__hr_leave__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__hr_leave_allocation__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__kmitl_project__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__kris_project__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity__state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__procurement_plan__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__product_product__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__product_template__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__project_project__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__project_task__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__project_update__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_contract_type__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_guarantee__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_order__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_approval__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_line__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_tender__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__purchase_requisition__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__res_partner__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__res_partner_bank__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__res_partner_type__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__sale_order__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__sarabun_document__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__stock_lot__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__stock_picking__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__stock_request__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__withholding_tax_cert__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__work_acceptance__activity_state__overdue
-#: model:ir.model.fields.selection,name:mail.selection__work_acceptance_committee__activity_state__overdue
+#. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
-#, python-format
 msgid "Overdue"
 msgstr "เกินกำหนด"
 
@@ -538,79 +244,22 @@ msgstr "เกินกำหนด"
 msgid "Per-user read state for Todos"
 msgstr ""
 
-#. modules: mail, mail_activity_todo
-#. odoo-javascript
-#: code:addons/mail/static/src/backend_components/activity_list_view/activity_list_view.xml:0
-#: code:addons/mail/static/src/js/views/activity/activity_renderer.js:0
-#: model:ir.model.fields.selection,name:mail.selection__account_asset__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_batch__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_batch_line__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_subcomponent__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__account_journal__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__account_move__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__account_payment__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__advance_payment__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__approval_request__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__bank_payment_export__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation_compilation__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation_master_summary__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__budget_commitment__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__budget_journal__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__budget_move__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__budget_transfer__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__construction_project__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__disbursement_request__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__hr_contract__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__hr_employee__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__hr_leave__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__hr_leave_allocation__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__kmitl_project__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__kris_project__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity__state__planned
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__procurement_plan__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__product_product__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__product_template__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__project_project__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__project_task__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__project_update__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_contract_type__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_guarantee__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_order__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_approval__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_line__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_tender__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__purchase_requisition__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__res_partner__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__res_partner_bank__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__res_partner_type__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__sale_order__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__sarabun_document__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__stock_lot__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__stock_picking__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__stock_request__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__withholding_tax_cert__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__work_acceptance__activity_state__planned
-#: model:ir.model.fields.selection,name:mail.selection__work_acceptance_committee__activity_state__planned
+#. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
-#, python-format
 msgid "Planned"
-msgstr "วางแผน"
+msgstr "วางแผนไว้"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity__is_read_by_me
 msgid "Read"
-msgstr ""
+msgstr "อ่านแล้ว"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 msgid "Read / Dismissed"
-msgstr ""
+msgstr "อ่านแล้ว"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_mail_notification__read_date
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__read_date
 msgid "Read Date"
 msgstr "วันที่อ่าน"
@@ -620,9 +269,8 @@ msgstr "วันที่อ่าน"
 msgid "Read receipts"
 msgstr ""
 
-#. modules: mail, mail_activity_todo
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__res_name
-#: model_terms:ir.ui.view,arch_db:mail.mail_notification_view_form
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
@@ -634,41 +282,32 @@ msgstr "แหล่งที่มา"
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 msgid "Source App"
-msgstr ""
+msgstr "แอป"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
 msgid "Source Document"
-msgstr ""
+msgstr "เอกสารต้นทาง"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__res_id
 msgid "Source ID"
-msgstr ""
+msgstr "ID แหล่งที่มา"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__res_model
 msgid "Source Model"
-msgstr ""
+msgstr "โมเดลแหล่งที่มา"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_mail_compose_message__subject
-#: model:ir.model.fields,field_description:mail.field_mail_composer_mixin__subject
-#: model:ir.model.fields,field_description:mail.field_mail_mail__subject
-#: model:ir.model.fields,field_description:mail.field_mail_message__subject
-#: model:ir.model.fields,field_description:mail.field_mail_template__subject
-#: model:ir.model.fields,field_description:mail.field_mail_template_preview__subject
+#. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
 msgid "Subject"
-msgstr "หัวเรื่อง"
+msgstr "เรื่อง"
 
-#. modules: mail, mail_activity_todo
-#: model:ir.model.fields,field_description:mail.field_ir_actions_server__activity_summary
-#: model:ir.model.fields,field_description:mail.field_ir_cron__activity_summary
-#: model:ir.model.fields,field_description:mail.field_mail_activity__summary
+#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__summary
 msgid "Summary"
 msgstr "สรุป"
@@ -680,68 +319,9 @@ msgid ""
 "Todos (user_id); the role-in-unit layer extends this to group Todos."
 msgstr ""
 
-#. modules: mail, mail_activity_todo
+#. module: mail_activity_todo
 #. odoo-javascript
-#: code:addons/mail/static/src/backend_components/activity_list_view/activity_list_view.xml:0
-#: code:addons/mail/static/src/components/activity_menu_view/activity_menu_view.xml:0
-#: code:addons/mail/static/src/js/activity.js:0
-#: code:addons/mail/static/src/js/views/activity/activity_renderer.js:0
-#: code:addons/mail/static/src/models/activity_list_view_item.js:0
-#: code:addons/mail/static/src/models/message.js:0
-#: code:addons/mail/static/src/models/message.js:0
 #: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
-#: model:ir.model.fields.selection,name:mail.selection__account_asset__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_batch__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_batch_line__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__account_asset_subcomponent__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__account_journal__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__account_move__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__account_payment__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__advance_payment__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__approval_request__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__bank_payment_export__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation_compilation__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__budget_appropriation_master_summary__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__budget_commitment__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__budget_journal__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__budget_move__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__budget_transfer__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__construction_project__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__disbursement_request__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__hr_contract__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__hr_employee__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__hr_leave__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__hr_leave_allocation__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__kmitl_project__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__kris_project__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity__state__today
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__procurement_plan__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__product_product__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__product_template__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__project_project__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__project_task__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__project_update__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_contract_type__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_guarantee__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_order__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_approval__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_line__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_request_tender__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__purchase_requisition__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__res_partner__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__res_partner_bank__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__res_partner_type__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__sale_order__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__sarabun_document__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__stock_lot__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__stock_picking__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__stock_request__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__withholding_tax_cert__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__work_acceptance__activity_state__today
-#: model:ir.model.fields.selection,name:mail.selection__work_acceptance_committee__activity_state__today
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #, python-format
 msgid "Today"
@@ -751,13 +331,13 @@ msgstr "วันนี้"
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__activity_id
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
 msgid "Todo"
-msgstr ""
+msgstr "งานที่ต้องทำ"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity__todo_category
 #: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity_type__todo_category
 msgid "Todo Category"
-msgstr ""
+msgstr "หมวดหมู่"
 
 #. module: mail_activity_todo
 #. odoo-javascript
@@ -770,38 +350,34 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
 #, python-format
 msgid "Todos"
-msgstr ""
+msgstr "งานที่ต้องทำ"
 
 #. module: mail_activity_todo
 #: model_terms:ir.actions.act_window,help:mail_activity_todo.action_completed_todos
 msgid "Todos you finish are archived here for reference."
-msgstr ""
+msgstr "งานที่คุณทำเสร็จจะถูกเก็บไว้ที่นี่เพื่อเป็นการอ้างอิง"
 
 #. module: mail_activity_todo
 #: model:ir.actions.server,name:mail_activity_todo.ir_cron_gc_read_fyi_todos_ir_actions_server
 #: model:ir.cron,cron_name:mail_activity_todo.ir_cron_gc_read_fyi_todos
 msgid "Todos: garbage-collect read FYI activities past retention"
-msgstr ""
+msgstr "งานที่ต้องทำ: เคลียร์ข้อมูลหมวดหมู่ 'เพื่อทราบ' ที่อ่านแล้วเกินระยะเวลาที่กำหนดไว้"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 msgid "Unread"
-msgstr ""
+msgstr "ยังไม่อ่าน"
 
 #. module: mail_activity_todo
 #. odoo-javascript
 #: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
 #, python-format
 msgid "Upcoming"
-msgstr ""
+msgstr "เร็วๆ นี้"
 
-#. modules: mail, mail_activity_todo
+#. module: mail_activity_todo
 #: model:ir.model,name:mail_activity_todo.model_res_users
-#: model:ir.model.fields,field_description:mail.field_res_users_settings__user_id
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__user_id
-#: model_terms:ir.ui.view,arch_db:mail.view_mail_alias_search
-#: model_terms:ir.ui.view,arch_db:mail.view_mail_form
-#: model_terms:ir.ui.view,arch_db:mail.view_mail_tree
 msgid "User"
 msgstr "ผู้ใช้"
 
@@ -810,19 +386,19 @@ msgstr "ผู้ใช้"
 #: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
 #, python-format
 msgid "View all"
-msgstr ""
+msgstr "ดูทั้งหมด"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__user_id
 msgid "Was assigned to"
-msgstr ""
+msgstr "ถูกมอบหมายให้"
 
 #. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__date_deadline
 msgid "Was due"
-msgstr ""
+msgstr "เคยมีกำหนดส่งเมื่อ"
 
 #. module: mail_activity_todo
 #: model_terms:ir.actions.act_window,help:mail_activity_todo.action_my_todos
 msgid "Work awaiting you from every app shows up here."
-msgstr ""
+msgstr "งานที่รอการดำเนินการจากทุกแอปจะแสดงอยู่ที่นี่"
