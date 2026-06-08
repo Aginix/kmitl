@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!--
+      "Access all OUs' Todos" — the Operating Unit dimension on the Todos inbox
+      and the Completed history is shown only to holders of this group (gated at
+      the view level). Regular users still route by role ∩ their own OU
+      server-side (ADR-0002), so hiding the column never changes which Todos
+      they receive. Standalone like the other *_operating_unit_access_all groups:
+      assign it deliberately to cross-OU / oversight users.
+    -->
+    <record id="group_all_ou_todo" model="res.groups">
+        <field name="name">Access all OUs' Todos</field>
+        <field name="category_id" ref="operating_unit.module_operating_units" />
+    </record>
+
+    <!--
       Group Todos completed by a role-in-unit are visible to current holders of
       that role in that operating unit (ADR-0002/0004). This rule is OR-combined
       with the core's personal rule (mail_activity_todo.todo_log_own_rule), so a
