@@ -142,7 +142,7 @@
             <!-- Guarantee & Attachment -->
             <xpath expr="//sheet" position="inside">
                 <group name="analytic" string="Analytic for Guarantee">
-                    <field name="analytic_distribution" groups="analytic.group_analytic_accounting" widget="analytic_distribution"/>
+                    <field name="analytic_distribution" groups="analytic.group_analytic_accounting" widget="analytic_distribution" readonly="1"/>
                 </group>
                 <group name="attachment" string="Attachment for Guarantee">
                     <field name="attachment_ids"
