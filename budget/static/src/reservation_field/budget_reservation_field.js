@@ -48,6 +48,20 @@ export class BudgetReservationField extends Component {
         return this.props.showStatus;
     }
 
+    // The status figures are shown only while the host is in one of these states
+    // (option status_states). Empty/absent → shown in every state. The code and
+    // dimensions are always shown regardless.
+    get statusVisible() {
+        if (!this.showStatus || !this.state.status || !this.fiscalYear) {
+            return false;
+        }
+        const states = this.props.statusStates;
+        if (states && states.length) {
+            return states.includes(this.props.record.data.state);
+        }
+        return true;
+    }
+
     // --- current values off the in-memory record ---
     get account() {
         return this.props.value; // [id, display_name] or false
@@ -81,7 +95,11 @@ export class BudgetReservationField extends Component {
         const distChanged =
             JSON.stringify(prev.record.data[this.distributionField] || {}) !==
             JSON.stringify(next.record.data[this.distributionField] || {});
-        return accountChanged || fyChanged || distChanged;
+        // Re-fetch on state change too: figures fetched in draft are pre-reserve,
+        // so the post-reserve standing must be refreshed when the host enters a
+        // state that displays the status (e.g. draft → new).
+        const stateChanged = prev.record.data.state !== next.record.data.state;
+        return accountChanged || fyChanged || distChanged || stateChanged;
     }
 
     async loadStatus(props) {
@@ -176,6 +194,7 @@ BudgetReservationField.props = {
     distributionField: { type: String, optional: true },
     amountField: { type: String, optional: true },
     showStatus: { type: Boolean, optional: true },
+    statusStates: { type: Array, optional: true },
 };
 BudgetReservationField.extractProps = ({ attrs }) => {
     const options = attrs.options || {};
@@ -185,6 +204,8 @@ BudgetReservationField.extractProps = ({ attrs }) => {
         amountField: options.amount_field,
         // Status block shown unless explicitly disabled.
         showStatus: options.show_status !== false,
+        // Optional: restrict the status figures to these host states.
+        statusStates: options.status_states,
     };
 };
 

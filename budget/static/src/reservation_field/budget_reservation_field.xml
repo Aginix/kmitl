@@ -17,7 +17,7 @@
                         </td>
                     </tr>
                 </table>
-                <div t-if="showStatus and status and fiscalYear" class="o_brf_status">
+                <div t-if="statusVisible" class="o_brf_status">
                     <div class="o_brf_status_head">
                         <span class="o_brf_status_label">งบที่จองได้</span>
                         <span t-att-class="'o_brf_avail ' + (status.available &lt; 0 ? 'text-danger' : 'text-success')"
