@@ -132,6 +132,70 @@ class BudgetController(models.AbstractModel):
             )
         return True
 
+    @api.model
+    def get_reservation_status(
+        self, budget_account, analytic_distribution, fiscal_year_id, company_id=None
+    ):
+        """Control-node budget standing for a picked selection, for the widget.
+
+        Returns the figures the ``budget_reservation`` field widget shows inline —
+        Current Budget (a), Used (e) and Available (a − e, งบที่จองได้) at the
+        control node — plus the resolved budget-account and dimension labels so the
+        widget renders the whole selection in one round-trip.
+
+        Availability is evaluated against the four real accounting dimensions only:
+        the ownership tags (``kmitl_project`` / ``procurement_plan``) ride on a
+        reservation but never on the floating appropriation pool, so pinning them
+        would find no pool — this mirrors the reserve-time check, which passes no
+        tag. Those tags are also dropped from the displayed dimension list.
+        """
+        if not company_id:
+            company_id = self.env.company.id
+        account = self._coerce_account(budget_account)
+        dims = self._parse_dimensions(analytic_distribution)
+        real_dims = {
+            column: analytic
+            for column, analytic in dims.items()
+            if column not in self._POOL_TAG_COLUMNS
+        }
+        # Labels in the canonical dimension order (departments → activities).
+        dimensions = []
+        for column in self._DIM_COLUMNS.values():
+            analytic = real_dims.get(column)
+            if analytic:
+                dimensions.append(
+                    {
+                        "column": column,
+                        "plan_name": analytic.plan_id.name,
+                        "code": analytic.code or "",
+                        "name": analytic.name or "",
+                    }
+                )
+        result = {
+            "account": {
+                "id": account.id,
+                "code": account.code or "",
+                "name": account.name or "",
+            }
+            if account
+            else False,
+            "dimensions": dimensions,
+            "current": 0.0,
+            "used": 0.0,
+            "available": 0.0,
+        }
+        if not account or not fiscal_year_id:
+            return result
+        controls = self._resolve_control_nodes(
+            account, real_dims, fiscal_year_id, company_id
+        )
+        current = self._sum_current(controls, real_dims, fiscal_year_id, company_id)
+        used = self._sum_used(controls, real_dims, fiscal_year_id, company_id)
+        result.update(
+            {"current": current, "used": used, "available": current - used}
+        )
+        return result
+
     # ------------------------------------------------------------------
     # Control-node resolution + set-based aggregation
     # ------------------------------------------------------------------

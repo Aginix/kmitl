@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="budget.BudgetReservationField" owl="1">
+        <div class="o_budget_reservation_field">
+            <t t-if="account">
+                <div class="o_brf_code">
+                    <i class="fa fa-sitemap me-1 text-muted"/>
+                    <b t-esc="status and status.account ? (status.account.code + ' ' + status.account.name) : account[1]"/>
+                </div>
+                <table t-if="dimensions.length" class="o_brf_dims">
+                    <tr t-foreach="dimensions" t-as="dim" t-key="dim.column">
+                        <td class="o_brf_dim_label text-muted" t-esc="dim.plan_name"/>
+                        <td class="o_brf_dim_value">
+                            <b t-esc="dim.code"/>
+                            <t t-esc="dim.name"/>
+                        </td>
+                    </tr>
+                </table>
+                <div t-if="showStatus and status and fiscalYear" class="o_brf_status">
+                    <div class="o_brf_status_head">
+                        <span class="o_brf_status_label">งบที่จองได้</span>
+                        <span t-att-class="'o_brf_avail ' + (status.available &lt; 0 ? 'text-danger' : 'text-success')"
+                              t-esc="format(status.available)"/>
+                    </div>
+                    <div class="o_brf_status_sub text-muted">
+                        <span>งบปัจจุบัน <t t-esc="format(status.current)"/></span>
+                        <span class="ms-3">ใช้ไป <t t-esc="format(status.used)"/></span>
+                    </div>
+                    <div t-if="sufficient !== null"
+                         t-att-class="'o_brf_cue ' + (sufficient ? 'text-success' : 'text-danger')">
+                        <t t-if="sufficient">✓ งบประมาณเพียงพอ</t>
+                        <t t-else="">⚠ งบประมาณไม่เพียงพอ (ขาด <t t-esc="format(shortage)"/>)</t>
+                    </div>
+                </div>
+                <div t-if="loading" class="o_brf_loading text-muted">กำลังตรวจสอบสถานะงบประมาณ...</div>
+            </t>
+            <t t-else="">
+                <span class="text-muted">ยังไม่ได้เลือกรหัสงบประมาณ</span>
+            </t>
+            <div t-if="!props.readonly" class="o_brf_actions">
+                <button class="btn btn-sm btn-primary" t-on-click="() => this.openPicker()">
+                    <i class="fa fa-sitemap me-1"/>
+                    <t t-if="account">เปลี่ยนรหัสงบประมาณ</t>
+                    <t t-else="">เลือกงบประมาณจากผังงบ</t>
+                </button>
+            </div>
+        </div>
+    </t>
+
+</templates>

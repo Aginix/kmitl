@@ -123,16 +123,12 @@
                             </group>
                             <group name="budget" string="งบประมาณ">
                                 <field name="budget_amount" required="1"/>
+                                <field name="budget_account_id" widget="budget_reservation"
+                                    options="{'fiscal_year_field': 'account_fiscal_year_id',
+                                              'distribution_field': 'analytic_distribution',
+                                              'amount_field': 'budget_amount',
+                                              'show_status': True}"/>
                                 <field name="budget_remaining" attrs="{'invisible': [('state', '=', 'draft')]}"/>
-                                <button name="action_open_reservation_picker" type="object"
-                                    string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
-                                    class="btn btn-primary" icon="fa-sitemap" colspan="2"
-                                    attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                                <field name="budget_account_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="activity_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="fund_analytic_id" readonly="1" widget="selection" />
-                                <field name="department_analytic_id" readonly="1" widget="helper_text" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" />
-                                <field name="source_analytic_id" readonly="1" widget="selection" />
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />
                             </group>

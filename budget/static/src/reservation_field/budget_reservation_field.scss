@@ -1,0 +1,62 @@
+.o_budget_reservation_field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+
+    .o_brf_code {
+        font-size: 1.05em;
+    }
+
+    .o_brf_dims {
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+            padding: 1px 0;
+            vertical-align: top;
+        }
+
+        .o_brf_dim_label {
+            white-space: nowrap;
+            padding-right: 12px;
+            width: 1%;
+        }
+    }
+
+    .o_brf_status {
+        margin-top: 2px;
+        padding: 6px 10px;
+        border-left: 3px solid var(--o-gray-300, #dee2e6);
+        background-color: var(--o-gray-100, #f8f9fa);
+        border-radius: 3px;
+
+        .o_brf_status_head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+
+            .o_brf_status_label {
+                font-weight: 500;
+            }
+
+            .o_brf_avail {
+                font-weight: 700;
+                font-size: 1.1em;
+            }
+        }
+
+        .o_brf_status_sub {
+            font-size: 0.9em;
+        }
+
+        .o_brf_cue {
+            margin-top: 2px;
+            font-weight: 500;
+        }
+    }
+
+    .o_brf_actions {
+        margin-top: 2px;
+    }
+}
