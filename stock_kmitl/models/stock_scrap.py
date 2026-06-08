@@ -23,10 +23,11 @@ class StockScrap(models.Model):
         states={"done": [("readonly", True)]},
     )
 
-    attachment_ids = fields.One2many(
-        "ir.attachment",
-        "res_id",
+    attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
         string="Document Attachments",
+        domain=[("res_model", "=", "stock.scrap")],
+        context={"default_res_model": "stock.scrap"},
         tracking=True,
         states={"done": [("readonly", True)]},
     )
