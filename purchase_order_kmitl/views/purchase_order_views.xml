@@ -143,7 +143,7 @@
                 <attribute name="attrs">{'invisible': ['|', '|', ('state', '!=', 'draft'), ('invoice_plan_ids', '=', []), ('invoice_count', '>', 0)]}</attribute>
             </xpath>
             <xpath expr="/form/sheet/notebook" position="before">
-                <group string="ข้อมูล" name="information_section">
+                <group string="Purchase Details" name="information_section">
                     <group>
                         <field
                             name="account_fiscal_year_id"
@@ -164,7 +164,7 @@
                 <field name="invoice_count" invisible="1" />
 
                 <group
-                    string="งวดงาน"
+                    string="Invoice Plan"
                     name="invoice_plan_section"
                     attrs="{'readonly': [('invoice_count', '>', 0)]}"
                 >

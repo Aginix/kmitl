@@ -80,6 +80,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="open_preview" icon="fa-search-plus" string="เปิดเอกสาร" />
+                        <button type="object" name="action_view_origin" class="oe_stat_button" icon="fa-file-contract" string="Original Document" attrs="{'invisible': [('origin_model', '=', False)]}"/>
                     </div>
                     <div class="oe_title" invisible="1">
                         <h1>

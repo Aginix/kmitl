@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="hr_employee_name_detail_kmitl.EmployeeDetailCard" owl="1">
+        <div class="o_employee_detail" t-if="employeeDetail">
+            <div class="o_employee_detail_line" t-if="employeeDetail.academic_standing_title">
+                <i class="fa fa-fw fa-graduation-cap" title="ตำแหน่งทางวิชาการ"/>
+                <span t-esc="employeeDetail.academic_standing_title"/>
+            </div>
+            <div class="o_employee_detail_line" t-if="employeeDetail.work_email">
+                <i class="fa fa-fw fa-envelope-o" title="อีเมล"/>
+                <span t-esc="employeeDetail.work_email"/>
+            </div>
+            <div class="o_employee_detail_line" t-if="employeeDetail.department">
+                <i class="fa fa-fw fa-building-o" title="สังกัด"/>
+                <span t-esc="employeeDetail.department"/>
+            </div>
+            <div class="o_employee_detail_line" t-if="employeeDetail.kid">
+                <i class="fa fa-fw fa-id-card-o" title="KID"/>
+                <span>KID: <t t-esc="employeeDetail.kid"/></span>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="hr_employee_name_detail_kmitl.EmployeeDetailMany2OneField" owl="1">
+        <t t-if="props.readonly">
+            <t t-if="!props.canOpen">
+                <span>
+                    <span t-esc="displayName"/>
+                    <t t-call="hr_employee_name_detail_kmitl.EmployeeDetailCard"/>
+                </span>
+            </t>
+            <t t-else="">
+                <a
+                    t-if="props.value"
+                    t-attf-class="o_form_uri #{classFromDecoration}"
+                    t-att-href="props.value ? `#id=${props.value[0]}&amp;model=${relation}` : '#'"
+                    t-on-click.prevent="onClick"
+                >
+                    <span t-esc="displayName"/>
+                    <t t-call="hr_employee_name_detail_kmitl.EmployeeDetailCard"/>
+                </a>
+            </t>
+        </t>
+        <t t-else="">
+            <div class="o_field_many2one_selection">
+                <Many2XAutocomplete t-props="Many2XAutocompleteProps"/>
+                <t t-if="hasExternalButton">
+                    <button
+                        type="button"
+                        class="btn btn-secondary fa o_external_button"
+                        t-att-class="(props.openTarget === 'current' and !env.inDialog )? 'fa-arrow-right' : 'fa-external-link'"
+                        tabindex="-1"
+                        draggable="false"
+                        aria-label="Internal link"
+                        data-tooltip="Internal link"
+                        t-on-click="onExternalBtnClick"
+                    />
+                </t>
+                <button
+                    t-if="hasBarcodeButton"
+                    t-on-click="onBarcodeBtnClick"
+                    type="button"
+                    class="btn ms-3 o_barcode"
+                    tabindex="-1"
+                    draggable="false"
+                    aria-label="Scan barcode"
+                    title="Scan barcode"
+                    data-tooltip="Scan barcode"
+                />
+            </div>
+            <t t-call="hr_employee_name_detail_kmitl.EmployeeDetailCard"/>
+        </t>
+    </t>
+
+</templates>

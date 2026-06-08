@@ -2,7 +2,7 @@ import logging
 from contextlib import ExitStack
 
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -352,6 +352,14 @@ class BudgetMove(models.Model):
         # คำนวณยอดรวมจากทุก line
         self.total_amount = sum(self.line_ids.mapped("balance"))
 
+    @api.constrains("move_type", "appropriation_type")
+    def _check_appropriation_type(self):
+        for move in self:
+            if move.move_type == "appropriation" and not move.appropriation_type:
+                raise ValidationError(
+                    _("ประเภทการจัดสรร is required for appropriation moves.")
+                )
+
     def action_review(self):
         self.write({"state": "review"})
 
@@ -391,6 +399,14 @@ class BudgetMove(models.Model):
         with ExitStack() as exit_stack:
                 for vals in vals_list:
                     self._sanitize_vals(vals)
+                    # Appropriation moves must carry an appropriation_type so the
+                    # initial-allocation metric is never undercounted; default to
+                    # "initial" when the caller omits it. entry/consume moves are
+                    # untouched (their move_type != "appropriation").
+                    if vals.get("move_type") == "appropriation" and not vals.get(
+                        "appropriation_type"
+                    ):
+                        vals["appropriation_type"] = "initial"
                 stolen_moves = self.browse(
                     set(move for vals in vals_list for move in self._stolen_move(vals))
                 )

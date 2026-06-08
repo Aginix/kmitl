@@ -3362,13 +3362,13 @@ msgstr ""
 
 #. module: purchase_order_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
-msgid "ข้อมูล"
-msgstr ""
+msgid "Purchase Details"
+msgstr "ข้อมูล"
 
 #. module: purchase_order_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form_invoice_plan
-msgid "งวดงาน"
-msgstr ""
+msgid "Invoice Plan"
+msgstr "งวดงาน"
 
 #. module: purchase_no_rfq
 #: model_terms:ir.ui.view,arch_db:purchase_no_rfq.purchase_order_form

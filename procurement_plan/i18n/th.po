@@ -432,7 +432,7 @@ msgstr "ตุลาคม"
 #. module: procurement_plan
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__on_hold
 msgid "On Hold"
-msgstr ""
+msgstr "ชะลอโครงการ"
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__payment_ids
@@ -509,7 +509,7 @@ msgstr "จัดทำ พ.1"
 #. module: procurement_plan
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__ready model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
 msgid "Ready"
-msgstr "ยังไม่ดำเนินการ"
+msgstr "รอดำเนินการ"
 
 #. module: procurement_plan
 #. odoo-python

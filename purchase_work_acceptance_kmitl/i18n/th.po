@@ -1337,8 +1337,8 @@ msgstr ""
 
 #. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
-msgid "รายละเอียดค่าปรับ"
-msgstr ""
+msgid "Fines Details"
+msgstr "รายละเอียดค่าปรับ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.report_purchase_work_acceptance
@@ -1583,3 +1583,23 @@ msgstr "กรุณากรอกผลการตรวจรับให้
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
 msgid "Work Acceptance Form"
 msgstr "ใบตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_construction_dates
+msgid "Construction"
+msgstr "วันที่ดำเนินงาน"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__date_committee_received
+msgid "Committee Received Date"
+msgstr "วันที่คณะกรรมการได้รับเอกสาร"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__date_contract_complete
+msgid "Contract Complete Date"
+msgstr "วันที่เสร็จถูกต้องตามสัญญา"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__date_work_handover
+msgid "Work Handover Date"
+msgstr "วันที่รับมอบงานแล้ว"

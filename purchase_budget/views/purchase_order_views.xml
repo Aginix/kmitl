@@ -7,9 +7,9 @@
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="งบประมาณ" name="budget_page">
+                <page string="Budget" name="budget_page">
                     <group
-                        string="การใช้งบประมาณ"
+                        string="Budget Details"
                         attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
                     >
                         <field name="product_id" invisible="1" />
@@ -24,14 +24,14 @@
                             invisible="0"
                             groups="base.group_erp_manager"
                         />
-                        <field name="budget_account_id" />
-                        <field name="activity_analytic_id" />
-                        <field name="department_analytic_id" />
-                        <field name="fund_analytic_id" />
-                        <field name="source_analytic_id" />
+                        <field name="budget_account_id"/>
+                        <field name="activity_analytic_id" string="Activity"/>
+                        <field name="department_analytic_id" string="Department"/>
+                        <field name="fund_analytic_id" string="Fund"/>
+                        <field name="source_analytic_id" string="Source"/>
                         <field name="procurement_plan_analytic_id" invisible="1" />
                     </group>
-                    <group string="แผนจัดซื้อจัดจ้าง">
+                    <group string="Procurement Plan">
                         <field
                             name="use_procurement_plan"
                             attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
@@ -69,7 +69,7 @@
                     attrs="{'invisible': [('procurement_plan_id', '=', False)]}"
                 >
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">แผนจัดซื้อจัดจ้าง</span>
+                        <span class="o_stat_text">Procurement Plan</span>
                     </div>
                 </button>
             </xpath>

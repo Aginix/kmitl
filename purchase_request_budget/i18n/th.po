@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-11 07:50+0000\n"
-"PO-Revision-Date: 2025-09-11 07:50+0000\n"
+"POT-Creation-Date: 2026-05-27 11:05+0000\n"
+"PO-Revision-Date: 2026-05-27 11:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -22,6 +22,7 @@ msgstr "<span>งบประมาณ</span>"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__analytic_distribution
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request_line__analytic_distribution
 msgid "Analytic"
 msgstr "การวิเคราะห์"
 
@@ -54,6 +55,7 @@ msgstr "งบประมาณที่จะใช้สำหรับกา
 #. odoo-python
 #: code:addons/purchase_request_budget/models/purchase_request.py:0
 #: code:addons/purchase_request_budget/models/purchase_request.py:0
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
 #, python-format
 msgid "Budget commitment %s has been cancelled"
 msgstr "งบประมาณ %s ได้ถูกยกเลิกแล้ว"
@@ -80,18 +82,19 @@ msgid "Cannot reserve budget: %s"
 msgstr "ไม่สามารถจองงบประมาณได้: %s"
 
 #. module: purchase_request_budget
-#. odoo-python
-#: code:addons/purchase_request_budget/models/purchase_request.py:0
-#, python-format
-msgid "Please specify analytic dimensions for budget commitment"
-msgstr "โปดระบุรายละเอียดการวิเคราะห์สำหรับการจองงบประมาณ"
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__hide_reserve_budget_button
+msgid "Hide Reserve Budget Button"
+msgstr ""
 
 #. module: purchase_request_budget
-#. odoo-python
-#: code:addons/purchase_request_budget/models/purchase_request.py:0
-#, python-format
-msgid "Please specify budget account"
-msgstr "โปดระบุรหัสงบประมาณ"
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__is_budget_editable
+msgid "Is Budget Editable"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__product_id
+msgid "Product"
+msgstr "สินค้า"
 
 #. module: purchase_request_budget
 #: model:ir.model,name:purchase_request_budget.model_purchase_request
@@ -99,9 +102,9 @@ msgid "Purchase Request"
 msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_request_budget
-#: model:ir.model,name:purchase_request_budget.model_purchase_request_exception_confirm
-msgid "Purchase request exception wizard"
-msgstr "คำขอซื้อขอจ้าง ตัวช่วยข้อยกเว้น"
+#: model:ir.model,name:purchase_request_budget.model_purchase_request_line
+msgid "Purchase Request Line"
+msgstr "คำขอซื้อขอจ้างไลน์"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__budget_commitment_id
@@ -117,31 +120,38 @@ msgstr "จองงบประมาณ"
 #. odoo-python
 #: code:addons/purchase_request_budget/models/purchase_request.py:0
 #: code:addons/purchase_request_budget/models/purchase_request.py:0
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
 #, python-format
 msgid "Warning: Could not cancel budget commitment: %s"
 msgstr "ระวัง: ไม่สามารถยกเลิกการจองงบประมาณได้: %s"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__fund_analytic_id
-msgid "กองทุน"
-msgstr ""
+msgid "Fund"
+msgstr "กองทุน"
 
 #. module: purchase_request_budget
+#: model:exception.rule,description:purchase_request_budget.pr_exception_required_budget
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
-msgid "จองงบประมาณ"
-msgstr ""
+msgid "Budget Details"
+msgstr "การใช้งบประมาณ"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__activity_analytic_id
-msgid "ด้าน/แผนงาน/กิจกรรม"
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: purchase_request_budget
+#: model:exception.rule,name:purchase_request_budget.pr_exception_required_budget
+msgid "ต้องระบุรายละเอียดการใช้งบประมาณ"
 msgstr ""
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__department_analytic_id
-msgid "ส่วนงาน"
-msgstr ""
+msgid "Department"
+msgstr "ส่วนงาน"
 
 #. module: purchase_request_budget
 #: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__source_analytic_id
-msgid "แหล่งเงิน"
-msgstr ""
+msgid "Source"
+msgstr "แหล่งเงิน"

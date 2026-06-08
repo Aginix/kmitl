@@ -155,19 +155,19 @@ class WorkAcceptance(models.Model):
         store=True,
     )
     date_committee_received = fields.Date(
-        string="วันที่คณะกรรมการได้รับเอกสาร",
+        string="Committee Received Date",
         readonly=True,
         states={"draft": [("readonly", False)]},
         tracking=True,
     )
     date_contract_complete = fields.Date(
-        string="วันที่เสร็จถูกต้องตามสัญญา",
+        string="Contract Complete Date",
         readonly=True,
         states={"draft": [("readonly", False)]},
         tracking=True,
     )
     date_work_handover = fields.Date(
-        string="วันที่รับมอบงานแล้ว",
+        string="Work Handover Date",
         readonly=True,
         states={"draft": [("readonly", False)]},
         tracking=True,

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+     Read-only inspection / audit surfaces. Each reuses an existing OCA model
+     and its views; the IAM app only adds an action + a gated menu. None of
+     these grant the IAM manager any new write capability. -->
+<odoo>
+
+    <menuitem
+        id="menu_iam_audit"
+        name="Audit"
+        parent="menu_iam_root"
+        sequence="60"
+    />
+
+    <!-- Role Change History (base_user_role_history): immutable trail of every
+         role add / edit / unlink, with editor and timestamp. The OCA module
+         ships the model + views but no action/menu of its own. -->
+    <record id="action_iam_role_history" model="ir.actions.act_window">
+        <field name="name">Role Change History</field>
+        <field name="res_model">base.user.role.line.history</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_iam_role_history"
+        name="Role Change History"
+        parent="menu_iam_audit"
+        action="action_iam_role_history"
+        sequence="10"
+    />
+
+</odoo>

@@ -1,6 +1,6 @@
 {
     "name": "KMITL Accounting",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "KMITL/Accounting",
     "summary": "งานบัญชี KMITL: ตั้งหนี้, ล้างหนี้, สมุดรายวัน, รายงานบัญชี",
     "author": "KMITL",
@@ -17,7 +17,6 @@
         "views/account_move_views.xml",
         "views/account_payment_method_views.xml",
         "views/menuitem.xml",
-        "data/tier_definition.xml",
     ],
     "installable": True,
     "auto_install": False,

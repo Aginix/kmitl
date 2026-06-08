@@ -18,7 +18,6 @@
     "data": [
         "data/sarabun_route_template_data.xml",
         "views/approval_request_views.xml",
-        "views/sarabun_document_views.xml",
         "views/portal_templates.xml",
     ],
     "assets": {

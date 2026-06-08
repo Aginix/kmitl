@@ -35,8 +35,10 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
+                    <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
+                        type="object" class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_reserve" string="Reserve Budget" type="object"
-                        class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_obligate" string="ผูกพัน" type="object"
                         class="oe_highlight"
@@ -220,6 +222,122 @@
                 Budget commitments allow you to reserve budget amounts for future spending.
                 Use ledger lines to track reservations, obligations, and consumption.
             </p>
+        </field>
+    </record>
+
+    <!-- Budget Commitment Line Tree View (used by the dashboard drill-down) -->
+    <record id="budget_commitment_line_tree_view" model="ir.ui.view">
+        <field name="name">budget.commitment.line.tree</field>
+        <field name="model">budget.commitment.line</field>
+        <field name="arch" type="xml">
+            <tree string="Budget Commitment Lines" create="false" edit="false" delete="false"
+                decoration-muted="state == 'cancel'">
+                <field name="date"/>
+                <field name="commitment_id"/>
+                <field name="move_type"/>
+                <field name="account_fiscal_year_id" optional="hide"/>
+                <field name="account_id"/>
+                <field name="department_analytic_id" optional="show"/>
+                <field name="source_analytic_id" optional="show"/>
+                <field name="activity_analytic_id" optional="show"/>
+                <field name="fund_analytic_id" optional="show"/>
+                <field name="amount" sum="จำนวนเงิน"/>
+                <field name="name" optional="hide"/>
+                <button name="action_open_source_document" type="object"
+                    icon="fa-external-link" title="Open Source Document"
+                    attrs="{'invisible': [('res_model', '=', False)]}"/>
+                <field name="res_name" string="เอกสารต้นทาง" optional="show"/>
+                <field name="res_model" invisible="1"/>
+                <field name="budget_move_id" optional="hide"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'posted'"
+                    decoration-danger="state == 'cancel'"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Budget Commitment Line Form View -->
+    <record id="budget_commitment_line_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.line.form</field>
+        <field name="model">budget.commitment.line</field>
+        <field name="arch" type="xml">
+            <form string="Budget Commitment Line" create="false" edit="false">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                            name="action_open_source_document" icon="fa-external-link"
+                            attrs="{'invisible': [('res_model', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">เอกสาร</span>
+                                <span class="o_stat_text">ต้นทาง</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="ข้อมูลทั่วไป">
+                            <field name="commitment_id" options="{'no_create': True}"/>
+                            <field name="date"/>
+                            <field name="move_type"/>
+                            <field name="account_fiscal_year_id"/>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="state" widget="badge"
+                                decoration-success="state == 'posted'"
+                                decoration-danger="state == 'cancel'"/>
+                        </group>
+                        <group string="มิติบัญชี">
+                            <field name="account_id" options="{'no_open': True}"/>
+                            <field name="department_analytic_id" options="{'no_open': True}"/>
+                            <field name="source_analytic_id" options="{'no_open': True}"/>
+                            <field name="activity_analytic_id" options="{'no_open': True}"/>
+                            <field name="fund_analytic_id" options="{'no_open': True}"/>
+                        </group>
+                    </group>
+                    <group string="รายละเอียด">
+                        <field name="name"/>
+                        <field name="res_name" string="เอกสารต้นทาง"/>
+                        <field name="res_model" invisible="1"/>
+                        <field name="budget_move_id"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Budget Commitment Line Search View -->
+    <record id="budget_commitment_line_search_view" model="ir.ui.view">
+        <field name="name">budget.commitment.line.search</field>
+        <field name="model">budget.commitment.line</field>
+        <field name="arch" type="xml">
+            <search string="Budget Commitment Lines">
+                <field name="commitment_id"/>
+                <field name="account_id"/>
+                <field name="name"/>
+                <field name="department_analytic_id"/>
+                <field name="source_analytic_id"/>
+                <field name="activity_analytic_id"/>
+                <field name="fund_analytic_id"/>
+                <separator/>
+                <filter string="จองงบ" name="reserve" domain="[('move_type', '=', 'reserve')]"/>
+                <filter string="ผูกพัน" name="obligate" domain="[('move_type', '=', 'obligate')]"/>
+                <filter string="ตัดงบ" name="consume" domain="[('move_type', '=', 'consume')]"/>
+                <separator/>
+                <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
+                <filter string="Cancelled" name="cancel" domain="[('state', '=', 'cancel')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="ประเภท" name="group_move_type" context="{'group_by': 'move_type'}"/>
+                    <filter string="รหัสงบประมาณ" name="group_account" context="{'group_by': 'account_id'}"/>
+                    <filter string="ส่วนงาน" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter string="แหล่งเงิน" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
+                    <filter string="กิจกรรม" name="group_activity" context="{'group_by': 'activity_analytic_id'}"/>
+                    <filter string="กองทุน" name="group_fund" context="{'group_by': 'fund_analytic_id'}"/>
+                    <filter string="ปีงบประมาณ" name="group_fy" context="{'group_by': 'account_fiscal_year_id'}"/>
+                </group>
+            </search>
         </field>
     </record>
 

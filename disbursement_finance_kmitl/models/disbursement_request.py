@@ -207,12 +207,6 @@ class DisbursementRequest(models.Model):
                 payment_vals["write_off_line_vals"] = write_off_line_vals
             if payment_type:
                 payment_vals["kmitl_payment_type_id"] = payment_type.id
-            if bill.budget_commitment_id:
-                payment_vals["budget_commitment_id"] = (
-                    bill.budget_commitment_id.id
-                )
-            if bill.budget_account_id:
-                payment_vals["budget_account_id"] = bill.budget_account_id.id
 
             payment = self.env["account.payment"].create(payment_vals)
             payment.to_reconcile_payment_line_ids = payable_lines
@@ -237,14 +231,6 @@ class DisbursementRequest(models.Model):
                 subtype_xmlid="mail.mt_note",
             )
 
-        if len(payments) == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "account.payment",
-                "res_id": payments.id,
-                "view_mode": "form",
-                "target": "current",
-            }
         return {
             "type": "ir.actions.act_window",
             "name": _("Payments"),
@@ -255,17 +241,8 @@ class DisbursementRequest(models.Model):
         }
 
     def action_view_payments(self):
-        """Open related payment(s)."""
+        """Open related payment(s) in list view."""
         self.ensure_one()
-        if self.payment_count == 1:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Payment"),
-                "res_model": "account.payment",
-                "res_id": self.payment_ids.id,
-                "view_mode": "form",
-                "target": "current",
-            }
         return {
             "type": "ir.actions.act_window",
             "name": _("Payments"),

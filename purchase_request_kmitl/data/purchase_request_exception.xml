@@ -249,11 +249,12 @@ if len(self.work_acceptance_committee_ids) == 1:
     </record>
 
     <!-- Active KMITL exception rules -->
+    <!-- ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง -->
     <record id="pr_exception_product_1" model="exception.rule">
-        <field name="name">ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง</field>
+        <field name="name">At least one item must be listed.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -262,11 +263,12 @@ if not self.line_ids:
         </field>
     </record>
 
+    <!-- ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 1 รายชื่อ -->
     <record id="kmitl_pr_exception_committee_1" model="exception.rule">
-        <field name="name">ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 1 รายชื่อ</field>
+        <field name="name">At least one Work Acceptance Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -275,13 +277,14 @@ if len(self.work_acceptance_committee_ids) &lt; 1:
         </field>
     </record>
 
+    <!-- การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 1 รายชื่อ -->
     <record id="kmitl_pr_exception_committee_2" model="exception.rule">
         <field
             name="name"
-        >การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 1 รายชื่อ </field>
+        >For procurement exceeding 100,000 baht, At least one TOR Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -291,13 +294,14 @@ if self.estimated_cost &gt; 100000:
         </field>
     </record>
 
+    <!-- การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง จำนวน 1 รายชื่อ -->
     <record id="kmitl_pr_exception_committee_3" model="exception.rule">
         <field
             name="name"
-        >การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง จำนวน 1 รายชื่อ </field>
+        >For procurement exceeding 100,000 baht, At least one Price Determine Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
@@ -307,13 +311,14 @@ if self.estimated_cost &gt; 100000:
         </field>
     </record>
 
+    <!-- การจัดซื้อจัดจ้าง เกิน 500,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 1 รายชื่อ  -->
     <record id="kmitl_pr_exception_committee_4" model="exception.rule">
         <field
             name="name"
-        >การจัดซื้อจัดจ้าง เกิน 500,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 1 รายชื่อ </field>
+        >For procurement exceeding 500,000 baht, At least one Evaluation Committee must be selected.</field>
         <field
             name="description"
-        >พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        >The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)</field>
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">

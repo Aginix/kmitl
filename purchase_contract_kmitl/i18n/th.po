@@ -388,23 +388,23 @@ msgstr "คำนวณค่าปรับล่าช้า รายวั�
 #: model:exception.rule,description:purchase_contract_kmitl.purchase_order_contract_name_exception
 #: model:exception.rule,description:purchase_contract_kmitl.purchase_order_contract_type_exception
 #: model:exception.rule,description:purchase_contract_kmitl.purchase_order_fines_rate_exception
-msgid "ข้อมูลใบสั่งซื้อ/จ้าง/สัญญา"
-msgstr ""
+msgid "Purchase Order Information"
+msgstr "ข้อมูลใบสั่งซื้อ/จ้าง/สัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:exception.rule,name:purchase_contract_kmitl.purchase_order_fines_rate_exception
-msgid "ต้องระบุค่าปรับต่อวัน"
-msgstr ""
+msgid "fine amount must be specified."
+msgstr "ต้องระบุค่าปรับต่อวัน"
 
 #. module: purchase_contract_kmitl
 #: model:exception.rule,name:purchase_contract_kmitl.purchase_order_contract_name_exception
-msgid "ต้องระบุชื่อสัญญา"
-msgstr ""
+msgid "The contract name must be specified."
+msgstr "ต้องระบุชื่อสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:exception.rule,name:purchase_contract_kmitl.purchase_order_contract_type_exception
-msgid "ต้องระบุประเภทสัญญา"
-msgstr ""
+msgid "The type of contract must be specified."
+msgstr "ต้องระบุประเภทสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:exception.rule,name:purchase_contract_kmitl.purchase_order_is_construction_exception
@@ -412,17 +412,37 @@ msgid "ต้องระบุวันที่เริ่มงาน-วั
 msgstr ""
 
 #. module: purchase_contract_kmitl
-#: model:exception.rule,description:purchase_contract_kmitl.purchase_order_is_construction_exception
-#: model:exception.rule,description:purchase_contract_kmitl.purchase_order_work_start_must_be_valid_exception
-msgid "ประเภทสัญญางานก่อสร้าง"
-msgstr ""
-
-#. module: purchase_contract_kmitl
 #: model:exception.rule,name:purchase_contract_kmitl.purchase_order_work_start_must_be_valid_exception
-msgid "วันที่เริ่มงาน ต้องไม่เริ่มก่อนวันที่เริ่มสัญญา"
-msgstr ""
+msgid "The start date must not be before the start date of the contract."
+msgstr "วันที่เริ่มงาน ต้องไม่เริ่มก่อนวันที่เริ่มสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__work_end_display
 msgid "Work End"
 msgstr "วันที่สิ้นสุดงาน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Fines Details"
+msgstr "ค่าปรับและค่าควบคุมงาน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Fines"
+msgstr "ค่าปรับล่าช้า"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Contract Details"
+msgstr "รายละเอียดสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_contract_kmitl
+#: model:exception.rule,description:purchase_contract_kmitl.purchase_order_contract_number_requried_exception
+#: model:exception.rule,description:purchase_contract_kmitl.purchase_order_work_start_must_be_valid_exception
+msgid "Types of construction contracts"
+msgstr "ประเภทสัญญางานก่อสร้าง"
+
+#. module: purchase_contract_kmitl
+#: model:exception.rule,name:purchase_contract_kmitl.purchase_order_contract_number_requried_exception
+msgid "จำเป็นต้องมีเลขที่สัญญา"
+msgstr "จำเป็นต้องมีเลขที่สัญญา"

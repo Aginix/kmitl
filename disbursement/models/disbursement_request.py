@@ -863,6 +863,8 @@ class DisbursementRequest(models.Model):
             "account_id": reserve_line.account_id.id,
             "analytic_distribution": reserve_line.analytic_distribution,
             "amount": self.amount_total,
+            "res_model": "disbursement.request",
+            "res_id": self.id,
         }
         return [
             dict(common, move_type="obligate",
@@ -870,6 +872,19 @@ class DisbursementRequest(models.Model):
             dict(common, move_type="consume",
                  name=_("Consumption: %s") % self.name),
         ]
+
+    def _reverse_own_commitment_lines(self, commitment):
+        """Cancel only the obligate/consume lines THIS request created on a
+        shared commitment, leaving the reservation open for other requests."""
+        self.ensure_one()
+        own = commitment.line_ids.filtered(
+            lambda l: l.state == "posted"
+            and l.move_type in ("obligate", "consume")
+            and l.res_model == "disbursement.request"
+            and l.res_id == self.id
+        )
+        own.action_cancel()
+        return True
 
     def action_cancel(self):
         """Cancel the request.
@@ -882,14 +897,34 @@ class DisbursementRequest(models.Model):
                 raise UserError(
                     _("Cannot cancel an already cancelled request.")
                 )
-            if record.budget_commitment_id:
+            commitment = record.budget_commitment_id
+            if commitment:
                 try:
-                    record._cancel_budget_commitment()
-                    record.message_post(
-                        body=_("Budget commitment %s cancelled.")
-                        % record.budget_commitment_id.name,
-                        subtype_xmlid="mail.mt_note",
+                    plan_owned = (
+                        "procurement_plan_id" in commitment._fields
+                        and commitment.procurement_plan_id
                     )
+                    is_shared = (
+                        plan_owned
+                        or len(commitment.disbursement_request_ids) > 1
+                    )
+                    if is_shared:
+                        record._reverse_own_commitment_lines(commitment)
+                        record.message_post(
+                            body=_(
+                                "Reversed this request's lines on shared "
+                                "commitment %s."
+                            )
+                            % commitment.name,
+                            subtype_xmlid="mail.mt_note",
+                        )
+                    else:
+                        record._cancel_budget_commitment()
+                        record.message_post(
+                            body=_("Budget commitment %s cancelled.")
+                            % commitment.name,
+                            subtype_xmlid="mail.mt_note",
+                        )
                 except UserError as e:
                     record.message_post(
                         body=_("Warning: %s") % str(e),

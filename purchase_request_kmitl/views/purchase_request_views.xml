@@ -164,7 +164,7 @@
             </xpath>
 
             <xpath expr="//h1" position="after">
-                <group string="รายละเอียดคำขอซื้อขอจ้าง" name="purchase_request_details_group">
+                <group string="Purchase Request Details" name="purchase_request_details_group">
                     <group>
                         <field
                             name="title"
@@ -188,7 +188,7 @@
                         <field name="user_id" readonly="1" />
                     </group>
                 </group>
-                <group string="คำขอซื้อขอจ้าง" name="purchase_request_group">
+                <group string="Purchase Request" name="purchase_request_group">
                     <group>
                         <field
                             name="account_fiscal_year_id"

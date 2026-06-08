@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": ["budget", "budget_account_root", "product_category_code"],
-    "data": ["data/budget_account.xml", "views/budget_account_views.xml"],
+    "data": ["data/budget_account.xml", "views/budget_account_views.xml", "data/fine_account.xml"],
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",

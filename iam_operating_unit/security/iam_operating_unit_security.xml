@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<odoo>
+
+    <!--
+        Let the IAM Manager *see* the Operating Units menu and the OU widget on
+        the user form (both gated by operating_unit.group_multi_operating_unit).
+        (4, ...) appends, leaving the base.group_erp_manager implication intact.
+
+        We intentionally do NOT imply operating_unit.group_manager_operating_unit:
+        that group auto-assigns *every* OU to the user and would leak OU-scoped
+        business data across all modules. Master-data CRUD is granted instead by
+        the explicit ACL row in ir.model.access.csv.
+    -->
+    <record id="iam.group_iam_manager" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('operating_unit.group_multi_operating_unit'))]"
+        />
+    </record>
+
+</odoo>

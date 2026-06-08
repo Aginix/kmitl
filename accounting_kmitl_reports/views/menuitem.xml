@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <!-- Trial Balance: OWL client action, opened straight from the menu
+         (defaults to the current fiscal year, filterable by KMITL dimensions). -->
+    <record id="action_trial_balance_kmitl" model="ir.actions.client">
+        <field name="name">Trial Balance</field>
+        <field name="tag">kmitl_trial_balance</field>
+    </record>
+
     <!-- Actions: open the pre-configured instance directly on its result
          view (the same view mis_builder.preview() uses, so the report
          renders inline without a "Preview" click). -->
 
     <record id="action_report_pl_kmitl" model="ir.actions.act_window">
-        <field name="name">งบกำไรขาดทุน</field>
+        <field name="name">Profit and Loss</field>
         <field name="res_model">mis.report.instance</field>
         <field name="res_id" eval="ref('instance_pl_kmitl')"/>
         <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
@@ -15,7 +22,7 @@
     </record>
 
     <record id="action_report_bs_kmitl" model="ir.actions.act_window">
-        <field name="name">งบแสดงฐานะการเงิน</field>
+        <field name="name">Balance Sheet</field>
         <field name="res_model">mis.report.instance</field>
         <field name="res_id" eval="ref('instance_bs_kmitl')"/>
         <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
@@ -24,7 +31,7 @@
     </record>
 
     <record id="action_report_cf_kmitl" model="ir.actions.act_window">
-        <field name="name">งบกระแสเงินสด</field>
+        <field name="name">Cash Flow Statement</field>
         <field name="res_model">mis.report.instance</field>
         <field name="res_id" eval="ref('instance_cf_kmitl')"/>
         <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
@@ -35,28 +42,28 @@
     <!-- Menus under accounting_kmitl Reports submenu -->
     <menuitem
         id="menu_report_trial_balance_kmitl"
-        name="งบทดลอง"
+        name="Trial Balance"
         parent="accounting_kmitl.menu_accounting_reports"
-        action="action_trial_balance_wizard_kmitl"
+        action="action_trial_balance_kmitl"
         sequence="5"
     />
     <menuitem
         id="menu_report_pl_kmitl"
-        name="งบกำไรขาดทุน"
+        name="Profit and Loss"
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_report_pl_kmitl"
         sequence="10"
     />
     <menuitem
         id="menu_report_bs_kmitl"
-        name="งบแสดงฐานะการเงิน"
+        name="Balance Sheet"
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_report_bs_kmitl"
         sequence="20"
     />
     <menuitem
         id="menu_report_cf_kmitl"
-        name="งบกระแสเงินสด"
+        name="Cash Flow Statement"
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_report_cf_kmitl"
         sequence="30"
