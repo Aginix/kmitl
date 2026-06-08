@@ -47,7 +47,7 @@ msgstr "มอบหมายเจ้าหน้าที่จัดซื้
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
 msgid "Assign to me"
-msgstr "รับงาน"
+msgstr "มอบหมายให้ฉัน"
 
 #. module: procurement_assignment_kmitl
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__user_id
@@ -82,7 +82,7 @@ msgstr "สามารถมอบหมายให้ตัวเองได
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
 msgid "Assign…"
-msgstr "มอบหมาย..."
+msgstr "มอบหมายให้..."
 
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assign_officer_wizard_form
@@ -136,7 +136,7 @@ msgid ""
 "                            document already assigned to someone else. When off,\n"
 "                            officers may only claim unassigned documents."
 msgstr ""
-"อนุญาตให้เจ้าหน้าที่คนใดก็ได้ใช้ \"รับงาน\" เพื่อรับเอกสาร\n"
+"อนุญาตให้เจ้าหน้าที่คนใดก็ได้ใช้ \"มอบหมายให้ฉัน\" เพื่อรับเอกสาร\n"
 "                            ที่มอบหมายให้คนอื่นแล้ว เมื่อปิดการใช้งาน\n"
 "                            เจ้าหน้าที่จะสามารถรับเฉพาะเอกสารที่ยังไม่ได้มอบหมายเท่านั้น"
 
@@ -207,7 +207,7 @@ msgid ""
 "document already assigned to someone else. When disabled (default), officers"
 " may only claim unassigned documents; reassigning is a manager action."
 msgstr ""
-"เมื่อเปิดใช้งาน เจ้าหน้าที่จัดซื้อจัดจ้างคนใดก็ได้สามารถใช้ 'รับงาน' "
+"เมื่อเปิดใช้งาน เจ้าหน้าที่จัดซื้อจัดจ้างคนใดก็ได้สามารถใช้ 'มอบหมายให้ฉัน' "
 "เพื่อรับเอกสารที่มอบหมายให้คนอื่นแล้วได้ เมื่อปิดการใช้งาน (ค่าเริ่มต้น) "
 "เจ้าหน้าที่จะสามารถรับเฉพาะเอกสารที่ยังไม่ได้มอบหมาย "
 "การมอบหมายใหม่เป็นสิทธิ์ของผู้จัดการ"
