@@ -86,7 +86,7 @@ class WorkAcceptance(portal.CustomerPortal):
             pending_reviews.write({"comment": comment_text})
             work_acceptance.with_user(committee_user)._validate_tier(pending_reviews)
             work_acceptance._update_counter({"review_deleted": True})
-            committee.write({"status": "other", "note": comment_text})
+            committee.write({"status": "accept_conditionally", "note": comment_text})
 
         return redirect(f"/wa/view/{work_acceptance.id}?access_token={work_acceptance.access_token}&committee_token={committee.access_token}")
 
