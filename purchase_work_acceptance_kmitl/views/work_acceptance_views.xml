@@ -467,6 +467,21 @@
         </field>
     </record>
 
+    <!-- Deliverables on WA form (shown next to the invoice plan installment) -->
+    <record id="view_work_acceptance_form_deliverables" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form.deliverables</field>
+        <field name="model">work.acceptance</field>
+        <field
+            name="inherit_id"
+            ref="purchase_work_acceptance_invoice_plan.view_work_acceptance_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='installment_id']" position="after">
+                <field name="deliverables" />
+            </xpath>
+        </field>
+    </record>
+
     <!-- Menu -->
     <menuitem id="menu_purchase_work_acceptance"
               name="Work Acceptance"
