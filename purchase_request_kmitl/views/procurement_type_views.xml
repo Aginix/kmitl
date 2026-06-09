@@ -61,10 +61,9 @@
 
     <menuitem
         id="purchase_request_procurement_type_menu"
-        parent="purchase_request_configuration"
+        parent="purchase_request_kmitl.purchase_request_configuration"
         sequence="51"
         action="procurement_type_action"
-        groups="purchase_request.group_purchase_request_manager"
     />
 
 </odoo>
