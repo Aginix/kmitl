@@ -148,7 +148,7 @@ msgstr "ล๊อค"
 #. module: purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__is_no_expiry
 msgid "No Expiry"
-msgstr "ไม่มีวันหมดอายุ"
+msgstr "จนกว่าจะพ้นภาระผูกพันตามสัญญา"
 
 #. module: purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__note
