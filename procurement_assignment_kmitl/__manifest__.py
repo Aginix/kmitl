@@ -7,7 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
-        "purchase_order_kmitl",
+        "purchase_kmitl",
         "purchase_request_approval",
     ],
     "data": [

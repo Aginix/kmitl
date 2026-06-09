@@ -5,7 +5,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["purchase_order_kmitl", "budget", "procurement_plan_budget", "purchase_request_budget_procurement"],
+    "depends": ["purchase_kmitl", "budget", "procurement_plan_budget", "purchase_request_budget_procurement"],
     "data": ["views/purchase_order_views.xml", "views/procurement_plan_views.xml"],
     "application": False,
     "installable": True,

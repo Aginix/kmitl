@@ -43,33 +43,6 @@
         </field>
     </record>
 
-    <!-- Hide columns in tree view -->
-    <record id="view_purchase_order_tree_invisible" model="ir.ui.view">
-        <field name="name">view.purchase.order.tree(Hide Columns)</field>
-        <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='date_approve']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='user_id']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='origin']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='activity_ids']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='invoice_status']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-        </field>
-    </record>
-
     <!-- Hide label from purchase_no_rfq -->
     <record id="view_purchase_order_no_rfq_form_invisible" model="ir.ui.view">
         <field name="name">view.purchase.order.form(Hide label)</field>

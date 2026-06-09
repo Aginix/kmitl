@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseContractType(models.Model):
-    _name = 'purchase.contract.type'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'PurchaseContractType'
+    _name = "purchase.contract.type"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _description = "PurchaseContractType"
 
     name = fields.Char(tracking=True, required=True)
     active = fields.Boolean(tracking=True, default=True)
@@ -24,6 +24,7 @@ class PurchaseContractType(models.Model):
         for rec in self:
             if rec.purchase_ids:
                 raise UserError(
-                    _("You cannot delete a contract type (%s) that is used in purchase order") % rec.name
+                    _("You cannot delete a contract type (%s) that is used in purchase order")
+                    % rec.name
                 )
         return super().unlink()

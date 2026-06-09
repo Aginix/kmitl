@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['purchase_request' , 'thai_date_utils', 'purchase_contract_kmitl', 'purchase_order_link_purchase_request'],
+    'depends': ['purchase_request' , 'thai_date_utils', 'purchase_kmitl', 'purchase_order_link_purchase_request'],
     'data': [
         "reports/report_purchase_order.xml",
         "reports/paperformat_purchase_order.xml",
