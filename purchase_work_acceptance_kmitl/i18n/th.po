@@ -365,6 +365,12 @@ msgstr "รายละเอียด"
 msgid "Display Name"
 msgstr ""
 
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__deliverables
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__deliverables
+msgid "Deliverables"
+msgstr "รายละเอียดการส่งมอบงาน"
+
 #. module: purchase_work_acceptance
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
