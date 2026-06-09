@@ -36,7 +36,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
                     'employee_name': committee.name,
                     'approve_role': committee.approve_role,
                     'status': committee.status,
-                    'note': committee.note,
+                    'reason': committee.note,
                     'is_done': bool(committee.status),
                 }))
             res['line_ids'] = lines
@@ -51,19 +51,10 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
         for line in self.line_ids:
             if line.is_done:
                 continue
-            if line.reason:
-                reason_label = dict(
-                    line._fields['reason'].selection
-                ).get(line.reason, line.reason)
-                note_value = reason_label
-            else:
-                note_value = line.note
-
-            vals = {
+            line.committee_id.write({
                 'status': line.status,
-                'note': note_value,
-            }
-            line.committee_id.write(vals)
+                'note': line.reason,
+            })
 
         self.wa_id.with_context(
             skip_committee_wizard=True,
