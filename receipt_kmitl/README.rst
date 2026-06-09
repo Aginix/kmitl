@@ -45,7 +45,9 @@ After install, the Central Finance Manager must:
 1. Open ``Receipts → Configuration → Settings`` and set the Walk-in Partner
    (a default ``Walk-in Customer`` is provided).
 2. Open ``Receipts → Configuration → Payment Methods`` and create one method per
-   channel, each with a Journal and a Debit Account.
+   channel, each with a Journal, a Debit Account, and a Payment Type
+   (Cash / Cheque / Money Transfer / Other) — the type controls which box is
+   ticked on the printed official receipt.
 3. Create products (standard Odoo products) with an Income Account set to the
    appropriate income-type account.
 4. For each Cashier, open ``Settings → Users → KMITL Receipt`` and select the

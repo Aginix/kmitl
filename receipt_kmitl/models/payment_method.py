@@ -11,6 +11,18 @@ class ReceiptPaymentMethod(models.Model):
     name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
+    payment_type = fields.Selection(
+        [
+            ("cash", "Cash"),
+            ("cheque", "Cheque"),
+            ("transfer", "Money Transfer"),
+            ("other", "Other"),
+        ],
+        string="Payment Type",
+        required=True,
+        default="cash",
+        help="Drives which box is ticked on the printed official receipt.",
+    )
     journal_id = fields.Many2one(
         "account.journal",
         string="Journal",

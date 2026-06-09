@@ -181,6 +181,36 @@ msgid "Payment method name must be unique."
 msgstr "ชื่อวิธีชำระเงินต้องไม่ซ้ำกัน"
 
 #. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_payment_method__payment_type
+msgid "Payment Type"
+msgstr "ประเภทการชำระเงิน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cash
+msgid "Cash"
+msgstr "เงินสด"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__cheque
+msgid "Cheque"
+msgstr "เช็ค"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__transfer
+msgid "Money Transfer"
+msgstr "เงินโอน"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields.selection,name:receipt_kmitl.selection__kmitl_payment_method__payment_type__other
+msgid "Other"
+msgstr "อื่นๆ"
+
+#. module: receipt_kmitl
+#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__book_no
+msgid "Book No."
+msgstr "เล่มที่"
+
+#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_cash_deposit__name
 msgid "Deposit Number"
 msgstr "เลขที่ใบนำส่ง"

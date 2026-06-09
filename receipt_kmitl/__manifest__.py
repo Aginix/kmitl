@@ -11,6 +11,7 @@
         "account",
         "mail",
         "account_analytic_kmitl",
+        "l10n_th_amount_to_text",
     ],
     "data": [
         "security/security.xml",
