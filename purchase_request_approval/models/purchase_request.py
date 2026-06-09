@@ -188,7 +188,33 @@ class PurchaseRequest(models.Model):
             .create({"supplier_id": self.partner_id.id})
         )
         wizard.make_purchase_order()
+        approval = self.request_approval_ids[:1]
+        if approval:
+            purchase_orders = wizard.item_ids.mapped("line_id.purchase_lines.order_id")
+            self._post_chatter_messages_approval_po(approval, purchase_orders)
         return wizard
+
+    def _post_chatter_messages_approval_po(self, approval, purchase_orders):
+        if not purchase_orders:
+            return
+        pa_link = "/web#id=%d&model=purchase.request.approval&view_type=form" % approval.id
+        for po in purchase_orders:
+            po.message_post(
+                body=_(
+                    'Created from Purchase Request Approval'
+                    ' <a href="%(link)s" target="_blank">%(name)s</a>.'
+                ) % {"link": pa_link, "name": approval.name},
+                subtype_xmlid="mail.mt_note",
+            )
+        po_items = "".join(
+            '<li><a href="/web#id=%d&model=purchase.order&view_type=form" target="_blank">%s</a></li>'
+            % (po.id, po.name)
+            for po in purchase_orders
+        )
+        approval.message_post(
+            body=_("Purchase Order created:<ul>%s</ul>") % po_items,
+            subtype_xmlid="mail.mt_note",
+        )
 
     @api.depends(
         "state",
