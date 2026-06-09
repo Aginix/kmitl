@@ -191,6 +191,7 @@ msgstr "วันที่ตรวจรับ"
 #. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__accept
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__accept
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__accept
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
@@ -261,8 +262,9 @@ msgstr ""
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#. module: purchase_work_acceptance
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__cancel
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__cancel
 msgid "Cancelled"
 msgstr "ยกเลิก"
 
@@ -371,8 +373,9 @@ msgstr ""
 msgid "Deliverables"
 msgstr "รายละเอียดการส่งมอบงาน"
 
-#. module: purchase_work_acceptance
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__draft
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Draft"
 msgstr "แบบร่าง"
@@ -1012,14 +1015,20 @@ msgstr ""
 msgid "WA Not Accepted"
 msgstr ""
 
-#. module: purchase_work_acceptance
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_move__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_payment__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__wa_id
 msgid "WA Reference"
-msgstr ""
+msgstr "เลขที่ใบตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__wa_state
+msgid "WA Status"
+msgstr "สถานะ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_count
@@ -1564,6 +1573,7 @@ msgstr "วันที่ตรวจรับ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__in_review
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__in_review
 msgid "In Review"
 msgstr "อยู่ระหว่างการตรวจรับ"
 
