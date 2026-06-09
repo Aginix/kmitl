@@ -28,7 +28,7 @@
                 'purchase_work_acceptance_kmitl', 'purchase_work_acceptance_portal',
                 'stock_inventory_department', 'stock_inventory_kmitl', 'stock_inventory_restriction',
                 'stock_scrap_reason_text', 'stock_scrap_responsible_user', 'thai_date_utils', 'web_kmitl', 'web_widget_helper_text', 'web_theme_classic_extended', 'kmitl_project',
-                'hr_department_short_name', 'hr_department_tracking', 'purchase_invoice_plan_kmitl',
+                'hr_department_short_name', 'hr_department_tracking', 'purchase_kmitl',
                 'purchase_guarantee_account_payment', 'purchase_guarantee_bid_guarantee_kmitl',
                 'purchase_guarantee_kmitl',
                 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',

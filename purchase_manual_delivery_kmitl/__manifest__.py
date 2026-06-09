@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['purchase_manual_delivery', 'purchase_contract_kmitl'],
+    'depends': ['purchase_manual_delivery', 'purchase_kmitl'],
     "data": [
         "data/settings.xml",
         "views/purchase_order_views.xml",

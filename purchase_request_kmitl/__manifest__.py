@@ -11,7 +11,7 @@
         "purchase_request_exception",
         "purchase_request_operating_unit",
         "account_fiscal_year",
-        "purchase_order_kmitl",
+        "purchase_kmitl",
         "purchase_operating_unit",
         "web_m2x_options",
     ],

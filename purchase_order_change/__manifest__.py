@@ -6,7 +6,7 @@
     'author': 'Aginix Technologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['purchase', 'purchase_contract_kmitl', 'purchase_work_acceptance_kmitl'],
+    'depends': ['purchase', 'purchase_kmitl', 'purchase_work_acceptance_kmitl'],
     "data": [
         "data/purchase_change_section_data.xml",
         "security/ir.model.access.csv",

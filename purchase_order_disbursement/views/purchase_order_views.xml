@@ -22,7 +22,7 @@
     <record id="view_purchase_order_tree" model="ir.ui.view">
         <field name="name">view.purchase.order.tree</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase_order_kmitl.view_purchase_order_tree"/>
+        <field name="inherit_id" ref="purchase_kmitl.view_purchase_order_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_type']" position="before">
                 <field name="disbursement_request_ids" optional="show"/>

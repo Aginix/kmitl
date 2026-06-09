@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
+<odoo>
 
     <!-- View purchase.invoice.plan tree -->
     <record id="view_purchase_invoice_plan_tree" model="ir.ui.view">
@@ -22,4 +22,4 @@
         </field>
     </record>
 
-  </odoo>
+</odoo>

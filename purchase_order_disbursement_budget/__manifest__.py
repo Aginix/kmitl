@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['purchase_order_disbursement', 'purchase_budget', 'purchase_order_kmitl'],
+    'depends': ['purchase_order_disbursement', 'purchase_budget', 'purchase_kmitl'],
     'data': [],
     'installable': True,
     'auto_install': False,
