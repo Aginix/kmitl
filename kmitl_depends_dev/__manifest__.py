@@ -24,7 +24,7 @@
                 'purchase_request_approval_disbursement', 'purchase_request_approval_attach_existing_attachments',
                 'purchase_request_operating_unit_access_all',
                 'purchase_sequence_kmitl', 'purchase_request_sarabun', 'purchase_request_sequence_kmitl',
-                'purchase_request_kmitl', 'purchase_work_acceptance_invoice_plan_deliverables', 'purchase_work_acceptance_invoice_plan_usability',
+                'purchase_request_kmitl',
                 'purchase_work_acceptance_kmitl', 'purchase_work_acceptance_portal',
                 'stock_kmitl',
                 'thai_date_utils', 'web_kmitl', 'web_widget_helper_text', 'web_theme_classic_extended', 'kmitl_project',
