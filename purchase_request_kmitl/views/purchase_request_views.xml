@@ -397,10 +397,6 @@
                 <attribute name="attrs">{'invisible': [('origin', '=', False)]}</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
             <xpath expr="//field[@name='date_start']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>

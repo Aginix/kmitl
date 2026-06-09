@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- ===== Inbox list: add OU / role columns + Claim/Release ===== -->
+    <record id="view_my_todo_tree_role_unit" model="ir.ui.view">
+        <field name="name">mail.activity.todo.tree.role.unit</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail_activity_todo.view_my_todo_tree" />
+        <field name="arch" type="xml">
+            <field name="res_model_id" position="after">
+                <field
+                    name="operating_unit_id"
+                    string="Operating Unit"
+                    optional="show"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+                <field name="responsible_role_id" optional="hide" />
+            </field>
+            <button name="action_mark_unread" position="after">
+                <button
+                    name="action_claim"
+                    type="object"
+                    string="Claim"
+                    icon="fa-hand-paper-o"
+                    attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '!=', False)]}"
+                />
+                <button
+                    name="action_unclaim"
+                    type="object"
+                    string="Release"
+                    icon="fa-hand-o-up"
+                    attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '=', False)]}"
+                />
+            </button>
+        </field>
+    </record>
+
+    <!-- ===== Inbox form: add OU / role fields + Claim/Release ===== -->
+    <record id="view_my_todo_form_role_unit" model="ir.ui.view">
+        <field name="name">mail.activity.todo.form.role.unit</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail_activity_todo.view_my_todo_form" />
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field
+                    name="operating_unit_id"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+                <field name="responsible_role_id" />
+            </field>
+            <button name="action_mark_unread" position="after">
+                <button
+                    name="action_claim"
+                    type="object"
+                    string="Claim (รับเรื่อง)"
+                    class="btn-secondary"
+                    icon="fa-hand-paper-o"
+                    attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '!=', False)]}"
+                />
+                <button
+                    name="action_unclaim"
+                    type="object"
+                    string="Release"
+                    icon="fa-hand-o-up"
+                    attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '=', False)]}"
+                />
+            </button>
+        </field>
+    </record>
+
+    <!-- ===== Inbox search: OU field, group filters, OU groupby + panel ===== -->
+    <record id="view_my_todo_search_role_unit" model="ir.ui.view">
+        <field name="name">mail.activity.todo.search.role.unit</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail_activity_todo.view_my_todo_search" />
+        <field name="arch" type="xml">
+            <field name="activity_type_id" position="after">
+                <field
+                    name="operating_unit_id"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+            </field>
+            <filter name="planned" position="after">
+                <separator />
+                <filter
+                    name="personal"
+                    string="Assigned to me"
+                    domain="[('user_id', '!=', False)]"
+                />
+                <filter
+                    name="group"
+                    string="Group"
+                    domain="[('responsible_role_id', '!=', False)]"
+                />
+            </filter>
+            <filter name="group_deadline" position="after">
+                <filter
+                    name="group_ou"
+                    string="Operating Unit"
+                    context="{'group_by': 'operating_unit_id'}"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+            </filter>
+            <searchpanel position="inside">
+                <field
+                    name="operating_unit_id"
+                    string="Operating Unit"
+                    select="multi"
+                    enable_counters="1"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+            </searchpanel>
+        </field>
+    </record>
+
+    <!-- ===== Completed log: add OU / role columns + OU filters ===== -->
+    <record id="view_todo_log_tree_role_unit" model="ir.ui.view">
+        <field name="name">todo.log.tree.role.unit</field>
+        <field name="model">todo.log</field>
+        <field name="inherit_id" ref="mail_activity_todo.view_todo_log_tree" />
+        <field name="arch" type="xml">
+            <field name="res_model_id" position="after">
+                <field
+                    name="operating_unit_id"
+                    optional="show"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+                <field name="responsible_role_id" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_todo_log_search_role_unit" model="ir.ui.view">
+        <field name="name">todo.log.search.role.unit</field>
+        <field name="model">todo.log</field>
+        <field name="inherit_id" ref="mail_activity_todo.view_todo_log_search" />
+        <field name="arch" type="xml">
+            <field name="res_name" position="after">
+                <field
+                    name="operating_unit_id"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+            </field>
+            <filter name="group_completed_by" position="after">
+                <filter
+                    name="group_ou"
+                    string="Operating Unit"
+                    context="{'group_by': 'operating_unit_id'}"
+                    groups="mail_activity_todo_role_unit.group_all_ou_todo"
+                />
+            </filter>
+        </field>
+    </record>
+
+</odoo>

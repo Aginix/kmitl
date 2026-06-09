@@ -1,0 +1,28 @@
+.o_mail_activity_todo_systray_toggle {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    .badge {
+        background-color: $o-brand-primary;
+        color: #fff;
+        margin-left: 2px;
+        font-size: 0.7rem;
+    }
+}
+
+.o_mail_activity_todo_systray {
+    .o_mail_activity_todo_group {
+        border-bottom: 1px solid $border-color;
+
+        &:hover {
+            background-color: $dropdown-link-hover-bg;
+        }
+    }
+
+    .o_mail_activity_todo_group_icon {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+}
