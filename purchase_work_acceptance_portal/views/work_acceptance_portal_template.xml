@@ -394,7 +394,7 @@
                                                         </t>
                                                     </td>
                                                     <td>
-                                                        <t t-esc="committee.reason" />
+                                                        <t t-esc="committee.note" />
                                                     </td>
                                                 </tr>
                                             </t>
