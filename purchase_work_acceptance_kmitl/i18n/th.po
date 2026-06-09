@@ -181,7 +181,7 @@ msgstr "<span class=\"o_stat_text\">สัญญา/ใบสั่งซื้�
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_tier_validation
 msgid "Accept"
-msgstr "ตอบรับ"
+msgstr "ตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
@@ -376,7 +376,7 @@ msgstr "แบบร่าง"
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_due
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Due Date"
-msgstr "วันสุดท้ายของการตรวจรับ"
+msgstr "วันที่สิ้นสุดสัญญา"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__employee_id
@@ -650,7 +650,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__other
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_tier_validation
 msgid "Other"
-msgstr "ตรวจรับแบบมีเงื่อนไข"
+msgstr "อื่นๆ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_order__wa_tier_validation

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from odoo import models, fields, api, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
     def button_confirm(self):
         if any(not line.status for line in self.line_ids):
             raise UserError(_("Please fill in all the inspection results."))
-        
+
         self.ensure_one()
 
         for line in self.line_ids:
@@ -101,24 +102,14 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
     status = fields.Selection(
         selection=[
             ('accept', 'Accept'),
+            ('accept_conditionally', 'Accept Conditionally'),
+            ('leave', 'Leave'),
             ('other', 'Other'),
         ],
         string='Status',
     )
 
-    note = fields.Text(string='Note')
-
-    reason = fields.Selection(
-        selection=[
-            ('leave', 'ลา'),
-            ('mission', 'ติดภารกิจ'),
-        ],
-        string='Reason',
-    )
-
-    is_reason_editable = fields.Boolean(
-        compute='_compute_is_reason_editable'
-    )
+    reason = fields.Text(string='Reason')
 
     is_done = fields.Boolean(
         string='Is Done',
@@ -129,10 +120,3 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
     def _onchange_status(self):
         if self.status == 'accept':
             self.note = False
-
-    @api.depends('status', 'note')
-    def _compute_is_reason_editable(self):
-        for rec in self:
-            rec.is_reason_editable = (
-                rec.status == 'other' and not rec.note
-            )

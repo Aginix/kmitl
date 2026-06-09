@@ -386,7 +386,7 @@
                                                             >
                                                         </t>
                                                         <t
-                                                            t-if="committee.status == 'other'"
+                                                            t-if="committee.status == 'accept_conditionally'"
                                                         >
                                                             <span class="text-secondary"
                                                                 >เห็นชอบตรวจรับแบบมีเงื่อนไข</span
@@ -394,7 +394,7 @@
                                                         </t>
                                                     </td>
                                                     <td>
-                                                        <t t-esc="committee.note" />
+                                                        <t t-esc="committee.reason" />
                                                     </td>
                                                 </tr>
                                             </t>

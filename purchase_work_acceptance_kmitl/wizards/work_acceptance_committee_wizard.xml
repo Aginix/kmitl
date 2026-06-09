@@ -14,7 +14,6 @@
                         <field name="is_done" invisible="1"/>
                         <field name="employee_name" readonly="1"/>
                         <field name="approve_role" readonly="1"/>
-                        <field name="is_reason_editable" invisible="1"/>
                         <field
                             name="status"
                             decoration-success="status == 'accept'"
@@ -26,18 +25,8 @@
                         <field
                             name="reason"
                             attrs="{
-                                'invisible': [('status', '!=', 'other')],
-                                'required': [('is_reason_editable', '=', True)],
-                                'readonly': [('is_reason_editable', '=', False), ('is_done', '=', True)]
+                                'readonly': [('is_done', '=', True)]
                             }"
-                        />
-                        <field
-                            name="note"
-                            readonly="1"
-                            attrs="{
-                                'invisible': [('status', '!=', 'other')],
-                            }"
-                            force_save="1"
                         />
                     </tree>
                 </field>
