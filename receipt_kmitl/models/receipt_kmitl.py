@@ -59,7 +59,7 @@ class ReceiptKmitl(models.Model):
         string="Payment Method",
         required=True,
         check_company=True,
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]",
         tracking=True,
         states=READONLY_STATES,
     )

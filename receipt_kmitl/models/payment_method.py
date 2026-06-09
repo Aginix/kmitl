@@ -16,7 +16,7 @@ class ReceiptPaymentMethod(models.Model):
         string="Journal",
         required=True,
         check_company=True,
-        domain="[('type', 'in', ('cash', 'bank')), ('company_id', '=', company_id)]",
+        domain="[('type', 'in', ('cash', 'bank')), ('company_id', 'in', allowed_company_ids)]",
         help="Journal used for the receipt's journal entry.",
     )
     account_id = fields.Many2one(
@@ -24,7 +24,7 @@ class ReceiptPaymentMethod(models.Model):
         string="Debit Account",
         required=True,
         check_company=True,
-        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
+        domain="[('deprecated', '=', False), ('company_id', 'in', allowed_company_ids)]",
         help="GL account debited when a receipt using this payment method is "
              "posted (e.g. cash on hand, bank clearing).",
     )

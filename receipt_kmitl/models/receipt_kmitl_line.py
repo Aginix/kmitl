@@ -28,7 +28,7 @@ class ReceiptKmitlLine(models.Model):
         required=True,
         check_company=True,
         domain="[('deprecated', '=', False), ('account_type', '=', 'income'),"
-               " ('company_id', '=', company_id)]",
+               " ('company_id', 'in', allowed_company_ids)]",
     )
     company_id = fields.Many2one(
         related="receipt_id.company_id",
