@@ -450,6 +450,12 @@
         action="purchase_request.purchase_request_form_action"
         sequence="3"
     />
+    <menuitem
+        id="purchase_request_configuration"
+        name="Configuration"
+        parent="purchase_request.parent_menu_purchase_request"
+        sequence="10"
+    />
 
     <function name="write" model="ir.actions.act_window">
         <value

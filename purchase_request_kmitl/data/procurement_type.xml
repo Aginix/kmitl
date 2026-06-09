@@ -66,5 +66,21 @@
         <field name="name">จ้างทำของ/จ้างเหมาบริการ</field>
         <field name="sequence">40</field>
     </record>
+    <record id="procurement_type_008" model="procurement.type">
+        <field name="name">จ้างออกแบบ</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="procurement_type_009" model="procurement.type">
+        <field name="name">จ้างควบคุมงาน</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="procurement_type_010" model="procurement.type">
+        <field name="name">จ้างที่ปรึกษา</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="procurement_type_011" model="procurement.type">
+        <field name="name">จ้างปรับปรุง</field>
+        <field name="sequence">80</field>
+    </record>
 
 </odoo>

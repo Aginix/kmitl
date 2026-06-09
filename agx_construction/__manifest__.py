@@ -14,5 +14,6 @@
         "views/construction_project_views.xml",
         "views/construction_menus.xml",
         "data/construction_sequence.xml",
+        "data/procurement_type.xml",
     ],
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data" search="[('module', '=', 'purchase_request_kmitl'), ('name', 'in',['procurement_type_004','procurement_type_005', 'procurement_type_006', 'procurement_type_007', 'procurement_type_008', 'procurement_type_009', 'procurement_type_010', 'procurement_type_011'])]" />
+        <value eval="{'noupdate': False}" />
+    </function>
+
+    <!-- Active procurement types -->
+    <record id="purchase_request_kmitl.procurement_type_004" model="procurement.type">
+        <field name="is_construction">True</field>
+    </record>
+    <record id="purchase_request_kmitl.procurement_type_005" model="procurement.type">
+        <field name="is_construction">True</field>
+    </record>
+    <record id="purchase_request_kmitl.procurement_type_006" model="procurement.type">
+        <field name="is_purchase">False</field>
+        <field name="is_construction">True</field>
+    </record>
+    <record id="purchase_request_kmitl.procurement_type_007" model="procurement.type">
+        <field name="is_construction">True</field>
+    </record>
+    <record id="purchase_request_kmitl.procurement_type_008" model="procurement.type">
+        <field name="is_purchase">False</field>
+        <field name="is_construction">True</field>
+    </record>
+    <record id="purchase_request_kmitl.procurement_type_009" model="procurement.type">
+        <field name="is_purchase">False</field>
+        <field name="is_construction">True</field>
+    </record>
+    <record id="purchase_request_kmitl.procurement_type_010" model="procurement.type">
+        <field name="is_construction">True</field>
+    </record>
+    <record id="purchase_request_kmitl.procurement_type_011" model="procurement.type">
+        <field name="is_construction">True</field>
+    </record>
+
+</odoo>
