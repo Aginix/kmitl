@@ -158,10 +158,14 @@ class BudgetController(models.AbstractModel):
             for column, analytic in dims.items()
             if column not in self._POOL_TAG_COLUMNS
         }
-        # Labels in the canonical dimension order (departments → activities).
+        # Labels in the canonical dimension order (departments → activities, then
+        # the ownership tags). The tags (kmitl_project / procurement_plan) are
+        # flagged is_pool: display-only here — they are excluded from the figure
+        # computation below — and the widget renders them only when the host opts
+        # in via show_pool_dimensions.
         dimensions = []
         for column in self._DIM_COLUMNS.values():
-            analytic = real_dims.get(column)
+            analytic = dims.get(column)
             if analytic:
                 dimensions.append(
                     {
@@ -171,6 +175,7 @@ class BudgetController(models.AbstractModel):
                         # Full hierarchical name (account_analytic_parent), so a
                         # dimension reads as its whole path, not just the leaf.
                         "complete_name": analytic.complete_name or analytic.name or "",
+                        "is_pool": column in self._POOL_TAG_COLUMNS,
                     }
                 )
         result = {

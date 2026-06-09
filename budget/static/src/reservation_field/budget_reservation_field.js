@@ -81,7 +81,13 @@ export class BudgetReservationField extends Component {
         return this.state.status;
     }
     get dimensions() {
-        return (this.state.status && this.state.status.dimensions) || [];
+        const dims = (this.state.status && this.state.status.dimensions) || [];
+        // Ownership-tag dimensions (kmitl_project / procurement_plan) are shown
+        // only when the host opts in (show_pool_dimensions); they are never part
+        // of the availability figures.
+        return this.props.showPoolDimensions
+            ? dims
+            : dims.filter((dim) => !dim.is_pool);
     }
     get loading() {
         return this.state.loading;
@@ -199,6 +205,7 @@ BudgetReservationField.props = {
     amountField: { type: String, optional: true },
     showStatus: { type: Boolean, optional: true },
     statusInvisible: { type: [Array, Boolean], optional: true },
+    showPoolDimensions: { type: Boolean, optional: true },
 };
 BudgetReservationField.extractProps = ({ attrs }) => {
     const options = attrs.options || {};
@@ -211,6 +218,9 @@ BudgetReservationField.extractProps = ({ attrs }) => {
         // Optional domain (attrs-invisible semantics): hide the status figures
         // when it matches the record.
         statusInvisible: options.status_invisible,
+        // Also display the ownership-tag dimensions (kmitl_project /
+        // procurement_plan), off by default.
+        showPoolDimensions: options.show_pool_dimensions === true,
     };
 };
 

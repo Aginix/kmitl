@@ -62,7 +62,8 @@
                         attrs="{'required': [('state', '=', 'to_verify')], 'readonly': [('is_budget_editable', '=', False)]}"
                         options="{'fiscal_year_field': 'account_fiscal_year_id',
                                   'distribution_field': 'analytic_distribution',
-                                  'show_status': True}"
+                                  'show_status': True,
+                                  'show_pool_dimensions': True}"
                     />
                 </group>
             </xpath>
