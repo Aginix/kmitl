@@ -206,11 +206,6 @@ msgid "Other"
 msgstr "อื่นๆ"
 
 #. module: receipt_kmitl
-#: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_receipt__book_no
-msgid "Book No."
-msgstr "เล่มที่"
-
-#. module: receipt_kmitl
 #: model:ir.model.fields,field_description:receipt_kmitl.field_kmitl_cash_deposit__name
 msgid "Deposit Number"
 msgstr "เลขที่ใบนำส่ง"

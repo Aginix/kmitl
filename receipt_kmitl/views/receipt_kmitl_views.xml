@@ -60,7 +60,6 @@
                     <group>
                         <group string="Header">
                             <field name="date"/>
-                            <field name="book_no"/>
                             <field name="department_id"
                                    options="{'no_create': True}"/>
                             <field name="payment_method_id"/>

@@ -28,13 +28,6 @@ class ReceiptKmitl(models.Model):
         default="/",
         tracking=True,
     )
-    book_no = fields.Char(
-        string="Book No.",
-        copy=False,
-        tracking=True,
-        states=READONLY_STATES,
-        help="Physical receipt book number (เล่มที่) printed on the receipt.",
-    )
     state = fields.Selection(
         [
             ("draft", "Draft"),

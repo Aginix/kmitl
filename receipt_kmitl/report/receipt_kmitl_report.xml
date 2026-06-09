@@ -7,7 +7,15 @@
         which is why the labels are inline rather than translated via i18n.
     -->
     <template id="report_receipt_kmitl_document">
-            <div class="page" style="font-size: 13px;">
+        <t t-call="web.basic_layout">
+            <style>
+                * { font-family: 'THSarabunNew', Arial, sans-serif; }
+                .page, .page p, .page span, .page div, .page td, .page th {
+                    font-size: 16pt;
+                    line-height: 1.25;
+                }
+            </style>
+            <div class="page">
                 <t t-if="o.state == 'cancelled'">
                     <div style="position: absolute; top: 320px; left: 180px;
                                 transform: rotate(-30deg); font-size: 96px;
@@ -16,20 +24,15 @@
                     </div>
                 </t>
 
-                <!-- Top: Book No. / crest / No. -->
+                <!-- Top: crest / No. -->
                 <div class="row">
-                    <div class="col-4">
-                        <div>เล่มที่ / Book No.
-                            <span t-esc="o.book_no or '............'"/>
-                        </div>
-                    </div>
-                    <div class="col-4 text-center">
+                    <div class="col-8 text-center offset-2">
                         <img t-if="o.company_id.logo"
                              t-att-src="image_data_uri(o.company_id.logo)"
                              style="max-height: 70px;"
                              alt="Logo"/>
                     </div>
-                    <div class="col-4 text-right">
+                    <div class="col-2 text-right">
                         <div>เลขที่ / No.
                             <span t-field="o.name"/>
                         </div>
@@ -147,6 +150,7 @@
                     </div>
                 </div>
             </div>
+        </t>
     </template>
 
     <template id="report_receipt_kmitl">
