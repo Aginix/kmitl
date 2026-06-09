@@ -26,21 +26,21 @@ msgstr "% จัดสรร"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__maintenance_deduction_pct
 msgid "% หักค่าบำรุง"
-msgstr ""
+msgstr "% หักค่าบำรุง"
 
 #. module: kris_project
 #. odoo-python
 #: code:addons/kris_project/models/kris_project_dashboard.py:0
 #, python-format
 msgid "(ไม่มีประเภท)"
-msgstr ""
+msgstr "(ไม่มีประเภท)"
 
 #. module: kris_project
 #. odoo-python
 #: code:addons/kris_project/models/kris_project_dashboard.py:0
 #, python-format
 msgid "(ไม่ระบุ)"
-msgstr ""
+msgstr "(ไม่ระบุ)"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -66,44 +66,44 @@ msgstr "<strong>มีข้อควรระวัง:</strong>"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_needaction
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "ต้องดำเนินการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_category__active
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__active
 msgid "Active"
-msgstr ""
+msgstr "ใช้งาน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "กิจกรรม"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "การตกแต่งกิจกรรมข้อยกเว้น"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "สถานะกิจกรรม"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "ไอคอนประเภทกิจกรรม"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_exception_rule__model
 msgid "Apply on"
-msgstr ""
+msgstr "ใช้กับ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_attachment_count
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "จำนวนสิ่งที่แนบมา"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__create_uid
@@ -121,7 +121,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__create_uid
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "สร้างโดย"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__create_date
@@ -139,17 +139,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__create_date
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__create_date
 msgid "Created on"
-msgstr ""
+msgstr "สร้างเมื่อ"
 
 #. module: kris_project
 #: model:ir.ui.menu,name:kris_project.menu_kris_project_dashboard
 msgid "Dashboard"
-msgstr ""
+msgstr "แดชบอร์ด"
 
 #. module: kris_project
 #: model:ir.actions.client,name:kris_project.action_kris_project_dashboard
 msgid "Dashboard KRIS Project"
-msgstr ""
+msgstr "แดชบอร์ดโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__display_name
@@ -167,56 +167,56 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__display_name
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "ชื่อที่แสดง"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_exception_rule
 msgid "Exception Rule"
-msgstr ""
+msgstr "กฎข้อยกเว้น"
 
 #. module: kris_project
 #: model:ir.actions.act_window,name:kris_project.action_kris_project_exception_rule
 #: model:ir.ui.menu,name:kris_project.menu_kris_project_exception_rules
 msgid "Exception Rules"
-msgstr ""
+msgstr "กฎข้อยกเว้น"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__exception_ids
 msgid "Exceptions"
-msgstr ""
+msgstr "ข้อยกเว้น"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__exceptions_summary
 msgid "Exceptions Summary"
-msgstr ""
+msgstr "สรุปข้อยกเว้น"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_exception_confirm__exception_ids
 msgid "Exceptions to resolve"
-msgstr ""
+msgstr "ข้อยกเว้นที่ต้องแก้ไข"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_follower_ids
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "ผู้ติดตาม"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_partner_ids
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "ผู้ติดตาม (พาร์ทเนอร์)"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "ไอคอน Font Awesome เช่น fa-tasks"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__has_message
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "มีข้อความ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__id
@@ -234,23 +234,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "ไอคอน"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "ไอคอนเพื่อระบุกิจกรรมข้อยกเว้น"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__message_needaction
 #: model:ir.model.fields,help:kris_project.field_kris_project_receipt__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "หากเลือก ข้อความใหม่จะต้องการความสนใจจากคุณ"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__message_has_error
@@ -258,34 +258,34 @@ msgstr ""
 #: model:ir.model.fields,help:kris_project.field_kris_project_receipt__message_has_error
 #: model:ir.model.fields,help:kris_project.field_kris_project_receipt__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "หากเลือก ข้อความบางส่วนมีข้อผิดพลาดในการส่ง"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__ignore_exception
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_exception_confirm__ignore
 msgid "Ignore Exceptions"
-msgstr ""
+msgstr "ละเว้นข้อยกเว้น"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_is_follower
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "เป็นผู้ติดตาม"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_allocation_item
 msgid "KRIS Allocation Item"
-msgstr ""
+msgstr "รายการปันส่วน KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_allocation_template
 msgid "KRIS Allocation Template"
-msgstr ""
+msgstr "แม่แบบการปันส่วน KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_allocation_template_line
 msgid "KRIS Allocation Template Line"
-msgstr ""
+msgstr "บรรทัดแม่แบบการปันส่วน KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project
@@ -294,62 +294,62 @@ msgstr ""
 #: model:ir.module.category,name:kris_project.module_category_kris_project
 #: model:ir.ui.menu,name:kris_project.menu_kris_project_root
 msgid "KRIS Project"
-msgstr ""
+msgstr "โครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_allocation_line
 msgid "KRIS Project Allocation Line"
-msgstr ""
+msgstr "บรรทัดการจัดสรรโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_category
 msgid "KRIS Project Category"
-msgstr ""
+msgstr "หมวดหมู่โครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_exception_confirm
 msgid "KRIS Project Exception Wizard"
-msgstr ""
+msgstr "ตัวช่วยข้อยกเว้นโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_installment
 msgid "KRIS Project Installment"
-msgstr ""
+msgstr "งวดงานโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_installment_allocation
 msgid "KRIS Project Installment Allocation Breakdown"
-msgstr ""
+msgstr "รายละเอียดการจัดสรรงวดงานโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_receipt
 msgid "KRIS Project Receipt"
-msgstr ""
+msgstr "ใบเสร็จโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_receipt_allocation
 msgid "KRIS Project Receipt Allocation Breakdown"
-msgstr ""
+msgstr "รายละเอียดการจัดสรรใบเสร็จโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_receipt_wizard
 msgid "KRIS Project Receipt Wizard"
-msgstr ""
+msgstr "ตัวช่วยใบเสร็จโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_receipt_wizard_line
 msgid "KRIS Project Receipt Wizard Line"
-msgstr ""
+msgstr "บรรทัดตัวช่วยใบเสร็จโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model,name:kris_project.model_kris_project_type
 msgid "KRIS Project Type"
-msgstr ""
+msgstr "ประเภทโครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_exception_rule__kris_project_ids
 msgid "KRIS Projects"
-msgstr ""
+msgstr "โครงการ KRIS"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project____last_update
@@ -367,7 +367,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line____last_update
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "แก้ไขล่าสุดเมื่อ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__write_uid
@@ -385,7 +385,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__write_uid
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "อัปเดตล่าสุดโดย"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__write_date
@@ -403,47 +403,47 @@ msgstr ""
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__write_date
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_type__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "อัปเดตล่าสุดเมื่อ"
 
 #. module: kris_project
 #. odoo-javascript
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "Loading..."
-msgstr ""
+msgstr "กำลังโหลด..."
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_main_attachment_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "สิ่งที่แนบมาหลัก"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__main_exception_id
 msgid "Main Exception"
-msgstr ""
+msgstr "ข้อยกเว้นหลัก"
 
 #. module: kris_project
 #: model:res.groups,name:kris_project.group_kris_project_manager
 msgid "Manager"
-msgstr ""
+msgstr "ผู้จัดการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_has_error
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "ข้อผิดพลาดในการส่งข้อความ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_ids
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "ข้อความ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "กำหนดเวลากิจกรรมของฉัน"
 
 #. module: kris_project
 #. odoo-python
@@ -453,77 +453,77 @@ msgstr ""
 #: code:addons/kris_project/models/kris_project.py:0
 #, python-format
 msgid "New"
-msgstr ""
+msgstr "ใหม่"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "ปฏิทินกิจกรรมถัดไป"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "กำหนดเวลากิจกรรมถัดไป"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "สรุปกิจกรรมถัดไป"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "ประเภทกิจกรรมถัดไป"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_needaction_counter
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "จำนวนการดำเนินการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_has_error_counter
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "จำนวนข้อผิดพลาด"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__message_needaction_counter
 #: model:ir.model.fields,help:kris_project.field_kris_project_receipt__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr ""
+msgstr "จำนวนข้อความที่ต้องดำเนินการ"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__message_has_error_counter
 #: model:ir.model.fields,help:kris_project.field_kris_project_receipt__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "จำนวนข้อความที่มีข้อผิดพลาดในการส่ง"
 
 #. module: kris_project
 #: model:res.groups,name:kris_project.group_kris_project_officer
 msgid "Officer"
-msgstr ""
+msgstr "เจ้าหน้าที่"
 
 #. module: kris_project
 #: model:ir.actions.act_window,name:kris_project.action_kris_project_exception_confirm
 msgid "Outstanding exceptions to manage"
-msgstr ""
+msgstr "ข้อยกเว้นคงค้างที่ต้องจัดการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "ผู้รับผิดชอบ"
 
 #. module: kris_project
 #: model:ir.module.category,description:kris_project.module_category_kris_project
 msgid "Revenue tracking for KRIS academic service and research projects"
-msgstr ""
+msgstr "การติดตามรายรับสำหรับโครงการบริการวิชาการและวิจัย KRIS"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__message_has_sms_error
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "ข้อผิดพลาดในการส่ง SMS"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__activity_state
@@ -532,56 +532,56 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
-msgstr ""
+msgstr "สถานะตามกิจกรรม\nเกินกำหนด: วันครบกำหนดผ่านไปแล้ว\nวันนี้: วันที่ของกิจกรรมคือวันนี้\nวางแผนไว้: กิจกรรมในอนาคต"
 
 #. module: kris_project
 #. odoo-javascript
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "Top 10 หัวหน้าโครงการ (รายรับรวม)"
-msgstr ""
+msgstr "Top 10 หัวหน้าโครงการ (รายรับรวม)"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "ประเภทของกิจกรรมข้อยกเว้นในระเบียน"
 
 #. module: kris_project
 #: model:res.groups,name:kris_project.group_kris_project_viewer
 msgid "Viewer"
-msgstr ""
+msgstr "ผู้ดู"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__warn_allocation_mismatch
 msgid "Warn Allocation Mismatch"
-msgstr ""
+msgstr "เตือนการจัดสรรไม่ตรงกัน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__warn_installment_maintenance_mismatch
 msgid "Warn Installment Maintenance Mismatch"
-msgstr ""
+msgstr "เตือนค่าบำรุงงวดงานไม่ตรงกัน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__warn_installment_total_mismatch
 msgid "Warn Installment Total Mismatch"
-msgstr ""
+msgstr "เตือนยอดรวมงวดงานไม่ตรงกัน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__website_message_ids
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "ข้อความเว็บไซต์"
 
 #. module: kris_project
 #: model:ir.model.fields,help:kris_project.field_kris_project__website_message_ids
 #: model:ir.model.fields,help:kris_project.field_kris_project_receipt__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "ประวัติการสื่อสารของเว็บไซต์"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__wizard_id
 msgid "Wizard"
-msgstr ""
+msgstr "ตัวช่วย"
 
 #. module: kris_project
 #: model:exception.rule,description:kris_project.kris_excep_no_installments
@@ -624,12 +624,12 @@ msgstr "การจัดสรรตามรายรับ"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "การจัดสรรรายรับตามคณะ/หน่วยงาน"
-msgstr ""
+msgstr "การจัดสรรรายรับตามคณะ/หน่วยงาน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__allocation_line_ids
 msgid "การจัดสรรรายได้"
-msgstr ""
+msgstr "การจัดสรรรายได้"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
@@ -649,14 +649,14 @@ msgstr "ระบุจำนวนเงิน"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__maintenance_deduction_fixed_amount
 msgid "จำนวนเงินค่าบำรุง"
-msgstr ""
+msgstr "จำนวนเงินค่าบำรุง"
 
 #. module: kris_project
 #. odoo-javascript
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "ของมูลค่างาน"
-msgstr ""
+msgstr "ของมูลค่างาน"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__maintenance_deduction_type__tiered
@@ -723,7 +723,7 @@ msgstr "ค่าบำรุงในงวดไม่ตรง"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "ค้นหา"
-msgstr ""
+msgstr "ค้นหา"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__installment_ids
@@ -747,12 +747,12 @@ msgstr "งวดที่"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__available_installment_ids
 msgid "งวดที่ใช้ได้"
-msgstr ""
+msgstr "งวดที่ใช้ได้"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "จัดกลุ่มตาม"
-msgstr ""
+msgstr "จัดกลุ่มตาม"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment_allocation__allocated_amount
@@ -809,7 +809,7 @@ msgstr "ตั้งค่า"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "ถึง"
-msgstr ""
+msgstr "ถึง"
 
 #. module: kris_project
 #. odoo-javascript
@@ -818,7 +818,7 @@ msgstr ""
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "ทั้งหมด"
-msgstr ""
+msgstr "ทั้งหมด"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -828,7 +828,7 @@ msgstr "นำแม่แบบมาใช้"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__company_id
 msgid "บริษัท"
-msgstr ""
+msgstr "บริษัท"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
@@ -838,7 +838,7 @@ msgstr "บันทึก"
 #. module: kris_project
 #: model_terms:ir.actions.act_window,help:kris_project.action_kris_project
 msgid "บันทึกข้อมูลโครงการบริการวิชาการและวิจัยหลังลงนามสัญญา"
-msgstr ""
+msgstr "บันทึกข้อมูลโครงการบริการวิชาการและวิจัยหลังลงนามสัญญา"
 
 #. module: kris_project
 #. odoo-python
@@ -858,7 +858,7 @@ msgstr "บันทึกรายรับ"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "บาท"
-msgstr ""
+msgstr "บาท"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__estimated_amount
@@ -871,7 +871,7 @@ msgstr "ประมาณการ (บาท)"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "ประมาณการ KRIS"
-msgstr ""
+msgstr "ประมาณการ KRIS"
 
 #. module: kris_project
 #. odoo-javascript
@@ -951,7 +951,7 @@ msgstr "ผลรวมจำนวนเงินที่ได้รับใ
 #: code:addons/kris_project/models/kris_project_allocation.py:0
 #, python-format
 msgid "ผลรวมประมาณการจัดสรรต้องไม่เกินมูลค่าหักค่าบำรุง (%.2f บาท)"
-msgstr ""
+msgstr "ผลรวมประมาณการจัดสรรต้องไม่เกินมูลค่าหักค่าบำรุง (%.2f บาท)"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__item_id
@@ -1027,7 +1027,7 @@ msgstr "มูลค่าและงวดงาน"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "มูลค่าโครงการรวม"
-msgstr ""
+msgstr "มูลค่าโครงการรวม"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__cancel
@@ -1097,12 +1097,12 @@ msgstr "อยู่ระยะเวลาโครงการ"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_installment_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_tree
 msgid "รวม"
-msgstr ""
+msgstr "รวม"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project_installment__state__pending
 msgid "รอรับเงิน"
-msgstr ""
+msgstr "รอรับเงิน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__project_duration
@@ -1124,7 +1124,7 @@ msgstr "รับจริง (บาท)"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "รับจริง KRIS"
-msgstr ""
+msgstr "รับจริง KRIS"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__received_from_employer
@@ -1134,7 +1134,7 @@ msgstr "รับเงินงวดจากผู้ว่าจ้าง"
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project_installment__state__received
 msgid "รับเงินแล้ว"
-msgstr ""
+msgstr "รับเงินแล้ว"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__total_received_amount
@@ -1165,21 +1165,21 @@ msgstr "รายรับ"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "รายรับ KRIS ตามประเภทโครงการ"
-msgstr ""
+msgstr "รายรับ KRIS ตามประเภทโครงการ"
 
 #. module: kris_project
 #. odoo-javascript
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "รายรับรวม"
-msgstr ""
+msgstr "รายรับรวม"
 
 #. module: kris_project
 #. odoo-javascript
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "รายรับรายเดือน (ปีปัจจุบัน vs ปีก่อน)"
-msgstr ""
+msgstr "รายรับรายเดือน (ปีปัจจุบัน vs ปีก่อน)"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -1233,7 +1233,7 @@ msgstr "ลำดับ"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "ล้าง"
-msgstr ""
+msgstr "ล้าง"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -1256,7 +1256,7 @@ msgstr "วันที่รับเงิน"
 #: code:addons/kris_project/static/src/components/kris_project_dashboard/kris_project_dashboard.xml:0
 #, python-format
 msgid "วันที่ รับเงินตั้งแต่"
-msgstr ""
+msgstr "วันที่ รับเงินตั้งแต่"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__date_contract_end
@@ -1296,7 +1296,7 @@ msgstr "สถานะ"
 #. module: kris_project
 #: model_terms:ir.actions.act_window,help:kris_project.action_kris_project
 msgid "สร้างโครงการ KRIS ใหม่"
-msgstr ""
+msgstr "สร้างโครงการ KRIS ใหม่"
 
 #. module: kris_project
 #. odoo-python
@@ -1460,12 +1460,12 @@ msgstr "เอกสารแนบ"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__template_id
 msgid "แม่แบบ"
-msgstr ""
+msgstr "แม่แบบ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__allocation_template_id
 msgid "แม่แบบการจัดสรร"
-msgstr ""
+msgstr "แม่แบบการจัดสรร"
 
 #. module: kris_project
 #: model:ir.actions.act_window,name:kris_project.action_kris_project_allocation_template
