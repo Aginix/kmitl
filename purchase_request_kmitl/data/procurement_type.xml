@@ -53,34 +53,50 @@
     <record id="procurement_type_004" model="procurement.type">
         <field name="name">ซื้อ</field>
         <field name="sequence">10</field>
+        <field name="is_purchase">True</field>
+        <field name="is_construction">True</field>
     </record>
     <record id="procurement_type_005" model="procurement.type">
         <field name="name">เช่า</field>
         <field name="sequence">20</field>
+        <field name="is_purchase">True</field>
+        <field name="is_construction">True</field>
     </record>
     <record id="procurement_type_006" model="procurement.type">
         <field name="name">จ้างก่อสร้าง</field>
         <field name="sequence">30</field>
+        <field name="is_purchase">False</field>
+        <field name="is_construction">True</field>
     </record>
     <record id="procurement_type_007" model="procurement.type">
         <field name="name">จ้างทำของ/จ้างเหมาบริการ</field>
         <field name="sequence">40</field>
+        <field name="is_purchase">True</field>
+        <field name="is_construction">True</field>
     </record>
     <record id="procurement_type_008" model="procurement.type">
         <field name="name">จ้างออกแบบ</field>
         <field name="sequence">50</field>
+        <field name="is_purchase">False</field>
+        <field name="is_construction">True</field>
     </record>
     <record id="procurement_type_009" model="procurement.type">
         <field name="name">จ้างควบคุมงาน</field>
         <field name="sequence">60</field>
+        <field name="is_purchase">False</field>
+        <field name="is_construction">True</field>
     </record>
     <record id="procurement_type_010" model="procurement.type">
         <field name="name">จ้างที่ปรึกษา</field>
         <field name="sequence">70</field>
+        <field name="is_purchase">True</field>
+        <field name="is_construction">True</field>
     </record>
     <record id="procurement_type_011" model="procurement.type">
         <field name="name">จ้างปรับปรุง</field>
         <field name="sequence">80</field>
+        <field name="is_purchase">True</field>
+        <field name="is_construction">True</field>
     </record>
 
 </odoo>

@@ -3,16 +3,4 @@
     <menuitem id="construction_root_menu" name="Construction" web_icon="agx_construction,static/description/icon.png"/>
     <menuitem id="construction_project_menu" name="Projects" parent="construction_root_menu" action="action_construction_project" sequence="10"/>
     <menuitem id="construction_purchase_request_menu" name="Constructions" parent="construction_root_menu" action="action_construction_purchase_request" sequence="20"/>
-    <menuitem
-        id="construction_configuration_menu"
-        name="Configuration"
-        parent="construction_root_menu"
-        sequence="50"
-    />
-    <menuitem
-        id="construction_procurement_type"
-        parent="construction_configuration_menu"
-        action="purchase_request_kmitl.procurement_type_action"
-        sequence="20"
-    />
 </odoo>
