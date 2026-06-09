@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budgeting",
-    "version": "16.0.1.4.0",
+    "version": "16.0.1.4.1",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
