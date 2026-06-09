@@ -57,7 +57,7 @@ class KrisProjectReceiptReport(models.Model):
     )
 
     # --- Measures ---
-    amount = fields.Monetary(string="Amount", readonly=True)
+    amount = fields.Monetary(string="จำนวนเงินที่ได้รับ", readonly=True)
     equipment_cost_in_installment = fields.Monetary(
         string="Equipment Cost in Installment", readonly=True
     )

@@ -771,7 +771,7 @@ msgstr "จำนวนเงิน"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__amount_net
 msgid "Net Amount"
-msgstr "จำนวนเงินที่ใช้ได้"
+msgstr "จำนวนเงินสุทธิ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_installment__amount
@@ -1090,7 +1090,7 @@ msgstr "ยืนยัน"
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "In Progress"
-msgstr "อยู่ระยะเวลาโครงการ"
+msgstr "กำลังดำเนินการ"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
