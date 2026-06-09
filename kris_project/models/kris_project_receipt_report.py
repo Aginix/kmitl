@@ -63,6 +63,10 @@ class KrisProjectReceiptReport(models.Model):
     )
     extra_income = fields.Monetary(string="Extra Value", readonly=True)
     net_amount = fields.Monetary(string="Net Amount", readonly=True)
+    # Project-level totals (attributed to a single row per project so sums
+    # over the flattened receipts stay correct for comparison).
+    project_value = fields.Monetary(string="มูลค่างาน", readonly=True)
+    revenue_remaining = fields.Monetary(string="ยอดคงเหลือ", readonly=True)
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -91,7 +95,19 @@ class KrisProjectReceiptReport(models.Model):
                     r.amount                                               AS amount,
                     r.equipment_cost_in_installment                        AS equipment_cost_in_installment,
                     r.extra_income                                         AS extra_income,
-                    r.net_amount                                           AS net_amount
+                    r.net_amount                                           AS net_amount,
+                    CASE
+                        WHEN ROW_NUMBER() OVER (
+                            PARTITION BY r.project_id ORDER BY r.id
+                        ) = 1
+                        THEN p.project_value ELSE 0
+                    END                                                    AS project_value,
+                    CASE
+                        WHEN ROW_NUMBER() OVER (
+                            PARTITION BY r.project_id ORDER BY r.id
+                        ) = 1
+                        THEN p.revenue_remaining ELSE 0
+                    END                                                    AS revenue_remaining
                 FROM kris_project_receipt r
                 JOIN kris_project p ON p.id = r.project_id
                 JOIN res_company c ON c.id = p.company_id

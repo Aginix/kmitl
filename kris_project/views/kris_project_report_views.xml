@@ -104,8 +104,10 @@
             <pivot string="Revenue Analysis" sample="1" disable_linking="True">
                 <field name="account_fiscal_year_id" type="row"/>
                 <field name="project_category_id" type="col"/>
+                <field name="project_value" type="measure"/>
                 <field name="amount" type="measure"/>
                 <field name="net_amount" type="measure"/>
+                <field name="revenue_remaining" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -138,10 +140,12 @@
                 <field name="department_analytic_id_lvl2" optional="hide"/>
                 <field name="department_analytic_id_lvl3" optional="hide"/>
                 <field name="date" optional="show"/>
+                <field name="project_value" sum="รวม" optional="show"/>
                 <field name="amount" sum="รวม" optional="show"/>
                 <field name="equipment_cost_in_installment" sum="รวม" optional="hide"/>
                 <field name="extra_income" sum="รวม" optional="hide"/>
                 <field name="net_amount" sum="รวม" optional="show"/>
+                <field name="revenue_remaining" sum="รวม" optional="show"/>
             </tree>
         </field>
     </record>
