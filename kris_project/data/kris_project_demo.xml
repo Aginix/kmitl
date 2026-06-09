@@ -1,0 +1,1490 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ============================================================
+             Demo Employees (Project Managers)
+             ============================================================ -->
+        <record id="demo_mgr_01" model="hr.employee">
+            <field name="name">รศ.ดร.ประสิทธิ์ ชัยวงศ์</field>
+            <field name="job_title">รองศาสตราจารย์</field>
+        </record>
+        <record id="demo_mgr_02" model="hr.employee">
+            <field name="name">ผศ.ดร.สุภาพร มั่นคง</field>
+            <field name="job_title">ผู้ช่วยศาสตราจารย์</field>
+        </record>
+        <record id="demo_mgr_03" model="hr.employee">
+            <field name="name">รศ.ดร.วิชัย พงษ์สุวรรณ</field>
+            <field name="job_title">รองศาสตราจารย์</field>
+        </record>
+        <record id="demo_mgr_04" model="hr.employee">
+            <field name="name">ศ.ดร.มาลีรัตน์ บุญเจริญ</field>
+            <field name="job_title">ศาสตราจารย์</field>
+        </record>
+        <record id="demo_mgr_05" model="hr.employee">
+            <field name="name">ผศ.ดร.ธนพล อินทรวิชัย</field>
+            <field name="job_title">ผู้ช่วยศาสตราจารย์</field>
+        </record>
+        <record id="demo_mgr_06" model="hr.employee">
+            <field name="name">รศ.ดร.กิตติชัย เรืองศรี</field>
+            <field name="job_title">รองศาสตราจารย์</field>
+        </record>
+        <record id="demo_mgr_07" model="hr.employee">
+            <field name="name">ผศ.ดร.นภัสสร วัฒนกุล</field>
+            <field name="job_title">ผู้ช่วยศาสตราจารย์</field>
+        </record>
+
+        <!-- ============================================================
+             1. Draft — ข้อมูลขั้นต่ำสุด (required fields only)
+             ============================================================ -->
+        <record id="kris_project_demo_01" model="kris.project">
+            <field name="name">KRIS-2567-001</field>
+            <field name="project_name">โครงการฝึกอบรมเชิงปฏิบัติการปัญญาประดิษฐ์สำหรับอุตสาหกรรม</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_training"/>
+        </record>
+
+        <!-- ============================================================
+             2. Draft — ข้อมูลบางส่วน: + ลูกค้า + คณะ
+             ============================================================ -->
+        <record id="kris_project_demo_02" model="kris.project">
+            <field name="name">KRIS-2567-002</field>
+            <field name="project_name">โครงการที่ปรึกษาระบบโลจิสติกส์และห่วงโซ่อุปทาน</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_consulting"/>
+            <field name="client_name">บริษัท ไทยโลจิสติกส์ จำกัด</field>
+            <field name="client_location">กรุงเทพมหานคร</field>
+            <field name="client_org_type">private</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        </record>
+
+        <!-- ============================================================
+             3. Draft — ข้อมูลบางส่วน: + มูลค่า + คณะ + หัวหน้า
+             ============================================================ -->
+        <record id="kris_project_demo_03" model="kris.project">
+            <field name="name">KRIS-2567-003</field>
+            <field name="project_name">โครงการวิจัยพลังงานทดแทนจากชีวมวล</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_external_research"/>
+            <field name="client_name">กระทรวงพลังงาน</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">750000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+            <field name="manager_id" ref="demo_mgr_04"/>
+        </record>
+
+        <!-- ============================================================
+             4. Draft — ข้อมูลบางส่วน: + วันสัญญา + ลูกค้า + คณะ
+             ============================================================ -->
+        <record id="kris_project_demo_04" model="kris.project">
+            <field name="name">KRIS-2567-004</field>
+            <field name="project_name">โครงการทดสอบและรับรองคุณภาพวัสดุก่อสร้างมาตรฐานสากล</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_testing"/>
+            <field name="client_name">บริษัท ก่อสร้างไทย จำกัด (มหาชน)</field>
+            <field name="client_location">นนทบุรี</field>
+            <field name="client_tax_number">0105565012345</field>
+            <field name="client_org_type">private</field>
+            <field name="contract_number">สญ.67-004</field>
+            <field name="date_contract_start">2024-10-01</field>
+            <field name="date_contract_end">2025-03-31</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        </record>
+
+        <!-- ============================================================
+             5. In Progress — ข้อมูลบางส่วน: ยังไม่มีรายการจัดสรร
+             ============================================================ -->
+        <record id="kris_project_demo_05" model="kris.project">
+            <field name="name">KRIS-2567-005</field>
+            <field name="project_name">โครงการบริการวิชาการพัฒนาเมืองอัจฉริยะ (Smart City)</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_consulting"/>
+            <field name="state">in_progress</field>
+            <field name="client_name">สำนักงานส่งเสริมเศรษฐกิจดิจิทัล (DEPA)</field>
+            <field name="client_org_type">state_enterprise</field>
+            <field name="project_value">1500000.0</field>
+            <field name="contract_number">สญ.67-005</field>
+            <field name="date_contract_start">2024-11-01</field>
+            <field name="date_contract_end">2025-10-31</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+            <field name="manager_id" ref="demo_mgr_01"/>
+        </record>
+
+        <!-- ============================================================
+             6. In Progress — ครบ: 1,000,000 บาท + จัดสรร + 2 งวด + รายรับ (งวด 1 รับแล้ว)
+             maintenance = 100,000 (10% × 1M)
+             คณะ: เทคโนโลยีการเกษตร (04) / ภาค: เทคโนโลยีการผลิตพืช (04040)
+             ============================================================ -->
+        <record id="kris_project_demo_06" model="kris.project">
+            <field name="name">KRIS-2567-006</field>
+            <field name="project_name">โครงการวิจัยและพัฒนานวัตกรรมเกษตรอัจฉริยะ IoT</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_external_research"/>
+            <field name="state">in_progress</field>
+            <field name="client_name">สำนักงานพัฒนาการวิจัยการเกษตร (สวก.)</field>
+            <field name="client_location">กรุงเทพมหานคร</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">1000000.0</field>
+            <field name="contract_number">สญ.67-006</field>
+            <field name="date_contract_start">2024-10-01</field>
+            <field name="date_contract_end">2025-09-30</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+            <field name="manager_id" ref="demo_mgr_05"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_06_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_06"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">35000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_06_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_06"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">35000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+        </record>
+        <record id="kris_project_demo_06_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_06"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">20000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04040"/>
+        </record>
+        <record id="kris_project_demo_06_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_06"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">10000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_06_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_06"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (ส่งมอบงานงวดแรก)</field>
+            <field name="amount">600000.0</field>
+            <field name="due_date">2025-01-31</field>
+            <field name="deduction_guarantee">60000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_central"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_faculty"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_dept"/>
+            <field name="amount">12000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_kris"/>
+            <field name="amount">6000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_06"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (ส่งมอบงานงวดสุดท้าย)</field>
+            <field name="amount">400000.0</field>
+            <field name="due_date">2025-06-30</field>
+            <field name="deduction_guarantee">40000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_02_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_central"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_02_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_faculty"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_02_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_dept"/>
+            <field name="amount">8000.0</field>
+        </record>
+        <record id="kris_project_demo_06_inst_02_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_06_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_kris"/>
+            <field name="amount">4000.0</field>
+        </record>
+        <!-- รายรับ: งวดที่ 1 รับเงินครบแล้ว -->
+        <record id="kris_project_demo_06_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_06"/>
+            <field name="installment_id" ref="kris_project_demo_06_inst_01"/>
+            <field name="name">RCPT-67-006-1</field>
+            <field name="date">2025-02-05</field>
+            <field name="amount">600000.0</field>
+        </record>
+        <record id="kris_project_demo_06_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_06_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_central"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_06_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_06_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_faculty"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_06_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_06_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_dept"/>
+            <field name="amount">12000.0</field>
+        </record>
+        <record id="kris_project_demo_06_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_06_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_06_alloc_kris"/>
+            <field name="amount">6000.0</field>
+        </record>
+
+        <!-- ============================================================
+             7. In Progress — ครบ: 500,000 บาท + จัดสรร + 2 งวด + รายรับ
+             (งวด 1 รับครบ, งวด 2 รับบางส่วน)
+             maintenance = 50,000 (10% × 500k)
+             คณะ: วิศวกรรมศาสตร์ (01) / ภาค: วิศวกรรมคอมพิวเตอร์ (01040)
+             ============================================================ -->
+        <record id="kris_project_demo_07" model="kris.project">
+            <field name="name">KRIS-2567-007</field>
+            <field name="project_name">โครงการที่ปรึกษาระบบบริหารจัดการโรงพยาบาลดิจิทัล</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_consulting"/>
+            <field name="state">in_progress</field>
+            <field name="client_name">โรงพยาบาลราชวิถี</field>
+            <field name="client_location">กรุงเทพมหานคร</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">500000.0</field>
+            <field name="contract_number">สญ.67-007</field>
+            <field name="date_contract_start">2025-01-01</field>
+            <field name="date_contract_end">2025-06-30</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+            <field name="manager_id" ref="demo_mgr_02"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_07_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">17500.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_07_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">17500.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        </record>
+        <record id="kris_project_demo_07_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">10000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01040"/>
+        </record>
+        <record id="kris_project_demo_07_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">5000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_07_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (ส่งรายงานความก้าวหน้า)</field>
+            <field name="amount">250000.0</field>
+            <field name="due_date">2025-03-31</field>
+        </record>
+        <record id="kris_project_demo_07_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_central"/>
+            <field name="amount">8750.0</field>
+        </record>
+        <record id="kris_project_demo_07_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_faculty"/>
+            <field name="amount">8750.0</field>
+        </record>
+        <record id="kris_project_demo_07_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_dept"/>
+            <field name="amount">5000.0</field>
+        </record>
+        <record id="kris_project_demo_07_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_kris"/>
+            <field name="amount">2500.0</field>
+        </record>
+        <record id="kris_project_demo_07_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (ส่งมอบงานครบถ้วน)</field>
+            <field name="amount">250000.0</field>
+            <field name="due_date">2025-06-30</field>
+        </record>
+        <record id="kris_project_demo_07_inst_02_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_central"/>
+            <field name="amount">8750.0</field>
+        </record>
+        <record id="kris_project_demo_07_inst_02_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_faculty"/>
+            <field name="amount">8750.0</field>
+        </record>
+        <record id="kris_project_demo_07_inst_02_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_dept"/>
+            <field name="amount">5000.0</field>
+        </record>
+        <record id="kris_project_demo_07_inst_02_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_07_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_kris"/>
+            <field name="amount">2500.0</field>
+        </record>
+        <!-- รายรับ: งวด 1 รับครบ 250,000 -->
+        <record id="kris_project_demo_07_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="installment_id" ref="kris_project_demo_07_inst_01"/>
+            <field name="name">RCPT-67-007-1</field>
+            <field name="date">2025-04-03</field>
+            <field name="amount">250000.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_central"/>
+            <field name="amount">8750.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_faculty"/>
+            <field name="amount">8750.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_dept"/>
+            <field name="amount">5000.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_kris"/>
+            <field name="amount">2500.0</field>
+        </record>
+        <!-- รายรับ: งวด 2 รับบางส่วน 100,000 (จาก 250,000) -->
+        <record id="kris_project_demo_07_rcpt_02" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_07"/>
+            <field name="installment_id" ref="kris_project_demo_07_inst_02"/>
+            <field name="name">RCPT-67-007-2</field>
+            <field name="date">2025-07-10</field>
+            <field name="amount">100000.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_02_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_central"/>
+            <field name="amount">3500.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_02_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_faculty"/>
+            <field name="amount">3500.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_02_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_dept"/>
+            <field name="amount">2000.0</field>
+        </record>
+        <record id="kris_project_demo_07_rcpt_02_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_07_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_07_alloc_kris"/>
+            <field name="amount">1000.0</field>
+        </record>
+
+        <!-- ============================================================
+             8. Done — ครบ: 2,000,000 บาท + จัดสรร + 3 งวด + รายรับครบทุกงวด
+             maintenance = 190,000 (1M×10% + 1M×9%)
+             คณะ: วิทยาศาสตร์ (05) / ภาค: ชีววิทยา (05220)
+             ============================================================ -->
+        <record id="kris_project_demo_08" model="kris.project">
+            <field name="name">KRIS-2567-008</field>
+            <field name="project_name">โครงการวิจัยและพัฒนาอุปกรณ์การแพทย์สำหรับผู้สูงอายุ</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_research_contract"/>
+            <field name="state">done</field>
+            <field name="client_name">บริษัท เมดเทค ไทยแลนด์ จำกัด</field>
+            <field name="client_location">สมุทรปราการ</field>
+            <field name="client_tax_number">0105565098765</field>
+            <field name="client_org_type">private</field>
+            <field name="project_value">2000000.0</field>
+            <field name="contract_number">สญ.66-008</field>
+            <field name="date_contract_start">2023-10-01</field>
+            <field name="date_contract_end">2024-09-30</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+            <field name="manager_id" ref="demo_mgr_03"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_08_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">66500.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_08_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">66500.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        </record>
+        <record id="kris_project_demo_08_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">38000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05220"/>
+        </record>
+        <record id="kris_project_demo_08_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">19000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_08_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (รายงานความก้าวหน้าครั้งที่ 1)</field>
+            <field name="amount">800000.0</field>
+            <field name="due_date">2024-01-31</field>
+            <field name="deduction_guarantee">80000.0</field>
+            <field name="deduction_advance">100000.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_central"/>
+            <field name="amount">26600.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_faculty"/>
+            <field name="amount">26600.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_dept"/>
+            <field name="amount">15200.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_kris"/>
+            <field name="amount">7600.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (รายงานความก้าวหน้าครั้งที่ 2)</field>
+            <field name="amount">700000.0</field>
+            <field name="due_date">2024-05-31</field>
+            <field name="deduction_guarantee">70000.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_02_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_central"/>
+            <field name="amount">23275.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_02_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_faculty"/>
+            <field name="amount">23275.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_02_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_dept"/>
+            <field name="amount">13300.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_02_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_kris"/>
+            <field name="amount">6650.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_03" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="sequence">30</field>
+            <field name="name">งวดที่ 3 (ส่งมอบงานครบถ้วน)</field>
+            <field name="amount">500000.0</field>
+            <field name="due_date">2024-09-30</field>
+            <field name="deduction_guarantee">50000.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_03_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_central"/>
+            <field name="amount">16625.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_03_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_faculty"/>
+            <field name="amount">16625.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_03_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_dept"/>
+            <field name="amount">9500.0</field>
+        </record>
+        <record id="kris_project_demo_08_inst_03_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_08_inst_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_kris"/>
+            <field name="amount">4750.0</field>
+        </record>
+        <!-- รายรับ: รับครบทั้ง 3 งวด -->
+        <record id="kris_project_demo_08_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="installment_id" ref="kris_project_demo_08_inst_01"/>
+            <field name="name">RCPT-66-008-1</field>
+            <field name="date">2024-02-10</field>
+            <field name="amount">800000.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_central"/>
+            <field name="amount">26600.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_faculty"/>
+            <field name="amount">26600.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_dept"/>
+            <field name="amount">15200.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_kris"/>
+            <field name="amount">7600.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_02" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="installment_id" ref="kris_project_demo_08_inst_02"/>
+            <field name="name">RCPT-66-008-2</field>
+            <field name="date">2024-06-12</field>
+            <field name="amount">700000.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_02_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_central"/>
+            <field name="amount">23275.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_02_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_faculty"/>
+            <field name="amount">23275.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_02_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_dept"/>
+            <field name="amount">13300.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_02_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_kris"/>
+            <field name="amount">6650.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_03" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_08"/>
+            <field name="installment_id" ref="kris_project_demo_08_inst_03"/>
+            <field name="name">RCPT-66-008-3</field>
+            <field name="date">2024-10-05</field>
+            <field name="amount">500000.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_03_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_central"/>
+            <field name="amount">16625.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_03_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_faculty"/>
+            <field name="amount">16625.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_03_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_dept"/>
+            <field name="amount">9500.0</field>
+        </record>
+        <record id="kris_project_demo_08_rcpt_03_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_08_rcpt_03"/>
+            <field name="allocation_line_id" ref="kris_project_demo_08_alloc_kris"/>
+            <field name="amount">4750.0</field>
+        </record>
+
+        <!-- ============================================================
+             9. Done — ข้อมูลบางส่วน (ไม่มีจัดสรร/งวด)
+             ============================================================ -->
+        <record id="kris_project_demo_09" model="kris.project">
+            <field name="name">KRIS-2567-009</field>
+            <field name="project_name">โครงการอบรมบุคลากรภาครัฐด้านดิจิทัลทรานส์ฟอร์เมชั่น</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_training"/>
+            <field name="state">done</field>
+            <field name="client_name">สำนักงาน ก.พ.</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">300000.0</field>
+            <field name="contract_number">สญ.66-009</field>
+            <field name="date_contract_start">2023-11-01</field>
+            <field name="date_contract_end">2024-01-31</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03"/>
+            <field name="manager_id" ref="demo_mgr_01"/>
+        </record>
+
+        <!-- ============================================================
+             10. Cancel — ข้อมูลขั้นต่ำ
+             ============================================================ -->
+        <record id="kris_project_demo_10" model="kris.project">
+            <field name="name">KRIS-2567-010</field>
+            <field name="project_name">โครงการวิจัยผลกระทบสิ่งแวดล้อมบริเวณชายฝั่งอ่าวไทย</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_internal_research"/>
+            <field name="state">cancel</field>
+            <field name="client_name">กรมทรัพยากรทางทะเลและชายฝั่ง</field>
+            <field name="client_org_type">government</field>
+        </record>
+
+        <!-- ============================================================
+             11. Draft — ข้อมูลขั้นต่ำ (research)
+             ============================================================ -->
+        <record id="kris_project_demo_11" model="kris.project">
+            <field name="name">KRIS-2567-011</field>
+            <field name="project_name">โครงการวิจัยวัสดุนาโนสำหรับการกักเก็บพลังงาน</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_internal_research"/>
+        </record>
+
+        <!-- ============================================================
+             12. Draft — ข้อมูลบางส่วน: + ลูกค้า + มูลค่า + คณะ + หัวหน้า
+             ============================================================ -->
+        <record id="kris_project_demo_12" model="kris.project">
+            <field name="name">KRIS-2567-012</field>
+            <field name="project_name">โครงการออกแบบผังเมืองและภูมิสถาปัตยกรรมพื้นที่สีเขียว</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_consulting"/>
+            <field name="client_name">เทศบาลนครนนทบุรี</field>
+            <field name="client_location">นนทบุรี</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">450000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+            <field name="manager_id" ref="demo_mgr_06"/>
+        </record>
+
+        <!-- ============================================================
+             13. In Progress — ครบ: 1,500,000 + จัดสรร + 2 งวด + รายรับ (งวด 1 รับแล้ว)
+             maintenance = 145,000 (1M×10% + 500k×9%)
+             คณะ: เทคโนโลยีสารสนเทศ (06) / ภาค: สาขาวิชา IT (06040)
+             ============================================================ -->
+        <record id="kris_project_demo_13" model="kris.project">
+            <field name="name">KRIS-2567-013</field>
+            <field name="project_name">โครงการพัฒนาแพลตฟอร์มวิเคราะห์ข้อมูลขนาดใหญ่ภาครัฐ</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_research_contract"/>
+            <field name="state">in_progress</field>
+            <field name="client_name">สำนักงานสถิติแห่งชาติ</field>
+            <field name="client_location">กรุงเทพมหานคร</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">1500000.0</field>
+            <field name="contract_number">สญ.67-013</field>
+            <field name="date_contract_start">2024-12-01</field>
+            <field name="date_contract_end">2025-11-30</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+            <field name="manager_id" ref="demo_mgr_07"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_13_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_13"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">50750.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_13_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_13"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">50750.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+        </record>
+        <record id="kris_project_demo_13_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_13"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">29000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06040"/>
+        </record>
+        <record id="kris_project_demo_13_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_13"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">14500.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_13_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_13"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (ออกแบบและพัฒนาต้นแบบ)</field>
+            <field name="amount">900000.0</field>
+            <field name="due_date">2025-04-30</field>
+            <field name="deduction_guarantee">90000.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_central"/>
+            <field name="amount">30450.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_faculty"/>
+            <field name="amount">30450.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_dept"/>
+            <field name="amount">17400.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_kris"/>
+            <field name="amount">8700.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_13"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (ส่งมอบระบบครบถ้วน)</field>
+            <field name="amount">600000.0</field>
+            <field name="due_date">2025-11-30</field>
+            <field name="deduction_guarantee">60000.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_02_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_central"/>
+            <field name="amount">20300.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_02_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_faculty"/>
+            <field name="amount">20300.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_02_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_dept"/>
+            <field name="amount">11600.0</field>
+        </record>
+        <record id="kris_project_demo_13_inst_02_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_13_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_kris"/>
+            <field name="amount">5800.0</field>
+        </record>
+        <!-- รายรับ: งวด 1 รับครบ 900,000 -->
+        <record id="kris_project_demo_13_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_13"/>
+            <field name="installment_id" ref="kris_project_demo_13_inst_01"/>
+            <field name="name">RCPT-67-013-1</field>
+            <field name="date">2025-05-08</field>
+            <field name="amount">900000.0</field>
+        </record>
+        <record id="kris_project_demo_13_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_13_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_central"/>
+            <field name="amount">30450.0</field>
+        </record>
+        <record id="kris_project_demo_13_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_13_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_faculty"/>
+            <field name="amount">30450.0</field>
+        </record>
+        <record id="kris_project_demo_13_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_13_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_dept"/>
+            <field name="amount">17400.0</field>
+        </record>
+        <record id="kris_project_demo_13_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_13_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_13_alloc_kris"/>
+            <field name="amount">8700.0</field>
+        </record>
+
+        <!-- ============================================================
+             14. In Progress — มีจัดสรร + งวด แต่ยังไม่ลงรายละเอียดจัดสรรงวด/ยังไม่มีรายรับ
+             maintenance = 80,000 (10% × 800k)
+             คณะ: วิศวกรรมศาสตร์ (01)
+             ============================================================ -->
+        <record id="kris_project_demo_14" model="kris.project">
+            <field name="name">KRIS-2567-014</field>
+            <field name="project_name">โครงการที่ปรึกษาระบบควบคุมคุณภาพสายการผลิตอัตโนมัติ</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_consulting"/>
+            <field name="state">in_progress</field>
+            <field name="client_name">บริษัท ออโต้พาร์ท แมนูแฟคเจอริ่ง จำกัด</field>
+            <field name="client_location">ชลบุรี</field>
+            <field name="client_org_type">private</field>
+            <field name="project_value">800000.0</field>
+            <field name="contract_number">สญ.67-014</field>
+            <field name="date_contract_start">2025-02-01</field>
+            <field name="date_contract_end">2025-08-31</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+            <field name="manager_id" ref="demo_mgr_06"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_14_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_14"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">28000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_14_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_14"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">28000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        </record>
+        <record id="kris_project_demo_14_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_14"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">16000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01040"/>
+        </record>
+        <record id="kris_project_demo_14_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_14"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">8000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_14_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_14"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (สำรวจและวิเคราะห์)</field>
+            <field name="amount">400000.0</field>
+            <field name="due_date">2025-05-31</field>
+        </record>
+        <record id="kris_project_demo_14_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_14"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (ส่งมอบผลงาน)</field>
+            <field name="amount">400000.0</field>
+            <field name="due_date">2025-08-31</field>
+        </record>
+
+        <!-- ============================================================
+             15. Done — ครบ: 600,000 + จัดสรร + 1 งวด + รายรับครบ
+             maintenance = 60,000 (10% × 600k)
+             คณะ: ครุศาสตร์อุตสาหกรรมฯ (03)
+             ============================================================ -->
+        <record id="kris_project_demo_15" model="kris.project">
+            <field name="name">KRIS-2567-015</field>
+            <field name="project_name">โครงการพัฒนาสื่อการเรียนรู้ดิจิทัลสำหรับอาชีวศึกษา</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_training"/>
+            <field name="state">done</field>
+            <field name="client_name">สำนักงานคณะกรรมการการอาชีวศึกษา</field>
+            <field name="client_location">กรุงเทพมหานคร</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">600000.0</field>
+            <field name="contract_number">สญ.66-015</field>
+            <field name="date_contract_start">2023-12-01</field>
+            <field name="date_contract_end">2024-05-31</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03"/>
+            <field name="manager_id" ref="demo_mgr_02"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_15_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_15"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">21000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_15_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_15"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">21000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03"/>
+        </record>
+        <record id="kris_project_demo_15_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_15"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">12000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03020"/>
+        </record>
+        <record id="kris_project_demo_15_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_15"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">6000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_15_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_15"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดเดียว (ส่งมอบงานครบถ้วน)</field>
+            <field name="amount">600000.0</field>
+            <field name="due_date">2024-05-31</field>
+        </record>
+        <record id="kris_project_demo_15_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_15_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_central"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_15_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_15_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_faculty"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_15_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_15_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_dept"/>
+            <field name="amount">12000.0</field>
+        </record>
+        <record id="kris_project_demo_15_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_15_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_kris"/>
+            <field name="amount">6000.0</field>
+        </record>
+        <record id="kris_project_demo_15_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_15"/>
+            <field name="installment_id" ref="kris_project_demo_15_inst_01"/>
+            <field name="name">RCPT-66-015-1</field>
+            <field name="date">2024-06-07</field>
+            <field name="amount">600000.0</field>
+        </record>
+        <record id="kris_project_demo_15_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_15_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_central"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_15_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_15_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_faculty"/>
+            <field name="amount">21000.0</field>
+        </record>
+        <record id="kris_project_demo_15_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_15_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_dept"/>
+            <field name="amount">12000.0</field>
+        </record>
+        <record id="kris_project_demo_15_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_15_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_15_alloc_kris"/>
+            <field name="amount">6000.0</field>
+        </record>
+
+        <!-- ============================================================
+             16. Done — ครบ: 3,000,000 + จัดสรร + 2 งวด + รายรับครบทุกงวด
+             maintenance = 280,000 (1M×10% + 2M×9%)
+             คณะ: วิทยาศาสตร์ (05) / ภาค: ชีววิทยา (05220)
+             ============================================================ -->
+        <record id="kris_project_demo_16" model="kris.project">
+            <field name="name">KRIS-2567-016</field>
+            <field name="project_name">โครงการวิจัยขั้นสูงด้านเทคโนโลยีชีวภาพทางการแพทย์</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_external_research"/>
+            <field name="state">done</field>
+            <field name="client_name">สถาบันวิจัยระบบสาธารณสุข (สวรส.)</field>
+            <field name="client_location">กรุงเทพมหานคร</field>
+            <field name="client_org_type">government</field>
+            <field name="project_value">3000000.0</field>
+            <field name="contract_number">สญ.66-016</field>
+            <field name="date_contract_start">2023-10-01</field>
+            <field name="date_contract_end">2024-09-30</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+            <field name="manager_id" ref="demo_mgr_04"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_16_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">98000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_16_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">98000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
+        </record>
+        <record id="kris_project_demo_16_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">56000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05220"/>
+        </record>
+        <record id="kris_project_demo_16_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">28000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_16_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (ระยะวิจัยพื้นฐาน)</field>
+            <field name="amount">1500000.0</field>
+            <field name="due_date">2024-03-31</field>
+            <field name="deduction_guarantee">150000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_central"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_faculty"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_dept"/>
+            <field name="amount">28000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_kris"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (ระยะทดลองและสรุปผล)</field>
+            <field name="amount">1500000.0</field>
+            <field name="due_date">2024-09-30</field>
+            <field name="deduction_guarantee">150000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_02_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_central"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_02_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_faculty"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_02_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_dept"/>
+            <field name="amount">28000.0</field>
+        </record>
+        <record id="kris_project_demo_16_inst_02_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_16_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_kris"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="installment_id" ref="kris_project_demo_16_inst_01"/>
+            <field name="name">RCPT-66-016-1</field>
+            <field name="date">2024-04-08</field>
+            <field name="amount">1500000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_central"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_faculty"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_dept"/>
+            <field name="amount">28000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_kris"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_02" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_16"/>
+            <field name="installment_id" ref="kris_project_demo_16_inst_02"/>
+            <field name="name">RCPT-66-016-2</field>
+            <field name="date">2024-10-09</field>
+            <field name="amount">1500000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_02_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_central"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_02_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_faculty"/>
+            <field name="amount">49000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_02_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_dept"/>
+            <field name="amount">28000.0</field>
+        </record>
+        <record id="kris_project_demo_16_rcpt_02_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_16_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_16_alloc_kris"/>
+            <field name="amount">14000.0</field>
+        </record>
+
+        <!-- ============================================================
+             17. In Progress — มีค่าครุภัณฑ์: 1,000,000 (ครุภัณฑ์ 200,000)
+             operating = 800,000 → maintenance = 80,000
+             2 งวด (รวม = มูลค่าโครงการ) + รายรับงวด 1 (หักครุภัณฑ์ในงวด)
+             คณะ: เทคโนโลยีการเกษตร (04) / ภาค: เทคโนโลยีการผลิตพืช (04040)
+             ============================================================ -->
+        <record id="kris_project_demo_17" model="kris.project">
+            <field name="name">KRIS-2567-017</field>
+            <field name="project_name">โครงการพัฒนาเครื่องคัดแยกผลผลิตการเกษตรด้วยภาพ</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_research_contract"/>
+            <field name="state">in_progress</field>
+            <field name="client_name">บริษัท แอกริเทค อินโนเวชั่น จำกัด</field>
+            <field name="client_location">ปทุมธานี</field>
+            <field name="client_org_type">private</field>
+            <field name="project_value">1000000.0</field>
+            <field name="equipment_cost">200000.0</field>
+            <field name="contract_number">สญ.67-017</field>
+            <field name="date_contract_start">2024-11-15</field>
+            <field name="date_contract_end">2025-11-14</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+            <field name="manager_id" ref="demo_mgr_05"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_17_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">28000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_17_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">28000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
+        </record>
+        <record id="kris_project_demo_17_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">16000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04040"/>
+        </record>
+        <record id="kris_project_demo_17_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">8000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_17_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (จัดหาครุภัณฑ์และพัฒนาต้นแบบ)</field>
+            <field name="amount">500000.0</field>
+            <field name="due_date">2025-05-15</field>
+        </record>
+        <record id="kris_project_demo_17_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_central"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_17_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_faculty"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_17_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_dept"/>
+            <field name="amount">8000.0</field>
+        </record>
+        <record id="kris_project_demo_17_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_kris"/>
+            <field name="amount">4000.0</field>
+        </record>
+        <record id="kris_project_demo_17_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (ส่งมอบงานครบถ้วน)</field>
+            <field name="amount">500000.0</field>
+            <field name="due_date">2025-11-14</field>
+        </record>
+        <record id="kris_project_demo_17_inst_02_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_central"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_17_inst_02_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_faculty"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_17_inst_02_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_dept"/>
+            <field name="amount">8000.0</field>
+        </record>
+        <record id="kris_project_demo_17_inst_02_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_17_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_kris"/>
+            <field name="amount">4000.0</field>
+        </record>
+        <!-- รายรับ: งวด 1 รับครบ 500,000 (หักค่าครุภัณฑ์ในงวด 200,000) -->
+        <record id="kris_project_demo_17_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="installment_id" ref="kris_project_demo_17_inst_01"/>
+            <field name="name">RCPT-67-017-1</field>
+            <field name="date">2025-05-20</field>
+            <field name="amount">500000.0</field>
+            <field name="equipment_cost_in_installment">200000.0</field>
+        </record>
+        <record id="kris_project_demo_17_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_17_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_central"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_17_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_17_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_faculty"/>
+            <field name="amount">14000.0</field>
+        </record>
+        <record id="kris_project_demo_17_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_17_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_dept"/>
+            <field name="amount">8000.0</field>
+        </record>
+        <record id="kris_project_demo_17_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_17_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_17_alloc_kris"/>
+            <field name="amount">4000.0</field>
+        </record>
+
+        <!-- ============================================================
+             18. Draft — ข้อมูลครบเชิงสัญญา แต่ยังไม่จัดสรร/ยังไม่เริ่ม
+             ============================================================ -->
+        <record id="kris_project_demo_18" model="kris.project">
+            <field name="name">KRIS-2567-018</field>
+            <field name="project_name">โครงการประเมินความปลอดภัยทางไซเบอร์ระบบโครงสร้างพื้นฐาน</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_consulting"/>
+            <field name="client_name">การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย</field>
+            <field name="client_location">นนทบุรี</field>
+            <field name="client_tax_number">0994000165676</field>
+            <field name="client_org_type">state_enterprise</field>
+            <field name="project_value">1200000.0</field>
+            <field name="contract_number">สญ.67-018</field>
+            <field name="date_contract_start">2025-03-01</field>
+            <field name="date_contract_end">2026-02-28</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+            <field name="manager_id" ref="demo_mgr_07"/>
+        </record>
+
+        <!-- ============================================================
+             19. Cancel — เคยกรอกข้อมูลแล้วถูกยกเลิก
+             ============================================================ -->
+        <record id="kris_project_demo_19" model="kris.project">
+            <field name="name">KRIS-2567-019</field>
+            <field name="project_name">โครงการศึกษาความเป็นไปได้ระบบขนส่งมวลชนภายในมหาวิทยาลัย</field>
+            <field name="project_category_id" ref="project_category_academic_service"/>
+            <field name="project_type_id" ref="project_type_consulting"/>
+            <field name="state">cancel</field>
+            <field name="client_name">บริษัท เออร์เบินโมบิลิตี้ จำกัด</field>
+            <field name="client_location">กรุงเทพมหานคร</field>
+            <field name="client_org_type">private</field>
+            <field name="project_value">350000.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+            <field name="manager_id" ref="demo_mgr_03"/>
+            <field name="note">ยกเลิกเนื่องจากผู้ว่าจ้างเปลี่ยนแปลงนโยบายการลงทุน</field>
+        </record>
+
+        <!-- ============================================================
+             20. Done — ครบ: 1,200,000 + จัดสรร + 2 งวด + รายรับครบทุกงวด
+             maintenance = 118,000 (1M×10% + 200k×9%)
+             คณะ: วิศวกรรมศาสตร์ (01) / ภาค: วิศวกรรมคอมพิวเตอร์ (01040)
+             ============================================================ -->
+        <record id="kris_project_demo_20" model="kris.project">
+            <field name="name">KRIS-2567-020</field>
+            <field name="project_name">โครงการพัฒนาระบบควบคุมหุ่นยนต์อุตสาหกรรมอัตโนมัติ</field>
+            <field name="project_category_id" ref="project_category_research"/>
+            <field name="project_type_id" ref="project_type_research_contract"/>
+            <field name="state">done</field>
+            <field name="client_name">บริษัท สมาร์ทแฟคทอรี โซลูชั่น จำกัด</field>
+            <field name="client_location">ระยอง</field>
+            <field name="client_tax_number">0215564003421</field>
+            <field name="client_org_type">private</field>
+            <field name="project_value">1200000.0</field>
+            <field name="contract_number">สญ.66-020</field>
+            <field name="date_contract_start">2023-09-01</field>
+            <field name="date_contract_end">2024-08-31</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+            <field name="manager_id" ref="demo_mgr_06"/>
+            <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_20_alloc_central" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="item_id" ref="allocation_item_central"/>
+            <field name="sequence">10</field>
+            <field name="estimated_amount">41300.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+        </record>
+        <record id="kris_project_demo_20_alloc_faculty" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="item_id" ref="allocation_item_faculty"/>
+            <field name="sequence">20</field>
+            <field name="estimated_amount">41300.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+        </record>
+        <record id="kris_project_demo_20_alloc_dept" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="item_id" ref="allocation_item_dept"/>
+            <field name="sequence">30</field>
+            <field name="estimated_amount">23600.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01040"/>
+        </record>
+        <record id="kris_project_demo_20_alloc_kris" model="kris.project.allocation.line">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="item_id" ref="allocation_item_kris"/>
+            <field name="sequence">40</field>
+            <field name="estimated_amount">11800.0</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_99"/>
+        </record>
+        <record id="kris_project_demo_20_inst_01" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="sequence">10</field>
+            <field name="name">งวดที่ 1 (พัฒนาระบบควบคุม)</field>
+            <field name="amount">700000.0</field>
+            <field name="due_date">2024-03-31</field>
+            <field name="deduction_guarantee">70000.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_01_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_central"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_01_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_faculty"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_01_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_dept"/>
+            <field name="amount">11800.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_01_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_kris"/>
+            <field name="amount">5900.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_02" model="kris.project.installment">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="sequence">20</field>
+            <field name="name">งวดที่ 2 (ติดตั้งและส่งมอบ)</field>
+            <field name="amount">500000.0</field>
+            <field name="due_date">2024-08-31</field>
+            <field name="deduction_guarantee">50000.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_02_alloc_central" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_central"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_02_alloc_faculty" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_faculty"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_02_alloc_dept" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_dept"/>
+            <field name="amount">11800.0</field>
+        </record>
+        <record id="kris_project_demo_20_inst_02_alloc_kris" model="kris.project.installment.allocation">
+            <field name="installment_id" ref="kris_project_demo_20_inst_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_kris"/>
+            <field name="amount">5900.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_01" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="installment_id" ref="kris_project_demo_20_inst_01"/>
+            <field name="name">RCPT-66-020-1</field>
+            <field name="date">2024-04-05</field>
+            <field name="amount">700000.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_central"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_01_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_faculty"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_01_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_dept"/>
+            <field name="amount">11800.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_01_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_01"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_kris"/>
+            <field name="amount">5900.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_02" model="kris.project.receipt">
+            <field name="project_id" ref="kris_project_demo_20"/>
+            <field name="installment_id" ref="kris_project_demo_20_inst_02"/>
+            <field name="name">RCPT-66-020-2</field>
+            <field name="date">2024-09-06</field>
+            <field name="amount">500000.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_02_alloc_central" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_central"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_02_alloc_faculty" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_faculty"/>
+            <field name="amount">20650.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_02_alloc_dept" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_dept"/>
+            <field name="amount">11800.0</field>
+        </record>
+        <record id="kris_project_demo_20_rcpt_02_alloc_kris" model="kris.project.receipt.allocation">
+            <field name="receipt_id" ref="kris_project_demo_20_rcpt_02"/>
+            <field name="allocation_line_id" ref="kris_project_demo_20_alloc_kris"/>
+            <field name="amount">5900.0</field>
+        </record>
+
+    </data>
+</odoo>

@@ -15,6 +15,9 @@
         "account_analytic_kmitl",
         "hr_employee_name_detail_kmitl",
     ],
+    "demo": [
+        "data/kris_project_demo.xml",
+    ],
     "data": [
         "data/sequence.xml",
         "data/kris_project_type_data.xml",
