@@ -1,7 +1,9 @@
 import logging
+import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 
 from .budget_tree import BudgetTree
 
@@ -38,7 +40,10 @@ class BudgetAccount(models.Model):
     _description = "Budget Account"
     _parent_store = True
     _order = "code"
-    _rec_names_search = ["name", "code"]
+    # Search the hierarchical complete_name (e.g. "parent / child") so users can
+    # find children by typing the parent's name. complete_name already includes
+    # the account's own name as suffix, so "name" is covered too.
+    _rec_names_search = ["complete_name", "code"]
 
     _inherit = ["mail.thread"]
 
@@ -184,6 +189,37 @@ class BudgetAccount(models.Model):
     def _check_parent_id(self):
         if not self._check_recursion():
             raise ValidationError(_("You cannot create recursive budget account."))
+
+    @api.model
+    def _name_search(
+        self, name="", args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        # name_get displays records as "[code] complete_name". When users edit
+        # that text in an autocomplete (e.g. deleting the last hierarchy segment
+        # to look for siblings), the leftover "[code]" prefix is not part of any
+        # single stored field, so the default search matches nothing. Detect the
+        # prefix, drop it, and search the code and the remaining hierarchical
+        # name independently (OR) so siblings under the same parent are found.
+        if name and operator not in expression.NEGATIVE_TERM_OPERATORS:
+            match = re.match(r"^\s*\[(?P<code>[^\]]*)\]\s*(?P<rest>.*)$", name)
+            if match:
+                code = match.group("code").strip()
+                rest = match.group("rest").strip()
+                subdomains = []
+                if rest:
+                    subdomains.append([("complete_name", operator, rest)])
+                if code:
+                    subdomains.append([("code", operator, code)])
+                if subdomains:
+                    domain = expression.AND(
+                        [list(args or []), expression.OR(subdomains)]
+                    )
+                    return self._search(
+                        domain, limit=limit, access_rights_uid=name_get_uid
+                    )
+        return super()._name_search(
+            name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid
+        )
 
     def name_get(self):
         res = []
