@@ -30,33 +30,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 ) % line.display_name)
 
         res = super().make_purchase_order()
-        self._post_chatter_messages_after_po_creation()
         return res
-
-    def _post_chatter_messages_after_po_creation(self):
-        purchase_orders = self.item_ids.mapped("line_id.purchase_lines.order_id")
-        purchase_requests = self.item_ids.mapped("line_id.request_id")
-        if not purchase_orders or not purchase_requests:
-            return
-        for po in purchase_orders:
-            pr_items = "".join(
-                '<li><a href="%s" target="_blank">%s</a></li>' % (pr._get_record_url(), pr.name)
-                for pr in purchase_requests
-            )
-            po.message_post(
-                body=_("Created from Purchase Request:<ul>%s</ul>") % pr_items,
-                subtype_xmlid="mail.mt_note",
-            )
-        for pr in purchase_requests:
-            po_items = "".join(
-                '<li><a href="/web#id=%d&model=purchase.order&view_type=form" target="_blank">%s</a></li>'
-                % (po.id, po.name)
-                for po in purchase_orders
-            )
-            pr.message_post(
-                body=_("Purchase Order created:<ul>%s</ul>") % po_items,
-                subtype_xmlid="mail.mt_note",
-            )
 
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
