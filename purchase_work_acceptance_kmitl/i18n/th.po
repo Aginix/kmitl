@@ -1,14 +1,14 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_work_acceptance_kmitl
 # 	* purchase_work_acceptance
+# 	* purchase_work_acceptance_kmitl
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-09 09:50+0000\n"
-"PO-Revision-Date: 2026-06-09 09:50+0000\n"
+"POT-Creation-Date: 2026-06-09 12:31+0000\n"
+"PO-Revision-Date: 2026-06-09 12:31+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -129,6 +129,7 @@ msgid "Accept"
 msgstr "ตรวจรับ"
 
 #. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__accept_conditionally
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__accept_conditionally
 msgid "Accept Conditionally"
 msgstr "ตรวจรับแบบมีเงื่อนไข"
@@ -140,6 +141,7 @@ msgstr "วันที่ตรวจรับ"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__accept
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__accept
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__accept
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
@@ -229,8 +231,9 @@ msgstr ""
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#. module: purchase_work_acceptance
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__cancel
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__cancel
 msgid "Cancelled"
 msgstr "ยกเลิก"
 
@@ -354,7 +357,13 @@ msgstr ""
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 msgid "Define your terms and conditions ..."
-msgstr ""
+msgstr "ตั้งค่าข้อกำหนดและเงื่อนไขของคุณ..."
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__deliverables
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__deliverables
+msgid "Deliverables"
+msgstr "สิ่งของที่ต้องส่งมอบ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__department_id
@@ -383,8 +392,9 @@ msgstr ""
 msgid "Document Attachments"
 msgstr ""
 
-#. module: purchase_work_acceptance
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__draft
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Draft"
 msgstr "แบบร่าง"
@@ -517,9 +527,15 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__purchase_invoice_plan__wa_state__in_review
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__in_review
 msgid "In Review"
 msgstr "อยู่ระหว่างการตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_purchase_invoice_plan
+msgid "Invoice Planning Detail"
+msgstr ""
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__invoice_ref
@@ -595,6 +611,7 @@ msgid "Late day(s) from Received Date - Due Date"
 msgstr ""
 
 #. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__leave
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__leave
 msgid "Leave"
 msgstr "ติดภารกิจ"
@@ -1135,19 +1152,25 @@ msgstr ""
 msgid "WA Not Accepted"
 msgstr ""
 
-#. module: purchase_work_acceptance
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_move__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_payment__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__wa_id
 msgid "WA Reference"
-msgstr ""
+msgstr "อ้างอิงใบตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__wa_state
+msgid "WA Status"
+msgstr "สถานะใบตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_count
 msgid "WA count"
-msgstr ""
+msgstr "จำนวนใบตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking_type__bypass_wa
