@@ -85,7 +85,7 @@ class ReceiptKmitlCommon(TransactionCase):
         )
 
         # --- Payment methods ---
-        Method = cls.env["receipt.kmitl.payment.method"]
+        Method = cls.env["kmitl.payment.method"]
         cls.pm_cash = Method.create(
             {
                 "name": "Cash",
@@ -135,7 +135,7 @@ class ReceiptKmitlCommon(TransactionCase):
         department = department or self.dept_a
         method = method or self.pm_cash
         lines = lines or [(self.product_tuition, 1, 5000.0)]
-        return self.env["receipt.kmitl"].create(
+        return self.env["kmitl.receipt"].create(
             {
                 "department_id": department.id,
                 "payment_method_id": method.id,

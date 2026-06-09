@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_receipt_kmitl_tree" model="ir.ui.view">
-        <field name="name">receipt.kmitl.tree</field>
-        <field name="model">receipt.kmitl</field>
+        <field name="name">kmitl.receipt.tree</field>
+        <field name="model">kmitl.receipt</field>
         <field name="arch" type="xml">
             <tree decoration-muted="state == 'cancelled'"
                   decoration-info="state == 'confirmed'"
@@ -24,8 +24,8 @@
     </record>
 
     <record id="view_receipt_kmitl_form" model="ir.ui.view">
-        <field name="name">receipt.kmitl.form</field>
-        <field name="model">receipt.kmitl</field>
+        <field name="name">kmitl.receipt.form</field>
+        <field name="model">kmitl.receipt</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -121,8 +121,8 @@
     </record>
 
     <record id="view_receipt_kmitl_search" model="ir.ui.view">
-        <field name="name">receipt.kmitl.search</field>
-        <field name="model">receipt.kmitl</field>
+        <field name="name">kmitl.receipt.search</field>
+        <field name="model">kmitl.receipt</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
@@ -150,7 +150,7 @@
 
     <record id="action_receipt_kmitl" model="ir.actions.act_window">
         <field name="name">Receipts</field>
-        <field name="res_model">receipt.kmitl</field>
+        <field name="res_model">kmitl.receipt</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_receipt_kmitl_search"/>
     </record>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_cash_deposit_tree" model="ir.ui.view">
-        <field name="name">receipt.kmitl.cash.deposit.tree</field>
-        <field name="model">receipt.kmitl.cash.deposit</field>
+        <field name="name">kmitl.cash.deposit.tree</field>
+        <field name="model">kmitl.cash.deposit</field>
         <field name="arch" type="xml">
             <tree decoration-muted="state == 'cancelled'"
                   decoration-info="state == 'submitted'"
@@ -21,8 +21,8 @@
     </record>
 
     <record id="view_cash_deposit_form" model="ir.ui.view">
-        <field name="name">receipt.kmitl.cash.deposit.form</field>
-        <field name="model">receipt.kmitl.cash.deposit</field>
+        <field name="name">kmitl.cash.deposit.form</field>
+        <field name="model">kmitl.cash.deposit</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -106,7 +106,7 @@
 
     <record id="action_cash_deposit" model="ir.actions.act_window">
         <field name="name">Cash Deposits</field>
-        <field name="res_model">receipt.kmitl.cash.deposit</field>
+        <field name="res_model">kmitl.cash.deposit</field>
         <field name="view_mode">tree,form</field>
     </record>
 </odoo>

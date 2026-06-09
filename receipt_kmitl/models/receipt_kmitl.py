@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ReceiptKmitl(models.Model):
-    _name = "receipt.kmitl"
+    _name = "kmitl.receipt"
     _description = "KMITL Cash Receipt"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
@@ -55,7 +55,7 @@ class ReceiptKmitl(models.Model):
         states=READONLY_STATES,
     )
     payment_method_id = fields.Many2one(
-        "receipt.kmitl.payment.method",
+        "kmitl.payment.method",
         string="Payment Method",
         required=True,
         check_company=True,
@@ -89,7 +89,7 @@ class ReceiptKmitl(models.Model):
     )
     note = fields.Text(states=READONLY_STATES)
     line_ids = fields.One2many(
-        "receipt.kmitl.line",
+        "kmitl.receipt.line",
         "receipt_id",
         string="Lines",
         copy=True,
@@ -120,7 +120,7 @@ class ReceiptKmitl(models.Model):
         copy=False,
     )
     deposit_id = fields.Many2one(
-        "receipt.kmitl.cash.deposit",
+        "kmitl.cash.deposit",
         string="Cash Deposit",
         readonly=True,
         copy=False,
@@ -222,7 +222,7 @@ class ReceiptKmitl(models.Model):
 
     def _get_receipt_sequence(self, department, date):
         return self._get_or_create_dept_fy_sequence(
-            department, date, "receipt.kmitl", "Receipt", "RC"
+            department, date, "kmitl.receipt", "Receipt", "RC"
         )
 
     # -------------------------------------------------------------------------

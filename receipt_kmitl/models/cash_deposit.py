@@ -5,7 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class CashDeposit(models.Model):
-    _name = "receipt.kmitl.cash.deposit"
+    _name = "kmitl.cash.deposit"
     _description = "Cash Deposit Slip"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
@@ -43,7 +43,7 @@ class CashDeposit(models.Model):
         tracking=True,
     )
     receipt_ids = fields.One2many(
-        "receipt.kmitl",
+        "kmitl.receipt",
         "deposit_id",
         string="Receipts",
     )
@@ -75,8 +75,8 @@ class CashDeposit(models.Model):
 
     def _get_sequence(self):
         self.ensure_one()
-        return self.env["receipt.kmitl"]._get_or_create_dept_fy_sequence(
-            self.department_id, self.date, "receipt.kmitl.deposit", "Cash Deposit", "CD"
+        return self.env["kmitl.receipt"]._get_or_create_dept_fy_sequence(
+            self.department_id, self.date, "kmitl.cash.deposit", "Cash Deposit", "CD"
         )
 
     def action_pull_pending_receipts(self):
@@ -84,7 +84,7 @@ class CashDeposit(models.Model):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Can only pull receipts on draft deposits."))
-            receipts = self.env["receipt.kmitl"].search(
+            receipts = self.env["kmitl.receipt"].search(
                 [
                     ("company_id", "=", rec.company_id.id),
                     ("department_id", "=", rec.department_id.id),

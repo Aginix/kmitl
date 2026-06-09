@@ -4,13 +4,13 @@ from odoo import api, fields, models
 
 
 class ReceiptKmitlLine(models.Model):
-    _name = "receipt.kmitl.line"
+    _name = "kmitl.receipt.line"
     _description = "KMITL Receipt Line"
     _inherit = ["analytic.distribution.mixin"]
     _order = "receipt_id, sequence, id"
 
     receipt_id = fields.Many2one(
-        "receipt.kmitl",
+        "kmitl.receipt",
         required=True,
         ondelete="cascade",
     )

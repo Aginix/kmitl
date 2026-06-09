@@ -16,12 +16,12 @@ receipt.
 Key features
 ============
 
-* Custom ``receipt.kmitl`` document with multi-line entries
+* Custom ``kmitl.receipt`` document with multi-line entries
 * Line uses ``product_id`` (standard ``product.product``) whose income account
   (``property_account_income_id``, falling back to the product category's
   income account) drives the credit; free-text description like a normal
   invoice line
-* Configurable payment methods (``receipt.kmitl.payment.method``) — each binds a
+* Configurable payment methods (``kmitl.payment.method``) — each binds a
   debit GL account and a journal
 * 6D analytic dimensions at the line level via ``analytic.distribution.mixin``
 * Per-department × per-fiscal-year sequence (``RC/{dept_code}/{FY2}/{####}``)

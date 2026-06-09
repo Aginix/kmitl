@@ -4,7 +4,7 @@ from odoo import fields, models
 
 
 class ReceiptPaymentMethod(models.Model):
-    _name = "receipt.kmitl.payment.method"
+    _name = "kmitl.payment.method"
     _description = "Receipt Payment Method"
     _order = "sequence, name"
 

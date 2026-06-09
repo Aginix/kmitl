@@ -34,7 +34,7 @@
         <!-- Cashier sees receipts of their own departments; Central sees all -->
         <record id="receipt_kmitl_rule_cashier" model="ir.rule">
             <field name="name">Receipt: cashier sees own departments</field>
-            <field name="model_id" ref="model_receipt_kmitl"/>
+            <field name="model_id" ref="model_kmitl_receipt"/>
             <field name="domain_force">[('department_id', 'in', user.kmitl_department_ids.ids)]</field>
             <field name="groups" eval="[(4, ref('group_receipt_kmitl_cashier'))]"/>
             <field name="perm_read" eval="True"/>
@@ -44,20 +44,20 @@
         </record>
         <record id="receipt_kmitl_rule_central" model="ir.rule">
             <field name="name">Receipt: central finance sees all</field>
-            <field name="model_id" ref="model_receipt_kmitl"/>
+            <field name="model_id" ref="model_kmitl_receipt"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_receipt_kmitl_central_finance'))]"/>
         </record>
 
         <record id="cash_deposit_rule_cashier" model="ir.rule">
             <field name="name">Cash Deposit: cashier sees own departments</field>
-            <field name="model_id" ref="model_receipt_kmitl_cash_deposit"/>
+            <field name="model_id" ref="model_kmitl_cash_deposit"/>
             <field name="domain_force">[('department_id', 'in', user.kmitl_department_ids.ids)]</field>
             <field name="groups" eval="[(4, ref('group_receipt_kmitl_cashier'))]"/>
         </record>
         <record id="cash_deposit_rule_central" model="ir.rule">
             <field name="name">Cash Deposit: central finance sees all</field>
-            <field name="model_id" ref="model_receipt_kmitl_cash_deposit"/>
+            <field name="model_id" ref="model_kmitl_cash_deposit"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_receipt_kmitl_central_finance'))]"/>
         </record>

@@ -13,7 +13,7 @@ class TestCashDeposit(ReceiptKmitlCommon):
         r2 = self._make_receipt()
         r2.action_confirm()
 
-        deposit = self.env["receipt.kmitl.cash.deposit"].create(
+        deposit = self.env["kmitl.cash.deposit"].create(
             {"department_id": self.dept_a.id}
         )
         deposit.action_pull_pending_receipts()
@@ -40,7 +40,7 @@ class TestCashDeposit(ReceiptKmitlCommon):
         r_b = self._make_receipt(department=self.dept_b)
         r_b.action_confirm()
 
-        deposit = self.env["receipt.kmitl.cash.deposit"].create(
+        deposit = self.env["kmitl.cash.deposit"].create(
             {"department_id": self.dept_a.id}
         )
         deposit.action_pull_pending_receipts()
@@ -49,14 +49,14 @@ class TestCashDeposit(ReceiptKmitlCommon):
     def test_pull_excludes_already_deposited(self):
         r1 = self._make_receipt()
         r1.action_confirm()
-        d1 = self.env["receipt.kmitl.cash.deposit"].create(
+        d1 = self.env["kmitl.cash.deposit"].create(
             {"department_id": self.dept_a.id, "receipt_ids": [(6, 0, [r1.id])]}
         )
         d1.action_submit()
 
         r2 = self._make_receipt()
         r2.action_confirm()
-        d2 = self.env["receipt.kmitl.cash.deposit"].create(
+        d2 = self.env["kmitl.cash.deposit"].create(
             {"department_id": self.dept_a.id}
         )
         d2.action_pull_pending_receipts()
