@@ -4,71 +4,79 @@ from odoo import SUPERUSER_ID, api
 
 _logger = logging.getLogger(__name__)
 
+# Journal master data. ``account`` is the account code used as the journal's
+# default account (resolved after the chart is loaded); ``None`` when the
+# journal has no default account.
+JOURNALS = [
+    {"xmlid": "journal_jv", "code": "JV", "name": "สมุดรายวันทั่วไป", "type": "general", "sequence": 10, "account": None},
+    {"xmlid": "journal_pv", "code": "PV", "name": "สมุดรายวันจ่าย", "type": "bank", "sequence": 20, "account": "1112210004"},
+    {"xmlid": "journal_rv", "code": "RV", "name": "สมุดรายวันรับ", "type": "bank", "sequence": 30, "account": "1112210004"},
+    {"xmlid": "journal_sv", "code": "SV", "name": "สมุดรายวันขาย", "type": "sale", "sequence": 40, "account": "4000000000"},
+    {"xmlid": "journal_uv", "code": "UV", "name": "สมุดรายวันซื้อ", "type": "purchase", "sequence": 50, "account": "5000000000"},
+]
+
+# Account used as payment_account_id on the bank journals' payment method lines.
+BANK_PAYMENT_ACCOUNT_CODE = "1112210004"
+
 
 def _create_journals(env, company):
-    """Create KMITL journals after chart of accounts is loaded."""
+    """Create KMITL journals after the chart of accounts is loaded.
+
+    Journals are created here (not via XML data files) because a bank journal
+    created before the chart exists would auto-create a stray liquidity account
+    and break ``chart._load``. Each journal is registered with a stable external
+    id so other modules can reference it via ``ref``. Idempotent: existing
+    journals are reused rather than duplicated.
+    """
     Account = env["account.account"]
+    Journal = env["account.journal"]
 
     def get_account(code):
-        return Account.search([("code", "=", code), ("company_id", "=", company.id)], limit=1)
+        account = Account.search(
+            [("code", "=", code), ("company_id", "=", company.id)], limit=1
+        )
+        if not account:
+            _logger.warning(
+                "account_kmitl: account code %s not found for company %s; "
+                "leaving journal default account empty.",
+                code,
+                company.display_name,
+            )
+        return account
 
-    journals_data = [
-        {
-            "name": "สมุดรายวันทั่วไป",
-            "code": "JV",
-            "type": "general",
-            "company_id": company.id,
-            "sequence": 10,
-        },
-        {
-            "name": "สมุดรายวันจ่าย",
-            "code": "PV",
-            "type": "bank",
-            "company_id": company.id,
-            "default_account_id": get_account("1112210004").id or False,
-            "sequence": 20,
-        },
-        {
-            "name": "สมุดรายวันรับ",
-            "code": "RV",
-            "type": "bank",
-            "company_id": company.id,
-            "default_account_id": get_account("1112210004").id or False,
-            "sequence": 30,
-        },
-        {
-            "name": "สมุดรายวันขาย",
-            "code": "SV",
-            "type": "sale",
-            "company_id": company.id,
-            "default_account_id": get_account("4000000000").id or False,
-            "sequence": 40,
-        },
-        {
-            "name": "สมุดรายวันซื้อ",
-            "code": "UV",
-            "type": "purchase",
-            "company_id": company.id,
-            "default_account_id": get_account("5000000000").id or False,
-            "sequence": 50,
-        },
-    ]
-
-    Journal = env["account.journal"]
-    for data in journals_data:
-        existing = Journal.search(
+    for data in JOURNALS:
+        journal = Journal.search(
             [("code", "=", data["code"]), ("company_id", "=", company.id)], limit=1
         )
-        if not existing:
-            Journal.create(data)
+        if not journal:
+            vals = {
+                "name": data["name"],
+                "code": data["code"],
+                "type": data["type"],
+                "company_id": company.id,
+                "sequence": data["sequence"],
+            }
+            if data["account"]:
+                vals["default_account_id"] = get_account(data["account"]).id or False
+            journal = Journal.create(vals)
+        env["ir.model.data"]._update_xmlids(
+            [
+                {
+                    "xml_id": "account_kmitl.%s" % data["xmlid"],
+                    "record": journal,
+                    "noupdate": True,
+                }
+            ]
+        )
 
     # Set payment_account_id on bank journal payment method lines
-    payment_account = get_account("1112210004")
+    payment_account = get_account(BANK_PAYMENT_ACCOUNT_CODE)
     if payment_account:
+        bank_codes = [j["code"] for j in JOURNALS if j["type"] == "bank"]
         bank_journals = Journal.search(
             [
                 ("company_id", "=", company.id),
-                ("code", "in", ("PV", "RV")),
+                ("code", "in", bank_codes),
             ]
         )
         payment_method_lines = (
@@ -80,7 +88,7 @@ def _create_journals(env, company):
 
 def _deactivate_default_journals(env, company):
     """Deactivate all non-KMITL journals created by the chart of accounts loader."""
-    kmitl_codes = ("JV", "PV", "RV", "SV", "UV")
+    kmitl_codes = tuple(j["code"] for j in JOURNALS)
     journals_to_deactivate = env["account.journal"].search(
         [
             ("company_id", "=", company.id),

@@ -17,11 +17,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010004').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -51,11 +47,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010005').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -85,11 +77,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -119,11 +107,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -153,11 +137,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010007').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -187,11 +167,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -221,11 +197,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -255,11 +227,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -289,11 +257,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -323,11 +287,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -357,11 +317,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -391,11 +347,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010011').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -425,11 +377,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010012').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -459,11 +407,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010013').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -493,11 +437,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010016').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -527,11 +467,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010019').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -561,11 +497,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010015').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -595,11 +527,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010014').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -629,11 +557,7 @@
             model="base"
             eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010017').code)])"
         />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
