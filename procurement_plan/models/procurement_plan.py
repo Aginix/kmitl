@@ -298,33 +298,8 @@ class ProcurementPlan(models.Model):
                 self.account_fiscal_year_id.id,
                 self.company_id.id,
             )
-        dist = dict(self.analytic_distribution or {})
         commitment = self.env["budget.commitment"].create(
-            {
-                "account_id": self.budget_account_id.id,
-                "amount": self.total_price,
-                "analytic_distribution": dist or False,
-                "account_fiscal_year_id": self.account_fiscal_year_id.id,
-                "company_id": self.company_id.id,
-                "date": fields.Date.context_today(self),
-                "ref": self.name,
-                "description": self.description,
-                "procurement_plan_id": self.id,
-                "user_id": self.env.user.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "move_type": "reserve",
-                            "account_id": self.budget_account_id.id,
-                            "analytic_distribution": dist or False,
-                            "amount": self.total_price,
-                            "name": _("Initial reservation"),
-                        },
-                    )
-                ],
-            }
+            self._prepare_plan_commitment_vals()
         )
         commitment.action_reserve()
         self.message_post(
@@ -334,6 +309,40 @@ class ProcurementPlan(models.Model):
                 format_amount(self.env, self.total_price, self.currency_id),
             )
         )
+
+    def _prepare_plan_commitment_vals(self):
+        """Build the create vals for the plan's shared reservation commitment.
+        Split out of ``_reserve_plan_commitment`` so bridge modules can enrich the
+        commitment — e.g. stamp the plan's operating unit so the reservation lands
+        in the same OU as the plan/appropriation — without re-implementing the
+        whole reservation flow."""
+        self.ensure_one()
+        dist = dict(self.analytic_distribution or {})
+        return {
+            "account_id": self.budget_account_id.id,
+            "amount": self.total_price,
+            "analytic_distribution": dist or False,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "company_id": self.company_id.id,
+            "date": fields.Date.context_today(self),
+            "ref": self.name,
+            "description": self.description,
+            "procurement_plan_id": self.id,
+            "user_id": self.env.user.id,
+            "line_ids": [
+                (
+                    0,
+                    0,
+                    {
+                        "move_type": "reserve",
+                        "account_id": self.budget_account_id.id,
+                        "analytic_distribution": dist or False,
+                        "amount": self.total_price,
+                        "name": _("Initial reservation"),
+                    },
+                )
+            ],
+        }
 
     def _release_plan_commitment(self):
         """Release the plan's reservation when it leaves the active band
