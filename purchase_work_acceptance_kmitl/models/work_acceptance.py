@@ -71,12 +71,12 @@ class WorkAcceptance(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    date_receive = fields.Date(
-        string="Received Date",
-        default=lambda self: self._default_start_date(),
-        required=True,
+
+    deliverables = fields.Text(
+        string="Deliverables",
+        related="installment_id.deliverables",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        store=False,
     )
 
     # PO date snapshots (captured at WA creation, immune to PO edits)
