@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import date, datetime, time, timedelta
 
 from odoo import _, api, fields, models
@@ -102,6 +103,23 @@ class PurchaseOrder(models.Model):
         ),
     ]
 
+    @api.onchange("contract_number")
+    def _onchange_contract_number_normalize(self):
+        if self.contract_number:
+            self.contract_number = self.contract_number.replace(" ", "")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("contract_number"):
+                vals["contract_number"] = vals["contract_number"].replace(" ", "")
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if vals.get("contract_number"):
+            vals["contract_number"] = vals["contract_number"].replace(" ", "")
+        return super().write(vals)
+
     @api.onchange('date_order_date', 'work_start')
     def _onchange_sync_work_start(self):
         for rec in self:
@@ -116,6 +134,23 @@ class PurchaseOrder(models.Model):
                 rec.work_end = rec.work_start + timedelta(days=rec.contract_period_days)
             else:
                 rec.work_end = False
+
+    _CONTRACT_NUMBER_RE = re.compile(r"^[0-9๐-๙ก-ฮa-z.,/]+$")
+
+    @api.constrains("contract_number")
+    def _check_contract_number_chars(self):
+        for rec in self:
+            if rec.contract_number and not self._CONTRACT_NUMBER_RE.match(
+                rec.contract_number
+            ):
+                raise ValidationError(
+                    _(
+                        'Contract number "%(value)s" contains invalid characters. '
+                        "Only digits (0-9, ๐-๙), Thai consonants (ก-ฮ), "
+                        "English letters (a-z), and the symbols . , / are allowed.",
+                        value=rec.contract_number,
+                    )
+                )
 
     @api.constrains('contract_period_days')
     def _check_contract_period_days(self):
