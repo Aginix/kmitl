@@ -25,7 +25,7 @@
                         <field
                             name="reason"
                             attrs="{
-                                'readonly': [('is_done', '=', True)]
+                                'readonly': ['|', ('is_done', '=', True) ,('status', '=', 'accept')],
                             }"
                         />
                     </tree>

@@ -241,14 +241,18 @@ msgstr "ยกเลิก"
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__approve_role__chairman
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__approve_role__chairman
 msgid "Chairman"
-msgstr "ประธาน"
+msgstr "ประธานกรรมการ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
+msgid "Committee"
+msgstr "คณะกรรมการ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__approve_role__committee
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__approve_role__committee
-#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
 msgid "Committee"
-msgstr "คณะกรรมการ"
+msgstr "กรรมการ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__name

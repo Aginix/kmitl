@@ -93,7 +93,6 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
     status = fields.Selection(
         selection=[
             ('accept', 'Accept'),
-            ('accept_conditionally', 'Accept Conditionally'),
             ('leave', 'Leave'),
             ('other', 'Other'),
         ],
