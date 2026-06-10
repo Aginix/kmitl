@@ -204,12 +204,16 @@ class PurchaseRequest(models.Model):
 
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
+        # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
+        # (account_fiscal_year_id), not today() — otherwise a request whose FY differs
+        # from today is checked against the wrong year.
         check_result = self._check_budget_availability(
             amount=amount,
             activity_analytic_id=self.activity_analytic_id.id,
             department_analytic_id=self.department_analytic_id.id,
             fund_analytic_id=self.fund_analytic_id.id,
             source_analytic_id=self.source_analytic_id.id,
+            account_fiscal_year_id=self.account_fiscal_year_id.id,
         )
 
         if not check_result["is_sufficient"]:
@@ -228,6 +232,7 @@ class PurchaseRequest(models.Model):
                 ref=self.name,
                 description=f"Purchase Request: {self.name}",
                 auto_reserve=True,
+                account_fiscal_year_id=self.account_fiscal_year_id.id,
             )
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
