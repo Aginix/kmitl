@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Procurement Plan Budget with Operating Units",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -9,6 +9,7 @@
         "procurement_plan_budget",
         "procurement_plan_operating_unit",
         "budget_appropriation_operating_unit",
+        "budget_operating_unit",
     ],
     "data": [],
     "application": False,
