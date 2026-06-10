@@ -115,7 +115,9 @@ class PurchaseRequest(models.Model):
                 )
             self.budget_commitment_id = commitment.id
             if project.state == "new":
-                project.button_in_progress()
+                # Purchasing/budget staff have read — not write — on the project;
+                # advancing it is a system side-effect of reserving, so elevate it.
+                project.sudo().button_in_progress()
             self.button_to_approve()
             return {
                 "type": "ir.actions.act_window",
@@ -177,7 +179,10 @@ class PurchaseRequest(models.Model):
                 {"analytic_distribution": project.analytic_distribution}
             )
         if project.state == "new":
-            project.button_in_progress()
+            # The PR creator (purchase request user) has read — not write — on the
+            # project; advancing it to in_progress is a system side-effect of
+            # creating the พ.1, so elevate just this state write.
+            project.sudo().button_in_progress()
 
 
 class KmitlProject(models.Model):
