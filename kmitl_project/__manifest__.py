@@ -21,6 +21,7 @@
         "report/paperformat.xml",
         "report/report_kmitl_project.xml",
         "data/account.analytic.plan.csv",
+        "data/sequence.xml",
         "data/kmitl_project_exception_data.xml",
         "data/project.evaluation.csv",
         "data/project.fight.csv",
