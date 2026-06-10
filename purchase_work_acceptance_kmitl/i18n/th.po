@@ -2,6 +2,7 @@
 # This file contains the translation of the following modules:
 # 	* purchase_work_acceptance
 # 	* purchase_work_acceptance_kmitl
+#   * purchase_work_acceptance_invoice_plan
 #
 msgid ""
 msgstr ""
@@ -1609,3 +1610,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.report_work_acceptance
 msgid "ได้รับของจาก"
 msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.purchase_order_form_inherit
+msgid "Create WA by Installment"
+msgstr "สร้างใบตรวจรับ"

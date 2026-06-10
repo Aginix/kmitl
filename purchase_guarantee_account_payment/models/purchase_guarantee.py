@@ -13,11 +13,21 @@ class PurchaseGuarantee(models.Model):
     payment_count = fields.Integer(
         compute="_compute_payment_count",
     )
+    has_active_payment = fields.Boolean(
+        compute="_compute_has_active_payment",
+    )
 
     @api.depends("payment_ids")
     def _compute_payment_count(self):
         for rec in self:
             rec.payment_count = len(rec.payment_ids)
+
+    @api.depends("payment_ids.state")
+    def _compute_has_active_payment(self):
+        for rec in self:
+            rec.has_active_payment = any(
+                p.state != "cancel" for p in rec.payment_ids
+            )
 
     def action_view_payments(self):
         self.ensure_one()
@@ -57,9 +67,16 @@ class PurchaseGuarantee(models.Model):
     def action_create_payment(self):
         self.ensure_one()
 
+        if self.has_active_payment:
+            raise UserError(
+                _("หลักประกันนี้มีใบ Payment ที่ใช้งานอยู่แล้ว ไม่สามารถสร้างใหม่ได้")
+            )
+
         vals = self._prepare_account_payment_vals()
 
         payment = self.env["account.payment"].create(vals)
+
+        self.button_lock()
 
         # Re-apply analytic distribution after creation.
         # During _inherits creation, AnalyticDistributionMixin's compute
