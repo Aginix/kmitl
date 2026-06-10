@@ -71,7 +71,8 @@ class PurchaseRequestDashboardController(http.Controller):
         if not fiscal_year_id and fiscal_years:
             fiscal_year_id = fiscal_years[0].id
         if not source_id and sources:
-            source_id = sources[0].id
+            default_source = sources.filtered(lambda s: s.code == "2")
+            source_id = (default_source[:1] or sources[:1]).id
 
         # Fetch and filter records
         domain = []
