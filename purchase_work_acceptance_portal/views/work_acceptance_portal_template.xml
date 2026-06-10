@@ -367,7 +367,7 @@
                                                         <t
                                                             t-if="committee.approve_role == 'chairman'"
                                                         >
-                                                            <span>ประธาน</span>
+                                                            <span>ประธานกรรมการ</span>
                                                         </t>
                                                         <t
                                                             t-elif="committee.approve_role == 'committee'"
