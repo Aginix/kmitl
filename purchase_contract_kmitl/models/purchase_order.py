@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import date, datetime, time, timedelta
 
 from odoo import _, api, fields, models
@@ -116,6 +117,23 @@ class PurchaseOrder(models.Model):
                 rec.work_end = rec.work_start + timedelta(days=rec.contract_period_days)
             else:
                 rec.work_end = False
+
+    _CONTRACT_NUMBER_RE = re.compile(r"^[0-9๐-๙ก-ฮa-z.,/]+$")
+
+    @api.constrains("contract_number")
+    def _check_contract_number_chars(self):
+        for rec in self:
+            if rec.contract_number and not self._CONTRACT_NUMBER_RE.match(
+                rec.contract_number
+            ):
+                raise ValidationError(
+                    _(
+                        'Contract number "%(value)s" contains invalid characters. '
+                        "Only digits (0-9, ๐-๙), Thai consonants (ก-ฮ), "
+                        "English letters (a-z), and the symbols . , / are allowed.",
+                        value=rec.contract_number,
+                    )
+                )
 
     @api.constrains('contract_period_days')
     def _check_contract_period_days(self):
