@@ -5,7 +5,7 @@
     "author": "",
     "website": "",
     "category": "",
-    "depends": ["portal", "procurement_plan"],
+    "depends": ["portal", "procurement_plan", "purchase_request_budget_procurement"],
     "data": ["views/templates.xml"],
     "assets": {
         "web.assets_frontend": [

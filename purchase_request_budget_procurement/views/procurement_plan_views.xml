@@ -16,6 +16,9 @@
                     <field name="purchase_request_count" widget="statinfo" string="ใบ พ.1" />
                 </button>
             </xpath>
+            <xpath expr="//field[@name='purchase_request_eta']" position="before">
+                <field name="procurement_method_id" widget="radio" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
+            </xpath>
         </field>
     </record>
 
@@ -26,6 +29,36 @@
         <field name="res_model">procurement.plan</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('state', 'in', ['new', 'ready'])]</field>
+    </record>
+
+    <!-- Tree: add procurement method column -->
+    <record id="view_procurement_plan_tree_procurement_method" model="ir.ui.view">
+        <field name="name">view.procurement.plan.tree.procurement.method</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='activity_analytic_id']" position="after">
+                <field name="procurement_method_id" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: add procurement method field, group by and search panel -->
+    <record id="view_procurement_plan_search_procurement_method" model="ir.ui.view">
+        <field name="name">view.procurement.plan.search.procurement.method</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//search/field[@name='activity_analytic_id']" position="after">
+                <field name="procurement_method_id" />
+            </xpath>
+            <xpath expr="//filter[@name='group_by_state']" position="before">
+                <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method" context="{'group_by': 'procurement_method_id'}" />
+            </xpath>
+            <xpath expr="//searchpanel/field[@name='fund_analytic_id']" position="after">
+                <field name="procurement_method_id" icon="fa-calendar" select="multi" />
+            </xpath>
+        </field>
     </record>
 
 </odoo>
