@@ -29,7 +29,7 @@ msgstr "เดิม"
 #: model:ir.model.fields.selection,name:purchase_order_change_committee.selection__purchase_order_change_committee_snapshot__approve_role__chairman
 #: model:ir.model.fields.selection,name:purchase_order_change_committee.selection__purchase_order_change_committee_wizard_line__approve_role__chairman
 msgid "Chairman"
-msgstr "ประธาน"
+msgstr "ประธานกรรมการ"
 
 #. module: purchase_order_change_committee
 #: model:ir.model.fields,field_description:purchase_order_change_committee.field_purchase_order_change_committee_snapshot__change_id
@@ -40,7 +40,7 @@ msgstr "การแก้ไขสัญญา"
 #: model:ir.model.fields.selection,name:purchase_order_change_committee.selection__purchase_order_change_committee_snapshot__approve_role__committee
 #: model:ir.model.fields.selection,name:purchase_order_change_committee.selection__purchase_order_change_committee_wizard_line__approve_role__committee
 msgid "Committee"
-msgstr "คณะกรรมการ"
+msgstr "กรรมการ"
 
 #. module: purchase_order_change_committee
 #: model:ir.model,name:purchase_order_change_committee.model_purchase_order_change_committee_snapshot
