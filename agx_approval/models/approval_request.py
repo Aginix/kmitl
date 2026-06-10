@@ -567,12 +567,16 @@ class ApprovalRequest(models.Model):
 
         amount = sum(self.line_ids.mapped("total_amount"))
 
+        # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
+        # (account_fiscal_year_id, derived from its date), not today() — otherwise a
+        # request whose FY differs from today is checked against the wrong year.
         check_result = self._check_budget_availability(
             amount=amount,
             activity_analytic_id=self.activity_analytic_id.id,
             department_analytic_id=self.department_analytic_id.id,
             fund_analytic_id=self.fund_analytic_id.id,
             source_analytic_id=self.source_analytic_id.id,
+            account_fiscal_year_id=self.account_fiscal_year_id.id,
         )
 
         if not check_result["is_sufficient"]:
@@ -591,6 +595,7 @@ class ApprovalRequest(models.Model):
                 ref=self.name,
                 description=f"Approval Request: {self.name}",
                 auto_reserve=True,
+                account_fiscal_year_id=self.account_fiscal_year_id.id,
             )
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
