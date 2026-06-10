@@ -391,6 +391,13 @@
                                                                 >เห็นชอบตรวจรับ</span
                                                             >
                                                         </t>
+                                                        <t
+                                                            t-if="committee.status == 'other'"
+                                                        >
+                                                            <span class="text-success"
+                                                                >อื่นๆ</span
+                                                            >
+                                                        </t>
                                                     </td>
                                                     <td>
                                                         <t t-esc="committee.note" />
