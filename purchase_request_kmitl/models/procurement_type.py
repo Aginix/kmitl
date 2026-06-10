@@ -27,5 +27,9 @@ class ProcurementType(models.Model):
     )
     is_purchase = fields.Boolean(
         string="Is Purchase",
-        default=True
+        default=False,
+    )
+    is_construction = fields.Boolean(
+        string="Is Construction",
+        default=False,
     )

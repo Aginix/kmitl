@@ -30,6 +30,7 @@
         "views/procurement_committee_views.xml",
         "views/purchase_request_views.xml",
         "views/purchase_order_line_views.xml",
+        "views/purchase_order_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
     ],
     "installable": True,

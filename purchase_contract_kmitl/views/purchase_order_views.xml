@@ -140,9 +140,6 @@
             <xpath expr="//field[@name='date_planned']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='amount_total']" position="after">
-                <field name="work_end_display"/>
-            </xpath>
         </field>
     </record>
 </odoo>

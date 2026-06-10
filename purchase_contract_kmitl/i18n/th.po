@@ -83,6 +83,18 @@ msgid "Contract Period Days must be >= 0"
 msgstr ""
 
 #. module: purchase_contract_kmitl
+#. odoo-python
+#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
+#, python-format
+msgid ""
+"Contract number \"%(value)s\" contains invalid characters. Only digits (0-9,"
+" ๐-๙), Thai consonants (ก-ฮ), English letters (a-z), and the symbols . , / "
+"are allowed."
+msgstr ""
+"เลขที่สัญญา \"%(value)s\" มีอักขระที่ไม่อนุญาต รองรับเฉพาะตัวเลข (0-9, ๐-๙),"
+" พยัญชนะไทย (ก-ฮ), พยัญชนะภาษาอังกฤษ (a-z) และอักขระพิเศษ . , / เท่านั้น"
+
+#. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__contract_type_id
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
 msgid "Contract Type"
