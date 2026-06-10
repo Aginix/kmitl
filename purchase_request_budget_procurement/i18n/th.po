@@ -16,6 +16,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: purchase_request_budget_procurement
+#: model:ir.model.fields,field_description:purchase_request_budget_procurement.field_procurement_plan__procurement_method_id
+msgid "Procurement Method"
+msgstr "วิธีการจัดซื้อจัดจ้าง"
+
+#. module: purchase_request_budget_procurement
 #: model_terms:ir.ui.view,arch_db:purchase_request_budget_procurement.view_procurement_plan_form_purchase_request
 msgid "<span class=\"o_stat_text\">Purchase Requests</span>"
 msgstr "<span class=\"o_stat_text\">คำขอซื้อขอจ้าง</span>"
