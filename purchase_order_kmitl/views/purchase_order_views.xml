@@ -185,6 +185,7 @@
                 <field name="contract_number" optional="show" />
                 <field name="contract_name" />
                 <field name="contract_type_id" />
+                <field name="department_id" optional="hide"/>
             </field>
 
             <!-- Add work_start after partner_id -->
