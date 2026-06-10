@@ -461,11 +461,6 @@ msgid "Procurement Count"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__procurement_method_id
-msgid "Procurement Method"
-msgstr "วิธีการจัดซื้อจัดจ้าง"
-
-#. module: procurement_plan
 #: model:ir.actions.act_window,name:procurement_plan.action_procurement_plan model:ir.model,name:procurement_plan.model_procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_budget_commitment__procurement_plan_id
 #: model:ir.model.fields,field_description:procurement_plan.field_budget_move_line__procurement_plan_id

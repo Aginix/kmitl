@@ -133,9 +133,6 @@ class ProcurementPlanDashboardController(http.Controller):
                 "state_display": self.STATE_LABELS.get(plan.state, plan.state),
                 "department": plan.department_analytic_id.complete_name or "-",
                 "source": plan.source_analytic_id.name or "-",
-                "method": plan.procurement_method_id.name
-                if plan.procurement_method_id
-                else "-",
             })
 
         return {

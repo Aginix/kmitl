@@ -80,12 +80,6 @@ class ProcurementPlan(models.Model):
         readonly=False,
         tracking=True,
     )
-    procurement_method_id = fields.Many2one(
-        comodel_name="procurement.method",
-        string="Procurement Method",
-        required=False,
-        tracking=True,
-    )
     state = fields.Selection(
         [
             ("draft", "Draft"),
@@ -249,7 +243,6 @@ class ProcurementPlan(models.Model):
             or not self.approval_signing_eta
             or not self.contract_order_signing_eta
             or not self.acceptance_eta
-            or not self.procurement_method_id
         ):
             raise UserError(_("กรุณาระบุแผนการดำเนินงานให้เสร็จสิ้นทั้งหมด"))
         self._reserve_plan_commitment()

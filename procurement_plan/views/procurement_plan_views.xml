@@ -18,7 +18,6 @@
                 <field name="source_analytic_id" optional="show" />
                 <field name="fund_analytic_id" optional="hide" />
                 <field name="activity_analytic_id" optional="hide" />
-                <field name="procurement_method_id" optional="show" />
                 <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'" />
             </tree>
         </field>
@@ -78,7 +77,6 @@
                         <page string="การดำเนินงาน">
                             <group>
                                 <group string="แผน">
-                                    <field name="procurement_method_id" widget="radio" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
                                     <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
                                     <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
                                     <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
@@ -131,7 +129,6 @@
                 <field name="source_analytic_id" />
                 <field name="fund_analytic_id" />
                 <field name="activity_analytic_id" />
-                <field name="procurement_method_id" />
                 <separator/>
                 <filter name="hide_draft_cancel" string="ซ่อนร่าง/ยกเลิก" domain="[('state', 'not in', ('draft', 'cancel'))]" />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
@@ -143,7 +140,6 @@
                     <filter string="กองทุน" name="group_by_fund" context="{'group_by': 'fund_analytic_id'}" />
                     <filter string="กิจกรรม" name="group_by_activity" context="{'group_by': 'activity_analytic_id'}" />
                     <filter string="รหัสงบประมาณ" name="group_by_budget_account" context="{'group_by': 'budget_account_id'}" />
-                    <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method" context="{'group_by': 'procurement_method_id'}" />
                     <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
                 </group>
                 <searchpanel>
@@ -152,7 +148,6 @@
                     <field name="department_analytic_id" icon="fa-sitemap" select="multi" />
                     <field name="source_analytic_id" icon="fa-money" select="multi" />
                     <field name="fund_analytic_id" icon="fa-university" select="multi" />
-                    <field name="procurement_method_id" icon="fa-calendar" select="multi" />
                 </searchpanel>
             </search>
         </field>
