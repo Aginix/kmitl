@@ -94,6 +94,7 @@ msgstr "ชื่อไฟล์"
 #: model:ir.ui.menu,name:purchase_guarantee_kmitl.kmitl_guarantee_purchase
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.purchase_guarantee_search_view
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.purchase_order_form
+#: model:ir.actions.act_window,name:l10n_th_gov_purchase_guarantee.purchase_guarantee_action
 msgid "Guarantee"
 msgstr "หลักประกัน"
 
