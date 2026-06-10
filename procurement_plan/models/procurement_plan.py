@@ -298,6 +298,14 @@ class ProcurementPlan(models.Model):
                 self.account_fiscal_year_id.id,
                 self.company_id.id,
             )
+        # Refold this plan's own procurement_plan dimension into
+        # analytic_distribution before snapshotting it onto the commitment in
+        # _prepare_plan_commitment_vals. It is normally folded in via the
+        # analytic_account_id inverse at action_new; refolding here makes the
+        # reservation robust to any edit or state-ordering change in between, so
+        # the reserve line always carries the ownership tag (see
+        # budget.controller _POOL_TAG_COLUMNS).
+        self._update_analytic_distribution("procurement_plan")
         commitment = self.env["budget.commitment"].create(
             self._prepare_plan_commitment_vals()
         )
