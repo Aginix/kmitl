@@ -103,6 +103,23 @@ class PurchaseOrder(models.Model):
         ),
     ]
 
+    @api.onchange("contract_number")
+    def _onchange_contract_number_normalize(self):
+        if self.contract_number:
+            self.contract_number = self.contract_number.replace(" ", "")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("contract_number"):
+                vals["contract_number"] = vals["contract_number"].replace(" ", "")
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if vals.get("contract_number"):
+            vals["contract_number"] = vals["contract_number"].replace(" ", "")
+        return super().write(vals)
+
     @api.onchange('date_order_date', 'work_start')
     def _onchange_sync_work_start(self):
         for rec in self:
