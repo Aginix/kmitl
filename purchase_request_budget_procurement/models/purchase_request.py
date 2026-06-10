@@ -60,8 +60,13 @@ class PurchaseRequest(models.Model):
                 self.account_fiscal_year_id = self.procurement_plan_id.account_fiscal_year_id.id
                 self.procurement_method_id = self.procurement_plan_id.procurement_method_id.id
                 self.budget_account_id = self.procurement_plan_id.budget_account_id.id
-                self.analytic_distribution = self.procurement_plan_id.analytic_distribution
                 self.title = _("%s") % self.procurement_plan_id.description
+                # Do NOT assign analytic_distribution here. It is the core
+                # analytic.mixin field whose compute is a no-op; re-assigning it
+                # inside the new-record onchange cascade makes Odoo recompute it to
+                # False, wiping the dimensions on the unsaved form. It is prefilled
+                # by default_get (default_analytic_distribution) and written
+                # server-side on create in _link_to_procurement_plan instead.
         else:
             self.procurement_plan_id = False
             self.budget_account_id = False
@@ -162,11 +167,17 @@ class PurchaseRequest(models.Model):
     def _link_to_procurement_plan(self):
         """A plan-driven PR (created from the plan, ADR-0006) enforces one active
         PR per plan, links the plan's already-reserved shared commitment, and
-        starts the plan. Reservation itself happened at appropriation post."""
+        starts the plan. Reservation itself happened at appropriation post.
+
+        The plan's budget context — budget account, fiscal year, procurement
+        method and the full analytic distribution (4 financial dimensions + the
+        plan's own procurement_plan dimension) — is written here **server-side**
+        so the พ.1 always carries it. analytic_distribution is the core
+        analytic.mixin field with a no-op compute, so the live-form onchange
+        prefill alone is not a guarantee; this write is (mirrors
+        kmitl_project_purchase_request._link_to_project)."""
         self.ensure_one()
         plan = self.procurement_plan_id
-        if not self.use_procurement_plan:
-            self.use_procurement_plan = True
         active_others = plan.purchase_request_ids.filtered(
             lambda r: r.id != self.id and r.state != "rejected"
         )
@@ -178,12 +189,26 @@ class PurchaseRequest(models.Model):
                 )
                 % plan.display_name
             )
+        vals = {
+            "use_procurement_plan": True,
+            "budget_account_id": plan.budget_account_id.id,
+            "account_fiscal_year_id": plan.account_fiscal_year_id.id,
+            "procurement_method_id": plan.procurement_method_id.id,
+            "analytic_distribution": plan.analytic_distribution or False,
+        }
         if not self.budget_commitment_id:
             commitment = plan.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
             )[:1]
             if commitment:
-                self.budget_commitment_id = commitment.id
+                vals["budget_commitment_id"] = commitment.id
+        self.write(vals)
+        # write() does not fire the form's _onchange_analytic_distribution, so push
+        # the plan's distribution onto any existing lines explicitly.
+        if self.line_ids and plan.analytic_distribution:
+            self.line_ids.write(
+                {"analytic_distribution": plan.analytic_distribution}
+            )
         if plan.state == "ready":
             plan.action_in_progress()
 
