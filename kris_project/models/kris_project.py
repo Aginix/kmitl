@@ -88,6 +88,15 @@ class KrisProject(models.Model):
     can_edit = fields.Boolean(
         compute="_compute_can_edit",
     )
+    no_installment_tracking = fields.Boolean(
+        string="ไม่มีงวดงานกำกับ",
+        tracking=True,
+        help="ติ๊กเมื่อโครงการนี้ไม่มีงวดงานกำกับ: ข้ามการตรวจสอบงวดงานตอนยืนยัน "
+        "แก้ไขงวดงานได้ระหว่างดำเนินการ และปิดโครงการได้โดยไม่ต้องรับเงินครบ",
+    )
+    installment_editable = fields.Boolean(
+        compute="_compute_installment_editable",
+    )
     client_name = fields.Char(
         string="Client Name",
         tracking=True,
@@ -338,6 +347,15 @@ class KrisProject(models.Model):
         for rec in self:
             rec.can_edit = rec.state == "draft"
 
+    @api.depends("state", "no_installment_tracking")
+    def _compute_installment_editable(self):
+        # Installments remain editable after confirmation only for projects
+        # flagged as having no work-period tracking; otherwise draft-only.
+        for rec in self:
+            rec.installment_editable = rec.state == "draft" or (
+                rec.state == "in_progress" and rec.no_installment_tracking
+            )
+
     @api.depends("operating_expense")
     def _compute_allocatable_value(self):
         for rec in self:
@@ -425,9 +443,12 @@ class KrisProject(models.Model):
 
     def action_add_installment(self):
         self.ensure_one()
-        if self.state in ("done", "cancel"):
+        if not self.installment_editable:
             raise UserError(
-                _("Cannot add installments on a project that is done or cancelled.")
+                _(
+                    "Installments can only be edited while the project is in "
+                    "draft, or in progress when it has no work-period tracking."
+                )
             )
         return {
             "name": _("Add Installment"),
