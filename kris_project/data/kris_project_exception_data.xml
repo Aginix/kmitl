@@ -219,10 +219,10 @@ if self.state == 'draft' and not self.client_org_type:
         <field name="sequence">60</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'in_progress' and self.installment_ids and any(i.state != 'received' for i in self.installment_ids):
+if self.state == 'in_progress' and not self.no_installment_tracking and self.installment_ids and any(i.state != 'received' for i in self.installment_ids):
     failed = True
         </field>
-        <field name="active" eval="False"/>
+        <field name="active" eval="True"/>
     </record>
 
     <record id="kris_excep_revenue_remaining" model="exception.rule">
@@ -247,10 +247,10 @@ if self.state == 'in_progress' and not self.no_installment_tracking and self.rev
         <field name="sequence">80</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state in ('draft', 'in_progress') and self.receipt_ids:
+if self.state in ('draft', 'in_progress') and not self.no_installment_tracking and self.receipt_ids:
     failed = True
         </field>
-        <field name="active" eval="False"/>
+        <field name="active" eval="True"/>
     </record>
 
 </odoo>
