@@ -15,7 +15,13 @@
                 decoration-danger="state == 'overdue' and todo_category in ['approval', 'execution']"
                 decoration-warning="state == 'today' and todo_category in ['approval', 'execution']"
             >
-                <field name="state" widget="badge" optional="show" />
+                <field
+                    name="state"
+                    widget="badge"
+                    optional="show"
+                    decoration-danger="state == 'overdue'"
+                    decoration-warning="state == 'today'"
+                />
                 <field name="todo_category" optional="show" />
                 <field name="summary" string="Subject" />
                 <field name="res_name" string="Source" />
