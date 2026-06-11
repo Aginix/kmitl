@@ -18,6 +18,25 @@ JOURNALS = [
 # Account used as payment_account_id on the bank journals' payment method lines.
 BANK_PAYMENT_ACCOUNT_CODE = "1112210004"
 
+# Account codes other modules reference. The chart loader assigns real accounts a
+# company-prefixed external id (``account_kmitl.1_a_<code>``); we publish a stable,
+# company-independent ``account_kmitl.account_<code>`` for each so downstream data
+# files can use ``ref`` instead of brittle search-by-code. Keep in sync with the
+# codes used in the data files listed below.
+REFERENCED_ACCOUNTS = [
+    # account_asset_kmitl asset profiles (data/account_asset_profile.xml)
+    "1251000001", "1251000003", "1251100001", "1251100003", "1251200001", "1251200003",
+    "1251300001", "1251300003", "1251400001", "1251400003", "1251500001", "1251500003",
+    "1251700001", "1251700003", "1252000001", "1252000003", "1253000001", "1253000003",
+    "1254000001", "1254000003", "1255000001", "1255000003", "1256000001", "1256000003",
+    "1257000001", "1257000003", "1258000001", "1258000003", "1259000001", "1259000003",
+    "5105010004", "5105010005", "5105010006", "5105010007", "5105010008", "5105010009",
+    "5105010010", "5105010011", "5105010012", "5105010013", "5105010014", "5105010015",
+    "5105010016", "5105010017", "5105010019",
+    # kmitl_demo partners (data/res.partner.xml)
+    "1126000001", "2110000001", "2110000099",
+]
+
 
 def _create_journals(env, company):
     """Create KMITL journals after the chart of accounts is loaded.
@@ -84,6 +103,44 @@ def _create_journals(env, company):
             + bank_journals.outbound_payment_method_line_ids
         )
         payment_method_lines.payment_account_id = payment_account
+
+
+def _register_account_xmlids(env, company):
+    """Publish stable, company-independent external ids for the accounts that
+    other modules reference (e.g. account_asset_kmitl asset profiles,
+    kmitl_demo partners).
+
+    The chart loader assigns real accounts a company-coupled xmlid
+    (``account_kmitl.1_a_<code>``). Downstream modules should not hard-code the
+    company prefix, so we publish ``account_kmitl.account_<code>`` pointing at the
+    same record. Idempotent: ``_update_xmlids`` upserts on (module, name), so
+    re-running reuses existing rows. Missing codes are logged, never fatal.
+    """
+    Account = env["account.account"]
+
+    data_list = []
+    for code in REFERENCED_ACCOUNTS:
+        account = Account.search(
+            [("code", "=", code), ("company_id", "=", company.id)], limit=1
+        )
+        if not account:
+            _logger.warning(
+                "account_kmitl: account code %s not found for company %s; "
+                "skipping external id account_kmitl.account_%s.",
+                code,
+                company.display_name,
+                code,
+            )
+            continue
+        data_list.append(
+            {
+                "xml_id": "account_kmitl.account_%s" % code,
+                "record": account,
+                "noupdate": True,
+            }
+        )
+    if data_list:
+        env["ir.model.data"]._update_xmlids(data_list)
 
 
 def _deactivate_default_journals(env, company):
@@ -182,5 +239,6 @@ def post_init_hook(cr, registry):
     _purge_generic_accounting_demo(env, company)
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
+    _register_account_xmlids(env, company)
     _deactivate_default_journals(env, company)
     _create_withholding_taxes(env, company)
