@@ -25,6 +25,15 @@ An executive of a faculty/office who needs read-only access to projects belongin
 **Operating Unit (OU)**:
 A faculty or office, identified by a numeric code (`01` Engineering … `99` KRIS). Provided by the `operating_unit` module. Intended as the scoping dimension for OU Executive read access.
 
+**Maintenance Deduction** (ค่าบำรุง / ค่าบำรุงสถาบัน):
+The institutional fee KRIS deducts from a project's operating expense; the deducted total is the pool that is then allocated to departments. One of three **methods** determines the amount:
+
+- **Tiered** (ขั้นบันได): progressive rate brackets applied to the operating expense.
+- **Custom %** (กำหนดเปอร์เซ็นต์เอง): a manually entered percentage of the operating expense.
+- **Fixed Amount** (ระบุจำนวนเงิน): a manually entered baht figure used verbatim, independent of the operating expense.
+
+_Avoid_: "Custom" unqualified — ambiguous now that both Custom % and Fixed Amount are manually entered. Name the method (Custom % vs Fixed Amount).
+
 ### Project & money
 
 **Installment** (งวดงาน):

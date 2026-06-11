@@ -143,6 +143,7 @@
                     <field name="warn_installment_total_mismatch" invisible="1"/>
                     <field name="warn_extra_overshoot" invisible="1"/>
                     <field name="warn_cancel_with_receipts" invisible="1"/>
+                    <field name="warn_maintenance_exceeds_expense" invisible="1"/>
                     <div class="alert alert-warning" role="alert"
                         attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
                         โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
@@ -281,6 +282,13 @@
                                             'readonly': [('can_edit', '=', False)]
                                         }"
                                     />
+                                    <field
+                                        name="maintenance_deduction_fixed_amount"
+                                        attrs="{
+                                            'invisible': [('maintenance_deduction_type', '!=', 'fixed')],
+                                            'readonly': [('can_edit', '=', False)]
+                                        }"
+                                    />
                                     <field name="maintenance_deduction_amount" readonly="1"/>
                                 </group>
                             </group>
@@ -293,6 +301,11 @@
                                     />
                                 </group>
                             </group>
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_maintenance_exceeds_expense', '=', False)]}"
+                            >
+                                มูลค่าหักค่าบำรุงเกินค่าดำเนินการ (Operating Expense) กรุณาตรวจสอบวิธีคิดค่าบำรุง
+                            </div>
                             <div class="mb-3"
                                 attrs="{'invisible': [('can_edit', '=', False)]}"
                                 groups="kris_project.group_kris_project_officer"
