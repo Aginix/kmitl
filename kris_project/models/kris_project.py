@@ -425,9 +425,9 @@ class KrisProject(models.Model):
 
     def action_add_installment(self):
         self.ensure_one()
-        if not self.can_edit:
+        if self.state in ("done", "cancel"):
             raise UserError(
-                _("Installments can only be added while the project is in draft.")
+                _("Cannot add installments on a project that is done or cancelled.")
             )
         return {
             "name": _("Add Installment"),

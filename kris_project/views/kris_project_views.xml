@@ -346,7 +346,7 @@
                                 The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees. Please check the allocation for each period.
                             </div>
                             <div class="mb-3"
-                                attrs="{'invisible': [('can_edit', '=', False)]}"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                                 groups="kris_project.group_kris_project_officer"
                             >
                                 <button
@@ -358,7 +358,7 @@
                             </div>
                             <field
                                 name="installment_ids"
-                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                             >
                                 <tree create="0">
                                     <field name="sequence" widget="handle"/>

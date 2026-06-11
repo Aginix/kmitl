@@ -74,7 +74,7 @@ if self.state == 'draft' and self.allocation_line_ids and any(not line.departmen
 if self.state == 'draft' and not self.installment_ids:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
     <record id="kris_excep_installment_total_mismatch" model="exception.rule">
@@ -86,7 +86,7 @@ if self.state == 'draft' and not self.installment_ids:
 if self.state == 'draft' and self.installment_ids and self.warn_installment_total_mismatch:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
     <record id="kris_excep_installment_maintenance_mismatch" model="exception.rule">
@@ -98,7 +98,7 @@ if self.state == 'draft' and self.installment_ids and self.warn_installment_tota
 if self.state == 'draft' and self.installment_ids and self.warn_installment_maintenance_mismatch:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
     <record id="kris_excep_invalid_duration" model="exception.rule">
@@ -234,7 +234,7 @@ if self.state == 'in_progress' and self.installment_ids and any(i.state != 'rece
 if self.state == 'in_progress' and self.revenue_remaining > 0:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
     <!-- ============================================================ -->
