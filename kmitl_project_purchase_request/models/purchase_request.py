@@ -91,7 +91,12 @@ class PurchaseRequest(models.Model):
         the project's reserved budget_amount (ADR-0007)."""
         self.ensure_one()
         if self.use_project and self.kmitl_project_id:
-            project = self.kmitl_project_id
+            # Reading the project's commitment + budget figures and advancing its
+            # state are system side-effects of reserving the พ.1. The budget/
+            # purchasing staff who reserve are not project-app users and need not
+            # satisfy kmitl.project's record rules (notably its global Operating
+            # Unit rule, which no group can override) — so operate on it as sudo.
+            project = self.kmitl_project_id.sudo()
             commitment = project.budget_commitment_ids.filtered(
                 lambda c: c.state in ("reserved", "partial")
             )[:1]
@@ -115,9 +120,7 @@ class PurchaseRequest(models.Model):
                 )
             self.budget_commitment_id = commitment.id
             if project.state == "new":
-                # Purchasing/budget staff have read — not write — on the project;
-                # advancing it is a system side-effect of reserving, so elevate it.
-                project.sudo().button_in_progress()
+                project.button_in_progress()
             self.button_to_approve()
             return {
                 "type": "ir.actions.act_window",
@@ -159,7 +162,11 @@ class PurchaseRequest(models.Model):
         and the dimension fields are computed from analytic_distribution, so the
         live-form context/onchange prefill alone is not a guarantee."""
         self.ensure_one()
-        project = self.kmitl_project_id
+        # Pulling the project's budget context onto the พ.1 and advancing the
+        # project are system side-effects of creating the พ.1. The creator is a
+        # purchase-request user, not a project-app user, so read the project as
+        # sudo rather than requiring it to pass kmitl.project's record rules.
+        project = self.kmitl_project_id.sudo()
         commitment = project.budget_commitment_ids.filtered(
             lambda c: c.state in ("reserved", "partial")
         )[:1]
@@ -179,10 +186,7 @@ class PurchaseRequest(models.Model):
                 {"analytic_distribution": project.analytic_distribution}
             )
         if project.state == "new":
-            # The PR creator (purchase request user) has read — not write — on the
-            # project; advancing it to in_progress is a system side-effect of
-            # creating the พ.1, so elevate just this state write.
-            project.sudo().button_in_progress()
+            project.button_in_progress()
 
 
 class KmitlProject(models.Model):
