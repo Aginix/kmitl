@@ -34,7 +34,7 @@ msgstr ""
 #. module: account_asset_number
 #: model:ir.actions.report,print_report_name:account_asset_number.report_account_asset_number
 msgid "'Asset Number - %s' % (object.name)"
-msgstr ""
+msgstr "'เลขทะเบียนครุภัณฑ์ - %s' % (object.name)"
 
 #. module: account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.report_simple_asset_number_kmitl
@@ -303,7 +303,7 @@ msgstr "รหัสครุภัณฑ์/สินทรัพย์"
 #. module: account_asset_number
 #: model:ir.actions.report,name:account_asset_number.report_account_asset_number
 msgid "Asset Number (PDF)"
-msgstr ""
+msgstr "เลขทะเบียนครุภัณฑ์ (PDF)"
 
 #. module: account_asset_number
 #: model:ir.model.fields,field_description:account_asset_number.field_account_asset_profile__sequence_id

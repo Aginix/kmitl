@@ -70,6 +70,13 @@
                                 </tr>
 
                                 <tr>
+                                    <td class="text-start">วันที่ได้มา</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.date_start or '-'" />
+                                    </th>
+                                </tr>
+
+                                <tr>
                                     <td class="text-start">ประเภทครุภัณฑ์</td>
                                     <th class="text-end">
                                         <t t-esc="asset.profile_id.name or '-'" />

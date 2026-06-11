@@ -91,6 +91,6 @@
         id="account_asset_management.account_asset_action"
         model="ir.actions.act_window"
     >
-        <field name="name">Asset</field>
+        <field name="name">ครุภัณฑ์/สินทรัพย์</field>
     </record>
 </odoo>
