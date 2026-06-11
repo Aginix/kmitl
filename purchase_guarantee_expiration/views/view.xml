@@ -14,7 +14,7 @@
                 <field name="reference"/>
                 <field name="partner_id"/>
                 <field name="guarantee_method_id"/>
-                <field name="amount"/>
+                <field name="amount" optional="hide"/>
                 <field name="date_due_guarantee"/>
                 <field name="days_to_expire" invisible="1"/>
                 <field name="days_to_expire_display"/>
