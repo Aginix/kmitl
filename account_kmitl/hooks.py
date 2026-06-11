@@ -11,8 +11,8 @@ JOURNALS = [
     {"xmlid": "journal_jv", "code": "JV", "name": "สมุดรายวันทั่วไป", "type": "general", "sequence": 10, "account": None},
     {"xmlid": "journal_pv", "code": "PV", "name": "สมุดรายวันจ่าย", "type": "bank", "sequence": 20, "account": "1112210004"},
     {"xmlid": "journal_rv", "code": "RV", "name": "สมุดรายวันรับ", "type": "bank", "sequence": 30, "account": "1112210004"},
-    {"xmlid": "journal_sv", "code": "SV", "name": "สมุดรายวันขาย", "type": "sale", "sequence": 40, "account": "4000000000"},
-    {"xmlid": "journal_uv", "code": "UV", "name": "สมุดรายวันซื้อ", "type": "purchase", "sequence": 50, "account": "5000000000"},
+    {"xmlid": "journal_ar", "code": "AR", "name": "สมุดรายวันขาย", "type": "sale", "sequence": 40, "account": "4000000000"},
+    {"xmlid": "journal_ap", "code": "AP", "name": "สมุดรายวันซื้อ", "type": "purchase", "sequence": 50, "account": "5000000000"},
 ]
 
 # Account used as payment_account_id on the bank journals' payment method lines.
