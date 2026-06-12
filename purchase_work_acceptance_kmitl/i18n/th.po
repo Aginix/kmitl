@@ -616,16 +616,17 @@ msgid "Late day(s) from Received Date - Due Date"
 msgstr ""
 
 #. module: purchase_work_acceptance_kmitl
-#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__leave
-#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__leave
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__comment_wizard__wa_reason__leave
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__note__leave
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__leave
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__reason__leave
 msgid "Leave"
 msgstr "ลา"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__comment_wizard__wa_reason__on_duty
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__note__on_duty
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__reason__on_duty
 msgid "On Duty"
 msgstr "ติดภารกิจ"
 
@@ -1624,3 +1625,39 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.purchase_order_form_inherit
 msgid "Create WA by Installment"
 msgstr "สร้างใบตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_uom
+msgid "Product Unit of Measure"
+msgstr "หน่วยนับ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__installment_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_work_acceptance__installment_id
+msgid "Invoice Plan"
+msgstr "งวดงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__apply_method_id
+msgid "Base On"
+msgstr "อ้างอิงตาม"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_all_product_line
+msgid "All product lines"
+msgstr "ทุกรายการสินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_matched_amount
+msgid "Product line with matched amount"
+msgstr "เฉพาะรายการสินค้าที่มียอดตรงกัน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_line_ids
+msgid "Product Filter"
+msgstr "ตัวกรองสินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Leave blank to apply to all purchase lines"
+msgstr "หากไม่ระบุ จะมีผลกับทุกรายการในใบสั่งซื้อ"

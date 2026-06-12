@@ -110,3 +110,8 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
         string='Is Done',
         default=False,
     )
+
+    @api.onchange('status')
+    def _onchange_status(self):
+        if self.status == 'accept':
+            self.reason = False
