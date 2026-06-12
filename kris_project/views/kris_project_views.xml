@@ -142,6 +142,11 @@
                     <field name="warn_installment_maintenance_mismatch" invisible="1"/>
                     <field name="warn_installment_total_mismatch" invisible="1"/>
                     <field name="warn_extra_overshoot" invisible="1"/>
+                    <field name="warn_cancel_with_receipts" invisible="1"/>
+                    <div class="alert alert-warning" role="alert"
+                        attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
+                        โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>

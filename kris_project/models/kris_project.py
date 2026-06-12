@@ -293,6 +293,9 @@ class KrisProject(models.Model):
     warn_extra_overshoot = fields.Boolean(
         compute="_compute_warnings",
     )
+    warn_cancel_with_receipts = fields.Boolean(
+        compute="_compute_warnings",
+    )
 
     @api.depends(
         "maintenance_deduction_amount",
@@ -302,10 +305,17 @@ class KrisProject(models.Model):
         "total_installment_amount",
         "project_value",
         "extra_value",
+        "no_installment_tracking",
+        "state",
+        "receipt_ids",
     )
     def _compute_warnings(self):
         prec = self.env["decimal.precision"].precision_get("Account")
         for rec in self:
+            rec.warn_cancel_with_receipts = bool(rec.receipt_ids) and rec.state in (
+                "draft",
+                "in_progress",
+            )
             alloc_total = sum(rec.allocation_line_ids.mapped("estimated_amount"))
             rec.warn_allocation_mismatch = (
                 bool(rec.allocation_line_ids)
@@ -317,7 +327,8 @@ class KrisProject(models.Model):
             if rec.installment_ids:
                 maint_total = sum(rec.installment_ids.mapped("maintenance_fee"))
                 rec.warn_installment_maintenance_mismatch = (
-                    float_compare(
+                    not rec.no_installment_tracking
+                    and float_compare(
                         maint_total,
                         rec.maintenance_deduction_amount,
                         precision_digits=prec,
@@ -325,7 +336,8 @@ class KrisProject(models.Model):
                     != 0
                 )
                 rec.warn_installment_total_mismatch = (
-                    float_compare(
+                    not rec.no_installment_tracking
+                    and float_compare(
                         rec.total_installment_amount,
                         rec.project_value,
                         precision_digits=prec,
