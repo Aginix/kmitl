@@ -1617,7 +1617,8 @@ msgid "Reverse posted journal entry on depreciation line"
 msgstr ""
 
 #. modules: account_asset_management, l10n_th_account_asset_management
-#: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_sub_state__open model:ir.model.fields.selection,name:account_asset_management.selection__account_asset__state__open
+#: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_sub_state__open 
+#: model:ir.model.fields.selection,name:account_asset_management.selection__account_asset__state__open
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_search
 msgid "Running"
 msgstr "กำลังทำงานอยู่"
