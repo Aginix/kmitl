@@ -45,6 +45,8 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
     def button_confirm(self):
         if any(not line.status for line in self.line_ids):
             raise UserError(_("Please fill in all the inspection results."))
+        if any(line.status == 'other' and not line.reason for line in self.line_ids):
+            raise UserError(_("Please fill in the reason for all 'Other' results."))
 
         self.ensure_one()
 
