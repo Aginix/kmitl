@@ -482,6 +482,32 @@
         </field>
     </record>
 
+    <!-- Override comment.wizard: replace free-text with selection for work.acceptance -->
+    <record id="view_comment_wizard_wa_inherit" model="ir.ui.view">
+        <field name="name">comment.wizard.wa.inherit</field>
+        <field name="model">comment.wizard</field>
+        <field name="inherit_id" ref="base_tier_validation.view_comment_wizard"/>
+        <field name="arch" type="xml">
+            <field name="comment" position="before">
+                <field name="res_model" invisible="1"/>
+            </field>
+            <field name="comment" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': [('res_model', '=', 'work.acceptance')],
+                     'required': [('res_model', '!=', 'work.acceptance')]}
+                </attribute>
+            </field>
+            <field name="comment" position="after">
+                <field
+                    name="wa_reason"
+                    widget="radio"
+                    attrs="{'invisible': [('res_model', '!=', 'work.acceptance')],
+                            'required': [('res_model', '=', 'work.acceptance')]}"
+                />
+            </field>
+        </field>
+    </record>
+
     <!-- Menu -->
     <menuitem id="menu_purchase_work_acceptance"
               name="Work Acceptance"
