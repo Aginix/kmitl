@@ -149,11 +149,29 @@
                                             name="access_token"
                                             t-att-value="work_acceptance.access_token"
                                         />
-                                        <textarea
-                                            name="comment"
-                                            class="form-control"
-                                            placeholder="ใส่เหตุผล"
-                                        ></textarea>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    name="comment"
+                                                    id="reason_leave"
+                                                    value="leave"
+                                                    required="required"
+                                                />
+                                                <label class="form-check-label" for="reason_leave">ลา</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    name="comment"
+                                                    id="reason_on_duty"
+                                                    value="on_duty"
+                                                />
+                                                <label class="form-check-label" for="reason_on_duty">ติดภารกิจ</label>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="submit" class="btn btn-secondary">
@@ -400,7 +418,9 @@
                                                         </t>
                                                     </td>
                                                     <td>
-                                                        <t t-esc="committee.note" />
+                                                        <t t-if="committee.note == 'leave'">ลา</t>
+                                                        <t t-elif="committee.note == 'on_duty'">ติดภารกิจ</t>
+                                                        <t t-else=""><t t-esc="committee.note" /></t>
                                                     </td>
                                                 </tr>
                                             </t>

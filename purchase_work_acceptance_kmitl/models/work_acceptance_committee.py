@@ -64,7 +64,12 @@ class WorkAcceptanceCommittee(models.Model):
             ("other", "Other"),
         ],
     )
-    note = fields.Text()
+    note = fields.Selection(
+        selection=[
+            ("leave", "ลา"),
+            ("on_duty", "ติดภารกิจ"),
+        ],
+    )
     _sql_constraints = [
         (
             "committee_wa_uniq",
