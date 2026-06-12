@@ -250,7 +250,7 @@
                                             <tr>
                                                 <th class="ps-0 pb-0">หมายเหตุ:</th>
                                                 <td class="w-100 pb-0 text-wrap">
-                                                    <t t-esc="work_acceptance.notes" />
+                                                    <t t-esc="work_acceptance.note" />
                                                 </td>
                                             </tr>
                                             <tr>

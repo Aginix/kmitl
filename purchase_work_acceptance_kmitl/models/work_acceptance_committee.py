@@ -66,8 +66,8 @@ class WorkAcceptanceCommittee(models.Model):
     )
     note = fields.Selection(
         selection=[
-            ("leave", "ลา"),
-            ("on_duty", "ติดภารกิจ"),
+            ("leave", "Leave"),
+            ("on_duty", "On Duty"),
         ],
     )
     _sql_constraints = [

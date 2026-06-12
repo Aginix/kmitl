@@ -212,7 +212,7 @@
                             string="Accept"
                             attrs="{'invisible': [('can_review', '=', False)]}"
                             type="object"
-                            class="oe_inline oe_button btn-success"
+                            class="oe_inline oe_button btn-success mx-2"
                             icon="fa-thumbs-up"
                         />
                         <button

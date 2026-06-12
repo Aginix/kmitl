@@ -618,7 +618,15 @@ msgstr ""
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__leave
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__leave
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__comment_wizard__wa_reason__leave
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__note__leave
 msgid "Leave"
+msgstr "ลา"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__comment_wizard__wa_reason__on_duty
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__note__on_duty
+msgid "On Duty"
 msgstr "ติดภารกิจ"
 
 #. module: purchase_work_acceptance_kmitl
@@ -837,6 +845,7 @@ msgid "Quantity"
 msgstr "จำนวน"
 
 #. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_comment_wizard__wa_reason
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__reason
 msgid "Reason"
 msgstr "หมายเหตุ"

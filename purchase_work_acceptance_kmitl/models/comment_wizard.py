@@ -9,8 +9,8 @@ class CommentWizard(models.TransientModel):
     comment = fields.Char(required=False)
     wa_reason = fields.Selection(
         selection=[
-            ("leave", "ลา"),
-            ("on_duty", "ติดภารกิจ"),
+            ("leave", "Leave"),
+            ("on_duty", "On Duty"),
         ],
         string="Reason",
     )
