@@ -174,10 +174,6 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                             <field
-                                name="no_installment_tracking"
-                                attrs="{'readonly': [('can_edit', '=', False)]}"
-                            />
-                            <field
                                 name="manager_id"
                                 required="1"
                                 widget="employee_detail_many2one"
@@ -340,6 +336,12 @@
                                 </tree>
                             </field>
                             <separator string="3. Contract payment installments" name="installment_separator" />
+                            <group>
+                                <field
+                                    name="no_installment_tracking"
+                                    attrs="{'readonly': [('can_edit', '=', False)]}"
+                                />
+                            </group>
                             <div class="alert alert-danger mb-2" role="alert"
                                 attrs="{'invisible': [('warn_extra_overshoot', '=', False)]}"
                             >
