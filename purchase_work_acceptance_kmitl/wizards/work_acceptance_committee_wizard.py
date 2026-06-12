@@ -93,13 +93,18 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
     status = fields.Selection(
         selection=[
             ('accept', 'Accept'),
-            ('leave', 'Leave'),
             ('other', 'Other'),
         ],
         string='Status',
     )
 
-    reason = fields.Text(string='Reason')
+    reason = fields.Selection(
+        selection=[
+            ('leave', 'Leave'),
+            ('on_duty', 'On Duty'),
+        ],
+        string='Reason',
+    )
 
     is_done = fields.Boolean(
         string='Is Done',
