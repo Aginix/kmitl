@@ -24,3 +24,22 @@ An executive of a faculty/office who needs read-only access to projects belongin
 
 **Operating Unit (OU)**:
 A faculty or office, identified by a numeric code (`01` Engineering … `99` KRIS). Provided by the `operating_unit` module. Intended as the scoping dimension for OU Executive read access.
+
+### Project & money
+
+**Installment** (งวดงาน):
+A scheduled milestone of contracted work, each with its own due date and payment amount; a project's value is broken down into these. `kris.project.installment`.
+_Avoid_: work period, work phase, payment schedule, payment installment
+
+**Receipt** (รายรับ):
+A single recorded payment received against a project — one document with a number, date and amount. `kris.project.receipt`.
+_Avoid_: revenue (a single one is never "a revenue")
+
+**Revenue**:
+The aggregate received on a project — the running sum of its Receipts. A total, not a record.
+
+**Project Value** (มูลค่าโครงการ):
+The total contracted value of a project; the baseline its operating expense, maintenance deduction and installment totals are derived from or checked against.
+
+**Installment-free project** (ไม่มีงวดงานกำกับ):
+A project whose งวด schedule isn't fixed or known up front (typically test/trial work), so it is not governed by งวด targets. Flag `no_installment_tracking`; see ADR-0001 for what this relaxes.

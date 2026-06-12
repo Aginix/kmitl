@@ -137,10 +137,16 @@
                 </div>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
+                    <field name="installment_editable" invisible="1"/>
                     <field name="warn_allocation_mismatch" invisible="1"/>
                     <field name="warn_installment_maintenance_mismatch" invisible="1"/>
                     <field name="warn_installment_total_mismatch" invisible="1"/>
                     <field name="warn_extra_overshoot" invisible="1"/>
+                    <field name="warn_cancel_with_receipts" invisible="1"/>
+                    <div class="alert alert-warning" role="alert"
+                        attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
+                        โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
@@ -330,6 +336,12 @@
                                 </tree>
                             </field>
                             <separator string="3. Contract payment installments" name="installment_separator" />
+                            <group>
+                                <field
+                                    name="no_installment_tracking"
+                                    attrs="{'readonly': [('can_edit', '=', False)]}"
+                                />
+                            </group>
                             <div class="alert alert-danger mb-2" role="alert"
                                 attrs="{'invisible': [('warn_extra_overshoot', '=', False)]}"
                             >
@@ -346,7 +358,7 @@
                                 The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees. Please check the allocation for each period.
                             </div>
                             <div class="mb-3"
-                                attrs="{'invisible': [('can_edit', '=', False)]}"
+                                attrs="{'invisible': [('installment_editable', '=', False)]}"
                                 groups="kris_project.group_kris_project_officer"
                             >
                                 <button
@@ -358,7 +370,7 @@
                             </div>
                             <field
                                 name="installment_ids"
-                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                                attrs="{'readonly': [('installment_editable', '=', False)]}"
                             >
                                 <tree create="0">
                                     <field name="sequence" widget="handle"/>
