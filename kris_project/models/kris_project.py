@@ -152,7 +152,8 @@ class KrisProject(models.Model):
     maintenance_deduction_type = fields.Selection(
         selection=[
             ("tiered", "Tiered"),
-            ("custom", "Custom"),
+            ("custom", "Custom %"),
+            ("fixed", "Fixed Amount"),
         ],
         string="Maintenance Deduction Type",
         default="tiered",
@@ -162,6 +163,10 @@ class KrisProject(models.Model):
     maintenance_deduction_pct = fields.Float(
         string="% หักค่าบำรุง",
         digits=(5, 2),
+        tracking=True,
+    )
+    maintenance_deduction_fixed_amount = fields.Monetary(
+        string="จำนวนเงินค่าบำรุง",
         tracking=True,
     )
     maintenance_deduction_amount = fields.Monetary(
@@ -296,9 +301,13 @@ class KrisProject(models.Model):
     warn_cancel_with_receipts = fields.Boolean(
         compute="_compute_warnings",
     )
+    warn_maintenance_exceeds_expense = fields.Boolean(
+        compute="_compute_warnings",
+    )
 
     @api.depends(
         "maintenance_deduction_amount",
+        "operating_expense",
         "allocation_line_ids.estimated_amount",
         "installment_ids.maintenance_fee",
         "installment_ids.extra_income",
@@ -315,6 +324,14 @@ class KrisProject(models.Model):
             rec.warn_cancel_with_receipts = bool(rec.receipt_ids) and rec.state in (
                 "draft",
                 "in_progress",
+            )
+            rec.warn_maintenance_exceeds_expense = (
+                float_compare(
+                    rec.maintenance_deduction_amount,
+                    rec.operating_expense,
+                    precision_digits=prec,
+                )
+                > 0
             )
             alloc_total = sum(rec.allocation_line_ids.mapped("estimated_amount"))
             rec.warn_allocation_mismatch = (
@@ -377,6 +394,7 @@ class KrisProject(models.Model):
         "operating_expense",
         "maintenance_deduction_type",
         "maintenance_deduction_pct",
+        "maintenance_deduction_fixed_amount",
     )
     def _compute_maintenance_deduction_amount(self):
         for rec in self:
@@ -384,9 +402,13 @@ class KrisProject(models.Model):
                 rec.maintenance_deduction_amount = _compute_tiered_deduction(
                     rec.operating_expense
                 )
-            else:
+            elif rec.maintenance_deduction_type == "custom":
                 rec.maintenance_deduction_amount = (
                     rec.operating_expense * rec.maintenance_deduction_pct / 100.0
+                )
+            else:  # "fixed"
+                rec.maintenance_deduction_amount = (
+                    rec.maintenance_deduction_fixed_amount
                 )
 
     @api.depends(
@@ -428,6 +450,16 @@ class KrisProject(models.Model):
             and self.project_type_id.category_id != self.project_category_id
         ):
             self.project_type_id = False
+
+    @api.onchange("maintenance_deduction_type")
+    def _onchange_maintenance_deduction_type(self):
+        # Clear the inputs that do not apply to the selected method so stale
+        # values are neither stored nor exported (mirrors the Odoo core
+        # pattern in product.pricelist.item._onchange_compute_price).
+        if self.maintenance_deduction_type != "custom":
+            self.maintenance_deduction_pct = 0.0
+        if self.maintenance_deduction_type != "fixed":
+            self.maintenance_deduction_fixed_amount = 0.0
 
     @api.model_create_multi
     def create(self, vals_list):
