@@ -451,6 +451,16 @@ class KrisProject(models.Model):
         ):
             self.project_type_id = False
 
+    @api.onchange("maintenance_deduction_type")
+    def _onchange_maintenance_deduction_type(self):
+        # Clear the inputs that do not apply to the selected method so stale
+        # values are neither stored nor exported (mirrors the Odoo core
+        # pattern in product.pricelist.item._onchange_compute_price).
+        if self.maintenance_deduction_type != "custom":
+            self.maintenance_deduction_pct = 0.0
+        if self.maintenance_deduction_type != "fixed":
+            self.maintenance_deduction_fixed_amount = 0.0
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:

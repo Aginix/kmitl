@@ -1,4 +1,4 @@
-from odoo.tests.common import TransactionCase, tagged
+from odoo.tests.common import Form, TransactionCase, tagged
 
 
 @tagged("post_install", "-at_install")
@@ -90,3 +90,22 @@ class TestMaintenanceDeduction(TransactionCase):
             maintenance_deduction_pct=150.0,
         )
         self.assertTrue(project.warn_maintenance_exceeds_expense)
+
+    def test_switching_type_clears_inactive_inputs(self):
+        # Switching the method clears the input that no longer applies, so no
+        # stale value lingers in storage or on export.
+        form = Form(self.Project)
+        form.project_name = "Switch Test"
+        form.project_category_id = self.category
+        form.project_type_id = self.project_type
+        form.project_value = 2_000_000.0
+
+        form.maintenance_deduction_type = "fixed"
+        form.maintenance_deduction_fixed_amount = 123_456.0
+
+        form.maintenance_deduction_type = "custom"
+        self.assertEqual(form.maintenance_deduction_fixed_amount, 0.0)
+
+        form.maintenance_deduction_pct = 5.0
+        form.maintenance_deduction_type = "fixed"
+        self.assertEqual(form.maintenance_deduction_pct, 0.0)
