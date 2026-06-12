@@ -223,12 +223,13 @@ msgstr "การแนบ"
 msgid "Attachment Count"
 msgstr ""
 
-#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl, purchase_work_acceptance_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_select_work_acceptance_wizard
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_committee_wizard_form
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -306,8 +307,9 @@ msgstr "วันที่เสร็จถูกต้องตามสัญ
 msgid "Create Vendor Bill"
 msgstr ""
 
-#. module: purchase_work_acceptance
+#. module: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
 msgid "Create WA"
 msgstr "สร้างใบตรวจรับ"
 
