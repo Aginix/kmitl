@@ -219,16 +219,19 @@ class KrisProject(models.Model):
         comodel_name="kris.project.installment",
         inverse_name="project_id",
         string="Installment",
+        copy=True,
     )
     receipt_ids = fields.One2many(
         comodel_name="kris.project.receipt",
         inverse_name="project_id",
         string="Revenue",
+        copy=False,
     )
     allocation_line_ids = fields.One2many(
         comodel_name="kris.project.allocation.line",
         inverse_name="project_id",
         string="การจัดสรรรายได้",
+        copy=True,
     )
     attachment_ids = fields.Many2many(
         comodel_name="ir.attachment",
@@ -469,6 +472,48 @@ class KrisProject(models.Model):
                     self.env["ir.sequence"].next_by_code("kris.project") or _("New")
                 )
         return super().create(vals_list)
+
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        # Duplicate carries over the allocation (การจัดสรร) and installments
+        # (งวดงาน) but never the revenue (รายรับ); revenue One2many fields are
+        # flagged copy=False so the new project starts empty.
+        self.ensure_one()
+        default = dict(default or {})
+        # Append a "(copy)" suffix to the project name only when it would clash
+        # with an existing one (a duplicate always clashes with its source).
+        if "project_name" not in default and self.project_name:
+            if self.search_count([("project_name", "=", self.project_name)]):
+                default["project_name"] = _("%s (copy)") % self.project_name
+        new = super().copy(default)
+        self._copy_installment_allocations(new)
+        return new
+
+    def _copy_installment_allocations(self, new):
+        """Rebuild the per-installment maintenance breakdown on the copy.
+
+        ``installment_ids`` and ``allocation_line_ids`` are copied via
+        ``copy=True``, but ``kris.project.installment.allocation`` cross-links
+        both, so each entry's ``allocation_line_id`` must be re-pointed from the
+        source lines to the newly created ones. Copy preserves recordset order,
+        so the source and new collections align positionally.
+        """
+        line_map = dict(zip(self.allocation_line_ids, new.allocation_line_ids))
+        vals_list = []
+        for src_inst, new_inst in zip(self.installment_ids, new.installment_ids):
+            for breakdown in src_inst.allocation_ids:
+                new_line = line_map.get(breakdown.allocation_line_id)
+                if not new_line:
+                    continue
+                vals_list.append(
+                    {
+                        "installment_id": new_inst.id,
+                        "allocation_line_id": new_line.id,
+                        "amount": breakdown.amount,
+                    }
+                )
+        if vals_list:
+            self.env["kris.project.installment.allocation"].create(vals_list)
 
     def action_add_receipt(self):
         self.ensure_one()
