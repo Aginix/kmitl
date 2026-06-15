@@ -1722,6 +1722,16 @@ msgstr ""
 msgid "Start Date"
 msgstr ""
 
+#. module: account_asset_kmitl
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
+msgid "Start Date"
+msgstr "วันที่เริ่ม"
+
+#. module: account_asset_kmitl
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
+msgid "End Date"
+msgstr "วันที่สิ้นสุด"
+
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_recompute_trigger__state
 msgid "State"
