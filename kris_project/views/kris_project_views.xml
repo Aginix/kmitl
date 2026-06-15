@@ -124,13 +124,6 @@
                         states="cancel"
                         groups="kris_project.group_kris_project_manager"
                     />
-                    <button
-                        name="create_revision"
-                        string="New Revision"
-                        type="object"
-                        states="done,cancel"
-                        groups="kris_project.group_kris_project_officer"
-                    />
                     <field
                         name="state"
                         widget="statusbar"
@@ -143,21 +136,6 @@
                     <field name="exceptions_summary"/>
                 </div>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button
-                            name="action_view_revisions"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-history"
-                            attrs="{'invisible': ['|', ('has_old_revisions', '=', False), ('revision_count', '=', 0)]}"
-                        >
-                            <field
-                                name="revision_count"
-                                widget="statinfo"
-                                string="Revisions"
-                            />
-                        </button>
-                    </div>
                     <field name="can_edit" invisible="1"/>
                     <field name="installment_editable" invisible="1"/>
                     <field name="warn_allocation_mismatch" invisible="1"/>

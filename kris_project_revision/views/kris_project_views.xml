@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View kris.project form -->
+    <record id="view_kris_project_form" model="ir.ui.view">
+        <field name="name">view.kris.project.form</field>
+        <field name="model">kris.project</field>
+        <field name="inherit_id" ref="kris_project.view_kris_project_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_draft']" position="after">
+                <button
+                    name="create_revision"
+                    string="New Revision"
+                    type="object"
+                    states="done,cancel"
+                    groups="kris_project.group_kris_project_officer"
+                />
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <field name="has_old_revisions" invisible="1" />
+                <field
+                    name="current_revision_id"
+                    attrs="{'invisible': [('current_revision_id', '=', False)]}"
+                />
+                <field name="current_revision_id" invisible="1"/>
+                <div class="oe_button_box" name="button_box">
+                    <button
+                        name="action_view_revisions"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-history"
+                        attrs="{'invisible': ['|', ('has_old_revisions', '=', False), ('revision_count', '=', 0)]}"
+                    >
+                        <field
+                            name="revision_count"
+                            widget="statinfo"
+                            string="Revisions"
+                        />
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
