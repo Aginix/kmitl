@@ -947,21 +947,25 @@ msgstr ""
 msgid "Generate Report"
 msgstr ""
 
-#. module: l10n_th_gov_account_asset_management, account_asset_kmitl
+#. module: l10n_th_gov_account_asset_management
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
-#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.account_asset_view_form
+msgid "Guarantee"
+msgstr "ระยะเวลารับประกัน"
+
+#. module: account_asset_kmitl
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.view_account_asset_form
 msgid "Guarantee"
 msgstr "ระยะเวลารับประกัน"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_guarantee_end
 msgid "Guarantee End"
-msgstr ""
+msgstr "สิ้นสุดประกัน"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__asset_guarantee_start
 msgid "Guarantee Start"
-msgstr "ระยะเวลารับประกัน"
+msgstr "เริ่มประกัน"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__has_message
