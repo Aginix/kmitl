@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KRIS Project",
-    "version": "16.0.1.5.0",
+    "version": "16.0.1.6.0",
     "category": "KMITL",
     "summary": "Academic service and research project revenue tracking for KRIS",
     "author": "Aginix Technologies",
@@ -11,6 +11,7 @@
         "hr",
         "account_fiscal_year",
         "base_exception",
+        "base_revision",
         "tracking_manager",
         "account_analytic_kmitl",
         "hr_employee_name_detail_kmitl",
@@ -43,4 +44,5 @@
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
+    "post_init_hook": "populate_unrevisioned_name",
 }
