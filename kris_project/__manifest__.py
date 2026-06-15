@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KRIS Project",
-    "version": "16.0.1.2.0",
+    "version": "16.0.1.5.0",
     "category": "KMITL",
     "summary": "Academic service and research project revenue tracking for KRIS",
     "author": "Aginix Technologies",
