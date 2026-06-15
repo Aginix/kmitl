@@ -947,8 +947,9 @@ msgstr ""
 msgid "Generate Report"
 msgstr ""
 
-#. module: l10n_th_gov_account_asset_management
+#. module: l10n_th_gov_account_asset_management, account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_account_asset_management.account_asset_view_form
+#: model_terms:ir.ui.view,arch_db:account_asset_kmitl.account_asset_view_form
 msgid "Guarantee"
 msgstr "ระยะเวลารับประกัน"
 
