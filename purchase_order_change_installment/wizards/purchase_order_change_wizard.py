@@ -17,6 +17,11 @@ class InstallmentWizardLine(models.TransientModel):
     )
     installment = fields.Integer(string="งวดที่", readonly=True)
     has_wa = fields.Boolean(string="มี WA แล้ว")
+    wa_id = fields.Many2one(
+        comodel_name="work.acceptance",
+        string="อ้างอิงใบตรวจรับ",
+        readonly=True,
+    )
     wa_state = fields.Selection(
         selection=[
             ("draft", "Draft"),
@@ -24,14 +29,15 @@ class InstallmentWizardLine(models.TransientModel):
             ("accept", "Accepted"),
             ("cancel", "Cancelled"),
         ],
-        string="สถานะ WA",
+        string="สถานะใบตรวจรับ",
         readonly=True,
     )
-    plan_date = fields.Date(string="กำหนดวันส่ง")
-    duration_days = fields.Integer(string="จำนวนวัน")
-    percent = fields.Float(string="สัดส่วน (%)")
+    plan_date = fields.Date(string="วันที่กำหนด")
+    duration_days = fields.Integer(string="ระยะเวลา (วัน)")
+    percent = fields.Float(string="ร้อยละ")
     amount = fields.Monetary(string="จำนวนเงิน", readonly=True)
-    deliverables = fields.Text(string="รายละเอียดงาน")
+    deliverables = fields.Text(string="สิ่งของที่ต้องส่งมอบ")
+    po_amount_total = fields.Monetary(string="ยอดรวม")
     currency_id = fields.Many2one(
         related="wizard_id.purchase_id.currency_id",
         readonly=True,
@@ -39,9 +45,8 @@ class InstallmentWizardLine(models.TransientModel):
 
     @api.onchange("percent")
     def _onchange_percent(self):
-        total = self.wizard_id.purchase_id.amount_total
-        if total:
-            self.amount = self.percent * total / 100
+        if self.po_amount_total:
+            self.amount = self.percent * self.po_amount_total / 100
 
 
 class PurchaseOrderChangeWizard(models.TransientModel):
@@ -86,7 +91,9 @@ class PurchaseOrderChangeWizard(models.TransientModel):
                     "amount": plan.amount,
                     "deliverables": plan.deliverables,
                     "has_wa": plan.wa_state in ("in_review", "accept"),
+                    "wa_id": plan.wa_id.id,
                     "wa_state": plan.wa_state or False,
+                    "po_amount_total": purchase.amount_total,
                 })
                 for plan in purchase.invoice_plan_ids
             ]

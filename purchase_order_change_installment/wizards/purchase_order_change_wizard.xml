@@ -25,15 +25,17 @@
                     attrs="{'invisible': [('show_installment', '=', False)]}"
                 >
                     <tree editable="bottom" create="false" delete="false">
-                        <field name="installment" readonly="1" />
+                        <field name="installment_id" invisible="1" />
                         <field name="has_wa" invisible="1" />
-                        <field name="wa_state" readonly="1" />
+                        <field name="po_amount_total" invisible="1" />
+                        <field name="currency_id" invisible="1" />
+                        <field name="installment" readonly="1" />
                         <field
-                            name="plan_date"
+                            name="duration_days"
                             attrs="{'readonly': [('has_wa', '=', True)]}"
                         />
                         <field
-                            name="duration_days"
+                            name="plan_date"
                             attrs="{'readonly': [('has_wa', '=', True)]}"
                         />
                         <field
@@ -45,7 +47,8 @@
                             name="deliverables"
                             attrs="{'readonly': [('has_wa', '=', True)]}"
                         />
-                        <field name="currency_id" invisible="1" />
+                        <field name="wa_id" readonly="1" />
+                        <field name="wa_state" readonly="1" />
                     </tree>
                 </field>
             </xpath>
