@@ -7,7 +7,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     show_installment = fields.Boolean()
     editable_installment_ids = fields.Many2many(
         comodel_name="purchase.invoice.plan",
-        compute="_compute_editable_installment_ids",
     )
     installment_id = fields.Many2one(
         comodel_name="purchase.invoice.plan",
@@ -27,14 +26,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     amount = fields.Monetary(string="จำนวนเงิน (ใหม่)", readonly=True)
     deliverables = fields.Text(string="รายละเอียดงาน (ใหม่)")
 
-    @api.depends("purchase_id")
-    def _compute_editable_installment_ids(self):
-        for rec in self:
-            plans = rec.purchase_id.invoice_plan_ids.filtered(
-                lambda p: p.wa_state not in ("in_review", "accept")
-            )
-            rec.editable_installment_ids = plans
-
     @api.model
     def default_get(self, fields_list):
         vals = super().default_get(fields_list)
@@ -52,6 +43,15 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         vals["show_installment"] = (
             "purchase_change_section_installment" in xml_id_list
         )
+
+        purchase = self.env["purchase.order"].browse(
+            self.env.context.get("default_purchase_id")
+        )
+        if purchase:
+            plans = purchase.invoice_plan_ids.filtered(
+                lambda p: p.wa_state not in ("in_review", "accept")
+            )
+            vals["editable_installment_ids"] = [(6, 0, plans.ids)]
         return vals
 
     @api.onchange("installment_id")
