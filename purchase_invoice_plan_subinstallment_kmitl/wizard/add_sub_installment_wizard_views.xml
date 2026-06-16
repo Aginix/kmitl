@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_add_sub_installment_wizard_form" model="ir.ui.view">
+        <field name="name">add.sub.installment.wizard.form</field>
+        <field name="model">add.sub.installment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Split into Sub-Installments">
+                <group>
+                    <group string="Parent Installment">
+                        <field name="parent_id" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="parent_installment"/>
+                        <field name="parent_percent"/>
+                        <field name="parent_amount"/>
+                    </group>
+                    <group string="New Sub-Installments">
+                        <field name="num_sub"/>
+                        <field name="plan_date"/>
+                        <field name="split_evenly"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_create" string="Create" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
