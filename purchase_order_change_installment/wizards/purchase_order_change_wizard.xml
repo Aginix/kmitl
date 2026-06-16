@@ -13,40 +13,39 @@
         <field name="arch" type="xml">
             <field name="show_fines_fields" position="after">
                 <field name="show_installment" invisible="1" />
-                <field name="editable_installment_ids" invisible="1" />
             </field>
             <group name="new_contract_field_group" position="after">
                 <group
-                    name="installment_select_group"
+                    string="งวดงาน"
+                    name="installment_group"
                     colspan="2"
                     attrs="{'invisible': [('show_installment', '=', False)]}"
                 >
-                    <field
-                        name="installment_id"
-                        options="{'no_create': True, 'no_open': True}"
-                    />
-                </group>
-                <group
-                    string="งวดงาน (เดิม)"
-                    name="old_installment_group"
-                    attrs="{'invisible': ['|', ('show_installment', '=', False), ('installment_id', '=', False)]}"
-                >
-                    <field name="plan_date_old" />
-                    <field name="duration_days_old" />
-                    <field name="percent_old" />
-                    <field name="amount_old" />
-                    <field name="deliverables_old" />
-                </group>
-                <group
-                    string="งวดงาน (ใหม่)"
-                    name="new_installment_group"
-                    attrs="{'invisible': ['|', ('show_installment', '=', False), ('installment_id', '=', False)]}"
-                >
-                    <field name="plan_date" />
-                    <field name="duration_days" />
-                    <field name="percent" />
-                    <field name="amount" />
-                    <field name="deliverables" />
+                    <field name="installment_line_ids" nolabel="1">
+                        <tree editable="bottom" create="false" delete="false">
+                            <field name="installment" readonly="1" />
+                            <field name="has_wa" invisible="1" />
+                            <field name="wa_state" readonly="1" />
+                            <field
+                                name="plan_date"
+                                attrs="{'readonly': [('has_wa', '=', True)]}"
+                            />
+                            <field
+                                name="duration_days"
+                                attrs="{'readonly': [('has_wa', '=', True)]}"
+                            />
+                            <field
+                                name="percent"
+                                attrs="{'readonly': [('has_wa', '=', True)]}"
+                            />
+                            <field name="amount" readonly="1" />
+                            <field
+                                name="deliverables"
+                                attrs="{'readonly': [('has_wa', '=', True)]}"
+                            />
+                            <field name="currency_id" invisible="1" />
+                        </tree>
+                    </field>
                 </group>
             </group>
         </field>

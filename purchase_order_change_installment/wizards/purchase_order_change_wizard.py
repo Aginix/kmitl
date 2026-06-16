@@ -1,30 +1,58 @@
 from odoo import api, fields, models
+from odoo.tools import float_compare
+
+
+class InstallmentWizardLine(models.TransientModel):
+    _name = "purchase.order.change.installment.wizard.line"
+    _description = "Installment Change Wizard Line"
+    _order = "installment"
+
+    wizard_id = fields.Many2one(
+        comodel_name="purchase.order.change.wizard",
+        ondelete="cascade",
+    )
+    installment_id = fields.Many2one(
+        comodel_name="purchase.invoice.plan",
+        string="งวดงาน",
+    )
+    installment = fields.Integer(string="งวดที่", readonly=True)
+    has_wa = fields.Boolean(string="มี WA แล้ว")
+    wa_state = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("in_review", "In Review"),
+            ("accept", "Accepted"),
+            ("cancel", "Cancelled"),
+        ],
+        string="สถานะ WA",
+        readonly=True,
+    )
+    plan_date = fields.Date(string="กำหนดวันส่ง")
+    duration_days = fields.Integer(string="จำนวนวัน")
+    percent = fields.Float(string="สัดส่วน (%)")
+    amount = fields.Monetary(string="จำนวนเงิน", readonly=True)
+    deliverables = fields.Text(string="รายละเอียดงาน")
+    currency_id = fields.Many2one(
+        related="wizard_id.purchase_id.currency_id",
+        readonly=True,
+    )
+
+    @api.onchange("percent")
+    def _onchange_percent(self):
+        total = self.wizard_id.purchase_id.amount_total
+        if total:
+            self.amount = self.percent * total / 100
 
 
 class PurchaseOrderChangeWizard(models.TransientModel):
     _inherit = "purchase.order.change.wizard"
 
     show_installment = fields.Boolean()
-    editable_installment_ids = fields.Many2many(
-        comodel_name="purchase.invoice.plan",
+    installment_line_ids = fields.One2many(
+        comodel_name="purchase.order.change.installment.wizard.line",
+        inverse_name="wizard_id",
+        string="งวดงาน",
     )
-    installment_id = fields.Many2one(
-        comodel_name="purchase.invoice.plan",
-        string="งวดงานที่ต้องการแก้ไข",
-        domain="[('id', 'in', editable_installment_ids)]",
-    )
-    # ค่าเดิม (readonly)
-    plan_date_old = fields.Date(string="กำหนดวันส่ง (เดิม)", readonly=True)
-    duration_days_old = fields.Integer(string="จำนวนวัน (เดิม)", readonly=True)
-    percent_old = fields.Float(string="สัดส่วน % (เดิม)", readonly=True)
-    amount_old = fields.Monetary(string="จำนวนเงิน (เดิม)", readonly=True)
-    deliverables_old = fields.Text(string="รายละเอียดงาน (เดิม)", readonly=True)
-    # ค่าใหม่
-    plan_date = fields.Date(string="กำหนดวันส่ง (ใหม่)")
-    duration_days = fields.Integer(string="จำนวนวัน (ใหม่)")
-    percent = fields.Float(string="สัดส่วน % (ใหม่)")
-    amount = fields.Monetary(string="จำนวนเงิน (ใหม่)", readonly=True)
-    deliverables = fields.Text(string="รายละเอียดงาน (ใหม่)")
 
     @api.model
     def default_get(self, fields_list):
@@ -48,31 +76,21 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             self.env.context.get("default_purchase_id")
         )
         if purchase:
-            plans = purchase.invoice_plan_ids.filtered(
-                lambda p: p.wa_state not in ("in_review", "accept")
-            )
-            vals["editable_installment_ids"] = [(6, 0, plans.ids)]
+            vals["installment_line_ids"] = [
+                (0, 0, {
+                    "installment_id": plan.id,
+                    "installment": plan.installment,
+                    "plan_date": plan.plan_date,
+                    "duration_days": plan.duration_days,
+                    "percent": plan.percent,
+                    "amount": plan.amount,
+                    "deliverables": plan.deliverables,
+                    "has_wa": plan.wa_state in ("in_review", "accept"),
+                    "wa_state": plan.wa_state or False,
+                })
+                for plan in purchase.invoice_plan_ids
+            ]
         return vals
-
-    @api.onchange("installment_id")
-    def _onchange_installment_id(self):
-        plan = self.installment_id
-        self.plan_date_old = plan.plan_date
-        self.duration_days_old = plan.duration_days
-        self.percent_old = plan.percent
-        self.amount_old = plan.amount
-        self.deliverables_old = plan.deliverables
-        self.plan_date = plan.plan_date
-        self.duration_days = plan.duration_days
-        self.percent = plan.percent
-        self.amount = plan.amount
-        self.deliverables = plan.deliverables
-
-    @api.onchange("percent")
-    def _onchange_percent(self):
-        amount_total = self.purchase_id.amount_total
-        if amount_total:
-            self.amount = self.percent * amount_total / 100
 
     def action_save_changes(self):
         if self.show_installment:
@@ -81,37 +99,49 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
     def _save_installment_change(self):
         self.ensure_one()
-        plan = self.installment_id
-        if not plan:
-            return
-
         Snapshot = self.env["purchase.order.change.installment.snapshot"].sudo()
-        Snapshot.create({
-            "change_id": self.change_id.id,
-            "snapshot_type": "before",
-            "installment_id": plan.id,
-            "installment": plan.installment,
-            "plan_date": self.plan_date_old,
-            "duration_days": self.duration_days_old,
-            "percent": self.percent_old,
-            "amount": self.amount_old,
-            "deliverables": self.deliverables_old,
-        })
-        Snapshot.create({
-            "change_id": self.change_id.id,
-            "snapshot_type": "after",
-            "installment_id": plan.id,
-            "installment": plan.installment,
-            "plan_date": self.plan_date,
-            "duration_days": self.duration_days,
-            "percent": self.percent,
-            "amount": self.amount,
-            "deliverables": self.deliverables,
-        })
 
-        plan.sudo().write({
-            "plan_date": self.plan_date,
-            "duration_days": self.duration_days,
-            "percent": self.percent,
-            "deliverables": self.deliverables,
-        })
+        for line in self.installment_line_ids:
+            plan = line.installment_id
+            if not plan or line.has_wa:
+                continue
+
+            changed = (
+                plan.plan_date != line.plan_date
+                or plan.duration_days != line.duration_days
+                or float_compare(plan.percent, line.percent, precision_digits=2)
+                != 0
+                or (plan.deliverables or "") != (line.deliverables or "")
+            )
+            if not changed:
+                continue
+
+            Snapshot.create({
+                "change_id": self.change_id.id,
+                "snapshot_type": "before",
+                "installment_id": plan.id,
+                "installment": plan.installment,
+                "plan_date": plan.plan_date,
+                "duration_days": plan.duration_days,
+                "percent": plan.percent,
+                "amount": plan.amount,
+                "deliverables": plan.deliverables,
+            })
+            Snapshot.create({
+                "change_id": self.change_id.id,
+                "snapshot_type": "after",
+                "installment_id": plan.id,
+                "installment": plan.installment,
+                "plan_date": line.plan_date,
+                "duration_days": line.duration_days,
+                "percent": line.percent,
+                "amount": line.amount,
+                "deliverables": line.deliverables,
+            })
+
+            plan.sudo().write({
+                "plan_date": line.plan_date,
+                "duration_days": line.duration_days,
+                "percent": line.percent,
+                "deliverables": line.deliverables,
+            })
