@@ -14,40 +14,41 @@
             <field name="show_fines_fields" position="after">
                 <field name="show_installment" invisible="1" />
             </field>
-            <group name="new_contract_field_group" position="after">
-                <group
+            <xpath expr="//form/group" position="after">
+                <separator
                     string="งวดงาน"
-                    name="installment_group"
-                    colspan="2"
+                    attrs="{'invisible': [('show_installment', '=', False)]}"
+                />
+                <field
+                    name="installment_line_ids"
+                    nolabel="1"
                     attrs="{'invisible': [('show_installment', '=', False)]}"
                 >
-                    <field name="installment_line_ids" nolabel="1">
-                        <tree editable="bottom" create="false" delete="false">
-                            <field name="installment" readonly="1" />
-                            <field name="has_wa" invisible="1" />
-                            <field name="wa_state" readonly="1" />
-                            <field
-                                name="plan_date"
-                                attrs="{'readonly': [('has_wa', '=', True)]}"
-                            />
-                            <field
-                                name="duration_days"
-                                attrs="{'readonly': [('has_wa', '=', True)]}"
-                            />
-                            <field
-                                name="percent"
-                                attrs="{'readonly': [('has_wa', '=', True)]}"
-                            />
-                            <field name="amount" readonly="1" />
-                            <field
-                                name="deliverables"
-                                attrs="{'readonly': [('has_wa', '=', True)]}"
-                            />
-                            <field name="currency_id" invisible="1" />
-                        </tree>
-                    </field>
-                </group>
-            </group>
+                    <tree editable="bottom" create="false" delete="false">
+                        <field name="installment" readonly="1" />
+                        <field name="has_wa" invisible="1" />
+                        <field name="wa_state" readonly="1" />
+                        <field
+                            name="plan_date"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field
+                            name="duration_days"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field
+                            name="percent"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field name="amount" readonly="1" />
+                        <field
+                            name="deliverables"
+                            attrs="{'readonly': [('has_wa', '=', True)]}"
+                        />
+                        <field name="currency_id" invisible="1" />
+                    </tree>
+                </field>
+            </xpath>
         </field>
     </record>
 </odoo>
