@@ -61,6 +61,78 @@ class PurchaseGuarantee(models.Model):
         help="True if reference is purchase.order",
     )
 
+    # --- Report fields: contract info from purchase.order ---
+    contract_number = fields.Char(
+        related="purchase_id.contract_number",
+        store=True,
+        string="เลขที่สัญญา",
+    )
+    contract_name = fields.Char(
+        related="purchase_id.contract_name",
+        store=True,
+        string="ชื่องาน",
+    )
+    contract_type_id = fields.Many2one(
+        "purchase.contract.type",
+        related="purchase_id.contract_type_id",
+        store=True,
+        string="ประเภทงาน",
+    )
+    work_start = fields.Date(
+        related="purchase_id.work_start",
+        store=True,
+        string="วันที่เริ่มสัญญา",
+    )
+    work_end = fields.Date(
+        related="purchase_id.work_end",
+        store=True,
+        string="วันที่สิ้นสุดสัญญา",
+    )
+    purchase_state_label = fields.Char(
+        string="สถานะสัญญา",
+        compute="_compute_purchase_state_label",
+        store=True,
+    )
+    date_due_display = fields.Char(
+        string="วันที่สิ้นสุดอายุหลักประกัน",
+        compute="_compute_date_due_display",
+        store=True,
+    )
+    guarantee_return_state = fields.Selection(
+        selection=[("returned", "คืนแล้ว"), ("pending", "ยังไม่ได้คืน")],
+        string="สถานะหลักประกัน",
+        compute="_compute_guarantee_return_state",
+        store=True,
+    )
+
+    _PURCHASE_STATE_MAP = {
+        "draft": "ร่าง",
+        "sent": "ส่งให้ผู้ขาย",
+        "purchase": "อยู่ระหว่างดำเนินงาน",
+        "done": "ปิดสัญญา",
+        "cancel": "ยกเลิกสัญญา",
+    }
+
+    @api.depends("purchase_id.state")
+    def _compute_purchase_state_label(self):
+        for rec in self:
+            rec.purchase_state_label = self._PURCHASE_STATE_MAP.get(
+                rec.purchase_id.state, ""
+            )
+
+    @api.depends("date_due_guarantee")
+    def _compute_date_due_display(self):
+        for rec in self:
+            if rec.date_due_guarantee:
+                rec.date_due_display = rec.date_due_guarantee.strftime("%d/%m/%Y")
+            else:
+                rec.date_due_display = "จนกว่าจะพ้นภาระผูกพันธ์"
+
+    @api.depends("date_return")
+    def _compute_guarantee_return_state(self):
+        for rec in self:
+            rec.guarantee_return_state = "returned" if rec.date_return else "pending"
+
     @api.depends("date_due_guarantee")
     def _compute_is_no_expiry(self):
         for rec in self:
