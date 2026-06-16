@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_order_change_installment_snapshot,purchase.order.change.installment.snapshot,model_purchase_order_change_installment_snapshot,,1,1,1,1

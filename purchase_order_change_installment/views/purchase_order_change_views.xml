@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_order_change_form_installment" model="ir.ui.view">
+        <field name="name">view.purchase.order.change.form.installment</field>
+        <field name="model">purchase.order.change</field>
+        <field
+            name="inherit_id"
+            ref="purchase_order_change.view_purchase_order_change_form"
+        />
+        <field name="arch" type="xml">
+            <page name="document" position="before">
+                <page
+                    string="งวดงาน"
+                    name="installment_changes"
+                    attrs="{'invisible': [('has_installment_snapshot', '=', False)]}"
+                >
+                    <field name="has_installment_snapshot" invisible="1" />
+                    <group
+                        string="งวดงาน (เดิม)"
+                        colspan="2"
+                        col="1"
+                    >
+                        <field
+                            name="old_installment_snapshot_ids"
+                            nolabel="1"
+                            readonly="1"
+                        >
+                            <tree no_open="1">
+                                <field name="installment" />
+                                <field name="plan_date" />
+                                <field name="duration_days" />
+                                <field name="percent" />
+                                <field name="amount" />
+                                <field name="deliverables" />
+                                <field name="currency_id" invisible="1" />
+                            </tree>
+                        </field>
+                    </group>
+                    <group
+                        string="งวดงาน (ใหม่)"
+                        colspan="2"
+                        col="1"
+                    >
+                        <field
+                            name="new_installment_snapshot_ids"
+                            nolabel="1"
+                            readonly="1"
+                        >
+                            <tree no_open="1">
+                                <field name="installment" />
+                                <field name="plan_date" />
+                                <field name="duration_days" />
+                                <field name="percent" />
+                                <field name="amount" />
+                                <field name="deliverables" />
+                                <field name="currency_id" invisible="1" />
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>
