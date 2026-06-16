@@ -9,7 +9,6 @@
                 <group>
                     <group string="Parent Installment">
                         <field name="parent_id" invisible="1"/>
-                        <field name="currency_id" invisible="1"/>
                         <field name="parent_installment"/>
                         <field name="parent_percent"/>
                         <field name="parent_amount"/>

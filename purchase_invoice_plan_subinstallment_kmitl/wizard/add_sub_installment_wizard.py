@@ -18,17 +18,13 @@ class AddSubInstallmentWizard(models.TransientModel):
         related="parent_id.installment",
         readonly=True,
     )
-    parent_amount = fields.Monetary(
+    parent_amount = fields.Float(
         related="parent_id.amount",
-        currency_field="currency_id",
+        digits="Product Price",
         readonly=True,
     )
     parent_percent = fields.Float(
         related="parent_id.percent",
-        readonly=True,
-    )
-    currency_id = fields.Many2one(
-        related="parent_id.purchase_id.currency_id",
         readonly=True,
     )
     num_sub = fields.Integer(
