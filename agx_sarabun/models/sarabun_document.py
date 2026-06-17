@@ -3,7 +3,7 @@
 
 P1 scope: the static data foundation only (header, classification, origin link,
 อ้างถึง / สิ่งที่ส่งมาด้วย, lifecycle state field). The routing engine and the
-lifecycle state *machine* (transitions, _register, freeze, callbacks) arrive in
+lifecycle state *machine* (transitions, numbering, freeze, callbacks) arrive in
 P2–P5 — see DESIGN.md and IMPLEMENTATION-PLAN.md. Methods here are intentionally
 minimal; behaviour is added per phase.
 """
@@ -419,7 +419,7 @@ class SarabunDocument(models.Model):
                 raise UserError(_(
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
-            doc._register()  # P3: atomic per-(ส่วนงาน × type) allocation
+            doc._assign_register_number()  # P3: atomic per-(ส่วนงาน × type) allocation
             doc.state = "circulating"
             doc.message_post(body=_("Document sent for routing."))
             doc._call_origin("_on_sarabun_circulating", doc)
@@ -622,9 +622,13 @@ class SarabunDocument(models.Model):
             })
         return seq
 
-    def _register(self):
+    def _assign_register_number(self):
         """ลงทะเบียน — the distinct Register seam (phase-2 clerk gate lands here).
-        Idempotent: a returned document keeps its number on re-send."""
+        Idempotent: a returned document keeps its number on re-send.
+
+        NOTE: do not rename back to ``_register`` — that name is reserved by
+        Odoo's ORM (BaseModel._register, the registry-visibility flag) and gets
+        clobbered to a bool on registry reload."""
         self.ensure_one()
         if self.register_number_id:
             return
