@@ -84,19 +84,11 @@
         <field name="search_view_id" ref="view_purchase_contract_guarantee_report_search"/>
     </record>
 
-    <!-- Reports parent menu -->
-    <menuitem
-        id="menu_purchase_reports_root"
-        name="รายงาน"
-        parent="purchase.menu_purchase_root"
-        sequence="15"
-    />
-
     <!-- Report menu item -->
     <menuitem
         id="menu_contract_guarantee_report"
         name="รายงานทะเบียนคุมสัญญา"
-        parent="menu_purchase_reports_root"
+        parent="purchase.purchase_report_main"
         action="action_contract_guarantee_report"
         sequence="10"
     />
