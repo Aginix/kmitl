@@ -10,13 +10,13 @@
         <field name="arch" type="xml">
             <page name="document" position="before">
                 <page
-                    string="งวดงาน"
+                    string="Installments"
                     name="installment_changes"
                     attrs="{'invisible': [('has_installment_snapshot', '=', False)]}"
                 >
                     <field name="has_installment_snapshot" invisible="1" />
                     <group
-                        string="งวดงาน (เดิม)"
+                        string="Installments (Before)"
                         colspan="2"
                         col="1"
                     >
@@ -37,7 +37,7 @@
                         </field>
                     </group>
                     <group
-                        string="งวดงาน (ใหม่)"
+                        string="Installments (After)"
                         colspan="2"
                         col="1"
                     >

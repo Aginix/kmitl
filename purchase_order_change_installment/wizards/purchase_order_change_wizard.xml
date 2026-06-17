@@ -16,7 +16,7 @@
             </field>
             <xpath expr="//form/group" position="after">
                 <separator
-                    string="งวดงาน"
+                    string="Installments"
                     attrs="{'invisible': [('show_installment', '=', False)]}"
                 />
                 <field
@@ -49,7 +49,11 @@
                             attrs="{'readonly': [('has_wa', '=', True)]}"
                         />
                         <field name="wa_id" readonly="1" />
-                        <field name="wa_state" readonly="1" />
+                        <field name="wa_state" 
+                            readonly="1" 
+                            widget="badge"
+                            decoration-info="wa_state == 'draft'"
+                            decoration-success="wa_state == 'accept'"/>
                     </tree>
                 </field>
             </xpath>

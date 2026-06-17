@@ -12,13 +12,13 @@ class PurchaseOrderChange(models.Model):
     old_installment_snapshot_ids = fields.One2many(
         comodel_name="purchase.order.change.installment.snapshot",
         inverse_name="change_id",
-        string="งวดงาน (เดิม)",
+        string="Installments (Before)",
         domain=[("snapshot_type", "=", "before")],
     )
     new_installment_snapshot_ids = fields.One2many(
         comodel_name="purchase.order.change.installment.snapshot",
         inverse_name="change_id",
-        string="งวดงาน (ใหม่)",
+        string="Installments (After)",
         domain=[("snapshot_type", "=", "after")],
     )
     has_installment_snapshot = fields.Boolean(

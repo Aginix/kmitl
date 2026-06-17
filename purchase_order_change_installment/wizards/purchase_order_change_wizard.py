@@ -15,13 +15,13 @@ class InstallmentWizardLine(models.TransientModel):
     )
     installment_id = fields.Many2one(
         comodel_name="purchase.invoice.plan",
-        string="งวดงาน",
+        string="Installment",
     )
-    installment = fields.Integer(string="งวดที่", readonly=True)
-    has_wa = fields.Boolean(string="มี WA แล้ว")
+    installment = fields.Integer(string="Installment No.", readonly=True)
+    has_wa = fields.Boolean(string="Has WA")
     wa_id = fields.Many2one(
         comodel_name="work.acceptance",
-        string="อ้างอิงใบตรวจรับ",
+        string="Work Acceptance Reference",
         readonly=True,
     )
     wa_state = fields.Selection(
@@ -31,16 +31,16 @@ class InstallmentWizardLine(models.TransientModel):
             ("accept", "Accepted"),
             ("cancel", "Cancelled"),
         ],
-        string="สถานะใบตรวจรับ",
+        string="Work Acceptance Status",
         readonly=True,
     )
-    plan_date = fields.Date(string="วันที่กำหนด")
-    duration_days = fields.Integer(string="ระยะเวลา (วัน)")
-    percent = fields.Float(string="ร้อยละ")
-    amount = fields.Monetary(string="จำนวนเงิน", readonly=True)
-    deliverables = fields.Text(string="สิ่งของที่ต้องส่งมอบ")
-    po_amount_total = fields.Monetary(string="ยอดรวม")
-    po_work_start = fields.Date(string="วันที่เริ่มงาน")
+    plan_date = fields.Date(string="Plan Date")
+    duration_days = fields.Integer(string="Duration (Days)")
+    percent = fields.Float(string="Percent")
+    amount = fields.Monetary(string="Amount", readonly=True)
+    deliverables = fields.Text(string="Deliverables")
+    po_amount_total = fields.Monetary(string="Total Amount")
+    po_work_start = fields.Date(string="Work Start")
     currency_id = fields.Many2one(
         related="wizard_id.purchase_id.currency_id",
         readonly=True,
@@ -64,7 +64,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     installment_line_ids = fields.One2many(
         comodel_name="purchase.order.change.installment.wizard.line",
         inverse_name="wizard_id",
-        string="งวดงาน",
+        string="Installments",
     )
 
     @api.model
