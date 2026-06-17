@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from odoo import api, fields, models
 from odoo.tools import float_compare
 
@@ -38,6 +40,7 @@ class InstallmentWizardLine(models.TransientModel):
     amount = fields.Monetary(string="จำนวนเงิน", readonly=True)
     deliverables = fields.Text(string="สิ่งของที่ต้องส่งมอบ")
     po_amount_total = fields.Monetary(string="ยอดรวม")
+    po_work_start = fields.Date(string="วันที่เริ่มงาน")
     currency_id = fields.Many2one(
         related="wizard_id.purchase_id.currency_id",
         readonly=True,
@@ -47,6 +50,11 @@ class InstallmentWizardLine(models.TransientModel):
     def _onchange_percent(self):
         if self.po_amount_total:
             self.amount = self.percent * self.po_amount_total / 100
+
+    @api.onchange("duration_days")
+    def _onchange_duration_days(self):
+        if self.duration_days and self.po_work_start:
+            self.plan_date = self.po_work_start + timedelta(days=self.duration_days)
 
 
 class PurchaseOrderChangeWizard(models.TransientModel):
@@ -90,10 +98,11 @@ class PurchaseOrderChangeWizard(models.TransientModel):
                     "percent": plan.percent,
                     "amount": plan.amount,
                     "deliverables": plan.deliverables,
-                    "has_wa": plan.wa_state in ("in_review", "accept"),
+                    "has_wa": bool(plan.wa_id),
                     "wa_id": plan.wa_id.id,
                     "wa_state": plan.wa_state or False,
                     "po_amount_total": purchase.amount_total,
+                    "po_work_start": purchase.work_start,
                 })
                 for plan in purchase.invoice_plan_ids
             ]

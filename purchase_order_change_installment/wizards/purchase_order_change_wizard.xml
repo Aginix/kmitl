@@ -28,6 +28,7 @@
                         <field name="installment_id" invisible="1" />
                         <field name="has_wa" invisible="1" />
                         <field name="po_amount_total" invisible="1" />
+                        <field name="po_work_start" invisible="1" />
                         <field name="currency_id" invisible="1" />
                         <field name="installment" readonly="1" />
                         <field
