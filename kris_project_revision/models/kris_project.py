@@ -12,8 +12,17 @@ class KrisProject(models.Model):
     _inherit = ["kris.project", "base.revision"]
 
     # --- Revision (base.revision mixin) ---
-    current_revision_id = fields.Many2one(comodel_name="kris.project")
-    old_revision_ids = fields.One2many(comodel_name="kris.project")
+    current_revision_id = fields.Many2one(
+        comodel_name="kris.project",
+        string="ฉบับแก้ไขล่าสุด",
+        copy=False,
+    )
+    old_revision_ids = fields.One2many(
+        comodel_name="kris.project",
+        string="ฉบับแก้ไขก่อนหน้า",
+    )
+    revision_number = fields.Integer(string="ครั้งที่แก้ไข")
+    revision_count = fields.Integer(string="จำนวนฉบับแก้ไข")
 
     _sql_constraints = [
         (
@@ -32,6 +41,25 @@ class KrisProject(models.Model):
         vals = super()._get_new_rev_data(new_rev_number)
         vals["project_name"] = self.project_name
         return vals
+
+    def create_revision(self):
+        self.ensure_one()
+        new = self.copy_revision_with_context()
+        self.message_post(
+            body=_("สร้างฉบับแก้ไขใหม่ %s — ฉบับนี้ถูกเก็บเป็นสำเนาเก่า")
+            % new.name
+        )
+        new.message_post(
+            body=_("สร้างจากฉบับเดิม %s (ฉบับแก้ไขครั้งที่ %s)")
+            % (self.name, new.revision_number)
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self._name,
+            "view_mode": "form",
+            "res_id": new.id,
+            "target": "current",
+        }
 
     def action_view_revisions(self):
         self.ensure_one()

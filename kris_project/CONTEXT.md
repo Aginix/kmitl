@@ -52,3 +52,7 @@ The total contracted value of a project; the baseline its operating expense, mai
 
 **Installment-free project** (ไม่มีงวดงานกำกับ):
 A project whose งวด schedule isn't fixed or known up front (typically test/trial work), so it is not governed by งวด targets. Flag `no_installment_tracking`; see ADR-0001 for what this relaxes.
+
+**Revision** (ฉบับแก้ไข):
+A snapshot of a project taken before scope/value changes. Creating a revision archives the source (`active=False`, state preserved), copies installments and allocations into a new `draft` record numbered with a `-NN` suffix (`KRIS0005` → `KRIS0005-01`), and points the source's `current_revision_id` at the new record. Revenue (รายรับ) is **not** copied. Only `in_progress` or `cancel` projects may be revised; `done` projects are frozen.
+_Avoid_: "version", "copy" — "copy" specifically refers to Odoo's built-in duplicate action, which is a different mechanism (and must not drag `current_revision_id` along).
