@@ -11,14 +11,22 @@
                     name="create_revision"
                     string="สร้างฉบับแก้ไข"
                     type="object"
-                    states="in_progress,cancel"
-                    attrs="{'invisible': [('current_revision_id', '!=', False)]}"
+                    attrs="{'invisible': ['|', ('current_revision_id', '!=', False), ('state', 'not in', ('in_progress', 'cancel'))]}"
                     groups="kris_project.group_kris_project_officer"
                 />
             </xpath>
             <xpath expr="//sheet" position="inside">
                 <field name="has_old_revisions" invisible="1" />
                 <field name="current_revision_id" invisible="1" />
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('current_revision_id', '=', False)]}"
+                >
+                    เอกสารฉบับนี้เป็นสำเนาเก่าที่เก็บไว้อ้างอิง มีฉบับแก้ไขใหม่กว่าแล้ว
+                </div>
             </xpath>
             <xpath expr="//sheet/div[hasclass('oe_title')]" position="before">
                 <div class="oe_button_box" name="button_box">
@@ -42,10 +50,6 @@
                     bg_color="bg-black"
                     attrs="{'invisible': [('current_revision_id', '=', False)]}"
                 />
-                <div class="alert alert-warning" role="alert"
-                    attrs="{'invisible': [('current_revision_id', '=', False)]}">
-                    เอกสารฉบับนี้เป็นสำเนาเก่าที่เก็บไว้อ้างอิง มีฉบับแก้ไขใหม่กว่าแล้ว
-                </div>
             </xpath>
         </field>
     </record>
