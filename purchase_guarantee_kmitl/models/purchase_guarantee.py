@@ -61,13 +61,13 @@ class PurchaseGuarantee(models.Model):
         help="True if reference is purchase.order",
     )
 
-    # --- Report fields: display-only from purchase.order (store=False) ---
+    # --- Report fields from purchase.order ---
     contract_number = fields.Char(related="purchase_id.contract_number", store=False, string="เลขที่สัญญา")
     contract_name = fields.Char(related="purchase_id.contract_name", store=False, string="ชื่องาน")
-    contract_type_id = fields.Many2one("purchase.contract.type", related="purchase_id.contract_type_id", store=False, string="ประเภทงาน")
+    contract_type_id = fields.Many2one("purchase.contract.type", related="purchase_id.contract_type_id", store=True, string="ประเภทงาน")
     work_start = fields.Date(related="purchase_id.work_start", store=False, string="วันที่เริ่มสัญญา")
     work_end = fields.Date(related="purchase_id.work_end", store=False, string="วันที่สิ้นสุดสัญญา")
-    purchase_state = fields.Selection(related="purchase_id.state", store=False, string="สถานะสัญญา")
+    purchase_state = fields.Selection(related="purchase_id.state", store=True, string="สถานะสัญญา")
 
     date_due_display = fields.Char(
         string="วันที่สิ้นสุดอายุหลักประกัน",

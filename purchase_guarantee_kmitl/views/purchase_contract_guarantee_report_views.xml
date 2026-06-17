@@ -26,9 +26,10 @@
         <field name="name">view.purchase.contract.guarantee.report.pivot</field>
         <field name="model">purchase.guarantee</field>
         <field name="arch" type="xml">
-            <pivot string="รายงานทะเบียนคุมสัญญา">
+            <pivot string="รายงานทะเบียนคุมสัญญา" disable_linking="True">
+                <field name="contract_type_id" type="row"/>
                 <field name="guarantee_type_id" type="col"/>
-                <field name="guarantee_return_state" type="row"/>
+                <field name="guarantee_return_state" type="col"/>
                 <field name="amount" type="measure"/>
             </pivot>
         </field>
@@ -60,16 +61,10 @@
                     domain="[('guarantee_return_state', '=', 'returned')]"
                 />
                 <group expand="0" string="Group By">
-                    <filter
-                        string="สถานะหลักประกัน"
-                        name="group_return_state"
-                        context="{'group_by': 'guarantee_return_state'}"
-                    />
-                    <filter
-                        string="ประเภทหลักประกัน"
-                        name="group_guarantee_type"
-                        context="{'group_by': 'guarantee_type_id'}"
-                    />
+                    <filter string="ประเภทงาน" name="group_contract_type" context="{'group_by': 'contract_type_id'}"/>
+                    <filter string="ประเภทหลักประกัน" name="group_guarantee_type" context="{'group_by': 'guarantee_type_id'}"/>
+                    <filter string="สถานะสัญญา" name="group_purchase_state" context="{'group_by': 'purchase_state'}"/>
+                    <filter string="สถานะหลักประกัน" name="group_return_state" context="{'group_by': 'guarantee_return_state'}"/>
                 </group>
             </search>
         </field>
@@ -79,7 +74,7 @@
     <record id="action_contract_guarantee_report" model="ir.actions.act_window">
         <field name="name">รายงานทะเบียนคุมสัญญา</field>
         <field name="res_model">purchase.guarantee</field>
-        <field name="view_mode">tree,pivot</field>
+        <field name="view_mode">tree,pivot,form</field>
         <field name="domain">[('guarantee_method_id.default_for_model', '=', 'purchase.order.po')]</field>
         <field name="view_ids" eval="[
             (5, 0, 0),
