@@ -3,7 +3,7 @@
     <!-- List View -->
     <record id="view_purchase_contract_guarantee_report_tree" model="ir.ui.view">
         <field name="name">view.purchase.contract.guarantee.report.tree</field>
-        <field name="model">purchase.order</field>
+        <field name="model">purchase.guarantee</field>
         <field name="arch" type="xml">
             <tree string="รายงานทะเบียนคุมสัญญา">
                 <field name="contract_number" string="เลขที่สัญญา"/>
@@ -12,11 +12,11 @@
                 <field name="contract_type_id" string="ประเภทงาน"/>
                 <field name="work_start" string="วันที่เริ่มสัญญา"/>
                 <field name="work_end" string="วันที่สิ้นสุดสัญญา"/>
-                <field name="state" string="สถานะสัญญา"/>
-                <field name="contract_guarantee_type_id" string="ประเภทหลักประกัน"/>
-                <field name="contract_guarantee_amount" string="มูลค่าหลักประกัน"/>
-                <field name="contract_guarantee_date_due_display" string="วันที่สิ้นสุดอายุหลักประกัน"/>
-                <field name="contract_guarantee_return_state" string="สถานะหลักประกัน"/>
+                <field name="purchase_state" string="สถานะสัญญา"/>
+                <field name="guarantee_type_id" string="ประเภทหลักประกัน"/>
+                <field name="amount" string="มูลค่าหลักประกัน"/>
+                <field name="date_due_display" string="วันที่สิ้นสุดอายุหลักประกัน"/>
+                <field name="guarantee_return_state" string="สถานะหลักประกัน"/>
             </tree>
         </field>
     </record>
@@ -24,12 +24,12 @@
     <!-- Pivot View -->
     <record id="view_purchase_contract_guarantee_report_pivot" model="ir.ui.view">
         <field name="name">view.purchase.contract.guarantee.report.pivot</field>
-        <field name="model">purchase.order</field>
+        <field name="model">purchase.guarantee</field>
         <field name="arch" type="xml">
             <pivot string="รายงานทะเบียนคุมสัญญา">
-                <field name="contract_guarantee_type_id" type="col"/>
-                <field name="contract_guarantee_return_state" type="row"/>
-                <field name="contract_guarantee_amount" type="measure"/>
+                <field name="guarantee_type_id" type="col"/>
+                <field name="guarantee_return_state" type="row"/>
+                <field name="amount" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -37,7 +37,7 @@
     <!-- Search View -->
     <record id="view_purchase_contract_guarantee_report_search" model="ir.ui.view">
         <field name="name">view.purchase.contract.guarantee.report.search</field>
-        <field name="model">purchase.order</field>
+        <field name="model">purchase.guarantee</field>
         <field name="arch" type="xml">
             <search string="รายงานทะเบียนคุมสัญญา">
                 <field name="contract_number" string="เลขที่สัญญา"/>
@@ -46,39 +46,29 @@
                 <filter
                     string="เงินสด/เงินโอน"
                     name="filter_cash"
-                    domain="[('contract_guarantee_type_id.name', '=', 'เงินสด/เงินโอน')]"
+                    domain="[('guarantee_type_id.name', '=', 'เงินสด/เงินโอน')]"
                 />
                 <separator/>
                 <filter
                     string="ยังไม่ได้คืน"
                     name="filter_pending"
-                    domain="[('contract_guarantee_return_state', '=', 'pending')]"
+                    domain="[('guarantee_return_state', '=', 'pending')]"
                 />
                 <filter
                     string="คืนแล้ว"
                     name="filter_returned"
-                    domain="[('contract_guarantee_return_state', '=', 'returned')]"
+                    domain="[('guarantee_return_state', '=', 'returned')]"
                 />
                 <group expand="0" string="Group By">
                     <filter
                         string="สถานะหลักประกัน"
                         name="group_return_state"
-                        context="{'group_by': 'contract_guarantee_return_state'}"
+                        context="{'group_by': 'guarantee_return_state'}"
                     />
                     <filter
                         string="ประเภทหลักประกัน"
                         name="group_guarantee_type"
-                        context="{'group_by': 'contract_guarantee_type_id'}"
-                    />
-                    <filter
-                        string="ประเภทงาน"
-                        name="group_contract_type"
-                        context="{'group_by': 'contract_type_id'}"
-                    />
-                    <filter
-                        string="สถานะสัญญา"
-                        name="group_state"
-                        context="{'group_by': 'state'}"
+                        context="{'group_by': 'guarantee_type_id'}"
                     />
                 </group>
             </search>
@@ -88,9 +78,9 @@
     <!-- Action -->
     <record id="action_contract_guarantee_report" model="ir.actions.act_window">
         <field name="name">รายงานทะเบียนคุมสัญญา</field>
-        <field name="res_model">purchase.order</field>
+        <field name="res_model">purchase.guarantee</field>
         <field name="view_mode">tree,pivot</field>
-        <field name="domain">[('guarantee_ids.guarantee_method_id.default_for_model', '=', 'purchase.order.po')]</field>
+        <field name="domain">[('guarantee_method_id.default_for_model', '=', 'purchase.order.po')]</field>
         <field name="view_ids" eval="[
             (5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_contract_guarantee_report_tree')}),

@@ -19,12 +19,10 @@
         # payment type merged into this module
         "purchase_exception",
         "purchase_stock",
-        "purchase_guarantee_kmitl",
     ],
     "data": [
         "views/purchase_order_views.xml",
         "views/purchase_order_views_invisible.xml",
-        "views/purchase_contract_guarantee_report_views.xml",
     ],
     "application": False,
     "installable": True,

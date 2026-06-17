@@ -67,60 +67,6 @@ class PurchaseOrder(models.Model):
         ("done", "Done")
     ])
 
-    # --- Contract Guarantee Report fields ---
-    guarantee_ids = fields.One2many("purchase.guarantee", "purchase_id")
-
-    contract_guarantee_type_id = fields.Many2one(
-        "purchase.guarantee.type",
-        string="ประเภทหลักประกัน",
-        compute="_compute_contract_guarantee_info",
-        store=True,
-    )
-    contract_guarantee_amount = fields.Monetary(
-        string="มูลค่าหลักประกัน",
-        compute="_compute_contract_guarantee_info",
-        store=True,
-    )
-    contract_guarantee_date_due_display = fields.Char(
-        string="วันที่สิ้นสุดอายุหลักประกัน",
-        compute="_compute_contract_guarantee_info",
-        store=True,
-    )
-    contract_guarantee_return_state = fields.Selection(
-        selection=[("returned", "คืนแล้ว"), ("pending", "ยังไม่ได้คืน")],
-        string="สถานะหลักประกัน",
-        compute="_compute_contract_guarantee_info",
-        store=True,
-    )
-
-    @api.depends(
-        "guarantee_ids.guarantee_method_id",
-        "guarantee_ids.guarantee_type_id",
-        "guarantee_ids.amount",
-        "guarantee_ids.date_due_guarantee",
-        "guarantee_ids.date_return",
-    )
-    def _compute_contract_guarantee_info(self):
-        for rec in self:
-            guarantee = rec.guarantee_ids.filtered(
-                lambda g: g.guarantee_method_id.default_for_model == "purchase.order.po"
-            )[:1]
-            rec.contract_guarantee_type_id = guarantee.guarantee_type_id
-            rec.contract_guarantee_amount = guarantee.amount
-            if guarantee:
-                if guarantee.date_due_guarantee:
-                    rec.contract_guarantee_date_due_display = (
-                        guarantee.date_due_guarantee.strftime("%d/%m/%Y")
-                    )
-                else:
-                    rec.contract_guarantee_date_due_display = "จนกว่าจะพ้นภาระผูกพันธ์"
-                rec.contract_guarantee_return_state = (
-                    "returned" if guarantee.date_return else "pending"
-                )
-            else:
-                rec.contract_guarantee_date_due_display = False
-                rec.contract_guarantee_return_state = False
-
     def action_view_purchase_request(self):
         self.ensure_one()
         if not self.request_id:
