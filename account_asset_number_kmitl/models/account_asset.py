@@ -10,6 +10,10 @@ _logger = logging.getLogger(__name__)
 class AccountAsset(models.Model):
     _inherit = 'account.asset'
 
+    _sql_constraints = [
+        ("number_unique", "UNIQUE(number)", "Asset Number must be unique."),
+    ]
+
     is_asset_number_editable = fields.Boolean(
         string="Is Asset Number Editable",
         compute='_compute_is_asset_number_editable',
@@ -44,13 +48,22 @@ class AccountAsset(models.Model):
             seq = self.env['ir.sequence'].sudo().search([('code', '=', seq_code)], limit=1)
 
             if not seq:
-                seq = self.env['ir.sequence'].sudo().create({
-                    'name': f"account.asset.{fiscal_year}.{short_name}.{asset.gpsc_id.code}",
-                    'code': seq_code,
-                    'padding': 5,
-                    'number_increment': 1,
-                    'number_next_actual': 1,
-                })
+                try:
+                    seq = self.env['ir.sequence'].sudo().create({
+                        'name': seq_code,
+                        'code': seq_code,
+                        'padding': 5,
+                        'number_increment': 1,
+                        'number_next_actual': 1,
+                    })
+                except Exception:
+                    seq = self.env['ir.sequence'].sudo().search(
+                        [('code', '=', seq_code)], limit=1
+                    )
+                if not seq:
+                    raise UserError(
+                        _("Failed to create or find sequence %s") % seq_code
+                    )
 
             sequence_number = self.env['ir.sequence'].next_by_code(seq_code)
             number = f"{fiscal_year}{short_name}{asset.gpsc_id.code}-{sequence_number}"

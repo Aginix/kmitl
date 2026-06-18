@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-import random
+import secrets
 import string
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 
-def _generate_random_code(length=8):
+def _generate_random_code(length=16):
     chars = string.ascii_lowercase + string.digits
-    return ''.join(random.choices(chars, k=length))
+    return ''.join(secrets.choice(chars) for _ in range(length))
 
 
 class AccountAsset(models.Model):
@@ -108,12 +108,11 @@ class AccountAsset(models.Model):
     )
 
     def _default_access_uid(self):
-        return _generate_random_code(8)
+        return _generate_random_code(16)
 
     access_uid = fields.Char(
         string="Access Code",
         default=_default_access_uid,
-        size=8,
         copy=False,
     )
 

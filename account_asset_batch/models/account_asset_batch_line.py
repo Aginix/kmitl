@@ -81,6 +81,12 @@ class AccountAssetBatchLine(models.Model):
         store=False
     )
 
+    @api.constrains("amount")
+    def _check_amount_positive(self):
+        for record in self:
+            if record.amount <= 0:
+                raise ValidationError(_("Amount must be greater than zero."))
+
     @api.depends("amount", "price_per_unit")
     def _compute_amount_total(self):
         for rec in self:

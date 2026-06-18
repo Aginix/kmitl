@@ -33,7 +33,9 @@ class AccountAssetRemove(models.TransientModel):
             if (
                 asset.method in ["linear-limit", "degr-limit"]
                 and asset.value_residual != asset.salvage_value
-                or asset.value_residual
+            ) or (
+                asset.method not in ["linear-limit", "degr-limit"]
+                and asset.value_residual
             ):
                 ctx.update({"early_removal": True})
             ctx.update({"active_id": asset.id})

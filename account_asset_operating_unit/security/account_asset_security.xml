@@ -8,9 +8,9 @@
         </field>
         <field name="name">Asset Operating Unit</field>
         <field name="global" eval="True" />
-        <field eval="0" name="perm_unlink" />
-        <field eval="0" name="perm_write" />
+        <field eval="1" name="perm_unlink" />
+        <field eval="1" name="perm_write" />
         <field eval="1" name="perm_read" />
-        <field eval="0" name="perm_create" />
+        <field eval="1" name="perm_create" />
     </record>
 </odoo>

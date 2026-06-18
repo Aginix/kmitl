@@ -35,13 +35,22 @@ class AccountAsset(models.Model):
             seq = self.env['ir.sequence'].sudo().search([('code', '=', seq_code)], limit=1)
 
             if not seq:
-                seq = self.env['ir.sequence'].sudo().create({
-                    'name': seq_code,
-                    'code': seq_code,
-                    'padding': 5,
-                    'number_increment': 1,
-                    'number_next_actual': 1,
-                })
+                try:
+                    seq = self.env['ir.sequence'].sudo().create({
+                        'name': seq_code,
+                        'code': seq_code,
+                        'padding': 5,
+                        'number_increment': 1,
+                        'number_next_actual': 1,
+                    })
+                except Exception:
+                    seq = self.env['ir.sequence'].sudo().search(
+                        [('code', '=', seq_code)], limit=1
+                    )
+                if not seq:
+                    raise UserError(
+                        _("Failed to create or find sequence %s") % seq_code
+                    )
 
             sequence_number = self.env['ir.sequence'].next_by_code(seq_code)
 

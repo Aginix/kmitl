@@ -143,15 +143,24 @@ class AccountAssetBatch(models.Model):
                     [('code', '=', yearly_code)], limit=1
                 )
                 if not seq:
-                    seq = self.env['ir.sequence'].sudo().create({
-                        'name': f"Asset Batch {fiscal_year}",
-                        'code': yearly_code,
-                        'prefix': f"ASSET/{fiscal_year}/",
-                        'padding': 4,
-                        'number_next': 1,
-                        'number_increment': 1,
-                        'company_id': False,
-                    })
+                    try:
+                        seq = self.env['ir.sequence'].sudo().create({
+                            'name': f"Asset Batch {fiscal_year}",
+                            'code': yearly_code,
+                            'prefix': f"ASSET/{fiscal_year}/",
+                            'padding': 4,
+                            'number_next': 1,
+                            'number_increment': 1,
+                            'company_id': False,
+                        })
+                    except Exception:
+                        seq = self.env['ir.sequence'].sudo().search(
+                            [('code', '=', yearly_code)], limit=1
+                        )
+                    if not seq:
+                        raise UserError(
+                            _("Failed to create or find sequence %s") % yearly_code
+                        )
 
                 vals['name'] = seq.next_by_code(yearly_code) or 'New'
 

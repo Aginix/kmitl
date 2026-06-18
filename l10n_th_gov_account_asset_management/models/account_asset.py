@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.account_asset_management.models.account_asset import READONLY_STATES
 
@@ -56,6 +56,18 @@ class AccountAsset(models.Model):
         string="Maintenance Lines",
         copy=False,
     )
+
+    @api.constrains("asset_guarantee_start", "asset_guarantee_end")
+    def _check_guarantee_dates(self):
+        for record in self:
+            if (
+                record.asset_guarantee_start
+                and record.asset_guarantee_end
+                and record.asset_guarantee_start > record.asset_guarantee_end
+            ):
+                raise ValidationError(
+                    _("Guarantee start date must be before guarantee end date.")
+                )
 
     @api.depends("name", "number")
     def name_get(self):
