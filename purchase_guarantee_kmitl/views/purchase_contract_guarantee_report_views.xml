@@ -3,9 +3,9 @@
     <!-- List View -->
     <record id="view_purchase_contract_guarantee_report_tree" model="ir.ui.view">
         <field name="name">view.purchase.contract.guarantee.report.tree</field>
-        <field name="model">purchase.guarantee</field>
+        <field name="model">purchase.contract.guarantee.report</field>
         <field name="arch" type="xml">
-            <tree string="รายงานทะเบียนคุมสัญญา">
+            <tree string="รายงานทะเบียนคุมสัญญา" create="0" edit="0" delete="0">
                 <field name="contract_number" string="เลขที่สัญญา"/>
                 <field name="contract_name" string="ชื่องาน"/>
                 <field name="partner_id" string="คู่ค้า"/>
@@ -14,6 +14,7 @@
                 <field name="work_end" string="วันที่สิ้นสุดสัญญา"/>
                 <field name="purchase_state" string="สถานะสัญญา"/>
                 <field name="guarantee_type_id" string="ประเภทหลักประกัน"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="amount" string="มูลค่าหลักประกัน"/>
                 <field name="date_due_display" string="วันที่สิ้นสุดอายุหลักประกัน"/>
                 <field name="guarantee_return_state" string="สถานะหลักประกัน"/>
@@ -24,7 +25,7 @@
     <!-- Pivot View -->
     <record id="view_purchase_contract_guarantee_report_pivot" model="ir.ui.view">
         <field name="name">view.purchase.contract.guarantee.report.pivot</field>
-        <field name="model">purchase.guarantee</field>
+        <field name="model">purchase.contract.guarantee.report</field>
         <field name="arch" type="xml">
             <pivot string="รายงานทะเบียนคุมสัญญา" disable_linking="True">
                 <field name="contract_type_id" type="row"/>
@@ -38,7 +39,7 @@
     <!-- Search View -->
     <record id="view_purchase_contract_guarantee_report_search" model="ir.ui.view">
         <field name="name">view.purchase.contract.guarantee.report.search</field>
-        <field name="model">purchase.guarantee</field>
+        <field name="model">purchase.contract.guarantee.report</field>
         <field name="arch" type="xml">
             <search string="รายงานทะเบียนคุมสัญญา">
                 <field name="contract_number" string="เลขที่สัญญา"/>
@@ -73,9 +74,8 @@
     <!-- Action -->
     <record id="action_contract_guarantee_report" model="ir.actions.act_window">
         <field name="name">รายงานทะเบียนคุมสัญญา</field>
-        <field name="res_model">purchase.guarantee</field>
-        <field name="view_mode">tree,pivot,form</field>
-        <field name="domain">[('guarantee_method_id.default_for_model', '=', 'purchase.order.po')]</field>
+        <field name="res_model">purchase.contract.guarantee.report</field>
+        <field name="view_mode">tree,pivot</field>
         <field name="view_ids" eval="[
             (5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_contract_guarantee_report_tree')}),
