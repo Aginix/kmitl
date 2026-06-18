@@ -8,6 +8,7 @@
     'category': 'KMITL',
     'depends': ['l10n_th_gov_purchase_guarantee', 'purchase_exception', 'purchase_budget', 'purchase_contract_kmitl'],
     "data": [
+        "security/ir.model.access.csv",
         "data/purchase_guarantee_method_data.xml",
         "data/purchase_exception.xml",
         "data/purchase_guarantee_rules.xml",
