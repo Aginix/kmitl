@@ -10,6 +10,10 @@ schedule or money-completeness:
 - For **every** project, **Done** is allowed even when received Revenue is below Project
   Value and not all งวด are received, and **Cancel** is never blocked by recorded
   Revenue — projects legitimately close under-collected, at KRIS's discretion.
+- A single งวด may be recorded across **multiple Receipts** and may be **over-collected**
+  (its received total may exceed the งวด amount). The receipt wizard pre-fills only the
+  outstanding remainder, but does not cap the entry, so a fully-received งวด stays
+  selectable for a later correction or extra income.
 
 ## Why record this
 
