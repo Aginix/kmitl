@@ -11,8 +11,12 @@ phase-2 magic-link controller can drive the same path. Holder resolution and
 notification (mail.activity) are wired here but the notification body itself is a
 P4 concern (stubbed). Numbering (P3) and freeze/sign (P5) live on the document.
 """
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 # Keep in sync with sarabun_route_template.py
 VERB_SELECTION = [
@@ -163,6 +167,11 @@ class SarabunRoutingStep(models.Model):
             step.state = "active"
             step._snapshot_holders()
         self._schedule_activities()
+        for step in self:
+            step._notify_inbox({
+                "document_id": step.document_id.id,
+                "subject": step.document_id.subject,
+            })
 
     def _activity_summary(self):
         self.ensure_one()
@@ -196,6 +205,27 @@ class SarabunRoutingStep(models.Model):
         )
         links.mapped("activity_id").unlink()
         links.unlink()
+        for step in self:
+            step._notify_inbox({"refresh": True})
+
+    def _notify_inbox(self, payload=None):
+        """Push a systray-inbox refresh to each snapshot holder (P4 realtime).
+
+        A payload carrying ``subject``/``document_id`` makes the client play a
+        sound + browser notification; ``{"refresh": True}`` only updates the badge.
+        Best-effort: never let a bus hiccup break the routing transaction.
+        """
+        self.ensure_one()
+        partners = self.actor_user_ids.partner_id
+        if not partners:
+            return
+        payload = payload or {}
+        try:
+            self.env["bus.bus"]._sendmany(
+                [(partner, "sarabun_inbox/updated", payload) for partner in partners]
+            )
+        except Exception:  # noqa: BLE001 — a tray hiccup must not roll back routing
+            _logger.warning("Failed to push e-Sarabun inbox notification", exc_info=True)
 
     # ----------------------------------------------------------------- acting
     def _check_act_authority(self, actor):

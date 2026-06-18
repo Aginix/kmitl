@@ -9,6 +9,7 @@
     "depends": [
         "mail",
         "hr",
+        "bus",  # realtime push for the inbox systray (P4-tray)
         "thai_date_utils",
         "l10n_th_fonts",  # Thai font rendering for the cover-sheet PDF (P5)
         "hr_employee_digitized_signature",  # hr.employee.signature image (signature block)
@@ -35,6 +36,14 @@
         "views/sarabun_document_views.xml",
         "views/sarabun_menus.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "agx_sarabun/static/src/scss/sarabun_systray.scss",
+            "agx_sarabun/static/src/js/sarabun_notification_handler.esm.js",
+            "agx_sarabun/static/src/js/sarabun_systray.esm.js",
+            "agx_sarabun/static/src/xml/sarabun_systray.xml",
+        ],
+    },
     "application": True,
     "installable": True,
     "auto_install": False,

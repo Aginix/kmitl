@@ -83,3 +83,16 @@ class TestP4Access(SarabunCommon):
         doc.action_send()
         self.assertTrue(self._activities(doc, self.user_a))      # gating → activity
         self.assertFalse(self._activities(doc, self.user_b))     # acknowledge → none
+
+    # ------------------------------------------------------------- inbox tray
+    def test_inbox_lists_my_active_step_documents(self):
+        """get_my_sarabun_inbox (systray tray) returns docs where I have an active step."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        inbox_a = self.Doc.with_user(self.user_a).get_my_sarabun_inbox()
+        self.assertEqual(inbox_a["total_count"], 1)
+        self.assertEqual(inbox_a["documents"][0]["id"], doc.id)
+        # a user with no active step has an empty inbox
+        inbox_b = self.Doc.with_user(self.user_b).get_my_sarabun_inbox()
+        self.assertEqual(inbox_b["total_count"], 0)

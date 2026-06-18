@@ -464,6 +464,31 @@ class SarabunDocument(models.Model):
             "context": {"default_step_id": self.my_active_step_id.id},
         }
 
+    # === Inbox tray (P4 — systray) ===
+    @api.model
+    def get_my_sarabun_inbox(self, limit=20):
+        """Documents awaiting the current user's action — powers the systray tray.
+
+        The inbox is every หนังสือ with an *active* step whose snapshot holders
+        include the current user (gating or รับทราบ alike). Returns the live total
+        plus a capped, display-ready list. Runs as the user, so record rules apply.
+        """
+        steps = self.env["sarabun.routing.step"].search(
+            [("state", "=", "active"), ("actor_user_ids", "in", self.env.user.id)]
+        )
+        docs = steps.mapped("document_id").filtered(lambda d: d.state == "circulating")
+        documents = [
+            {
+                "id": d.id,
+                "name": d.name,
+                "subject": d.subject or "",
+                "date": fields.Date.to_string(d.date) if d.date else "",
+                "document_type": d.type_id.display_name or "",
+            }
+            for d in docs[:limit]
+        ]
+        return {"documents": documents, "total_count": len(docs)}
+
     def action_duplicate_to_draft(self):
         """rejected → a NEW draft linked to the same origin (1:N — ADR-0002 #8)."""
         self.ensure_one()

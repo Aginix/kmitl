@@ -6,6 +6,13 @@
               web_icon="agx_sarabun,static/description/icon.png"
               sequence="20"/>
 
+    <!-- My Inbox (กล่องหนังสือเข้า) -->
+    <menuitem id="menu_sarabun_inbox"
+              name="กล่องหนังสือเข้า (Inbox)"
+              parent="menu_sarabun_root"
+              action="action_sarabun_document_inbox"
+              sequence="5"/>
+
     <!-- Documents -->
     <menuitem id="menu_sarabun_document"
               name="Documents"
