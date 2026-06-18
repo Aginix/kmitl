@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, fields, models
 
 
 class KrisProject(models.Model):
@@ -45,6 +40,9 @@ class KrisProject(models.Model):
     def create_revision(self):
         self.ensure_one()
         new = self.copy_revision_with_context()
+        self._copy_receipts(new)
+        if self.state != "cancel":
+            self.action_cancel()
         self.message_post(
             body=_("สร้างฉบับแก้ไขใหม่ %s — ฉบับนี้ถูกเก็บเป็นสำเนาเก่า")
             % new.name
@@ -60,6 +58,48 @@ class KrisProject(models.Model):
             "res_id": new.id,
             "target": "current",
         }
+
+    def _copy_receipts(self, new):
+        """Carry receipts from the source revision to the new one.
+
+        ``receipt_ids`` is ``copy=False`` on ``kris.project`` so Odoo's
+        Duplicate action never drags revenue across. Revision creation is the
+        exception: each receipt is copied with its installment and allocation
+        cross-links re-pointed at the new revision's records (positional zip,
+        same approach as ``_copy_installment_allocations``). Allocation
+        breakdowns are rebuilt from scratch so the source's allocation lines
+        are not transiently double-counted by
+        ``_check_actual_not_exceed_estimated``.
+        """
+        if not self.receipt_ids:
+            return
+        inst_map = dict(zip(self.installment_ids, new.installment_ids))
+        line_map = dict(zip(self.allocation_line_ids, new.allocation_line_ids))
+        Allocation = self.env["kris.project.receipt.allocation"]
+        for src_receipt in self.receipt_ids:
+            new_inst = inst_map.get(src_receipt.installment_id)
+            new_receipt = src_receipt.copy(
+                {
+                    "project_id": new.id,
+                    "installment_id": new_inst.id if new_inst else False,
+                    "allocation_ids": False,
+                }
+            )
+            alloc_vals = []
+            for src_alloc in src_receipt.allocation_ids:
+                new_line = line_map.get(src_alloc.allocation_line_id)
+                if not new_line:
+                    continue
+                alloc_vals.append(
+                    {
+                        "receipt_id": new_receipt.id,
+                        "allocation_line_id": new_line.id,
+                        "amount": src_alloc.amount,
+                        "remaining_amount": src_alloc.remaining_amount,
+                    }
+                )
+            if alloc_vals:
+                Allocation.create(alloc_vals)
 
     def action_view_revisions(self):
         self.ensure_one()

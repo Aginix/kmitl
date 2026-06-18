@@ -3,10 +3,12 @@ from odoo.tests.common import TransactionCase, tagged
 
 @tagged("post_install", "-at_install")
 class TestKrisProjectRevision(TransactionCase):
-    """Revising a project (base_revision) copies a closed project into a fresh
-    draft version, archives the original while preserving its state, and
-    renumbers KRIS0001 -> KRIS0001-01. Revenue (รายรับ) is never carried over;
-    allocations (การจัดสรร) and installments (งวดงาน) are.
+    """Revising a project (base_revision) copies the source into a fresh
+    draft version, archives the original *and* cancels its state, and
+    renumbers KRIS0001 -> KRIS0001-01. Allocations (การจัดสรร), installments
+    (งวดงาน) and receipts (บันทึกรายรับ) are all carried across; receipts
+    have their installment + allocation cross-links remapped to the new
+    revision's records.
     """
 
     @classmethod
@@ -123,17 +125,18 @@ class TestKrisProjectRevision(TransactionCase):
         self.assertEqual(new.state, "draft")
         self.assertTrue(new.active)
 
-    # --- Old revision is archived, state preserved (D2) ------------------
+    # --- Old revision is archived AND cancelled --------------------------
 
-    def test_old_revision_archived_state_preserved(self):
+    def test_old_revision_archived_and_cancelled(self):
         new = self._revise(self.project)
         self.assertFalse(self.project.active)
-        # State is preserved, NOT forced to cancel (diverges from sale_order_revision).
-        self.assertEqual(self.project.state, "done")
+        # State is forced to cancel via action_cancel() so the workflow agrees
+        # with the archive: source is unambiguously inactive.
+        self.assertEqual(self.project.state, "cancel")
         self.assertEqual(self.project.current_revision_id, new)
         self.assertIn(self.project, new.old_revision_ids)
 
-    # --- Allocations / installments copied, revenue not ------------------
+    # --- Allocations / installments / receipts copied --------------------
 
     def test_installments_and_allocations_copied(self):
         new = self._revise(self.project)
@@ -149,12 +152,37 @@ class TestKrisProjectRevision(TransactionCase):
         self.assertTrue(used_line_ids.issubset(set(new.allocation_line_ids.ids)))
         self.assertFalse(used_line_ids & set(self.project.allocation_line_ids.ids))
 
-    def test_revenue_not_copied(self):
+    def test_revenue_copied(self):
         new = self._revise(self.project)
-        self.assertFalse(new.receipt_ids)
-        self.assertEqual(new.total_received_amount, 0.0)
-        # The source keeps its revenue untouched.
+        self.assertEqual(len(new.receipt_ids), len(self.project.receipt_ids))
+        self.assertEqual(new.total_received_amount, self.project.total_received_amount)
+        # Source revenue is untouched.
         self.assertEqual(len(self.project.receipt_ids), 1)
+
+    def test_receipt_installment_remap(self):
+        # The seeded receipt is bound to the source's first installment;
+        # it must be remapped to the *new* revision's first installment.
+        new = self._revise(self.project)
+        new_receipt = new.receipt_ids
+        self.assertEqual(len(new_receipt), 1)
+        new_inst1 = new.installment_ids.filtered(lambda i: i.name == "Installment 1")
+        self.assertEqual(new_receipt.installment_id, new_inst1)
+        self.assertNotEqual(new_receipt.installment_id, self.inst1)
+
+    def test_receipt_allocation_remap(self):
+        # The receipt's allocation breakdown must point at the new revision's
+        # allocation lines, not the source's.
+        new = self._revise(self.project)
+        new_receipt = new.receipt_ids
+        new_line_a = new.allocation_line_ids.filtered(
+            lambda line: line.item_id == self.item_a
+        )
+        new_line_b = new.allocation_line_ids.filtered(
+            lambda line: line.item_id == self.item_b
+        )
+        breakdown_lines = new_receipt.allocation_ids.mapped("allocation_line_id")
+        self.assertEqual(set(breakdown_lines.ids), {new_line_a.id, new_line_b.id})
+        self.assertFalse(breakdown_lines & self.project.allocation_line_ids)
 
     # --- Revision chain --------------------------------------------------
 

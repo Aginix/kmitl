@@ -7,6 +7,7 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 ## Contexts
 
 - [KRIS Project](./kris_project/CONTEXT.md) — revenue tracking for projects run under the KRIS unit (operating unit `99`); external academic-service and research work channelled through KRIS.
+- [KRIS Project Revision](./kris_project_revision/CONTEXT.md) — snapshot mechanism on top of KRIS Project: archives + cancels the source and forks a fresh draft revision (KRIS0005 → KRIS0005-01) carrying installments, allocations and receipts across.
 - [Budget](./budget/CONTEXT.md) — appropriation, reservation and disbursement tracking; appropriated pool (`budget.move`) consumed through a reserve→obligate→consume commitment pipeline (`budget.commitment`).
 - [Procurement Plan](./procurement_plan/CONTEXT.md) — annual procurement planning; each plan is created from an appropriation, reserves its budget at that moment, and is realised through one purchase request + installment disbursements.
 - [KMITL Project](./kmitl_project/CONTEXT.md) — institutional project/activity planning (โครงการ/กิจกรรม); a project draws from a *floating* project-type budget pool, reserves its full budget when confirmed, then spends like a procurement plan.

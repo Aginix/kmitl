@@ -17,7 +17,12 @@
             </xpath>
             <xpath expr="//sheet" position="inside">
                 <field name="has_old_revisions" invisible="1" />
-                <field name="current_revision_id" invisible="1" />
+            </xpath>
+            <xpath expr="//sheet/div[hasclass('oe_title')]" position="inside">
+                <field
+                    name="current_revision_id"
+                    attrs="{'invisible': [('current_revision_id', '=', False)]}"
+                />
             </xpath>
             <xpath expr="//sheet" position="before">
                 <div
@@ -50,6 +55,18 @@
                     bg_color="bg-black"
                     attrs="{'invisible': [('current_revision_id', '=', False)]}"
                 />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search view: expose current_revision_id for filters/defaults -->
+    <record id="view_kris_project_search" model="ir.ui.view">
+        <field name="name">view.kris.project.search.revision</field>
+        <field name="model">kris.project</field>
+        <field name="inherit_id" ref="kris_project.view_kris_project_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='project_type_id']" position="after">
+                <field name="current_revision_id" invisible="1" />
             </xpath>
         </field>
     </record>
