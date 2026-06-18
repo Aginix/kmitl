@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_example_file_control_root"
+        name="File Control Demo"
+        sequence="99"/>
+
+    <menuitem id="menu_example_file_control"
+        name="Documents"
+        parent="menu_example_file_control_root"
+        action="action_example_file_control"
+        sequence="10"/>
+</odoo>

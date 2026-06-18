@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_example_file_control_list" model="ir.ui.view">
+        <field name="name">example.file.control.list</field>
+        <field name="model">example.file.control</field>
+        <field name="arch" type="xml">
+            <tree string="File Control Example"
+                decoration-info="state == 'draft'"
+                decoration-warning="state == 'submitted'"
+                decoration-success="state == 'done'"
+                decoration-danger="state == 'cancel'">
+                <field name="name"/>
+                <field name="description"/>
+                <field name="document" widget="binary"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'submitted'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_example_file_control_form" model="ir.ui.view">
+        <field name="name">example.file.control.form</field>
+        <field name="model">example.file.control</field>
+        <field name="arch" type="xml">
+            <form string="File Control Example">
+                <header>
+                    <!-- Req 1 & 2: Submit ทำให้ field กลายเป็น readonly และลบไฟล์ไม่ได้ -->
+                    <button name="action_submit"
+                        string="Submit"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_done"
+                        string="Done"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'submitted')]}"/>
+                    <button name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        confirm="ต้องการยกเลิกหรือไม่?"
+                        attrs="{'invisible': [('state', 'not in', ['draft', 'submitted'])]}"/>
+                    <button name="action_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,submitted,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Reference..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="รายละเอียด">
+                            <field name="description"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group string="เอกสารแนบ">
+                            <!--
+                                Req 1: readonly เมื่อ state != draft (UI-level)
+                                Req 2: ir.attachment.unlink() ป้องกันการลบ (server-level)
+                                Req 3: ไฟล์จาก chatter มี res_field=NULL จึงไม่โผล่ที่นี่
+                            -->
+                            <field name="document"
+                                widget="binary"
+                                filename="document_filename"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="document_filename" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <!--
+                        Req 3: เพิ่มไฟล์ใน chatter ได้ทุก state
+                        ไฟล์ที่เพิ่มผ่าน chatter จะมี res_field=NULL
+                        จึงไม่ปรากฏใน Binary field 'document' ด้านบน
+                    -->
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_example_file_control" model="ir.actions.act_window">
+        <field name="name">File Control Example</field>
+        <field name="res_model">example.file.control</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

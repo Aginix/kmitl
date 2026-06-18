@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_example_file_control_user,example.file.control user,model_example_file_control,,1,1,1,1
