@@ -159,11 +159,6 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </h1>
-                        <field name="has_old_revisions" invisible="1"/>
-                        <field
-                            name="current_revision_id"
-                            attrs="{'invisible': [('current_revision_id', '=', False)]}"
-                        />
                     </div>
                     <field name="currency_id" invisible="1"/>
                     <group>
@@ -548,7 +543,6 @@
                 <field name="user_id"/>
                 <field name="project_category_id"/>
                 <field name="project_type_id"/>
-                <field name="current_revision_id" invisible="1"/>
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                 <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>

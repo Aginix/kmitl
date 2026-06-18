@@ -11,7 +11,6 @@
         "hr",
         "account_fiscal_year",
         "base_exception",
-        "base_revision",
         "tracking_manager",
         "account_analytic_kmitl",
         "hr_employee_name_detail_kmitl",

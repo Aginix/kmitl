@@ -44,7 +44,7 @@ def _compute_tiered_deduction(amount):
 class KrisProject(models.Model):
     _name = "kris.project"
     _description = "KRIS Project"
-    _inherit = ["mail.thread", "mail.activity.mixin", "base.revision"]
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "name desc"
     _rec_name = "name"
 
