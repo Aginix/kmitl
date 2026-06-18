@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_purchase_contract_guarantee_report_user,purchase.contract.guarantee.report user,model_purchase_contract_guarantee_report,purchase.group_purchase_user,1,0,0,0
-access_purchase_contract_guarantee_report_manager,purchase.contract.guarantee.report manager,model_purchase_contract_guarantee_report,purchase.group_purchase_manager,1,0,0,0
+access_purchase_contract_guarantee_report_manager,purchase.contract.guarantee.report manager,model_purchase_contract_guarantee_report,purchase.group_purchase_manager,1,1,1,1
