@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-import logging
 from datetime import timedelta
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import models, fields, api
 
-_logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -77,41 +74,22 @@ class PurchaseOrder(models.Model):
         ]
 
     def _cron_notify_contract_expire(self):
-        purchase_orders = self.search(self._domain_contract_expiration())
-
-        if not purchase_orders:
+        act_type = self.env.ref(
+            'purchase_order_expiration.mail_activity_contract_expire',
+            raise_if_not_found=False,
+        )
+        if not act_type:
             return
 
-        action = self.env.ref('purchase_order_expiration.action_contracts_expiring')
-        odoobot_user = self.env.ref('base.user_root')
-        orders_by_user = {}
-
-        for order in purchase_orders:
+        for order in self.search(self._domain_contract_expiration()):
             if not order.user_id:
                 continue
-            orders_by_user.setdefault(order.user_id, self.env['purchase.order'])
-            orders_by_user[order.user_id] |= order
-
-        for user, orders in orders_by_user.items():
-            if user == odoobot_user:
-                continue
-            body = _(
-                'There are %s contracts that are about to expire. '
-                '<a href="/web#action=%s">Click to review</a>'
-            ) % (len(orders), action.id)
-            try:
-                with self.env.cr.savepoint():
-                    channel_data = self.env['mail.channel'].sudo().channel_get(
-                        [odoobot_user.partner_id.id, user.partner_id.id]
-                    )
-                    channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
-                    channel.sudo().with_user(odoobot_user).message_post(
-                        body=body,
-                        message_type='comment',
-                        subtype_xmlid='mail.mt_comment',
-                        author_id=odoobot_user.partner_id.id,
-                    )
-            except Exception:
-                _logger.warning(
-                    "Failed to notify user %s of expiring contracts", user.name, exc_info=True
-                )
+            if order.activity_ids.filtered(
+                lambda a: a.activity_type_id == act_type
+            ):
+                continue  # already raised, don't duplicate each day
+            order.activity_schedule(
+                'purchase_order_expiration.mail_activity_contract_expire',
+                user_id=order.user_id.id,
+                date_deadline=order.work_end,
+            )

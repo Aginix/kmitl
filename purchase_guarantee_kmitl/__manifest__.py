@@ -8,6 +8,8 @@
     'category': 'KMITL',
     'depends': ['l10n_th_gov_purchase_guarantee', 'purchase_exception', 'purchase_budget'],
     "data": [
+        "data/mail_activity_type.xml",
+        "data/ir_cron_data.xml",
         "data/purchase_guarantee_method_data.xml",
         "data/purchase_exception.xml",
         "data/purchase_guarantee_rules.xml",

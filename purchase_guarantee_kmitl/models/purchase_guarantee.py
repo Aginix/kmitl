@@ -1,4 +1,8 @@
+from datetime import timedelta
+
 from odoo import _, api, fields, models
+
+GUARANTEE_ACT = "purchase_guarantee_kmitl.mail_activity_guarantee_expire"
 
 
 class PurchaseGuarantee(models.Model):
@@ -103,6 +107,37 @@ class PurchaseGuarantee(models.Model):
                     )
                 ]
                 rec.guarantee_method_id = GuaranteeMethod.search(dom)[:1]
+
+    # --- Expiration notification (mail.activity Todo) ---
+    def _domain_guarantee_expiration(self):
+        today = fields.Date.today()
+        days = int(
+            self.env["ir.config_parameter"].sudo().get_param(
+                "purchase_guarantee_kmitl.notify_before_days", default=15
+            )
+        )
+        return [
+            ("active", "=", True),
+            ("date_return", "=", False),  # not yet returned
+            ("date_due_guarantee", ">=", today),
+            ("date_due_guarantee", "<=", today + timedelta(days=days)),
+        ]
+
+    def _cron_notify_guarantee_expire(self):
+        act_type = self.env.ref(GUARANTEE_ACT, raise_if_not_found=False)
+        if not act_type:
+            return
+        for rec in self.search(self._domain_guarantee_expiration()):
+            user = rec.create_uid
+            if not user or rec.activity_ids.filtered(
+                lambda a: a.activity_type_id == act_type
+            ):
+                continue  # no owner, or a Todo is already raised
+            rec.activity_schedule(
+                GUARANTEE_ACT,
+                user_id=user.id,
+                date_deadline=rec.date_due_guarantee,
+            )
 
     def action_view_purchase_order(self):
         self.ensure_one()

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!-- Notification -->
+    <record id="ir_cron_notify_guarantee_expire" model="ir.cron">
+        <field name="name">Notify Guarantee Nearly Expire</field>
+        <field
+            name="model_id"
+            ref="l10n_th_gov_purchase_guarantee.model_purchase_guarantee"
+        />
+        <field name="state">code</field>
+        <field name="code">model._cron_notify_guarantee_expire()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

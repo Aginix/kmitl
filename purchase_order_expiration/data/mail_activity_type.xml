@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Acknowledgement Todo: the purchase contract is about to expire -->
+    <record id="mail_activity_contract_expire" model="mail.activity.type">
+        <field name="name">Contract about to expire</field>
+        <field name="summary">The purchase contract is about to expire</field>
+        <field name="todo_category">acknowledgement</field>
+        <field name="res_model">purchase.order</field>
+        <field name="icon">fa-clock-o</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

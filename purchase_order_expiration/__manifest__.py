@@ -8,6 +8,7 @@
     "category": "Purchase",
     'depends': ['purchase_kmitl', 'purchase_contract_kmitl'],
     "data": [
+        "data/mail_activity_type.xml",
         "data/ir_cron_data.xml",
         "views/purchase_order_views.xml",
         "views/res_config_settings_views.xml"
