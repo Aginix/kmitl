@@ -24,6 +24,7 @@ class KrisProjectReceipt(models.Model):
         string="Installment Number",
         domain="[('project_id', '=', project_id)]",
         ondelete="set null",
+        tracking=True,
     )
     name = fields.Char(
         string="Receipt Number",
@@ -61,6 +62,7 @@ class KrisProjectReceipt(models.Model):
     )
     note = fields.Text(
         string="Note",
+        tracking=True,
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",

@@ -41,7 +41,7 @@ A scheduled milestone of contracted work, each with its own due date and payment
 _Avoid_: work period, work phase, payment schedule, payment installment
 
 **Receipt** (รายรับ):
-A single recorded payment received against a project — one document with a number, date and amount. `kris.project.receipt`.
+A single recorded payment received against a project — one document with a number, date and amount. `kris.project.receipt`. Amendable while the project is `draft`/`in_progress`; frozen once the project is `done`/`cancel`. `project_id` is immutable — a receipt belongs to one project for life. See ADR-0003.
 _Avoid_: revenue (a single one is never "a revenue")
 
 **Revenue**:
