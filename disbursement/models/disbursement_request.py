@@ -30,6 +30,7 @@ class DisbursementRequest(models.Model):
         "signed": [("readonly", True)],
         "verified": [("readonly", True)],
         "approved": [("readonly", True)],
+        "bills_posted": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
 

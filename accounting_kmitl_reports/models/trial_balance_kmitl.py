@@ -3,12 +3,6 @@
 from odoo import _, api, fields, models
 from odoo.tools import date_utils, format_date
 
-# Dimension plan codes this report can filter on. Order is the display order.
-DIMENSION_CODES = ("departments", "sources", "funds", "activities")
-# Hierarchical dimensions: a selected node also matches all of its descendants
-# (when analytic accounts carry a ``parent_id`` hierarchy). ``sources`` is flat.
-HIERARCHICAL_DIMS = ("departments", "funds", "activities")
-
 
 class TrialBalanceReportKmitl(models.AbstractModel):
     """Trial balance computed by the OCA engine, extended with KMITL
@@ -21,7 +15,10 @@ class TrialBalanceReportKmitl(models.AbstractModel):
 
     _name = "report.accounting_kmitl_reports.trial_balance_kmitl"
     _description = "KMITL Trial Balance Report"
-    _inherit = "report.account_financial_report.trial_balance"
+    _inherit = [
+        "report.account_financial_report.trial_balance",
+        "accounting_kmitl_reports.dimension.filter.mixin",
+    ]
 
     # ------------------------------------------------------------------
     # Dimension filtering
@@ -51,25 +48,6 @@ class TrialBalanceReportKmitl(models.AbstractModel):
     def _get_initial_balance_fy_pl_ml_domain(self, *args, **kwargs):
         domain = super()._get_initial_balance_fy_pl_ml_domain(*args, **kwargs)
         return domain + self._kmitl_dim_leaves()
-
-    @api.model
-    def _kmitl_build_dim_leaves(self, dims):
-        """Turn the selected dimension values into ``analytic_distribution``
-        domain leaves. Within a dimension the ids (plus descendants for
-        hierarchical dimensions) are OR-ed; the resulting leaves are AND-ed
-        across dimensions by the domain builder.
-        """
-        analytic = self.env["account.analytic.account"]
-        use_child = "parent_id" in analytic._fields
-        leaves = []
-        for code in DIMENSION_CODES:
-            ids = (dims or {}).get(code) or []
-            if not ids:
-                continue
-            if code in HIERARCHICAL_DIMS and use_child:
-                ids = analytic.search([("id", "child_of", ids)]).ids
-            leaves.append(("analytic_distribution", "in", ids))
-        return leaves
 
     # ------------------------------------------------------------------
     # Filter helpers
