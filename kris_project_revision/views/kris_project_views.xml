@@ -24,9 +24,9 @@
                     attrs="{'invisible': [('current_revision_id', '=', False)]}"
                 />
             </xpath>
-            <xpath expr="//sheet" position="before">
+            <xpath expr="//div[hasclass('dialog-warning-receipt')]" position="before">
                 <div
-                    class="alert alert-warning"
+                    class="alert alert-danger"
                     role="alert"
                     attrs="{'invisible': [('current_revision_id', '=', False)]}"
                 >
