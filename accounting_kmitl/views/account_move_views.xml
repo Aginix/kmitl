@@ -67,6 +67,14 @@
             </xpath>
             <xpath expr="//page[@id='other_tab_entry']/field[@name='narration']" position="replace"/>
 
+            <!-- Attachments (renders the base account.move attachment_ids field
+                 with the same many2many_binary widget disbursement.request uses) -->
+            <xpath expr="//page[@id='invoice_tab']/.." position="before">
+                <group name="attachment" string="Attachments">
+                    <field name="attachment_ids" widget="many2many_binary" nolabel="1" colspan="2" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                </group>
+            </xpath>
+
             <!-- Show reversed_entry_id only when it has a value -->
             <xpath expr="//page[@id='other_tab_entry']//field[@name='reversed_entry_id']" position="attributes">
                 <attribute name="attrs">{'invisible': ['|', ('move_type', '!=', 'entry'), ('reversed_entry_id', '=', False)]}</attribute>

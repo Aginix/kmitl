@@ -102,6 +102,21 @@ class AccountAsset(models.Model):
         domain=[("root_plan_id.code", "=", "activities")],
     )
 
+    @api.depends("profile_id")
+    def _compute_analytic_distribution(self):
+        """Default the analytic distribution from the profile only when the
+        asset has none yet; never overwrite dimensions entered through the
+        convenience fields (source/department/fund/activity).
+
+        The base account_asset_management computes this purely from the profile,
+        which wipes out the values written by the convenience-field inverse.
+        """
+        for asset in self:
+            asset.analytic_distribution = (
+                asset.analytic_distribution
+                or asset.profile_id.analytic_distribution
+            )
+
     location = fields.Char(
         tracking=True,
         string="Location",
