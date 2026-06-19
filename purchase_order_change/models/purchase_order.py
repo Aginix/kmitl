@@ -19,9 +19,15 @@ class PurchaseOrder(models.Model):
     def _action_open_purchase_order_change(self, change_type):
         self.ensure_one()
 
+        name = (
+            _("Structural Contract Change")
+            if change_type == "impact"
+            else _("Non-Structural Contract Change")
+        )
+
         return {
             "type": "ir.actions.act_window",
-            "name": "Purchase Order Change",
+            "name": name,
             "res_model": "purchase.order.change",
             "view_mode": "form",
             "views": [
