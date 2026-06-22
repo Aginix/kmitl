@@ -13,10 +13,10 @@
                 <div t-if="state.admins.length" class="o_kca_admins">
                     <h5>ผู้ดูแลระบบ</h5>
                     <ul>
-                        <t t-foreach="state.admins" t-as="admin" t-key="admin.email">
+                        <t t-foreach="state.admins" t-as="admin" t-key="admin_index">
                             <li>
-                                <span class="o_kca_admin_name" t-esc="admin.name" />
-                                <a t-att-href="'mailto:' + admin.email" t-esc="admin.email" />
+                                <span t-if="admin.name" class="o_kca_admin_name" t-esc="admin.name" />
+                                <a t-if="admin.email" t-att-href="'mailto:' + admin.email" t-esc="admin.email" />
                             </li>
                         </t>
                     </ul>

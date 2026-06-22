@@ -26,7 +26,11 @@ export class ContactAdmin extends Component {
                 this.menu.selectMenu(apps[0]);
                 return;
             }
-            this.state.admins = await this.orm.call("res.users", "get_access_admins", []);
+            try {
+                this.state.admins = await this.orm.call("res.users", "get_access_admins", []);
+            } catch {
+                this.state.admins = [];
+            }
         });
     }
 }

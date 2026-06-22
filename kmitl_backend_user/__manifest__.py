@@ -25,6 +25,7 @@
             "kmitl_backend_user/static/src/contact_admin/contact_admin.scss",
         ],
     },
+    "uninstall_hook": "uninstall_hook",
     "application": False,
     "installable": True,
 }
