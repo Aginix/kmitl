@@ -44,11 +44,21 @@
         sequence="20"
     />
 
+    <!-- All account.move entries (รายการเดินบัญชี) under Journal Entries -->
+    <menuitem
+        id="menu_account_entries"
+        name="Account Entries"
+        parent="menu_journal_entries"
+        action="account.action_move_journal_line"
+        sequence="5"
+    />
+
     <!-- All Journal Items (account.move.line) under Journal Entries -->
     <record id="action_account_move_lines_all" model="ir.actions.act_window">
         <field name="name">Journal Items</field>
         <field name="res_model">account.move.line</field>
         <field name="view_mode">tree,pivot,graph,kanban,form</field>
+        <field name="search_view_id" ref="account.view_account_move_line_filter"/>
         <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
         <field name="context">{'search_default_group_by_move': 1, 'create': 0}</field>
     </record>
