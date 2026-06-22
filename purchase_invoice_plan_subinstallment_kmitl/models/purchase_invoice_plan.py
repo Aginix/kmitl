@@ -91,7 +91,7 @@ class PurchaseInvoicePlan(models.Model):
                     rec.amount / amount_total * 100 if amount_total else 0
                 )
                 continue
-            if rec.last and not rec.child_ids:
+            if rec.last and not rec.child_ids and not rec.parent_id:
                 scope = rec._sibling_scope()
                 scope_total = rec._scope_total()
                 prev_amount = sum((scope - rec).mapped("amount"))
@@ -107,7 +107,7 @@ class PurchaseInvoicePlan(models.Model):
                 continue
             amount_total = rec.purchase_id.amount_total
             if amount_total != 0:
-                if rec.last:
+                if rec.last and not rec.parent_id:
                     scope = rec._sibling_scope()
                     scope_percent = rec._scope_percent()
                     prev_percent = sum((scope - rec).mapped("percent"))
