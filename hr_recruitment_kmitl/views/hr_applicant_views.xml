@@ -1,43 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Extend hr.applicant form with onboarding button -->
-    <record id="hr_applicant_view_form_onboarding_button" model="ir.ui.view">
-        <field name="name">hr.applicant.form.onboarding.button</field>
-        <field name="model">hr.applicant</field>
-        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" />
-        <field name="arch" type="xml">
-            <xpath
-                expr="//button[@name='create_employee_from_applicant']"
-                position="after"
-            >
-                <button
-                    name="%(hr_recruitment_kmitl.action_create_onboarding)d"
-                    type="action"
-                    class="btn-primary"
-                    string="Create Onboarding"
-                    attrs="{'invisible': [('can_create_onboarding', '=', False)]}"
-                />
-                <field name="can_create_onboarding" invisible="1" />
-            </xpath>
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button
-                    class="oe_stat_button"
-                    type="object"
-                    name="action_view_onboarding"
-                    icon="fa-list"
-                    attrs="{'invisible': [('onboarding_count', '=', 0)]}"
-                >
-                    <field
-                        name="onboarding_count"
-                        widget="statinfo"
-                        string="Onboarding"
-                    />
-                </button>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Extend hr.applicant form with profile tabs -->
+    <!-- Extend hr.applicant form with profile tabs.
+         NOTE: this view must load before the onboarding-button view below.
+         Both inherit the same base form, and Odoo validates the full combined
+         arch when writing any sibling. Loading this view first ensures fields
+         removed here (e.g. spouse_*) are cleaned before the other view is
+         validated, avoiding upgrade failures against a stale stored view. -->
     <record id="hr_applicant_view_form_profile" model="ir.ui.view">
         <field name="name">hr.applicant.form.profile</field>
         <field name="model">hr.applicant</field>
@@ -269,6 +237,43 @@
                         </group>
                     </group>
                 </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend hr.applicant form with onboarding button -->
+    <record id="hr_applicant_view_form_onboarding_button" model="ir.ui.view">
+        <field name="name">hr.applicant.form.onboarding.button</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//button[@name='create_employee_from_applicant']"
+                position="after"
+            >
+                <button
+                    name="%(hr_recruitment_kmitl.action_create_onboarding)d"
+                    type="action"
+                    class="btn-primary"
+                    string="Create Onboarding"
+                    attrs="{'invisible': [('can_create_onboarding', '=', False)]}"
+                />
+                <field name="can_create_onboarding" invisible="1" />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    class="oe_stat_button"
+                    type="object"
+                    name="action_view_onboarding"
+                    icon="fa-list"
+                    attrs="{'invisible': [('onboarding_count', '=', 0)]}"
+                >
+                    <field
+                        name="onboarding_count"
+                        widget="statinfo"
+                        string="Onboarding"
+                    />
+                </button>
             </xpath>
         </field>
     </record>
