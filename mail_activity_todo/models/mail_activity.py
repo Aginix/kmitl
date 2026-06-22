@@ -30,11 +30,22 @@ class MailActivity(models.Model):
     _inherit = "mail.activity"
 
     todo_category = fields.Selection(
-        related="activity_type_id.todo_category",
+        TODO_CATEGORIES,
+        string="Todo Category",
+        compute="_compute_todo_category",
         store=True,
         index=True,
-        readonly=True,
+        readonly=False,
+        help="Defaults from the activity type. Set it on a manually scheduled "
+        "activity to turn it into a Todo that lands in your inbox.",
     )
+
+    @api.depends("activity_type_id")
+    def _compute_todo_category(self):
+        """Default the category from the type, but leave it user-overridable so a
+        manually scheduled activity can be categorised into the Todo inbox."""
+        for activity in self:
+            activity.todo_category = activity.activity_type_id.todo_category
 
     read_ids = fields.One2many("todo.read", "activity_id", string="Read receipts")
     is_my_todo = fields.Boolean(
