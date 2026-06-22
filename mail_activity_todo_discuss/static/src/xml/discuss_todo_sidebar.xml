@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="mail_activity_todo_discuss.DiscussTodoSidebarItem" owl="1">
+        <button class="o_DiscussSidebarMailbox o_DiscussTodoSidebarItem btn d-flex align-items-center py-1 px-0 border-0 rounded-0 fw-normal text-dark"
+            t-att-class="{
+                'bg-100': !discussView.discuss.isTodoActive,
+                'o-active bg-200': discussView.discuss.isTodoActive,
+            }"
+            t-attf-class="{{ className }}"
+            t-on-click="onClick"
+            t-ref="root"
+            data-mailbox-name="Todos"
+        >
+            <i class="o_DiscussSidebarMailbox_item fa fa-fw fa-check-square-o ms-4 me-2"/>
+            <div class="o_DiscussSidebarMailbox_item o_DiscussSidebarMailbox_name me-2 text-truncate">Todos</div>
+            <div t-attf-class="o_DiscussSidebarMailbox_item flex-grow-1 {{ state.count === 0 ? 'me-3' : '' }}"/>
+            <t t-if="state.count > 0">
+                <div class="o_DiscussSidebarMailbox_counter o_DiscussSidebarMailbox_item badge rounded-pill text-bg-primary ms-1 me-3" t-esc="state.count"/>
+            </t>
+        </button>
+    </t>
+
+    <!-- Add a "Todos" row to the Discuss sidebar, in the mailbox category next
+         to Inbox / Starred / History. -->
+    <t t-name="mail_activity_todo_discuss.DiscussSidebar" t-inherit="mail.DiscussSidebar" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_DiscussSidebar_categoryMailbox')]" position="inside">
+            <DiscussTodoSidebarItem record="discussView"/>
+        </xpath>
+    </t>
+
+</templates>

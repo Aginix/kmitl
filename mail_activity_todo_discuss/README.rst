@@ -1,36 +1,44 @@
-==================================
-Mail Activity Todo - Discuss Panel
-==================================
+============================
+Mail Activity Todo - Discuss
+============================
 
-Surfaces the unified Todo inbox (from ``mail_activity_todo``) as a panel inside
-the **Discuss** sidebar, so every piece of incoming work addressed to the user
-— chat messages, mailbox notifications and actionable Todos — is reachable from
-a single place.
+Makes the unified Todo inbox (from ``mail_activity_todo``) a first-class
+destination **inside Discuss**, so every piece of incoming work addressed to
+the user — chat messages, mailbox notifications and actionable Todos — lives in
+one place.
 
 Features
 ========
 
-* A **Todos** section in the Discuss sidebar, below the Inbox / Starred /
-  History mailboxes.
-* Lists the user's pending Todos (up to 100, earliest deadline first), each
-  with its source-app icon, subject, source record and a colour-coded
-  deadline (overdue / today / planned). A live total count sits in the header,
-  mirroring the systray badge.
+* A **Todos** row in the Discuss sidebar, next to Inbox / Starred / History,
+  with a live unread count and active-state highlight that behave like the
+  native mailbox rows.
+* Clicking it opens the Todo inbox in the Discuss **main content pane** (not a
+  cramped sidebar list): the user's open Todos (up to 100, earliest deadline
+  first), each with its source-app icon, subject, source record and a
+  colour-coded deadline (overdue / today / planned).
 * Click a Todo to jump straight to its source document.
-* A **View all (N)** link opens the full Todo app for the remaining Todos.
-* Live refresh: the panel updates in real time as Todos addressed to the user
-  change (reuses the existing ``mail_activity_todo`` bus notification).
-* Collapsible header, with the list scrolling within the panel so it never
-  pushes the Channels / Direct Messages categories off-screen.
+* A header button and footer link open the full Todo app for the remainder
+  (``View all (N)`` when more than 100 Todos exist).
+* The activity **systray** routes here too: clicking it opens the Todos page
+  inside Discuss rather than the backend list.
+* Live refresh via the existing ``mail_activity_todo`` bus notification.
+* Selecting a mailbox/channel automatically leaves the Todo view, and vice
+  versa — they are never highlighted at once.
 
-The list payload is provided by ``res.users.get_my_todos`` (added here),
-which reuses ``mail_activity_todo``'s ``_my_todo_count_domain`` so the panel,
-the systray badge and the Todo app all select the same Todos. Navigation
-reuses ``mail.activity.action_open_document`` and the
-``mail_activity_todo.action_my_todos`` action.
+How it works
+============
+
+* ``res.users.get_my_todos`` (added here) provides the list payload, reusing
+  ``mail_activity_todo``'s ``_my_todo_count_domain`` so the page, the sidebar
+  count and the Todo app all select the same Todos.
+* A ``registerPatch`` on the legacy mail ``Discuss`` model adds an
+  ``isTodoActive`` flag and an ``openTodos()`` method (mirroring ``openThread``);
+  the Discuss content/sidebar templates are extended via ``t-inherit`` to render
+  the Todo view and the sidebar row.
 
 Configuration
 =============
 
-No configuration required. Install the module; the panel appears for every user
-in Discuss (desktop layout).
+No configuration required. Install the module; the Todos destination appears
+for every user in Discuss (desktop layout).

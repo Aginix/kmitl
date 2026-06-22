@@ -61,5 +61,15 @@ class ResUsers(models.Model):
         return {
             "todos": todos,
             "total_count": total,
-            "shown_count": len(todos),
+        }
+
+    @api.model
+    def get_my_todo_total(self):
+        """Cheap badge count for the Discuss Todo sidebar row — just the number
+        (a single search_count), since the row only renders the total and does
+        not need the per-app grouping of get_my_todo_count."""
+        return {
+            "total_count": self.env["mail.activity"].search_count(
+                self._my_todo_count_domain()
+            ),
         }

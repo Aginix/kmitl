@@ -1,0 +1,17 @@
+.o_DiscussTodoView {
+    .o_DiscussTodoView_icon {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    // Let the text column truncate inside the flex row.
+    .o_DiscussTodoView_text {
+        min-width: 0;
+    }
+
+    .o_DiscussTodoView_item:hover {
+        background-color: $gray-200;
+    }
+}

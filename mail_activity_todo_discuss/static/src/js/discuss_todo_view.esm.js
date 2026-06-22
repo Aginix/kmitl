@@ -7,34 +7,27 @@ import { useService, useBus } from "@web/core/utils/hooks";
 const { useState, onWillStart } = owl;
 
 /**
- * A Todo inbox panel embedded in the Discuss sidebar. It lists the current
- * user's open Todos (capped server-side at 100 via res.users.get_my_todos),
- * so every incoming, actionable item lives alongside the user's chat and
- * mailbox notifications. Clicking a Todo opens its source document; "View all"
- * opens the full Todo app for the remainder.
+ * The Todo inbox rendered in the Discuss MAIN content pane (when
+ * discuss.isTodoActive). Lists the current user's open Todos (capped at 100 by
+ * res.users.get_my_todos); clicking one opens its source document, and the
+ * footer/header links open the full Todo app for the remainder.
  *
- * Registered as a messaging component so it can be referenced from the
- * inherited mail.DiscussSidebar template (legacy mail framework, Odoo 16.0).
+ * Registered as a messaging component so the patched mail.Discuss.content
+ * template can reference <DiscussTodoView/> with no import.
  */
-export class DiscussTodoPanel extends LegacyComponent {
+export class DiscussTodoView extends LegacyComponent {
     setup() {
         super.setup();
         this.orm = useService("orm");
         this.action = useService("action");
-
-        this.state = useState({
-            todos: [],
-            totalCount: 0,
-            shownCount: 0,
-            isOpen: true,
-        });
+        this.state = useState({ todos: [], totalCount: 0 });
 
         onWillStart(() => this.fetchData());
-
-        // Live refresh: the server pings "mail_activity_todo/updated" on the
-        // user's bus channel; mail_activity_todo's notification handler re-emits
-        // it on env.bus as "mail_activity_todo_updated".
         useBus(this.env.bus, "mail_activity_todo_updated", () => this.fetchData());
+    }
+
+    get discussView() {
+        return this.props.record;
     }
 
     async fetchData() {
@@ -42,23 +35,16 @@ export class DiscussTodoPanel extends LegacyComponent {
             const result = await this.orm.call("res.users", "get_my_todos", []);
             this.state.todos = result.todos || [];
             this.state.totalCount = result.total_count || 0;
-            this.state.shownCount = result.shown_count || 0;
         } catch (error) {
             console.error("Failed to fetch Todos:", error);
             this.state.todos = [];
             this.state.totalCount = 0;
-            this.state.shownCount = 0;
         }
-    }
-
-    toggle() {
-        this.state.isOpen = !this.state.isOpen;
     }
 
     onTodoClick(todo) {
         // Open the Todo's source record. Build the act_window client-side with
-        // an explicit `views` (the action service requires it); mail.activity's
-        // action_open_document returns only view_mode, which doAction rejects.
+        // an explicit `views` (the action service requires it).
         if (!todo.res_model || !todo.res_id) {
             return;
         }
@@ -76,9 +62,9 @@ export class DiscussTodoPanel extends LegacyComponent {
     }
 }
 
-Object.assign(DiscussTodoPanel, {
-    props: {},
-    template: "mail_activity_todo_discuss.DiscussTodoPanel",
+Object.assign(DiscussTodoView, {
+    props: { record: Object },
+    template: "mail_activity_todo_discuss.DiscussTodoView",
 });
 
-registerMessagingComponent(DiscussTodoPanel);
+registerMessagingComponent(DiscussTodoView);
