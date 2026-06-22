@@ -1,4 +1,4 @@
-from odoo import fields, models, modules
+from odoo import api, fields, models, modules
 
 
 class ResUsers(models.Model):
@@ -11,6 +11,7 @@ class ResUsers(models.Model):
             ("todo_category", "!=", False),
         ]
 
+    @api.model
     def get_my_todo_count(self):
         """Systray payload: open Todos grouped by source model with per-model
         icon and overdue/today/planned counts.
