@@ -7,12 +7,11 @@ import { useService, useBus } from "@web/core/utils/hooks";
 const { useState, onWillStart } = owl;
 
 /**
- * A Todo inbox panel embedded in the Discuss sidebar. It reuses the exact
- * server payload the systray uses (res.users.get_my_todo_count), so the count
- * and grouping stay consistent with the systray badge and the Todo app.
- *
- * Rationale: every incoming thing addressed to the user — chat, mailbox
- * notifications and actionable Todos — should be reachable from one place.
+ * A Todo inbox panel embedded in the Discuss sidebar. It lists the current
+ * user's open Todos (capped server-side at 100 via res.users.get_my_todos),
+ * so every incoming, actionable item lives alongside the user's chat and
+ * mailbox notifications. Clicking a Todo opens its source document; "View all"
+ * opens the full Todo app for the remainder.
  *
  * Registered as a messaging component so it can be referenced from the
  * inherited mail.DiscussSidebar template (legacy mail framework, Odoo 16.0).
@@ -24,12 +23,11 @@ export class DiscussTodoPanel extends LegacyComponent {
         this.action = useService("action");
 
         this.state = useState({
-            groups: [],
+            todos: [],
             totalCount: 0,
+            shownCount: 0,
             isOpen: true,
         });
-        this.treeViewId = false;
-        this.formViewId = false;
 
         onWillStart(() => this.fetchData());
 
@@ -41,15 +39,15 @@ export class DiscussTodoPanel extends LegacyComponent {
 
     async fetchData() {
         try {
-            const result = await this.orm.call("res.users", "get_my_todo_count", []);
-            this.state.groups = result.groups || [];
+            const result = await this.orm.call("res.users", "get_my_todos", []);
+            this.state.todos = result.todos || [];
             this.state.totalCount = result.total_count || 0;
-            this.treeViewId = result.tree_view_id || false;
-            this.formViewId = result.form_view_id || false;
+            this.state.shownCount = result.shown_count || 0;
         } catch (error) {
-            console.error("Failed to fetch Todo count:", error);
-            this.state.groups = [];
+            console.error("Failed to fetch Todos:", error);
+            this.state.todos = [];
             this.state.totalCount = 0;
+            this.state.shownCount = 0;
         }
     }
 
@@ -57,21 +55,18 @@ export class DiscussTodoPanel extends LegacyComponent {
         this.state.isOpen = !this.state.isOpen;
     }
 
-    onGroupClick(group) {
-        // Drill into the Todo inbox filtered to this source model.
+    onTodoClick(todo) {
+        // Open the Todo's source record. Build the act_window client-side with
+        // an explicit `views` (the action service requires it); mail.activity's
+        // action_open_document returns only view_mode, which doAction rejects.
+        if (!todo.res_model || !todo.res_id) {
+            return;
+        }
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: group.name,
-            res_model: "mail.activity",
-            domain: [
-                ["is_my_todo", "=", true],
-                ["is_read_by_me", "=", false],
-                ["res_model_id", "=", group.model_id],
-            ],
-            views: [
-                [this.treeViewId, "list"],
-                [this.formViewId, "form"],
-            ],
+            res_model: todo.res_model,
+            res_id: todo.res_id,
+            views: [[false, "form"]],
             target: "current",
         });
     }

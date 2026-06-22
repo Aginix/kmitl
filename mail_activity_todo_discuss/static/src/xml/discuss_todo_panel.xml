@@ -17,24 +17,41 @@
                 />
             </div>
             <div class="o_DiscussTodoPanel_content" t-if="state.isOpen">
-                <t t-if="state.groups.length === 0">
+                <t t-if="state.todos.length === 0">
                     <div class="text-muted small mx-4 mb-2">No pending todos</div>
                 </t>
                 <t t-else="">
-                    <t t-foreach="state.groups" t-as="group" t-key="group.model">
-                        <button class="o_DiscussTodoPanel_item btn d-flex align-items-center w-100 py-1 px-0 border-0 rounded-0 fw-normal text-dark"
-                            t-on-click="() => this.onGroupClick(group)"
-                            t-att-title="group.name"
-                        >
-                            <img t-if="group.icon" t-att-src="group.icon" class="o_DiscussTodoPanel_icon ms-4 me-2" alt=""/>
-                            <i t-else="" class="fa fa-fw fa-check-square-o ms-4 me-2"/>
-                            <span class="flex-grow-1 text-truncate text-start" t-esc="group.name"/>
-                            <span class="o_DiscussTodoPanel_itemCounter badge rounded-pill text-bg-primary ms-1 me-3" t-esc="group.total_count"/>
-                        </button>
-                    </t>
+                    <div class="o_DiscussTodoPanel_items">
+                        <t t-foreach="state.todos" t-as="todo" t-key="todo.id">
+                            <button class="o_DiscussTodoPanel_item btn d-flex align-items-center w-100 py-1 px-0 border-0 rounded-0 fw-normal text-dark"
+                                t-on-click="() => this.onTodoClick(todo)"
+                                t-att-title="todo.summary"
+                            >
+                                <img t-if="todo.icon" t-att-src="todo.icon" class="o_DiscussTodoPanel_icon ms-4 me-2" alt=""/>
+                                <i t-else="" class="fa fa-fw fa-check-square-o ms-4 me-2"/>
+                                <div class="o_DiscussTodoPanel_itemText flex-grow-1 text-start text-truncate">
+                                    <div class="text-truncate" t-esc="todo.summary"/>
+                                    <small class="text-muted text-truncate d-block" t-if="todo.res_name" t-esc="todo.res_name"/>
+                                </div>
+                                <small t-if="todo.date_deadline"
+                                    class="o_DiscussTodoPanel_deadline ms-1 me-3 text-nowrap"
+                                    t-att-class="{
+                                        'text-danger': todo.state === 'overdue',
+                                        'text-warning': todo.state === 'today',
+                                        'text-muted': todo.state === 'planned',
+                                    }"
+                                    t-esc="todo.date_deadline"
+                                />
+                            </button>
+                        </t>
+                    </div>
                     <div class="o_DiscussTodoPanel_viewAll mx-4 my-1">
                         <a href="#" class="small text-primary" t-on-click.prevent="onViewAllClick">
-                            <i class="fa fa-list me-1"/>View all
+                            <i class="fa fa-list me-1"/>
+                            <t t-if="state.totalCount > state.shownCount">
+                                View all (<t t-esc="state.totalCount"/>)
+                            </t>
+                            <t t-else="">View all</t>
                         </a>
                     </div>
                 </t>
