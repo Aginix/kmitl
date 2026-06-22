@@ -253,9 +253,6 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
     }
 
     function initProfilePage() {
-        setupToggle("marital", "spouse_fields", function (el) {
-            return el.value === "married";
-        });
         setupToggle("academic_standing_id", "academic_position_details", function (el) {
             return Boolean(el.value);
         });

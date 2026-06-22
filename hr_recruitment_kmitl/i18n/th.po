@@ -1659,47 +1659,6 @@ msgid "Social Security"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.hr_applicant_view_form_profile
-msgid "Spouse"
-msgstr "คู่สมรส"
-
-#. module: hr_recruitment_kmitl
-#. odoo-javascript
-#: code:addons/hr_recruitment_kmitl/static/src/js/form_editor.js:0
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant__spouse_first_name
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__spouse_first_name
-#, python-format
-msgid "Spouse First Name"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#. odoo-javascript
-#: code:addons/hr_recruitment_kmitl/static/src/js/form_editor.js:0
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant__spouse_last_name
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__spouse_last_name
-#, python-format
-msgid "Spouse Last Name"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#. odoo-javascript
-#: code:addons/hr_recruitment_kmitl/static/src/js/form_editor.js:0
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant__spouse_middle_name
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__spouse_middle_name
-#, python-format
-msgid "Spouse Middle Name"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#. odoo-javascript
-#: code:addons/hr_recruitment_kmitl/static/src/js/form_editor.js:0
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant__spouse_prefix
-#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__spouse_prefix
-#, python-format
-msgid "Spouse Prefix"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__date_start
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__date_start
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_profile

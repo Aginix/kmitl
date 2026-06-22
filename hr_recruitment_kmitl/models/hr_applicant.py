@@ -12,10 +12,6 @@ PROFILE_CHAR_FIELDS = [
     "first_name_en",
     "middle_name_en",
     "last_name_en",
-    "spouse_prefix",
-    "spouse_first_name",
-    "spouse_middle_name",
-    "spouse_last_name",
     "emergency_contact_name",
     "emergency_contact_relation",
     "emergency_contact_phone",
@@ -148,11 +144,6 @@ class HrApplicant(models.Model):
         string="Marital Status",
         tracking=True,
     )
-    spouse_prefix = fields.Char(tracking=True)
-    spouse_first_name = fields.Char(tracking=True)
-    spouse_middle_name = fields.Char(tracking=True)
-    spouse_last_name = fields.Char(tracking=True)
-
     # Emergency contact
     emergency_contact_name = fields.Char(tracking=True)
     emergency_contact_relation = fields.Char(tracking=True)

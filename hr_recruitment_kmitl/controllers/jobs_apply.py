@@ -103,15 +103,6 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 )
                 d("marital", profile.marital or "")
 
-                # Spouse
-                d(
-                    "spouse_prefix",
-                    profile.spouse_prefix.name if profile.spouse_prefix else "",
-                )
-                d("spouse_first_name", profile.spouse_first_name or "")
-                d("spouse_middle_name", profile.spouse_middle_name or "")
-                d("spouse_last_name", profile.spouse_last_name or "")
-
                 # Registered address
                 d("address_street", profile.address_street or "")
                 d("address_city", profile.address_city or "")

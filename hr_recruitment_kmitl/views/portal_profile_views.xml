@@ -62,22 +62,6 @@
                             <group string="Family">
                                 <group>
                                     <field name="marital" />
-                                    <field
-                                        name="spouse_prefix"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
-                                    <field
-                                        name="spouse_first_name"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
-                                    <field
-                                        name="spouse_middle_name"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
-                                    <field
-                                        name="spouse_last_name"
-                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
-                                    />
                                 </group>
                             </group>
                         </page>

@@ -78,15 +78,6 @@
                             <field name="nationality_id" />
                             <field name="marital" />
                         </group>
-                        <group
-                            string="Spouse"
-                            attrs="{'invisible': [('marital', '!=', 'married')]}"
-                        >
-                            <field name="spouse_prefix" />
-                            <field name="spouse_first_name" />
-                            <field name="spouse_middle_name" />
-                            <field name="spouse_last_name" />
-                        </group>
                     </group>
                 </page>
                 <!-- Contact & Address tab -->
