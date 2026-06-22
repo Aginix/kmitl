@@ -292,6 +292,10 @@
                 </t>
 
                 <div class="family-rows-container">
+                    <t
+                        t-set="default_relations"
+                        t-value="(request.env.ref('hr_recruitment_kmitl.relation_father', raise_if_not_found=False) or request.env['hr.employee.relative.relation']) + (request.env.ref('hr_recruitment_kmitl.relation_mother', raise_if_not_found=False) or request.env['hr.employee.relative.relation'])"
+                    />
                     <t t-foreach="onboarding.family_member_ids" t-as="family">
                         <div class="card border rounded-4 mb-4 family-row">
                             <div class="card-body p-4">
@@ -304,6 +308,7 @@
                                             t-out="family_index + 1"
                                         /></h6>
                                     <button
+                                        t-if="family.relation_id not in default_relations"
                                         type="button"
                                         class="btn btn-outline-danger btn-sm rounded-pill btn-remove-family-row"
                                     >
@@ -466,6 +471,77 @@
                                         </select>
                                     </div>
                                 </div>
+                                <hr class="my-3" />
+                                <h6 class="fw-semibold text-dark mb-3">เอกสารประกอบ</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
+                                            <t
+                                                t-set="name"
+                                                t-valuef="family_house_registration_#{family_index}"
+                                            />
+                                            <t t-set="label">สำเนาทะเบียนบ้าน</t>
+                                            <t
+                                                t-set="description"
+                                            >รองรับ PDF หรือรูปภาพ</t>
+                                            <t t-set="required" t-value="False" />
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="family.house_registration_filename or False"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="('/web/content?model=hr.onboarding.family&amp;id=%d&amp;field=house_registration_file&amp;filename_field=house_registration_filename&amp;download=false' % family.id) if family.house_registration_file else False"
+                                            />
+                                        </t>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_upload_item"
+                                        >
+                                            <t
+                                                t-set="name"
+                                                t-valuef="family_id_card_#{family_index}"
+                                            />
+                                            <t t-set="label">บัตรประชาชน / สูติบัตร</t>
+                                            <t
+                                                t-set="description"
+                                            >รองรับ PDF หรือรูปภาพ</t>
+                                            <t t-set="required" t-value="False" />
+                                            <t
+                                                t-set="existing_filename"
+                                                t-value="family.id_card_filename or False"
+                                            />
+                                            <t
+                                                t-set="download_url"
+                                                t-value="('/web/content?model=hr.onboarding.family&amp;id=%d&amp;field=id_card_file&amp;filename_field=id_card_filename&amp;download=false' % family.id) if family.id_card_file else False"
+                                            />
+                                        </t>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.document_multi_upload_item"
+                                        >
+                                            <t
+                                                t-set="name"
+                                                t-valuef="family_other_attachment_#{family_index}"
+                                            />
+                                            <t t-set="label">เอกสารอื่น ๆ</t>
+                                            <t
+                                                t-set="description"
+                                            >อัปโหลดได้หลายไฟล์ รองรับ PDF หรือรูปภาพ</t>
+                                            <t t-set="required" t-value="False" />
+                                            <t
+                                                t-set="files"
+                                                t-value="[{'id': a.id, 'filename': a.name, 'download_url': '/web/content/%d?download=false' % a.id} for a in family.other_attachment_ids]"
+                                            />
+                                        </t>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </t>
@@ -604,6 +680,48 @@
                                     </select>
                                 </div>
                             </div>
+                            <hr class="my-3" />
+                            <h6 class="fw-semibold text-dark mb-3">เอกสารประกอบ</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.document_upload_item"
+                                    >
+                                        <t
+                                            t-set="name"
+                                        >family_house_registration___INDEX__</t>
+                                        <t t-set="label">สำเนาทะเบียนบ้าน</t>
+                                        <t t-set="description">รองรับ PDF หรือรูปภาพ</t>
+                                        <t t-set="required" t-value="False" />
+                                    </t>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.document_upload_item"
+                                    >
+                                        <t t-set="name">family_id_card___INDEX__</t>
+                                        <t t-set="label">บัตรประชาชน / สูติบัตร</t>
+                                        <t t-set="description">รองรับ PDF หรือรูปภาพ</t>
+                                        <t t-set="required" t-value="False" />
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <t
+                                        t-call="hr_recruitment_kmitl.document_multi_upload_item"
+                                    >
+                                        <t
+                                            t-set="name"
+                                        >family_other_attachment___INDEX__</t>
+                                        <t t-set="label">เอกสารอื่น ๆ</t>
+                                        <t
+                                            t-set="description"
+                                        >อัปโหลดได้หลายไฟล์ รองรับ PDF หรือรูปภาพ</t>
+                                        <t t-set="required" t-value="False" />
+                                    </t>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -690,10 +808,21 @@
                                         <t
                                             t-call="hr_recruitment_kmitl.input_readonly_field"
                                         >
-                                            <t t-set="label">Graduation Date</t>
+                                            <t t-set="label">Start Year</t>
                                             <t
                                                 t-set="value"
-                                                t-value="edu.get('graduation_date') or '-'"
+                                                t-value="edu.get('start_year') or '-'"
+                                            />
+                                        </t>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.input_readonly_field"
+                                        >
+                                            <t t-set="label">Graduate Year</t>
+                                            <t
+                                                t-set="value"
+                                                t-value="edu.get('graduate_year') or '-'"
                                             />
                                         </t>
                                     </div>
@@ -847,7 +976,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=royal_decoration_proof_file&amp;filename_field=royal_decoration_proof_filename&amp;download=true' % onboarding.id) if onboarding.royal_decoration_proof_file else False"
+                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=royal_decoration_proof_file&amp;filename_field=royal_decoration_proof_filename&amp;download=false' % onboarding.id) if onboarding.royal_decoration_proof_file else False"
                             />
                         </t>
                     </div>
@@ -959,7 +1088,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="applicant.academic_position_file and ('/web/content?model=hr.applicant&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % applicant.id) or False"
+                                t-value="applicant.academic_position_file and ('/web/content?model=hr.applicant&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=false' % applicant.id) or False"
                             />
                         </t>
                     </div>
@@ -979,9 +1108,9 @@
                 <div class="row">
                     <div class="mb-3 col-12">
                         <label class="col-form-label d-block">
-                            ท่านสามารถเริ่มปฏิบัติงานในระยะเวลาที่ประกาศกำหนดหรือไม่? <span
-                                class="text-danger"
-                            >*</span>
+                            ท่านสามารถเริ่มปฏิบัติงานใน <t
+                                t-out="applicant.job_id.start_service_date and applicant.job_id.start_service_date.strftime('%d/%m/%Y') or 'ระยะเวลาที่ประกาศกำหนด'"
+                            /> ได้หรือไม่? <span class="text-danger">*</span>
                         </label>
                         <div class="d-flex flex-wrap gap-4 pt-2">
                             <div class="form-check">
@@ -991,7 +1120,7 @@
                                     name="can_start_on_time"
                                     id="can_start_on_time_yes"
                                     value="yes"
-                                    checked="checked"
+                                    t-att-checked="onboarding.can_start_on_time != 'no' or None"
                                 />
                                 <label
                                     class="form-check-label"
@@ -1007,6 +1136,7 @@
                                     name="can_start_on_time"
                                     id="can_start_on_time_no"
                                     value="no"
+                                    t-att-checked="onboarding.can_start_on_time == 'no' or None"
                                 />
                                 <label
                                     class="form-check-label"
@@ -1018,20 +1148,25 @@
                         </div>
                     </div>
                 </div>
+                <div
+                    class="js-starting-date-details"
+                    t-att-style="'' if onboarding.can_start_on_time == 'no' else 'display:none'"
+                >
                 <div class="row">
                     <div class="mb-3 col-lg-6">
                         <label
-                            class="col-form-label"
-                            for="starting_date"
-                        > วันแรกที่เริ่มปฏิบัติงาน (ค.ศ.) (The First date of
+                                class="col-form-label"
+                                for="starting_date"
+                            > วันแรกที่เริ่มปฏิบัติงาน (ค.ศ.) (The First date of
                             work) <span class="text-danger">*</span>
                         </label>
                         <input
-                            type="date"
-                            id="starting_date"
-                            name="starting_date"
-                            class="form-control"
-                        />
+                                type="date"
+                                id="starting_date"
+                                name="starting_date"
+                                class="form-control"
+                                t-att-value="onboarding.starting_date and onboarding.starting_date.strftime('%Y-%m-%d') or ''"
+                            />
                     </div>
                 </div>
                 <div class="row">
@@ -1040,33 +1175,35 @@
                             ไม่สามารถเริ่มปฏิบัติงานตามระยะเวลาในประกาศได้ แบบหนังสือชี้แจงเหตุผล
                             เรียนอธิการบดี
                             พร้อมทั้งระบุวันที่ปฏิบัติงานได้ (เฉพาะกรณีขอเลื่อน)
+                            <span class="text-danger">*</span>
                         </label>
                         <textarea
-                            id="starting_date_note"
-                            name="starting_date_note"
-                            class="form-control"
-                            rows="3"
-                            placeholder="กรอกรายละเอียดเพิ่มเติม"
-                        />
+                                id="starting_date_note"
+                                name="starting_date_note"
+                                class="form-control"
+                                rows="3"
+                                placeholder="กรอกรายละเอียดเพิ่มเติม"
+                            />
                     </div>
                     <div class="mb-3 col-12">
                         <t t-call="hr_recruitment_kmitl.document_upload_item">
                             <t t-set="name">starting_date_attachment</t>
                             <t
-                                t-set="label"
-                            >แนบเอกสารชี้แจงเหตุผล (Word หรือ PDF file)</t>
+                                    t-set="label"
+                                >แนบเอกสารชี้แจงเหตุผล (Word หรือ PDF file)</t>
                             <t t-set="description">รองรับไฟล์ PDF, DOC, DOCX</t>
-                            <t t-set="required" t-value="False" />
+                            <t t-set="required" t-value="True" />
                             <t
-                                t-set="existing_filename"
-                                t-value="onboarding.starting_date_attachment_filename or False"
-                            />
+                                    t-set="existing_filename"
+                                    t-value="onboarding.starting_date_attachment_filename or False"
+                                />
                             <t
-                                t-set="download_url"
-                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=starting_date_attachment_file&amp;filename_field=starting_date_attachment_filename&amp;download=true' % onboarding.id) if onboarding.starting_date_attachment_file else False"
-                            />
+                                    t-set="download_url"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=starting_date_attachment_file&amp;filename_field=starting_date_attachment_filename&amp;download=false' % onboarding.id) if onboarding.starting_date_attachment_file else False"
+                                />
                         </t>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -1108,9 +1245,6 @@
                                 <a href="#" class="text-decoration-underline">
                                     ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม
                                 </a>
-                                <a href="#" class="text-decoration-underline">
-                                    ดาวน์โหลดหนังสือให้ความยินยอม (PDPA)
-                                </a>
                             </div>
                         </div>
 
@@ -1130,7 +1264,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=health_employee_file&amp;filename_field=health_employee_filename&amp;download=true' % onboarding.id) if onboarding.health_employee_file else False"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=health_employee_file&amp;filename_field=health_employee_filename&amp;download=false' % onboarding.id) if onboarding.health_employee_file else False"
                                 />
                             </t>
                         </div>
@@ -1197,7 +1331,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=accident_employee_file&amp;filename_field=accident_employee_filename&amp;download=true' % onboarding.id) if onboarding.accident_employee_file else False"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=accident_employee_file&amp;filename_field=accident_employee_filename&amp;download=false' % onboarding.id) if onboarding.accident_employee_file else False"
                                 />
                             </t>
                         </div>
@@ -1258,7 +1392,7 @@
                                     />
                                     <t
                                         t-set="download_url"
-                                        t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=provident_fund_file&amp;filename_field=provident_fund_filename&amp;download=true' % onboarding.id) if onboarding.provident_fund_file else False"
+                                        t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=provident_fund_file&amp;filename_field=provident_fund_filename&amp;download=false' % onboarding.id) if onboarding.provident_fund_file else False"
                                     />
                                 </t>
                             </div>
@@ -1295,7 +1429,7 @@
                                     />
                                     <t
                                         t-set="download_url"
-                                        t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=beneficiary_declaration_file&amp;filename_field=beneficiary_declaration_filename&amp;download=true' % onboarding.id) if onboarding.beneficiary_declaration_file else False"
+                                        t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=beneficiary_declaration_file&amp;filename_field=beneficiary_declaration_filename&amp;download=false' % onboarding.id) if onboarding.beneficiary_declaration_file else False"
                                     />
                                 </t>
                             </div>
@@ -1319,9 +1453,6 @@
                             <a href="#" class="text-decoration-underline">
                                 Click here Letter
                             </a>
-                            <a href="#" class="text-decoration-underline">
-                                or Graduated from CU Click here CU form
-                            </a>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -1339,7 +1470,7 @@
                                     />
                                     <t
                                         t-set="download_url"
-                                        t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=letter_of_consent_file&amp;filename_field=letter_of_consent_filename&amp;download=true' % onboarding.id) if onboarding.letter_of_consent_file else False"
+                                        t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=letter_of_consent_file&amp;filename_field=letter_of_consent_filename&amp;download=false' % onboarding.id) if onboarding.letter_of_consent_file else False"
                                     />
                                 </t>
                             </div>
@@ -1476,7 +1607,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=salary_book_file&amp;filename_field=salary_book_filename&amp;download=true' % onboarding.id) if onboarding.salary_book_file else False"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=salary_book_file&amp;filename_field=salary_book_filename&amp;download=false' % onboarding.id) if onboarding.salary_book_file else False"
                                 />
                             </t>
                             <t t-call="hr_recruitment_kmitl.document_upload_card">
@@ -1489,7 +1620,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=medical_certificate_file&amp;filename_field=medical_certificate_filename&amp;download=true' % onboarding.id) if onboarding.medical_certificate_file else False"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=medical_certificate_file&amp;filename_field=medical_certificate_filename&amp;download=false' % onboarding.id) if onboarding.medical_certificate_file else False"
                                 />
                             </t>
                         </div>
@@ -2091,10 +2222,21 @@
                                         <t
                                             t-call="hr_recruitment_kmitl.input_readonly_field"
                                         >
-                                            <t t-set="label">Graduation Date</t>
+                                            <t t-set="label">Start Year</t>
                                             <t
                                                 t-set="value"
-                                                t-value="edu.get('graduation_date') or '-'"
+                                                t-value="edu.get('start_year') or '-'"
+                                            />
+                                        </t>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <t
+                                            t-call="hr_recruitment_kmitl.input_readonly_field"
+                                        >
+                                            <t t-set="label">Graduate Year</t>
+                                            <t
+                                                t-set="value"
+                                                t-value="edu.get('graduate_year') or '-'"
                                             />
                                         </t>
                                     </div>
@@ -2207,7 +2349,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=royal_decoration_proof_file&amp;filename_field=royal_decoration_proof_filename&amp;download=true' % onboarding.id) if onboarding.royal_decoration_proof_file else False"
+                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=royal_decoration_proof_file&amp;filename_field=royal_decoration_proof_filename&amp;download=false' % onboarding.id) if onboarding.royal_decoration_proof_file else False"
                             />
                         </t>
                     </div>
@@ -2321,7 +2463,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="applicant.academic_position_file and ('/web/content?model=hr.applicant&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % applicant.id) or False"
+                                t-value="applicant.academic_position_file and ('/web/content?model=hr.applicant&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=false' % applicant.id) or False"
                             />
                         </t>
                     </div>
@@ -2342,7 +2484,9 @@
                     <div class="col-12 mb-3">
                         <t t-call="hr_recruitment_kmitl.input_readonly_field">
                             <t t-set="label">
-                                ท่านสามารถเริ่มปฏิบัติงานในระยะเวลาที่ประกาศกำหนดหรือไม่?</t>
+                                ท่านสามารถเริ่มปฏิบัติงานใน <t
+                                    t-out="applicant.job_id.start_service_date and applicant.job_id.start_service_date.strftime('%d/%m/%Y') or 'ระยะเวลาที่ประกาศกำหนด'"
+                                /> ได้หรือไม่?</t>
                             <t
                                 t-set="value"
                                 t-value="{'yes': 'ใช่ (Yes)', 'no': 'ไม่ใช่ (No)'}.get(onboarding.can_start_on_time, '-')"
@@ -2389,7 +2533,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=starting_date_attachment_file&amp;filename_field=starting_date_attachment_filename&amp;download=true' % onboarding.id) if onboarding.starting_date_attachment_file else False"
+                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=starting_date_attachment_file&amp;filename_field=starting_date_attachment_filename&amp;download=false' % onboarding.id) if onboarding.starting_date_attachment_file else False"
                             />
                         </t>
                     </div>
@@ -2433,9 +2577,6 @@
                                 <a href="#" class="text-decoration-underline">
                                     ดาวน์โหลดใบสมัครประกันสุขภาพกลุ่ม Form
                                 </a>
-                                <a href="#" class="text-decoration-underline">
-                                    ดาวน์โหลดหนังสือให้ความยินยอม (PDPA)
-                                </a>
                             </div>
                         </div>
 
@@ -2456,7 +2597,7 @@
                                     />
                                     <t
                                         t-set="download_url"
-                                        t-value="'/web/content?model=hr.onboarding&amp;id=%d&amp;field=health_employee_file&amp;filename_field=health_employee_filename&amp;download=true' % onboarding.id"
+                                        t-value="'/web/content?model=hr.onboarding&amp;id=%d&amp;field=health_employee_file&amp;filename_field=health_employee_filename&amp;download=false' % onboarding.id"
                                     />
                                 </t>
                             </t>
@@ -2491,12 +2632,12 @@
                                         <t t-set="filename" t-value="att.name" />
                                         <t
                                             t-set="download_url"
-                                            t-value="'/web/content/%d?download=true' % att.id"
+                                            t-value="'/web/content/%d?download=false' % att.id"
                                         />
                                         <!--
-                                        t-value="'/web/content?model=ir.attachment&amp;id=%d&amp;field=datas&amp;filename_field=name&amp;download=true'
+                                        t-value="'/web/content?model=ir.attachment&amp;id=%d&amp;field=datas&amp;filename_field=name&amp;download=false'
                                         % att.id" -->
-                                        <!-- t-value="'/web/content/%d?download=true' % att.id"   -->
+                                        <!-- t-value="'/web/content/%d?download=false' % att.id"   -->
                                         <t t-set="attachment_id" t-value="att.id" />
                                     </t>
                                 </t>
@@ -2565,7 +2706,7 @@
                                     />
                                     <t
                                         t-set="download_url"
-                                        t-value="'/web/content?model=hr.onboarding&amp;id=%d&amp;field=accident_employee_file&amp;filename_field=accident_employee_filename&amp;download=true' % onboarding.id"
+                                        t-value="'/web/content?model=hr.onboarding&amp;id=%d&amp;field=accident_employee_file&amp;filename_field=accident_employee_filename&amp;download=false' % onboarding.id"
                                     />
                                 </t>
                             </t>
@@ -2601,7 +2742,7 @@
                                         <t t-set="filename" t-value="att.name" />
                                         <t
                                             t-set="download_url"
-                                            t-value="'/web/content/%d?download=true' % att.id"
+                                            t-value="'/web/content/%d?download=false' % att.id"
                                         />
                                         <t t-set="attachment_id" t-value="att.id" />
                                     </t>
@@ -2647,7 +2788,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=provident_fund_file&amp;filename_field=provident_fund_filename&amp;download=true' % onboarding.id) if onboarding.provident_fund_file else False"
+                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=provident_fund_file&amp;filename_field=provident_fund_filename&amp;download=false' % onboarding.id) if onboarding.provident_fund_file else False"
                             />
                         </t>
                     </div>
@@ -2677,7 +2818,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=beneficiary_declaration_file&amp;filename_field=beneficiary_declaration_filename&amp;download=true' % onboarding.id) if onboarding.beneficiary_declaration_file else False"
+                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=beneficiary_declaration_file&amp;filename_field=beneficiary_declaration_filename&amp;download=false' % onboarding.id) if onboarding.beneficiary_declaration_file else False"
                             />
                         </t>
                     </div>
@@ -2700,9 +2841,6 @@
                             <a href="#" class="text-decoration-underline">
                                 Click here Letter
                             </a>
-                            <a href="#" class="text-decoration-underline">
-                                or Graduated from CU Click here CU form
-                            </a>
                         </div>
                         <t t-call="hr_recruitment_kmitl.application_document_item">
                             <t t-set="label">Letter of Consent</t>
@@ -2712,7 +2850,7 @@
                             />
                             <t
                                 t-set="download_url"
-                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=letter_of_consent_file&amp;filename_field=letter_of_consent_filename&amp;download=true' % onboarding.id) if onboarding.letter_of_consent_file else False"
+                                t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=letter_of_consent_file&amp;filename_field=letter_of_consent_filename&amp;download=false' % onboarding.id) if onboarding.letter_of_consent_file else False"
                             />
                         </t>
                     </div>
@@ -2841,7 +2979,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=salary_book_file&amp;filename_field=salary_book_filename&amp;download=true' % onboarding.id) if onboarding.salary_book_file else False"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=salary_book_file&amp;filename_field=salary_book_filename&amp;download=false' % onboarding.id) if onboarding.salary_book_file else False"
                                 />
                             </t>
                             <t t-call="hr_recruitment_kmitl.application_document_item">
@@ -2852,7 +2990,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=medical_certificate_file&amp;filename_field=medical_certificate_filename&amp;download=true' % onboarding.id) if onboarding.medical_certificate_file else False"
+                                    t-value="('/web/content?model=hr.onboarding&amp;id=%d&amp;field=medical_certificate_file&amp;filename_field=medical_certificate_filename&amp;download=false' % onboarding.id) if onboarding.medical_certificate_file else False"
                                 />
                             </t>
                         </div>

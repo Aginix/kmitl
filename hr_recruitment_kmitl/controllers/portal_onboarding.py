@@ -4,7 +4,7 @@ from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
 
-from .profile import must_set_email
+from .profile import assert_upload, must_set_email
 
 
 class PortalOnboardingHome(CustomerPortal):
@@ -70,18 +70,17 @@ class PortalOnboardingController(http.Controller):
                         "major": edu.major or "-",
                         "institution": edu.institution or "-",
                         "country": edu.country_id.name if edu.country_id else "-",
-                        "graduation_date": fields.Date.to_string(edu.graduation_date)
-                        if edu.graduation_date
-                        else "-",
+                        "start_year": edu.start_year or "-",
+                        "graduate_year": edu.graduate_year or "-",
                         "certificate_url": (
-                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=certificate_file&filename_field=certificate_filename&download=true"
+                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=certificate_file&filename_field=certificate_filename&download=false"
                             if edu.certificate_file
                             else False
                         ),
                         "certificate_filename": edu.certificate_filename or "",
                         "transcript_url": (
-                            # f"/web/content/hr.applicant.education.history/{edu.id}/transcript_file/{edu.transcript_filename or 'transcript'}?download=true"
-                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=transcript_file&filename_field=transcript_filename&download=true"
+                            # f"/web/content/hr.applicant.education.history/{edu.id}/transcript_file/{edu.transcript_filename or 'transcript'}?download=false"
+                            f"/web/content?model=hr.applicant.education.history&id={edu.id}&field=transcript_file&filename_field=transcript_filename&download=false"
                             if edu.transcript_file
                             else False
                         ),
@@ -97,7 +96,7 @@ class PortalOnboardingController(http.Controller):
                     {
                         "id": att.id,
                         "filename": att.name,
-                        "download_url": f"/web/content/{att.id}?download=true",
+                        "download_url": f"/web/content/{att.id}?download=false",
                     }
                 )
             return items
@@ -147,6 +146,7 @@ class PortalOnboardingController(http.Controller):
             "background_check_location_type",
             "krungthai_bank_account",
             "pdpa_consent",
+            "can_start_on_time",
         ]:
             if field in post:
                 vals[field] = post.get(field) or False
@@ -194,6 +194,8 @@ class PortalOnboardingController(http.Controller):
 
     def _save_family(self, onboarding, form):
         FamilyModel = request.env["hr.onboarding.family"]
+        AttachmentModel = request.env["ir.attachment"].sudo()
+        files = request.httprequest.files
         family_ids = form.getlist("family_id")
         family_relation_ids = form.getlist("family_relation_id")
         family_identifications = form.getlist("family_identification_id")
@@ -249,13 +251,58 @@ class PortalOnboardingController(http.Controller):
                     rec.write(vals)
                     submitted_ids.add(family_id)
             else:
-                new_rec = FamilyModel.create(vals)
-                submitted_ids.add(new_rec.id)
+                rec = FamilyModel.create(vals)
+                submitted_ids.add(rec.id)
+
+            self._save_family_row_files(rec, i, form, files, AttachmentModel)
 
         # Unlink removed rows
         for rec in onboarding.family_member_ids:
             if rec.id not in submitted_ids:
                 rec.unlink()
+
+    def _save_family_row_files(self, rec, row_index, form, files, AttachmentModel):
+        """Persist per-family-row file uploads keyed by row position."""
+        for prefix in ("family_house_registration", "family_id_card"):
+            input_name = f"{prefix}_{row_index}"
+            delete_flag = form.get(f"delete_{input_name}") == "1"
+            uploaded = files.get(input_name)
+            field_prefix = prefix.replace("family_", "")
+            if delete_flag:
+                rec.write(
+                    {
+                        f"{field_prefix}_file": False,
+                        f"{field_prefix}_filename": False,
+                    }
+                )
+            if uploaded and uploaded.filename:
+                assert_upload(uploaded)
+                rec.write(
+                    {
+                        f"{field_prefix}_file": base64.b64encode(uploaded.read()),
+                        f"{field_prefix}_filename": uploaded.filename,
+                    }
+                )
+        # Multi-file other attachments
+        m2m_input = f"family_other_attachment_{row_index}"
+        delete_prefix = f"delete_attachment_{m2m_input}_"
+        for key in form:
+            if key.startswith(delete_prefix) and form.get(key) == "1":
+                att_id = int(key.replace(delete_prefix, ""))
+                if att_id in rec.other_attachment_ids.ids:
+                    rec.write({"other_attachment_ids": [(3, att_id)]})
+        for uploaded in files.getlist(m2m_input):
+            if uploaded and uploaded.filename:
+                assert_upload(uploaded)
+                attachment = AttachmentModel.create(
+                    {
+                        "name": uploaded.filename,
+                        "datas": base64.b64encode(uploaded.read()),
+                        "res_model": "hr.onboarding.family",
+                        "res_id": rec.id,
+                    }
+                )
+                rec.write({"other_attachment_ids": [(4, attachment.id)]})
 
     def _is_file_present(self, onboarding, prefix, post, files):
         """Return True if a file for ``prefix`` will exist after save."""
@@ -283,6 +330,23 @@ class PortalOnboardingController(http.Controller):
         if missing:
             raise UserError(_("กรุณากรอกข้อมูลให้ครบถ้วน:\n• ") + "\n• ".join(missing))
 
+    def _validate_starting_date(self, onboarding, post, files):
+        """If the applicant cannot start on time, the postponement details
+        (date, explanation note and attached document) are all required."""
+        if post.get("can_start_on_time") != "no":
+            return
+        missing = []
+        if not post.get("starting_date"):
+            missing.append("วันแรกที่เริ่มปฏิบัติงาน")
+        if not (post.get("starting_date_note") or "").strip():
+            missing.append("หนังสือชี้แจงเหตุผล (เรียนอธิการบดี)")
+        if not self._is_file_present(
+            onboarding, "starting_date_attachment", post, files
+        ):
+            missing.append("แนบเอกสารชี้แจงเหตุผล")
+        if missing:
+            raise UserError(_("กรุณากรอกข้อมูลให้ครบถ้วน:\n• ") + "\n• ".join(missing))
+
     def _save_single_file(self, onboarding, prefix, post, files):
         for file_suffix in ["_file", "_filename"]:
             if (
@@ -295,6 +359,7 @@ class PortalOnboardingController(http.Controller):
         if file_input_name in files:
             uploaded = files.get(file_input_name)
             if uploaded and uploaded.filename:
+                assert_upload(uploaded)
                 onboarding.write(
                     {
                         f"{prefix}_file": base64.b64encode(uploaded.read()),
@@ -317,6 +382,7 @@ class PortalOnboardingController(http.Controller):
         # Process uploads
         for uploaded in files.getlist(m2m_field):
             if uploaded and uploaded.filename:
+                assert_upload(uploaded)
                 attachment = AttachmentModel.create(
                     {
                         "name": uploaded.filename,
@@ -382,10 +448,15 @@ class PortalOnboardingController(http.Controller):
             return request.redirect(f"/my/onboarding/{onboarding_id}")
 
         if post and request.httprequest.method == "POST":
+            action = post.get("action") or "submit"
             try:
-                self._validate_required_files(
-                    onboarding, post, request.httprequest.files
-                )
+                if action == "submit":
+                    self._validate_required_files(
+                        onboarding, post, request.httprequest.files
+                    )
+                    self._validate_starting_date(
+                        onboarding, post, request.httprequest.files
+                    )
 
                 self._save_main(onboarding, post, request.httprequest.files)
                 self._save_family(onboarding, request.httprequest.form)
@@ -415,8 +486,11 @@ class PortalOnboardingController(http.Controller):
                         onboarding, m2m_field, post, request.httprequest.files
                     )
 
-                onboarding.action_submit()
-                return request.redirect(f"/my/onboarding/{onboarding_id}")
+                if action == "submit":
+                    onboarding.action_submit()
+                    return request.redirect(f"/my/onboarding/{onboarding_id}")
+                # Save draft — stay on the form
+                return request.redirect(f"/my/onboarding/form/{onboarding_id}?saved=1")
             except (UserError, ValidationError) as e:
                 error_message = [e.args[0] if e.args else str(e)]
                 values = self._prepare_values(onboarding)
@@ -426,4 +500,5 @@ class PortalOnboardingController(http.Controller):
                 )
 
         values = self._prepare_values(onboarding)
+        values["saved"] = request.params.get("saved") == "1"
         return request.render("hr_recruitment_kmitl.portal_my_onboarding_form", values)

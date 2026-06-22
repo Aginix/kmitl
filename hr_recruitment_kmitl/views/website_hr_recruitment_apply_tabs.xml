@@ -464,8 +464,13 @@
             />
             <input
                 type="hidden"
-                name="edu_graduation_date"
-                t-att-value="best_edu_rec.graduation_date or ''"
+                name="edu_start_year"
+                t-att-value="best_edu_rec.start_year or ''"
+            />
+            <input
+                type="hidden"
+                name="edu_graduate_year"
+                t-att-value="best_edu_rec.graduate_year or ''"
             />
             <input
                 type="hidden"
@@ -552,13 +557,24 @@
                                 <div class="mb-3 col-md-4">
                                     <label
                                         class="col-form-label fw-semibold text-dark small"
-                                    >Graduation
-                                        Date</label>
+                                    >Start Year</label>
                                     <span class="s_website_form_mark"> *</span>
                                     <input
                                         type="text"
                                         class="form-control text-muted border-0 py-2"
-                                        t-att-value="edu_rec.graduation_date or ''"
+                                        t-att-value="edu_rec.start_year or ''"
+                                        readonly="readonly"
+                                    />
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <label
+                                        class="col-form-label fw-semibold text-dark small"
+                                    >Graduate Year</label>
+                                    <span class="s_website_form_mark"> *</span>
+                                    <input
+                                        type="text"
+                                        class="form-control text-muted border-0 py-2"
+                                        t-att-value="edu_rec.graduate_year or ''"
                                         readonly="readonly"
                                     />
                                 </div>
@@ -578,7 +594,7 @@
                                         />
                                         <t
                                             t-set="download_url"
-                                            t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=certificate_file&amp;filename_field=certificate_filename&amp;download=true' % edu_rec.id if edu_rec.certificate_filename else False"
+                                            t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=certificate_file&amp;filename_field=certificate_filename&amp;download=false' % edu_rec.id if edu_rec.certificate_filename else False"
                                         />
                                     </t>
                                 </div>
@@ -598,7 +614,7 @@
                                         />
                                         <t
                                             t-set="download_url"
-                                            t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=transcript_file&amp;filename_field=transcript_filename&amp;download=true' % edu_rec.id if edu_rec.transcript_filename else False"
+                                            t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=transcript_file&amp;filename_field=transcript_filename&amp;download=false' % edu_rec.id if edu_rec.transcript_filename else False"
                                         />
                                     </t>
                                 </div>
@@ -871,7 +887,7 @@
                     <t t-set="filename" t-value="profile.academic_position_filename" />
                     <t
                         t-set="download_url"
-                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % profile.id if profile.academic_position_filename else False"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=false' % profile.id if profile.academic_position_filename else False"
                     />
                 </t>
             </div>
@@ -965,7 +981,7 @@
                     <t t-set="filename" t-value="profile.ocsc_exam_filename" />
                     <t
                         t-set="download_url"
-                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=ocsc_exam_file&amp;filename_field=ocsc_exam_filename&amp;download=true' % profile.id if profile.ocsc_exam_filename else False"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=ocsc_exam_file&amp;filename_field=ocsc_exam_filename&amp;download=false' % profile.id if profile.ocsc_exam_filename else False"
                     />
                 </t>
             </div>
@@ -1080,7 +1096,7 @@
                     <t t-set="filename" t-value="profile.english_score_filename" />
                     <t
                         t-set="download_url"
-                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=english_score_file&amp;filename_field=english_score_filename&amp;download=true' % profile.id if profile.english_score_filename else False"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=english_score_file&amp;filename_field=english_score_filename&amp;download=false' % profile.id if profile.english_score_filename else False"
                     />
                 </t>
             </div>
@@ -1155,7 +1171,7 @@
                 <t t-set="filename" t-value="profile.photo_filename" />
                 <t
                     t-set="download_url"
-                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=photo_file&amp;filename_field=photo_filename&amp;download=true' % profile.id if profile.photo_filename else False"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=photo_file&amp;filename_field=photo_filename&amp;download=false' % profile.id if profile.photo_filename else False"
                 />
             </t>
             <!-- ID Card -->
@@ -1164,7 +1180,7 @@
                 <t t-set="filename" t-value="profile.id_card_filename" />
                 <t
                     t-set="download_url"
-                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=id_card_file&amp;filename_field=id_card_filename&amp;download=true' % profile.id if profile.id_card_filename else False"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=id_card_file&amp;filename_field=id_card_filename&amp;download=false' % profile.id if profile.id_card_filename else False"
                 />
             </t>
             <!-- Household Registration -->
@@ -1173,7 +1189,7 @@
                 <t t-set="filename" t-value="profile.household_registration_filename" />
                 <t
                     t-set="download_url"
-                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=household_registration_file&amp;filename_field=household_registration_filename&amp;download=true' % profile.id if profile.household_registration_filename else False"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=household_registration_file&amp;filename_field=household_registration_filename&amp;download=false' % profile.id if profile.household_registration_filename else False"
                 />
             </t>
             <!-- Military Certificate (male only) -->
@@ -1188,7 +1204,7 @@
                     />
                     <t
                         t-set="download_url"
-                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=true' % profile.id if profile.military_certificate_filename else False"
+                        t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=false' % profile.id if profile.military_certificate_filename else False"
                     />
                 </t>
             </t>
@@ -1201,7 +1217,7 @@
                 <t t-set="filename" t-value="profile.resume_filename" />
                 <t
                     t-set="download_url"
-                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=resume_file&amp;filename_field=resume_filename&amp;download=true' % profile.id if profile.resume_filename else False"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=resume_file&amp;filename_field=resume_filename&amp;download=false' % profile.id if profile.resume_filename else False"
                 />
             </t>
             <!-- Work Certificate -->
@@ -1213,7 +1229,7 @@
                 <t t-set="filename" t-value="profile.work_certificate_filename" />
                 <t
                     t-set="download_url"
-                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=work_certificate_file&amp;filename_field=work_certificate_filename&amp;download=true' % profile.id if profile.work_certificate_filename else False"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=work_certificate_file&amp;filename_field=work_certificate_filename&amp;download=false' % profile.id if profile.work_certificate_filename else False"
                 />
             </t>
             <!-- Other Documents -->
@@ -1222,7 +1238,7 @@
                 <t t-set="filename" t-value="profile.other_documents_filename" />
                 <t
                     t-set="download_url"
-                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=other_documents_file&amp;filename_field=other_documents_filename&amp;download=true' % profile.id if profile.other_documents_filename else False"
+                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=other_documents_file&amp;filename_field=other_documents_filename&amp;download=false' % profile.id if profile.other_documents_filename else False"
                 />
             </t>
         </div>

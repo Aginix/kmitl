@@ -100,7 +100,9 @@ class HrApplicant(models.Model):
     _inherit = "hr.applicant"
 
     job_role = fields.Selection(related="job_id.role", string="Job Role", tracking=True)
-    old_code = fields.Char(tracking=True)
+    old_code = fields.Char(
+        related="job_id.old_code", store=True, readonly=True, tracking=True
+    )
 
     # Name fields
     applicant_title = fields.Many2one("res.partner.title", tracking=True)
@@ -275,18 +277,21 @@ class HrApplicant(models.Model):
         "last_name": "นามสกุล (ภาษาไทย)",
         "first_name_en": "ชื่อภาษาอังกฤษ",
         "last_name_en": "นามสกุลภาษาอังกฤษ",
+        "nationality_id": "สัญชาติ",
         "identification_id": "เลขบัตรประชาชน",
         "birthday": "วัน/เดือน/ปี เกิด",
         "gender": "เพศ",
-        "nationality_id": "สัญชาติ",
-        "email": "อีเมล",
         "phone": "โทรศัพท์",
+        "email": "อีเมล",
+        "address_address": "ที่อยู่ตามทะเบียนบ้าน",
+        "address_zip": "รหัสไปรษณีย์ที่อยู่ตามทะเบียนบ้าน",
+        "current_address": "ที่อยู่ปัจจุบัน",
+        "current_zip": "รหัสไปรษณีย์ที่อยู่ปัจจุบัน",
+        "marital": "สถานะการสมรส",
         "emergency_contact_name": "ชื่อผู้ติดต่อฉุกเฉิน",
         "emergency_contact_relation": "ความสัมพันธ์ผู้ติดต่อฉุกเฉิน",
         "emergency_contact_phone": "เบอร์ติดต่อฉุกเฉิน",
         "emergency_contact_email": "อีเมลติดต่อฉุกเฉิน",
-        "address_address": "ที่อยู่ตามทะเบียนบ้าน",
-        "current_address": "ที่อยู่ปัจจุบัน",
     }
 
     ROLE_REQUIRED_FIELDS = {
@@ -336,6 +341,35 @@ class HrApplicant(models.Model):
             if not val or (isinstance(val, str) and val.strip() == "-"):
                 missing.append(label)
         # Common required: education, work history, documents
+        if not profile.education_history_ids:
+            missing.append("ประวัติการศึกษา")
+        else:
+            for edu in profile.education_history_ids:
+                level_name = edu.education_level_id.name or "ไม่ระบุระดับ"
+                if not edu.program:
+                    missing.append(
+                        f"ประวัติการศึกษา ({level_name}): กรุณากรอก สาขาวิชา/โปรแกรม"
+                    )
+                if not edu.major:
+                    missing.append(f"ประวัติการศึกษา ({level_name}): กรุณากรอก วิชาเอก/สาขา")
+                if not edu.institution:
+                    missing.append(
+                        f"ประวัติการศึกษา ({level_name}): กรุณากรอก สถาบันการศึกษา"
+                    )
+                if not edu.start_year:
+                    missing.append(f"ประวัติการศึกษา ({level_name}): กรุณากรอก ปีที่เริ่มศึกษา")
+                if not edu.graduate_year:
+                    missing.append(
+                        f"ประวัติการศึกษา ({level_name}): กรุณากรอก ปีที่สำเร็จการศึกษา"
+                    )
+                if not edu.certificate_file:
+                    missing.append(
+                        f"เอกสารแนบประวัติการศึกษา ({level_name}): วุฒิบัตร/ประกาศนียบัตร"
+                    )
+                if not edu.transcript_file:
+                    missing.append(
+                        f"เอกสารแนบประวัติการศึกษา ({level_name}): ใบแสดงผลการศึกษา (Transcript)"
+                    )
         if profile.work_history_ids:
             for i, work in enumerate(profile.work_history_ids, start=1):
                 fields = []
@@ -347,32 +381,9 @@ class HrApplicant(models.Model):
                     fields.append("เงินเดือน")
                 if not work.date_start:
                     fields.append("วันที่เริ่มงาน")
-                if not work.date_end:
-                    fields.append("วันที่สิ้นสุดงาน")
                 if fields:
                     company = work.company_name or f"งานที่ {i}"
                     missing.append(f"{company}: กรุณากรอก {', '.join(fields)}")
-        if not profile.education_history_ids:
-            missing.append("ประวัติการศึกษา")
-        else:
-            for edu in profile.education_history_ids:
-                level_name = edu.education_level_id.name or "ไม่ระบุระดับ"
-                if not edu.certificate_file:
-                    missing.append(
-                        f"เอกสารแนบประวัติการศึกษา ({level_name}): วุฒิบัตร/ประกาศนียบัตร"
-                    )
-                if not edu.transcript_file:
-                    missing.append(
-                        f"เอกสารแนบประวัติการศึกษา ({level_name}): ใบแสดงผลการศึกษา (Transcript)"
-                    )
-        if not profile.id_card_file:
-            missing.append("สำเนาบัตรประจำตัวประชาชน")
-        if not profile.household_registration_file:
-            missing.append("สำเนาทะเบียนบ้าน")
-        if not profile.photo_file:
-            missing.append("รูปถ่ายหน้าตรง")
-        if profile.gender == "male" and not profile.military_certificate_file:
-            missing.append("สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร")
         # Role-specific required fields
         if job.role:
             required = dict(self.ROLE_REQUIRED_FIELDS.get(job.role, {}))
@@ -383,6 +394,14 @@ class HrApplicant(models.Model):
             for field_name, label in required.items():
                 if not getattr(profile, field_name, False):
                     missing.append(label)
+        if not profile.photo_file:
+            missing.append("รูปถ่ายหน้าตรง")
+        if not profile.id_card_file:
+            missing.append("สำเนาบัตรประจำตัวประชาชน")
+        if not profile.household_registration_file:
+            missing.append("สำเนาทะเบียนบ้าน")
+        if profile.gender == "male" and not profile.military_certificate_file:
+            missing.append("สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร")
         # Consent & file validation — check raw request data directly
         # because extract_data may not put them in values if fields
         # aren't in authorized_fields yet
@@ -534,10 +553,6 @@ class HrApplicant(models.Model):
             for f in ACADEMIC_ONLY_FIELDS:
                 vals.pop(f, None)
 
-        # Auto-fill old_code if the job has exactly 1 position
-        if self.job_id and len(self.job_id.old_code_ids) == 1:
-            vals["old_code"] = self.job_id.old_code_ids.name
-
         if vals:
             self.sudo().write(vals)
 
@@ -551,7 +566,8 @@ class HrApplicant(models.Model):
                     "major": edu.major,
                     "institution": edu.institution,
                     "country_id": edu.country_id.id,
-                    "graduation_date": edu.graduation_date,
+                    "start_year": edu.start_year,
+                    "graduate_year": edu.graduate_year,
                     "certificate_file": edu.certificate_file,
                     "certificate_filename": edu.certificate_filename,
                     "transcript_file": edu.transcript_file,
@@ -643,11 +659,34 @@ class HrApplicant(models.Model):
                 ctx[dest] = val
         if self.nationality_id:
             ctx["default_country_id"] = self.nationality_id.id
-        if self.academic_standing_id:
-            ctx["default_academic_standing_id"] = self.academic_standing_id.id
+        prefix = self._resolve_employee_prefix()
+        if prefix:
+            ctx["default_prefix_id"] = prefix.id
         if self.job_id and self.job_id.role:
             ctx["default_role"] = self.job_id.role
         return ctx
+
+    def _resolve_employee_prefix(self):
+        """Pick the hr.employee.prefix to apply on the new employee.
+
+        Academic position (วิทยฐานะ) takes precedence over the personal
+        title so the employee's name is prefixed with the academic rank
+        when present; the academic_standing_id table itself is left empty.
+        """
+        self.ensure_one()
+        Prefix = self.env["hr.employee.prefix"].sudo()
+        candidate_names = []
+        if self.academic_standing_id:
+            candidate_names.append(self.academic_standing_id.name)
+        if self.applicant_title:
+            candidate_names.append(self.applicant_title.name)
+        for name in candidate_names:
+            if not name:
+                continue
+            prefix = Prefix.search([("name", "=", name)], limit=1)
+            if prefix:
+                return prefix
+        return Prefix.browse()
 
     def _update_employee_from_applicant(self):
         for applicant in self:
@@ -663,15 +702,12 @@ class HrApplicant(models.Model):
         return super()._update_employee_from_applicant()
 
     def _sync_employee_prefix(self, employee):
-        # applicant_title is res.partner.title; employee prefix_id is
-        # hr.employee.prefix. Match by name when possible.
-        if not self.applicant_title or not hasattr(employee, "prefix_id"):
+        # Employee prefix_id is hr.employee.prefix. Prefer the academic
+        # position (วิทยฐานะ) over the personal title — see
+        # _resolve_employee_prefix.
+        if not hasattr(employee, "prefix_id"):
             return
-        prefix = (
-            self.env["hr.employee.prefix"]
-            .sudo()
-            .search([("name", "=", self.applicant_title.name)], limit=1)
-        )
+        prefix = self._resolve_employee_prefix()
         if prefix:
             employee.sudo().prefix_id = prefix.id
 
@@ -686,8 +722,8 @@ class HrApplicant(models.Model):
             vals = {"employee_id": employee.id}
             if edu.education_level_id:
                 vals["education_level_id"] = edu.education_level_id.id
-            if edu.graduation_date:
-                year = str(edu.graduation_date.year)
+            if edu.graduate_year:
+                year = str(edu.graduate_year)
                 if year in year_keys:
                     vals["graduation_year"] = year
             Edu.create(vals)

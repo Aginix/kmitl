@@ -22,8 +22,13 @@ class HrApplicantEducationHistory(models.Model):
     program = fields.Char(tracking=True)
     major = fields.Char(tracking=True)
     institution = fields.Char(tracking=True)
-    country_id = fields.Many2one("res.country", tracking=True)
-    graduation_date = fields.Date(tracking=True)
+    country_id = fields.Many2one(
+        "res.country",
+        tracking=True,
+        default=lambda self: self.env.ref("base.th", raise_if_not_found=False),
+    )
+    start_year = fields.Integer(tracking=True)
+    graduate_year = fields.Integer(tracking=True)
     certificate_file = fields.Binary(string="Certificate", attachment=True)
     certificate_filename = fields.Char(tracking=True)
     transcript_file = fields.Binary(string="Transcript", attachment=True)

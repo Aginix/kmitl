@@ -137,7 +137,8 @@
                                     <field name="major" />
                                     <field name="institution" />
                                     <field name="country_id" />
-                                    <field name="graduation_date" />
+                                    <field name="start_year" />
+                                    <field name="graduate_year" />
                                     <field
                                         name="certificate_file"
                                         filename="certificate_filename"

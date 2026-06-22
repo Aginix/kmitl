@@ -217,9 +217,8 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                             "program": rec.program or "",
                             "major": rec.major or "",
                             "institution": rec.institution or "",
-                            "graduation_date": str(rec.graduation_date)
-                            if rec.graduation_date
-                            else "",
+                            "start_year": rec.start_year or "",
+                            "graduate_year": rec.graduate_year or "",
                             "country_id": rec.country_id.id if rec.country_id else "",
                         }
                         for rec in edu_sorted

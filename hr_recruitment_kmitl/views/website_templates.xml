@@ -1,6 +1,7 @@
 <odoo>
-    <!-- <template id="website.option_header_brand_logo" name="Header Brand Logo" active="False"></template> -->
-    <!-- <template id="kmitl_template_header" inherit_id="website.template_header_default" name="KMITL Template Header" active="True">
-
-    </template> -->
+    <template id="kmitl_signup_fields" inherit_id="auth_signup.fields">
+        <xpath expr="//label[@for='name']" position="replace">
+            <label for="name">Firstname - Lastname</label>
+        </xpath>
+    </template>
 </odoo>

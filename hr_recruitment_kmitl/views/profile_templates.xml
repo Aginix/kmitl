@@ -480,7 +480,7 @@
                                             <label
                                                 class="col-form-label"
                                                 for="address_street"
-                                            >ที่อยู่</label>
+                                            >บ้านเลขที่ หมู่ ซอย ถนน</label>
                                             <span class="text-danger ms-1">*</span>
                                             <input
                                                 type="text"
@@ -495,7 +495,7 @@
                                             <label
                                                 class="col-form-label"
                                                 for="address_zip_id"
-                                            >ที่ตั้ง (ZIP Location)</label>
+                                            >รหัสไปรษณีย์ แขวง เขต จังหวัด</label>
                                             <span class="text-danger ms-1">*</span>
                                             <select
                                                 name="address_zip_id"
@@ -541,7 +541,7 @@
                                                 <label
                                                     class="col-form-label"
                                                     for="current_street"
-                                                >ที่อยู่</label>
+                                                >บ้านเลขที่ หมู่ ซอย ถนน</label>
                                                 <span class="text-danger ms-1">*</span>
                                                 <input
                                                     type="text"
@@ -556,7 +556,7 @@
                                                 <label
                                                     class="col-form-label"
                                                     for="current_zip_id"
-                                                >ที่ตั้ง (ZIP Location)</label>
+                                                >รหัสไปรษณีย์ แขวง เขต จังหวัด</label>
                                                 <span class="text-danger ms-1">*</span>
                                                 <select
                                                     name="current_zip_id"
@@ -621,74 +621,6 @@
                                                 >หม้าย
                                                     (Widowed)</option>
                                             </select>
-                                        </div>
-                                    </div>
-                                    <!-- Row: Spouse Name (shown when married) -->
-                                    <div
-                                        id="spouse_fields"
-                                        class="row"
-                                        t-attf-style="{{ '' if profile.marital == 'married' else 'display: none;' }}"
-                                    >
-                                        <div class="mb-3 col-lg-2">
-                                            <label
-                                                class="col-form-label"
-                                                for="spouse_prefix"
-                                            >คำนำหน้า (Title)</label>
-                                            <span class="text-danger ms-1">*</span>
-                                            <select
-                                                name="spouse_prefix"
-                                                class="form-select"
-                                            >
-                                                <option value="">-- เลือก --</option>
-                                                <t t-foreach="titles or []" t-as="t">
-                                                    <option
-                                                        t-att-value="t.id"
-                                                        t-att-selected="t.id == profile.spouse_prefix.id or None"
-                                                    >
-                                                        <t t-out="t.name" />
-                                                    </option>
-                                                </t>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3 col-lg-4">
-                                            <label
-                                                class="col-form-label"
-                                                for="spouse_first_name"
-                                            >ชื่อจริง (First Name)</label>
-                                            <span class="text-danger ms-1">*</span>
-                                            <input
-                                                type="text"
-                                                name="spouse_first_name"
-                                                class="form-control"
-                                                t-att-value="profile.spouse_first_name or ''"
-                                            />
-                                        </div>
-                                        <div class="mb-3 col-lg-3">
-                                            <label
-                                                class="col-form-label"
-                                                for="spouse_middle_name"
-                                            >ชื่อกลาง
-                                                (Middle
-                                                Name)</label>
-                                            <input
-                                                type="text"
-                                                name="spouse_middle_name"
-                                                class="form-control"
-                                                t-att-value="profile.spouse_middle_name or ''"
-                                            />
-                                        </div>
-                                        <div class="mb-3 col-lg-3">
-                                            <label
-                                                class="col-form-label"
-                                                for="spouse_last_name"
-                                            >นามสกุล (Last Name)</label>
-                                            <span class="text-danger ms-1">*</span>
-                                            <input
-                                                type="text"
-                                                name="spouse_last_name"
-                                                class="form-control"
-                                                t-att-value="profile.spouse_last_name or ''"
-                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -1008,9 +940,6 @@
                                                             <label
                                                                 class="col-form-label"
                                                             >End Date</label>
-                                                            <span
-                                                                class="text-danger ms-1"
-                                                            >*</span>
                                                             <input
                                                                 type="date"
                                                                 name="wh_date_end"
@@ -1159,7 +1088,7 @@
                                                 />
                                                 <t
                                                     t-set="download_url"
-                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=ocsc_exam_file&amp;filename_field=ocsc_exam_filename&amp;download=true' % profile.id if profile.ocsc_exam_filename else False"
+                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=ocsc_exam_file&amp;filename_field=ocsc_exam_filename&amp;download=false' % profile.id if profile.ocsc_exam_filename else False"
                                                 />
                                             </t>
                                         </div>
@@ -1252,7 +1181,7 @@
                                                 />
                                                 <t
                                                     t-set="download_url"
-                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=true' % profile.id if profile.academic_position_filename else False"
+                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=academic_position_file&amp;filename_field=academic_position_filename&amp;download=false' % profile.id if profile.academic_position_filename else False"
                                                 />
                                             </t>
                                         </div>
@@ -1473,7 +1402,7 @@
                                             />
                                             <t
                                                 t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=english_score_file&amp;filename_field=english_score_filename&amp;download=true' % profile.id if profile.english_score_filename else False"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=english_score_file&amp;filename_field=english_score_filename&amp;download=false' % profile.id if profile.english_score_filename else False"
                                             />
                                         </t>
                                     </div>
@@ -1559,6 +1488,7 @@
                                             t-call="hr_recruitment_kmitl.document_upload_card"
                                         >
                                             <t t-set="name">doc_photo</t>
+                                            <t t-set="accept">.jpg,.jpeg,.png</t>
                                             <t
                                                 t-set="label"
                                             >รูปถ่ายหน้าตรง (1 นิ้ว)<span
@@ -1573,7 +1503,7 @@
                                             />
                                             <t
                                                 t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=photo_file&amp;filename_field=photo_filename&amp;download=true' % profile.id if profile.photo_filename else False"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=photo_file&amp;filename_field=photo_filename&amp;download=false' % profile.id if profile.photo_filename else False"
                                             />
                                         </t>
                                         <!-- ID Card -->
@@ -1595,7 +1525,7 @@
                                             />
                                             <t
                                                 t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=id_card_file&amp;filename_field=id_card_filename&amp;download=true' % profile.id if profile.id_card_filename else False"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=id_card_file&amp;filename_field=id_card_filename&amp;download=false' % profile.id if profile.id_card_filename else False"
                                             />
                                         </t>
                                         <!-- Household Registration -->
@@ -1617,7 +1547,7 @@
                                             />
                                             <t
                                                 t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=household_registration_file&amp;filename_field=household_registration_filename&amp;download=true' % profile.id if profile.household_registration_filename else False"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=household_registration_file&amp;filename_field=household_registration_filename&amp;download=false' % profile.id if profile.household_registration_filename else False"
                                             />
                                         </t>
                                         <!-- Resume -->
@@ -1634,7 +1564,7 @@
                                             />
                                             <t
                                                 t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=resume_file&amp;filename_field=resume_filename&amp;download=true' % profile.id if profile.resume_filename else False"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=resume_file&amp;filename_field=resume_filename&amp;download=false' % profile.id if profile.resume_filename else False"
                                             />
                                         </t>
                                         <!-- Military Certificate (male only) -->
@@ -1651,7 +1581,9 @@
                                                 >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
                                                     หรือได้รับการยกเว้นการเกณฑ์ทหาร <br
                                                     /> (ใบ สด.8
-                                                    สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ) </t>
+                                                    สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ)<span
+                                                        class="text-danger ms-1"
+                                                    >*</span></t>
                                                 <t t-set="description">เฉพาะเพศชาย</t>
                                                 <t
                                                     t-set="existing_filename"
@@ -1659,7 +1591,7 @@
                                                 />
                                                 <t
                                                     t-set="download_url"
-                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=true' % profile.id if profile.military_certificate_filename else False"
+                                                    t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=military_certificate_file&amp;filename_field=military_certificate_filename&amp;download=false' % profile.id if profile.military_certificate_filename else False"
                                                 />
                                             </t>
                                         </t>
@@ -1682,7 +1614,7 @@
                                             />
                                             <t
                                                 t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=work_certificate_file&amp;filename_field=work_certificate_filename&amp;download=true' % profile.id if profile.work_certificate_filename else False"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=work_certificate_file&amp;filename_field=work_certificate_filename&amp;download=false' % profile.id if profile.work_certificate_filename else False"
                                             />
                                         </t>
                                         <!-- Other Documents -->
@@ -1701,7 +1633,7 @@
                                             />
                                             <t
                                                 t-set="download_url"
-                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=other_documents_file&amp;filename_field=other_documents_filename&amp;download=true' % profile.id if profile.other_documents_filename else False"
+                                                t-value="'/web/content?model=portal.profile&amp;id=%d&amp;field=other_documents_file&amp;filename_field=other_documents_filename&amp;download=false' % profile.id if profile.other_documents_filename else False"
                                             />
                                         </t>
                                     </div>
@@ -1797,6 +1729,10 @@
                         <div class="mb-3 col-md-4">
                             <label class="col-form-label">Country</label>
                             <span class="text-danger ms-1">*</span>
+                            <t
+                                t-set="default_country_id"
+                                t-value="th_country and th_country.id or False"
+                            />
                             <select
                                 t-attf-name="#{section_prefix}country_id"
                                 class="form-select"
@@ -1805,21 +1741,39 @@
                                 <t t-foreach="countries or []" t-as="country">
                                     <option
                                         t-att-value="country.id"
-                                        t-att-selected="edu_rec and country.id == edu_rec.country_id.id or None"
+                                        t-att-selected="((edu_rec and country.id == edu_rec.country_id.id) or (not edu_rec and country.id == default_country_id)) or None"
                                     >
                                         <t t-out="country.name" />
                                     </option>
                                 </t>
                             </select>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="mb-3 col-md-4">
-                            <label class="col-form-label">Graduation Date</label>
+                            <label class="col-form-label">Start Year</label>
                             <span class="text-danger ms-1">*</span>
                             <input
-                                type="date"
-                                t-attf-name="#{section_prefix}graduation_date"
+                                type="number"
+                                min="1900"
+                                max="2100"
+                                t-attf-name="#{section_prefix}start_year"
                                 class="form-control"
-                                t-att-value="edu_rec.graduation_date if edu_rec else ''"
+                                t-att-value="edu_rec.start_year if edu_rec else ''"
+                                placeholder="e.g. 2018"
+                            />
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label class="col-form-label">Graduate Year</label>
+                            <span class="text-danger ms-1">*</span>
+                            <input
+                                type="number"
+                                min="1900"
+                                max="2100"
+                                t-attf-name="#{section_prefix}graduate_year"
+                                class="form-control"
+                                t-att-value="edu_rec.graduate_year if edu_rec else ''"
+                                placeholder="e.g. 2022"
                             />
                         </div>
                     </div>
@@ -1841,7 +1795,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=certificate_file&amp;filename_field=certificate_filename&amp;download=true' % edu_rec.id if edu_rec and edu_rec.certificate_filename else False"
+                                    t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=certificate_file&amp;filename_field=certificate_filename&amp;download=false' % edu_rec.id if edu_rec and edu_rec.certificate_filename else False"
                                 />
                             </t>
                         </div>
@@ -1862,7 +1816,7 @@
                                 />
                                 <t
                                     t-set="download_url"
-                                    t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=transcript_file&amp;filename_field=transcript_filename&amp;download=true' % edu_rec.id if edu_rec and edu_rec.transcript_filename else False"
+                                    t-value="'/web/content?model=portal.education.history&amp;id=%d&amp;field=transcript_file&amp;filename_field=transcript_filename&amp;download=false' % edu_rec.id if edu_rec and edu_rec.transcript_filename else False"
                                 />
                             </t>
                         </div>
