@@ -16,6 +16,14 @@ class ConstructionProject(models.Model):
 
     ref = fields.Char(string="Reference", default="/", readonly=True, copy=False)
 
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Responsible",
+        default=lambda self: self.env.user,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
     department_id = fields.Many2one(
         comodel_name="hr.department",
         string="Department",

@@ -8,6 +8,17 @@
         <field name="tag">kmitl_trial_balance</field>
     </record>
 
+    <!-- Aged Receivable / Aged Payable: OWL client actions sharing one
+         component; the tag selects the account type filtered. -->
+    <record id="action_aged_receivable_kmitl" model="ir.actions.client">
+        <field name="name">Aged Receivable</field>
+        <field name="tag">kmitl_aged_receivable</field>
+    </record>
+    <record id="action_aged_payable_kmitl" model="ir.actions.client">
+        <field name="name">Aged Payable</field>
+        <field name="tag">kmitl_aged_payable</field>
+    </record>
+
     <!-- Actions: open the pre-configured instance directly on its result
          view (the same view mis_builder.preview() uses, so the report
          renders inline without a "Preview" click). -->
@@ -67,6 +78,20 @@
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_report_cf_kmitl"
         sequence="30"
+    />
+    <menuitem
+        id="menu_report_aged_receivable_kmitl"
+        name="Aged Receivable"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_aged_receivable_kmitl"
+        sequence="40"
+    />
+    <menuitem
+        id="menu_report_aged_payable_kmitl"
+        name="Aged Payable"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_aged_payable_kmitl"
+        sequence="50"
     />
 
 </odoo>

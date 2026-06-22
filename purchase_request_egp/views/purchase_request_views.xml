@@ -33,6 +33,7 @@
                             name="egp_project_id"
                             attrs="{
                                 'readonly': [('can_edit_egp', '=', False)],
+                                'required': [('egp_status', '=', 'in_progress')],
                             }"
                             class="o_required_modifier"
                         />

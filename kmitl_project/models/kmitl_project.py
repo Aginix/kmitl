@@ -96,7 +96,14 @@ class KmitlProject(models.Model):
         "res.company", required=True, default=lambda self: self.env.company
     )
     location = fields.Text(string="สถานที่/พื้นที่ดำเนินโครงการ", copy=True, tracking=True)
-    key = fields.Char(tracking=True, readonly=True)
+    key = fields.Char(
+        string="เลขที่รันโครงการ",
+        tracking=True,
+        readonly=True,
+        copy=False,
+        help="เลขที่รันของโครงการ ออกให้ครั้งเดียวเมื่อยืนยันโครงการ (draft→new) "
+        "และคงเดิมตลอดอายุโครงการ ใช้เป็นรหัส (code) ของบัญชีวิเคราะห์โครงการ",
+    )
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
         string="Fiscal year",
@@ -503,15 +510,47 @@ class KmitlProject(models.Model):
             }
         )
 
+    def _ensure_project_number(self):
+        """Issue the project's running number (``key``) once, when it is first
+        confirmed (``draft→new``). Idempotent — a later reset-to-draft keeps the
+        number, never re-issues it. Stamped with the project's fiscal year (not the
+        confirmation calendar date) by drawing the sequence on the fiscal year's
+        end date, so the number always reads as its ปีงบประมาณ. Becomes the analytic
+        account's ``code``."""
+        self.ensure_one()
+        if self.key:
+            return
+        self.key = self.env["ir.sequence"].next_by_code(
+            "kmitl.project",
+            sequence_date=self.account_fiscal_year_id.date_to,
+        )
+
+    def write(self, vals):
+        """Freeze the fiscal year once a running number exists: the number, the
+        budget commitment and the analytic are all minted against
+        ``account_fiscal_year_id`` at confirmation, so it must not drift afterwards
+        (e.g. on the reset-to-draft edit path)."""
+        if "account_fiscal_year_id" in vals:
+            for rec in self:
+                if rec.key and rec.account_fiscal_year_id.id != vals[
+                    "account_fiscal_year_id"
+                ]:
+                    raise UserError(
+                        _("ไม่สามารถเปลี่ยนปีงบประมาณได้ เนื่องจากโครงการมีเลขที่รันแล้ว (%s)")
+                        % rec.key
+                    )
+        return super().write(vals)
+
     def _ensure_analytic_account(self):
         """A confirmed project tracks its own ``kmitl_project`` analytic dimension so
         its reservation and downstream spend are attributable to the project. Create
         it on demand (kmitl.project, unlike procurement.plan, has no auto-create on
         write) and let the inverse fold it into ``analytic_distribution``."""
         self.ensure_one()
+        self._ensure_project_number()
         if not self.analytic_account_id:
             self.analytic_account_id = self._create_analytic_account_from_values(
-                {"name": self.name, "code": self.key or self.name}
+                {"name": self.name, "code": self.key}
             ).id
         # Fold the kmitl_project dimension into analytic_distribution — in both
         # branches, independent of the create-branch inverse-flush ordering. The

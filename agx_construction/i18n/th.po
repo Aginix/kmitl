@@ -343,7 +343,7 @@ msgstr ""
 #. module: agx_construction
 #: model_terms:ir.ui.view,arch_db:agx_construction.construction_project_view_form
 msgid "PO"
-msgstr ""
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: agx_construction
 #: model:ir.model,name:agx_construction.model_procurement_type

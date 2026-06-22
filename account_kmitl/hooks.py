@@ -1,4 +1,8 @@
+import logging
+
 from odoo import SUPERUSER_ID, api
+
+_logger = logging.getLogger(__name__)
 
 
 def _create_journals(env, company):
@@ -127,9 +131,47 @@ def _create_withholding_taxes(env, company):
             WHT.create({**data, "company_id": company.id})
 
 
+def _purge_generic_accounting_demo(env, company):
+    """Remove Odoo's generic accounting demo data before loading the KMITL chart.
+
+    When installing with demo data, ``l10n_th`` (a dependency) auto-loads its
+    own chart onto the main company and posts demo invoices/payments. Those
+    entries make ``account.chart.template.existing_accounting()`` truthy, so
+    ``_load`` raises a UserError instead of replacing the chart.
+
+    Safety: this runs in account_kmitl's ``post_init_hook`` -- once, at the very
+    moment the KMITL chart is first installed. The KMITL chart does not exist on
+    the company yet, so every accounting entry present here is by definition the
+    auto-generated demo data, never real user-entered accounting. We therefore
+    only act when the database was built *with* demo data; on a production
+    (no-demo) install there is nothing to clean and this is a no-op.
+
+    Deleting the moves cascades to their payments and bank statement lines
+    (``move_id`` ``ondelete='cascade'``); the now-empty statements are removed
+    too.
+    """
+    if not env.ref("base.module_account").demo:
+        return
+
+    moves = env["account.move"].sudo().search([("company_id", "=", company.id)])
+    if moves:
+        moves.with_context(force_delete=True).unlink()
+    env["account.bank.statement"].sudo().search(
+        [("company_id", "=", company.id)]
+    ).unlink()
+    if moves:
+        _logger.info(
+            "account_kmitl: purged %d generic accounting demo move(s) on %s "
+            "before loading the KMITL chart.",
+            len(moves),
+            company.display_name,
+        )
+
+
 def post_init_hook(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
     company = env.ref("base.main_company")
+    _purge_generic_accounting_demo(env, company)
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
     _deactivate_default_journals(env, company)

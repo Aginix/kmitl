@@ -1,0 +1,39 @@
+.o_kmitl_aged {
+    height: 100%;
+    overflow: auto;
+
+    .o_kmitl_aged_table_wrap {
+        overflow-x: auto;
+    }
+
+    .o_kmitl_aged_table {
+        th {
+            background-color: #f8f9fa;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        td,
+        th {
+            font-size: 1rem;
+        }
+        .o_kmitl_aged_partner {
+            min-width: 18rem;
+        }
+        .o_kmitl_aged_account td {
+            background-color: #f1f3f5;
+        }
+        .o_kmitl_aged_indent {
+            padding-left: 1.5rem;
+        }
+        .o_kmitl_aged_indent2 {
+            padding-left: 3rem;
+            font-size: 0.9rem;
+        }
+        .o_kmitl_aged_ml td {
+            font-size: 0.9rem;
+        }
+        tfoot td {
+            background-color: #f8f9fa;
+        }
+    }
+}

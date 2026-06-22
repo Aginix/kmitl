@@ -16,6 +16,10 @@ _Avoid_: strategic plan (that names the `project.strategic.plan` it aligns to, n
 The full amount a project earmarks from its floating budget code. Reserved as one shared `budget.commitment` when the project is confirmed (`draft→new`); drawn down by the project's purchase requests and disbursements. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
 _Avoid_: allocation, cost
 
+**Project Number (เลขที่รันโครงการ, `key`)**:
+A sequential running number that identifies a Project. Minted once, when the project is first confirmed (`draft→new`), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which is therefore frozen once a Project Number exists. Reused as the `code` of the project's analytic account.
+_Avoid_: Project Code (รหัสโครงการ) — a distinct approval-time identifier, **not yet implemented**; do not conflate it with the Project Number even though both currently share the `key` field.
+
 **Project Budget Remaining (งบประมาณคงเหลือ)**:
 A project's reserved `budget_amount` minus what has actually been **consumed (เบิกจ่าย)** from its commitment — the project money still available to spend. It is the project's own reservation-vs-spend, **not** the budget account's disbursement *Remaining (f)*, and **not** the พ.1 planning headroom (`budget_amount − Σ estimated_cost`) that caps how many purchase requests a project may raise.
 _Avoid_: remaining (unqualified — clashes with [budget » Remaining (f)](../budget/CONTEXT.md))

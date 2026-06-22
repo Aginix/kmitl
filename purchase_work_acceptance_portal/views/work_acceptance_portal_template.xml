@@ -72,7 +72,7 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#modaldecline"
                                         >
-                                            ตรวจรับแบบมีเงื่อนไข
+                                            อื่นๆ
                                         </button>
                                     </div>
                                 </div>
@@ -235,6 +235,12 @@
                                                     <t t-esc="work_acceptance.notes" />
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <th class="ps-0 pb-0">สิ่งของที่ต้องส่งมอบ:</th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t t-esc="work_acceptance.deliverables" />
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -361,7 +367,7 @@
                                                         <t
                                                             t-if="committee.approve_role == 'chairman'"
                                                         >
-                                                            <span>ประธาน</span>
+                                                            <span>ประธานกรรมการ</span>
                                                         </t>
                                                         <t
                                                             t-elif="committee.approve_role == 'committee'"
@@ -388,8 +394,8 @@
                                                         <t
                                                             t-if="committee.status == 'other'"
                                                         >
-                                                            <span class="text-secondary"
-                                                                >เห็นชอบตรวจรับแบบมีเงื่อนไข</span
+                                                            <span class="text-success"
+                                                                >อื่นๆ</span
                                                             >
                                                         </t>
                                                     </td>

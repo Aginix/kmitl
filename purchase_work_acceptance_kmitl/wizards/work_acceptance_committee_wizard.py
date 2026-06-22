@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from odoo import models, fields, api, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
                     'employee_name': committee.name,
                     'approve_role': committee.approve_role,
                     'status': committee.status,
-                    'note': committee.note,
+                    'reason': committee.note,
                     'is_done': bool(committee.status),
                 }))
             res['line_ids'] = lines
@@ -44,25 +45,16 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
     def button_confirm(self):
         if any(not line.status for line in self.line_ids):
             raise UserError(_("Please fill in all the inspection results."))
-        
+
         self.ensure_one()
 
         for line in self.line_ids:
             if line.is_done:
                 continue
-            if line.reason:
-                reason_label = dict(
-                    line._fields['reason'].selection
-                ).get(line.reason, line.reason)
-                note_value = reason_label
-            else:
-                note_value = line.note
-
-            vals = {
+            line.committee_id.write({
                 'status': line.status,
-                'note': note_value,
-            }
-            line.committee_id.write(vals)
+                'note': line.reason,
+            })
 
         self.wa_id.with_context(
             skip_committee_wizard=True,
@@ -101,38 +93,15 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
     status = fields.Selection(
         selection=[
             ('accept', 'Accept'),
+            ('leave', 'Leave'),
             ('other', 'Other'),
         ],
         string='Status',
     )
 
-    note = fields.Text(string='Note')
-
-    reason = fields.Selection(
-        selection=[
-            ('leave', 'ลา'),
-            ('mission', 'ติดภารกิจ'),
-        ],
-        string='Reason',
-    )
-
-    is_reason_editable = fields.Boolean(
-        compute='_compute_is_reason_editable'
-    )
+    reason = fields.Text(string='Reason')
 
     is_done = fields.Boolean(
         string='Is Done',
         default=False,
     )
-
-    @api.onchange('status')
-    def _onchange_status(self):
-        if self.status == 'accept':
-            self.note = False
-
-    @api.depends('status', 'note')
-    def _compute_is_reason_editable(self):
-        for rec in self:
-            rec.is_reason_editable = (
-                rec.status == 'other' and not rec.note
-            )

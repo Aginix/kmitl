@@ -231,6 +231,29 @@ class ApprovalRequest(models.Model):
     def _domain_budget_account_id(self):
         return [("purchase_ok", "=", True), ("product_id", "!=", False)]
 
+    def _reservation_account_domain(self):
+        """Budget codes selectable in the reservation picker for this request.
+
+        Mirror the budget_account_id field domain (purchasable, product-backed
+        codes) on top of the mixin's budgetable/expense baseline, so the picker
+        cannot offer — and apply_reservation_selection cannot write — a code the
+        request rejects.
+        """
+        return super()._reservation_account_domain() + self._domain_budget_account_id()
+
+    def apply_reservation_selection(self, selections, dims=None):
+        """Picker write-back: set the budget code + dimensions, then push the
+        distribution onto the request lines (the analytic_distribution onchange
+        does not fire on an ORM write)."""
+        res = super().apply_reservation_selection(selections, dims=dims)
+        if (
+            self.analytic_distribution
+            and self.line_ids
+            and "analytic_distribution" in self.line_ids._fields
+        ):
+            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
+        return res
+
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
@@ -544,12 +567,16 @@ class ApprovalRequest(models.Model):
 
         amount = sum(self.line_ids.mapped("total_amount"))
 
+        # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
+        # (account_fiscal_year_id, derived from its date), not today() — otherwise a
+        # request whose FY differs from today is checked against the wrong year.
         check_result = self._check_budget_availability(
             amount=amount,
             activity_analytic_id=self.activity_analytic_id.id,
             department_analytic_id=self.department_analytic_id.id,
             fund_analytic_id=self.fund_analytic_id.id,
             source_analytic_id=self.source_analytic_id.id,
+            account_fiscal_year_id=self.account_fiscal_year_id.id,
         )
 
         if not check_result["is_sufficient"]:
@@ -568,6 +595,7 @@ class ApprovalRequest(models.Model):
                 ref=self.name,
                 description=f"Approval Request: {self.name}",
                 auto_reserve=True,
+                account_fiscal_year_id=self.account_fiscal_year_id.id,
             )
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)

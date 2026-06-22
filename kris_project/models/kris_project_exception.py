@@ -58,10 +58,8 @@ class KrisProject(models.Model):
                 raise UserError(
                     _("This project is already cancelled.")
                 )
-        if self.detect_exceptions() and not self.ignore_exception:
-            return self.with_context(
-                kris_exception_action="action_cancel"
-            )._popup_exceptions()
+        # Cancelling abandons the project, so it must not be gated by the
+        # confirm/done validation rules; skip exception detection here.
         self.write({"state": "cancel", "ignore_exception": False})
 
     def action_draft(self):

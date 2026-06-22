@@ -86,6 +86,9 @@ class PurchaseRequest(models.Model):
         copy=False,
     )
 
+    # construction
+    is_construction = fields.Boolean(string="Construction", readonly=True)
+
     # -- purchase_request_kmitl fields --
     title = fields.Char(string="title", tracking=True)
 

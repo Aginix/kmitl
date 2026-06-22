@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Hotfix: let purchasing staff (purchase request user / purchase user)
+             create พ.1 from a project. The model access above grants them read on
+             kmitl.project; this rule lets them read every project (ANDed with the
+             global company / operating-unit rules) instead of being narrowed to
+             "own projects" when they also hold a kmitl.project user group.
+
+             Read only — they never gain write. The new→in_progress advance that a
+             พ.1 triggers on the project is elevated server-side (purchase_request.py),
+             so purchasing staff cannot otherwise edit or change a project's state. -->
+        <record id="kmitl_project_purchase_read_rule" model="ir.rule">
+            <field name="name">KMITL Project: purchasing read (สร้าง พ.1)</field>
+            <field name="model_id" ref="kmitl_project.model_kmitl_project"/>
+            <field name="groups" eval="[(4, ref('purchase_request.group_purchase_request_user')), (4, ref('purchase.group_purchase_user'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>

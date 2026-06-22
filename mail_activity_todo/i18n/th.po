@@ -1,0 +1,404 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* mail_activity_todo
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-08 08:23+0000\n"
+"PO-Revision-Date: 2026-06-08 08:23+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: mail_activity_todo
+#: model:ir.model.constraint,message:mail_activity_todo.constraint_todo_read_activity_user_uniq
+msgid "A read receipt already exists for this user and Todo."
+msgstr "การอ่านได้ถูกสร้างขึ้นแล้วสำหรับผู้ใช้นี้และงานที่ต้องทำ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__acknowledgement
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__acknowledgement
+msgid "Acknowledgement"
+msgstr "การรับทราบ"
+
+#. module: mail_activity_todo
+#: model:ir.model,name:mail_activity_todo.model_mail_activity
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: mail_activity_todo
+#: model:ir.model,name:mail_activity_todo.model_mail_activity_type
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__activity_type_id
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+msgid "Activity Type"
+msgstr "ประเภทกิจกรรม"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__res_model_id
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
+msgid "App"
+msgstr "แอป"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__approval
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__approval
+msgid "Approval"
+msgstr "การอนุมัติ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,help:mail_activity_todo.field_mail_activity__todo_category
+#: model:ir.model.fields,help:mail_activity_todo.field_mail_activity_type__todo_category
+msgid ""
+"Behavioural category of Todos created from this activity type. "
+"Approval/Execution clear by acting on the source; Acknowledgement/FYI can be"
+" dismissed with 'Mark as Read'."
+msgstr ""
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__todo_category
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+msgid "Category"
+msgstr "หมวดหมู่"
+
+#. module: mail_activity_todo
+#: model:ir.actions.act_window,name:mail_activity_todo.action_completed_todos
+#: model:ir.ui.menu,name:mail_activity_todo.menu_todo_completed
+msgid "Completed"
+msgstr "เสร็จสิ้น"
+
+#. module: mail_activity_todo
+#: model:ir.model,name:mail_activity_todo.model_todo_log
+msgid "Completed Todo (history)"
+msgstr "ประวัติงานที่เสร็จสิ้น"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
+msgid "Completed Todos"
+msgstr "งานที่เสร็จสิ้น"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__completed_by
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+msgid "Completed by"
+msgstr "เสร็จสิ้นโดย"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+msgid "Completed by me"
+msgstr "เสร็จสิ้นโดยฉัน"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__completed_date
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
+msgid "Completed on"
+msgstr "เสร็จสิ้นเมื่อ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__create_uid
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__create_date
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+msgid "Deadline"
+msgstr "วันครบกำหนด"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__display_name
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__display_name
+msgid "Display Name"
+msgstr "แสดงชื่อ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__execution
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__execution
+msgid "Execution"
+msgstr "การดำเนินการ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__fyi
+#: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__fyi
+msgid "FYI"
+msgstr "เพื่อทราบ"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+msgid "Group By"
+msgstr "กลุ่มโดย"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__id
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__id
+msgid "ID"
+msgstr "ไอดี"
+
+#. module: mail_activity_todo
+#: model:ir.ui.menu,name:mail_activity_todo.menu_todo_inbox
+msgid "Inbox"
+msgstr "กล่องข้อความ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity__is_my_todo
+msgid "Is My Todo"
+msgstr "เป็นงานของฉัน"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+msgid "Last 30 days"
+msgstr ""
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log____last_update
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__write_uid
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตครั้งล่าสุดโดย"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__write_date
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตครั้งล่าสุดเมื่อ"
+
+#. module: mail_activity_todo
+#. odoo-javascript
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#, python-format
+msgid "Late"
+msgstr "ล่าช้า"
+
+#. module: mail_activity_todo
+#: model:ir.actions.server,name:mail_activity_todo.action_server_mark_read
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+msgid "Mark as Read"
+msgstr "ทำเครื่องหมายว่าอ่านแล้ว"
+
+#. module: mail_activity_todo
+#: model:ir.actions.server,name:mail_activity_todo.action_server_mark_unread
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+msgid "Mark as Unread"
+msgstr "ทำเครื่องหมายว่ายังไม่อ่าน"
+
+#. module: mail_activity_todo
+#: model_terms:ir.actions.act_window,help:mail_activity_todo.action_completed_todos
+msgid "No completed Todos yet"
+msgstr "ยังไม่มีงานที่ทำเสร็จ"
+
+#. module: mail_activity_todo
+#. odoo-javascript
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#, python-format
+msgid "No pending todos"
+msgstr "ไม่มีงานที่ต้องทำค้างอยู่"
+
+#. module: mail_activity_todo
+#: model_terms:ir.actions.act_window,help:mail_activity_todo.action_my_todos
+msgid "No pending todos 🎉"
+msgstr "ไม่มีงานที่ต้องทำค้างอยู่ 🎉"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
+msgid "Open Source"
+msgstr "เปิดเอกสารต้นทาง"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
+msgid "Open Source Document"
+msgstr "เปิดเอกสารต้นทาง"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+msgid "Overdue"
+msgstr "เกินกำหนด"
+
+#. module: mail_activity_todo
+#: model:ir.model,name:mail_activity_todo.model_todo_read
+msgid "Per-user read state for Todos"
+msgstr ""
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+msgid "Planned"
+msgstr "วางแผนไว้"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity__is_read_by_me
+msgid "Read"
+msgstr "อ่านแล้ว"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+msgid "Read / Dismissed"
+msgstr "อ่านแล้ว"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__read_date
+msgid "Read Date"
+msgstr "วันที่อ่าน"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity__read_ids
+msgid "Read receipts"
+msgstr ""
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__res_name
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
+msgid "Source"
+msgstr "แหล่งที่มา"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+msgid "Source App"
+msgstr "แอป"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
+msgid "Source Document"
+msgstr "เอกสารต้นทาง"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__res_id
+msgid "Source ID"
+msgstr "ID แหล่งที่มา"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__res_model
+msgid "Source Model"
+msgstr "โมเดลแหล่งที่มา"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_tree
+msgid "Subject"
+msgstr "เรื่อง"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__summary
+msgid "Summary"
+msgstr "สรุป"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,help:mail_activity_todo.field_mail_activity__is_my_todo
+msgid ""
+"Technical: addressed to the current user. The core engine matches personal "
+"Todos (user_id); the role-in-unit layer extends this to group Todos."
+msgstr ""
+
+#. module: mail_activity_todo
+#. odoo-javascript
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#, python-format
+msgid "Today"
+msgstr "วันนี้"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__activity_id
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_form
+msgid "Todo"
+msgstr "งานที่ต้องทำ"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity__todo_category
+#: model:ir.model.fields,field_description:mail_activity_todo.field_mail_activity_type__todo_category
+msgid "Todo Category"
+msgstr "หมวดหมู่"
+
+#. module: mail_activity_todo
+#. odoo-javascript
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#: model:ir.actions.act_window,name:mail_activity_todo.action_my_todos
+#: model:ir.ui.menu,name:mail_activity_todo.menu_my_todos_root
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_tree
+#, python-format
+msgid "Todos"
+msgstr "งานที่ต้องทำ"
+
+#. module: mail_activity_todo
+#: model_terms:ir.actions.act_window,help:mail_activity_todo.action_completed_todos
+msgid "Todos you finish are archived here for reference."
+msgstr "งานที่คุณทำเสร็จจะถูกเก็บไว้ที่นี่เพื่อเป็นการอ้างอิง"
+
+#. module: mail_activity_todo
+#: model:ir.actions.server,name:mail_activity_todo.ir_cron_gc_read_fyi_todos_ir_actions_server
+#: model:ir.cron,cron_name:mail_activity_todo.ir_cron_gc_read_fyi_todos
+msgid "Todos: garbage-collect read FYI activities past retention"
+msgstr "งานที่ต้องทำ: เคลียร์ข้อมูลหมวดหมู่ 'เพื่อทราบ' ที่อ่านแล้วเกินระยะเวลาที่กำหนดไว้"
+
+#. module: mail_activity_todo
+#: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
+msgid "Unread"
+msgstr "ยังไม่อ่าน"
+
+#. module: mail_activity_todo
+#. odoo-javascript
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#, python-format
+msgid "Upcoming"
+msgstr "เร็วๆ นี้"
+
+#. module: mail_activity_todo
+#: model:ir.model,name:mail_activity_todo.model_res_users
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__user_id
+msgid "User"
+msgstr "ผู้ใช้"
+
+#. module: mail_activity_todo
+#. odoo-javascript
+#: code:addons/mail_activity_todo/static/src/xml/todo_systray.xml:0
+#, python-format
+msgid "View all"
+msgstr "ดูทั้งหมด"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__user_id
+msgid "Was assigned to"
+msgstr "ถูกมอบหมายให้"
+
+#. module: mail_activity_todo
+#: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__date_deadline
+msgid "Was due"
+msgstr "เคยมีกำหนดส่งเมื่อ"
+
+#. module: mail_activity_todo
+#: model_terms:ir.actions.act_window,help:mail_activity_todo.action_my_todos
+msgid "Work awaiting you from every app shows up here."
+msgstr "งานที่รอการดำเนินการจากทุกแอปจะแสดงอยู่ที่นี่"
