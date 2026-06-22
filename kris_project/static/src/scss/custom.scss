@@ -4,10 +4,3 @@
     text-overflow: unset !important;
     word-break: break-word !important;
 }
-
-.o_kris_installment_allocation_tree {
-    td.o_data_cell.text-warning,
-    td.o_data_cell:has(> .o_field_widget.text-warning) {
-        background-color: #fff3cd;
-    }
-}
