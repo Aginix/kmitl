@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <!-- Let users categorise a manually-scheduled activity from the native
+         "Schedule Activity" dialog, so it lands in their Todo inbox (the inbox
+         shows only categorised activities). -->
+    <record id="mail_activity_view_form_popup_todo" model="ir.ui.view">
+        <field name="name">mail.activity.view.form.popup.todo</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
+        <field name="arch" type="xml">
+            <field name="activity_type_id" position="after">
+                <field name="todo_category" />
+            </field>
+        </field>
+    </record>
+
     <!-- ================= Inbox list (L1) ================= -->
     <record id="view_my_todo_tree" model="ir.ui.view">
         <field name="name">mail.activity.todo.tree</field>
