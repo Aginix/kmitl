@@ -45,6 +45,14 @@ class SarabunDocumentMixin(models.AbstractModel):
         compute="_compute_sarabun_documents",
         string="Sarabun Document Count",
     )
+    sarabun_has_live_document = fields.Boolean(
+        compute="_compute_sarabun_documents",
+        string="Has Live หนังสือ",
+        help="True while a non-terminal Document exists (draft/circulating/"
+        "completed/returned). Gate the 'create หนังสือ' button on this — NOT on "
+        "sarabun_document_count — so a fresh one can be issued after a terminal "
+        "outcome (rejected/cancelled), while a returned doc is revised in place.",
+    )
 
     def _compute_sarabun_documents(self):
         SarabunDocument = self.env["sarabun.document"]
@@ -60,6 +68,7 @@ class SarabunDocumentMixin(models.AbstractModel):
             record.sarabun_document_count = len(documents)
             live = documents.filtered(lambda d: d.state not in ("rejected", "cancelled"))
             record.active_sarabun_document_id = live[:1] or documents[:1]
+            record.sarabun_has_live_document = bool(live)
 
     def _prepare_sarabun_document_vals(self):
         """

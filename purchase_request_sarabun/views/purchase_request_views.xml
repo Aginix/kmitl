@@ -12,7 +12,7 @@
                     string="Create Sarabun"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_document_count', '>', 0)]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_has_live_document', '=', True)]}"
                 />
             </xpath>
 

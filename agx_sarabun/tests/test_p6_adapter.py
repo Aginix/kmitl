@@ -103,3 +103,20 @@ class TestP6Adapter(SarabunCommon):
             self._act(s_sign, "complete", self.user_b)
         self.assertTrue(doc.is_completed)
         self.assertEqual(origin.completed_count, 1)
+
+    def test_has_live_document_gates_recreate(self):
+        """sarabun_has_live_document drops to False once the only doc is terminal —
+        so the consumer's 'create หนังสือ' button can reappear after reject/cancel."""
+        origin, doc = self._origin_doc()
+        step = self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        self.assertTrue(origin.sarabun_has_live_document)   # circulating = live → button hidden
+        self._act(step, "reject", self.user_a)
+        self.assertFalse(origin.sarabun_has_live_document)  # rejected = not live → button returns
+        # a returned doc, by contrast, stays live (revised in place, not re-created)
+        origin2, doc2 = self._origin_doc(self.Origin.create({"name": "PR2", "test_department_id": self.dept.id}))
+        step2 = self._add_step(doc2, order=10, verb="endorse", user=self.user_a)
+        doc2.action_send()
+        self._act(step2, "return", self.user_a, destination="sender_restart")
+        self.assertTrue(doc2.is_returned)
+        self.assertTrue(origin2.sarabun_has_live_document)  # returned is NOT terminal → still live

@@ -17,7 +17,7 @@
                         string="Submit to Sarabun"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('sarabun_in_progress', '=', True)]}"
+                        attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('sarabun_has_live_document', '=', True)]}"
                         groups="disbursement.group_disbursement_user"/>
             </xpath>
 
