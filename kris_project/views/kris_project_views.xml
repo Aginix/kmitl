@@ -76,7 +76,7 @@
                         <field name="estimated_amount" readonly="1"/>
                         <field name="allocated_amount" readonly="1"/>
                         <field name="remaining_amount" readonly="1"/>
-                        <field name="amount" sum="รวม" decoration-warning="amount == 0 and remaining_amount &gt; 0"/>
+                        <field name="amount" sum="รวม" decoration-danger="amount == 0 and remaining_amount &gt; 0"/>
                         <field name="currency_id" invisible="1"/>
                     </tree>
                 </field>
