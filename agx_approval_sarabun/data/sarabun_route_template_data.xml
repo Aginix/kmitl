@@ -1,22 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="0">
+<odoo>
 
-    <!-- Route Template for Approval Request -->
-    <record id="route_template_approval_request" model="sarabun.route.template">
-        <field name="name">Approval Request Approval</field>
-        <field name="description">Route template for approval request workflow</field>
-        <field name="sequence">10</field>
-        <field name="origin_model">approval.request</field>
-        <field name="active" eval="True"/>
-    </record>
+    <!-- Placeholder approving position. Holder is base.user_admin as a seed only —
+         assign the real holder(s) in Configuration ▸ Positions before go-live.
+         noupdate="1" so the holder assignment survives module upgrades. -->
+    <data noupdate="1">
+        <record id="position_ar_approver" model="sarabun.position">
+            <field name="name">ผู้อนุมัติคำขออนุมัติ (Approval Approver)</field>
+            <field name="code">AR_APPROVER</field>
+            <field name="holder_ids" eval="[(6, 0, [ref('base.user_admin')])]"/>
+        </record>
+    </data>
 
-    <!-- Route Template Line 1: Approver (seed-only) -->
-    <record id="route_template_line_approval_approve" model="sarabun.route.template.line">
-        <field name="template_id" ref="route_template_approval_request"/>
-        <field name="order">10</field>
-        <field name="verb">sign_approve</field>
-        <field name="target_mode">person</field>
-        <field name="user_id" ref="base.user_admin"/>
-    </record>
+    <data noupdate="0">
+        <!-- Route Template for Approval Request -->
+        <record id="route_template_approval_request" model="sarabun.route.template">
+            <field name="name">Approval Request Approval</field>
+            <field name="description">Route template for approval request workflow</field>
+            <field name="sequence">10</field>
+            <field name="origin_model">approval.request</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Approver step — targets a Position (canonical). Change the approver by
+             reassigning the position's holders, not by editing this line. -->
+        <record id="route_template_line_approval_approve" model="sarabun.route.template.line">
+            <field name="template_id" ref="route_template_approval_request"/>
+            <field name="order">10</field>
+            <field name="verb">sign_approve</field>
+            <field name="target_mode">position</field>
+            <field name="position_id" ref="position_ar_approver"/>
+        </record>
+    </data>
 
 </odoo>
