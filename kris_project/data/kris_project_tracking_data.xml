@@ -13,4 +13,8 @@
         <field name="custom_tracking" eval="True"/>
     </record>
 
+    <record id="field_kris_project__receipt_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True"/>
+    </record>
+
 </odoo>
