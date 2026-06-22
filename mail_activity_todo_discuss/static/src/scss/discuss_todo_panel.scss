@@ -1,0 +1,17 @@
+.o_DiscussTodoPanel {
+    .o_DiscussTodoPanel_icon {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+    }
+
+    .o_DiscussTodoPanel_item {
+        &:hover {
+            background-color: $gray-200;
+        }
+    }
+
+    .o_DiscussTodoPanel_viewAll a {
+        cursor: pointer;
+    }
+}
