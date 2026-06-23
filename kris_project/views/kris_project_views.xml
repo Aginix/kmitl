@@ -27,7 +27,7 @@
                     <tree create="0" delete="0" editable="bottom">
                         <field name="allocation_line_id" invisible="1" />
                         <field name="name" string="Allocator" />
-                        <field name="remaining_amount" />
+                        <field name="remaining_amount" readonly="1" />
                         <field name="amount" />
                         <field name="currency_id" invisible="1" />
                     </tree>
