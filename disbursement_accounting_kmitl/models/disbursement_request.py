@@ -260,7 +260,12 @@ class DisbursementRequest(models.Model):
         }
 
     def action_post_bills(self):
-        """Post all unposted bills and transition DR state to bills_posted."""
+        """Post all unposted bills and transition DR state to bills_posted.
+
+        Programmatic/demo entry point only — it posts bills directly, bypassing
+        the account.move approval. In the UI bills are posted by approving them
+        on the account.move (Approve = post); there is no "Post Bills" button.
+        """
         for record in self:
             if record.state != "approved":
                 raise UserError(

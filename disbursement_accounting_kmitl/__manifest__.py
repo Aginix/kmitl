@@ -12,6 +12,7 @@
     "depends": [
         "disbursement",
         "accounting_kmitl",
+        "accounting_kmitl_workflow",
     ],
     "data": [
         "security/ir.model.access.csv",

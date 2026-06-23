@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_inherit_workflow" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.workflow</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Show display_state on the status bar instead of the raw state.
+                 Keep state in the view (invisible) so the many base button
+                 attrs that key off it still evaluate. -->
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="after">
+                <field name="display_state" widget="statusbar"
+                       statusbar_visible="draft,to_approve,posted"/>
+            </xpath>
+
+            <!-- Submit only by the creator (or admin) -->
+            <xpath expr="//button[@name='action_submit']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'draft'), ('can_submit', '=', False)]}</attribute>
+            </xpath>
+
+            <!-- Approve / Reject (step 2: ผู้อนุมัติ) after the Submit button
+                 added by accounting_kmitl. -->
+            <xpath expr="//button[@name='action_submit']" position="after">
+                <field name="can_submit" invisible="1"/>
+                <button name="action_approve" string="Approve" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('workflow_state', '!=', 'to_approve')]}"
+                        groups="accounting_kmitl.group_accounting_kmitl_manager"/>
+                <button name="action_open_reject_wizard" string="Reject" type="object"
+                        attrs="{'invisible': [('workflow_state', '!=', 'to_approve')]}"
+                        groups="accounting_kmitl.group_accounting_kmitl_manager"/>
+            </xpath>
+
+            <!-- Approval audit block next to the accounting dimensions. -->
+            <xpath expr="//group[@name='budget_info']" position="after">
+                <group name="approval_workflow" string="Approval Workflow">
+                    <field name="workflow_state" readonly="1"/>
+                    <field name="submitted_by" readonly="1"/>
+                    <field name="submitted_date" readonly="1"/>
+                    <field name="approved_by" readonly="1"
+                           attrs="{'invisible': [('approved_by', '=', False)]}"/>
+                    <field name="approved_date" readonly="1"
+                           attrs="{'invisible': [('approved_by', '=', False)]}"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
