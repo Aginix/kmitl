@@ -52,7 +52,10 @@ class ResUsers(models.Model):
                 "res_name": act.res_name or "",
                 "res_model": act.res_model,
                 "res_id": act.res_id,
-                "app": act.res_model_id.display_name or "",
+                # sudo: regular users cannot read ir.model (non-sensitive
+                # metadata); without it the whole payload raises AccessError for
+                # non-admins and the Discuss list shows nothing.
+                "app": act.res_model_id.sudo().display_name or "",
                 "icon": model_icon(act.res_model) if act.res_model else False,
                 "activity_type": act.activity_type_id.display_name or "",
                 "todo_category": act.todo_category,
