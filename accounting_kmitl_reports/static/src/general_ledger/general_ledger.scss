@@ -2,68 +2,25 @@
     height: 100%;
     overflow: auto;
 
-    .o_kmitl_gl_table_wrap {
-        overflow-x: auto;
-    }
-
     .o_kmitl_gl_table {
-        th {
-            background-color: #f8f9fa;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-        td,
-        th {
-            font-size: 0.95rem;
-        }
-        .o_kmitl_gl_date {
-            min-width: 7rem;
-        }
-
-        // Account header row
-        .o_kmitl_gl_account td {
-            background-color: #eef1f4;
-            font-weight: bold;
-        }
-        // Opening balance row
-        .o_kmitl_gl_opening td {
-            background-color: #fbfbfb;
-            color: #555;
-        }
-        // Ending balance row
-        .o_kmitl_gl_ending td {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #adb5bd;
-        }
-
-        // Drill-down: expand caret + journal-entry Dr/Cr detail
-        .o_kmitl_gl_expand {
+        // Clickable account rows (accordion headers)
+        .o_kmitl_gl_row {
             cursor: pointer;
-            color: #6c757d;
-
-            &:hover {
-                color: #212529;
-            }
         }
+
+        // Detail panel row: let the inner padded panel provide the background
         .o_kmitl_gl_detail > td {
-            padding: 0;
-            background-color: #fbfcfe;
+            background-color: transparent;
         }
-        .o_kmitl_gl_detail_table {
-            margin: 0;
 
+        .o_kmitl_gl_detail_table {
             th {
                 background-color: #eef1f4;
-                font-weight: 600;
+                white-space: nowrap;
             }
-            th,
-            td {
-                font-size: 0.9rem;
-            }
-            // Indent the entry breakdown under the ledger line.
-            th:first-child,
-            td:first-child {
-                padding-left: 2.5rem;
+            .o_kmitl_gl_opening td,
+            .o_kmitl_gl_ending td {
+                background-color: #f8f9fa;
             }
         }
     }

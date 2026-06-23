@@ -4,206 +4,128 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { Component, onWillStart, useState } from "@odoo/owl";
-import { MultiRecordSelect } from "../trial_balance/multi_record_select";
 
 const REPORT_MODEL = "report.accounting_kmitl_reports.general_ledger_kmitl";
-
-// Selected-record state buckets that feed the report options.
-const SELECTION_KEYS = [
-    "journals",
-    "partners",
-    "accounts",
-    "accountFrom",
-    "accountTo",
-    "departments",
-    "sources",
-    "funds",
-    "activities",
-];
+const WIZARD_ACTION = "accounting_kmitl_reports.action_general_ledger_wizard_kmitl";
 
 export class GeneralLedger extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
         this.company = useService("company");
-        this.fiscalYears = [];
         this.state = useState({
-            fiscalYearId: false,
+            loading: true,
+            accounts: [],
+            // Accordion: the id of the expanded account (one open at a time).
+            expandedId: null,
             dateFrom: false,
             dateTo: false,
-            onlyPosted: true,
-            hideAt0: true,
-            // Journal/partner/account filters stay collapsed until requested.
-            showAdvanced: false,
-            // selections (each an Array<{id, name}>)
-            journals: [],
-            partners: [],
-            accounts: [],
-            accountFrom: [],
-            accountTo: [],
-            departments: [],
-            sources: [],
-            funds: [],
-            activities: [],
-            accountsData: [],
-            loading: false,
-            // Drill-down: expanded[moveLineId] -> true; entries[moveId] -> the
-            // journal entry's full Dr/Cr breakdown (lazily fetched on expand).
-            expanded: {},
-            entries: {},
         });
-        // Translated placeholders for the dimension / standard selectors.
         this.labels = {
-            journals: _t("Journals"),
-            partners: _t("Partners"),
-            accounts: _t("Accounts"),
-            accountFrom: _t("From code"),
-            accountTo: _t("To code"),
-            departments: _t("Departments"),
-            sources: _t("Sources"),
-            funds: _t("Funds"),
-            activities: _t("Activities"),
+            title: _t("General Ledger"),
+            changeCriteria: _t("Change criteria"),
+            printPdf: _t("Print PDF"),
+            exportExcel: _t("Export Excel"),
+            empty: _t("No entries for the selected criteria."),
+            account: _t("Account"),
+            opening: _t("Opening Balance"),
+            debit: _t("Debit"),
+            credit: _t("Credit"),
+            ending: _t("Ending Balance"),
+            date: _t("Date"),
+            entry: _t("Entry"),
+            journal: _t("Journal"),
+            partner: _t("Partner"),
+            label: _t("Label"),
+            balance: _t("Balance"),
+            open: _t("Open"),
         };
         onWillStart(this.onWillStart.bind(this));
     }
 
     async onWillStart() {
-        this.companyId = this.company.currentCompany.id;
-        this.fiscalYears = await this.orm.searchRead(
-            "account.fiscal.year",
-            [],
-            ["id", "name", "date_from", "date_to"],
-            { order: "date_from desc" }
-        );
-        const today = new Date().toISOString().slice(0, 10);
-        const covering = this.fiscalYears.find(
-            (fy) => fy.date_from <= today && fy.date_to >= today
-        );
-        const fy = covering || this.fiscalYears[0];
-        if (fy) {
-            this.state.fiscalYearId = fy.id;
-            this.state.dateFrom = fy.date_from;
-            this.state.dateTo = fy.date_to;
+        const params = (this.props.action && this.props.action.params) || {};
+        this.companyId = params.company_id || this.company.currentCompany.id;
+        this.accountIds = params.account_ids || [];
+        this.onlyPosted = params.only_posted === undefined ? true : params.only_posted;
+
+        if (params.date_from && params.date_to) {
+            this.state.dateFrom = params.date_from;
+            this.state.dateTo = params.date_to;
         } else {
-            const year = new Date().getFullYear();
-            this.state.dateFrom = `${year}-01-01`;
-            this.state.dateTo = `${year}-12-31`;
+            // No wizard params (opened directly): default to the current FY.
+            const fys = await this.orm.searchRead(
+                "account.fiscal.year",
+                [],
+                ["date_from", "date_to"],
+                { order: "date_from desc" }
+            );
+            const today = new Date().toISOString().slice(0, 10);
+            const fy =
+                fys.find((f) => f.date_from <= today && f.date_to >= today) || fys[0];
+            if (fy) {
+                this.state.dateFrom = fy.date_from;
+                this.state.dateTo = fy.date_to;
+            } else {
+                const year = new Date().getFullYear();
+                this.state.dateFrom = `${year}-01-01`;
+                this.state.dateTo = `${year}-12-31`;
+            }
         }
         await this.load();
     }
 
-    // ------------------------------------------------------------------
-    // Report options + data loading
-    // ------------------------------------------------------------------
     get options() {
         return {
             company_id: this.companyId,
             date_from: this.state.dateFrom,
             date_to: this.state.dateTo,
-            only_posted: this.state.onlyPosted,
-            hide_account_at_0: this.state.hideAt0,
-            journal_ids: this.state.journals.map((r) => r.id),
-            partner_ids: this.state.partners.map((r) => r.id),
-            account_ids: this.state.accounts.map((r) => r.id),
-            account_code_from_id: (this.state.accountFrom[0] || {}).id || false,
-            account_code_to_id: (this.state.accountTo[0] || {}).id || false,
-            dims: {
-                departments: this.state.departments.map((r) => r.id),
-                sources: this.state.sources.map((r) => r.id),
-                funds: this.state.funds.map((r) => r.id),
-                activities: this.state.activities.map((r) => r.id),
-            },
+            only_posted: this.onlyPosted,
+            // When specific accounts were picked, keep them even at a zero
+            // balance; otherwise hide empty accounts to keep the list short.
+            hide_account_at_0: !this.accountIds.length,
+            account_ids: this.accountIds,
+            dims: {},
         };
     }
 
     async load() {
-        if (!this.state.dateFrom || !this.state.dateTo) {
-            return;
-        }
         this.state.loading = true;
-        // A reload rebuilds the line ids, so drop any open drill-downs.
-        this.state.expanded = {};
+        this.state.expandedId = null;
         try {
             const data = await this.orm.call(
                 REPORT_MODEL,
                 "get_general_ledger_data",
                 [this.options]
             );
-            this.state.accountsData = data.accounts || [];
+            this.state.accounts = data.accounts || [];
         } finally {
             this.state.loading = false;
         }
     }
 
-    // Expand/collapse a ledger line to reveal the full Dr/Cr breakdown of its
-    // journal entry. The entry detail is fetched once and cached by move id.
-    async toggleExpand(line) {
-        if (this.state.expanded[line.id]) {
-            delete this.state.expanded[line.id];
+    toggleExpand(account) {
+        this.state.expandedId =
+            this.state.expandedId === account.id ? null : account.id;
+    }
+
+    openEntry(line) {
+        if (!line.entry_id) {
             return;
         }
-        this.state.expanded[line.id] = true;
-        const moveId = line.entry_id;
-        if (moveId && !this.state.entries[moveId]) {
-            this.state.entries[moveId] = { loading: true, lines: [] };
-            const detail = await this.orm.call(
-                REPORT_MODEL,
-                "get_move_lines_detail",
-                [moveId]
-            );
-            this.state.entries[moveId] = { loading: false, ...detail };
-        }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "account.move",
+            res_id: line.entry_id,
+            views: [[false, "form"]],
+            target: "current",
+        });
     }
 
-    // ------------------------------------------------------------------
-    // Filter events
-    // ------------------------------------------------------------------
-    onFiscalYearChange(ev) {
-        const id = parseInt(ev.target.value) || false;
-        this.state.fiscalYearId = id;
-        const fy = this.fiscalYears.find((f) => f.id === id);
-        if (fy) {
-            this.state.dateFrom = fy.date_from;
-            this.state.dateTo = fy.date_to;
-        }
-        this.load();
+    changeCriteria() {
+        this.action.doAction(WIZARD_ACTION);
     }
 
-    onDateFromChange(ev) {
-        this.state.dateFrom = ev.target.value || false;
-        this.load();
-    }
-
-    onDateToChange(ev) {
-        this.state.dateTo = ev.target.value || false;
-        this.load();
-    }
-
-    onTogglePosted(ev) {
-        this.state.onlyPosted = ev.target.checked;
-        this.load();
-    }
-
-    onToggleHide(ev) {
-        this.state.hideAt0 = ev.target.checked;
-        this.load();
-    }
-
-    toggleAdvanced() {
-        this.state.showAdvanced = !this.state.showAdvanced;
-    }
-
-    // One change handler per selection bucket (bound in the template).
-    onSelectionChange(key, selected) {
-        if (SELECTION_KEYS.includes(key)) {
-            this.state[key] = selected;
-            this.load();
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // Rendering helpers
-    // ------------------------------------------------------------------
     format(value) {
         if (!value || Math.abs(value) < 0.005) {
             return "";
@@ -230,6 +152,6 @@ export class GeneralLedger extends Component {
 }
 
 GeneralLedger.template = "accounting_kmitl_reports.GeneralLedger";
-GeneralLedger.components = { MultiRecordSelect };
+GeneralLedger.props = ["*"];
 
 registry.category("actions").add("kmitl_general_ledger", GeneralLedger);

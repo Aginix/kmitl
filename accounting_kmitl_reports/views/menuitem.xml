@@ -8,9 +8,10 @@
         <field name="tag">kmitl_trial_balance</field>
     </record>
 
-    <!-- General Ledger: OWL client action (OCA general_ledger engine), per
-         account opening balance + dated move lines + closing balance,
-         filterable by the KMITL accounting dimensions. -->
+    <!-- General Ledger: OWL accordion report (OCA general_ledger engine).
+         Launched by the wizard (action_general_ledger_wizard_kmitl) with the
+         chosen accounts + period in the action params; each account row
+         expands to its dated move lines with a running balance. -->
     <record id="action_general_ledger_kmitl" model="ir.actions.client">
         <field name="name">General Ledger</field>
         <field name="tag">kmitl_general_ledger</field>
@@ -68,7 +69,7 @@
         id="menu_report_general_ledger_kmitl"
         name="General Ledger"
         parent="accounting_kmitl.menu_accounting_reports"
-        action="action_general_ledger_kmitl"
+        action="action_general_ledger_wizard_kmitl"
         sequence="6"
     />
     <menuitem

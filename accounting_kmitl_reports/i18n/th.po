@@ -345,3 +345,28 @@ msgstr "ยอดยกมา"
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
 msgid "Ending Balance"
 msgstr "ยอดคงเหลือ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Change criteria"
+msgstr "เปลี่ยนเงื่อนไข"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "No entries for the selected criteria."
+msgstr "ไม่มีรายการตามเงื่อนไขที่เลือก"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Open"
+msgstr "เปิด"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.view_general_ledger_wizard_kmitl_form
+msgid "View Report"
+msgstr "ดูรายงาน"
+
+#. module: accounting_kmitl_reports
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.view_general_ledger_wizard_kmitl_form
+msgid "Leave empty for all accounts"
+msgstr "เว้นว่างเพื่อแสดงทุกบัญชี"

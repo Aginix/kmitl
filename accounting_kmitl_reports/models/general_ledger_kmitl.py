@@ -108,7 +108,11 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         accounts = []
         for acc in general_ledger:
             lines = []
+            period_debit = 0.0
+            period_credit = 0.0
             for ml in acc.get("move_lines", []):
+                period_debit += ml.get("debit") or 0.0
+                period_credit += ml.get("credit") or 0.0
                 journal = journals_data.get(ml["journal_id"], {}) if ml.get(
                     "journal_id"
                 ) else {}
@@ -132,6 +136,8 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                     "code": acc["code"] or "",
                     "name": acc["name"] or "",
                     "initial_balance": acc["init_bal"]["balance"],
+                    "period_debit": period_debit,
+                    "period_credit": period_credit,
                     "final_debit": acc["fin_bal"]["debit"],
                     "final_credit": acc["fin_bal"]["credit"],
                     "final_balance": acc["fin_bal"]["balance"],
@@ -139,34 +145,6 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                 }
             )
         return {"accounts": accounts, "currency_id": company.currency_id.id}
-
-    @api.model
-    def get_move_lines_detail(self, move_id):
-        """Return the full debit/credit breakdown of a journal entry — every
-        line of the ``account.move`` — for the General Ledger drill-down (the
-        OWL ``expand`` on a ledger line). Access rules apply via the ORM."""
-        move = self.env["account.move"].browse(move_id).exists()
-        if not move:
-            return {"name": "", "date": "", "journal": "", "lines": []}
-        lines = []
-        for ml in move.line_ids.sorted(key=lambda line: (line.account_id.code or "", line.id)):
-            lines.append(
-                {
-                    "id": ml.id,
-                    "account": "%s - %s"
-                    % (ml.account_id.code or "", ml.account_id.name or ""),
-                    "partner": ml.partner_id.display_name or "",
-                    "label": ml.name or "",
-                    "debit": ml.debit,
-                    "credit": ml.credit,
-                }
-            )
-        return {
-            "name": move.name or "",
-            "date": fields.Date.to_string(move.date) if move.date else "",
-            "journal": move.journal_id.code or "",
-            "lines": lines,
-        }
 
     @api.model
     def _kmitl_format_amount(self, value):
