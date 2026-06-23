@@ -15,3 +15,26 @@
         background-color: $gray-200;
     }
 }
+
+.o_DiscussTodoSidebar {
+    // Let the group's text column truncate inside the flex row.
+    .min-w-0 {
+        min-width: 0;
+    }
+
+    .o_DiscussTodoSidebar_caret,
+    .o_DiscussTodoSidebar_title {
+        cursor: pointer;
+    }
+
+    .o_DiscussTodoSidebar_icon {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .o_DiscussTodoSidebar_group:hover {
+        background-color: $gray-200;
+    }
+}

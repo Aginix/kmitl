@@ -6,9 +6,9 @@ import { clear } from "@mail/model/model_field_command";
 
 /**
  * Make "Todos" a first-class destination in the Discuss main content pane,
- * alongside the Inbox/Starred/History mailboxes. The flag lives on the Discuss
- * singleton so the sidebar row, the content pane and the systray all share one
- * source of truth.
+ * alongside the Inbox/Starred/History mailboxes. The flags live on the Discuss
+ * singleton so the sidebar panel, the content pane and the systray all share
+ * one source of truth.
  */
 registerPatch({
     name: "Discuss",
@@ -16,21 +16,28 @@ registerPatch({
         // When true, the main content pane shows the Todo inbox instead of a
         // conversation. Mutually exclusive with an active thread.
         isTodoActive: attr({ default: false }),
+        // Optional source-model filter (e.g. "purchase.order") set when a
+        // sidebar app group is clicked; empty string means "all apps".
+        todoResModel: attr({ default: "" }),
     },
     recordMethods: {
         /**
          * Show the Todo inbox in the Discuss main pane (opening Discuss first if
-         * needed). Mirrors openThread(): clear the active thread so the
-         * conversation pane hides, then flag the Todo view on.
+         * needed), optionally filtered to one source app. Mirrors openThread():
+         * clear the active thread so the conversation pane hides, then flag the
+         * Todo view on.
          *
          * Presets isInitThreadHandled so DiscussContainer's one-time
          * "open Inbox on first Discuss open" does not steal focus when the
          * systray routes the user straight to Todos.
+         *
+         * @param {string} [resModel=""] source model to filter to, "" = all
          */
-        openTodos() {
+        openTodos(resModel = "") {
             this.update({
                 thread: clear(),
                 isTodoActive: true,
+                todoResModel: resModel || "",
                 isInitThreadHandled: true,
             });
             if (!this.discussView) {

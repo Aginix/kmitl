@@ -1,21 +1,26 @@
 from odoo import api, fields, models, modules
+from odoo.tools import html2plaintext
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
 
     @api.model
-    def get_my_todos(self, limit=100):
-        """List payload for the Discuss Todo panel: the current user's open
-        Todos as records (capped at ``limit``), earliest deadline first, each
-        carrying its source-app icon.
+    def get_my_todos(self, res_model=False, limit=100):
+        """List payload for the Discuss Todo page: the current user's open Todos
+        as records (capped at ``limit``), earliest deadline first, each carrying
+        its source-app icon and the detail fields the list renders.
 
-        Reuses ``_my_todo_count_domain`` (from mail_activity_todo) so the panel
-        list, the systray badge and the Todo app all select the same Todos.
-        ``total_count`` lets the panel show "View all (N)" when more remain.
+        Reuses ``_my_todo_count_domain`` (from mail_activity_todo) so the page,
+        the systray badge and the Todo app all select the same Todos. Pass
+        ``res_model`` to drill into a single source app (matching a sidebar
+        group); ``total_count`` then reflects that app, staying consistent with
+        the sidebar group badge.
         """
         Activity = self.env["mail.activity"]
         domain = self._my_todo_count_domain()
+        if res_model:
+            domain = domain + [("res_model", "=", res_model)]
         total = Activity.search_count(domain)
         activities = Activity.search(
             domain, limit=limit, order="date_deadline asc, id desc"
@@ -47,29 +52,22 @@ class ResUsers(models.Model):
                 "res_name": act.res_name or "",
                 "res_model": act.res_model,
                 "res_id": act.res_id,
+                "app": act.res_model_id.display_name or "",
                 "icon": model_icon(act.res_model) if act.res_model else False,
+                "activity_type": act.activity_type_id.display_name or "",
+                "todo_category": act.todo_category,
+                "assigned": act.user_id.display_name or "",
+                "note": html2plaintext(act.note)[:160] if act.note else "",
                 "date_deadline": (
                     fields.Date.to_string(act.date_deadline)
                     if act.date_deadline
                     else False
                 ),
                 "state": act.state,
-                "todo_category": act.todo_category,
             }
             for act in activities
         ]
         return {
             "todos": todos,
             "total_count": total,
-        }
-
-    @api.model
-    def get_my_todo_total(self):
-        """Cheap badge count for the Discuss Todo sidebar row — just the number
-        (a single search_count), since the row only renders the total and does
-        not need the per-app grouping of get_my_todo_count."""
-        return {
-            "total_count": self.env["mail.activity"].search_count(
-                self._my_todo_count_domain()
-            ),
         }

@@ -1,31 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="mail_activity_todo_discuss.DiscussTodoSidebarItem" owl="1">
-        <button class="o_DiscussSidebarMailbox o_DiscussTodoSidebarItem btn d-flex align-items-center py-1 px-0 border-0 rounded-0 fw-normal text-dark"
-            t-att-class="{
-                'bg-100': !discussView.discuss.isTodoActive,
-                'o-active bg-200': discussView.discuss.isTodoActive,
-            }"
-            t-attf-class="{{ className }}"
-            t-on-click="onClick"
-            t-ref="root"
-            data-mailbox-name="Todos"
-        >
-            <i class="o_DiscussSidebarMailbox_item fa fa-fw fa-check-square-o ms-4 me-2"/>
-            <div class="o_DiscussSidebarMailbox_item o_DiscussSidebarMailbox_name me-2 text-truncate">Todos</div>
-            <div t-attf-class="o_DiscussSidebarMailbox_item flex-grow-1 {{ state.count === 0 ? 'me-3' : '' }}"/>
-            <t t-if="state.count > 0">
-                <div class="o_DiscussSidebarMailbox_counter o_DiscussSidebarMailbox_item badge rounded-pill text-bg-primary ms-1 me-3" t-esc="state.count"/>
-            </t>
-        </button>
+    <t t-name="mail_activity_todo_discuss.DiscussTodoSidebar" owl="1">
+        <div class="o_DiscussTodoSidebar" t-attf-class="{{ className }}" t-ref="root">
+            <div class="o_DiscussTodoSidebar_header d-flex align-items-center my-1">
+                <i class="o_DiscussTodoSidebar_caret small mx-1 btn p-0 text-700 opacity-100-hover opacity-75"
+                    t-att-class="state.isOpen ? 'fa fa-chevron-down' : 'fa fa-chevron-right'"
+                    t-on-click="toggle"
+                    role="img"
+                    title="Toggle Todos"
+                />
+                <div class="o_DiscussTodoSidebar_title btn btn-sm p-0 text-start text-uppercase fw-bolder flex-grow-1"
+                    t-att-class="{ 'text-primary': discuss.isTodoActive and !discuss.todoResModel }"
+                    t-on-click="onClickAll"
+                >
+                    Todos
+                </div>
+                <div class="badge rounded-pill text-bg-primary me-3"
+                    t-if="state.totalCount > 0"
+                    t-esc="state.totalCount"
+                />
+            </div>
+            <div class="o_DiscussTodoSidebar_content" t-if="state.isOpen">
+                <t t-if="state.groups.length === 0">
+                    <div class="text-muted small mx-4 mb-2">No pending todos</div>
+                </t>
+                <t t-else="">
+                    <t t-foreach="state.groups" t-as="group" t-key="group.model">
+                        <button class="o_DiscussSidebarMailbox o_DiscussTodoSidebar_group btn d-flex align-items-center w-100 py-1 px-0 border-0 rounded-0 fw-normal text-dark"
+                            t-att-class="{
+                                'o-active bg-200': discuss.isTodoActive and discuss.todoResModel === group.model,
+                            }"
+                            t-on-click="() => this.onClickGroup(group)"
+                            t-att-title="group.name"
+                        >
+                            <img t-if="group.icon" t-att-src="group.icon" class="o_DiscussTodoSidebar_icon ms-4 me-2" alt=""/>
+                            <i t-else="" class="fa fa-fw fa-check-square-o ms-4 me-2"/>
+                            <div class="flex-grow-1 min-w-0 text-start">
+                                <div class="text-truncate" t-esc="group.name"/>
+                                <div class="small" t-if="group.overdue_count or group.today_count or group.planned_count">
+                                    <span t-if="group.overdue_count" class="text-danger me-2"><t t-esc="group.overdue_count"/> Late</span>
+                                    <span t-if="group.today_count" class="text-warning me-2"><t t-esc="group.today_count"/> Today</span>
+                                    <span t-if="group.planned_count" class="text-muted"><t t-esc="group.planned_count"/> Upcoming</span>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill text-bg-primary ms-1 me-3" t-esc="group.total_count"/>
+                        </button>
+                    </t>
+                </t>
+            </div>
+        </div>
     </t>
 
-    <!-- Add a "Todos" row to the Discuss sidebar, in the mailbox category next
-         to Inbox / Starred / History. -->
+    <!-- Add the grouped, collapsible Todos panel to the Discuss sidebar, right
+         after the Inbox/Starred/History mailbox category. -->
     <t t-name="mail_activity_todo_discuss.DiscussSidebar" t-inherit="mail.DiscussSidebar" t-inherit-mode="extension" owl="1">
-        <xpath expr="//div[hasclass('o_DiscussSidebar_categoryMailbox')]" position="inside">
-            <DiscussTodoSidebarItem record="discussView"/>
+        <xpath expr="//div[hasclass('o_DiscussSidebar_categoryMailbox')]" position="after">
+            <hr class="o_DiscussSidebar_separator w-100 border-top"/>
+            <DiscussTodoSidebar className="'o_DiscussSidebar_category o_DiscussSidebar_categoryTodo flex-shrink-0'" record="discussView"/>
         </xpath>
     </t>
 
