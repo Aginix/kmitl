@@ -112,7 +112,6 @@
                                                 <thead>
                                                     <tr>
                                                         <th><t t-esc="labels.account" /></th>
-                                                        <th><t t-esc="labels.label" /></th>
                                                         <th class="text-end"><t t-esc="labels.debit" /></th>
                                                         <th class="text-end"><t t-esc="labels.credit" /></th>
                                                     </tr>
@@ -124,7 +123,6 @@
                                                         t-key="ml.id"
                                                     >
                                                         <td t-esc="displayName(ml.account_id)" />
-                                                        <td t-esc="ml.name" />
                                                         <td class="text-end" t-esc="format(ml.debit)" />
                                                         <td class="text-end" t-esc="format(ml.credit)" />
                                                     </tr>

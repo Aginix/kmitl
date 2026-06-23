@@ -31,6 +31,15 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
     # ``analytic_distribution`` via its analytic account's ``root_plan_id.code``.
     _GL_DIM_PLANS = ("funds", "departments", "activities", "sources")
 
+    def _get_acc_prt_accounts_ids(self, company_id, grouped_by):
+        """This report is always ungrouped (``grouped_by="none"``). The OCA
+        engine otherwise forces the partner-grouped path for every
+        receivable/payable account, which nests their move lines under
+        ``list_grouped`` instead of ``move_lines`` -- so our flat reshape would
+        drop them (notably the credit-side lines). Returning no accounts keeps
+        every account on the flat ``move_lines`` path."""
+        return []
+
     # ------------------------------------------------------------------
     # Shared compute
     # ------------------------------------------------------------------

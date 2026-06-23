@@ -8,7 +8,7 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 const REPORT_MODEL = "report.accounting_kmitl_reports.general_ledger_kmitl";
 const WIZARD_ACTION = "accounting_kmitl_reports.action_general_ledger_wizard_kmitl";
 // Fields of the journal entry's lines shown in the expand panel (Dr/Cr table).
-const ENTRY_LINE_FIELDS = ["account_id", "name", "debit", "credit"];
+const ENTRY_LINE_FIELDS = ["account_id", "debit", "credit"];
 
 export class GeneralLedger extends Component {
     setup() {
@@ -40,7 +40,6 @@ export class GeneralLedger extends Component {
             credit: _t("Credit"),
             balance: _t("Balance"),
             account: _t("Account"),
-            label: _t("Label"),
             partner: _t("Partner"),
             narration: _t("Narration"),
             maker: _t("Maker"),
