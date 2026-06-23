@@ -11,6 +11,7 @@
                 <field name="parent_id" invisible="1"/>
                 <field name="has_children" invisible="1"/>
                 <field name="is_sub" invisible="1"/>
+                <field name="state" invisible="1"/>
                 <field name="installment_display" readonly="1" string="Installment"/>
             </field>
             <field name="installment" position="attributes">
