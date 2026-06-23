@@ -143,6 +143,20 @@ class MailActivity(models.Model):
         activities.filtered("todo_category")._todo_notify()
         return activities
 
+    def write(self, vals):
+        # A write can move a Todo between inboxes (reassigning user_id), turn an
+        # activity into/out of a Todo (todo_category), or re-route a group Todo
+        # (role/unit, in the role-in-unit layer). Ping both the recipients before
+        # the change and after it, so the old and new owners' badges refresh live
+        # — not only on reload.
+        before = self.filtered("todo_category")._todo_recipient_partners()
+        res = super().write(vals)
+        after = self.filtered("todo_category")._todo_recipient_partners()
+        partners = before | after
+        if partners:
+            self._todo_notify(partners)
+        return res
+
     def unlink(self):
         # Capture recipients before the records vanish (badge goes down).
         partners = self.filtered("todo_category")._todo_recipient_partners()
