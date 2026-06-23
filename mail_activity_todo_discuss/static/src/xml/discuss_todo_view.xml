@@ -36,6 +36,10 @@
                             <img t-if="todo.icon" t-att-src="todo.icon" class="o_DiscussTodoView_icon me-3" alt=""/>
                             <i t-else="" class="fa fa-fw fa-check-square-o me-3 mt-1"/>
                             <div class="o_DiscussTodoView_text flex-grow-1">
+                                <small class="text-muted d-flex align-items-center">
+                                    <t t-if="todo.activity_type" t-esc="todo.activity_type" />
+                                    <span t-if="todo.todo_category" class="badge bg-light text-dark border ms-2" t-esc="categoryLabel(todo.todo_category)"/>
+                                </small>
                                 <div class="d-flex align-items-center">
                                     <span class="fw-medium text-truncate" t-esc="todo.summary"/>
                                     <span t-if="todo.todo_category" class="badge bg-light text-dark border ms-2" t-esc="categoryLabel(todo.todo_category)"/>
@@ -43,7 +47,6 @@
                                 <small class="text-muted text-truncate d-block">
                                     <span t-if="todo.app" t-esc="todo.app"/>
                                     <t t-if="todo.res_name"> · <t t-esc="todo.res_name"/></t>
-                                    <t t-if="todo.activity_type"> · <t t-esc="todo.activity_type"/></t>
                                     <t t-if="todo.assigned"> · <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/></t>
                                 </small>
                                 <small class="text-muted fst-italic text-truncate d-block" t-if="todo.note" t-esc="todo.note"/>
