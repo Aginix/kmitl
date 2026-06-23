@@ -23,13 +23,13 @@
                     <field name="note"/>
                 </group>
                 <separator string="Allocation based on revenue."/>
-                <field name="allocation_ids" readonly="1">
+                <field name="allocation_ids">
                     <tree create="0" delete="0">
-                        <field name="allocation_line_id" invisible="1" readonly="1"/>
-                        <field name="name" readonly="1" string="Allocator"/>
-                        <field name="remaining_amount" readonly="1"/>
-                        <field name="amount" readonly="1"/>
-                        <field name="currency_id" invisible="1"/>
+                        <field name="allocation_line_id" invisible="1" />
+                        <field name="name" string="Allocator" />
+                        <field name="remaining_amount" />
+                        <field name="amount" />
+                        <field name="currency_id" invisible="1" />
                     </tree>
                 </field>
             </form>
