@@ -8,6 +8,14 @@ Financial-statement reports for KMITL — Trial Balance, Profit and Loss, Balanc
 A per-account listing, over a date range, of the opening balance, the period movement and the ending balance — each shown as Debit, Credit and Balance. Opens straight from the menu as an OWL client action and prints as a QWeb PDF that shares the same compute.
 _Avoid_: trial sheet, TB
 
+**General Ledger (บัญชีแยกประเภท)**:
+The detailed sibling of the Trial Balance: for each account, over a date range, the opening balance, then every journal item in date order (Date, Entry, Journal, Partner, Label, Debit, Credit and a running Balance), then the ending balance. Computed by the OCA `general_ledger` engine, with the KMITL dimension filter injected through the engine's `extra_domain` (which is AND-ed into both the initial-balance and the period queries) rather than by overriding the domain builders. Opens straight from the menu as an OWL client action and shares its compute with the QWeb PDF and XLSX exports. Lines are flat (ungrouped — `grouped_by="none"`), no centralization, single company, company currency only.
+_Avoid_: GL, journal report (a journal report lists by journal, not by account)
+
+**Running balance / cumulative balance (ยอดสะสม)**:
+On the General Ledger, each move line's Balance column is the account's opening balance plus every line up to and including that one — not the line's own signed amount. Reset per account.
+_Avoid_: line balance, period balance
+
 **Balance section (หมวด)**:
 One of the Trial Balance's three column groups — **Opening** (ยอดยกมา), **During the year** (ระหว่างงวด) and **Ending** (ยอดคงเหลือ). Each section carries a Debit, a Credit and a Balance sub-column. In this report "หมวด" means a balance section — **not** an account category/type (asset/liability/…) and not an account group.
 _Avoid_: category, account type, group (those name a chart-of-accounts grouping, not a column section)

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_kmitl_reports.GeneralLedger" owl="1">
+        <div class="o_kmitl_general_ledger o_action_manager p-3">
+            <div class="o_kmitl_gl_header d-flex align-items-center mb-3">
+                <h2 class="m-0 flex-grow-1">General Ledger</h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" />Export Excel
+                </button>
+                <button class="btn btn-primary" t-on-click="printPdf">
+                    <i class="fa fa-file-pdf-o me-1" />Print PDF
+                </button>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="o_kmitl_gl_filters row g-2 mb-3">
+                <div class="col-md-3">
+                    <label class="o_form_label">Fiscal Year</label>
+                    <select class="form-select" t-on-change="onFiscalYearChange">
+                        <option value="">/</option>
+                        <option
+                            t-foreach="fiscalYears"
+                            t-as="fy"
+                            t-key="fy.id"
+                            t-att-value="fy.id"
+                            t-att-selected="fy.id === state.fiscalYearId"
+                        >
+                            <t t-esc="fy.name" />
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date From</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateFrom"
+                        t-on-change="onDateFromChange"
+                    />
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date To</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateTo"
+                        t-on-change="onDateToChange"
+                    />
+                </div>
+                <div class="col-md-5 d-flex align-items-end gap-3">
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_gl_posted"
+                            t-att-checked="state.onlyPosted"
+                            t-on-change="onTogglePosted"
+                        />
+                        <label class="form-check-label" for="kmitl_gl_posted">Posted entries only</label>
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_gl_hide0"
+                            t-att-checked="state.hideAt0"
+                            t-on-change="onToggleHide"
+                        />
+                        <label class="form-check-label" for="kmitl_gl_hide0">Hide accounts at 0</label>
+                    </div>
+                </div>
+
+                <!-- KMITL accounting dimensions -->
+                <div class="col-md-3">
+                    <label class="o_form_label">Departments</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'departments']]"
+                        placeholder="labels.departments"
+                        selected="state.departments"
+                        onChange="(sel) => this.onSelectionChange('departments', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Sources</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'sources']]"
+                        placeholder="labels.sources"
+                        selected="state.sources"
+                        onChange="(sel) => this.onSelectionChange('sources', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Funds</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'funds']]"
+                        placeholder="labels.funds"
+                        selected="state.funds"
+                        onChange="(sel) => this.onSelectionChange('funds', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Activities</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'activities']]"
+                        placeholder="labels.activities"
+                        selected="state.activities"
+                        onChange="(sel) => this.onSelectionChange('activities', sel)"
+                    />
+                </div>
+
+                <!-- Standard filters (collapsed by default) -->
+                <div class="col-12">
+                    <button
+                        class="btn btn-link p-0 o_kmitl_gl_more"
+                        t-on-click="toggleAdvanced"
+                    >
+                        <i
+                            t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                        />
+                        <t t-if="state.showAdvanced">Hide journal / partner / account filters</t>
+                        <t t-else="">More filters</t>
+                    </button>
+                </div>
+                <t t-if="state.showAdvanced">
+                    <div class="col-md-3">
+                        <label class="o_form_label">Journals</label>
+                        <MultiRecordSelect
+                            resModel="'account.journal'"
+                            domain="[['company_id', '=', companyId]]"
+                            placeholder="labels.journals"
+                            selected="state.journals"
+                            onChange="(sel) => this.onSelectionChange('journals', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Partners</label>
+                        <MultiRecordSelect
+                            resModel="'res.partner'"
+                            placeholder="labels.partners"
+                            selected="state.partners"
+                            onChange="(sel) => this.onSelectionChange('partners', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Accounts</label>
+                        <MultiRecordSelect
+                            resModel="'account.account'"
+                            domain="[['company_id', '=', companyId]]"
+                            placeholder="labels.accounts"
+                            selected="state.accounts"
+                            onChange="(sel) => this.onSelectionChange('accounts', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Account code range</label>
+                        <div class="d-flex gap-1">
+                            <MultiRecordSelect
+                                resModel="'account.account'"
+                                domain="[['company_id', '=', companyId]]"
+                                placeholder="labels.accountFrom"
+                                single="true"
+                                selected="state.accountFrom"
+                                onChange="(sel) => this.onSelectionChange('accountFrom', sel)"
+                            />
+                            <MultiRecordSelect
+                                resModel="'account.account'"
+                                domain="[['company_id', '=', companyId]]"
+                                placeholder="labels.accountTo"
+                                single="true"
+                                selected="state.accountTo"
+                                onChange="(sel) => this.onSelectionChange('accountTo', sel)"
+                            />
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Report table -->
+            <div class="o_kmitl_gl_table_wrap">
+                <table class="table table-sm table-bordered o_kmitl_gl_table">
+                    <thead>
+                        <tr>
+                            <th class="o_kmitl_gl_date">Date</th>
+                            <th>Entry</th>
+                            <th>Journal</th>
+                            <th>Partner</th>
+                            <th>Label</th>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="state.loading">
+                            <td colspan="8" class="text-center text-muted">Loading...</td>
+                        </tr>
+                        <tr t-elif="!state.accountsData.length">
+                            <td colspan="8" class="text-center text-muted">No data</td>
+                        </tr>
+                        <t t-foreach="state.accountsData" t-as="acc" t-key="acc.id">
+                            <tr class="o_kmitl_gl_account">
+                                <td colspan="8">
+                                    <t t-esc="acc.code" /> - <t t-esc="acc.name" />
+                                </td>
+                            </tr>
+                            <tr class="o_kmitl_gl_opening">
+                                <td colspan="5" class="text-end fst-italic">Opening Balance</td>
+                                <td />
+                                <td />
+                                <td class="text-end" t-esc="format(acc.initial_balance)" />
+                            </tr>
+                            <tr t-foreach="acc.lines" t-as="line" t-key="line.id">
+                                <td t-esc="line.date" />
+                                <td t-esc="line.entry" />
+                                <td t-esc="line.journal" />
+                                <td t-esc="line.partner" />
+                                <td t-esc="line.ref_label" />
+                                <td class="text-end" t-esc="format(line.debit)" />
+                                <td class="text-end" t-esc="format(line.credit)" />
+                                <td class="text-end" t-esc="format(line.balance)" />
+                            </tr>
+                            <tr class="o_kmitl_gl_ending fw-bold">
+                                <td colspan="5" class="text-end">Ending Balance</td>
+                                <td class="text-end" t-esc="format(acc.final_debit)" />
+                                <td class="text-end" t-esc="format(acc.final_credit)" />
+                                <td class="text-end" t-esc="format(acc.final_balance)" />
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>

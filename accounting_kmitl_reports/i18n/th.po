@@ -287,3 +287,61 @@ msgstr "รายการ"
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.cash_flow_kmitl
 msgid "Amount"
 msgstr "จำนวนเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_general_ledger_kmitl
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_general_ledger_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "General Ledger"
+msgstr "บัญชีแยกประเภท"
+
+#. module: accounting_kmitl_reports
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl_xlsx
+msgid "General Ledger (XLSX)"
+msgstr "บัญชีแยกประเภท (XLSX)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Date"
+msgstr "วันที่"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Entry"
+msgstr "เลขที่ใบสำคัญ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Journal"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Partner"
+msgstr "คู่ค้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Label"
+msgstr "คำอธิบาย"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl_xlsx
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Opening Balance"
+msgstr "ยอดยกมา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl_xlsx
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Ending Balance"
+msgstr "ยอดคงเหลือ"

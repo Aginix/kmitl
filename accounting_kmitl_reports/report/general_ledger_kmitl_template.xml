@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="general_ledger_kmitl">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="header" style="border-bottom: 1px solid #000;">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 70px; border: none; vertical-align: top;">
+                                <img
+                                    t-if="res_company.logo"
+                                    t-att-src="image_data_uri(res_company.logo)"
+                                    style="max-height: 60px; max-width: 60px;"
+                                    alt="Logo"
+                                />
+                            </td>
+                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">
+                                    <t t-out="res_company.display_name" />
+                                </div>
+                                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">General Ledger</div>
+                                <div style="font-size: 12pt;">
+                                    <span>From</span>
+                                    <t t-out="date_from_label" />
+                                    <span>to</span>
+                                    <t t-out="date_to_label" />
+                                </div>
+                            </td>
+                            <td style="width: 70px; border: none;" />
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer" style="text-align: right; font-size: 10pt;">
+                    <span class="page" />/<span class="topage" />
+                </div>
+
+                <div class="article">
+                    <style>
+                        table.kmitl-general-ledger {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 8.5pt;
+                        }
+                        table.kmitl-general-ledger th,
+                        table.kmitl-general-ledger td {
+                            border: 1px solid #000;
+                            padding: 2px 4px;
+                        }
+                        table.kmitl-general-ledger thead th {
+                            background-color: #f0f0f0;
+                            text-align: center;
+                            font-weight: bold;
+                        }
+                        table.kmitl-general-ledger td.text-right,
+                        table.kmitl-general-ledger th.text-right {
+                            text-align: right;
+                        }
+                        table.kmitl-general-ledger tr.acc td {
+                            background-color: #eef1f4;
+                            font-weight: bold;
+                        }
+                        table.kmitl-general-ledger tr.opening td {
+                            color: #555;
+                        }
+                        table.kmitl-general-ledger tr.ending td {
+                            font-weight: bold;
+                            background-color: #f6f6f6;
+                        }
+                    </style>
+                    <table class="kmitl-general-ledger">
+                        <thead style="display: table-header-group;">
+                            <tr>
+                                <th style="width: 8%;">Date</th>
+                                <th style="width: 13%;">Entry</th>
+                                <th style="width: 8%;">Journal</th>
+                                <th style="width: 17%;">Partner</th>
+                                <th>Label</th>
+                                <th class="text-right" style="width: 11%;">Debit</th>
+                                <th class="text-right" style="width: 11%;">Credit</th>
+                                <th class="text-right" style="width: 11%;">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="accounts" t-as="acc">
+                                <tr class="acc">
+                                    <td colspan="8">
+                                        <t t-out="acc['code']" /> - <t t-out="acc['name']" />
+                                    </td>
+                                </tr>
+                                <tr class="opening">
+                                    <td colspan="5" class="text-right" style="font-style: italic;">Opening Balance</td>
+                                    <td />
+                                    <td />
+                                    <td class="text-right" t-out="format_amount(acc['initial_balance'])" />
+                                </tr>
+                                <tr t-foreach="acc['lines']" t-as="line">
+                                    <td t-out="line['date']" />
+                                    <td t-out="line['entry']" />
+                                    <td t-out="line['journal']" />
+                                    <td t-out="line['partner']" />
+                                    <td t-out="line['ref_label']" />
+                                    <td class="text-right" t-out="format_amount(line['debit'])" />
+                                    <td class="text-right" t-out="format_amount(line['credit'])" />
+                                    <td class="text-right" t-out="format_amount(line['balance'])" />
+                                </tr>
+                                <tr class="ending">
+                                    <td colspan="5" class="text-right">Ending Balance</td>
+                                    <td class="text-right" t-out="format_amount(acc['final_debit'])" />
+                                    <td class="text-right" t-out="format_amount(acc['final_credit'])" />
+                                    <td class="text-right" t-out="format_amount(acc['final_balance'])" />
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

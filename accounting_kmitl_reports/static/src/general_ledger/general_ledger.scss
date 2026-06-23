@@ -1,0 +1,39 @@
+.o_kmitl_general_ledger {
+    height: 100%;
+    overflow: auto;
+
+    .o_kmitl_gl_table_wrap {
+        overflow-x: auto;
+    }
+
+    .o_kmitl_gl_table {
+        th {
+            background-color: #f8f9fa;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        td,
+        th {
+            font-size: 0.95rem;
+        }
+        .o_kmitl_gl_date {
+            min-width: 7rem;
+        }
+
+        // Account header row
+        .o_kmitl_gl_account td {
+            background-color: #eef1f4;
+            font-weight: bold;
+        }
+        // Opening balance row
+        .o_kmitl_gl_opening td {
+            background-color: #fbfbfb;
+            color: #555;
+        }
+        // Ending balance row
+        .o_kmitl_gl_ending td {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #adb5bd;
+        }
+    }
+}
