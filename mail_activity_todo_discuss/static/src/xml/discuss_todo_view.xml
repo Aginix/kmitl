@@ -50,6 +50,21 @@
                                     <t t-if="todo.assigned"> · <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/></t>
                                 </small>
                                 <small class="text-muted fst-italic text-truncate d-block" t-if="todo.note" t-esc="todo.note"/>
+                                <div t-if="todo.action_links and todo.action_links.length"
+                                    class="o_DiscussTodoView_actions mt-1 d-flex flex-wrap gap-1"
+                                >
+                                    <t t-foreach="todo.action_links" t-as="link" t-key="link_index">
+                                        <a t-att-href="link.url"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="badge rounded-pill bg-light text-dark border text-decoration-none"
+                                            t-on-click.stop="() => {}"
+                                        >
+                                            <i t-att-class="'fa me-1 ' + (link.icon or 'fa-external-link')"/>
+                                            <t t-esc="link.label"/>
+                                        </a>
+                                    </t>
+                                </div>
                             </div>
                             <small t-if="todo.date_deadline"
                                 class="ms-3 text-nowrap"

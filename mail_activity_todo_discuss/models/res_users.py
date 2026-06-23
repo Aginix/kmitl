@@ -67,6 +67,7 @@ class ResUsers(models.Model):
                     else False
                 ),
                 "state": act.state,
+                "action_links": act._get_todo_action_links(),
             }
             for act in activities
         ]
