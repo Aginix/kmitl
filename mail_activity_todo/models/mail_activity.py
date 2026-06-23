@@ -127,27 +127,6 @@ class MailActivity(models.Model):
                 partners |= act.user_id.partner_id
         return partners
 
-    # ------------------------------------------------------------------
-    # Secondary action links (ADR-0006) — extension point for bridges to
-    # surface additional URLs on a Todo card next to the primary "Open
-    # Source" button. Resolved live per (user, source) so per-user tokens
-    # (e.g. portal access tokens) are correct for the viewer.
-    # ------------------------------------------------------------------
-    def _get_todo_action_links(self):
-        """Hook: secondary URLs to show on this Todo in the Discuss list.
-
-        Override in consumer modules and branch on ``self.res_model``.
-        Resolve URLs live from ``self.user_id`` + ``self.res_id`` so per-user
-        tokens are accurate. Must NOT replace the primary source-record
-        action (ADR-0001) — these are additive only.
-
-        Returns:
-            list[dict]: each ``{"label": str, "url": str, "icon": str}``
-            where ``icon`` is a fontawesome class fragment (e.g. ``fa-link``).
-        """
-        self.ensure_one()
-        return []
-
     def _todo_notify(self, partners=None):
         """Ping affected users' bus channels so their systray badge refetches."""
         if partners is None:

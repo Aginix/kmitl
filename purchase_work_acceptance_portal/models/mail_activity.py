@@ -6,23 +6,25 @@ class MailActivity(models.Model):
     _inherit = "mail.activity"
 
     def _get_todo_action_links(self):
-        """Add portal WA + portal PO links for committee review Todos.
+        """Secondary URLs to show on this Todo in the Discuss list.
 
-        Token-aware: resolves the recipient's own ``committee_token`` so the
-        URL works without backend login.
+        Private to this module — returns portal WA + portal PO links for
+        committee review Todos, resolved live from ``self.user_id`` so each
+        committee member sees a URL bearing their own ``committee_token``.
+        Not an extension point: no consumer overrides this method.
         """
-        links = super()._get_todo_action_links()
         self.ensure_one()
         if self.res_model != "work.acceptance" or not self.user_id:
-            return links
+            return []
         wa = self.env["work.acceptance"].browse(self.res_id).exists()
         if not wa:
-            return links
+            return []
         committee = wa.work_acceptance_committee_ids.filtered(
             lambda c: c.employee_id.user_id == self.user_id
         )[:1]
         if not committee:
-            return links
+            return []
+        links = []
         wa_url = "%s&committee_token=%s" % (
             wa.get_portal_link(),
             committee.access_token,

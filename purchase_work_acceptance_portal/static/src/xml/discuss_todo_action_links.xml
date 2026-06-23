@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!--
+        Inject action-link pills into the Discuss Todo card. Extension is
+        scoped to this module rather than ``mail_activity_todo_discuss`` so
+        the base templates stay app-agnostic; the Python side (``get_my_todos``
+        override + ``_get_todo_action_links`` hook) is co-located in this
+        module. See ADR-0002.
+    -->
+    <t t-name="purchase_work_acceptance_portal.DiscussTodoView"
+       t-inherit="mail_activity_todo_discuss.DiscussTodoView"
+       t-inherit-mode="extension"
+       owl="1">
+        <xpath expr="//div[hasclass('o_DiscussTodoView_text')]" position="inside">
+            <div t-if="todo.action_links and todo.action_links.length"
+                class="o_DiscussTodoView_actions mt-1 d-flex flex-wrap gap-1"
+            >
+                <t t-foreach="todo.action_links" t-as="link" t-key="link_index">
+                    <a t-att-href="link.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="badge rounded-pill bg-light text-dark border text-decoration-none"
+                        t-on-click.stop="() => {}"
+                    >
+                        <i t-att-class="'fa me-1 ' + (link.icon or 'fa-external-link')"/>
+                        <t t-esc="link.label"/>
+                    </a>
+                </t>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

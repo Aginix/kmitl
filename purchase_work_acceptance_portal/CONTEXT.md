@@ -17,7 +17,7 @@ The `access_token` on `work.acceptance.committee` (inherited from `portal.mixin`
 _Avoid_: confusing with `wa_token` (the WA's access_token re-used in a PO portal URL).
 
 **WA Portal Link**:
-A URL of the form `/wa/view/<wa_id>?access_token=<wa_token>&committee_token=<committee_token>`. The page committee members open to review a WA — accept/reject buttons are gated on the committee_token. Surfaced on the review Todo as an [Action Link](../mail_activity_todo/docs/adr/0006-secondary-action-links-via-hook.md).
+A URL of the form `/wa/view/<wa_id>?access_token=<wa_token>&committee_token=<committee_token>`. The page committee members open to review a WA — accept/reject buttons are gated on the committee_token. Surfaced on the review Todo as an [Action Link](./docs/adr/0002-portal-links-on-review-todo.md).
 
 **PO Portal Link**:
 A URL of the form `/purchase/view/<po_id>?access_token=<po_token>&wa_token=<wa_token>`. The supporting purchase order page the committee member can open from the same review Todo to see what they're accepting against.
