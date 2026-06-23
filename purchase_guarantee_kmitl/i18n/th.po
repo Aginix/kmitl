@@ -380,14 +380,9 @@ msgid "Contract Amount"
 msgstr "มูลค่าสัญญา"
 
 #. module: purchase_guarantee_kmitl
-#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount_received
-msgid "Amount Received"
-msgstr "จำนวนเงินที่รับ"
-
-#. module: purchase_guarantee_kmitl
-#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount_returned
-msgid "Amount Returned"
-msgstr "จำนวนเงินที่คืน"
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__fines_late
+msgid "Fines Amount"
+msgstr "ค่าปรับ"
 
 #. module: purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__contract_period_days

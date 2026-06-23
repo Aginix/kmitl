@@ -40,8 +40,7 @@ class PurchaseContractGuaranteeReport(models.Model):
     # --- Measures ---
     amount = fields.Monetary(string="Guarantee Amount", readonly=True)
     amount_total = fields.Monetary(string="Contract Amount", readonly=True)
-    amount_received = fields.Monetary(string="Amount Received", readonly=True)
-    amount_returned = fields.Monetary(string="Amount Returned", readonly=True)
+    fines_late = fields.Monetary(string="Fines Amount", readonly=True)
     contract_period_days = fields.Integer(string="Contract Period Days", readonly=True)
 
     def init(self):
@@ -74,18 +73,7 @@ class PurchaseContractGuaranteeReport(models.Model):
                     END                     AS guarantee_return_state,
                     g.amount                AS amount,
                     po.amount_total         AS amount_total,
-                    COALESCE((
-                        SELECT SUM(am.amount_total - am.amount_residual)
-                        FROM account_move_guarantee_rel rel
-                        JOIN account_move am ON am.id = rel.move_id
-                        WHERE rel.guarantee_id = g.id
-                    ), 0)                   AS amount_received,
-                    COALESCE((
-                        SELECT SUM(am.amount_total - am.amount_residual)
-                        FROM account_move_return_guarantee_rel rel
-                        JOIN account_move am ON am.id = rel.move_id
-                        WHERE rel.guarantee_id = g.id
-                    ), 0)                   AS amount_returned,
+                    po.fines_late           AS fines_late,
                     po.contract_period_days AS contract_period_days
                 FROM purchase_guarantee g
                 JOIN purchase_order po ON po.id = g.purchase_id

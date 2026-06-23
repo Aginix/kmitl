@@ -20,8 +20,7 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="amount"/>
                 <field name="amount_total" optional="show"/>
-                <field name="amount_received" optional="hide"/>
-                <field name="amount_returned" optional="hide"/>
+                <field name="fines_late" optional="hide"/>
                 <field name="contract_period_days" optional="hide"/>
                 <field name="date_due_display"/>
                 <field name="date_return" optional="hide"/>
