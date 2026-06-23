@@ -35,5 +35,36 @@
             background-color: #f8f9fa;
             border-bottom: 2px solid #adb5bd;
         }
+
+        // Drill-down: expand caret + journal-entry Dr/Cr detail
+        .o_kmitl_gl_expand {
+            cursor: pointer;
+            color: #6c757d;
+
+            &:hover {
+                color: #212529;
+            }
+        }
+        .o_kmitl_gl_detail > td {
+            padding: 0;
+            background-color: #fbfcfe;
+        }
+        .o_kmitl_gl_detail_table {
+            margin: 0;
+
+            th {
+                background-color: #eef1f4;
+                font-weight: 600;
+            }
+            th,
+            td {
+                font-size: 0.9rem;
+            }
+            // Indent the entry breakdown under the ledger line.
+            th:first-child,
+            td:first-child {
+                padding-left: 2.5rem;
+            }
+        }
     }
 }

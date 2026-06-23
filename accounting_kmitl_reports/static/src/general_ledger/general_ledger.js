@@ -47,6 +47,10 @@ export class GeneralLedger extends Component {
             activities: [],
             accountsData: [],
             loading: false,
+            // Drill-down: expanded[moveLineId] -> true; entries[moveId] -> the
+            // journal entry's full Dr/Cr breakdown (lazily fetched on expand).
+            expanded: {},
+            entries: {},
         });
         // Translated placeholders for the dimension / standard selectors.
         this.labels = {
@@ -117,6 +121,8 @@ export class GeneralLedger extends Component {
             return;
         }
         this.state.loading = true;
+        // A reload rebuilds the line ids, so drop any open drill-downs.
+        this.state.expanded = {};
         try {
             const data = await this.orm.call(
                 REPORT_MODEL,
@@ -126,6 +132,26 @@ export class GeneralLedger extends Component {
             this.state.accountsData = data.accounts || [];
         } finally {
             this.state.loading = false;
+        }
+    }
+
+    // Expand/collapse a ledger line to reveal the full Dr/Cr breakdown of its
+    // journal entry. The entry detail is fetched once and cached by move id.
+    async toggleExpand(line) {
+        if (this.state.expanded[line.id]) {
+            delete this.state.expanded[line.id];
+            return;
+        }
+        this.state.expanded[line.id] = true;
+        const moveId = line.entry_id;
+        if (moveId && !this.state.entries[moveId]) {
+            this.state.entries[moveId] = { loading: true, lines: [] };
+            const detail = await this.orm.call(
+                REPORT_MODEL,
+                "get_move_lines_detail",
+                [moveId]
+            );
+            this.state.entries[moveId] = { loading: false, ...detail };
         }
     }
 

@@ -214,16 +214,65 @@
                                 <td />
                                 <td class="text-end" t-esc="format(acc.initial_balance)" />
                             </tr>
-                            <tr t-foreach="acc.lines" t-as="line" t-key="line.id">
-                                <td t-esc="line.date" />
-                                <td t-esc="line.entry" />
-                                <td t-esc="line.journal" />
-                                <td t-esc="line.partner" />
-                                <td t-esc="line.ref_label" />
-                                <td class="text-end" t-esc="format(line.debit)" />
-                                <td class="text-end" t-esc="format(line.credit)" />
-                                <td class="text-end" t-esc="format(line.balance)" />
-                            </tr>
+                            <t t-foreach="acc.lines" t-as="line" t-key="line.id">
+                                <tr class="o_kmitl_gl_line">
+                                    <td t-esc="line.date" />
+                                    <td class="o_kmitl_gl_entry">
+                                        <span
+                                            t-if="line.entry_id"
+                                            class="o_kmitl_gl_expand"
+                                            t-on-click="() => this.toggleExpand(line)"
+                                        >
+                                            <i
+                                                t-att-class="state.expanded[line.id] ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                                            />
+                                        </span>
+                                        <t t-esc="line.entry" />
+                                    </td>
+                                    <td t-esc="line.journal" />
+                                    <td t-esc="line.partner" />
+                                    <td t-esc="line.ref_label" />
+                                    <td class="text-end" t-esc="format(line.debit)" />
+                                    <td class="text-end" t-esc="format(line.credit)" />
+                                    <td class="text-end" t-esc="format(line.balance)" />
+                                </tr>
+                                <tr t-if="state.expanded[line.id]" class="o_kmitl_gl_detail">
+                                    <td colspan="8">
+                                        <t t-set="entry" t-value="state.entries[line.entry_id]" />
+                                        <div
+                                            t-if="entry and entry.loading"
+                                            class="text-muted p-2"
+                                        >Loading...</div>
+                                        <table
+                                            t-else=""
+                                            class="table table-sm mb-0 o_kmitl_gl_detail_table"
+                                        >
+                                            <thead>
+                                                <tr>
+                                                    <th>Account</th>
+                                                    <th>Partner</th>
+                                                    <th>Label</th>
+                                                    <th class="text-end">Debit</th>
+                                                    <th class="text-end">Credit</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr
+                                                    t-foreach="(entry and entry.lines) or []"
+                                                    t-as="d"
+                                                    t-key="d.id"
+                                                >
+                                                    <td t-esc="d.account" />
+                                                    <td t-esc="d.partner" />
+                                                    <td t-esc="d.label" />
+                                                    <td class="text-end" t-esc="format(d.debit)" />
+                                                    <td class="text-end" t-esc="format(d.credit)" />
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </t>
                             <tr class="o_kmitl_gl_ending fw-bold">
                                 <td colspan="5" class="text-end">Ending Balance</td>
                                 <td class="text-end" t-esc="format(acc.final_debit)" />

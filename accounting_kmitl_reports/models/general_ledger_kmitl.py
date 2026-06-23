@@ -117,6 +117,7 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                         "id": ml["id"],
                         "date": fields.Date.to_string(ml["date"]) if ml["date"] else "",
                         "entry": ml.get("entry") or "",
+                        "entry_id": ml.get("entry_id") or False,
                         "journal": journal.get("code") or "",
                         "partner": ml.get("partner_name") or "",
                         "ref_label": ml.get("ref_label") or "",
@@ -138,6 +139,34 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                 }
             )
         return {"accounts": accounts, "currency_id": company.currency_id.id}
+
+    @api.model
+    def get_move_lines_detail(self, move_id):
+        """Return the full debit/credit breakdown of a journal entry — every
+        line of the ``account.move`` — for the General Ledger drill-down (the
+        OWL ``expand`` on a ledger line). Access rules apply via the ORM."""
+        move = self.env["account.move"].browse(move_id).exists()
+        if not move:
+            return {"name": "", "date": "", "journal": "", "lines": []}
+        lines = []
+        for ml in move.line_ids.sorted(key=lambda line: (line.account_id.code or "", line.id)):
+            lines.append(
+                {
+                    "id": ml.id,
+                    "account": "%s - %s"
+                    % (ml.account_id.code or "", ml.account_id.name or ""),
+                    "partner": ml.partner_id.display_name or "",
+                    "label": ml.name or "",
+                    "debit": ml.debit,
+                    "credit": ml.credit,
+                }
+            )
+        return {
+            "name": move.name or "",
+            "date": fields.Date.to_string(move.date) if move.date else "",
+            "journal": move.journal_id.code or "",
+            "lines": lines,
+        }
 
     @api.model
     def _kmitl_format_amount(self, value):
