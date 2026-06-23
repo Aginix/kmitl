@@ -7,6 +7,11 @@ from odoo.tools.float_utils import float_round
 class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
+    def remove_invoice_plan(self):
+        self.ensure_one()
+        self.invoice_plan_ids.filtered("parent_id").unlink()
+        return super().remove_invoice_plan()
+
     @api.depends("invoice_plan_ids")
     def _compute_ip_total(self):
         """Count only root-level installments to avoid double-counting subs."""

@@ -21,7 +21,7 @@
                         type="object"
                         string="แบ่งงวดย่อย"
                         icon="fa-sitemap"
-                        attrs="{'invisible': ['|', ('is_sub', '=', True), ('no_edit', '=', True)]}"/>
+                        attrs="{'invisible': ['|', '|', ('is_sub', '=', True), ('no_edit', '=', True), ('state', '!=', 'draft')]}"/>
             </xpath>
         </field>
     </record>

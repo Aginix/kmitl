@@ -1,0 +1,268 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_work_acceptance_invoice_plan
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-22 00:00+0000\n"
+"PO-Revision-Date: 2026-06-22 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__active_installment_ids
+msgid "Active Installment"
+msgstr "งวดงานที่เปิดใช้งาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_all_product_line
+msgid "All product lines"
+msgstr "รายการสินค้าทั้งหมด"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__analytic_distribution
+msgid "Analytic"
+msgstr "งบประมาณเชิงวิเคราะห์"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__apply_method_id
+msgid "Base On"
+msgstr "อ้างอิงจาก"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,help:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__apply_method_id
+msgid "Choose the method to find matcing product line for this installment"
+msgstr "เลือกวิธีการค้นหารายการสินค้าที่ตรงกับงวดงานนี้"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_select_work_acceptance_invoice_plan_qty
+msgid "Compute quantity of each WA lines, according to product lines"
+msgstr "คำนวณจำนวนของแต่ละรายการตรวจรับ ตามรายการสินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Create WA"
+msgstr "สร้างใบตรวจรับงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.purchase_order_form_inherit
+msgid "Create WA by Installment"
+msgstr "สร้างใบตรวจรับงานตามงวดงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__currency_id
+msgid "Currency"
+msgstr "สกุลเงิน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Installment Warning:"
+msgstr "คำเตือนงวดงาน:"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Installment {} is already used by other WA."
+msgstr "งวดที่ {} ถูกใช้โดยใบตรวจรับงานอื่นแล้ว"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__installment_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_work_acceptance__installment_id
+msgid "Invoice Plan"
+msgstr "งวดงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_purchase_invoice_plan
+msgid "Invoice Planning Detail"
+msgstr "รายละเอียดแผนการวางบิล"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตล่าสุดโดย"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตล่าสุดเมื่อ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Leave blank to apply to all purchase lines"
+msgstr "เว้นว่างเพื่อใช้กับรายการสั่งซื้อทั้งหมด"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,help:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_line_ids
+msgid "List of product lines used to create WA. Blank means all"
+msgstr "รายการสินค้าที่ใช้สร้างใบตรวจรับงาน เว้นว่างหมายถึงทั้งหมด"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,help:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__installment_id
+msgid "List only installment that has not been used in WA (draft, accepted)"
+msgstr "แสดงเฉพาะงวดงานที่ยังไม่ถูกใช้ในใบตรวจรับงาน (ร่าง, ตรวจรับแล้ว)"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "No product line with matched amount!"
+msgstr "ไม่พบรายการสินค้าที่มีจำนวนเงินตรงกัน!"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__qty_not_accepted
+msgid "Not Accepted"
+msgstr "ยังไม่ตรวจรับ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__order_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_id
+msgid "Order"
+msgstr "ใบสั่งซื้อ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Please register deposit first."
+msgstr "กรุณาบันทึกเงินมัดจำก่อน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_line_ids
+msgid "Product Filter"
+msgstr "ตัวกรองสินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__order_line_id
+msgid "Product Line"
+msgstr "รายการสินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_matched_amount
+msgid "Product line with matched amount"
+msgstr "รายการสินค้าที่มีจำนวนเงินตรงกัน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "รายการสั่งซื้อ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Select Work Acceptance"
+msgstr "เลือกการตรวจรับงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_select_work_acceptance_invoice_plan_wizard
+msgid "Select Work Acceptance Invoice Plan Wizard"
+msgstr "ตัวช่วยเลือกงวดงานสำหรับตรวจรับงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_select_work_acceptance_wizard
+msgid "Select Work Acceptance Wizard"
+msgstr "ตัวช่วยเลือกการตรวจรับงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid ""
+"The 1st installment is 'Invoice Plan %(min_installment)s' but you are "
+"choosing 'Invoice Plan %(installment)s'"
+msgstr ""
+"งวดแรกที่ต้องดำเนินการคืองวดที่ %(min_installment)s "
+"แต่คุณกำลังเลือกงวดที่ %(installment)s"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__quantity
+msgid "To Accept"
+msgstr "จำนวนตรวจรับ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Total"
+msgstr "รวม"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid ""
+"Total amount not equal to installment amount, are you sure to continue?"
+msgstr ""
+"จำนวนเงินรวมไม่เท่ากับจำนวนเงินของงวดงาน คุณต้องการดำเนินการต่อหรือไม่?"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Total purchase amount must not be zero!"
+msgstr "ยอดรวมการสั่งซื้อต้องไม่เป็นศูนย์!"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__valid_amount
+msgid "Valid Amount"
+msgstr "จำนวนเงินที่ถูกต้อง"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__wa_qty_line_ids
+msgid "Wa Qty Line"
+msgstr "รายการจำนวนตรวจรับ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__wizard_id
+msgid "Wizard"
+msgstr "ตัวช่วย"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.act_window,name:purchase_work_acceptance_invoice_plan.action_view_wa_installment
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_work_acceptance
+msgid "Work Acceptance"
+msgstr "การตรวจรับงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.constraint,message:purchase_work_acceptance_invoice_plan.constraint_select_work_acceptance_invoice_plan_qty_order_line_unique
+msgid "You are selecting same product line more than one."
+msgstr "คุณกำลังเลือกรายการสินค้าเดียวกันมากกว่าหนึ่งครั้ง"
