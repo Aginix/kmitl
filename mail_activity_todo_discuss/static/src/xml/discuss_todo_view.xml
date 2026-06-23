@@ -42,14 +42,13 @@
                                 </small>
                                 <div class="d-flex align-items-center">
                                     <span class="fw-medium text-truncate" t-esc="todo.summary"/>
-                                    <span t-if="todo.todo_category" class="badge bg-light text-dark border ms-2" t-esc="categoryLabel(todo.todo_category)"/>
                                 </div>
                                 <small class="text-muted text-truncate d-block">
                                     <span t-if="todo.app" t-esc="todo.app"/>
                                     <t t-if="todo.res_name"> · <t t-esc="todo.res_name"/></t>
                                     <t t-if="todo.assigned"> · <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/></t>
                                 </small>
-                                <small class="text-muted fst-italic text-truncate d-block" t-if="todo.note" t-esc="todo.note"/>
+                                <span class="text-sm text-muted fst-italic text-truncate d-block" t-if="todo.note" t-out="todo.note"/>
                             </div>
                             <small t-if="todo.date_deadline"
                                 class="ms-3 text-nowrap"
