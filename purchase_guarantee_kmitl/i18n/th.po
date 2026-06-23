@@ -250,3 +250,156 @@ msgstr "เอกสารประกอบหลักประกัน"
 #: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
 msgid "Analytic for Guarantee"
 msgstr "งบประมาณ"
+
+#
+# --- Contract Guarantee Report translations ---
+#
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model,name:purchase_guarantee_kmitl.model_purchase_contract_guarantee_report
+msgid "Contract Guarantee Register Report"
+msgstr "รายงานทะเบียนคุมสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.actions.act_window,name:purchase_guarantee_kmitl.action_contract_guarantee_report
+#: model:ir.ui.menu,name:purchase_guarantee_kmitl.menu_contract_guarantee_report
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_tree
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_pivot
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Contract Guarantee Register"
+msgstr "รายงานทะเบียนคุมสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__purchase_id
+msgid "Purchase Order"
+msgstr "ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__contract_number
+msgid "Contract Number"
+msgstr "เลขที่สัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__contract_name
+msgid "Contract Name"
+msgstr "ชื่องาน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__partner_id
+msgid "Vendor"
+msgstr "คู่ค้า"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__contract_type_id
+msgid "Contract Type"
+msgstr "ประเภทงาน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__work_start
+msgid "Work Start"
+msgstr "วันที่เริ่มสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__work_end
+msgid "Work End"
+msgstr "วันที่สิ้นสุดสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__purchase_state
+msgid "Contract Status"
+msgstr "สถานะสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_contract_guarantee_report__purchase_state__draft
+msgid "Draft"
+msgstr "ร่าง"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_contract_guarantee_report__purchase_state__sent
+msgid "Sent"
+msgstr "ส่งแล้ว"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_contract_guarantee_report__purchase_state__purchase
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_contract_guarantee_report__purchase_state__done
+msgid "Closed"
+msgstr "ปิดสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_contract_guarantee_report__purchase_state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิกสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__guarantee_type_id
+msgid "Guarantee Type"
+msgstr "ประเภทหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__date_due_guarantee
+msgid "Guarantee Due Date"
+msgstr "วันครบกำหนดหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__date_due_display
+msgid "Guarantee Expiry"
+msgstr "วันที่สิ้นสุดอายุหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__date_return
+msgid "Guarantee Return Date"
+msgstr "วันที่คืนหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__guarantee_return_state
+msgid "Guarantee Return Status"
+msgstr "สถานะหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_contract_guarantee_report__guarantee_return_state__returned
+msgid "Returned"
+msgstr "คืนแล้ว"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_contract_guarantee_report__guarantee_return_state__pending
+msgid "Pending"
+msgstr "ยังไม่ได้คืน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount
+msgid "Guarantee Amount"
+msgstr "มูลค่าหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount_total
+msgid "Contract Amount"
+msgstr "มูลค่าสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount_received
+msgid "Amount Received"
+msgstr "จำนวนเงินที่รับ"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount_returned
+msgid "Amount Returned"
+msgstr "จำนวนเงินที่คืน"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__contract_period_days
+msgid "Contract Period Days"
+msgstr "จำนวนวันสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Cash/Transfer"
+msgstr "เงินสด/เงินโอน"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"

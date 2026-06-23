@@ -3,37 +3,46 @@ from odoo import fields, models, tools
 
 class PurchaseContractGuaranteeReport(models.Model):
     _name = "purchase.contract.guarantee.report"
-    _description = "รายงานทะเบียนคุมสัญญา"
+    _description = "Contract Guarantee Register Report"
     _auto = False
     _order = "purchase_id desc"
 
-    purchase_id = fields.Many2one("purchase.order", string="ใบสั่งซื้อ/จ้าง", readonly=True)
-    contract_number = fields.Char(string="เลขที่สัญญา", readonly=True)
-    contract_name = fields.Char(string="ชื่องาน", readonly=True)
-    partner_id = fields.Many2one("res.partner", string="คู่ค้า", readonly=True)
-    contract_type_id = fields.Many2one("purchase.contract.type", string="ประเภทงาน", readonly=True)
-    work_start = fields.Date(string="วันที่เริ่มสัญญา", readonly=True)
-    work_end = fields.Date(string="วันที่สิ้นสุดสัญญา", readonly=True)
+    # --- Dimensions ---
+    purchase_id = fields.Many2one("purchase.order", string="Purchase Order", readonly=True)
+    contract_number = fields.Char(string="Contract Number", readonly=True)
+    contract_name = fields.Char(string="Contract Name", readonly=True)
+    partner_id = fields.Many2one("res.partner", string="Vendor", readonly=True)
+    contract_type_id = fields.Many2one("purchase.contract.type", string="Contract Type", readonly=True)
+    work_start = fields.Date(string="Work Start", readonly=True)
+    work_end = fields.Date(string="Work End", readonly=True)
     purchase_state = fields.Selection(
         selection=[
-            ("draft", "Draft RFQ"),
-            ("sent", "RFQ Sent"),
+            ("draft", "Draft"),
+            ("sent", "Sent"),
             ("purchase", "Purchase Order"),
-            ("done", "Locked"),
+            ("done", "Closed"),
             ("cancel", "Cancelled"),
         ],
-        string="สถานะสัญญา",
+        string="Contract Status",
         readonly=True,
     )
-    guarantee_type_id = fields.Many2one("purchase.guarantee.type", string="ประเภทหลักประกัน", readonly=True)
+    guarantee_type_id = fields.Many2one("purchase.guarantee.type", string="Guarantee Type", readonly=True)
     currency_id = fields.Many2one("res.currency", readonly=True)
-    date_due_display = fields.Char(string="วันที่สิ้นสุดอายุหลักประกัน", readonly=True)
+    date_due_guarantee = fields.Date(string="Guarantee Due Date", readonly=True)
+    date_due_display = fields.Char(string="Guarantee Expiry", readonly=True)
+    date_return = fields.Date(string="Guarantee Return Date", readonly=True)
     guarantee_return_state = fields.Selection(
-        selection=[("returned", "คืนแล้ว"), ("pending", "ยังไม่ได้คืน")],
-        string="สถานะหลักประกัน",
+        selection=[("returned", "Returned"), ("pending", "Pending")],
+        string="Guarantee Return Status",
         readonly=True,
     )
-    amount = fields.Monetary(string="มูลค่าหลักประกัน", readonly=True)
+
+    # --- Measures ---
+    amount = fields.Monetary(string="Guarantee Amount", readonly=True)
+    amount_total = fields.Monetary(string="Contract Amount", readonly=True)
+    amount_received = fields.Monetary(string="Amount Received", readonly=True)
+    amount_returned = fields.Monetary(string="Amount Returned", readonly=True)
+    contract_period_days = fields.Integer(string="Contract Period Days", readonly=True)
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -41,27 +50,43 @@ class PurchaseContractGuaranteeReport(models.Model):
             """
             CREATE OR REPLACE VIEW %s AS (
                 SELECT
-                    g.id                AS id,
-                    g.purchase_id       AS purchase_id,
-                    po.contract_number  AS contract_number,
-                    po.contract_name    AS contract_name,
-                    g.partner_id        AS partner_id,
-                    po.contract_type_id AS contract_type_id,
-                    po.work_start       AS work_start,
-                    po.work_end         AS work_end,
-                    po.state            AS purchase_state,
-                    g.guarantee_type_id AS guarantee_type_id,
-                    po.currency_id      AS currency_id,
+                    g.id                    AS id,
+                    g.purchase_id           AS purchase_id,
+                    po.contract_number      AS contract_number,
+                    po.contract_name        AS contract_name,
+                    g.partner_id            AS partner_id,
+                    po.contract_type_id     AS contract_type_id,
+                    po.work_start           AS work_start,
+                    po.work_end             AS work_end,
+                    po.state                AS purchase_state,
+                    g.guarantee_type_id     AS guarantee_type_id,
+                    po.currency_id          AS currency_id,
+                    g.date_due_guarantee    AS date_due_guarantee,
                     CASE
                         WHEN g.date_due_guarantee IS NOT NULL
                             THEN TO_CHAR(g.date_due_guarantee, 'DD/MM/YYYY')
                         ELSE 'จนกว่าจะพ้นภาระผูกพันธ์'
-                    END                 AS date_due_display,
+                    END                     AS date_due_display,
+                    g.date_return           AS date_return,
                     CASE
                         WHEN g.date_return IS NOT NULL THEN 'returned'
                         ELSE 'pending'
-                    END                 AS guarantee_return_state,
-                    g.amount            AS amount
+                    END                     AS guarantee_return_state,
+                    g.amount                AS amount,
+                    po.amount_total         AS amount_total,
+                    COALESCE((
+                        SELECT SUM(am.amount_total - am.amount_residual)
+                        FROM account_move_guarantee_rel rel
+                        JOIN account_move am ON am.id = rel.move_id
+                        WHERE rel.guarantee_id = g.id
+                    ), 0)                   AS amount_received,
+                    COALESCE((
+                        SELECT SUM(am.amount_total - am.amount_residual)
+                        FROM account_move_return_guarantee_rel rel
+                        JOIN account_move am ON am.id = rel.move_id
+                        WHERE rel.guarantee_id = g.id
+                    ), 0)                   AS amount_returned,
+                    po.contract_period_days AS contract_period_days
                 FROM purchase_guarantee g
                 JOIN purchase_order po ON po.id = g.purchase_id
                 JOIN purchase_guarantee_method pgm ON pgm.id = g.guarantee_method_id
