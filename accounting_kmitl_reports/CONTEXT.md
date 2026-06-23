@@ -27,3 +27,16 @@ _Avoid_: aging, overdue report
 **Accounting dimension on ageing (มิติทางบัญชีในรายงานอายุ)**:
 Because the receivable/payable control line carries no `analytic_distribution`, a dimension filter on the ageing reports works at the **move** level: it keeps only the residuals whose invoice contains a line matching the selected dimensions — not the control line itself.
 _Avoid_: line-level filter
+
+**Cash Flow Statement (งบกระแสเงินสด)**:
+A statement, over a date range, of how cash moved across three **activities** — **Operating** (ดำเนินงาน), **Investing** (ลงทุน) and **Financing** (จัดหาเงิน) — netting to the period's increase/decrease in cash, then reconciled to cash at the beginning and end of the period. Opens straight from the menu as an OWL client action and shares its compute with the QWeb PDF and XLSX exports.
+_Avoid_: cash flow forecast (that is the unrelated `mis_builder_cash_flow` liquidity projection, not this statement)
+
+**Balance-variation method (วิธีผลต่างยอดบัญชี / indirect)**:
+How the statement is computed. Because every entry is balanced, the period change in cash equals the negative of the period movement of every non-cash account, so each activity's figure is `-(Σ debit − credit)` of the accounts assigned to it. Accounts are assigned to an activity by `account_type` (every on-balance, non-cash type belongs to exactly one activity), so the three activities always net to the change in cash. **Operating** starts from `Net profit (loss)` (the P&L account types) and adds the `Changes in operating assets and liabilities` (operating receivables/payables and other current asset/liability types).
+_Avoid_: direct method (the GL has no cash-basis tagging to split receipts/payments)
+
+**Cash flow classification (การจัดประเภทกิจกรรม)**:
+The fixed `account_type` → activity map. **Cash** (measured, not an activity): `asset_cash`. **Operating**: P&L types (`income`, `income_other`, `expense`, `expense_depreciation`, `expense_direct_cost`) plus operating balance-sheet types (`asset_receivable`, `asset_current`, `asset_prepayments`, `liability_payable`, `liability_current`). **Investing**: `asset_fixed`, `asset_non_current`. **Financing**: `liability_non_current`, `liability_credit_card`, `equity`, `equity_unaffected`. **Excluded**: `off_balance`.
+_Caveats_: the net change is always exact, but (1) depreciation is not added back across activities — `expense_depreciation` sits in Operating while the matching accumulated depreciation sits in Investing, so that split is approximate; and (2) when a dimension filter is applied, cash beginning/end may not reconcile to the activities if the cash lines carry no `analytic_distribution`.
+_Avoid_: per-account cash-flow tagging (not used — classification is by type only)

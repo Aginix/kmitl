@@ -19,6 +19,13 @@
         <field name="tag">kmitl_aged_payable</field>
     </record>
 
+    <!-- Cash Flow Statement: OWL client action (indirect / balance-variation
+         method), filterable by the KMITL accounting dimensions. -->
+    <record id="action_cash_flow_kmitl" model="ir.actions.client">
+        <field name="name">Cash Flow Statement</field>
+        <field name="tag">kmitl_cash_flow</field>
+    </record>
+
     <!-- Actions: open the pre-configured instance directly on its result
          view (the same view mis_builder.preview() uses, so the report
          renders inline without a "Preview" click). -->
@@ -36,15 +43,6 @@
         <field name="name">Balance Sheet</field>
         <field name="res_model">mis.report.instance</field>
         <field name="res_id" eval="ref('instance_bs_kmitl')"/>
-        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
-        <field name="view_mode">form</field>
-        <field name="target">current</field>
-    </record>
-
-    <record id="action_report_cf_kmitl" model="ir.actions.act_window">
-        <field name="name">Cash Flow Statement</field>
-        <field name="res_model">mis.report.instance</field>
-        <field name="res_id" eval="ref('instance_cf_kmitl')"/>
         <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
         <field name="view_mode">form</field>
         <field name="target">current</field>
@@ -76,7 +74,7 @@
         id="menu_report_cf_kmitl"
         name="Cash Flow Statement"
         parent="accounting_kmitl.menu_accounting_reports"
-        action="action_report_cf_kmitl"
+        action="action_cash_flow_kmitl"
         sequence="30"
     />
     <menuitem

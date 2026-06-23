@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Accounting Reports",
-    "version": "16.0.3.0.0",
+    "version": "16.0.4.0.0",
     "category": "KMITL/Accounting",
     "summary": "KMITL accounting reports: Trial Balance, Profit and Loss, "
     "Balance Sheet, Cash Flow Statement, Aged Receivable/Payable",
@@ -24,13 +24,14 @@
         "data/mis_report_style_kmitl.xml",
         "data/mis_report_pl_kmitl.xml",
         "data/mis_report_bs_kmitl.xml",
-        "data/mis_report_cf_kmitl.xml",
         "data/mis_report_instance_kmitl.xml",
         "data/paperformat_trial_balance_kmitl.xml",
         "data/report_action_trial_balance_kmitl.xml",
         "data/report_action_aged_partner_balance_kmitl.xml",
+        "data/report_action_cash_flow_kmitl.xml",
         "report/trial_balance_kmitl_template.xml",
         "report/aged_partner_balance_kmitl_template.xml",
+        "report/cash_flow_kmitl_template.xml",
         "views/menuitem.xml",
     ],
     "assets": {
@@ -42,6 +43,9 @@
             "accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.js",
             "accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.xml",
             "accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.scss",
+            "accounting_kmitl_reports/static/src/cash_flow/cash_flow.js",
+            "accounting_kmitl_reports/static/src/cash_flow/cash_flow.xml",
+            "accounting_kmitl_reports/static/src/cash_flow/cash_flow.scss",
         ],
     },
     "installable": True,
