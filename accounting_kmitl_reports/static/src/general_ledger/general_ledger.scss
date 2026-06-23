@@ -1,0 +1,22 @@
+.o_kmitl_general_ledger {
+    height: 100%;
+    overflow: auto;
+
+    .o_kmitl_gl_table {
+        // Clickable move-line rows (accordion headers)
+        .o_kmitl_gl_row {
+            cursor: pointer;
+        }
+
+        // Opening (ยอดยกมา) / closing (ยอดยกไป) rows
+        .o_kmitl_gl_opening td,
+        .o_kmitl_gl_ending td {
+            background-color: #f8f9fa;
+        }
+
+        // Detail panel row: the inner padded panel provides the background
+        .o_kmitl_gl_detail > td {
+            background-color: transparent;
+        }
+    }
+}

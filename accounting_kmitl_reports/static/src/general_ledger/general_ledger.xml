@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_kmitl_reports.GeneralLedger" owl="1">
+        <div class="o_kmitl_general_ledger o_action_manager p-3">
+            <div class="d-flex align-items-center mb-3">
+                <h2 class="me-auto mb-0">
+                    <t t-esc="labels.title" />
+                    <small class="text-muted ms-2" t-if="state.dateFrom">
+                        <t t-esc="state.dateFrom" /> – <t t-esc="state.dateTo" />
+                    </small>
+                </h2>
+                <button class="btn btn-link" t-on-click="changeCriteria">
+                    <i class="fa fa-sliders me-1" /><t t-esc="labels.changeCriteria" />
+                </button>
+                <button class="btn btn-secondary ms-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" /><t t-esc="labels.exportExcel" />
+                </button>
+                <button class="btn btn-primary ms-2" t-on-click="printPdf">
+                    <i class="fa fa-file-pdf-o me-1" /><t t-esc="labels.printPdf" />
+                </button>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center p-5">
+                    <span class="spinner-border" role="status" />
+                </div>
+            </t>
+            <t t-elif="!state.accounts.length">
+                <div class="text-center text-muted p-5">
+                    <t t-esc="labels.empty" />
+                </div>
+            </t>
+            <t t-else="">
+                <div
+                    t-foreach="state.accounts"
+                    t-as="acc"
+                    t-key="acc.id"
+                    class="o_kmitl_gl_account mb-4"
+                >
+                    <h5 class="mb-2">
+                        <strong><t t-esc="acc.code" /></strong> - <t t-esc="acc.name" />
+                    </h5>
+                    <table class="table table-sm table-hover align-middle o_kmitl_gl_table">
+                        <thead>
+                            <tr>
+                                <th style="width: 24px;" />
+                                <th><t t-esc="labels.date" /></th>
+                                <th><t t-esc="labels.issue" /></th>
+                                <th><t t-esc="labels.remark" /></th>
+                                <th class="text-end"><t t-esc="labels.debit" /></th>
+                                <th class="text-end"><t t-esc="labels.credit" /></th>
+                                <th class="text-end"><t t-esc="labels.balance" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="o_kmitl_gl_opening">
+                                <td />
+                                <td colspan="5" class="fst-italic"><t t-esc="labels.opening" /></td>
+                                <td class="text-end" t-esc="format(acc.initial_balance)" />
+                            </tr>
+                            <t t-foreach="acc.lines" t-as="line" t-key="line.id">
+                                <tr class="o_kmitl_gl_row" t-on-click="() => this.toggleExpand(line)">
+                                    <td>
+                                        <i
+                                            class="fa"
+                                            t-att-class="state.expandedId === line.id ? 'fa-caret-down' : 'fa-caret-right'"
+                                        />
+                                    </td>
+                                    <td class="text-nowrap" t-esc="line.date" />
+                                    <td t-esc="line.issue" />
+                                    <td t-esc="line.narration" />
+                                    <td class="text-end" t-esc="format(line.debit)" />
+                                    <td class="text-end" t-esc="format(line.credit)" />
+                                    <td class="text-end" t-esc="format(line.balance)" />
+                                </tr>
+                                <tr t-if="state.expandedId === line.id" class="o_kmitl_gl_detail">
+                                    <td colspan="7" class="p-0">
+                                        <div class="p-3 bg-light border-top">
+                                            <div class="row mb-2">
+                                                <div class="col-md-6">
+                                                    <div>
+                                                        <strong><t t-esc="labels.date" />:</strong>
+                                                        <t t-esc="line.date" />
+                                                    </div>
+                                                    <div t-if="line.maker">
+                                                        <strong><t t-esc="labels.maker" />:</strong>
+                                                        <t t-esc="line.maker" />
+                                                        <span class="text-muted ms-1" t-esc="line.maker_date" />
+                                                    </div>
+                                                    <div t-if="line.partner">
+                                                        <strong><t t-esc="labels.partner" />:</strong>
+                                                        <t t-esc="line.partner" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div
+                                                        t-foreach="line.dimensions"
+                                                        t-as="dim"
+                                                        t-key="dim_index"
+                                                    >
+                                                        <strong><t t-esc="dim.label" />:</strong>
+                                                        <t t-esc="dim.value" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div t-if="line.narration" class="mb-2">
+                                                <strong><t t-esc="labels.narration" />:</strong>
+                                                <t t-esc="line.narration" />
+                                            </div>
+                                            <table class="table table-sm table-bordered mb-0 bg-white">
+                                                <thead>
+                                                    <tr>
+                                                        <th><t t-esc="labels.account" /></th>
+                                                        <th class="text-end"><t t-esc="labels.debit" /></th>
+                                                        <th class="text-end"><t t-esc="labels.credit" /></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        t-foreach="state.linesByMove[line.entry_id] || []"
+                                                        t-as="ml"
+                                                        t-key="ml.id"
+                                                    >
+                                                        <td t-esc="displayName(ml.account_id)" />
+                                                        <td class="text-end" t-esc="format(ml.debit)" />
+                                                        <td class="text-end" t-esc="format(ml.credit)" />
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="mt-2">
+                                                <a
+                                                    href="#"
+                                                    t-on-click.prevent.stop="() => this.openEntry(line)"
+                                                >
+                                                    <i class="fa fa-external-link me-1" /><t t-esc="labels.open" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr class="o_kmitl_gl_ending fw-bold">
+                                <td />
+                                <td colspan="5"><t t-esc="labels.carried" /></td>
+                                <td class="text-end" t-esc="format(acc.final_balance)" />
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>
