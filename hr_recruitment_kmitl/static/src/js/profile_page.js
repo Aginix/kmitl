@@ -113,16 +113,42 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         birthdayInput.addEventListener("change", computeAge);
     }
 
+    // Activate a tab by its "#tab-..." target. Uses the Bootstrap JS API when
+    // it is available, but falls back to toggling the classes directly so the
+    // deep-link/restore works even if `window.bootstrap` is not ready yet on
+    // load (tab *clicks* keep working via Bootstrap's data-api regardless).
+    function activateTab(target) {
+        var btn = document.querySelector('[data-bs-target="' + target + '"]');
+        var pane = document.querySelector(target);
+        if (!btn || !pane) return;
+        if (window.bootstrap && bootstrap.Tab) {
+            bootstrap.Tab.getOrCreateInstance(btn).show();
+        } else {
+            var nav = btn.closest(".nav, [role='tablist']");
+            if (nav) {
+                nav.querySelectorAll(".nav-link").forEach(function (b) {
+                    b.classList.remove("active");
+                    b.setAttribute("aria-selected", "false");
+                });
+            }
+            btn.classList.add("active");
+            btn.setAttribute("aria-selected", "true");
+            var content = pane.closest(".tab-content");
+            if (content) {
+                content.querySelectorAll(".tab-pane").forEach(function (p) {
+                    p.classList.remove("active", "show");
+                });
+            }
+            pane.classList.add("active", "show");
+        }
+        history.replaceState(null, "", target);
+    }
+
     function setupTabNavigation() {
         var savedTab = sessionStorage.getItem("profileActiveTab");
         if (savedTab) {
             sessionStorage.removeItem("profileActiveTab");
-            var savedTabBtn = document.querySelector(
-                '[data-bs-target="' + savedTab + '"]'
-            );
-            if (savedTabBtn && window.bootstrap && bootstrap.Tab) {
-                new bootstrap.Tab(savedTabBtn).show();
-            }
+            activateTab(savedTab);
         }
 
         document
@@ -143,12 +169,7 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
                 field.addEventListener("invalid", function () {
                     var pane = this.closest(".tab-pane");
                     if (pane && !pane.classList.contains("active")) {
-                        var tabBtn = document.querySelector(
-                            '[data-bs-target="#' + pane.id + '"]'
-                        );
-                        if (tabBtn && window.bootstrap && bootstrap.Tab) {
-                            new bootstrap.Tab(tabBtn).show();
-                        }
+                        activateTab("#" + pane.id);
                     }
                 });
             });
@@ -156,10 +177,20 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         // Restore from URL hash
         var hash = window.location.hash;
         if (hash && !savedTab) {
-            var hashTabBtn = document.querySelector('[data-bs-target="' + hash + '"]');
-            if (hashTabBtn && window.bootstrap && bootstrap.Tab) {
-                new bootstrap.Tab(hashTabBtn).show();
-            }
+            activateTab(hash);
+        }
+
+        // Remember the active tab across save: the POST redirect drops the URL
+        // hash, so stash it for the restore block above to re-apply on reload.
+        var profileForm = document.querySelector('form[action*="/my/profile"]');
+        if (profileForm) {
+            profileForm.addEventListener("submit", function () {
+                var activeBtn = document.querySelector("#profileTabs .nav-link.active");
+                var target = activeBtn && activeBtn.getAttribute("data-bs-target");
+                if (target) {
+                    sessionStorage.setItem("profileActiveTab", target);
+                }
+            });
         }
     }
 
