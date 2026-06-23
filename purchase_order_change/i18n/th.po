@@ -344,6 +344,18 @@ msgid "Purchase Order Change"
 msgstr "การเปลี่ยนแปลงสัญญา"
 
 #. module: purchase_order_change
+#: code:addons/purchase_order_change/models/purchase_order.py:0
+#, python-format
+msgid "Structural Contract Change"
+msgstr "แก้ไขสัญญาแบบกระทบโครงสร้าง"
+
+#. module: purchase_order_change
+#: code:addons/purchase_order_change/models/purchase_order.py:0
+#, python-format
+msgid "Non-Structural Contract Change"
+msgstr "แก้ไขสัญญาแบบไม่กระทบโครงสร้าง"
+
+#. module: purchase_order_change
 #: model:ir.actions.act_window,name:purchase_order_change.action_purchase_order_change_field
 #: model:ir.model,name:purchase_order_change.model_purchase_order_change_field
 #: model_terms:ir.ui.view,arch_db:purchase_order_change.view_purchase_order_change_field_form

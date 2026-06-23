@@ -88,6 +88,15 @@ class KrisProject(models.Model):
     can_edit = fields.Boolean(
         compute="_compute_can_edit",
     )
+    no_installment_tracking = fields.Boolean(
+        string="ไม่มีงวดงานกำกับ",
+        tracking=True,
+        help="ติ๊กเมื่อโครงการนี้ไม่มีงวดงานกำกับ: ข้ามการตรวจสอบงวดงานตอนยืนยัน "
+        "แก้ไขงวดงานได้ระหว่างดำเนินการ และปิดโครงการได้โดยไม่ต้องรับเงินครบ",
+    )
+    installment_editable = fields.Boolean(
+        compute="_compute_installment_editable",
+    )
     client_name = fields.Char(
         string="Client Name",
         tracking=True,
@@ -143,7 +152,8 @@ class KrisProject(models.Model):
     maintenance_deduction_type = fields.Selection(
         selection=[
             ("tiered", "Tiered"),
-            ("custom", "Custom"),
+            ("custom", "Custom %"),
+            ("fixed", "Fixed Amount"),
         ],
         string="Maintenance Deduction Type",
         default="tiered",
@@ -153,6 +163,10 @@ class KrisProject(models.Model):
     maintenance_deduction_pct = fields.Float(
         string="% หักค่าบำรุง",
         digits=(5, 2),
+        tracking=True,
+    )
+    maintenance_deduction_fixed_amount = fields.Monetary(
+        string="จำนวนเงินค่าบำรุง",
         tracking=True,
     )
     maintenance_deduction_amount = fields.Monetary(
@@ -205,16 +219,19 @@ class KrisProject(models.Model):
         comodel_name="kris.project.installment",
         inverse_name="project_id",
         string="Installment",
+        copy=True,
     )
     receipt_ids = fields.One2many(
         comodel_name="kris.project.receipt",
         inverse_name="project_id",
         string="Revenue",
+        copy=False,
     )
     allocation_line_ids = fields.One2many(
         comodel_name="kris.project.allocation.line",
         inverse_name="project_id",
         string="การจัดสรรรายได้",
+        copy=True,
     )
     attachment_ids = fields.Many2many(
         comodel_name="ir.attachment",
@@ -284,19 +301,41 @@ class KrisProject(models.Model):
     warn_extra_overshoot = fields.Boolean(
         compute="_compute_warnings",
     )
+    warn_cancel_with_receipts = fields.Boolean(
+        compute="_compute_warnings",
+    )
+    warn_maintenance_exceeds_expense = fields.Boolean(
+        compute="_compute_warnings",
+    )
 
     @api.depends(
         "maintenance_deduction_amount",
+        "operating_expense",
         "allocation_line_ids.estimated_amount",
         "installment_ids.maintenance_fee",
         "installment_ids.extra_income",
         "total_installment_amount",
         "project_value",
         "extra_value",
+        "no_installment_tracking",
+        "state",
+        "receipt_ids",
     )
     def _compute_warnings(self):
         prec = self.env["decimal.precision"].precision_get("Account")
         for rec in self:
+            rec.warn_cancel_with_receipts = bool(rec.receipt_ids) and rec.state in (
+                "draft",
+                "in_progress",
+            )
+            rec.warn_maintenance_exceeds_expense = (
+                float_compare(
+                    rec.maintenance_deduction_amount,
+                    rec.operating_expense,
+                    precision_digits=prec,
+                )
+                > 0
+            )
             alloc_total = sum(rec.allocation_line_ids.mapped("estimated_amount"))
             rec.warn_allocation_mismatch = (
                 bool(rec.allocation_line_ids)
@@ -308,7 +347,8 @@ class KrisProject(models.Model):
             if rec.installment_ids:
                 maint_total = sum(rec.installment_ids.mapped("maintenance_fee"))
                 rec.warn_installment_maintenance_mismatch = (
-                    float_compare(
+                    not rec.no_installment_tracking
+                    and float_compare(
                         maint_total,
                         rec.maintenance_deduction_amount,
                         precision_digits=prec,
@@ -316,7 +356,8 @@ class KrisProject(models.Model):
                     != 0
                 )
                 rec.warn_installment_total_mismatch = (
-                    float_compare(
+                    not rec.no_installment_tracking
+                    and float_compare(
                         rec.total_installment_amount,
                         rec.project_value,
                         precision_digits=prec,
@@ -338,6 +379,15 @@ class KrisProject(models.Model):
         for rec in self:
             rec.can_edit = rec.state == "draft"
 
+    @api.depends("state", "no_installment_tracking")
+    def _compute_installment_editable(self):
+        # Installments remain editable after confirmation only for projects
+        # flagged as having no work-period tracking; otherwise draft-only.
+        for rec in self:
+            rec.installment_editable = rec.state == "draft" or (
+                rec.state == "in_progress" and rec.no_installment_tracking
+            )
+
     @api.depends("operating_expense")
     def _compute_allocatable_value(self):
         for rec in self:
@@ -347,6 +397,7 @@ class KrisProject(models.Model):
         "operating_expense",
         "maintenance_deduction_type",
         "maintenance_deduction_pct",
+        "maintenance_deduction_fixed_amount",
     )
     def _compute_maintenance_deduction_amount(self):
         for rec in self:
@@ -354,9 +405,13 @@ class KrisProject(models.Model):
                 rec.maintenance_deduction_amount = _compute_tiered_deduction(
                     rec.operating_expense
                 )
-            else:
+            elif rec.maintenance_deduction_type == "custom":
                 rec.maintenance_deduction_amount = (
                     rec.operating_expense * rec.maintenance_deduction_pct / 100.0
+                )
+            else:  # "fixed"
+                rec.maintenance_deduction_amount = (
+                    rec.maintenance_deduction_fixed_amount
                 )
 
     @api.depends(
@@ -399,6 +454,16 @@ class KrisProject(models.Model):
         ):
             self.project_type_id = False
 
+    @api.onchange("maintenance_deduction_type")
+    def _onchange_maintenance_deduction_type(self):
+        # Clear the inputs that do not apply to the selected method so stale
+        # values are neither stored nor exported (mirrors the Odoo core
+        # pattern in product.pricelist.item._onchange_compute_price).
+        if self.maintenance_deduction_type != "custom":
+            self.maintenance_deduction_pct = 0.0
+        if self.maintenance_deduction_type != "fixed":
+            self.maintenance_deduction_fixed_amount = 0.0
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -407,6 +472,48 @@ class KrisProject(models.Model):
                     self.env["ir.sequence"].next_by_code("kris.project") or _("New")
                 )
         return super().create(vals_list)
+
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        # Duplicate carries over the allocation (การจัดสรร) and installments
+        # (งวดงาน) but never the revenue (รายรับ); revenue One2many fields are
+        # flagged copy=False so the new project starts empty.
+        self.ensure_one()
+        default = dict(default or {})
+        # Append a "(copy)" suffix to the project name only when it would clash
+        # with an existing one (a duplicate always clashes with its source).
+        if "project_name" not in default and self.project_name:
+            if self.search_count([("project_name", "=", self.project_name)]):
+                default["project_name"] = _("%s (copy)") % self.project_name
+        new = super().copy(default)
+        self._copy_installment_allocations(new)
+        return new
+
+    def _copy_installment_allocations(self, new):
+        """Rebuild the per-installment maintenance breakdown on the copy.
+
+        ``installment_ids`` and ``allocation_line_ids`` are copied via
+        ``copy=True``, but ``kris.project.installment.allocation`` cross-links
+        both, so each entry's ``allocation_line_id`` must be re-pointed from the
+        source lines to the newly created ones. Copy preserves recordset order,
+        so the source and new collections align positionally.
+        """
+        line_map = dict(zip(self.allocation_line_ids, new.allocation_line_ids))
+        vals_list = []
+        for src_inst, new_inst in zip(self.installment_ids, new.installment_ids):
+            for breakdown in src_inst.allocation_ids:
+                new_line = line_map.get(breakdown.allocation_line_id)
+                if not new_line:
+                    continue
+                vals_list.append(
+                    {
+                        "installment_id": new_inst.id,
+                        "allocation_line_id": new_line.id,
+                        "amount": breakdown.amount,
+                    }
+                )
+        if vals_list:
+            self.env["kris.project.installment.allocation"].create(vals_list)
 
     def action_add_receipt(self):
         self.ensure_one()
@@ -425,9 +532,12 @@ class KrisProject(models.Model):
 
     def action_add_installment(self):
         self.ensure_one()
-        if not self.can_edit:
+        if not self.installment_editable:
             raise UserError(
-                _("Installments can only be added while the project is in draft.")
+                _(
+                    "Installments can only be edited while the project is in "
+                    "draft, or in progress when it has no work-period tracking."
+                )
             )
         return {
             "name": _("Add Installment"),
