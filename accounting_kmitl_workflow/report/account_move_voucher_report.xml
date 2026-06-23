@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_account_move_voucher" model="ir.actions.report">
+        <field name="name">ใบสำคัญรายการบัญชี</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">accounting_kmitl_workflow.report_account_move_voucher</field>
+        <field name="report_file">accounting_kmitl_workflow.report_account_move_voucher</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_account_move_voucher"/>
+    </record>
+
+</odoo>
