@@ -146,6 +146,20 @@ class PurchaseInvoicePlan(models.Model):
         no_edit = super()._no_edit()
         return no_edit or bool(self.child_ids)
 
+    def name_get(self):
+        result = []
+        for rec in self:
+            if rec.parent_id:
+                label = "%s.%s" % (rec.parent_id.installment, rec.sub_installment)
+            else:
+                label = str(rec.installment)
+            result.append((
+                rec.id,
+                "งวดงานที่ %s : %s -- %s %s"
+                % (label, rec.plan_date, rec.percent, "%"),
+            ))
+        return result
+
     # -- constraints ------------------------------------------------------
 
     @api.constrains("parent_id")
