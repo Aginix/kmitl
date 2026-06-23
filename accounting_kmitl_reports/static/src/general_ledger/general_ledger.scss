@@ -3,25 +3,20 @@
     overflow: auto;
 
     .o_kmitl_gl_table {
-        // Clickable account rows (accordion headers)
+        // Clickable move-line rows (accordion headers)
         .o_kmitl_gl_row {
             cursor: pointer;
         }
 
-        // Detail panel row: let the inner padded panel provide the background
-        .o_kmitl_gl_detail > td {
-            background-color: transparent;
+        // Opening (ยอดยกมา) / closing (ยอดยกไป) rows
+        .o_kmitl_gl_opening td,
+        .o_kmitl_gl_ending td {
+            background-color: #f8f9fa;
         }
 
-        .o_kmitl_gl_detail_table {
-            th {
-                background-color: #eef1f4;
-                white-space: nowrap;
-            }
-            .o_kmitl_gl_opening td,
-            .o_kmitl_gl_ending td {
-                background-color: #f8f9fa;
-            }
+        // Detail panel row: the inner padded panel provides the background
+        .o_kmitl_gl_detail > td {
+            background-color: transparent;
         }
     }
 }

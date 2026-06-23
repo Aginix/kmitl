@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
-from odoo.tools import format_date
+from odoo.tools import format_date, html2plaintext
 
 
 class GeneralLedgerReportKmitl(models.AbstractModel):
@@ -25,6 +25,11 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         "report.account_financial_report.general_ledger",
         "accounting_kmitl_reports.dimension.filter.mixin",
     ]
+
+    # KMITL accounting dimensions shown per line (Account column + expand
+    # detail), in display order. Resolved from each move line's
+    # ``analytic_distribution`` via its analytic account's ``root_plan_id.code``.
+    _GL_DIM_PLANS = ("funds", "departments", "activities", "sources")
 
     # ------------------------------------------------------------------
     # Shared compute
@@ -82,7 +87,7 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         (
             gen_ld_data,
             accounts_data,
-            journals_data,
+            _journals_data,
             _full_reconcile_data,
             _taxes_data,
             _analytic_data,
@@ -105,6 +110,25 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         )
         general_ledger = sorted(general_ledger, key=lambda a: a["code"] or "")
 
+        # Resolve, in batch, the analytic accounts (for the Account column /
+        # dimension detail) and the journal entries (for the expand detail)
+        # referenced by every line.
+        move_ids, analytic_ids = set(), set()
+        for acc in general_ledger:
+            for ml in acc.get("move_lines", []):
+                if ml.get("entry_id"):
+                    move_ids.add(ml["entry_id"])
+                for aid in ml.get("analytic_distribution") or {}:
+                    analytic_ids.add(int(aid))
+        ana_map = self._kmitl_analytic_map(analytic_ids)
+        move_map = self._kmitl_move_detail_map(move_ids)
+        dim_labels = {
+            "funds": _("Fund"),
+            "departments": _("Department"),
+            "activities": _("Activity"),
+            "sources": _("Source"),
+        }
+
         accounts = []
         for acc in general_ledger:
             lines = []
@@ -113,21 +137,38 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             for ml in acc.get("move_lines", []):
                 period_debit += ml.get("debit") or 0.0
                 period_credit += ml.get("credit") or 0.0
-                journal = journals_data.get(ml["journal_id"], {}) if ml.get(
-                    "journal_id"
-                ) else {}
+                # Group the line's analytic accounts by KMITL dimension plan
+                # (shown in the expand detail panel, ApprovalQueue style).
+                by_plan = {}
+                for aid in ml.get("analytic_distribution") or {}:
+                    plan, code, name = ana_map.get(int(aid), ("", "", ""))
+                    if plan:
+                        by_plan.setdefault(plan, []).append((code, name))
+                dimensions = []
+                for plan in self._GL_DIM_PLANS:
+                    for code, name in by_plan.get(plan, []):
+                        # Display as "[code] name" (e.g. "[0000] ไม่ระบุกองทุน").
+                        value = ("[%s] %s" % (code, name)).strip() if code else (name or "")
+                        dimensions.append(
+                            {"label": dim_labels[plan], "value": value}
+                        )
+                detail = move_map.get(ml.get("entry_id"), {})
                 lines.append(
                     {
                         "id": ml["id"],
                         "date": fields.Date.to_string(ml["date"]) if ml["date"] else "",
-                        "entry": ml.get("entry") or "",
+                        "issue": ml.get("entry") or "",
                         "entry_id": ml.get("entry_id") or False,
-                        "journal": journal.get("code") or "",
-                        "partner": ml.get("partner_name") or "",
-                        "ref_label": ml.get("ref_label") or "",
+                        # Remark column shows the journal entry's narration.
+                        "narration": detail.get("narration") or "",
                         "debit": ml.get("debit") or 0.0,
                         "credit": ml.get("credit") or 0.0,
                         "balance": ml.get("balance") or 0.0,
+                        # Expand detail (ApprovalQueue-style panel)
+                        "dimensions": dimensions,
+                        "partner": ml.get("partner_name") or "",
+                        "maker": detail.get("maker") or "",
+                        "maker_date": detail.get("maker_date") or "",
                     }
                 )
             accounts.append(
@@ -145,6 +186,44 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                 }
             )
         return {"accounts": accounts, "currency_id": company.currency_id.id}
+
+    @api.model
+    def _kmitl_analytic_map(self, analytic_ids):
+        """``{analytic_account_id: (root_plan_code, code, name)}`` for the
+        accounts referenced by the report's lines."""
+        if not analytic_ids:
+            return {}
+        records = (
+            self.env["account.analytic.account"].browse(list(analytic_ids)).exists()
+        )
+        return {
+            a.id: (a.root_plan_id.code or "", a.code or "", a.name or "")
+            for a in records
+        }
+
+    @api.model
+    def _kmitl_move_detail_map(self, move_ids):
+        """``{move_id: {narration, maker, maker_date}}`` for the expand detail.
+        ``maker`` is the submitter when the workflow module is installed,
+        otherwise the entry's creator."""
+        if not move_ids:
+            return {}
+        Move = self.env["account.move"]
+        has_submitted = "submitted_by" in Move._fields
+        result = {}
+        for mv in Move.browse(list(move_ids)).exists():
+            if has_submitted and mv.submitted_by:
+                maker = mv.submitted_by.display_name
+                mdate = mv.submitted_date or mv.date
+            else:
+                maker = mv.create_uid.display_name
+                mdate = mv.create_date or mv.date
+            result[mv.id] = {
+                "narration": html2plaintext(mv.narration) if mv.narration else "",
+                "maker": maker or "",
+                "maker_date": fields.Date.to_string(mdate) if mdate else "",
+            }
+        return result
 
     @api.model
     def _kmitl_format_amount(self, value):
@@ -214,8 +293,8 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
     _description = "KMITL General Ledger XLSX"
     _inherit = "report.report_xlsx.abstract"
 
-    # Date | Entry | Journal | Partner | Label | Debit | Credit | Balance
-    _AMOUNT_COLS = (5, 6, 7)
+    # Date | Issue | Remark | Debit | Credit | Balance
+    _AMOUNT_COLS = (3, 4, 5)
 
     def generate_xlsx_report(self, workbook, data, objs):
         data = data or {}
@@ -245,13 +324,13 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
             {"border": 1, "bold": True, "num_format": "#,##0.00"}
         )
 
-        sheet.merge_range(0, 0, 0, 7, company.display_name, bold)
-        sheet.merge_range(1, 0, 1, 7, _("General Ledger"), bold)
+        sheet.merge_range(0, 0, 0, 5, company.display_name, bold)
+        sheet.merge_range(1, 0, 1, 5, _("General Ledger"), bold)
         sheet.merge_range(
             2,
             0,
             2,
-            7,
+            5,
             "%s %s %s %s"
             % (
                 _("From"),
@@ -263,10 +342,8 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
 
         headers = [
             _("Date"),
-            _("Entry"),
-            _("Journal"),
-            _("Partner"),
-            _("Label"),
+            _("Issue"),
+            _("Remark"),
             _("Debit"),
             _("Credit"),
             _("Balance"),
@@ -285,23 +362,21 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
         r = row_top + 1
         for acc in accounts:
             sheet.merge_range(
-                r, 0, r, 7, "%s - %s" % (acc["code"], acc["name"]), acc_fmt
+                r, 0, r, 5, "%s - %s" % (acc["code"], acc["name"]), acc_fmt
             )
             r += 1
-            # Opening balance row
-            sheet.write(r, 4, _("Opening Balance"), cell)
+            # Opening balance (ยอดยกมา)
+            sheet.merge_range(r, 0, r, 2, _("Opening Balance"), cell)
             write_amounts(r, [None, None, acc["initial_balance"]], num)
             r += 1
             for line in acc["lines"]:
                 sheet.write(r, 0, line["date"], cell)
-                sheet.write(r, 1, line["entry"], cell)
-                sheet.write(r, 2, line["journal"], cell)
-                sheet.write(r, 3, line["partner"], cell)
-                sheet.write(r, 4, line["ref_label"], cell)
+                sheet.write(r, 1, line["issue"], cell)
+                sheet.write(r, 2, line["narration"], cell)
                 write_amounts(r, [line["debit"], line["credit"], line["balance"]], num)
                 r += 1
-            # Closing balance row
-            sheet.write(r, 4, _("Ending Balance"), num_bold)
+            # Closing balance (ยอดยกไป)
+            sheet.merge_range(r, 0, r, 2, _("Carried Forward"), num_bold)
             write_amounts(
                 r,
                 [acc["final_debit"], acc["final_credit"], acc["final_balance"]],
@@ -311,6 +386,5 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
 
         sheet.set_column(0, 0, 12)
         sheet.set_column(1, 1, 18)
-        sheet.set_column(2, 2, 12)
-        sheet.set_column(3, 4, 30)
-        sheet.set_column(5, 7, 15)
+        sheet.set_column(2, 2, 50)
+        sheet.set_column(3, 5, 15)

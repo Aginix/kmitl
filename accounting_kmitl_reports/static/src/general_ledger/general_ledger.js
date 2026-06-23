@@ -7,6 +7,8 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 
 const REPORT_MODEL = "report.accounting_kmitl_reports.general_ledger_kmitl";
 const WIZARD_ACTION = "accounting_kmitl_reports.action_general_ledger_wizard_kmitl";
+// Fields of the journal entry's lines shown in the expand panel (Dr/Cr table).
+const ENTRY_LINE_FIELDS = ["account_id", "name", "debit", "credit"];
 
 export class GeneralLedger extends Component {
     setup() {
@@ -16,8 +18,10 @@ export class GeneralLedger extends Component {
         this.state = useState({
             loading: true,
             accounts: [],
-            // Accordion: the id of the expanded account (one open at a time).
+            // Accordion: the id of the expanded move-line (one open at a time).
             expandedId: null,
+            // Lazily-fetched Dr/Cr breakdown of each journal entry, by move id.
+            linesByMove: {},
             dateFrom: false,
             dateTo: false,
         });
@@ -27,17 +31,19 @@ export class GeneralLedger extends Component {
             printPdf: _t("Print PDF"),
             exportExcel: _t("Export Excel"),
             empty: _t("No entries for the selected criteria."),
-            account: _t("Account"),
             opening: _t("Opening Balance"),
+            carried: _t("Carried Forward"),
+            date: _t("Date"),
+            issue: _t("Issue"),
+            remark: _t("Remark"),
             debit: _t("Debit"),
             credit: _t("Credit"),
-            ending: _t("Ending Balance"),
-            date: _t("Date"),
-            entry: _t("Entry"),
-            journal: _t("Journal"),
-            partner: _t("Partner"),
-            label: _t("Label"),
             balance: _t("Balance"),
+            account: _t("Account"),
+            label: _t("Label"),
+            partner: _t("Partner"),
+            narration: _t("Narration"),
+            maker: _t("Maker"),
             open: _t("Open"),
         };
         onWillStart(this.onWillStart.bind(this));
@@ -53,7 +59,6 @@ export class GeneralLedger extends Component {
             this.state.dateFrom = params.date_from;
             this.state.dateTo = params.date_to;
         } else {
-            // No wizard params (opened directly): default to the current FY.
             const fys = await this.orm.searchRead(
                 "account.fiscal.year",
                 [],
@@ -81,8 +86,6 @@ export class GeneralLedger extends Component {
             date_from: this.state.dateFrom,
             date_to: this.state.dateTo,
             only_posted: this.onlyPosted,
-            // When specific accounts were picked, keep them even at a zero
-            // balance; otherwise hide empty accounts to keep the list short.
             hide_account_at_0: !this.accountIds.length,
             account_ids: this.accountIds,
             dims: {},
@@ -104,9 +107,24 @@ export class GeneralLedger extends Component {
         }
     }
 
-    toggleExpand(account) {
-        this.state.expandedId =
-            this.state.expandedId === account.id ? null : account.id;
+    // Expand/collapse a line; lazily fetch its journal entry's Dr/Cr lines.
+    async toggleExpand(line) {
+        if (this.state.expandedId === line.id) {
+            this.state.expandedId = null;
+            return;
+        }
+        this.state.expandedId = line.id;
+        const moveId = line.entry_id;
+        if (moveId && !this.state.linesByMove[moveId]) {
+            this.state.linesByMove[moveId] = await this.orm.searchRead(
+                "account.move.line",
+                [
+                    ["move_id", "=", moveId],
+                    ["display_type", "not in", ["line_section", "line_note"]],
+                ],
+                ENTRY_LINE_FIELDS
+            );
+        }
     }
 
     openEntry(line) {
@@ -124,6 +142,11 @@ export class GeneralLedger extends Component {
 
     changeCriteria() {
         this.action.doAction(WIZARD_ACTION);
+    }
+
+    displayName(value) {
+        // A searchRead Many2one value is [id, display_name] or false.
+        return Array.isArray(value) ? value[1] : "";
     }
 
     format(value) {

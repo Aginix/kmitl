@@ -370,3 +370,57 @@ msgstr "ดูรายงาน"
 #: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.view_general_ledger_wizard_kmitl_form
 msgid "Leave empty for all accounts"
 msgstr "เว้นว่างเพื่อแสดงทุกบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Issue"
+msgstr "เลขที่"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Remark"
+msgstr "หมายเหตุ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Cheque"
+msgstr "เช็ค"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
+msgid "Carried Forward"
+msgstr "ยอดยกไป"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Maker"
+msgstr "ผู้ทำ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Narration"
+msgstr "บันทึกย่อ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
+msgid "Source"
+msgstr "แหล่งเงิน"
