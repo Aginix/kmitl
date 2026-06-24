@@ -64,10 +64,10 @@
                 />
             </xpath>
             <xpath expr="//group[@id='header_right_group']" position="inside">
-                <field name="activity_analytic_id" />
-                <field name="department_analytic_id" />
-                <field name="fund_analytic_id" />
-                <field name="source_analytic_id" />
+                <field name="activity_analytic_id" required="1" />
+                <field name="department_analytic_id" required="1" />
+                <field name="fund_analytic_id" required="1" />
+                <field name="source_analytic_id" required="1" />
             </xpath>
         </field>
     </record>

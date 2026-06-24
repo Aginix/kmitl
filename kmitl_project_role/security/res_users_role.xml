@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- เจ้าหน้าที่งานแผน (หน่วยงาน) — add KMITL project user access -->
+        <record id="budget_role.role_planning_officer_department" model="res.users.role">
+            <field
+                name="implied_ids"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_user'))]"
+            />
+        </record>
+
+        <!-- เจ้าหน้าที่งานแผน (แอดมิน) — add KMITL project manager access -->
+        <record id="budget_role.role_planning_officer_admin" model="res.users.role">
+            <field
+                name="implied_ids"
+                eval="[(4, ref('kmitl_project.group_kmitl_project_manager'))]"
+            />
+        </record>
+
+    </data>
+</odoo>
