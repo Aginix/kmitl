@@ -8,6 +8,15 @@
         <field name="tag">kmitl_trial_balance</field>
     </record>
 
+    <!-- General Ledger: OWL accordion report (OCA general_ledger engine).
+         Launched by the wizard (action_general_ledger_wizard_kmitl) with the
+         chosen accounts + period in the action params; each account row
+         expands to its dated move lines with a running balance. -->
+    <record id="action_general_ledger_kmitl" model="ir.actions.client">
+        <field name="name">General Ledger</field>
+        <field name="tag">kmitl_general_ledger</field>
+    </record>
+
     <!-- Aged Receivable / Aged Payable: OWL client actions sharing one
          component; the tag selects the account type filtered. -->
     <record id="action_aged_receivable_kmitl" model="ir.actions.client">
@@ -17,6 +26,13 @@
     <record id="action_aged_payable_kmitl" model="ir.actions.client">
         <field name="name">Aged Payable</field>
         <field name="tag">kmitl_aged_payable</field>
+    </record>
+
+    <!-- Cash Flow Statement: OWL client action (indirect / balance-variation
+         method), filterable by the KMITL accounting dimensions. -->
+    <record id="action_cash_flow_kmitl" model="ir.actions.client">
+        <field name="name">Cash Flow Statement</field>
+        <field name="tag">kmitl_cash_flow</field>
     </record>
 
     <!-- Actions: open the pre-configured instance directly on its result
@@ -41,15 +57,6 @@
         <field name="target">current</field>
     </record>
 
-    <record id="action_report_cf_kmitl" model="ir.actions.act_window">
-        <field name="name">Cash Flow Statement</field>
-        <field name="res_model">mis.report.instance</field>
-        <field name="res_id" eval="ref('instance_cf_kmitl')"/>
-        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
-        <field name="view_mode">form</field>
-        <field name="target">current</field>
-    </record>
-
     <!-- Menus under accounting_kmitl Reports submenu -->
     <menuitem
         id="menu_report_trial_balance_kmitl"
@@ -57,6 +64,13 @@
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_trial_balance_kmitl"
         sequence="5"
+    />
+    <menuitem
+        id="menu_report_general_ledger_kmitl"
+        name="General Ledger"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_general_ledger_wizard_kmitl"
+        sequence="6"
     />
     <menuitem
         id="menu_report_pl_kmitl"
@@ -76,7 +90,7 @@
         id="menu_report_cf_kmitl"
         name="Cash Flow Statement"
         parent="accounting_kmitl.menu_accounting_reports"
-        action="action_report_cf_kmitl"
+        action="action_cash_flow_kmitl"
         sequence="30"
     />
     <menuitem

@@ -100,13 +100,4 @@
         </field>
     </record>
 
-    <!-- Menu: Bill Lines Review -->
-    <menuitem
-        id="menu_disbursement_move_lines"
-        name="ตรวจสอบรายการบัญชี"
-        parent="accounting_kmitl.menu_accounting_root"
-        action="action_disbursement_move_lines"
-        sequence="6"
-    />
-
 </odoo>

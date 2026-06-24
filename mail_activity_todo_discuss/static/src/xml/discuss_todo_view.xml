@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="mail_activity_todo_discuss.DiscussTodoView" owl="1">
+        <div class="o_DiscussTodoView d-flex flex-column h-100 w-100 bg-view" t-attf-class="{{ className }}" t-ref="root">
+            <div class="o_DiscussTodoView_header d-flex align-items-center px-4 py-3 border-bottom">
+                <h4 class="m-0 fw-bold">Todos</h4>
+                <span class="o_DiscussTodoView_filter ms-2 text-muted" t-if="filterLabel">
+                    · <t t-esc="filterLabel"/>
+                    <a href="#" class="small ms-2" t-on-click.prevent="onShowAll">(show all)</a>
+                </span>
+                <span class="badge rounded-pill text-bg-primary ms-2" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                <div class="flex-grow-1"/>
+                <button class="btn btn-link" t-on-click="onViewAllClick">
+                    <i class="fa fa-external-link me-1"/>Open Todo app
+                </button>
+            </div>
+            <t t-if="!state.loaded">
+                <div class="o_DiscussTodoView_loading d-flex flex-grow-1 align-items-center justify-content-center text-muted">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+                </div>
+            </t>
+            <t t-elif="state.todos.length === 0">
+                <div class="o_DiscussTodoView_empty d-flex flex-column flex-grow-1 align-items-center justify-content-center text-muted">
+                    <i class="fa fa-check-circle fa-3x mb-2"/>
+                    <h4>No pending todos 🎉</h4>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="o_DiscussTodoView_list flex-grow-1 overflow-auto">
+                    <t t-foreach="state.todos" t-as="todo" t-key="todo.id">
+                        <button class="o_DiscussTodoView_item btn d-flex align-items-start w-100 text-start px-4 py-2 border-0 border-bottom rounded-0"
+                            t-on-click="() => this.onTodoClick(todo)"
+                            t-att-title="todo.summary"
+                        >
+                            <img t-if="todo.icon" t-att-src="todo.icon" class="o_DiscussTodoView_icon me-3" alt=""/>
+                            <i t-else="" class="fa fa-fw fa-check-square-o me-3 mt-1"/>
+                            <div class="o_DiscussTodoView_text flex-grow-1">
+                                <small class="text-muted d-flex align-items-center">
+                                    <t t-if="todo.activity_type" t-esc="todo.activity_type" />
+                                    <span t-if="todo.todo_category" class="badge bg-light text-dark border ms-2" t-esc="categoryLabel(todo.todo_category)"/>
+                                </small>
+                                <div class="d-flex align-items-center">
+                                    <span class="fw-medium text-truncate" t-esc="todo.summary"/>
+                                    <span t-if="todo.todo_category" class="badge bg-light text-dark border ms-2" t-esc="categoryLabel(todo.todo_category)"/>
+                                </div>
+                                <small class="text-muted text-truncate d-block">
+                                    <span t-if="todo.app" t-esc="todo.app"/>
+                                    <t t-if="todo.res_name"> · <t t-esc="todo.res_name"/></t>
+                                    <t t-if="todo.assigned"> · <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/></t>
+                                </small>
+                                <small class="text-muted fst-italic text-truncate d-block" t-if="todo.note" t-esc="todo.note"/>
+                            </div>
+                            <small t-if="todo.date_deadline"
+                                class="ms-3 text-nowrap"
+                                t-att-class="{
+                                    'text-danger': todo.state === 'overdue',
+                                    'text-warning': todo.state === 'today',
+                                    'text-muted': todo.state === 'planned',
+                                }"
+                                t-esc="todo.date_deadline"
+                            />
+                        </button>
+                    </t>
+                </div>
+                <div class="o_DiscussTodoView_footer border-top px-4 py-2 text-center" t-if="state.totalCount > state.todos.length">
+                    <a href="#" class="text-primary" t-on-click.prevent="onViewAllClick">
+                        Showing <t t-esc="state.todos.length"/> of <t t-esc="state.totalCount"/> — View all in the Todo app
+                    </a>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <!-- Render the Todo view in the Discuss main content pane when active, and
+         suppress the "No conversation selected" placeholder. (The thread view
+         hides on its own: openTodos clears the active thread.) -->
+    <t t-name="mail_activity_todo_discuss.Discuss.content" t-inherit="mail.Discuss.content" t-inherit-mode="extension" owl="1">
+        <!-- Inject as a top-level sibling, right after the thread-view branch.
+             (Runs before the attribute guard below so the xpath still matches
+             the original t-if.) -->
+        <xpath expr="//t[@t-if='discussView.discuss.threadView']" position="after">
+            <t t-if="discussView.discuss.isTodoActive">
+                <DiscussTodoView className="'o_Discuss_todo flex-grow-1 w-100'" record="discussView"/>
+            </t>
+        </xpath>
+        <!-- Make mutual exclusivity self-enforcing in the template: never show a
+             thread and the Todo view at once (the model already clears the
+             thread when Todos open, but guard here too). -->
+        <xpath expr="//t[@t-if='discussView.discuss.threadView']" position="attributes">
+            <attribute name="t-if">discussView.discuss.threadView and !discussView.discuss.isTodoActive</attribute>
+        </xpath>
+        <!-- Hide the empty-state placeholder while the Todo view is shown. -->
+        <xpath expr="//div[hasclass('o_Discuss_noThread')]" position="attributes">
+            <attribute name="t-if">!discussView.discuss.isTodoActive</attribute>
+        </xpath>
+    </t>
+
+</templates>

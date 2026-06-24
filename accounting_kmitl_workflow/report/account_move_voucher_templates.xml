@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_account_move_voucher">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="o" t-value="o.with_context(lang='th_TH')"/>
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <style>
+                            .kmitl-voucher { font-family: "THSarabunNew", Arial, sans-serif; font-size: 13pt; color: #1f2937; }
+                            .kmitl-voucher .ctr { text-align: center; }
+                            .kmitl-voucher .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+                            .kmitl-voucher .muted { color: #6b7280; }
+
+                            /* Header */
+                            .kmitl-voucher .vh-logo { max-height: 60px; margin-bottom: 4px; }
+                            .kmitl-voucher .vh-org { font-size: 15pt; font-weight: 600; line-height: 1.3; }
+                            .kmitl-voucher .vh-title { font-size: 20pt; font-weight: 700; margin: 2px 0 10px; }
+
+                            /* Meta (key/value) */
+                            .kmitl-voucher table.meta { width: 100%; margin-bottom: 12px; }
+                            .kmitl-voucher table.meta td { padding: 1px 4px; vertical-align: top; }
+                            .kmitl-voucher table.meta .lbl { color: #6b7280; white-space: nowrap; width: 1%; }
+
+                            /* Items table */
+                            .kmitl-voucher table.items { width: 100%; border-collapse: collapse; }
+                            .kmitl-voucher table.items th,
+                            .kmitl-voucher table.items td { border: 1px solid #cbd1d8; padding: 4px 6px; vertical-align: top; }
+                            .kmitl-voucher table.items thead th { background: #eef1f5; font-weight: 700; text-align: center; line-height: 1.2; }
+                            .kmitl-voucher table.items tbody td { font-size: 12.5pt; }
+                            .kmitl-voucher table.items tr.total td { background: #f4f6f8; font-weight: 700; border-top: 2px solid #9aa3ad; }
+
+                            /* Signatures */
+                            .kmitl-voucher table.sign { width: 100%; margin-top: 40px; }
+                            .kmitl-voucher table.sign td { width: 50%; text-align: center; vertical-align: top; padding: 0 18px; }
+                            .kmitl-voucher .sig-line { display: inline-block; min-width: 170px; border-bottom: 1px dotted #374151; }
+                        </style>
+
+                        <div class="kmitl-voucher">
+
+                            <!-- Header -->
+                            <div class="ctr">
+                                <img t-if="o.company_id.logo" class="vh-logo"
+                                     t-att-src="image_data_uri(o.company_id.logo)" alt="Logo"/>
+                                <div class="vh-org" t-out="o.company_id.name"/>
+                                <div class="vh-title">ใบสำคัญรายการบัญชี</div>
+                            </div>
+
+                            <!-- Meta -->
+                            <table class="meta">
+                                <tr>
+                                    <td class="lbl">เลขที่</td>
+                                    <td>: <span t-field="o.name"/></td>
+                                    <td class="lbl">วันที่</td>
+                                    <td>: <span t-field="o.date"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">สมุดรายวัน</td>
+                                    <td>: <span t-field="o.journal_id"/></td>
+                                    <td class="lbl">อ้างอิง</td>
+                                    <td>: <span t-out="o.ref or '-'"/></td>
+                                </tr>
+                            </table>
+
+                            <!-- Accounting lines -->
+                            <table class="items">
+                                <thead style="display: table-header-group;">
+                                    <tr>
+                                        <th style="width: 4%;">ลำดับ</th>
+                                        <th style="width: 22%;">บัญชี</th>
+                                        <th style="width: 18%;">คำอธิบาย</th>
+                                        <th style="width: 11%;">ส่วนงาน</th>
+                                        <th style="width: 11%;">แหล่งเงิน</th>
+                                        <th style="width: 10%;">กองทุน</th>
+                                        <th style="width: 10%;">กิจกรรม</th>
+                                        <th class="num" style="width: 7%;">เดบิต</th>
+                                        <th class="num" style="width: 7%;">เครดิต</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="seq" t-value="0"/>
+                                    <t t-set="total_debit" t-value="0"/>
+                                    <t t-set="total_credit" t-value="0"/>
+                                    <t t-foreach="o._kmitl_voucher_lines()" t-as="line">
+                                        <t t-set="seq" t-value="seq + 1"/>
+                                        <t t-set="total_debit" t-value="total_debit + line.debit"/>
+                                        <t t-set="total_credit" t-value="total_credit + line.credit"/>
+                                        <t t-set="dims" t-value="line._kmitl_resolve_dimensions()"/>
+                                        <tr>
+                                            <td class="ctr" t-out="seq"/>
+                                            <td>
+                                                <span t-field="line.account_id.code"/> - <span t-field="line.account_id.name"/>
+                                            </td>
+                                            <td t-out="line.name or ''"/>
+                                            <td t-out="dims['departments']"/>
+                                            <td t-out="dims['sources']"/>
+                                            <td t-out="dims['funds']"/>
+                                            <td t-out="dims['activities']"/>
+                                            <td class="num" t-out="'{:,.2f}'.format(line.debit) if line.debit else ''"/>
+                                            <td class="num" t-out="'{:,.2f}'.format(line.credit) if line.credit else ''"/>
+                                        </tr>
+                                    </t>
+                                    <tr class="total">
+                                        <td class="ctr" colspan="7">รวมทั้งสิ้น</td>
+                                        <td class="num" t-out="'{:,.2f}'.format(total_debit)"/>
+                                        <td class="num" t-out="'{:,.2f}'.format(total_credit)"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Workflow signatures -->
+                            <table class="sign">
+                                <tr>
+                                    <td>
+                                        <div>ลงชื่อ <span class="sig-line"/> ผู้จัดทำ/ผู้ตรวจสอบ</div>
+                                        <div class="mt-2">( <span t-out="o.submitted_by.name or '…………………………………'"/> )</div>
+                                        <div class="muted">วันที่ <span t-out="o.submitted_date and o.submitted_date.strftime('%d/%m/%Y') or '……/……/………'"/></div>
+                                    </td>
+                                    <td>
+                                        <div>ลงชื่อ <span class="sig-line"/> ผู้อนุมัติ</div>
+                                        <div class="mt-2">( <span t-out="o.approved_by.name or '…………………………………'"/> )</div>
+                                        <div class="muted">วันที่ <span t-out="o.approved_date and o.approved_date.strftime('%d/%m/%Y') or '……/……/………'"/></div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

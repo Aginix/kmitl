@@ -14,6 +14,20 @@ class AccountMove(models.Model):
         ondelete={"submitted": "set default"},
     )
 
+    # --- Defaults ---
+    @api.model
+    def default_get(self, fields_list):
+        """Default Bill Date to today for vendor bills."""
+        res = super().default_get(fields_list)
+        move_type = self._context.get("default_move_type") or res.get("move_type")
+        if (
+            "invoice_date" in fields_list
+            and not res.get("invoice_date")
+            and move_type == "in_invoice"
+        ):
+            res["invoice_date"] = fields.Date.context_today(self)
+        return res
+
     # --- Compute ---
     @api.depends("date", "auto_post", "state")
     def _compute_hide_post_button(self):
