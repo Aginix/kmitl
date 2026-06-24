@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class KrisProject(models.Model):
@@ -100,6 +101,42 @@ class KrisProject(models.Model):
                 )
             if alloc_vals:
                 Allocation.create(alloc_vals)
+
+    def action_recalculate_allocation(self):
+        """Re-derive each allocation line's ``estimated_amount`` from the linked
+        template's percentages and the current ``maintenance_deduction_amount``,
+        in place — never ``unlink()``. This preserves ``receipt_allocation_ids``
+        (and therefore ``actual_amount``/รับจริง) on lines that were carried
+        from a previous revision; ``action_apply_allocation_template`` cannot
+        because it rebuilds the lines from scratch and cascade-deletes the
+        receipt-side breakdowns.
+
+        Lines whose ``item_id`` does not appear in the template are left
+        alone (preserves manual customization). Lines flagged ``is_locked``
+        are also skipped (ห้ามแก้ไข).
+        """
+        self.ensure_one()
+        if not self.can_edit:
+            raise UserError(
+                _("Allocation can only be changed while the project is in draft.")
+            )
+        if not self.allocation_template_id:
+            raise UserError(_("Please select an allocation template first."))
+        base_amount = self.maintenance_deduction_amount
+        template_by_item = {
+            tl.item_id.id: tl
+            for tl in self.allocation_template_id.line_ids
+        }
+        for line in self.allocation_line_ids:
+            if line.is_locked:
+                continue
+            tpl_line = template_by_item.get(line.item_id.id)
+            if not tpl_line:
+                continue
+            line.estimated_amount = base_amount * tpl_line.allocation_pct / 100.0
+        self.message_post(
+            body=_("คำนวณการจัดสรรใหม่ตามมูลค่าโครงการล่าสุด")
+        )
 
     def action_view_revisions(self):
         self.ensure_one()

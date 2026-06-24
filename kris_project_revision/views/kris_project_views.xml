@@ -33,6 +33,14 @@
                     เอกสารฉบับนี้เป็นสำเนาเก่าที่เก็บไว้อ้างอิง มีฉบับแก้ไขใหม่กว่าแล้ว
                 </div>
             </xpath>
+            <xpath expr="//button[@name='action_apply_allocation_template']" position="after">
+                <button
+                    name="action_recalculate_allocation"
+                    string="Recalculate"
+                    type="object"
+                    class="btn-secondary"
+                />
+            </xpath>
             <xpath expr="//sheet/div[hasclass('oe_title')]" position="before">
                 <div class="oe_button_box" name="button_box">
                     <button
