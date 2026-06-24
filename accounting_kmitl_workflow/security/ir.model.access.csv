@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_move_reject_reason_user,account.move.reject.reason user,model_account_move_reject_reason,accounting_kmitl.group_accounting_kmitl_user,1,1,1,1
+access_account_move_reject_reason_manager,account.move.reject.reason manager,model_account_move_reject_reason,accounting_kmitl.group_accounting_kmitl_manager,1,1,1,1

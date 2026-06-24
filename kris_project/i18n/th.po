@@ -638,8 +638,18 @@ msgstr "การเงิน"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__maintenance_deduction_type__custom
-msgid "Custom"
-msgstr "กำหนดเอง"
+msgid "Custom %"
+msgstr "กำหนดเปอร์เซ็นต์เอง"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__maintenance_deduction_type__fixed
+msgid "Fixed Amount"
+msgstr "ระบุจำนวนเงิน"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__maintenance_deduction_fixed_amount
+msgid "จำนวนเงินค่าบำรุง"
+msgstr ""
 
 #. module: kris_project
 #. odoo-javascript

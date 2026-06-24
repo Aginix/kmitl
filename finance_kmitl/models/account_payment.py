@@ -87,6 +87,11 @@ class AccountPayment(models.Model):
             if move.state != "draft":
                 raise UserError(_("Only draft payments can be submitted."))
             move.state = "submitted"
+            # Payment moves do not flow through account.move.action_submit, so
+            # enrol them in the approval workflow explicitly (step 1).
+            move.workflow_state = "to_approve"
+            move.submitted_by = self.env.user
+            move.submitted_date = fields.Datetime.now()
             if move.date and (not move.name or move.name == "/"):
                 move._set_next_sequence()
 

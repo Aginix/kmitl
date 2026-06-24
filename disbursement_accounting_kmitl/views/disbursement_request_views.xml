@@ -37,21 +37,15 @@
                 <attribute name="statusbar_visible">draft,submitted,signed,verified,approved,bills_posted</attribute>
             </xpath>
 
-            <!-- Create Bill + ตั้งหนี้ buttons placed after Approve -->
+            <!-- Create Bill button placed after Approve. Bills are posted
+                 through the account.move approval (Approve = post), not from
+                 the request, so there is no "Post Bills" button here. -->
             <xpath expr="//button[@name='action_approve']" position="after">
                 <button name="action_create_bill"
                         string="Create Bill"
                         type="object"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('bill_count', '>', 0)]}"
-                        groups="accounting_kmitl.group_accounting_kmitl_user"/>
-                <button name="action_post_bills"
-                        string="ตั้งหนี้"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': ['|',
-                            ('state', '!=', 'approved'),
-                            ('bill_draft_count', '=', 0)]}"
                         groups="accounting_kmitl.group_accounting_kmitl_user"/>
             </xpath>
 
