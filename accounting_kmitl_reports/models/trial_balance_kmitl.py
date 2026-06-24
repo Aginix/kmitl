@@ -1,7 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import _, api, fields, models
-from odoo.tools import date_utils, format_date
+from odoo import _, api, models
+from odoo.tools import format_date
 
 
 class TrialBalanceReportKmitl(models.AbstractModel):
@@ -50,45 +50,10 @@ class TrialBalanceReportKmitl(models.AbstractModel):
         return domain + self._kmitl_dim_leaves()
 
     # ------------------------------------------------------------------
-    # Filter helpers
-    # ------------------------------------------------------------------
-    @api.model
-    def _kmitl_fy_start_date(self, date_from, company):
-        """Fiscal-year start that contains ``date_from`` (used by the OCA
-        engine to accumulate P&L opening balances)."""
-        if not date_from:
-            return False
-        if isinstance(date_from, str):
-            date_from = fields.Date.to_date(date_from)
-        start, _end = date_utils.get_fiscal_year(
-            date_from,
-            day=company.fiscalyear_last_day,
-            month=int(company.fiscalyear_last_month),
-        )
-        return start
-
-    @api.model
-    def _kmitl_apply_account_range(self, options, company_id, account_ids):
-        """Expand an optional account code range into ``account_ids`` and
-        merge it with any explicitly picked accounts."""
-        code_from = options.get("account_code_from_id")
-        code_to = options.get("account_code_to_id")
-        if code_from and code_to:
-            a_from = self.env["account.account"].browse(code_from)
-            a_to = self.env["account.account"].browse(code_to)
-            if a_from.code and a_to.code:
-                ranged = self.env["account.account"].search(
-                    [
-                        ("company_id", "=", company_id),
-                        ("code", ">=", a_from.code),
-                        ("code", "<=", a_to.code),
-                    ]
-                )
-                account_ids = list(set(account_ids) | set(ranged.ids))
-        return account_ids
-
-    # ------------------------------------------------------------------
     # Shared compute
+    #
+    # ``_kmitl_fy_start_date`` and ``_kmitl_apply_account_range`` live on the
+    # dimension filter mixin (shared with the General Ledger report).
     # ------------------------------------------------------------------
     @api.model
     def get_trial_balance_data(self, options):
