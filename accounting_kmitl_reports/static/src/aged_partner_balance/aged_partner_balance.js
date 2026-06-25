@@ -134,6 +134,11 @@ export class AgedPartnerBalance extends Component {
         });
     }
 
+    // Muted-red class for negative amounts (the minus sign carries the meaning).
+    negClass(value) {
+        return value < 0 ? "o_kmitl_amount_neg" : "";
+    }
+
     async printPdf() {
         const action = await this.orm.call(REPORT_MODEL, "action_print_pdf", [this.options]);
         await this.action.doAction(action);

@@ -5,36 +5,74 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { MultiRecordSelect } from "../trial_balance/multi_record_select";
+import { MoveLinesDetail } from "../common/move_lines_detail";
 
-const REPORT_MODEL = "report.accounting_kmitl_reports.cash_flow_kmitl";
+const REPORT_MODEL = "report.accounting_kmitl_reports.general_journal_kmitl";
 
-// Selected-record state buckets that feed the report options (the four KMITL
-// accounting dimensions).
-const SELECTION_KEYS = ["departments", "sources", "funds", "activities"];
+// Selected-record state buckets that feed the report options.
+const SELECTION_KEYS = [
+    "journals",
+    "partners",
+    "departments",
+    "sources",
+    "funds",
+    "activities",
+];
 
-export class CashFlow extends Component {
+export class GeneralJournal extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
         this.company = useService("company");
         this.fiscalYears = [];
         this.state = useState({
+            loading: true,
+            // Report data: the journal entries returned by the compute.
+            entries: [],
+            // Expanded entry rows (multiple may be open at once), by entry id.
+            expanded: {},
+            // Lazily-fetched detail lines of each entry, by move id.
+            linesByMove: {},
+            // Row-based pagination (rows = entries).
+            page: 0,
+            pageSize: 50,
+            // Filters.
             fiscalYearId: false,
             dateFrom: false,
             dateTo: false,
             onlyPosted: true,
-            hideAt0: true,
+            showAdvanced: false,
             // selections (each an Array<{id, name}>)
+            journals: [],
+            partners: [],
             departments: [],
             sources: [],
             funds: [],
             activities: [],
-            rows: [],
-            summary: {},
-            loading: false,
         });
-        // Translated placeholders for the dimension selectors.
         this.labels = {
+            title: _t("General Journal"),
+            printPdf: _t("Print PDF"),
+            exportExcel: _t("Export Excel"),
+            empty: _t("No entries for the selected criteria."),
+            datetime: _t("Date-Time"),
+            number: _t("Number"),
+            journal: _t("Journal"),
+            reference: _t("Reference"),
+            account: _t("Account"),
+            label: _t("Label"),
+            partner: _t("Partner"),
+            debit: _t("Debit"),
+            credit: _t("Credit"),
+            narration: _t("Narration"),
+            maker: _t("Maker"),
+            open: _t("Open"),
+            prevPage: _t("Previous page"),
+            nextPage: _t("Next page"),
+            rowsPerPage: _t("Rows per page"),
+            // Filter placeholders (shared with the other reports).
+            journals: _t("Journals"),
+            partners: _t("Partners"),
             departments: _t("Departments"),
             sources: _t("Sources"),
             funds: _t("Funds"),
@@ -77,7 +115,8 @@ export class CashFlow extends Component {
             date_from: this.state.dateFrom,
             date_to: this.state.dateTo,
             only_posted: this.state.onlyPosted,
-            hide_account_at_0: this.state.hideAt0,
+            journal_ids: this.state.journals.map((r) => r.id),
+            partner_ids: this.state.partners.map((r) => r.id),
             dims: {
                 departments: this.state.departments.map((r) => r.id),
                 sources: this.state.sources.map((r) => r.id),
@@ -92,15 +131,59 @@ export class CashFlow extends Component {
             return;
         }
         this.state.loading = true;
+        this.state.expanded = {};
+        this.state.page = 0;
         try {
-            const data = await this.orm.call(REPORT_MODEL, "get_cash_flow_data", [
-                this.options,
-            ]);
-            this.state.rows = data.rows || [];
-            this.state.summary = data.summary || {};
+            const data = await this.orm.call(
+                REPORT_MODEL,
+                "get_general_journal_data",
+                [this.options]
+            );
+            this.state.entries = data.entries || [];
         } finally {
             this.state.loading = false;
         }
+    }
+
+    // ------------------------------------------------------------------
+    // Pagination (rows = entries)
+    // ------------------------------------------------------------------
+    get pageCount() {
+        return Math.max(1, Math.ceil(this.state.entries.length / this.state.pageSize));
+    }
+
+    get showPager() {
+        return this.pageCount > 1;
+    }
+
+    get isFirstPage() {
+        return this.state.page <= 0;
+    }
+
+    get isLastPage() {
+        return this.state.page + 1 >= this.pageCount;
+    }
+
+    get pagedEntries() {
+        const start = this.state.page * this.state.pageSize;
+        return this.state.entries.slice(start, start + this.state.pageSize);
+    }
+
+    prevPage() {
+        if (!this.isFirstPage) {
+            this.state.page -= 1;
+        }
+    }
+
+    nextPage() {
+        if (!this.isLastPage) {
+            this.state.page += 1;
+        }
+    }
+
+    setPageSize(ev) {
+        this.state.pageSize = parseInt(ev.target.value) || 50;
+        this.state.page = 0;
     }
 
     // ------------------------------------------------------------------
@@ -132,9 +215,8 @@ export class CashFlow extends Component {
         this.load();
     }
 
-    onToggleHide(ev) {
-        this.state.hideAt0 = ev.target.checked;
-        this.load();
+    toggleAdvanced() {
+        this.state.showAdvanced = !this.state.showAdvanced;
     }
 
     // One change handler per selection bucket (bound in the template).
@@ -146,28 +228,46 @@ export class CashFlow extends Component {
     }
 
     // ------------------------------------------------------------------
+    // Row interactions
+    // ------------------------------------------------------------------
+    // Expand/collapse an entry; lazily fetch its detail lines. Multiple entries
+    // can stay open at the same time.
+    async toggleExpand(entry) {
+        if (this.state.expanded[entry.id]) {
+            delete this.state.expanded[entry.id];
+            return;
+        }
+        this.state.expanded[entry.id] = true;
+        if (!this.state.linesByMove[entry.id]) {
+            this.state.linesByMove[entry.id] = await this.orm.call(
+                REPORT_MODEL,
+                "get_move_lines_detail",
+                [entry.id]
+            );
+        }
+    }
+
+    openEntry(entry) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "account.move",
+            res_id: entry.id,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
+
+    // ------------------------------------------------------------------
     // Rendering helpers
     // ------------------------------------------------------------------
     format(value) {
-        if (value === null || value === undefined) {
+        if (!value || Math.abs(value) < 0.005) {
             return "";
         }
         return value.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
-    }
-
-    rowLabel(row) {
-        if (row.code) {
-            return `${row.code} - ${row.name}`;
-        }
-        return row.label;
-    }
-
-    // Muted-red class for negative amounts (the minus sign carries the meaning).
-    negClass(value) {
-        return value < 0 ? "o_kmitl_amount_neg" : "";
     }
 
     async printPdf() {
@@ -185,7 +285,8 @@ export class CashFlow extends Component {
     }
 }
 
-CashFlow.template = "accounting_kmitl_reports.CashFlow";
-CashFlow.components = { MultiRecordSelect };
+GeneralJournal.template = "accounting_kmitl_reports.GeneralJournal";
+GeneralJournal.components = { MultiRecordSelect, MoveLinesDetail };
+GeneralJournal.props = ["*"];
 
-registry.category("actions").add("kmitl_cash_flow", CashFlow);
+registry.category("actions").add("kmitl_general_journal", GeneralJournal);

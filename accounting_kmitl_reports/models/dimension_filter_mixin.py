@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.tools import date_utils
 
 # Dimension plan codes the KMITL reports can filter on. Order is the display
@@ -10,6 +10,10 @@ DIMENSION_CODES = ("departments", "sources", "funds", "activities")
 # Hierarchical dimensions: a selected node also matches all of its descendants
 # (when analytic accounts carry a ``parent_id`` hierarchy). ``sources`` is flat.
 HIERARCHICAL_DIMS = ("departments", "funds", "activities")
+# Display order of the dimension chips shown in the shared expand-detail panel.
+DETAIL_DIM_PLANS = ("funds", "departments", "activities", "sources")
+# Lines never shown in the detail panel.
+_SKIP_DISPLAY_TYPES = ["line_section", "line_note"]
 
 
 class DimensionFilterMixin(models.AbstractModel):
@@ -41,6 +45,95 @@ class DimensionFilterMixin(models.AbstractModel):
                 ids = analytic.search([("id", "child_of", ids)]).ids
             leaves.append(("analytic_distribution", "in", ids))
         return leaves
+
+    # ------------------------------------------------------------------
+    # Shared expand-detail: one journal entry's posting lines, with the KMITL
+    # accounting dimensions resolved per line. Used by every report whose rows
+    # expand to the underlying entry (General Ledger, General Journal) so the
+    # detail panel looks the same everywhere.
+    # ------------------------------------------------------------------
+    @api.model
+    def _kmitl_move_lines_detail(self, move_ids):
+        """``{move_id: [{id, account, label, partner, debit, credit,
+        dimensions, dim_text}]}`` for the entries' posting lines."""
+        if not move_ids:
+            return {}
+        rows = self.env["account.move.line"].search_read(
+            [
+                ("move_id", "in", list(move_ids)),
+                ("display_type", "not in", _SKIP_DISPLAY_TYPES),
+            ],
+            [
+                "move_id",
+                "account_id",
+                "name",
+                "partner_id",
+                "debit",
+                "credit",
+                "analytic_distribution",
+            ],
+        )
+        acc_ids = {r["account_id"][0] for r in rows if r["account_id"]}
+        acc_name = {
+            a.id: ("%s %s" % (a.code or "", a.name or "")).strip()
+            for a in self.env["account.account"].browse(list(acc_ids)).exists()
+        }
+        analytic_ids = set()
+        for r in rows:
+            for aid in r.get("analytic_distribution") or {}:
+                analytic_ids.add(int(aid))
+        ana = (
+            self.env["account.analytic.account"].browse(list(analytic_ids)).exists()
+        )
+        ana_map = {
+            a.id: (a.root_plan_id.code or "", a.code or "", a.name or "") for a in ana
+        }
+        dim_labels = {
+            "funds": _("Fund"),
+            "departments": _("Department"),
+            "activities": _("Activity"),
+            "sources": _("Source"),
+        }
+
+        def build_dims(distribution):
+            by_plan = {}
+            for aid in distribution or {}:
+                plan, code, name = ana_map.get(int(aid), ("", "", ""))
+                if plan:
+                    by_plan.setdefault(plan, []).append((code, name))
+            dims = []
+            for plan in DETAIL_DIM_PLANS:
+                for code, name in by_plan.get(plan, []):
+                    value = ("[%s] %s" % (code, name)).strip() if code else (name or "")
+                    dims.append({"label": dim_labels[plan], "value": value})
+            return dims
+
+        result = {}
+        for r in rows:
+            dims = build_dims(r.get("analytic_distribution"))
+            result.setdefault(r["move_id"][0], []).append(
+                {
+                    "id": r["id"],
+                    "account": acc_name.get(
+                        r["account_id"][0] if r["account_id"] else 0, ""
+                    ),
+                    "label": r["name"] or "",
+                    "partner": r["partner_id"][1] if r["partner_id"] else "",
+                    "debit": r["debit"] or 0.0,
+                    "credit": r["credit"] or 0.0,
+                    "dimensions": dims,
+                    "dim_text": " · ".join(
+                        "%s: %s" % (d["label"], d["value"]) for d in dims
+                    ),
+                }
+            )
+        return result
+
+    @api.model
+    def get_move_lines_detail(self, move_id):
+        """RPC for the on-screen expand: one entry's posting lines (account,
+        label, partner, debit, credit and the KMITL accounting dimensions)."""
+        return self._kmitl_move_lines_detail([move_id]).get(move_id, [])
 
     # ------------------------------------------------------------------
     # Shared filter helpers used by the date-ranged reports (Trial Balance,

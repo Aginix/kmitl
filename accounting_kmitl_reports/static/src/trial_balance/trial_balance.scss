@@ -2,8 +2,18 @@
     height: 100%;
     overflow: auto;
 
+    // Group the filter controls in a light panel, set apart from the data.
+    .o_kmitl_tb_filterpanel {
+        padding: 0.75rem 0.75rem 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
     .o_kmitl_tb_table_wrap {
         overflow-x: auto;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
     }
 
     .o_kmitl_tb_table {
@@ -15,12 +25,28 @@
         td,
         th {
             font-size: 1rem;
+            // Tabular figures keep the amount columns aligned (no digit jitter).
+            font-variant-numeric: tabular-nums;
         }
         .o_kmitl_tb_account {
             min-width: 18rem;
         }
+
+        // Zebra striping on data rows for readability. Set on the row so it
+        // cascades to its cells.
+        .o_kmitl_tb_stripe {
+            --bs-table-accent-bg: #f6f8fa;
+        }
+
+        // Negative balances in a muted accounting red. The minus sign already
+        // carries the meaning, so colour is only a secondary cue.
+        .o_kmitl_amount_neg {
+            color: #b03030;
+        }
+
         tfoot td {
-            background-color: #f8f9fa;
+            background-color: #f1f3f5;
+            border-top: 2px solid #d6dae0;
         }
     }
 }
