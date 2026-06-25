@@ -188,6 +188,15 @@ export class TrialBalance extends Component {
         });
     }
 
+    // Like format() but renders an exact zero as "0.00" — used by the totals
+    // row so a zero sum shows 0.00 instead of a blank cell.
+    formatTotal(value) {
+        return (value || 0).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    }
+
     // Muted-red class for negative amounts (the minus sign carries the meaning).
     negClass(value) {
         return value < 0 ? "o_kmitl_amount_neg" : "";
