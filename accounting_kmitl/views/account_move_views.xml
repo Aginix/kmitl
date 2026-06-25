@@ -44,6 +44,11 @@
                 }</attribute>
             </xpath>
 
+            <!-- Rename the Journal Items notebook tab (unique source for translation) -->
+            <xpath expr="//page[@id='aml_tab']" position="attributes">
+                <attribute name="string">Account Items</attribute>
+            </xpath>
+
             <!-- Bill Date is required for vendor bills -->
             <xpath expr="//field[@name='invoice_date']" position="attributes">
                 <attribute name="attrs">{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))], 'required': [('move_type', '=', 'in_invoice')]}</attribute>
