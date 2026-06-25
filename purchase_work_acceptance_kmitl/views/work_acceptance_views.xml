@@ -87,12 +87,6 @@
                                     name="note"
                                     attrs="{'readonly': [('employee_id', '!=', False)]}"
                                 />
-                                <field
-                                    name="write_date"
-                                    string="Timestamp"
-                                    readonly="1"
-                                    attrs="{'invisible': [('status', '=', False)]}"
-                                />
                             </tree>
                         </field>
                 </page>
@@ -505,6 +499,21 @@
                             'required': [('res_model', '=', 'work.acceptance')]}"
                 />
             </field>
+            <!-- For work.acceptance, relabel the submit button as "Confirm" -->
+            <xpath expr="//footer/button[@name='add_comment']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('res_model', '=', 'work.acceptance')]}</attribute>
+            </xpath>
+            <xpath expr="//footer/button[@name='add_comment']" position="before">
+                <button
+                    name="add_comment"
+                    string="Confirm"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': [('res_model', '!=', 'work.acceptance')]}"
+                />
+            </xpath>
         </field>
     </record>
 
