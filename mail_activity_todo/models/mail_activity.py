@@ -30,11 +30,22 @@ class MailActivity(models.Model):
     _inherit = "mail.activity"
 
     todo_category = fields.Selection(
-        related="activity_type_id.todo_category",
+        TODO_CATEGORIES,
+        string="Todo Category",
+        compute="_compute_todo_category",
         store=True,
         index=True,
-        readonly=True,
+        readonly=False,
+        help="Defaults from the activity type. Set it on a manually scheduled "
+        "activity to turn it into a Todo that lands in your inbox.",
     )
+
+    @api.depends("activity_type_id")
+    def _compute_todo_category(self):
+        """Default the category from the type, but leave it user-overridable so a
+        manually scheduled activity can be categorised into the Todo inbox."""
+        for activity in self:
+            activity.todo_category = activity.activity_type_id.todo_category
 
     read_ids = fields.One2many("todo.read", "activity_id", string="Read receipts")
     is_my_todo = fields.Boolean(
@@ -131,6 +142,20 @@ class MailActivity(models.Model):
         # Only Todo-categorised activities drive the inbox; skip the rest.
         activities.filtered("todo_category")._todo_notify()
         return activities
+
+    def write(self, vals):
+        # A write can move a Todo between inboxes (reassigning user_id), turn an
+        # activity into/out of a Todo (todo_category), or re-route a group Todo
+        # (role/unit, in the role-in-unit layer). Ping both the recipients before
+        # the change and after it, so the old and new owners' badges refresh live
+        # — not only on reload.
+        before = self.filtered("todo_category")._todo_recipient_partners()
+        res = super().write(vals)
+        after = self.filtered("todo_category")._todo_recipient_partners()
+        partners = before | after
+        if partners:
+            self._todo_notify(partners)
+        return res
 
     def unlink(self):
         # Capture recipients before the records vanish (badge goes down).
