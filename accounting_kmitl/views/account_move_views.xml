@@ -44,6 +44,11 @@
                 }</attribute>
             </xpath>
 
+            <!-- Bill Date is required for vendor bills -->
+            <xpath expr="//field[@name='invoice_date']" position="attributes">
+                <attribute name="attrs">{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))], 'required': [('move_type', '=', 'in_invoice')]}</attribute>
+            </xpath>
+
             <!-- Budget fields on main form (before invoice_tab notebook) -->
             <xpath expr="//page[@id='invoice_tab']/.." position="before">
                 <group name="budget_root" string="Accounting Dimensions">
