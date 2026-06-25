@@ -288,6 +288,7 @@ msgid "Config Settings"
 msgstr "ตั้งค่าการกำหนดค่า"
 
 #. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_comment_wizard_wa_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_committee_wizard_form
 msgid "Confirm"
 msgstr "ยืนยัน"
@@ -703,7 +704,10 @@ msgid "Not Accept"
 msgstr "ไม่ตรวจรับ"
 
 #. module: purchase_work_acceptance_kmitl
+#. odoo-python
+#: code:addons/purchase_work_acceptance_kmitl/models/tier_validation.py:0
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__note
+#, python-format
 msgid "Note"
 msgstr "หมายเหตุ"
 
