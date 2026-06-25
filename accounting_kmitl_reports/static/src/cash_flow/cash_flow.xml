@@ -14,7 +14,8 @@
             </div>
 
             <!-- Filter bar -->
-            <div class="o_kmitl_cf_filters row g-2 mb-3">
+            <div class="o_kmitl_cf_filterpanel mb-3">
+                <div class="o_kmitl_cf_filters row g-2">
                 <div class="col-md-3">
                     <label class="o_form_label">Fiscal Year</label>
                     <select class="form-select" t-on-change="onFiscalYearChange">
@@ -112,6 +113,7 @@
                         onChange="(sel) => this.onSelectionChange('activities', sel)"
                     />
                 </div>
+                </div>
             </div>
 
             <!-- Report table -->
@@ -137,7 +139,7 @@
                             t-att-class="'o_kmitl_cf_' + row.level"
                         >
                             <td t-esc="rowLabel(row)" />
-                            <td class="text-end" t-esc="format(row.amount)" />
+                            <td class="text-end" t-att-class="negClass(row.amount)" t-esc="format(row.amount)" />
                         </tr>
                     </tbody>
                 </table>

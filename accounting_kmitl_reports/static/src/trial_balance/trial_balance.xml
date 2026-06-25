@@ -56,7 +56,8 @@
             </div>
 
             <!-- Filter bar -->
-            <div class="o_kmitl_tb_filters row g-2 mb-3">
+            <div class="o_kmitl_tb_filterpanel mb-3">
+                <div class="o_kmitl_tb_filters row g-2">
                 <div class="col-md-3">
                     <label class="o_form_label">Fiscal Year</label>
                     <select
@@ -223,6 +224,7 @@
                         </div>
                     </div>
                 </t>
+                </div>
             </div>
 
             <!-- Report table -->
@@ -254,19 +256,19 @@
                         <tr t-elif="!state.rows.length">
                             <td colspan="10" class="text-center text-muted">No data</td>
                         </tr>
-                        <tr t-foreach="state.rows" t-as="row" t-key="row.id">
+                        <tr t-foreach="state.rows" t-as="row" t-key="row.id" t-att-class="row_index % 2 ? 'o_kmitl_tb_stripe' : ''">
                             <td>
                                 <t t-esc="row.code" /> - <t t-esc="row.name" />
                             </td>
                             <td class="text-end" t-esc="format(row.opening_debit)" />
                             <td class="text-end" t-esc="format(row.opening_credit)" />
-                            <td class="text-end" t-esc="format(row.opening_balance)" />
+                            <td class="text-end" t-att-class="negClass(row.opening_balance)" t-esc="format(row.opening_balance)" />
                             <td class="text-end" t-esc="format(row.period_debit)" />
                             <td class="text-end" t-esc="format(row.period_credit)" />
-                            <td class="text-end" t-esc="format(row.period_balance)" />
+                            <td class="text-end" t-att-class="negClass(row.period_balance)" t-esc="format(row.period_balance)" />
                             <td class="text-end" t-esc="format(row.ending_debit)" />
                             <td class="text-end" t-esc="format(row.ending_credit)" />
-                            <td class="text-end" t-esc="format(row.ending_balance)" />
+                            <td class="text-end" t-att-class="negClass(row.ending_balance)" t-esc="format(row.ending_balance)" />
                         </tr>
                     </tbody>
                     <tfoot t-if="state.rows.length">
@@ -274,13 +276,13 @@
                             <td>Total</td>
                             <td class="text-end" t-esc="format(state.totals.opening_debit)" />
                             <td class="text-end" t-esc="format(state.totals.opening_credit)" />
-                            <td class="text-end" t-esc="format(state.totals.opening_balance)" />
+                            <td class="text-end" t-att-class="negClass(state.totals.opening_balance)" t-esc="format(state.totals.opening_balance)" />
                             <td class="text-end" t-esc="format(state.totals.period_debit)" />
                             <td class="text-end" t-esc="format(state.totals.period_credit)" />
-                            <td class="text-end" t-esc="format(state.totals.period_balance)" />
+                            <td class="text-end" t-att-class="negClass(state.totals.period_balance)" t-esc="format(state.totals.period_balance)" />
                             <td class="text-end" t-esc="format(state.totals.ending_debit)" />
                             <td class="text-end" t-esc="format(state.totals.ending_credit)" />
-                            <td class="text-end" t-esc="format(state.totals.ending_balance)" />
+                            <td class="text-end" t-att-class="negClass(state.totals.ending_balance)" t-esc="format(state.totals.ending_balance)" />
                         </tr>
                     </tfoot>
                 </table>

@@ -9,12 +9,22 @@
     </record>
 
     <!-- General Ledger: OWL accordion report (OCA general_ledger engine).
-         Launched by the wizard (action_general_ledger_wizard_kmitl) with the
-         chosen accounts + period in the action params; each account row
-         expands to its dated move lines with a running balance. -->
+         Launched by the wizard (action_general_ledger_wizard_kmitl), which
+         seeds the chosen accounts + period; the report screen then still
+         offers the full in-screen filter bar to refine live. Each account row
+         expands its entries into the opposite-side counterpart lines with a
+         running balance. -->
     <record id="action_general_ledger_kmitl" model="ir.actions.client">
         <field name="name">General Ledger</field>
         <field name="tag">kmitl_general_ledger</field>
+    </record>
+
+    <!-- General Journal: OWL report listing every journal entry in date order,
+         opened straight from the menu with an in-screen filter bar; each entry
+         row expands to its debit/credit detail lines. -->
+    <record id="action_general_journal_kmitl" model="ir.actions.client">
+        <field name="name">General Journal</field>
+        <field name="tag">kmitl_general_journal</field>
     </record>
 
     <!-- Aged Receivable / Aged Payable: OWL client actions sharing one
@@ -71,6 +81,13 @@
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_general_ledger_wizard_kmitl"
         sequence="6"
+    />
+    <menuitem
+        id="menu_report_general_journal_kmitl"
+        name="General Journal"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_general_journal_kmitl"
+        sequence="7"
     />
     <menuitem
         id="menu_report_pl_kmitl"
