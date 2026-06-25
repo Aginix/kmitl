@@ -39,6 +39,8 @@ class PurchaseContractGuaranteeReport(models.Model):
 
     # --- Measures ---
     amount = fields.Monetary(string="Guarantee Amount", readonly=True)
+    amount_returned = fields.Monetary(string="Returned Guarantee Amount", readonly=True)
+    guarantee_count = fields.Integer(string="Guarantee Count", readonly=True)
     amount_total = fields.Monetary(string="Contract Amount", readonly=True)
     fines_late = fields.Monetary(string="Fines Amount", readonly=True)
     contract_period_days = fields.Integer(string="Contract Period Days", readonly=True)
@@ -72,6 +74,8 @@ class PurchaseContractGuaranteeReport(models.Model):
                         ELSE 'pending'
                     END                     AS guarantee_return_state,
                     g.amount                AS amount,
+                    COALESCE(g.amount_returned, 0) AS amount_returned,
+                    1                       AS guarantee_count,
                     po.amount_total         AS amount_total,
                     po.fines_late           AS fines_late,
                     po.contract_period_days AS contract_period_days

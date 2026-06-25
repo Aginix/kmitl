@@ -37,10 +37,15 @@
         <field name="model">purchase.contract.guarantee.report</field>
         <field name="arch" type="xml">
             <pivot string="Contract Guarantee Register" disable_linking="True">
+                <field name="partner_id" type="row"/>
+                <field name="contract_number" type="row"/>
+                <field name="contract_name" type="row"/>
                 <field name="contract_type_id" type="row"/>
                 <field name="guarantee_type_id" type="col"/>
                 <field name="guarantee_return_state" type="col"/>
+                <field name="guarantee_count" type="measure"/>
                 <field name="amount" type="measure"/>
+                <field name="amount_returned" type="measure"/>
                 <field name="amount_total" type="measure"/>
             </pivot>
         </field>
