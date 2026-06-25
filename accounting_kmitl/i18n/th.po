@@ -165,3 +165,18 @@ msgstr "สมุดรายวัน"
 #: model:ir.ui.menu,name:accounting_kmitl.menu_config_taxes
 msgid "Taxes"
 msgstr "ภาษี"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:account.view_move_form
+msgid "Invoice Lines"
+msgstr "รายการตั้งหนี้"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:account.view_move_form
+msgid "Add a line"
+msgstr "เพิ่มบรรทัด"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "Account Items"
+msgstr "รายการบัญชี"
