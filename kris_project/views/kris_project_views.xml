@@ -16,7 +16,7 @@
                     <field name="name" readonly="1"/>
                     <field name="installment_id" readonly="1"/>
                     <field name="date" readonly="1"/>
-                    <field name="equipment_cost_in_installment" readonly="1"/>
+                    <field name="deductible_cost_in_installment" readonly="1"/>
                     <field name="amount" readonly="1"/>
                     <field name="extra_income" readonly="1"/>
                     <field name="net_amount" readonly="1"/>
@@ -252,10 +252,6 @@
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                     <field
-                                        name="equipment_cost"
-                                        attrs="{'readonly': [('can_edit', '=', False)]}"
-                                    />
-                                    <field
                                         name="extra_value"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
@@ -263,10 +259,7 @@
                                         name="extra_analytic_id"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
-                                    <field
-                                        name="operating_expense"
-                                        attrs="{'readonly': [('can_edit', '=', False)]}"
-                                    />
+                                    <field name="operating_expense" readonly="1"/>
                                 </group>
                                 <group string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
@@ -292,6 +285,27 @@
                                     <field name="maintenance_deduction_amount" readonly="1"/>
                                 </group>
                             </group>
+                            <separator string="ค่าใช้จ่าย (หักก่อนคิดค่าบำรุง)" name="expense_line_separator" />
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_expense_exceeds_value', '=', False)]}"
+                            >
+                                ยอดค่าใช้จ่ายรวมเกินมูลค่าโครงการ กรุณาตรวจสอบรายการค่าใช้จ่าย
+                            </div>
+                            <field
+                                name="expense_line_ids"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                                context="{'default_project_id': active_id}"
+                            >
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="expense_type_id"
+                                        domain="['|', ('category_ids', '=', False), ('category_ids', 'in', parent.project_category_id)]"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                    />
+                                    <field name="amount" sum="รวม"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
                             <separator string="2. Allocate Income" name="allocation_separator" />
                             <group>
                                 <group>
@@ -446,7 +460,7 @@
                                     <field name="name"/>
                                     <field name="installment_id"/>
                                     <field name="date"/>
-                                    <field name="equipment_cost_in_installment" sum="รวม"/>
+                                    <field name="deductible_cost_in_installment" sum="รวม"/>
                                     <field name="amount" sum="รวม"/>
                                     <field name="net_amount" sum="รวม"/>
                                     <field name="note"/>

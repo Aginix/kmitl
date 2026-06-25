@@ -58,6 +58,15 @@
     />
 
     <menuitem
+        id="menu_kris_project_expense_type"
+        name="Expense Type"
+        parent="menu_kris_project_config"
+        action="action_kris_project_expense_type"
+        sequence="25"
+        groups="kris_project.group_kris_project_manager"
+    />
+
+    <menuitem
         id="menu_kris_project_allocation_template"
         name="Allocation Template"
         parent="menu_kris_project_config"

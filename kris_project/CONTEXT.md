@@ -50,5 +50,9 @@ The aggregate received on a project — the running sum of its Receipts. A total
 **Project Value** (มูลค่าโครงการ):
 The total contracted value of a project; the baseline its operating expense, maintenance deduction and installment totals are derived from or checked against.
 
+**Deductible Cost** (ค่าใช้จ่ายที่หักก่อนคิดค่าบำรุง):
+An amount that is subtracted from Project Value *before* the Maintenance Deduction base is calculated — i.e. it sits outside the Operating Expense the institutional fee applies to. Stored as a One2many list of typed lines (`expense_line_ids` → `kris.project.expense.line`), keyed by master-data `kris.project.expense.type` (ค่าครุภัณฑ์, ค่าวัสดุวิจัย, ค่าเดินทางไปต่างประเทศ, ค่าใช้สอย, ค่าสาธารณูปโภค, ค่าอื่นๆ — extendable). Replaced the single `equipment_cost` field in 16.0.1.7.0; the old "Equipment Cost" became one expense type among many. The same concept also exists at the Receipt level as `deductible_cost_in_installment` — the portion of a single Receipt that is deductible cost rather than Revenue.
+_Avoid_: "Operating Expense" (means the maintenance base), "Equipment Cost" (now just one type), "Expense" unqualified.
+
 **Installment-free project** (ไม่มีงวดงานกำกับ):
 A project whose งวด schedule isn't fixed or known up front (typically test/trial work), so it is not governed by งวด targets. Flag `no_installment_tracking`; see ADR-0001 for what this relaxes.

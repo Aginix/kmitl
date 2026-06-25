@@ -26,8 +26,8 @@ class KrisProjectReceiptWizard(models.TransientModel):
         required=True,
         default=fields.Date.context_today,
     )
-    equipment_cost_in_installment = fields.Monetary(
-        string="Equipment Cost in Installment",
+    deductible_cost_in_installment = fields.Monetary(
+        string="Deductible Cost in Installment",
         default=0.0,
     )
     amount = fields.Monetary(
@@ -67,10 +67,10 @@ class KrisProjectReceiptWizard(models.TransientModel):
             ]
         return res
 
-    @api.depends("amount", "equipment_cost_in_installment")
+    @api.depends("amount", "deductible_cost_in_installment")
     def _compute_net_amount(self):
         for wiz in self:
-            wiz.net_amount = wiz.amount - wiz.equipment_cost_in_installment
+            wiz.net_amount = wiz.amount - wiz.deductible_cost_in_installment
 
     @api.onchange("installment_id")
     def _onchange_installment_id(self):
@@ -109,7 +109,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
                 "installment_id": self.installment_id.id or False,
                 "name": self.name,
                 "date": self.date,
-                "equipment_cost_in_installment": self.equipment_cost_in_installment,
+                "deductible_cost_in_installment": self.deductible_cost_in_installment,
                 "amount": self.amount,
                 "extra_income": self.extra_income,
                 "note": self.note,

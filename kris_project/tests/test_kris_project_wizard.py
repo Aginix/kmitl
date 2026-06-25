@@ -17,7 +17,7 @@ class TestKrisProjectWizard(KrisProjectCommon):
                 "name": "R",
                 "date": date(2025, 1, 1),
                 "amount": 100_000.0,
-                "equipment_cost_in_installment": 25_000.0,
+                "deductible_cost_in_installment": 25_000.0,
             }
         )
         self.assertAlmostEqual(wiz.net_amount, 75_000.0, 2)
