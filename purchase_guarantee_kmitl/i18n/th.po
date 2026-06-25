@@ -375,6 +375,16 @@ msgid "Guarantee Amount"
 msgstr "มูลค่าหลักประกัน"
 
 #. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount_returned
+msgid "Returned Guarantee Amount"
+msgstr "มูลค่าหลักประกันที่คืนแล้ว"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__guarantee_count
+msgid "Guarantee Count"
+msgstr "จำนวนหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_contract_guarantee_report__amount_total
 msgid "Contract Amount"
 msgstr "มูลค่าสัญญา"
