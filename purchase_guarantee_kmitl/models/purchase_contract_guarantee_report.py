@@ -74,7 +74,12 @@ class PurchaseContractGuaranteeReport(models.Model):
                         ELSE 'pending'
                     END                     AS guarantee_return_state,
                     g.amount                AS amount,
-                    COALESCE(g.amount_returned, 0) AS amount_returned,
+                    COALESCE((
+                        SELECT SUM(am.amount_total) - SUM(am.amount_residual)
+                        FROM account_move_return_guarantee_rel rel
+                        JOIN account_move am ON am.id = rel.move_id
+                        WHERE rel.guarantee_id = g.id
+                    ), 0)                   AS amount_returned,
                     1                       AS guarantee_count,
                     po.amount_total         AS amount_total,
                     po.fines_late           AS fines_late,
