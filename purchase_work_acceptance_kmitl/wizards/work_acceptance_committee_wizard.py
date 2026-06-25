@@ -43,16 +43,17 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
         return res
 
     def button_confirm(self):
-        if any(not line.status for line in self.line_ids):
+        self.ensure_one()
+        # Only validate the lines the current user is responsible for.
+        # Already-done lines are readonly and their reason is not round-tripped
+        # by the web client, so re-validating them would raise spurious errors.
+        pending_lines = self.line_ids.filtered(lambda line: not line.is_done)
+        if any(not line.status for line in pending_lines):
             raise UserError(_("Please fill in all the inspection results."))
-        if any(line.status == 'other' and not line.reason for line in self.line_ids):
+        if any(line.status == 'other' and not line.reason for line in pending_lines):
             raise UserError(_("Please fill in the reason for all 'Other' results."))
 
-        self.ensure_one()
-
-        for line in self.line_ids:
-            if line.is_done:
-                continue
+        for line in pending_lines:
             line.committee_id.write({
                 'status': line.status,
                 'note': line.reason,
