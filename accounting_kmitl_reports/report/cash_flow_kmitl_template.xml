@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="cash_flow_kmitl">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="header" style="border-bottom: 1px solid #000;">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 70px; border: none; vertical-align: top;">
+                                <img
+                                    t-if="res_company.logo"
+                                    t-att-src="image_data_uri(res_company.logo)"
+                                    style="max-height: 60px; max-width: 60px;"
+                                    alt="Logo"
+                                />
+                            </td>
+                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">
+                                    <t t-out="res_company.display_name" />
+                                </div>
+                                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">Cash Flow Statement</div>
+                                <div style="font-size: 12pt;">
+                                    <span>From</span>
+                                    <t t-out="date_from_label" />
+                                    <span>to</span>
+                                    <t t-out="date_to_label" />
+                                </div>
+                            </td>
+                            <td style="width: 70px; border: none;" />
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer" style="text-align: right; font-size: 10pt;">
+                    <span class="page" />/<span class="topage" />
+                </div>
+
+                <div class="article">
+                    <style>
+                        table.kmitl-cash-flow {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 10pt;
+                        }
+                        table.kmitl-cash-flow th,
+                        table.kmitl-cash-flow td {
+                            padding: 3px 6px;
+                        }
+                        table.kmitl-cash-flow thead th {
+                            background-color: #f0f0f0;
+                            font-weight: bold;
+                            border-bottom: 1px solid #000;
+                        }
+                        table.kmitl-cash-flow td.amount {
+                            text-align: right;
+                            white-space: nowrap;
+                        }
+                        table.kmitl-cash-flow tr.lvl-section td {
+                            font-weight: bold;
+                            padding-top: 8px;
+                        }
+                        table.kmitl-cash-flow tr.lvl-group td.item {
+                            padding-left: 22px;
+                            font-style: italic;
+                        }
+                        table.kmitl-cash-flow tr.lvl-detail td.item {
+                            padding-left: 44px;
+                            color: #444;
+                        }
+                        table.kmitl-cash-flow tr.lvl-total td {
+                            font-weight: bold;
+                            border-top: 1px solid #888;
+                        }
+                        table.kmitl-cash-flow tr.lvl-grand_total td {
+                            font-weight: bold;
+                            border-top: 2px solid #000;
+                            border-bottom: 1px solid #000;
+                        }
+                        table.kmitl-cash-flow tr.lvl-summary td {
+                            font-weight: bold;
+                        }
+                    </style>
+                    <table class="kmitl-cash-flow">
+                        <thead style="display: table-header-group;">
+                            <tr>
+                                <th style="text-align: left;">Item</th>
+                                <th style="text-align: right; width: 22%;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="rows" t-as="row" t-att-class="'lvl-' + row['level']">
+                                <td class="item">
+                                    <t t-if="row['code']">
+                                        <t t-out="row['code']" /> - <t t-out="row['name']" />
+                                    </t>
+                                    <t t-else="">
+                                        <t t-out="row['label']" />
+                                    </t>
+                                </td>
+                                <td class="amount" t-out="format_amount(row['amount'])" />
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
