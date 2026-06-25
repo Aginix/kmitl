@@ -1,0 +1,78 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kris_project_revision
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-25 00:00+0000\n"
+"PO-Revision-Date: 2026-06-25 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: kris_project_revision
+#: model_terms:ir.ui.view,arch_db:kris_project_revision.view_kris_project_form
+msgid "Recalculate"
+msgstr "คำนวณใหม่"
+
+#. module: kris_project_revision
+#: model:ir.model.fields,field_description:kris_project_revision.field_kris_project__current_revision_id
+msgid "ฉบับแก้ไขล่าสุด"
+msgstr ""
+
+#. module: kris_project_revision
+#: model:ir.model.fields,field_description:kris_project_revision.field_kris_project__old_revision_ids
+msgid "ฉบับแก้ไขก่อนหน้า"
+msgstr ""
+
+#. module: kris_project_revision
+#: model:ir.model.fields,field_description:kris_project_revision.field_kris_project__revision_number
+msgid "ครั้งที่แก้ไข"
+msgstr ""
+
+#. module: kris_project_revision
+#: model:ir.model.fields,field_description:kris_project_revision.field_kris_project__revision_count
+msgid "จำนวนฉบับแก้ไข"
+msgstr ""
+
+#. module: kris_project_revision
+#: model_terms:ir.ui.view,arch_db:kris_project_revision.view_kris_project_form
+msgid "สร้างฉบับแก้ไข"
+msgstr ""
+
+#. module: kris_project_revision
+#: model_terms:ir.ui.view,arch_db:kris_project_revision.view_kris_project_form
+msgid "ฉบับแก้ไข"
+msgstr ""
+
+#. module: kris_project_revision
+#: model_terms:ir.ui.view,arch_db:kris_project_revision.view_kris_project_form
+msgid "เอกสารฉบับนี้เป็นสำเนาเก่าที่เก็บไว้อ้างอิง มีฉบับแก้ไขใหม่กว่าแล้ว"
+msgstr ""
+
+#. module: kris_project_revision
+#: model_terms:ir.ui.view,arch_db:kris_project_revision.view_kris_project_form
+msgid "สำเนาเก่า"
+msgstr ""
+
+#. module: kris_project_revision
+#: code:addons/kris_project_revision/models/kris_project.py:0
+#, python-format
+msgid "Allocation can only be changed while the project is in draft."
+msgstr "จัดสรรได้เฉพาะขณะโครงการอยู่ในสถานะร่าง"
+
+#. module: kris_project_revision
+#: code:addons/kris_project_revision/models/kris_project.py:0
+#, python-format
+msgid "Please select an allocation template first."
+msgstr "กรุณาเลือกแม่แบบการจัดสรรก่อน"
+
+#. module: kris_project_revision
+#: model:ir.model,name:kris_project_revision.model_kris_project
+msgid "KRIS Project"
+msgstr ""
