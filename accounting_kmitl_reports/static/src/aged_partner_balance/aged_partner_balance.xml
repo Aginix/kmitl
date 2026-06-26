@@ -14,7 +14,8 @@
             </div>
 
             <!-- Filter bar -->
-            <div class="o_kmitl_aged_filters row g-2 mb-3">
+            <div class="o_kmitl_aged_filterpanel mb-3">
+                <div class="o_kmitl_aged_filters row g-2">
                 <div class="col-md-2">
                     <label class="o_form_label">As of</label>
                     <input
@@ -123,6 +124,7 @@
                         />
                     </div>
                 </t>
+                </div>
             </div>
 
             <!-- Report table -->
@@ -150,24 +152,24 @@
                         <t t-foreach="state.accounts_data" t-as="account" t-key="account.id">
                             <tr class="o_kmitl_aged_account fw-bold">
                                 <td><t t-esc="account.code" /> - <t t-esc="account.name" /></td>
-                                <td class="text-end" t-esc="format(account.residual)" />
-                                <td class="text-end" t-esc="format(account.current)" />
-                                <td class="text-end" t-esc="format(account['30_days'])" />
-                                <td class="text-end" t-esc="format(account['60_days'])" />
-                                <td class="text-end" t-esc="format(account['90_days'])" />
-                                <td class="text-end" t-esc="format(account['120_days'])" />
-                                <td class="text-end" t-esc="format(account.older)" />
+                                <td class="text-end" t-att-class="negClass(account.residual)" t-esc="format(account.residual)" />
+                                <td class="text-end" t-att-class="negClass(account.current)" t-esc="format(account.current)" />
+                                <td class="text-end" t-att-class="negClass(account['30_days'])" t-esc="format(account['30_days'])" />
+                                <td class="text-end" t-att-class="negClass(account['60_days'])" t-esc="format(account['60_days'])" />
+                                <td class="text-end" t-att-class="negClass(account['90_days'])" t-esc="format(account['90_days'])" />
+                                <td class="text-end" t-att-class="negClass(account['120_days'])" t-esc="format(account['120_days'])" />
+                                <td class="text-end" t-att-class="negClass(account.older)" t-esc="format(account.older)" />
                             </tr>
                             <t t-foreach="account.partners" t-as="partner" t-key="partner_index">
                                 <tr class="o_kmitl_aged_partner_row">
                                     <td class="o_kmitl_aged_indent" t-esc="partner.name" />
-                                    <td class="text-end" t-esc="format(partner.residual)" />
-                                    <td class="text-end" t-esc="format(partner.current)" />
-                                    <td class="text-end" t-esc="format(partner['30_days'])" />
-                                    <td class="text-end" t-esc="format(partner['60_days'])" />
-                                    <td class="text-end" t-esc="format(partner['90_days'])" />
-                                    <td class="text-end" t-esc="format(partner['120_days'])" />
-                                    <td class="text-end" t-esc="format(partner.older)" />
+                                    <td class="text-end" t-att-class="negClass(partner.residual)" t-esc="format(partner.residual)" />
+                                    <td class="text-end" t-att-class="negClass(partner.current)" t-esc="format(partner.current)" />
+                                    <td class="text-end" t-att-class="negClass(partner['30_days'])" t-esc="format(partner['30_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner['60_days'])" t-esc="format(partner['60_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner['90_days'])" t-esc="format(partner['90_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner['120_days'])" t-esc="format(partner['120_days'])" />
+                                    <td class="text-end" t-att-class="negClass(partner.older)" t-esc="format(partner.older)" />
                                 </tr>
                                 <t t-if="state.showDetails and partner.move_lines">
                                     <tr
@@ -180,13 +182,13 @@
                                             <t t-esc="ml.date" /> · <t t-esc="ml.entry" />
                                             <t t-if="ml.ref_label"> · <t t-esc="ml.ref_label" /></t>
                                         </td>
-                                        <td class="text-end" t-esc="format(ml.residual)" />
-                                        <td class="text-end" t-esc="format(ml.current)" />
-                                        <td class="text-end" t-esc="format(ml['30_days'])" />
-                                        <td class="text-end" t-esc="format(ml['60_days'])" />
-                                        <td class="text-end" t-esc="format(ml['90_days'])" />
-                                        <td class="text-end" t-esc="format(ml['120_days'])" />
-                                        <td class="text-end" t-esc="format(ml.older)" />
+                                        <td class="text-end" t-att-class="negClass(ml.residual)" t-esc="format(ml.residual)" />
+                                        <td class="text-end" t-att-class="negClass(ml.current)" t-esc="format(ml.current)" />
+                                        <td class="text-end" t-att-class="negClass(ml['30_days'])" t-esc="format(ml['30_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml['60_days'])" t-esc="format(ml['60_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml['90_days'])" t-esc="format(ml['90_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml['120_days'])" t-esc="format(ml['120_days'])" />
+                                        <td class="text-end" t-att-class="negClass(ml.older)" t-esc="format(ml.older)" />
                                     </tr>
                                 </t>
                             </t>
@@ -195,13 +197,13 @@
                     <tfoot t-if="state.accounts_data.length">
                         <tr class="fw-bold">
                             <td>Total</td>
-                            <td class="text-end" t-esc="format(state.totals.residual)" />
-                            <td class="text-end" t-esc="format(state.totals.current)" />
-                            <td class="text-end" t-esc="format(state.totals['30_days'])" />
-                            <td class="text-end" t-esc="format(state.totals['60_days'])" />
-                            <td class="text-end" t-esc="format(state.totals['90_days'])" />
-                            <td class="text-end" t-esc="format(state.totals['120_days'])" />
-                            <td class="text-end" t-esc="format(state.totals.older)" />
+                            <td class="text-end" t-att-class="negClass(state.totals.residual)" t-esc="format(state.totals.residual)" />
+                            <td class="text-end" t-att-class="negClass(state.totals.current)" t-esc="format(state.totals.current)" />
+                            <td class="text-end" t-att-class="negClass(state.totals['30_days'])" t-esc="format(state.totals['30_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals['60_days'])" t-esc="format(state.totals['60_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals['90_days'])" t-esc="format(state.totals['90_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals['120_days'])" t-esc="format(state.totals['120_days'])" />
+                            <td class="text-end" t-att-class="negClass(state.totals.older)" t-esc="format(state.totals.older)" />
                         </tr>
                     </tfoot>
                 </table>

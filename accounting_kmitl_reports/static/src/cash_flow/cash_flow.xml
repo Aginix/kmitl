@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_kmitl_reports.CashFlow" owl="1">
+        <div class="o_kmitl_cash_flow o_action_manager p-3">
+            <div class="o_kmitl_cf_header d-flex align-items-center mb-3">
+                <h2 class="m-0 flex-grow-1">Cash Flow Statement</h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" />Export Excel
+                </button>
+                <button class="btn btn-primary" t-on-click="printPdf">
+                    <i class="fa fa-file-pdf-o me-1" />Print PDF
+                </button>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="o_kmitl_cf_filterpanel mb-3">
+                <div class="o_kmitl_cf_filters row g-2">
+                <div class="col-md-3">
+                    <label class="o_form_label">Fiscal Year</label>
+                    <select class="form-select" t-on-change="onFiscalYearChange">
+                        <option value="">/</option>
+                        <option
+                            t-foreach="fiscalYears"
+                            t-as="fy"
+                            t-key="fy.id"
+                            t-att-value="fy.id"
+                            t-att-selected="fy.id === state.fiscalYearId"
+                        >
+                            <t t-esc="fy.name" />
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date From</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateFrom"
+                        t-on-change="onDateFromChange"
+                    />
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date To</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateTo"
+                        t-on-change="onDateToChange"
+                    />
+                </div>
+                <div class="col-md-5 d-flex align-items-end gap-3">
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_cf_posted"
+                            t-att-checked="state.onlyPosted"
+                            t-on-change="onTogglePosted"
+                        />
+                        <label class="form-check-label" for="kmitl_cf_posted">Posted entries only</label>
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="kmitl_cf_hide0"
+                            t-att-checked="state.hideAt0"
+                            t-on-change="onToggleHide"
+                        />
+                        <label class="form-check-label" for="kmitl_cf_hide0">Hide accounts at 0</label>
+                    </div>
+                </div>
+
+                <!-- KMITL accounting dimensions -->
+                <div class="col-md-3">
+                    <label class="o_form_label">Departments</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'departments']]"
+                        placeholder="labels.departments"
+                        selected="state.departments"
+                        onChange="(sel) => this.onSelectionChange('departments', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Sources</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'sources']]"
+                        placeholder="labels.sources"
+                        selected="state.sources"
+                        onChange="(sel) => this.onSelectionChange('sources', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Funds</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'funds']]"
+                        placeholder="labels.funds"
+                        selected="state.funds"
+                        onChange="(sel) => this.onSelectionChange('funds', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Activities</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'activities']]"
+                        placeholder="labels.activities"
+                        selected="state.activities"
+                        onChange="(sel) => this.onSelectionChange('activities', sel)"
+                    />
+                </div>
+                </div>
+            </div>
+
+            <!-- Report table -->
+            <div class="o_kmitl_cf_table_wrap">
+                <table class="table table-sm o_kmitl_cf_table">
+                    <thead>
+                        <tr>
+                            <th class="o_kmitl_cf_item">Item</th>
+                            <th class="text-end o_kmitl_cf_amount">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="state.loading">
+                            <td colspan="2" class="text-center text-muted">Loading...</td>
+                        </tr>
+                        <tr t-elif="!state.rows.length">
+                            <td colspan="2" class="text-center text-muted">No data</td>
+                        </tr>
+                        <tr
+                            t-foreach="state.rows"
+                            t-as="row"
+                            t-key="row_index"
+                            t-att-class="'o_kmitl_cf_' + row.level"
+                        >
+                            <td t-esc="rowLabel(row)" />
+                            <td class="text-end" t-att-class="negClass(row.amount)" t-esc="format(row.amount)" />
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>

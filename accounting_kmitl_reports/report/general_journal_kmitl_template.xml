@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="general_journal_kmitl">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="header" style="border-bottom: 1px solid #000;">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 70px; border: none; vertical-align: top;">
+                                <img
+                                    t-if="res_company.logo"
+                                    t-att-src="image_data_uri(res_company.logo)"
+                                    style="max-height: 60px; max-width: 60px;"
+                                    alt="Logo"
+                                />
+                            </td>
+                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">
+                                    <t t-out="res_company.display_name" />
+                                </div>
+                                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">General Journal</div>
+                                <div style="font-size: 12pt;">
+                                    <span>From</span>
+                                    <t t-out="date_from_label" />
+                                    <span>to</span>
+                                    <t t-out="date_to_label" />
+                                </div>
+                            </td>
+                            <td style="width: 70px; border: none;" />
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer" style="text-align: right; font-size: 10pt;">
+                    <span class="page" />/<span class="topage" />
+                </div>
+
+                <div class="article">
+                    <style>
+                        table.kmitl-general-journal {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 8.5pt;
+                        }
+                        table.kmitl-general-journal th,
+                        table.kmitl-general-journal td {
+                            border: 1px solid #000;
+                            padding: 2px 4px;
+                        }
+                        table.kmitl-general-journal thead th {
+                            background-color: #f0f0f0;
+                            text-align: center;
+                            font-weight: bold;
+                        }
+                        table.kmitl-general-journal td.amount,
+                        table.kmitl-general-journal th.amount {
+                            text-align: right;
+                            white-space: nowrap;
+                        }
+                        table.kmitl-general-journal tr.entry td {
+                            background-color: #eef1f4;
+                            font-weight: bold;
+                        }
+                    </style>
+                    <table class="kmitl-general-journal">
+                        <thead style="display: table-header-group;">
+                            <tr>
+                                <th style="width: 14%;">Date-Time</th>
+                                <th style="width: 12%;">Number</th>
+                                <th style="width: 24%;">Account</th>
+                                <th>Label</th>
+                                <th class="amount" style="width: 13%;">Debit</th>
+                                <th class="amount" style="width: 13%;">Credit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="entries" t-as="entry">
+                                <tr class="entry">
+                                    <td t-out="entry['date']" />
+                                    <td t-out="entry['name']" />
+                                    <td colspan="2">
+                                        <t t-if="entry['journal']">[<t t-out="entry['journal']" />] </t>
+                                        <t t-out="entry['ref']" />
+                                    </td>
+                                    <td class="amount" t-out="format_amount(entry['debit'])" />
+                                    <td class="amount" t-out="format_amount(entry['credit'])" />
+                                </tr>
+                                <tr t-foreach="entry['lines']" t-as="line">
+                                    <td />
+                                    <td />
+                                    <td t-out="line['account']" />
+                                    <td>
+                                        <t t-out="line['label']" />
+                                        <div
+                                            t-if="line['dim_text']"
+                                            style="font-size: 7.5pt; color: #555;"
+                                            t-out="line['dim_text']"
+                                        />
+                                    </td>
+                                    <td class="amount" t-out="format_amount(line['debit'])" />
+                                    <td class="amount" t-out="format_amount(line['credit'])" />
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

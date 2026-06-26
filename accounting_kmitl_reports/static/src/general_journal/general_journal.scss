@@ -1,0 +1,64 @@
+.o_kmitl_general_journal {
+    height: 100%;
+    overflow: auto;
+
+    // Group the filter controls in a light panel, set apart from the data.
+    .o_kmitl_gj_filterpanel {
+        padding: 0.75rem 0.75rem 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    // Card around the entry table.
+    .o_kmitl_gj_card {
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    .o_kmitl_gj_table {
+        // Tabular figures keep the amount columns aligned (no digit jitter).
+        td,
+        th {
+            font-variant-numeric: tabular-nums;
+        }
+
+        // Column headers stay visible while scrolling a long journal.
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e0e3e8;
+            white-space: nowrap;
+        }
+
+        // Clickable entry rows (accordion headers)
+        .o_kmitl_gj_row {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        // Zebra striping on entry rows for readability. Set on the row so it
+        // cascades to its cells, while table-hover still wins on hover.
+        .o_kmitl_gj_row.o_kmitl_gj_stripe {
+            --bs-table-accent-bg: #f6f8fa;
+        }
+
+        // Detail panel row: the inner padded panel provides the background.
+        .o_kmitl_gj_detail > td {
+            background-color: transparent;
+        }
+
+        td.text-end,
+        th.text-end {
+            white-space: nowrap;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .o_kmitl_general_journal .o_kmitl_gj_table .o_kmitl_gj_row {
+        transition: none;
+    }
+}

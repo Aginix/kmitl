@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form view: add DR smart button (navigate to the linked Disbursement Request) -->
+    <record id="view_account_move_form_inherit_disbursement" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.disbursement_accounting_kmitl</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_disbursement_request"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        groups="accounting_kmitl.group_accounting_kmitl_user"
+                        attrs="{'invisible': [('disbursement_request_name', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Disbursement Request</span>
+                        <span class="o_stat_text"><field name="disbursement_request_name" nolabel="1"/></span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
