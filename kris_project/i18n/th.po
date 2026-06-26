@@ -1503,3 +1503,8 @@ msgstr "รหัสงบประมาณหน่วยงาน"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
 msgid "Extra Payee"
 msgstr "ผู้รับค่า Extra"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_expense_line__expense_type_id
+msgid "Expense Type"
+msgstr "ประเภทค่าใช้จ่าย"

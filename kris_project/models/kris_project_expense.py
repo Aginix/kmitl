@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class KrisProjectExpenseType(models.Model):
@@ -24,6 +24,14 @@ class KrisProjectExpenseLine(models.Model):
     _name = "kris.project.expense.line"
     _description = "KRIS Project Expense Line"
     _order = "sequence, id"
+
+    _sql_constraints = [
+        (
+            "project_expense_type_uniq",
+            "UNIQUE(project_id, expense_type_id)",
+            "ไม่สามารถเพิ่มค่าใช้จ่ายประเภทเดียวกันซ้ำในโครงการเดียวกันได้",
+        ),
+    ]
 
     project_id = fields.Many2one(
         comodel_name="kris.project",
