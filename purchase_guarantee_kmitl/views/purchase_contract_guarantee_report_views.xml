@@ -73,6 +73,9 @@
                     domain="[('guarantee_return_state', '=', 'returned')]"
                 />
                 <group expand="0" string="Group By">
+                    <filter string="Vendor" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Contract Number" name="group_contract_number" context="{'group_by': 'contract_number'}"/>
+                    <filter string="Contract Name" name="group_contract_name" context="{'group_by': 'contract_name'}"/>
                     <filter string="Contract Type" name="group_contract_type" context="{'group_by': 'contract_type_id'}"/>
                     <filter string="Guarantee Type" name="group_guarantee_type" context="{'group_by': 'guarantee_type_id'}"/>
                     <filter string="Contract Status" name="group_purchase_state" context="{'group_by': 'purchase_state'}"/>
