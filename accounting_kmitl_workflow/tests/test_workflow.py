@@ -148,6 +148,60 @@ class TestAccountMoveWorkflow(TransactionCase):
             )
         )
 
+    def test_submitter_who_is_approver_gets_own_todo(self):
+        """An approver who submits their own entry still receives the
+        'to approve' Todo so it surfaces in their Todo inbox."""
+        to_approve_type = self.env.ref(
+            "accounting_kmitl_workflow.mail_activity_move_to_approve"
+        )
+        maker_approver = self.env["res.users"].create(
+            {
+                "name": "Maker Approver",
+                "login": "kmitl_maker_approver",
+                "groups_id": [
+                    Command.set(
+                        [
+                            self.env.ref(
+                                "accounting_kmitl.group_accounting_kmitl_user"
+                            ).id,
+                            self.env.ref(
+                                "accounting_kmitl.group_accounting_kmitl_manager"
+                            ).id,
+                            self.env.ref("account.group_account_manager").id,
+                        ]
+                    )
+                ],
+            }
+        )
+        move = self.env["account.move"].with_user(maker_approver).create(
+            {
+                "move_type": "entry",
+                "journal_id": self.journal.id,
+                "date": fields.Date.today(),
+                "line_ids": [
+                    Command.create(
+                        {
+                            "account_id": self.account_a.id,
+                            "debit": 100.0,
+                            "credit": 0.0,
+                        }
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.account_b.id,
+                            "debit": 0.0,
+                            "credit": 100.0,
+                        }
+                    ),
+                ],
+            }
+        )
+        move.with_user(maker_approver).action_submit()
+        activities = move.activity_ids.filtered(
+            lambda a: a.activity_type_id == to_approve_type
+        )
+        self.assertIn(maker_approver, activities.mapped("user_id"))
+
     def test_recall_returns_to_draft(self):
         move = self._new_entry()
         move.with_user(self.maker).action_submit()

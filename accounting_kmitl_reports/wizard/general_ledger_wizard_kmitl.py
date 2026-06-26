@@ -6,11 +6,13 @@ from odoo import _, api, fields, models
 class GeneralLedgerReportWizardKmitl(models.TransientModel):
     """Entry-point wizard for the General Ledger.
 
-    The menu opens this wizard (which accounts to report + the period); its
-    button then launches the OWL client action with those parameters. It
-    inherits the OCA wizard to reuse its fields (``account_ids``, ``date_from``,
-    ``date_to``, ``target_move``, ``company_id``); it also still serves as the
-    ``ir.actions.report`` carrier for the PDF/XLSX exports.
+    The menu opens this wizard (pick the accounts to report + the period); its
+    button then launches the OWL client action, seeding it with those criteria.
+    The report screen still exposes the full in-screen filter bar, so the
+    wizard selection is only a starting point that can be refined live. The
+    model also serves as the ``ir.actions.report`` carrier for the PDF/XLSX
+    exports. It inherits the OCA wizard to reuse its fields (``account_ids``,
+    ``date_from``, ``date_to``, ``target_move``, ``company_id``).
 
     The period is driven by a Fiscal Year selector that defaults to the
     current fiscal year and fills the date range (still editable afterwards).
@@ -54,8 +56,9 @@ class GeneralLedgerReportWizardKmitl(models.TransientModel):
             self.date_to = self.fiscal_year_id.date_to
 
     def action_view_general_ledger(self):
-        """Open the General Ledger OWL report for the chosen accounts/period.
-        Parameters travel in the action ``params`` (read by the client action)."""
+        """Open the General Ledger OWL report seeded with the chosen
+        accounts/period. The criteria travel in the action ``params`` (read by
+        the client action to initialise its in-screen filters)."""
         self.ensure_one()
         return {
             "type": "ir.actions.client",
@@ -63,6 +66,7 @@ class GeneralLedgerReportWizardKmitl(models.TransientModel):
             "name": _("General Ledger"),
             "params": {
                 "company_id": self.company_id.id,
+                "fiscal_year_id": self.fiscal_year_id.id,
                 "account_ids": self.account_ids.ids,
                 "date_from": fields.Date.to_string(self.date_from),
                 "date_to": fields.Date.to_string(self.date_to),

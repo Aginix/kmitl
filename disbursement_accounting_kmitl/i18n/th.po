@@ -32,6 +32,16 @@ msgid "Disbursement Request"
 msgstr "ใบขอเบิก"
 
 #. module: disbursement_accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_account_move_form_inherit_disbursement
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_request_name
+msgid "Disbursement Request Number"
+msgstr "เลขที่ใบขอเบิก"
+
+#. module: disbursement_accounting_kmitl
 #: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_ids
 msgid "Vendor Bills"
 msgstr "ใบตั้งหนี้ผู้ขาย"
