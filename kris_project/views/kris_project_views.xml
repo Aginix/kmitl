@@ -388,7 +388,7 @@
                                 <tree create="0">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
-                                    <field name="amount" sum="รวม"/>
+                                    <field name="amount"/>
                                     <field name="deduction_guarantee" sum="รวม" optional="show"/>
                                     <field name="deduction_advance" sum="รวม" optional="show"/>
                                     <field name="received_from_employer" sum="รวม" optional="show"/>
