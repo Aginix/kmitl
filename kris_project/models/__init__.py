@@ -1,4 +1,6 @@
 from . import kris_project_type
+from . import kris_project_document_type
+from . import ir_attachment
 from . import kris_project_allocation_template
 from . import kris_project
 from . import kris_project_exception

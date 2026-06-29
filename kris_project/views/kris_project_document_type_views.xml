@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_kris_project_document_type_tree" model="ir.ui.view">
+        <field name="name">kris.project.document.type.tree</field>
+        <field name="model">kris.project.document.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_kris_project_document_type_form" model="ir.ui.view">
+        <field name="name">kris.project.document.type.form</field>
+        <field name="model">kris.project.document.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <field
+                            name="active"
+                            widget="boolean_button"
+                            options='{"terminology": "archive"}'
+                        />
+                    </div>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_kris_project_document_type" model="ir.actions.act_window">
+        <field name="name">Document Types</field>
+        <field name="res_model">kris.project.document.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

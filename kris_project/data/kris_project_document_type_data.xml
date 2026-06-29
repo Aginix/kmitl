@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="document_type_receipt" model="kris.project.document.type">
+        <field name="name">ใบเสร็จรับเงิน</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="document_type_invoice" model="kris.project.document.type">
+        <field name="name">ใบแจ้งหนี้</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="document_type_contract" model="kris.project.document.type">
+        <field name="name">สัญญา</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="document_type_report" model="kris.project.document.type">
+        <field name="name">รายงานผลการดำเนินงาน</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="document_type_other" model="kris.project.document.type">
+        <field name="name">อื่นๆ</field>
+        <field name="sequence">99</field>
+    </record>
+
+</odoo>

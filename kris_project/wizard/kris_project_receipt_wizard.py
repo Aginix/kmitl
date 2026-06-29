@@ -45,6 +45,11 @@ class KrisProjectReceiptWizard(models.TransientModel):
         inverse_name="wizard_id",
         string="Allocation",
     )
+    wizard_attachment_ids = fields.One2many(
+        comodel_name="kris.project.receipt.wizard.attachment",
+        inverse_name="wizard_id",
+        string="Attachments",
+    )
     note = fields.Text(
         string="Note",
     )
@@ -124,6 +129,17 @@ class KrisProjectReceiptWizard(models.TransientModel):
                     "remaining_amount": line.remaining_amount,
                 }
             )
+        for att in self.wizard_attachment_ids:
+            if att.file:
+                self.env["ir.attachment"].create(
+                    {
+                        "name": att.filename or "untitled",
+                        "datas": att.file,
+                        "res_model": "kris.project.receipt",
+                        "res_id": receipt.id,
+                        "document_type_id": att.document_type_id.id or False,
+                    }
+                )
         return {"type": "ir.actions.act_window_close"}
 
 
@@ -170,3 +186,24 @@ class KrisProjectReceiptWizardLine(models.TransientModel):
             line.remaining_amount = (
                 alloc.estimated_amount - alloc.actual_amount if alloc else 0.0
             )
+
+
+class KrisProjectReceiptWizardAttachment(models.TransientModel):
+    _name = "kris.project.receipt.wizard.attachment"
+    _description = "KRIS Project Receipt Wizard Attachment"
+
+    wizard_id = fields.Many2one(
+        comodel_name="kris.project.receipt.wizard",
+        required=True,
+        ondelete="cascade",
+    )
+    file = fields.Binary(
+        string="File",
+        required=True,
+        attachment=False,
+    )
+    filename = fields.Char(string="Filename")
+    document_type_id = fields.Many2one(
+        comodel_name="kris.project.document.type",
+        string="Document Type",
+    )

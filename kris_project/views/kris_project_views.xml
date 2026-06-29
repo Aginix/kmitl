@@ -464,11 +464,17 @@
 
                         <!-- Tab 3: เอกสารแนบ -->
                         <page string="Attachment" name="attachments">
-                            <field
-                                name="attachment_ids"
-                                widget="many2many_binary"
-                                string="File"
-                            />
+                            <field name="attachment_ids">
+                                <tree editable="bottom">
+                                    <field name="name" string="Filename"/>
+                                    <field name="document_type_id"/>
+                                    <field
+                                        name="datas"
+                                        filename="name"
+                                        string="File"
+                                    />
+                                </tree>
+                            </field>
                         </page>
 
                         <!-- Tab 4: หมายเหตุ -->

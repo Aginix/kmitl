@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KRIS Project",
-    "version": "16.0.1.6.0",
+    "version": "16.0.1.7.0",
     "category": "KMITL",
     "summary": "Academic service and research project revenue tracking for KRIS",
     "author": "Aginix Technologies",
@@ -24,9 +24,11 @@
         "data/kris_project_allocation_data.xml",
         "data/kris_project_tracking_data.xml",
         "data/kris_project_exception_data.xml",
+        "data/kris_project_document_type_data.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
         "wizard/kris_project_exception_confirm_view.xml",
+        "views/kris_project_document_type_views.xml",
         "views/kris_project_type_views.xml",
         "views/kris_project_allocation_views.xml",
         "views/kris_project_receipt_wizard_views.xml",
