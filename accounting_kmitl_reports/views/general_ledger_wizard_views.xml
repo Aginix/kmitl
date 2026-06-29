@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Entry-point wizard: pick the accounts (GL) and the period, then open
-         the OWL report. -->
+         the OWL report (which still exposes the full in-screen filter bar). -->
     <record id="view_general_ledger_wizard_kmitl_form" model="ir.ui.view">
         <field name="name">general.ledger.report.wizard.kmitl.form</field>
         <field name="model">general.ledger.report.wizard.kmitl</field>

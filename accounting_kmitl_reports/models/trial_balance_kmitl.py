@@ -165,6 +165,12 @@ class TrialBalanceReportKmitl(models.AbstractModel):
             return ""
         return "{:,.2f}".format(value)
 
+    @api.model
+    def _kmitl_format_total(self, value):
+        """Like :meth:`_kmitl_format_amount` but renders an exact zero as
+        ``0.00`` — used by the totals row."""
+        return "{:,.2f}".format(value or 0.0)
+
     # ------------------------------------------------------------------
     # PDF export — return the report action so the OWL client action can
     # ``doAction`` it. Filters travel in ``data`` so the PDF mirrors the
@@ -217,6 +223,7 @@ class TrialBalanceReportKmitl(models.AbstractModel):
             "rows": result["rows"],
             "totals": result["totals"],
             "format_amount": self._kmitl_format_amount,
+            "format_total": self._kmitl_format_total,
             "date_from_label": format_date(self.env, options.get("date_from")),
             "date_to_label": format_date(self.env, options.get("date_to")),
         }
@@ -291,12 +298,12 @@ class TrialBalanceXlsxKmitl(models.AbstractModel):
         ):
             sheet.write(row_top + 1, i, label, head)
 
-        def write_amounts(row_idx, values, fmt):
+        def write_amounts(row_idx, values, fmt, blank_zero=True):
             for col, value in enumerate(values, start=1):
-                if not value or abs(value) < 0.005:
+                if blank_zero and (not value or abs(value) < 0.005):
                     sheet.write_blank(row_idx, col, None, fmt)
                 else:
-                    sheet.write_number(row_idx, col, value, fmt)
+                    sheet.write_number(row_idx, col, value or 0.0, fmt)
 
         r = row_top + 2
         for row in rows:
@@ -308,7 +315,10 @@ class TrialBalanceXlsxKmitl(models.AbstractModel):
 
         sheet.write(r, 0, _("Total"), num_bold)
         write_amounts(
-            r, [totals[k] for group in self._COLUMNS for k in group], num_bold
+            r,
+            [totals[k] for group in self._COLUMNS for k in group],
+            num_bold,
+            blank_zero=False,
         )
 
         sheet.set_column(0, 0, 42)
