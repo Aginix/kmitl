@@ -290,6 +290,7 @@ msgstr "จำนวนเงิน"
 
 #. module: accounting_kmitl_reports
 #: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: model:ir.actions.act_window,name:accounting_kmitl_reports.action_general_ledger_wizard_kmitl
 #: model:ir.actions.client,name:accounting_kmitl_reports.action_general_ledger_kmitl
 #: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_ledger_kmitl
 #: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_general_ledger_kmitl
@@ -424,3 +425,74 @@ msgstr "กิจกรรม"
 #: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
 msgid "Source"
 msgstr "แหล่งเงิน"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Balance brought forward"
+msgstr "ยอดยกมา (หน้าก่อน)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Previous page"
+msgstr "หน้าก่อนหน้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Next page"
+msgstr "หน้าถัดไป"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.js:0
+msgid "Rows per page"
+msgstr "แถวต่อหน้า"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_general_journal_kmitl
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_journal_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_general_journal_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_journal_kmitl
+msgid "General Journal"
+msgstr "สมุดรายวันทั่วไป"
+
+#. module: accounting_kmitl_reports
+#: model:ir.actions.report,name:accounting_kmitl_reports.action_report_general_journal_kmitl_xlsx
+msgid "General Journal (XLSX)"
+msgstr "สมุดรายวันทั่วไป (XLSX)"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.js:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_aged_receivable_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_aged_receivable_kmitl
+msgid "Aged Receivable"
+msgstr "ลูกหนี้ตามอายุ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/aged_partner_balance/aged_partner_balance.js:0
+#: model:ir.actions.client,name:accounting_kmitl_reports.action_aged_payable_kmitl
+#: model:ir.ui.menu,name:accounting_kmitl_reports.menu_report_aged_payable_kmitl
+msgid "Aged Payable"
+msgstr "เจ้าหนี้ตามอายุ"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+msgid "Number"
+msgstr "เลขที่"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+msgid "Reference"
+msgstr "อ้างอิง"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+msgid "Dimensions"
+msgstr "มิติทางบัญชี"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/models/general_journal_kmitl.py:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
+msgid "Date-Time"
+msgstr "วันเวลา"

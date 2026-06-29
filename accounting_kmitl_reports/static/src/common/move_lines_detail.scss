@@ -1,0 +1,16 @@
+// Shared expand-detail panel (General Ledger, General Journal).
+.o_kmitl_move_detail {
+    // Accounting-dimensions section in the panel header (entry level): one
+    // labeled dimension per line, bold label + value.
+    .o_kmitl_dims > div {
+        line-height: 1.5;
+    }
+
+    .o_kmitl_move_detail_table {
+        // Tabular figures keep the Debit/Credit columns aligned.
+        td,
+        th {
+            font-variant-numeric: tabular-nums;
+        }
+    }
+}

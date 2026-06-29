@@ -84,15 +84,15 @@
                         <tfoot style="display: table-footer-group;">
                             <tr>
                                 <td>Total</td>
-                                <td class="text-right" t-out="format_amount(totals['opening_debit'])" />
-                                <td class="text-right" t-out="format_amount(totals['opening_credit'])" />
-                                <td class="text-right" t-out="format_amount(totals['opening_balance'])" />
-                                <td class="text-right" t-out="format_amount(totals['period_debit'])" />
-                                <td class="text-right" t-out="format_amount(totals['period_credit'])" />
-                                <td class="text-right" t-out="format_amount(totals['period_balance'])" />
-                                <td class="text-right" t-out="format_amount(totals['ending_debit'])" />
-                                <td class="text-right" t-out="format_amount(totals['ending_credit'])" />
-                                <td class="text-right" t-out="format_amount(totals['ending_balance'])" />
+                                <td class="text-right" t-out="format_total(totals['opening_debit'])" />
+                                <td class="text-right" t-out="format_total(totals['opening_credit'])" />
+                                <td class="text-right" t-out="format_total(totals['opening_balance'])" />
+                                <td class="text-right" t-out="format_total(totals['period_debit'])" />
+                                <td class="text-right" t-out="format_total(totals['period_credit'])" />
+                                <td class="text-right" t-out="format_total(totals['period_balance'])" />
+                                <td class="text-right" t-out="format_total(totals['ending_debit'])" />
+                                <td class="text-right" t-out="format_total(totals['ending_credit'])" />
+                                <td class="text-right" t-out="format_total(totals['ending_balance'])" />
                             </tr>
                         </tfoot>
                         <tbody>
