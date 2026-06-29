@@ -21,6 +21,12 @@ _TIERED_BRACKETS = [
     (float("inf"), 0.07),
 ]
 
+# Extra (project management fee) caps by who receives the contracted work.
+_EXTRA_CAP_BY_RECEIVER = {
+    "department": 40.0,
+    "person": 20.0,
+}
+
 
 def _compute_tiered_deduction(amount):
     """Return progressive tiered deduction for the given base amount.
@@ -135,9 +141,44 @@ class KrisProject(models.Model):
         readonly=False,
         tracking=True,
     )
+    receiver_type = fields.Selection(
+        selection=[
+            ("department", "ส่วนงาน"),
+            ("person", "บุคคล"),
+        ],
+        string="ผู้รับงาน",
+        tracking=True,
+        help="ประเภทผู้รับงาน — กำหนดเพดาน Extra (ส่วนงาน ≤ 40%, บุคคล ≤ 20%) "
+        "เมื่อเลือกวิธีคำนวณ Extra เป็นเปอร์เซ็นต์",
+    )
+    extra_calc_type = fields.Selection(
+        selection=[
+            ("percentage", "Percentage"),
+            ("fixed", "Fixed Amount"),
+        ],
+        string="Extra Calculation Type",
+        default="percentage",
+        required=True,
+        tracking=True,
+    )
+    extra_pct = fields.Float(
+        string="% Extra",
+        digits=(5, 2),
+        tracking=True,
+    )
+    extra_fixed_amount = fields.Monetary(
+        string="จำนวนเงิน Extra",
+        tracking=True,
+    )
     extra_value = fields.Monetary(
         string="Extra Value",
+        compute="_compute_extra_value",
+        store=True,
         tracking=True,
+    )
+    extra_value_cap_pct = fields.Float(
+        string="เพดาน Extra (%)",
+        compute="_compute_extra_value_cap_pct",
     )
     extra_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -307,6 +348,9 @@ class KrisProject(models.Model):
     warn_maintenance_exceeds_expense = fields.Boolean(
         compute="_compute_warnings",
     )
+    warn_extra_exceeds_cap = fields.Boolean(
+        compute="_compute_warnings",
+    )
 
     @api.depends(
         "maintenance_deduction_amount",
@@ -317,6 +361,10 @@ class KrisProject(models.Model):
         "total_installment_amount",
         "project_value",
         "extra_value",
+        "extra_calc_type",
+        "extra_pct",
+        "extra_value_cap_pct",
+        "receiver_type",
         "no_installment_tracking",
         "state",
         "receipt_ids",
@@ -333,6 +381,16 @@ class KrisProject(models.Model):
                     rec.maintenance_deduction_amount,
                     rec.operating_expense,
                     precision_digits=prec,
+                )
+                > 0
+            )
+            # Cap is a policy on the chosen percentage rate; fixed-amount entries
+            # are treated as a manual override and bypass the check by design.
+            rec.warn_extra_exceeds_cap = (
+                rec.extra_calc_type == "percentage"
+                and bool(rec.receiver_type)
+                and float_compare(
+                    rec.extra_pct, rec.extra_value_cap_pct, precision_digits=2
                 )
                 > 0
             )
@@ -415,6 +473,26 @@ class KrisProject(models.Model):
                 )
 
     @api.depends(
+        "operating_expense",
+        "extra_calc_type",
+        "extra_pct",
+        "extra_fixed_amount",
+    )
+    def _compute_extra_value(self):
+        for rec in self:
+            if rec.extra_calc_type == "percentage":
+                rec.extra_value = rec.operating_expense * rec.extra_pct / 100.0
+            else:  # "fixed"
+                rec.extra_value = rec.extra_fixed_amount
+
+    @api.depends("receiver_type")
+    def _compute_extra_value_cap_pct(self):
+        for rec in self:
+            rec.extra_value_cap_pct = _EXTRA_CAP_BY_RECEIVER.get(
+                rec.receiver_type, 0.0
+            )
+
+    @api.depends(
         "installment_ids.received_from_employer",
         "receipt_ids.amount",
         "receipt_ids.net_amount",
@@ -463,6 +541,13 @@ class KrisProject(models.Model):
             self.maintenance_deduction_pct = 0.0
         if self.maintenance_deduction_type != "fixed":
             self.maintenance_deduction_fixed_amount = 0.0
+
+    @api.onchange("extra_calc_type")
+    def _onchange_extra_calc_type(self):
+        if self.extra_calc_type != "percentage":
+            self.extra_pct = 0.0
+        if self.extra_calc_type != "fixed":
+            self.extra_fixed_amount = 0.0
 
     @api.model_create_multi
     def create(self, vals_list):

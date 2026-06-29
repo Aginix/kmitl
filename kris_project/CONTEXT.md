@@ -34,6 +34,18 @@ The institutional fee KRIS deducts from a project's operating expense; the deduc
 
 _Avoid_: "Custom" unqualified — ambiguous now that both Custom % and Fixed Amount are manually entered. Name the method (Custom % vs Fixed Amount).
 
+**Extra** (ค่า Extra / ค่าบริหารจัดการโครงการ):
+A revenue share earmarked for a designated payee (`extra_analytic_id`, a department analytic) — independent of the Maintenance Deduction pool. One of two **methods** determines the amount:
+
+- **Percentage** (เปอร์เซ็นต์): user enters `extra_pct`, system computes `extra_value = operating_expense × extra_pct / 100`. Subject to the **Receiver Type** cap (40 % / 20 %).
+- **Fixed Amount** (จำนวนเงิน): user enters `extra_fixed_amount` directly; treated as a contractual override and **bypasses the cap**.
+
+_Avoid_: confusing Extra with Maintenance Deduction — they have separate payees and separate methods, even though both deduct from operating expense.
+
+**Receiver Type** (ผู้รับงาน):
+A policy flag on the project — `department` (ส่วนงานรับงาน, cap 40 %) or `person` (บุคคลรับงาน, cap 20 %). Constrains `extra_pct` when the **Extra** method is Percentage. **Not** an identity field: the actual project manager stays in `manager_id` and the owning faculty in `department_analytic_id`.
+_Avoid_: treating it as the contractual signer or as a substitute for `manager_id`.
+
 ### Project & money
 
 **Installment** (งวดงาน):
@@ -48,7 +60,7 @@ _Avoid_: revenue (a single one is never "a revenue")
 The aggregate received on a project — the running sum of its Receipts. A total, not a record.
 
 **Project Value** (มูลค่าโครงการ):
-The total contracted value of a project; the baseline its operating expense, maintenance deduction and installment totals are derived from or checked against.
+The total contracted value of a project; the baseline its operating expense, maintenance deduction and installment totals are derived from or checked against. When users say "มูลค่าโครงการ" while discussing the **base** for Maintenance Deduction or Extra percentage calculations they actually mean **operating expense** (project value minus equipment cost); the literal `project_value` field is rarely the percentage base in this domain.
 
 **Installment-free project** (ไม่มีงวดงานกำกับ):
 A project whose งวด schedule isn't fixed or known up front (typically test/trial work), so it is not governed by งวด targets. Flag `no_installment_tracking`; see ADR-0001 for what this relaxes.
