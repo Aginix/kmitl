@@ -88,7 +88,9 @@ class CashFlowReportKmitl(models.AbstractModel):
 
         only_posted = bool(options.get("only_posted", True))
         hide_at_0 = bool(options.get("hide_account_at_0", True))
-        leaves = self._kmitl_build_dim_leaves(options.get("dims") or {})
+        leaves = self._kmitl_build_dim_leaves(
+            options.get("dims") or {}, options.get("dim_only_self")
+        )
         # Posted only, or every non-cancelled entry (posted + draft).
         state_leaf = (
             [("parent_state", "=", "posted")]
