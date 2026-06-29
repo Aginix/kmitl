@@ -58,16 +58,6 @@
 
                         <table class="table mt-4">
                             <tbody>
-                                <tr>
-                                    <td class="text-start" width="35%">
-                                        หมายเลขประจำเครื่อง (S/N)
-                                    </td>
-                                    <th class="text-end">
-                                        <t t-esc="asset.asset_model or '-'" />
-                                        /
-                                        <t t-esc="asset.asset_brand or '-'" />
-                                    </th>
-                                </tr>
 
                                 <tr>
                                     <td class="text-start">วันที่ได้มา</td>
