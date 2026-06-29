@@ -29,6 +29,14 @@ export class CashFlow extends Component {
             sources: [],
             funds: [],
             activities: [],
+            // Per-dimension "only the specified entry" toggles. When false
+            // (default) a selected node also matches its descendants.
+            dimOnlySelf: {
+                departments: false,
+                sources: false,
+                funds: false,
+                activities: false,
+            },
             rows: [],
             summary: {},
             loading: false,
@@ -84,6 +92,7 @@ export class CashFlow extends Component {
                 funds: this.state.funds.map((r) => r.id),
                 activities: this.state.activities.map((r) => r.id),
             },
+            dim_only_self: { ...this.state.dimOnlySelf },
         };
     }
 
@@ -143,6 +152,12 @@ export class CashFlow extends Component {
             this.state[key] = selected;
             this.load();
         }
+    }
+
+    // Toggle a dimension's "only the specified entry" flag (no descendants).
+    onToggleDimOnlySelf(code, value) {
+        this.state.dimOnlySelf[code] = value;
+        this.load();
     }
 
     // ------------------------------------------------------------------

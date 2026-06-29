@@ -72,7 +72,11 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
 
         # KMITL dimensions (and the optional journal filter) ride along on the
         # engine's extra_domain, which is AND-ed into every move-line query.
-        extra_domain = list(self._kmitl_build_dim_leaves(options.get("dims") or {}))
+        extra_domain = list(
+            self._kmitl_build_dim_leaves(
+                options.get("dims") or {}, options.get("dim_only_self")
+            )
+        )
         if journal_ids:
             extra_domain += [("journal_id", "in", journal_ids)]
 

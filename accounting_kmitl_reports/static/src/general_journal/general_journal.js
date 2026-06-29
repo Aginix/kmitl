@@ -33,6 +33,8 @@ export class GeneralJournal extends Component {
             expanded: {},
             // Lazily-fetched detail lines of each entry, by move id.
             linesByMove: {},
+            // "Expand all" toggle: expand every entry on the current page.
+            expandAll: false,
             // Row-based pagination (rows = entries).
             page: 0,
             pageSize: 50,
@@ -49,6 +51,14 @@ export class GeneralJournal extends Component {
             sources: [],
             funds: [],
             activities: [],
+            // Per-dimension "only the specified entry" toggles. When false
+            // (default) a selected node also matches its descendants.
+            dimOnlySelf: {
+                departments: false,
+                sources: false,
+                funds: false,
+                activities: false,
+            },
         });
         this.labels = {
             title: _t("General Journal"),
@@ -123,6 +133,7 @@ export class GeneralJournal extends Component {
                 funds: this.state.funds.map((r) => r.id),
                 activities: this.state.activities.map((r) => r.id),
             },
+            dim_only_self: { ...this.state.dimOnlySelf },
         };
     }
 
@@ -142,6 +153,9 @@ export class GeneralJournal extends Component {
             this.state.entries = data.entries || [];
         } finally {
             this.state.loading = false;
+        }
+        if (this.state.expandAll) {
+            await this.expandCurrentPage();
         }
     }
 
@@ -172,18 +186,27 @@ export class GeneralJournal extends Component {
     prevPage() {
         if (!this.isFirstPage) {
             this.state.page -= 1;
+            if (this.state.expandAll) {
+                this.expandCurrentPage();
+            }
         }
     }
 
     nextPage() {
         if (!this.isLastPage) {
             this.state.page += 1;
+            if (this.state.expandAll) {
+                this.expandCurrentPage();
+            }
         }
     }
 
     setPageSize(ev) {
         this.state.pageSize = parseInt(ev.target.value) || 50;
         this.state.page = 0;
+        if (this.state.expandAll) {
+            this.expandCurrentPage();
+        }
     }
 
     // ------------------------------------------------------------------
@@ -227,6 +250,12 @@ export class GeneralJournal extends Component {
         }
     }
 
+    // Toggle a dimension's "only the specified entry" flag (no descendants).
+    onToggleDimOnlySelf(code, value) {
+        this.state.dimOnlySelf[code] = value;
+        this.load();
+    }
+
     // ------------------------------------------------------------------
     // Row interactions
     // ------------------------------------------------------------------
@@ -244,6 +273,35 @@ export class GeneralJournal extends Component {
                 "get_move_lines_detail",
                 [entry.id]
             );
+        }
+    }
+
+    // Expand every entry on the current page, batch-fetching the detail lines
+    // that are not cached yet (one round-trip per page).
+    async expandCurrentPage() {
+        const moveIds = new Set();
+        for (const entry of this.pagedEntries) {
+            this.state.expanded[entry.id] = true;
+            if (!this.state.linesByMove[entry.id]) {
+                moveIds.add(entry.id);
+            }
+        }
+        if (moveIds.size) {
+            const data = await this.orm.call(
+                REPORT_MODEL,
+                "get_move_lines_details",
+                [[...moveIds]]
+            );
+            Object.assign(this.state.linesByMove, data);
+        }
+    }
+
+    async onToggleExpandAll(ev) {
+        this.state.expandAll = ev.target.checked;
+        if (this.state.expandAll) {
+            await this.expandCurrentPage();
+        } else {
+            this.state.expanded = {};
         }
     }
 

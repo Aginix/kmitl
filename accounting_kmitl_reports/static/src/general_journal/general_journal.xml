@@ -49,7 +49,7 @@
                             t-on-change="onDateToChange"
                         />
                     </div>
-                    <div class="col-md-5 d-flex align-items-end">
+                    <div class="col-md-5 d-flex align-items-end gap-3">
                         <div class="form-check">
                             <input
                                 type="checkbox"
@@ -59,6 +59,16 @@
                                 t-on-change="onTogglePosted"
                             />
                             <label class="form-check-label" for="kmitl_gj_posted">Posted entries only</label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="kmitl_gj_expand_all"
+                                t-att-checked="state.expandAll"
+                                t-on-change="onToggleExpandAll"
+                            />
+                            <label class="form-check-label" for="kmitl_gj_expand_all">Expand all</label>
                         </div>
                     </div>
 
@@ -80,6 +90,9 @@
                             placeholder="labels.departments"
                             selected="state.departments"
                             onChange="(sel) => this.onSelectionChange('departments', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.departments"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('departments', val)"
                         />
                     </div>
                     <div class="col-md-3">
@@ -90,6 +103,9 @@
                             placeholder="labels.sources"
                             selected="state.sources"
                             onChange="(sel) => this.onSelectionChange('sources', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.sources"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('sources', val)"
                         />
                     </div>
                     <div class="col-md-3">
@@ -100,6 +116,9 @@
                             placeholder="labels.funds"
                             selected="state.funds"
                             onChange="(sel) => this.onSelectionChange('funds', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.funds"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('funds', val)"
                         />
                     </div>
                     <div class="col-md-3">
@@ -110,6 +129,9 @@
                             placeholder="labels.activities"
                             selected="state.activities"
                             onChange="(sel) => this.onSelectionChange('activities', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.activities"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('activities', val)"
                         />
                     </div>
 
