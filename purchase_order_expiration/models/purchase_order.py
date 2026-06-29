@@ -82,36 +82,32 @@ class PurchaseOrder(models.Model):
         if not purchase_orders:
             return
 
-        action = self.env.ref('purchase_order_expiration.action_contracts_expiring')
-        odoobot_user = self.env.ref('base.user_root')
-        orders_by_user = {}
+        activity_type = self.env.ref(
+            'purchase_order_expiration.mail_activity_type_po_expiring'
+        )
 
-        for order in purchase_orders:
-            if not order.user_id:
+        for po in purchase_orders:
+            if not po.user_id:
                 continue
-            orders_by_user.setdefault(order.user_id, self.env['purchase.order'])
-            orders_by_user[order.user_id] |= order
-
-        for user, orders in orders_by_user.items():
-            if user == odoobot_user:
+            existing = self.env['mail.activity'].search_count([
+                ('res_model', '=', po._name),
+                ('res_id', '=', po.id),
+                ('activity_type_id', '=', activity_type.id),
+                ('user_id', '=', po.user_id.id),
+            ])
+            if existing:
                 continue
-            body = _(
-                'There are %s contracts that are about to expire. '
-                '<a href="/web#action=%s">Click to review</a>'
-            ) % (len(orders), action.id)
             try:
                 with self.env.cr.savepoint():
-                    channel_data = self.env['mail.channel'].sudo().channel_get(
-                        [odoobot_user.partner_id.id, user.partner_id.id]
-                    )
-                    channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
-                    channel.sudo().with_user(odoobot_user).message_post(
-                        body=body,
-                        message_type='comment',
-                        subtype_xmlid='mail.mt_comment',
-                        author_id=odoobot_user.partner_id.id,
+                    po.activity_schedule(
+                        act_type_xmlid='purchase_order_expiration.mail_activity_type_po_expiring',
+                        user_id=po.user_id.id,
+                        date_deadline=po.work_end,
+                        summary=_('Purchase Order %s expires in %s day(s)') % (
+                            po.name, po.days_to_expire
+                        ),
                     )
             except Exception:
                 _logger.warning(
-                    "Failed to notify user %s of expiring contracts", user.name, exc_info=True
+                    "Failed to schedule expiry activity for PO %s", po.name, exc_info=True
                 )

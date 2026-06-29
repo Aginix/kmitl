@@ -83,37 +83,35 @@ class PurchaseGuarantee(models.Model):
         if not guarantees:
             return
 
-        action = self.env.ref('purchase_guarantee_expiration.action_guarantees_expiring')
-        odoobot_user = self.env.ref('base.user_root')
-        guarantees_by_user = {}
+        activity_type = self.env.ref(
+            'purchase_guarantee_expiration.mail_activity_type_guarantee_expiring'
+        )
 
         for guarantee in guarantees:
             user = guarantee.purchase_id.user_id or guarantee.requisition_id.user_id
             if not user:
                 continue
-            guarantees_by_user.setdefault(user, self.env['purchase.guarantee'])
-            guarantees_by_user[user] |= guarantee
-
-        for user, user_guarantees in guarantees_by_user.items():
-            if user == odoobot_user:
+            existing = self.env['mail.activity'].search_count([
+                ('res_model', '=', guarantee._name),
+                ('res_id', '=', guarantee.id),
+                ('activity_type_id', '=', activity_type.id),
+                ('user_id', '=', user.id),
+            ])
+            if existing:
                 continue
-            body = _(
-                'There are %s guarantees that are about to expire. '
-                '<a href="/web#action=%s">Click to review</a>'
-            ) % (len(user_guarantees), action.id)
             try:
                 with self.env.cr.savepoint():
-                    channel_data = self.env['mail.channel'].sudo().channel_get(
-                        [odoobot_user.partner_id.id, user.partner_id.id]
-                    )
-                    channel = self.env['mail.channel'].sudo().browse(channel_data['id'])
-                    channel.sudo().with_user(odoobot_user).message_post(
-                        body=body,
-                        message_type='comment',
-                        subtype_xmlid='mail.mt_comment',
-                        author_id=odoobot_user.partner_id.id,
+                    guarantee.activity_schedule(
+                        act_type_xmlid='purchase_guarantee_expiration.mail_activity_type_guarantee_expiring',
+                        user_id=user.id,
+                        date_deadline=guarantee.date_due_guarantee,
+                        summary=_('Purchase Guarantee %s expires in %s day(s)') % (
+                            guarantee.name, guarantee.days_to_expire
+                        ),
                     )
             except Exception:
                 _logger.warning(
-                    "Failed to notify user %s of expiring guarantees", user.name, exc_info=True
+                    "Failed to schedule expiry activity for guarantee %s",
+                    guarantee.name,
+                    exc_info=True,
                 )
