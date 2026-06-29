@@ -144,6 +144,7 @@
                     <field name="warn_extra_overshoot" invisible="1"/>
                     <field name="warn_cancel_with_receipts" invisible="1"/>
                     <field name="warn_maintenance_exceeds_expense" invisible="1"/>
+                    <field name="warn_extra_exceeds_cap" invisible="1"/>
                     <div class="alert alert-warning" role="alert"
                         attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
                         โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
