@@ -138,12 +138,12 @@ if self.state == 'draft' and not self.user_id:
     </record>
 
     <record id="kris_excep_no_contract_number" model="exception.rule">
-        <field name="name">ต้องมีเลขที่สัญญา</field>
-        <field name="description">จำเป็นต้องระบุเลขที่สัญญา</field>
+        <field name="name">ต้องมีรหัสโครงการ</field>
+        <field name="description">จำเป็นต้องระบุรหัสโครงการ</field>
         <field name="sequence">120</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and not self.contract_number:
+if self.state == 'draft' and not self.project_code:
     failed = True
         </field>
         <field name="active" eval="True"/>
