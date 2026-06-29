@@ -469,6 +469,7 @@ class KrisProject(models.Model):
             and self.project_type_id.category_id != self.project_category_id
         ):
             self.project_type_id = False
+        self.expense_line_ids = [(5, 0, 0)]
 
     @api.onchange("maintenance_deduction_type")
     def _onchange_maintenance_deduction_type(self):
