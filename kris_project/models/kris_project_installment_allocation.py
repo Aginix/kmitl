@@ -72,4 +72,4 @@ class KrisProjectInstallmentAllocation(models.Model):
                 continue
             allocated = allocated_by_id.get(line.allocation_line_id.id, 0.0)
             line.allocated_amount = allocated
-            line.remaining_amount = line.estimated_amount - allocated
+            line.remaining_amount = max(0.0, line.estimated_amount - allocated)
