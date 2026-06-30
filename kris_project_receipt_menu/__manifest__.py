@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "KRIS Project Receipt Report",
+    "name": "KRIS Project Receipt Menu",
     "version": "16.0.1.0.0",
     "category": "KMITL",
     "summary": "Cross-project listing and pivot report for KRIS receipts",
