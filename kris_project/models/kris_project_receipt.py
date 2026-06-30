@@ -72,6 +72,20 @@ class KrisProjectReceipt(models.Model):
         related="project_id.state",
         string="Project State",
     )
+    fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="ปีงบประมาณ",
+        related="project_id.account_fiscal_year_id",
+        store=True,
+        index=True,
+    )
+    project_category_id = fields.Many2one(
+        comodel_name="kris.project.type",
+        string="ประเภทโครงการ",
+        related="project_id.project_category_id",
+        store=True,
+        index=True,
+    )
 
     def action_delete(self):
         self.ensure_one()

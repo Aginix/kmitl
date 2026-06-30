@@ -30,7 +30,7 @@
         <field name="arch" type="xml">
             <pivot string="รายรับ (Pivot)" sample="1">
                 <field name="fiscal_year_id" type="row"/>
-                <field name="project_type_id" type="col"/>
+                <field name="project_category_id" type="col"/>
                 <field name="amount" type="measure"/>
                 <field name="net_amount" type="measure"/>
             </pivot>
@@ -67,7 +67,7 @@
                 <field name="project_id"/>
                 <field name="installment_id"/>
                 <field name="fiscal_year_id"/>
-                <field name="project_type_id"/>
+                <field name="project_category_id"/>
 
                 <filter name="this_year"
                         string="ปีนี้"
@@ -88,7 +88,7 @@
                     <filter name="gb_fiscal" string="ปีงบประมาณ"
                             context="{'group_by': 'fiscal_year_id'}"/>
                     <filter name="gb_type" string="ประเภทโครงการ"
-                            context="{'group_by': 'project_type_id'}"/>
+                            context="{'group_by': 'project_category_id'}"/>
                     <filter name="gb_project" string="โครงการ"
                             context="{'group_by': 'project_id'}"/>
                     <filter name="gb_installment" string="งวด"
@@ -100,7 +100,7 @@
                            string="ปีงบประมาณ"
                            select="one"
                            icon="fa-calendar"/>
-                    <field name="project_type_id"
+                    <field name="project_category_id"
                            string="ประเภทโครงการ"
                            select="one"
                            icon="fa-tag"/>
