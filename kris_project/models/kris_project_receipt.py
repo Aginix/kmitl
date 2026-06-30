@@ -80,7 +80,7 @@ class KrisProjectReceipt(models.Model):
         index=True,
     )
     project_category_id = fields.Many2one(
-        comodel_name="kris.project.type",
+        comodel_name="kris.project.category",
         string="ประเภทโครงการ",
         related="project_id.project_category_id",
         store=True,
