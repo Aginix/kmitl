@@ -15,29 +15,38 @@
 // Centered report body
 .o_brc_body {
     .o_brc_table_wrap {
-        max-width: 70rem;
+        max-width: 72rem;
         margin: 0 auto;
         overflow-x: auto;
     }
 
     .o_brc_table {
+        // Fixed layout so the columns keep stable, proportional widths and
+        // fill the centered frame exactly (no overflow, no dead space).
+        table-layout: fixed;
+        width: 100%;
+
         th {
             background-color: #f8f9fa;
             vertical-align: middle;
-            white-space: nowrap;
         }
         td,
         th {
             font-size: 1rem;
         }
+        // The indicator label may wrap; the numeric columns stay on one line.
+        .o_brc_amount,
+        .o_brc_pct {
+            white-space: nowrap;
+        }
         .o_brc_item {
-            min-width: 28rem;
+            width: 37%;
         }
         .o_brc_amount {
-            min-width: 12rem;
+            width: 17%;
         }
         .o_brc_pct {
-            min-width: 7rem;
+            width: 12%;
         }
 
         // Row types
