@@ -3,7 +3,9 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Layout } from "@web/search/layout";
+import { getDefaultConfig } from "@web/views/view";
+import { Component, onWillStart, useState, useSubEnv } from "@odoo/owl";
 import { MultiRecordSelect } from "./multi_record_select";
 
 const REPORT_MODEL = "budget.revenue.comparison.report";
@@ -15,6 +17,9 @@ const SELECTION_KEYS = ["departments", "sources"];
 
 export class BudgetRevenueComparison extends Component {
     setup() {
+        // Provide the config the Layout/ControlPanel chrome expects (the
+        // client action's own config is merged on top for the breadcrumb).
+        useSubEnv({ config: { ...getDefaultConfig(), ...this.env.config } });
         this.orm = useService("orm");
         this.action = useService("action");
         this.company = useService("company");
@@ -181,6 +186,6 @@ export class BudgetRevenueComparison extends Component {
 }
 
 BudgetRevenueComparison.template = "budget_revenue_comparison.BudgetRevenueComparison";
-BudgetRevenueComparison.components = { MultiRecordSelect };
+BudgetRevenueComparison.components = { Layout, MultiRecordSelect };
 
 registry.category("actions").add("budget_revenue_comparison", BudgetRevenueComparison);
