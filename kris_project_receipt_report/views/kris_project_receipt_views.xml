@@ -47,29 +47,10 @@
         <field name="mode">primary</field>
         <field name="priority">99</field>
         <field name="arch" type="xml">
-            <form string="Revenue Record">
-                <field name="currency_id" invisible="1"/>
-                <group>
-                    <field name="project_id" readonly="1"/>
-                    <field name="name"/>
-                    <field name="installment_id" readonly="1"/>
-                    <field name="date" readonly="1"/>
-                    <field name="equipment_cost_in_installment" readonly="1"/>
-                    <field name="amount" readonly="1"/>
-                    <field name="extra_income" readonly="1"/>
-                    <field name="net_amount" readonly="1"/>
-                    <field name="note" readonly="1"/>
-                </group>
-                <separator string="Allocation based on revenue."/>
-                <field name="allocation_ids">
-                    <tree create="0" delete="0">
-                        <field name="allocation_line_id" invisible="1" />
-                        <field name="name" string="Allocator" readonly="1" />
-                        <field name="remaining_amount" readonly="1" />
-                        <field name="amount" readonly="1" />
-                        <field name="currency_id" invisible="1" />
-                    </tree>
-                </field>
+            <form position="attributes">
+                <attribute name="create">0</attribute>
+                <attribute name="edit">0</attribute>
+                <attribute name="delete">0</attribute>
             </form>
         </field>
     </record>
