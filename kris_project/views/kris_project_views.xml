@@ -224,12 +224,8 @@
                                 name="account_fiscal_year_id"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
-                        </group>
-                        <group string="Contract/MOU Information (KRIS - Project Manager)">
-                            <field
-                                name="kris_contract_date"
-                                attrs="{'readonly': [('can_edit', '=', False)]}"
-                            />
+                            <separator string="Contract/MOU Information (KRIS - Project Manager)"/>
+                            <field name="kris_contract_date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                         </group>
                     </group>
                     <group>
