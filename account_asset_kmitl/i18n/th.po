@@ -348,7 +348,7 @@ msgstr ""
 #: code:addons/account_asset_management/report/account_asset_report_xls.py:0 model:ir.model.fields,field_description:account_asset_management.field_account_asset__date_start
 #, python-format
 msgid "Asset Start Date"
-msgstr "วันที่ลงทะเบียน"
+msgstr "วันที่ได้มา"
 
 #. module: l10n_th_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset__asset_sub_state_all

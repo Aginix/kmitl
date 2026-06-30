@@ -12,13 +12,20 @@ class AccountAssetBatch(models.Model):
     _inherit = ['analytic.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'AccountAssetBatch'
 
+    _analytic_keys = {
+        "sources": "source_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "activities": "activity_analytic_id",
+    }
+
     name = fields.Char(
         string="Document No.",
         tracking=True,
     )
 
     date = fields.Date(
-        string="Date",
+        string="Acquisition Date",
         tracking=True,
         default=fields.Date.context_today,
     )
@@ -125,6 +132,46 @@ class AccountAssetBatch(models.Model):
         tracking=True,
     )
 
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("sources"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "sources")],
+    )
+
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("departments"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "departments")],
+    )
+
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("funds"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "funds")],
+    )
+
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ด้าน/แผนงาน/กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("activities"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "activities")],
+    )
+
     @api.onchange('purchase_id')
     def _onchange_purchase_id_set_source(self):
         if self.purchase_id:
@@ -196,7 +243,11 @@ class AccountAssetBatch(models.Model):
 
             # Filter analytic_distribution to plan codes supported by account.asset
             asset_keys = set(self.env["account.asset"]._analytic_keys)
-            raw_dist = batch.purchase_id.analytic_distribution or {}
+            raw_dist = (
+                batch.purchase_id.analytic_distribution
+                if batch.purchase_id
+                else batch.analytic_distribution
+            ) or {}
             if raw_dist:
                 accounts = self.env["account.analytic.account"].browse(
                     [int(k) for k in raw_dist]

@@ -73,21 +73,23 @@
                                     </th>
                                 </tr>
 
-                                <tr>
-                                    <td class="text-start">ชื่อโครงการ</td>
-                                    <th class="text-end">
-                                        <t t-esc="asset.purchase_id.contract_name" />
-                                    </th>
-                                </tr>
+                                <t t-if="asset.purchase_id">
+                                    <tr>
+                                        <td class="text-start">ชื่อโครงการ</td>
+                                        <th class="text-end">
+                                            <t t-esc="asset.purchase_id.contract_name" />
+                                        </th>
+                                    </tr>
 
-                                <tr>
-                                    <td class="text-start">เลขที่สัญญา</td>
-                                    <th class="text-end">
-                                        <t
-                                            t-esc="asset.purchase_id.contract_number or '0.00'"
-                                        />
-                                    </th>
-                                </tr>
+                                    <tr>
+                                        <td class="text-start">เลขที่สัญญา</td>
+                                        <th class="text-end">
+                                            <t
+                                                t-esc="asset.purchase_id.contract_number or '0.00'"
+                                            />
+                                        </th>
+                                    </tr>
+                                </t>
 
                                 <tr>
                                     <td class="text-start">ระยะเวลารับประกัน</td>

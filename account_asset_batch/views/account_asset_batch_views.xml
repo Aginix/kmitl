@@ -93,7 +93,6 @@
                     </h1>
                     <group>
                         <field name="is_editable" invisible="1" />
-                        <field name="date" invisible="1" />
                         <field
                             name="source_of_asset"
                             required="1"
@@ -102,9 +101,10 @@
                             options="{'horizontal': true}"
                             force_save="1"
                         />
+                        <field name="date" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="account_fiscal_year_id" attrs="{'readonly': [('source_of_asset','not in', ('donation', 'transfer'))]}" force_save="1"/>
-                        <field name="contract_number" attrs="{'invisible': [('source_of_asset', 'in', ('donation', 'transfer'))]}"/>
-                        <field name="purchase_id" readonly="1" attrs="{'invisible': [('source_of_asset', 'in', ('donation', 'transfer'))]}"/>
+                        <field name="contract_number" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
+                        <field name="purchase_id" readonly="1" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
                         <field
                             name="received_from_agency"
                             attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))]}"
@@ -148,6 +148,14 @@
                                 />
                             </group>
                         </page>
+                        <page string="Analytic">
+                            <group attrs="{'readonly': [('is_editable','=', False)]}">
+                                <field name="source_analytic_id" />
+                                <field name="department_analytic_id" />
+                                <field name="fund_analytic_id" />
+                                <field name="activity_analytic_id" />
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
 
@@ -184,7 +192,7 @@
         <field name="res_model">account.asset.batch</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('source_of_asset', '=', 'procurement')]</field>
-        <field name="context">{'default_source_of_asset': 'procurement', 'create': False}</field>
+        <field name="context">{'default_source_of_asset': 'procurement', 'create': True}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_account_asset_batch_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_account_asset_batch_form')}),
