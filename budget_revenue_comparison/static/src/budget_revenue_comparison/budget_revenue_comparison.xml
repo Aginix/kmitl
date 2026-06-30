@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="budget_revenue_comparison.MultiRecordSelect" owl="1">
+        <div class="o_brc_ms" t-ref="root">
+            <div class="o_brc_ms_box form-control">
+                <span
+                    t-foreach="selected"
+                    t-as="rec"
+                    t-key="rec.id"
+                    class="badge text-bg-primary o_brc_ms_tag"
+                >
+                    <t t-esc="rec.name" />
+                    <span class="o_brc_ms_x" t-on-click="() => this.remove(rec.id)">×</span>
+                </span>
+                <input
+                    type="text"
+                    class="o_brc_ms_input"
+                    t-att-placeholder="props.placeholder"
+                    t-att-value="state.query"
+                    t-on-focus="onFocus"
+                    t-on-input="onInput"
+                />
+            </div>
+            <div class="o_brc_ms_dropdown" t-if="state.open and state.options.length">
+                <div
+                    t-foreach="state.options"
+                    t-as="opt"
+                    t-key="opt.id"
+                    class="o_brc_ms_option"
+                    t-on-click="() => this.add(opt)"
+                >
+                    <t t-esc="opt.name" />
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="budget_revenue_comparison.BudgetRevenueComparison" owl="1">
+        <div class="o_brc o_action_manager p-3">
+            <div class="o_brc_header d-flex align-items-center mb-3">
+                <h2 class="m-0 flex-grow-1">เปรียบเทียบงบประมาณรายรับ - รายรับจริง</h2>
+                <button class="btn btn-secondary" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" />Export Excel
+                </button>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="o_brc_filters row g-2 mb-3">
+                <div class="col-md-3">
+                    <label class="o_form_label">Fiscal Year</label>
+                    <select class="form-select" t-on-change="onFiscalYearChange">
+                        <option value="">/</option>
+                        <option
+                            t-foreach="fiscalYears"
+                            t-as="fy"
+                            t-key="fy.id"
+                            t-att-value="fy.id"
+                            t-att-selected="fy.id === state.fiscalYearId"
+                        >
+                            <t t-esc="fy.name" />
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date From</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateFrom"
+                        t-on-change="onDateFromChange"
+                    />
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label">Date To ( as of)</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.dateTo"
+                        t-on-change="onDateToChange"
+                    />
+                </div>
+                <div class="col-md-5 d-flex align-items-end">
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="brc_posted"
+                            t-att-checked="state.onlyPosted"
+                            t-on-change="onTogglePosted"
+                        />
+                        <label class="form-check-label" for="brc_posted">Posted entries only</label>
+                    </div>
+                </div>
+
+                <!-- KMITL accounting dimensions -->
+                <div class="col-md-3">
+                    <label class="o_form_label">Departments</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'departments']]"
+                        placeholder="labels.departments"
+                        selected="state.departments"
+                        onChange="(sel) => this.onSelectionChange('departments', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Sources</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'sources']]"
+                        placeholder="labels.sources"
+                        selected="state.sources"
+                        onChange="(sel) => this.onSelectionChange('sources', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Funds</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'funds']]"
+                        placeholder="labels.funds"
+                        selected="state.funds"
+                        onChange="(sel) => this.onSelectionChange('funds', sel)"
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label">Activities</label>
+                    <MultiRecordSelect
+                        resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'activities']]"
+                        placeholder="labels.activities"
+                        selected="state.activities"
+                        onChange="(sel) => this.onSelectionChange('activities', sel)"
+                    />
+                </div>
+            </div>
+
+            <!-- Report table -->
+            <div class="o_brc_table_wrap">
+                <table class="table table-sm o_brc_table">
+                    <thead>
+                        <tr>
+                            <th class="o_brc_item">ตัวชี้วัด</th>
+                            <th class="text-end o_brc_amount">งบประมาณรายรับ</th>
+                            <th class="text-end o_brc_amount">รายรับจริง</th>
+                            <th class="text-end o_brc_pct">%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="state.loading">
+                            <td colspan="4" class="text-center text-muted">Loading...</td>
+                        </tr>
+                        <tr t-elif="!state.rows.length">
+                            <td colspan="4" class="text-center text-muted">No data</td>
+                        </tr>
+                        <tr
+                            t-foreach="state.rows"
+                            t-as="row"
+                            t-key="row.id"
+                            t-att-class="'o_brc_' + row.row_type"
+                        >
+                            <td t-esc="row.name" />
+                            <td class="text-end" t-esc="formatAmount(row.budget)" />
+                            <td class="text-end" t-esc="formatAmount(row.actual)" />
+                            <td class="text-end">
+                                <t t-if="row.row_type !== 'header'" t-esc="formatPercentage(row.percentage)" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>
