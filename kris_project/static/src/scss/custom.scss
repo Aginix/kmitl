@@ -4,3 +4,9 @@
     text-overflow: unset !important;
     word-break: break-word !important;
 }
+
+.o_form_editable div[name="allocation_ids"] .o_field_cell.o_list_number[name="amount"] {
+    background-color: #eeeeee;
+    text-decoration: underline;
+    cursor: text !important;
+}
