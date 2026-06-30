@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- TREE (readonly)                                              -->
+    <!-- ============================================================ -->
+    <record id="view_kris_project_receipt_tree_report" model="ir.ui.view">
+        <field name="name">kris.project.receipt.tree.report</field>
+        <field name="model">kris.project.receipt</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0" string="รายรับ">
+                <field name="currency_id" invisible="1"/>
+                <field name="project_id" string="โครงการ"/>
+                <field name="date" string="วันที่รับเงิน"/>
+                <field name="installment_id" string="งวดที่"/>
+                <field name="name" string="เลขที่ใบเสร็จ"/>
+                <field name="amount" string="จำนวนเงิน" sum="รวม"/>
+                <field name="net_amount" string="ยอดรับสุทธิ" sum="รวมสุทธิ"/>
+                <field name="note" string="หมายเหตุ" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- PIVOT                                                        -->
+    <!-- ============================================================ -->
+    <record id="view_kris_project_receipt_pivot_report" model="ir.ui.view">
+        <field name="name">kris.project.receipt.pivot.report</field>
+        <field name="model">kris.project.receipt</field>
+        <field name="arch" type="xml">
+            <pivot string="รายรับ (Pivot)" sample="1">
+                <field name="fiscal_year_id" type="row"/>
+                <field name="project_type_id" type="col"/>
+                <field name="amount" type="measure"/>
+                <field name="net_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- FORM (readonly, primary inherit)                             -->
+    <!-- ============================================================ -->
+    <record id="view_kris_project_receipt_form_readonly" model="ir.ui.view">
+        <field name="name">kris.project.receipt.form.readonly</field>
+        <field name="model">kris.project.receipt</field>
+        <field name="inherit_id" ref="kris_project.view_kris_project_receipt_form"/>
+        <field name="mode">primary</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="create">0</attribute>
+                <attribute name="edit">0</attribute>
+                <attribute name="delete">0</attribute>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- SEARCH + SearchPanel                                         -->
+    <!-- ============================================================ -->
+    <record id="view_kris_project_receipt_search_report" model="ir.ui.view">
+        <field name="name">kris.project.receipt.search.report</field>
+        <field name="model">kris.project.receipt</field>
+        <field name="arch" type="xml">
+            <search string="รายรับ">
+                <field name="name" string="เลขที่ใบเสร็จ"/>
+                <field name="project_id"/>
+                <field name="installment_id"/>
+                <field name="fiscal_year_id"/>
+                <field name="project_type_id"/>
+
+                <filter name="this_year"
+                        string="ปีนี้"
+                        domain="[
+                            ('date', '&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + relativedelta(month=12, day=31)).strftime('%Y-%m-%d')),
+                        ]"/>
+                <filter name="last_year"
+                        string="ปีที่แล้ว"
+                        domain="[
+                            ('date', '&gt;=', (context_today() + relativedelta(years=-1, month=1, day=1)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + relativedelta(years=-1, month=12, day=31)).strftime('%Y-%m-%d')),
+                        ]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="gb_date" string="เดือน/ปี"
+                            context="{'group_by': 'date'}"/>
+                    <filter name="gb_fiscal" string="ปีงบประมาณ"
+                            context="{'group_by': 'fiscal_year_id'}"/>
+                    <filter name="gb_type" string="ประเภทโครงการ"
+                            context="{'group_by': 'project_type_id'}"/>
+                    <filter name="gb_project" string="โครงการ"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter name="gb_installment" string="งวด"
+                            context="{'group_by': 'installment_id'}"/>
+                </group>
+
+                <searchpanel>
+                    <field name="fiscal_year_id"
+                           string="ปีงบประมาณ"
+                           select="one"
+                           icon="fa-calendar"/>
+                    <field name="project_type_id"
+                           string="ประเภทโครงการ"
+                           select="one"
+                           icon="fa-tag"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- ACTION                                                       -->
+    <!-- ============================================================ -->
+    <record id="action_kris_project_receipt_report" model="ir.actions.act_window">
+        <field name="name">รายรับ</field>
+        <field name="res_model">kris.project.receipt</field>
+        <field name="view_mode">tree,pivot,form</field>
+        <field name="search_view_id" ref="view_kris_project_receipt_search_report"/>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_kris_project_receipt_tree_report')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_kris_project_receipt_pivot_report')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_kris_project_receipt_form_readonly')}),
+        ]"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">ยังไม่มีรายรับ</p>
+            <p>รายการรายรับจะแสดงเมื่อมีการบันทึกในหน้าโครงการ</p>
+        </field>
+    </record>
+
+</odoo>
