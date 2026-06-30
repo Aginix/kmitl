@@ -11,8 +11,8 @@
             <tree create="0" edit="0" delete="0" string="Receipts">
                 <field name="currency_id" invisible="1"/>
                 <field name="project_id" string="Project Number"/>
-                <field name="project_name" string="Project Name"/>
-                <field name="project_category_id" string="Project Category"/>
+                <field name="project_name" string="Project Name" optional="show"/>
+                <field name="project_category_id" string="Project Category" optional="show"/>
                 <field name="date" string="Receipt Date"/>
                 <field name="installment_id" string="Installment"/>
                 <field name="name" string="Receipt Number"/>
