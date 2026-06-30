@@ -27,19 +27,19 @@
                         <div class="text-center mb-2">
                             <t t-if="asset.state == 'open'">
                                 <span class="badge bg-success px-3 py-2 fs-6">
-                                    <span t-field="asset.state" />
+                                    กำลังใช้งาน
                                 </span>
                             </t>
 
                             <t t-elif="asset.state == 'close'">
                                 <span class="badge bg-dark px-3 py-2 fs-6">
-                                    <span t-field="asset.state" />
+                                    ปิด
                                 </span>
                             </t>
 
                             <t t-elif="asset.state == 'removed'">
                                 <span class="badge bg-danger px-3 py-2 fs-6">
-                                    <span t-field="asset.state" />
+                                    จำหน่ายแล้ว
                                 </span>
                             </t>
                         </div>

@@ -151,10 +151,10 @@
                         <page string="Analytic">
                             <group attrs="{'readonly': [('is_editable','=', False)]}">
                                 <field name="analytic_distribution" widget="analytic_distribution"/>
-                                <field name="source_analytic_id" />
-                                <field name="department_analytic_id" />
-                                <field name="fund_analytic_id" />
-                                <field name="activity_analytic_id" />
+                                <field name="source_analytic_id" required="0" />
+                                <field name="department_analytic_id" required="0" />
+                                <field name="fund_analytic_id" required="0" />
+                                <field name="activity_analytic_id" required="0" />
                             </group>
                         </page>
                     </notebook>

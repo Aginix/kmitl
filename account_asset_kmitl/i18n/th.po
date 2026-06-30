@@ -1287,7 +1287,7 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__remaining_value
 msgid "Next Period Depreciation"
-msgstr ""
+msgstr "ค่าเสื่อมราคางวดถัดไป"
 
 #. module: account_asset_management
 #. odoo-python
