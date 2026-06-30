@@ -122,8 +122,8 @@
 
             <!-- Centered report body -->
             <div class="o_brc_body p-3">
-                <div class="o_brc_table_wrap">
-                    <table class="table table-sm o_brc_table">
+                <div class="o_brc_card card shadow-sm">
+                    <table class="table table-sm o_brc_table mb-0">
                         <thead>
                             <tr>
                                 <th class="o_brc_item">ตัวชี้วัด</th>

@@ -14,10 +14,12 @@
 
 // Centered report body
 .o_brc_body {
-    .o_brc_table_wrap {
+    // Paper/card framing the table, centered on screen.
+    .o_brc_card {
         max-width: 72rem;
         margin: 0 auto;
-        overflow-x: auto;
+        // Clip the table's square corners to the card's rounded border.
+        overflow: hidden;
     }
 
     .o_brc_table {
