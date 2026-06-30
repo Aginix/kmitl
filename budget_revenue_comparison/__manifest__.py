@@ -16,6 +16,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/report_action_xlsx.xml",
+        "data/budget_revenue_report_line.xml",
         "views/budget_revenue_report_line_views.xml",
         "views/menuitem.xml",
     ],
