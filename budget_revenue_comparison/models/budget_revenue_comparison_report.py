@@ -15,6 +15,10 @@ _logger = logging.getLogger(__name__)
 DIMENSION_CODES = ("departments", "sources")
 HIERARCHICAL_DIMS = ("departments",)
 
+# The dimension that doubles as the optional group-by section axis (group by
+# ส่วนงาน): excluded from the per-section filters and used as the section key.
+GROUP_BY_DIM = "departments"
+
 # A budget appropriation/transfer move; ``consume`` is excluded so the Budget
 # column is the *Current Budget (a)* (initial + supplementary + transfers).
 BUDGET_MOVE_TYPES = ("appropriation", "entry")
@@ -199,7 +203,7 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
     # ------------------------------------------------------------------
     @api.model
     def _grouped_rows(self, options, lines, dims):
-        dims_wo_dept = {k: v for k, v in dims.items() if k != "departments"}
+        dims_wo_dept = {k: v for k, v in dims.items() if k != GROUP_BY_DIM}
         base_leaves = self._build_dim_leaves(dims_wo_dept)
         rows = []
         for name, dept_leaf in self._department_groups(options, dims, base_leaves):
@@ -219,7 +223,7 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
         departments roll up their descendants (``child_of``); auto-discovered
         departments use their exact id so the sections stay disjoint."""
         Analytic = self.env["account.analytic.account"]
-        selected = dims.get("departments") or []
+        selected = dims.get(GROUP_BY_DIM) or []
         if selected:
             for dept in Analytic.browse(selected).exists():
                 ids = Analytic.search([("id", "child_of", dept.id)]).ids
@@ -389,7 +393,6 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
             "line": workbook.add_format({"indent": 1}),
             "total": workbook.add_format({"bold": True, "top": 1, "indent": 1}),
         }
-        is_bold = {"department", "header", "total"}
 
         sheet.merge_range(0, 0, 0, 4, company.display_name, bold)
         sheet.merge_range(1, 0, 1, 4, _("Budget vs Actual Revenue"), bold)
@@ -419,7 +422,9 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
 
         r = 5
         for row in rows:
-            bold_row = row["row_type"] in is_bold
+            # Every row type except a plain "line" is emphasised (headers,
+            # department sections and totals).
+            bold_row = row["row_type"] != "line"
             sheet.write(r, 0, row["name"] or "", label_fmt.get(row["row_type"]))
             if row["budget"] is not None:
                 sheet.write_number(r, 1, row["budget"], num_bold if bold_row else num)
@@ -435,7 +440,7 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
                 sheet.write_number(
                     r, 4, row["percentage"], pct_bold if bold_row else pct
                 )
-            elif row["row_type"] not in ("header", "department"):
+            elif row["row_type"] in ("line", "total"):
                 sheet.write(r, 4, "–", center)
             r += 1
 

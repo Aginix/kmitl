@@ -19,18 +19,18 @@ On the actual side an *alphabetic* selector (``A['income']``) matches
 ``code`` -- unambiguous because CoA codes are digits.
 """
 import re
+from functools import lru_cache
 
 from odoo.tools.safe_eval import safe_eval
 
-# safe_eval globals are rebuilt fresh for every evaluation, so passing
-# ``nocopy=True`` only avoids a redundant shallow copy of the 2-key mapping.
-_EVAL_KW = {"mode": "eval", "nocopy": True}
 
-
+@lru_cache(maxsize=512)
 def _like_to_regex(pattern):
     """Compile an SQL-``LIKE``-style pattern (``%`` any run, ``_`` one char)
     into an anchored, case-insensitive regex. Every other character is matched
-    literally."""
+    literally. Cached: patterns come from a small fixed set of configured
+    formulas, so the same regex is reused across rows, sections and
+    departments."""
     parts = []
     for ch in pattern or "":
         if ch == "%":
@@ -106,7 +106,7 @@ def eval_formula(formula, budget_resolver, actual_resolver):
     if not formula:
         return 0.0
     result = safe_eval(
-        formula, {"B": budget_resolver, "A": actual_resolver}, **_EVAL_KW
+        formula, {"B": budget_resolver, "A": actual_resolver}, mode="eval"
     )
     return float(result or 0.0)
 
@@ -119,7 +119,7 @@ def validate_formula(formula):
         return None
     try:
         zero = _ZeroResolver()
-        safe_eval(formula, {"B": zero, "A": zero}, **_EVAL_KW)
+        safe_eval(formula, {"B": zero, "A": zero}, mode="eval")
     except Exception as exc:  # noqa: BLE001 - surfaced to the user verbatim
         return str(exc) or exc.__class__.__name__
     return None
