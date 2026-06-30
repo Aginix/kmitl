@@ -17,22 +17,22 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: kris_project_receipt_menu
-#: model:ir.actions.act_window,name:kris_project_receipt_menu.action_kris_project_receipt_menu
+#: model:ir.actions.act_window,name:kris_project_receipt_menu.action_kris_project_receipt_report
 msgid "Receipts"
 msgstr "รายรับ"
 
 #. module: kris_project_receipt_menu
-#: model:ir.actions.act_window,help:kris_project_receipt_menu.action_kris_project_receipt_menu
+#: model:ir.actions.act_window,help:kris_project_receipt_menu.action_kris_project_receipt_report
 msgid "No receipts yet"
 msgstr "ยังไม่มีรายรับ"
 
 #. module: kris_project_receipt_menu
-#: model:ir.actions.act_window,help:kris_project_receipt_menu.action_kris_project_receipt_menu
+#: model:ir.actions.act_window,help:kris_project_receipt_menu.action_kris_project_receipt_report
 msgid "Receipts will appear here when recorded from a project."
 msgstr "รายการรายรับจะแสดงเมื่อมีการบันทึกในหน้าโครงการ"
 
 #. module: kris_project_receipt_menu
-#: model:ir.ui.menu,name:kris_project_receipt_menu.menu_kris_project_receipt_menu
+#: model:ir.ui.menu,name:kris_project_receipt_menu.menu_kris_project_receipt_report
 msgid "Receipts"
 msgstr "รายรับ"
 
