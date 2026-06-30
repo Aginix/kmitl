@@ -1374,7 +1374,7 @@ msgstr "ข้อมูลอื่นๆ"
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset__parent_id model:ir.ui.menu,name:l10n_th_account_asset_management.account_asset_parent_menu
 #: model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_parent_view_form model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_parent_view_search
 msgid "Parent Asset"
-msgstr ""
+msgstr "ครุภัณฑ์หลัก"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_group__parent_id
@@ -1764,7 +1764,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_remove__asset_sub_state_id
 #: model:ir.model.fields,field_description:l10n_th_account_asset_management.field_account_asset_transfer__asset_sub_state_id
 msgid "Sub-Status"
-msgstr ""
+msgstr "สถานะย่อย"
 
 #. module: account_asset_management
 #. odoo-python
