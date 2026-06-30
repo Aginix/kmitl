@@ -17,6 +17,11 @@ HIERARCHICAL_DIMS = ("departments", "funds", "activities")
 # column is the *Current Budget (a)* (initial + supplementary + transfers).
 BUDGET_MOVE_TYPES = ("appropriation", "entry")
 
+# GL income account types -- used only to bound the auto-discovery of which
+# departments appear in the revenue data (the row formulas still decide what
+# actually counts in each figure).
+INCOME_TYPES = ("income", "income_other")
+
 
 class BudgetRevenueComparisonReport(models.AbstractModel):
     """Budget-vs-Actual revenue report.
@@ -60,53 +65,56 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
         )
 
     # ------------------------------------------------------------------
-    # Per-side aggregation -- one read_group each, regardless of how many rows
-    # or brackets the formulas use.
+    # Domain builders + per-side aggregation. ``leaves`` are extra domain
+    # leaves (dimension filters and/or a per-department group scope), so the
+    # same aggregators serve the flat report, each department section and the
+    # grand total -- one read_group per call regardless of formula count.
     # ------------------------------------------------------------------
     @api.model
-    def _aggregate_budget(self, options):
-        """``{budget_code: balance}`` of the current revenue budget for the
-        whole fiscal year (appropriation + entry, excluding consume)."""
-        fy_id = options.get("fiscal_year_id")
-        if not fy_id:
-            return {}
-        domain = [
+    def _budget_domain(self, options, leaves):
+        return [
             ("company_id", "=", options["company_id"]),
-            ("account_fiscal_year_id", "=", fy_id),
+            ("account_fiscal_year_id", "=", options["fiscal_year_id"]),
             ("budget_type", "=", "revenue"),
             ("move_type", "in", list(BUDGET_MOVE_TYPES)),
-        ] + self._state_leaf(options["only_posted"]) + self._build_dim_leaves(
-            options.get("dims") or {}
-        )
+        ] + self._state_leaf(options["only_posted"]) + list(leaves)
+
+    @api.model
+    def _actual_domain(self, options, leaves):
+        return [
+            ("company_id", "=", options["company_id"]),
+            ("date", ">=", options["date_from"]),
+            ("date", "<=", options["date_to"]),
+        ] + self._state_leaf(options["only_posted"]) + list(leaves)
+
+    @api.model
+    def _aggregate_budget(self, options, leaves):
+        """``{budget_code: balance}`` of the current revenue budget for the
+        whole fiscal year (appropriation + entry, excluding consume)."""
+        if not options.get("fiscal_year_id"):
+            return {}
         groups = self.env["budget.move.line"].read_group(
-            domain, ["balance:sum"], ["code"]
+            self._budget_domain(options, leaves), ["balance:sum"], ["code"]
         )
         return {
             g["code"]: (g.get("balance") or 0.0) for g in groups if g.get("code")
         }
 
     @api.model
-    def _aggregate_actual(self, options):
+    def _aggregate_actual(self, options, leaves):
         """List of ``{'code', 'type', 'value'}`` for GL accounts with activity
         in the date range, where ``value`` is credit-positive (``credit -
-        debit``) so revenue reads as a positive number."""
-        date_from = options.get("date_from")
-        date_to = options.get("date_to")
-        if not date_from or not date_to:
+        debit``) so revenue reads as a positive number. No account_type
+        restriction on purpose: the row's actual formula scopes the accounts
+        (``A['income']`` by type, ``A['41%']`` by code), so pre-aggregating
+        every account keeps code-based selectors working for non-income
+        accounts too."""
+        if not options.get("date_from") or not options.get("date_to"):
             return []
-        # No account_type restriction here on purpose: the row's actual formula
-        # is what scopes the accounts (``A['income']`` by type, ``A['41%']`` by
-        # code), so pre-aggregating every account keeps code-based selectors
-        # working for accounts that are not income-typed.
-        domain = [
-            ("company_id", "=", options["company_id"]),
-            ("date", ">=", date_from),
-            ("date", "<=", date_to),
-        ] + self._state_leaf(options["only_posted"]) + self._build_dim_leaves(
-            options.get("dims") or {}
-        )
         groups = self.env["account.move.line"].read_group(
-            domain, ["debit:sum", "credit:sum"], ["account_id"]
+            self._actual_domain(options, leaves),
+            ["debit:sum", "credit:sum"],
+            ["account_id"],
         )
         acc_ids = [g["account_id"][0] for g in groups if g.get("account_id")]
         info = {
@@ -137,10 +145,11 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
 
         ``options`` keys: ``company_id``, ``fiscal_year_id`` (drives the
         full-year Budget column), ``date_from`` / ``date_to`` (drive the
-        to-date Actual column), ``only_posted`` (bool) and ``dims``
-        (``{code: [analytic_account_ids]}``). Each row is
-        ``{id, row_type, name, budget, actual, percentage}`` -- header rows
-        carry ``None`` for the three figures.
+        to-date Actual column), ``only_posted`` (bool), ``dims``
+        (``{code: [analytic_account_ids]}``) and ``group_by_department``
+        (bool). Each row is ``{id, row_type, name, budget, actual,
+        percentage}``; ``header`` and ``department`` rows carry ``None`` for
+        the three figures.
         """
         options = options or {}
         company_id = options.get("company_id") or self.env.company.id
@@ -151,14 +160,25 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
             company_id=company_id,
             only_posted=bool(options.get("only_posted", True)),
         )
+        dims = options.get("dims") or {}
 
         lines = self.env["budget.revenue.report.line"].search(
             [("company_id", "=", company_id)], order="sequence, id"
         )
 
-        budget = BudgetResolver(self._aggregate_budget(options))
-        actual = ActualResolver(self._aggregate_actual(options))
+        if options.get("group_by_department"):
+            rows = self._grouped_rows(options, lines, dims)
+        else:
+            rows = self._section_rows(options, lines, self._build_dim_leaves(dims))
 
+        return {"rows": rows, "currency_id": company.currency_id.id}
+
+    @api.model
+    def _section_rows(self, options, lines, leaves):
+        """The indicator rows (report body) computed against ``leaves`` --
+        reused for the flat report, each department section and the total."""
+        budget = BudgetResolver(self._aggregate_budget(options, leaves))
+        actual = ActualResolver(self._aggregate_actual(options, leaves))
         rows = []
         for line in lines:
             if line.row_type == "header":
@@ -167,8 +187,103 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
             budget_amount = self._eval(line, line.budget_formula, budget, actual)
             actual_amount = self._eval(line, line.actual_formula, budget, actual)
             rows.append(self._row(line, budget_amount, actual_amount))
+        return rows
 
-        return {"rows": rows, "currency_id": company.currency_id.id}
+    # ------------------------------------------------------------------
+    # Group by department -- the department dimension becomes a section axis;
+    # the other three dimensions still filter within each section. The grouping
+    # is derived from ``analytic_distribution`` only (no reliance on the stored
+    # department_analytic_id mirror).
+    # ------------------------------------------------------------------
+    @api.model
+    def _grouped_rows(self, options, lines, dims):
+        dims_wo_dept = {k: v for k, v in dims.items() if k != "departments"}
+        base_leaves = self._build_dim_leaves(dims_wo_dept)
+        rows = []
+        for name, dept_leaf in self._department_groups(options, dims, base_leaves):
+            section = self._section_rows(options, lines, base_leaves + [dept_leaf])
+            if not self._section_has_data(section):
+                continue
+            rows.append(self._section_header_row(name))
+            rows.extend(section)
+        # Grand total: respects an explicit department selection, else all data.
+        rows.append(self._section_header_row(_("รวมทุกส่วนงาน")))
+        rows.extend(self._section_rows(options, lines, self._build_dim_leaves(dims)))
+        return rows
+
+    @api.model
+    def _department_groups(self, options, dims, base_leaves):
+        """Yield ``(name, leaf)`` per department section. Explicitly selected
+        departments roll up their descendants (``child_of``); auto-discovered
+        departments use their exact id so the sections stay disjoint."""
+        Analytic = self.env["account.analytic.account"]
+        selected = dims.get("departments") or []
+        if selected:
+            for dept in Analytic.browse(selected).exists():
+                ids = Analytic.search([("id", "child_of", dept.id)]).ids
+                yield dept.display_name, ("analytic_distribution", "in", ids)
+        else:
+            for dept in Analytic.browse(self._discover_department_ids(options, base_leaves)):
+                yield dept.display_name, ("analytic_distribution", "in", [dept.id])
+
+    @api.model
+    def _discover_department_ids(self, options, base_leaves):
+        """Department analytic accounts that actually appear in the period's
+        data, extracted from the ``analytic_distribution`` JSON of both the
+        revenue budget lines and the income GL lines (ordered by the analytic
+        plan for a stable display)."""
+        dept_ids = set(
+            self.env["account.analytic.account"]
+            .search([("root_plan_id.code", "=", "departments")])
+            .ids
+        )
+        if not dept_ids:
+            return []
+        sources = []
+        if options.get("fiscal_year_id"):
+            sources.append(
+                ("budget.move.line", self._budget_domain(options, base_leaves))
+            )
+        if options.get("date_from") and options.get("date_to"):
+            sources.append(
+                (
+                    "account.move.line",
+                    self._actual_domain(options, base_leaves)
+                    + [("account_id.account_type", "in", list(INCOME_TYPES))],
+                )
+            )
+        present = set()
+        for model, domain in sources:
+            for rec in self.env[model].search_read(domain, ["analytic_distribution"]):
+                for key in rec.get("analytic_distribution") or {}:
+                    try:
+                        aid = int(key)
+                    except (TypeError, ValueError):
+                        continue
+                    if aid in dept_ids:
+                        present.add(aid)
+        return (
+            self.env["account.analytic.account"]
+            .search([("id", "in", list(present))])
+            .ids
+        )
+
+    @api.model
+    def _section_header_row(self, name):
+        return {
+            "id": 0,
+            "row_type": "department",
+            "name": name,
+            "budget": None,
+            "actual": None,
+            "percentage": None,
+        }
+
+    @api.model
+    def _section_has_data(self, section):
+        """A section is worth showing if any indicator row carries a non-zero
+        budget or actual figure."""
+        return any(row["budget"] or row["actual"] for row in section)
 
     @api.model
     def _row(self, line, budget_amount, actual_amount):
@@ -248,11 +363,14 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
         center = workbook.add_format({"align": "center"})
 
         label_fmt = {
+            "department": workbook.add_format(
+                {"bold": True, "bg_color": "#e9ecef", "top": 1}
+            ),
             "header": workbook.add_format({"bold": True}),
             "line": workbook.add_format({"indent": 1}),
             "total": workbook.add_format({"bold": True, "top": 1, "indent": 1}),
         }
-        is_bold = {"header", "total"}
+        is_bold = {"department", "header", "total"}
 
         sheet.merge_range(0, 0, 0, 3, company.display_name, bold)
         sheet.merge_range(1, 0, 1, 3, _("Budget vs Actual Revenue"), bold)
@@ -286,7 +404,7 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
                 sheet.write_number(
                     r, 3, row["percentage"], pct_bold if bold_row else pct
                 )
-            elif row["row_type"] != "header":
+            elif row["row_type"] not in ("header", "department"):
                 sheet.write(r, 3, "–", center)
             r += 1
 

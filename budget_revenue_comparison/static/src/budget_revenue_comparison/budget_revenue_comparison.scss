@@ -28,6 +28,12 @@
         }
 
         // Row types
+        .o_brc_department td {
+            font-weight: bold;
+            background-color: #e9ecef;
+            border-top: 2px solid #adb5bd;
+            padding-top: 0.5rem;
+        }
         .o_brc_header td {
             font-weight: bold;
             padding-top: 0.6rem;

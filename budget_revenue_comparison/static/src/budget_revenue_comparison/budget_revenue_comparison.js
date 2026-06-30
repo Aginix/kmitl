@@ -23,6 +23,7 @@ export class BudgetRevenueComparison extends Component {
             dateFrom: false,
             dateTo: false,
             onlyPosted: true,
+            groupByDepartment: false,
             departments: [],
             sources: [],
             funds: [],
@@ -74,6 +75,7 @@ export class BudgetRevenueComparison extends Component {
             date_from: this.state.dateFrom,
             date_to: this.state.dateTo,
             only_posted: this.state.onlyPosted,
+            group_by_department: this.state.groupByDepartment,
             dims: {
                 departments: this.state.departments.map((r) => r.id),
                 sources: this.state.sources.map((r) => r.id),
@@ -127,6 +129,11 @@ export class BudgetRevenueComparison extends Component {
 
     onTogglePosted(ev) {
         this.state.onlyPosted = ev.target.checked;
+        this.load();
+    }
+
+    onToggleGroupByDept(ev) {
+        this.state.groupByDepartment = ev.target.checked;
         this.load();
     }
 

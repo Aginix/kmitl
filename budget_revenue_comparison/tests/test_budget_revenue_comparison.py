@@ -174,3 +174,14 @@ class TestComparisonCompute(TransactionCase):
         self.assertAlmostEqual(row["percentage"], 150.0)
         # ...and None when budget is zero.
         self.assertIsNone(self.Report._row(self.line, 0.0, 500000.0)["percentage"])
+
+    def test_group_by_department_appends_total_section(self):
+        # With no fiscal year/date there is no data to discover departments
+        # from, so no per-department section appears -- but the grand-total
+        # section ("รวมทุกส่วนงาน") is always present, with the configured
+        # indicator rows under it.
+        rows = self.Report.get_comparison_data({"group_by_department": True})["rows"]
+        dept_headers = [r for r in rows if r["row_type"] == "department"]
+        self.assertTrue(dept_headers)
+        self.assertIsNone(dept_headers[0]["budget"])
+        self.assertIn(self.line.name, [r["name"] for r in rows])
