@@ -65,7 +65,7 @@ class KrisProjectReceipt(models.Model):
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="project_id.currency_id",
-        string="สกุลเงิน",
+        string="Currency",
         readonly=True,
     )
     project_state = fields.Selection(
@@ -74,17 +74,22 @@ class KrisProjectReceipt(models.Model):
     )
     fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal Year",
         related="project_id.account_fiscal_year_id",
         store=True,
         index=True,
     )
     project_category_id = fields.Many2one(
         comodel_name="kris.project.category",
-        string="ประเภทโครงการ",
+        string="Project Category",
         related="project_id.project_category_id",
         store=True,
         index=True,
+    )
+    project_name = fields.Char(
+        string="Project Name",
+        related="project_id.project_name",
+        store=True,
     )
 
     def action_delete(self):

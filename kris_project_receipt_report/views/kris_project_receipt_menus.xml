@@ -3,7 +3,7 @@
 
     <menuitem
         id="menu_kris_project_receipt_report"
-        name="รายรับ"
+        name="Receipts"
         parent="kris_project.menu_kris_project_root"
         action="action_kris_project_receipt_report"
         sequence="20"

@@ -8,15 +8,17 @@
         <field name="name">kris.project.receipt.tree.report</field>
         <field name="model">kris.project.receipt</field>
         <field name="arch" type="xml">
-            <tree create="0" edit="0" delete="0" string="รายรับ">
+            <tree create="0" edit="0" delete="0" string="Receipts">
                 <field name="currency_id" invisible="1"/>
-                <field name="project_id" string="โครงการ"/>
-                <field name="date" string="วันที่รับเงิน"/>
-                <field name="installment_id" string="งวดที่"/>
-                <field name="name" string="เลขที่ใบเสร็จ"/>
-                <field name="amount" string="จำนวนเงิน" sum="รวม"/>
-                <field name="net_amount" string="ยอดรับสุทธิ" sum="รวมสุทธิ"/>
-                <field name="note" string="หมายเหตุ" optional="show"/>
+                <field name="project_id" string="Project Number"/>
+                <field name="project_name" string="Project Name"/>
+                <field name="project_category_id" string="Project Category"/>
+                <field name="date" string="Receipt Date"/>
+                <field name="installment_id" string="Installment"/>
+                <field name="name" string="Receipt Number"/>
+                <field name="amount" string="Amount" sum="Total"/>
+                <field name="net_amount" string="Net Amount" sum="Net Total"/>
+                <field name="note" string="Note" optional="show"/>
             </tree>
         </field>
     </record>
@@ -28,7 +30,7 @@
         <field name="name">kris.project.receipt.pivot.report</field>
         <field name="model">kris.project.receipt</field>
         <field name="arch" type="xml">
-            <pivot string="รายรับ (Pivot)" sample="1">
+            <pivot string="Receipts (Pivot)" sample="1">
                 <field name="fiscal_year_id" type="row"/>
                 <field name="project_category_id" type="col"/>
                 <field name="amount" type="measure"/>
@@ -62,46 +64,46 @@
         <field name="name">kris.project.receipt.search.report</field>
         <field name="model">kris.project.receipt</field>
         <field name="arch" type="xml">
-            <search string="รายรับ">
-                <field name="name" string="เลขที่ใบเสร็จ"/>
+            <search string="Receipts">
+                <field name="name" string="Receipt Number"/>
                 <field name="project_id"/>
                 <field name="installment_id"/>
                 <field name="fiscal_year_id"/>
                 <field name="project_category_id"/>
 
                 <filter name="this_year"
-                        string="ปีนี้"
+                        string="This Year"
                         domain="[
                             ('date', '&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
                             ('date', '&lt;=', (context_today() + relativedelta(month=12, day=31)).strftime('%Y-%m-%d')),
                         ]"/>
                 <filter name="last_year"
-                        string="ปีที่แล้ว"
+                        string="Last Year"
                         domain="[
                             ('date', '&gt;=', (context_today() + relativedelta(years=-1, month=1, day=1)).strftime('%Y-%m-%d')),
                             ('date', '&lt;=', (context_today() + relativedelta(years=-1, month=12, day=31)).strftime('%Y-%m-%d')),
                         ]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="gb_date" string="เดือน/ปี"
+                    <filter name="gb_date" string="Month/Year"
                             context="{'group_by': 'date'}"/>
-                    <filter name="gb_fiscal" string="ปีงบประมาณ"
+                    <filter name="gb_fiscal" string="Fiscal Year"
                             context="{'group_by': 'fiscal_year_id'}"/>
-                    <filter name="gb_type" string="ประเภทโครงการ"
+                    <filter name="gb_type" string="Project Category"
                             context="{'group_by': 'project_category_id'}"/>
-                    <filter name="gb_project" string="โครงการ"
+                    <filter name="gb_project" string="Project"
                             context="{'group_by': 'project_id'}"/>
-                    <filter name="gb_installment" string="งวด"
+                    <filter name="gb_installment" string="Installment"
                             context="{'group_by': 'installment_id'}"/>
                 </group>
 
                 <searchpanel>
                     <field name="fiscal_year_id"
-                           string="ปีงบประมาณ"
+                           string="Fiscal Year"
                            select="one"
                            icon="fa-calendar"/>
                     <field name="project_category_id"
-                           string="ประเภทโครงการ"
+                           string="Project Category"
                            select="one"
                            icon="fa-tag"/>
                 </searchpanel>
@@ -113,7 +115,7 @@
     <!-- ACTION                                                       -->
     <!-- ============================================================ -->
     <record id="action_kris_project_receipt_report" model="ir.actions.act_window">
-        <field name="name">รายรับ</field>
+        <field name="name">Receipts</field>
         <field name="res_model">kris.project.receipt</field>
         <field name="view_mode">tree,pivot,form</field>
         <field name="search_view_id" ref="view_kris_project_receipt_search_report"/>
@@ -125,8 +127,8 @@
         ]"/>
         <field name="context">{}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">ยังไม่มีรายรับ</p>
-            <p>รายการรายรับจะแสดงเมื่อมีการบันทึกในหน้าโครงการ</p>
+            <p class="o_view_nocontent_smiling_face">No receipts yet</p>
+            <p>Receipts will appear here when recorded from a project.</p>
         </field>
     </record>
 

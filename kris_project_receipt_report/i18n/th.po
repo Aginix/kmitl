@@ -1,0 +1,130 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kris_project_receipt_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Thai\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: kris_project_receipt_report
+#: model:ir.actions.act_window,name:kris_project_receipt_report.action_kris_project_receipt_report
+msgid "Receipts"
+msgstr "รายรับ"
+
+#. module: kris_project_receipt_report
+#: model:ir.actions.act_window,help:kris_project_receipt_report.action_kris_project_receipt_report
+msgid "No receipts yet"
+msgstr "ยังไม่มีรายรับ"
+
+#. module: kris_project_receipt_report
+#: model:ir.actions.act_window,help:kris_project_receipt_report.action_kris_project_receipt_report
+msgid "Receipts will appear here when recorded from a project."
+msgstr "รายการรายรับจะแสดงเมื่อมีการบันทึกในหน้าโครงการ"
+
+#. module: kris_project_receipt_report
+#: model:ir.ui.menu,name:kris_project_receipt_report.menu_kris_project_receipt_report
+msgid "Receipts"
+msgstr "รายรับ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Project Number"
+msgstr "เลขที่โครงการ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Project Name"
+msgstr "ชื่อโครงการ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Project Category"
+msgstr "ประเภทโครงการ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Receipt Date"
+msgstr "วันที่รับเงิน"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Installment"
+msgstr "งวดที่"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Receipt Number"
+msgstr "เลขที่ใบเสร็จ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Total"
+msgstr "รวม"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Net Amount"
+msgstr "ยอดรับสุทธิ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Net Total"
+msgstr "รวมสุทธิ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_tree_report
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_pivot_report
+msgid "Receipts (Pivot)"
+msgstr "รายรับ (Pivot)"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "This Year"
+msgstr "ปีนี้"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Last Year"
+msgstr "ปีที่แล้ว"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Group By"
+msgstr "จัดกลุ่มตาม"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Month/Year"
+msgstr "เดือน/ปี"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: kris_project_receipt_report
+#: model_terms:ir.ui.view,arch_db:kris_project_receipt_report.view_kris_project_receipt_search_report
+msgid "Project"
+msgstr "โครงการ"
