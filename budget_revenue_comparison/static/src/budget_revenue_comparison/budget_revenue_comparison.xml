@@ -124,26 +124,6 @@
                         onChange="(sel) => this.onSelectionChange('sources', sel)"
                     />
                 </div>
-                <div class="col-md-3">
-                    <label class="o_form_label">Funds</label>
-                    <MultiRecordSelect
-                        resModel="'account.analytic.account'"
-                        domain="[['root_plan_id.code', '=', 'funds']]"
-                        placeholder="labels.funds"
-                        selected="state.funds"
-                        onChange="(sel) => this.onSelectionChange('funds', sel)"
-                    />
-                </div>
-                <div class="col-md-3">
-                    <label class="o_form_label">Activities</label>
-                    <MultiRecordSelect
-                        resModel="'account.analytic.account'"
-                        domain="[['root_plan_id.code', '=', 'activities']]"
-                        placeholder="labels.activities"
-                        selected="state.activities"
-                        onChange="(sel) => this.onSelectionChange('activities', sel)"
-                    />
-                </div>
             </div>
 
             <!-- Report table -->
@@ -154,15 +134,16 @@
                             <th class="o_brc_item">ตัวชี้วัด</th>
                             <th class="text-end o_brc_amount">งบประมาณรายรับ</th>
                             <th class="text-end o_brc_amount">รายรับจริง</th>
+                            <th class="text-end o_brc_amount">ส่วนต่าง</th>
                             <th class="text-end o_brc_pct">%</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr t-if="state.loading">
-                            <td colspan="4" class="text-center text-muted">Loading...</td>
+                            <td colspan="5" class="text-center text-muted">Loading...</td>
                         </tr>
                         <tr t-elif="!state.rows.length">
-                            <td colspan="4" class="text-center text-muted">No data</td>
+                            <td colspan="5" class="text-center text-muted">No data</td>
                         </tr>
                         <tr
                             t-foreach="state.rows"
@@ -173,6 +154,9 @@
                             <td t-esc="row.name" />
                             <td class="text-end" t-esc="formatAmount(row.budget)" />
                             <td class="text-end" t-esc="formatAmount(row.actual)" />
+                            <td t-att-class="'text-end ' + varianceClass(row.variance)">
+                                <t t-if="row.row_type === 'line' or row.row_type === 'total'" t-esc="formatAmount(row.variance)" />
+                            </td>
                             <td class="text-end">
                                 <t t-if="row.row_type === 'line' or row.row_type === 'total'" t-esc="formatPercentage(row.percentage)" />
                             </td>

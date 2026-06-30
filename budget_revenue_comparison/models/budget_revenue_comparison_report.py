@@ -8,10 +8,12 @@ from .formula import ActualResolver, BudgetResolver, eval_formula
 _logger = logging.getLogger(__name__)
 
 # KMITL accounting-dimension plan codes the report can filter on, in display
-# order. Read from each line's ``analytic_distribution`` JSON. ``sources`` is
-# flat; the rest are hierarchical (a pick also matches descendants).
-DIMENSION_CODES = ("departments", "sources", "funds", "activities")
-HIERARCHICAL_DIMS = ("departments", "funds", "activities")
+# order. Read from each line's ``analytic_distribution`` JSON. Only Department
+# and Source apply here -- estimated revenue budget is not allocated by Fund or
+# Activity, so those dimensions are intentionally excluded. ``sources`` is
+# flat; ``departments`` is hierarchical (a pick also matches descendants).
+DIMENSION_CODES = ("departments", "sources")
+HIERARCHICAL_DIMS = ("departments",)
 
 # A budget appropriation/transfer move; ``consume`` is excluded so the Budget
 # column is the *Current Budget (a)* (initial + supplementary + transfers).
@@ -276,6 +278,7 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
             "name": name,
             "budget": None,
             "actual": None,
+            "variance": None,
             "percentage": None,
         }
 
@@ -288,9 +291,15 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
     @api.model
     def _row(self, line, budget_amount, actual_amount):
         # Percentage is meaningful only against a non-zero budget; the OWL/XLSX
-        # layers render ``None`` as a dash.
+        # layers render ``None`` as a dash. Variance = Actual - Budget (positive
+        # means revenue exceeded the target).
         percentage = (
             (actual_amount / budget_amount * 100.0) if budget_amount else None
+        )
+        variance = (
+            actual_amount - budget_amount
+            if actual_amount is not None and budget_amount is not None
+            else None
         )
         return {
             "id": line.id,
@@ -298,6 +307,7 @@ class BudgetRevenueComparisonReport(models.AbstractModel):
             "name": line.name,
             "budget": budget_amount,
             "actual": actual_amount,
+            "variance": variance,
             "percentage": percentage,
         }
 
@@ -361,6 +371,15 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
         pct = workbook.add_format({"num_format": '#,##0.00"%"'})
         pct_bold = workbook.add_format({"bold": True, "num_format": '#,##0.00"%"'})
         center = workbook.add_format({"align": "center"})
+        # Variance: green when revenue >= budget, red when short.
+        var_pos = workbook.add_format({"num_format": "#,##0.00", "font_color": "#1c7c3a"})
+        var_neg = workbook.add_format({"num_format": "#,##0.00", "font_color": "#c0392b"})
+        var_pos_bold = workbook.add_format(
+            {"bold": True, "num_format": "#,##0.00", "font_color": "#1c7c3a"}
+        )
+        var_neg_bold = workbook.add_format(
+            {"bold": True, "num_format": "#,##0.00", "font_color": "#c0392b"}
+        )
 
         label_fmt = {
             "department": workbook.add_format(
@@ -372,13 +391,13 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
         }
         is_bold = {"department", "header", "total"}
 
-        sheet.merge_range(0, 0, 0, 3, company.display_name, bold)
-        sheet.merge_range(1, 0, 1, 3, _("Budget vs Actual Revenue"), bold)
+        sheet.merge_range(0, 0, 0, 4, company.display_name, bold)
+        sheet.merge_range(1, 0, 1, 4, _("Budget vs Actual Revenue"), bold)
         sheet.merge_range(
             2,
             0,
             2,
-            3,
+            4,
             "%s %s %s %s"
             % (
                 _("From"),
@@ -388,7 +407,13 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
             ),
         )
 
-        headers = [_("Indicator"), _("Budget"), _("Actual"), _("%")]
+        headers = [
+            _("Indicator"),
+            _("Budget"),
+            _("Actual"),
+            _("Variance"),
+            _("%"),
+        ]
         for col, title in enumerate(headers):
             sheet.write(4, col, title, bold if col == 0 else center)
 
@@ -400,14 +425,20 @@ class BudgetRevenueComparisonXlsx(models.AbstractModel):
                 sheet.write_number(r, 1, row["budget"], num_bold if bold_row else num)
             if row["actual"] is not None:
                 sheet.write_number(r, 2, row["actual"], num_bold if bold_row else num)
+            if row["variance"] is not None:
+                if row["variance"] < 0:
+                    var_fmt = var_neg_bold if bold_row else var_neg
+                else:
+                    var_fmt = var_pos_bold if bold_row else var_pos
+                sheet.write_number(r, 3, row["variance"], var_fmt)
             if row["percentage"] is not None:
                 sheet.write_number(
-                    r, 3, row["percentage"], pct_bold if bold_row else pct
+                    r, 4, row["percentage"], pct_bold if bold_row else pct
                 )
             elif row["row_type"] not in ("header", "department"):
-                sheet.write(r, 3, "–", center)
+                sheet.write(r, 4, "–", center)
             r += 1
 
         sheet.set_column(0, 0, 48)
-        sheet.set_column(1, 2, 18)
-        sheet.set_column(3, 3, 12)
+        sheet.set_column(1, 3, 18)
+        sheet.set_column(4, 4, 12)

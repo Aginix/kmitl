@@ -162,18 +162,24 @@ class TestComparisonCompute(TransactionCase):
         # Header carries no figures.
         self.assertIsNone(header["budget"])
         self.assertIsNone(header["actual"])
+        self.assertIsNone(header["variance"])
         self.assertIsNone(header["percentage"])
-        # Line aggregates to zero (no FY/date), so percentage is a dash (None).
+        # Line aggregates to zero (no FY/date), so percentage is a dash (None)
+        # while variance is a concrete 0.0 (actual - budget).
         self.assertEqual(line["budget"], 0.0)
         self.assertEqual(line["actual"], 0.0)
+        self.assertEqual(line["variance"], 0.0)
         self.assertIsNone(line["percentage"])
 
-    def test_percentage_against_nonzero_budget(self):
-        # _row computes Actual / Budget * 100 when budget is non-zero.
+    def test_percentage_and_variance_against_nonzero_budget(self):
+        # _row computes Actual / Budget * 100 and Variance = Actual - Budget.
         row = self.Report._row(self.line, 1000000.0, 1500000.0)
         self.assertAlmostEqual(row["percentage"], 150.0)
-        # ...and None when budget is zero.
-        self.assertIsNone(self.Report._row(self.line, 0.0, 500000.0)["percentage"])
+        self.assertAlmostEqual(row["variance"], 500000.0)
+        # Percentage is None against a zero budget; variance still computes.
+        zero_budget = self.Report._row(self.line, 0.0, 500000.0)
+        self.assertIsNone(zero_budget["percentage"])
+        self.assertAlmostEqual(zero_budget["variance"], 500000.0)
 
     def test_group_by_department_appends_total_section(self):
         # With no fiscal year/date there is no data to discover departments

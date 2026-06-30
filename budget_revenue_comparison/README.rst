@@ -20,6 +20,8 @@ Columns
 * **รายรับจริง (Actual)** — recognized revenue from the General Ledger
   (posted ``account.move.line`` on income-type accounts) up to the chosen
   as-of date
+* **ส่วนต่าง (Variance)** — Actual − Budget; green when revenue met/exceeded
+  the target, red when short
 * **%** — Actual ÷ Budget × 100 (dash when Budget is zero)
 
 The full-year Budget vs to-date Actual asymmetry makes the percentage read as
@@ -47,8 +49,10 @@ Output
 ======
 
 * Interactive OWL screen (budget *รายงาน* menu), filterable by fiscal year, an
-  as-of date, posted-only, and the four KMITL accounting dimensions
-  (department / source / fund / activity)
+  as-of date, posted-only, and the **Department** and **Source** dimensions
+  (Fund / Activity are excluded — estimated revenue budget is not allocated by
+  them). A *จำแนกตามส่วนงาน* toggle breaks the report into one section per
+  department.
 * XLSX export sharing the same compute
 
 This module deliberately does **not** use OCA MIS Builder; see

@@ -8,9 +8,10 @@ import { MultiRecordSelect } from "./multi_record_select";
 
 const REPORT_MODEL = "budget.revenue.comparison.report";
 
-// Selected-record state buckets that feed the report options (the four KMITL
-// accounting dimensions).
-const SELECTION_KEYS = ["departments", "sources", "funds", "activities"];
+// Selected-record state buckets that feed the report options. Only Department
+// and Source apply -- estimated revenue budget is not allocated by Fund or
+// Activity.
+const SELECTION_KEYS = ["departments", "sources"];
 
 export class BudgetRevenueComparison extends Component {
     setup() {
@@ -26,16 +27,12 @@ export class BudgetRevenueComparison extends Component {
             groupByDepartment: false,
             departments: [],
             sources: [],
-            funds: [],
-            activities: [],
             rows: [],
             loading: false,
         });
         this.labels = {
             departments: _t("Departments"),
             sources: _t("Sources"),
-            funds: _t("Funds"),
-            activities: _t("Activities"),
         };
         onWillStart(this.onWillStart.bind(this));
     }
@@ -79,8 +76,6 @@ export class BudgetRevenueComparison extends Component {
             dims: {
                 departments: this.state.departments.map((r) => r.id),
                 sources: this.state.sources.map((r) => r.id),
-                funds: this.state.funds.map((r) => r.id),
-                activities: this.state.activities.map((r) => r.id),
             },
         };
     }
@@ -167,6 +162,14 @@ export class BudgetRevenueComparison extends Component {
                 maximumFractionDigits: 2,
             }) + "%"
         );
+    }
+
+    // Green when actual met/exceeded budget, red when short.
+    varianceClass(value) {
+        if (value === null || value === undefined) {
+            return "";
+        }
+        return value < 0 ? "text-danger" : "text-success";
     }
 
     async exportXlsx() {

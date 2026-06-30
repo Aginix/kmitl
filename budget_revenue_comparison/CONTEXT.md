@@ -14,7 +14,15 @@ _Avoid_: cash received, collections, receipts (those imply cash basis, which is 
 
 **Percentage (%)**:
 Actual ÷ Budget × 100 — the share of the annual revenue target realized. Rendered to 2 decimals; shown as a dash (`–`) when Budget is zero (a percentage of nothing is meaningless). Header rows carry no percentage; total rows take it from their own Budget/Actual figures.
-_Avoid_: variance, achievement ratio (keep the single label "Percentage")
+_Avoid_: achievement ratio (keep the single label "Percentage")
+
+**Variance (ส่วนต่าง)**:
+Actual − Budget — the absolute gap between realized and budgeted revenue. Positive (revenue met or exceeded the target) renders green, negative (a shortfall) renders red. Unlike Percentage it is defined even when Budget is zero. Header/department rows carry none.
+_Avoid_: difference, gap (keep the single label "Variance / ส่วนต่าง"); do not conflate with Percentage
+
+**Report dimensions (มิติที่ใช้กรอง/จำแนก)**:
+Only **Department (ส่วนงาน)** and **Source (แหล่งเงิน)** apply — estimated revenue budget is not allocated by Fund or Activity, so those two dimensions are deliberately excluded from both the filters and the group-by axis. Department additionally serves as the optional group-by section axis; both are read from `analytic_distribution`.
+_Avoid_: funds, activities (not used here), the four-dimension set (that is the accounting-reports module)
 
 **Indicator (ตัวชี้วัด)**:
 A configured row of the report (`budget.revenue.report.line`), carrying a label, a `sequence`, a `row_type` (`header` / `line` / `total`), and — for `line`/`total` rows — two free-text formulas: a **budget formula** (`B[...]` over revenue budget codes) and an **actual formula** (`A[...]` over GL income accounts). The report is the flat, sequence-ordered list of these rows; there is no parent-child nesting and no auto-summing (a total row sums via its own formula, e.g. `B['4%']`).
