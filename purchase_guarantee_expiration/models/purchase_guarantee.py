@@ -8,6 +8,14 @@ ACTIVITY_TYPE_XMLID = (
     "purchase_guarantee_expiration.mail_activity_type_guarantee_expiring"
 )
 
+_EXPIRY_TRIGGER_FIELDS = {
+    "state",
+    "date_due_guarantee",
+    "date_return",
+    "purchase_id",
+    "requisition_id",
+}
+
 
 class PurchaseGuarantee(models.Model):
     _inherit = "purchase.guarantee"
@@ -69,9 +77,24 @@ class PurchaseGuarantee(models.Model):
     # ------------------------------------------------------------------
     # Expiry Todo (mail_activity_todo)
     # ------------------------------------------------------------------
+    def _expiry_activity_wanted(self):
+        self.ensure_one()
+        return self.state == "lock" and not self.date_return
+
     def _expiry_activity_user(self):
         self.ensure_one()
         return self.purchase_id.user_id or self.requisition_id.user_id
+
+    def _expiry_activity_deadline(self):
+        self.ensure_one()
+        return self.date_due_guarantee
+
+    def _expiry_activity_summary(self):
+        self.ensure_one()
+        return _("Purchase Guarantee %s expires on %s") % (
+            self.name,
+            self.date_due_guarantee,
+        )
 
     def _sync_expiry_activity(self):
         activity_type = self.env.ref(ACTIVITY_TYPE_XMLID, raise_if_not_found=False)
@@ -87,53 +110,35 @@ class PurchaseGuarantee(models.Model):
                 ],
                 limit=1,
             )
-            user = guarantee._expiry_activity_user()
-            should_exist = (
-                guarantee.state == "draft"
-                and not guarantee.date_return
-                and guarantee.date_due_guarantee
-                and user
-            )
-            if should_exist:
-                summary = _("Purchase Guarantee %s expires on %s") % (
-                    guarantee.name or "",
-                    guarantee.date_due_guarantee,
-                )
-                if existing:
-                    vals = {}
-                    if existing.date_deadline != guarantee.date_due_guarantee:
-                        vals["date_deadline"] = guarantee.date_due_guarantee
-                    if existing.user_id != user:
-                        vals["user_id"] = user.id
-                    if existing.summary != summary:
-                        vals["summary"] = summary
-                    if vals:
-                        existing.write(vals)
-                else:
-                    guarantee.activity_schedule(
-                        act_type_xmlid=ACTIVITY_TYPE_XMLID,
-                        user_id=user.id,
-                        date_deadline=guarantee.date_due_guarantee,
-                        summary=summary,
-                    )
-            elif existing:
+            if not guarantee._expiry_activity_wanted():
                 existing.unlink()
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        records._sync_expiry_activity()
-        return records
+                continue
+            owner = guarantee._expiry_activity_user()
+            deadline = guarantee._expiry_activity_deadline()
+            if not owner or not deadline:
+                existing.unlink()
+                continue
+            summary = guarantee._expiry_activity_summary()
+            if existing:
+                vals = {}
+                if existing.user_id != owner:
+                    vals["user_id"] = owner.id
+                if existing.date_deadline != deadline:
+                    vals["date_deadline"] = deadline
+                if existing.summary != summary:
+                    vals["summary"] = summary
+                if vals:
+                    existing.write(vals)
+            else:
+                guarantee.activity_schedule(
+                    act_type_xmlid=ACTIVITY_TYPE_XMLID,
+                    user_id=owner.id,
+                    date_deadline=deadline,
+                    summary=summary,
+                )
 
     def write(self, vals):
         res = super().write(vals)
-        watched = {
-            "date_due_guarantee",
-            "date_return",
-            "state",
-            "purchase_id",
-            "requisition_id",
-        }
-        if watched & set(vals):
+        if _EXPIRY_TRIGGER_FIELDS & set(vals):
             self._sync_expiry_activity()
         return res

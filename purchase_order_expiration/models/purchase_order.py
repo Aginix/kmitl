@@ -4,8 +4,9 @@ from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
-ACTIVE_STATES = ("draft", "sent", "to approve", "purchase")
 ACTIVITY_TYPE_XMLID = "purchase_order_expiration.mail_activity_type_po_expiring"
+
+_EXPIRY_TRIGGER_FIELDS = {"state", "work_end", "user_id"}
 
 
 class PurchaseOrder(models.Model):
@@ -68,6 +69,22 @@ class PurchaseOrder(models.Model):
     # ------------------------------------------------------------------
     # Expiry Todo (mail_activity_todo)
     # ------------------------------------------------------------------
+    def _expiry_activity_wanted(self):
+        self.ensure_one()
+        return self.state == "purchase"
+
+    def _expiry_activity_user(self):
+        self.ensure_one()
+        return self.user_id
+
+    def _expiry_activity_deadline(self):
+        self.ensure_one()
+        return self.work_end
+
+    def _expiry_activity_summary(self):
+        self.ensure_one()
+        return _("Purchase Order %s expires on %s") % (self.name, self.work_end)
+
     def _sync_expiry_activity(self):
         activity_type = self.env.ref(ACTIVITY_TYPE_XMLID, raise_if_not_found=False)
         if not activity_type:
@@ -82,40 +99,35 @@ class PurchaseOrder(models.Model):
                 ],
                 limit=1,
             )
-            should_exist = po.state in ACTIVE_STATES and po.work_end and po.user_id
-            if should_exist:
-                summary = _("Purchase Order %s expires on %s") % (
-                    po.name or "",
-                    po.work_end,
-                )
-                if existing:
-                    vals = {}
-                    if existing.date_deadline != po.work_end:
-                        vals["date_deadline"] = po.work_end
-                    if existing.user_id != po.user_id:
-                        vals["user_id"] = po.user_id.id
-                    if existing.summary != summary:
-                        vals["summary"] = summary
-                    if vals:
-                        existing.write(vals)
-                else:
-                    po.activity_schedule(
-                        act_type_xmlid=ACTIVITY_TYPE_XMLID,
-                        user_id=po.user_id.id,
-                        date_deadline=po.work_end,
-                        summary=summary,
-                    )
-            elif existing:
+            if not po._expiry_activity_wanted():
                 existing.unlink()
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        records._sync_expiry_activity()
-        return records
+                continue
+            owner = po._expiry_activity_user()
+            deadline = po._expiry_activity_deadline()
+            if not owner or not deadline:
+                existing.unlink()
+                continue
+            summary = po._expiry_activity_summary()
+            if existing:
+                vals = {}
+                if existing.user_id != owner:
+                    vals["user_id"] = owner.id
+                if existing.date_deadline != deadline:
+                    vals["date_deadline"] = deadline
+                if existing.summary != summary:
+                    vals["summary"] = summary
+                if vals:
+                    existing.write(vals)
+            else:
+                po.activity_schedule(
+                    act_type_xmlid=ACTIVITY_TYPE_XMLID,
+                    user_id=owner.id,
+                    date_deadline=deadline,
+                    summary=summary,
+                )
 
     def write(self, vals):
         res = super().write(vals)
-        if {"work_end", "user_id", "state"} & set(vals):
+        if _EXPIRY_TRIGGER_FIELDS & set(vals):
             self._sync_expiry_activity()
         return res
