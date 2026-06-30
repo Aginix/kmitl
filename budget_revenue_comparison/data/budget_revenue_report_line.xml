@@ -11,14 +11,28 @@
         <field name="sequence">2</field>
         <field name="row_type">line</field>
         <field name="name">รายได้จากค่าธรรมเนียมการศึกษา</field>
-        <field name="budget_formula">B['43100%'] + B['412101%'] + B['412400%']</field>
-        <field name="actual_formula">A['412103%']</field>
+        <field name="budget_formula">B['43100'] + B['412101%'] + B['412400%']</field>
+        <field name="actual_formula">A['412101%'] + A['412102%']</field>
     </record>
     <record id="line_revenue_academic_service" model="budget.revenue.report.line">
         <field name="sequence">3</field>
         <field name="row_type">line</field>
         <field name="name">รายได้จากงานบริการวิชาการ</field>
-        <field name="budget_formula">B['43300%'] + B['412103%']</field>
+        <field name="budget_formula">B['43300'] + B['412103%']</field>
         <field name="actual_formula">A['412103%']</field>
+    </record>
+    <record id="line_revenue_benefit" model="budget.revenue.report.line">
+        <field name="sequence">4</field>
+        <field name="row_type">line</field>
+        <field name="name">รายได้จากเงินผลประโยชน์</field>
+        <field name="budget_formula">B['43400'] + B['412104%']</field>
+        <field name="actual_formula">A['412104%']</field>
+    </record>
+    <record id="line_revenue_donation" model="budget.revenue.report.line">
+        <field name="sequence">5</field>
+        <field name="row_type">line</field>
+        <field name="name">รายได้จากการรับบริจาค หรือ เงินอุดหนุน</field>
+        <field name="budget_formula">B['43500'] + B['412200%'] + B['43600'] + B['221%'] + B['223%']</field>
+        <field name="actual_formula">A['412200%'] + A['412105%']</field>
     </record>
 </odoo>
