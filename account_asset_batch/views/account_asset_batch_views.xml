@@ -101,8 +101,8 @@
                             options="{'horizontal': true}"
                             force_save="1"
                         />
-                        <field name="date" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <field name="account_fiscal_year_id" attrs="{'readonly': [('source_of_asset','not in', ('donation', 'transfer'))]}" force_save="1"/>
+                        <field name="date" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="contract_number" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
                         <field name="purchase_id" readonly="1" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
                         <field
@@ -150,6 +150,7 @@
                         </page>
                         <page string="Analytic">
                             <group attrs="{'readonly': [('is_editable','=', False)]}">
+                                <field name="analytic_distribution" widget="analytic_distribution"/>
                                 <field name="source_analytic_id" />
                                 <field name="department_analytic_id" />
                                 <field name="fund_analytic_id" />

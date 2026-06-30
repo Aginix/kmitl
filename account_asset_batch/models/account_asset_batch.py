@@ -231,7 +231,26 @@ class AccountAssetBatch(models.Model):
             purchase = self.env["purchase.order"].browse(purchase_id)
             if purchase.operating_unit_id:
                 res["operating_unit_id"] = purchase.operating_unit_id.id
+            res["analytic_distribution"] = self._asset_analytic_distribution(
+                purchase.analytic_distribution
+            )
         return res
+
+    def _asset_analytic_distribution(self, raw_dist):
+        """Filter an analytic_distribution to the plan codes supported by
+        account.asset (sources / departments / funds / activities)."""
+        raw_dist = raw_dist or {}
+        if not raw_dist:
+            return False
+        asset_keys = set(self.env["account.asset"]._analytic_keys)
+        accounts = self.env["account.analytic.account"].browse(
+            [int(k) for k in raw_dist]
+        )
+        return {
+            str(aa.id): raw_dist[str(aa.id)]
+            for aa in accounts
+            if aa.plan_id.code in asset_keys
+        } or False
 
     def action_register_assets(self):
         for batch in self:
@@ -242,23 +261,12 @@ class AccountAssetBatch(models.Model):
                 raise ValidationError(_("Some lines have zero amount. Please correct them before proceeding."))
 
             # Filter analytic_distribution to plan codes supported by account.asset
-            asset_keys = set(self.env["account.asset"]._analytic_keys)
             raw_dist = (
                 batch.purchase_id.analytic_distribution
                 if batch.purchase_id
                 else batch.analytic_distribution
-            ) or {}
-            if raw_dist:
-                accounts = self.env["account.analytic.account"].browse(
-                    [int(k) for k in raw_dist]
-                )
-                analytic_distribution = {
-                    str(aa.id): raw_dist[str(aa.id)]
-                    for aa in accounts
-                    if aa.plan_id.code in asset_keys
-                } or False
-            else:
-                analytic_distribution = False
+            )
+            analytic_distribution = batch._asset_analytic_distribution(raw_dist)
 
             for line in batch.line_ids:
                 for _ in range(line.amount):
