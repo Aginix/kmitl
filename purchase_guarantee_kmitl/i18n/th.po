@@ -408,3 +408,38 @@ msgstr "เงินสด/เงินโอน"
 #: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
 msgid "Group By"
 msgstr "จัดกลุ่มตาม"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Vendor"
+msgstr "คู่ค้า"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Contract Number"
+msgstr "เลขที่สัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Contract Name"
+msgstr "ชื่อสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Contract Type"
+msgstr "ประเภทสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Guarantee Type"
+msgstr "ประเภทหลักประกัน"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Contract Status"
+msgstr "สถานะสัญญา"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_contract_guarantee_report_search
+msgid "Guarantee Return Status"
+msgstr "สถานะการคืนหลักประกัน"
