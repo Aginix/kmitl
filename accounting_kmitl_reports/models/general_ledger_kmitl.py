@@ -72,7 +72,11 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
 
         # KMITL dimensions (and the optional journal filter) ride along on the
         # engine's extra_domain, which is AND-ed into every move-line query.
-        extra_domain = list(self._kmitl_build_dim_leaves(options.get("dims") or {}))
+        extra_domain = list(
+            self._kmitl_build_dim_leaves(
+                options.get("dims") or {}, options.get("dim_only_self")
+            )
+        )
         if journal_ids:
             extra_domain += [("journal_id", "in", journal_ids)]
 
@@ -129,8 +133,22 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                     move_ids.add(ml["entry_id"])
                 for aid in ml.get("analytic_distribution") or {}:
                     analytic_ids.add(int(aid))
-        ana_map = self._kmitl_analytic_map(analytic_ids)
         move_map = self._kmitl_move_detail_map(move_ids)
+        # Every line of each referenced entry, to explode the selected account's
+        # lines into their opposite-side counterparts (the Account column).
+        move_lines_map = self._kmitl_move_lines_map(move_ids, company_id)
+        cp_account_ids = set()
+        for cp_lines in move_lines_map.values():
+            for cp in cp_lines:
+                if cp["account_id"]:
+                    cp_account_ids.add(cp["account_id"][0])
+                for aid in cp.get("analytic_distribution") or {}:
+                    analytic_ids.add(int(aid))
+        acc_name = {
+            a.id: ("%s %s" % (a.code or "", a.name or "")).strip()
+            for a in self.env["account.account"].browse(list(cp_account_ids)).exists()
+        }
+        ana_map = self._kmitl_analytic_map(analytic_ids)
         dim_labels = {
             "funds": _("Fund"),
             "departments": _("Department"),
@@ -138,48 +156,110 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             "sources": _("Source"),
         }
 
+        def build_dimensions(distribution):
+            """KMITL dimension chips (expand panel) from an analytic
+            distribution, ordered by ``_GL_DIM_PLANS``."""
+            by_plan = {}
+            for aid in distribution or {}:
+                plan, code, name = ana_map.get(int(aid), ("", "", ""))
+                if plan:
+                    by_plan.setdefault(plan, []).append((code, name))
+            dims = []
+            for plan in self._GL_DIM_PLANS:
+                for code, name in by_plan.get(plan, []):
+                    # Display as "[code] name" (e.g. "[0000] ไม่ระบุกองทุน").
+                    value = ("[%s] %s" % (code, name)).strip() if code else (name or "")
+                    dims.append({"label": dim_labels[plan], "value": value})
+            return dims
+
         accounts = []
         for acc in general_ledger:
-            lines = []
+            sel_id = acc["id"]
+            sel_label = ("%s %s" % (acc["code"] or "", acc["name"] or "")).strip()
             period_debit = 0.0
             period_credit = 0.0
+            # Group the selected account's lines per entry, keeping the OCA
+            # date order (dict preserves insertion order).
+            groups = {}
             for ml in acc.get("move_lines", []):
                 period_debit += ml.get("debit") or 0.0
                 period_credit += ml.get("credit") or 0.0
-                # Group the line's analytic accounts by KMITL dimension plan
-                # (shown in the expand detail panel, ApprovalQueue style).
-                by_plan = {}
-                for aid in ml.get("analytic_distribution") or {}:
-                    plan, code, name = ana_map.get(int(aid), ("", "", ""))
-                    if plan:
-                        by_plan.setdefault(plan, []).append((code, name))
-                dimensions = []
-                for plan in self._GL_DIM_PLANS:
-                    for code, name in by_plan.get(plan, []):
-                        # Display as "[code] name" (e.g. "[0000] ไม่ระบุกองทุน").
-                        value = ("[%s] %s" % (code, name)).strip() if code else (name or "")
-                        dimensions.append(
-                            {"label": dim_labels[plan], "value": value}
-                        )
-                detail = move_map.get(ml.get("entry_id"), {})
-                lines.append(
-                    {
-                        "id": ml["id"],
-                        "date": fields.Date.to_string(ml["date"]) if ml["date"] else "",
-                        "issue": ml.get("entry") or "",
-                        "entry_id": ml.get("entry_id") or False,
-                        # Remark column shows the journal entry's narration.
-                        "narration": detail.get("narration") or "",
-                        "debit": ml.get("debit") or 0.0,
-                        "credit": ml.get("credit") or 0.0,
-                        "balance": ml.get("balance") or 0.0,
-                        # Expand detail (ApprovalQueue-style panel)
-                        "dimensions": dimensions,
-                        "partner": ml.get("partner_name") or "",
-                        "maker": detail.get("maker") or "",
-                        "maker_date": detail.get("maker_date") or "",
-                    }
+                groups.setdefault(ml.get("entry_id"), []).append(ml)
+
+            lines = []
+            running = acc["init_bal"]["balance"]
+            for entry_id, sel_lines in groups.items():
+                head = sel_lines[0]
+                sel_net = sum(
+                    (m.get("debit") or 0.0) - (m.get("credit") or 0.0) for m in sel_lines
                 )
+                # Side of the selected account in this entry; counterparts are
+                # the opposite side and their amount mirrors onto this side.
+                side = "debit" if sel_net >= 0 else "credit"
+                detail = move_map.get(entry_id, {})
+                base = {
+                    "date": fields.Date.to_string(head["date"]) if head.get("date") else "",
+                    "issue": head.get("entry") or "",
+                    "entry_id": entry_id or False,
+                    # Remark column shows the journal entry's narration.
+                    "narration": detail.get("narration") or "",
+                    "maker": detail.get("maker") or "",
+                    "maker_date": detail.get("maker_date") or "",
+                }
+                # Opposite-side lines (exclude the selected account itself);
+                # opposite-side tax lines are kept so amounts still tie out.
+                cps = [
+                    cp
+                    for cp in move_lines_map.get(entry_id, [])
+                    if cp["account_id"]
+                    and cp["account_id"][0] != sel_id
+                    and (
+                        (cp["credit"] or 0.0) > 0
+                        if side == "debit"
+                        else (cp["debit"] or 0.0) > 0
+                    )
+                ]
+                group_rows = []
+                if cps:
+                    for cp in cps:
+                        amt = (cp["credit"] if side == "debit" else cp["debit"]) or 0.0
+                        debit = amt if side == "debit" else 0.0
+                        credit = amt if side == "credit" else 0.0
+                        # Running balance accumulates each displayed row, so the
+                        # column always foots (prev ± this row's debit/credit).
+                        running += debit - credit
+                        group_rows.append(
+                            dict(
+                                base,
+                                id="%s-%s-%s" % (sel_id, entry_id, cp["id"]),
+                                account=acc_name.get(cp["account_id"][0], ""),
+                                debit=debit,
+                                credit=credit,
+                                balance=running,
+                                dimensions=build_dimensions(cp.get("analytic_distribution")),
+                                partner=cp["partner_id"][1] if cp.get("partner_id") else "",
+                            )
+                        )
+                else:
+                    # No opposite-side line (e.g. a same-side-only adjustment):
+                    # keep one row for the selected account so nothing is lost.
+                    debit = sum(m.get("debit") or 0.0 for m in sel_lines)
+                    credit = sum(m.get("credit") or 0.0 for m in sel_lines)
+                    running += debit - credit
+                    group_rows.append(
+                        dict(
+                            base,
+                            id="%s-%s-%s" % (sel_id, entry_id, head["id"]),
+                            account=sel_label,
+                            debit=debit,
+                            credit=credit,
+                            balance=running,
+                            dimensions=build_dimensions(head.get("analytic_distribution")),
+                            partner=head.get("partner_name") or "",
+                        )
+                    )
+                lines.extend(group_rows)
+
             accounts.append(
                 {
                     "id": acc["id"],
@@ -188,9 +268,12 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
                     "initial_balance": acc["init_bal"]["balance"],
                     "period_debit": period_debit,
                     "period_credit": period_credit,
-                    "final_debit": acc["fin_bal"]["debit"],
-                    "final_credit": acc["fin_bal"]["credit"],
-                    "final_balance": acc["fin_bal"]["balance"],
+                    # Carried-forward foots the displayed columns: the balance
+                    # is the running total of every row's Debit/Credit, so it
+                    # equals initial_balance + final_debit - final_credit.
+                    "final_debit": sum(line["debit"] for line in lines),
+                    "final_credit": sum(line["credit"] for line in lines),
+                    "final_balance": running,
                     "lines": lines,
                 }
             )
@@ -235,12 +318,39 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         return result
 
     @api.model
+    def _kmitl_move_lines_map(self, move_ids, company_id):
+        """``{move_id: [line_dict, ...]}`` with every posting line of each
+        referenced entry (section/note lines excluded). Used to explode each
+        selected-account line into the entry's opposite-side counterpart lines
+        (the Account column)."""
+        if not move_ids:
+            return {}
+        rows = self.env["account.move.line"].search_read(
+            [
+                ("move_id", "in", list(move_ids)),
+                ("company_id", "=", company_id),
+                ("display_type", "not in", ["line_section", "line_note"]),
+            ],
+            ["move_id", "account_id", "debit", "credit", "analytic_distribution", "partner_id"],
+        )
+        result = {}
+        for r in rows:
+            result.setdefault(r["move_id"][0], []).append(r)
+        return result
+
+    @api.model
     def _kmitl_format_amount(self, value):
         """Shared number formatting (kept identical to the OWL side so the PDF
         mirrors the screen). Blank for ~zero to reduce clutter."""
         if not value or abs(value) < 0.005:
             return ""
         return "{:,.2f}".format(value)
+
+    @api.model
+    def _kmitl_format_total(self, value):
+        """Like :meth:`_kmitl_format_amount` but renders an exact zero as
+        ``0.00`` — used by the carried-forward column totals."""
+        return "{:,.2f}".format(value or 0.0)
 
     # ------------------------------------------------------------------
     # PDF / XLSX export — return the report action so the OWL client action
@@ -289,6 +399,7 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             "res_company": company,
             "accounts": result["accounts"],
             "format_amount": self._kmitl_format_amount,
+            "format_total": self._kmitl_format_total,
             "date_from_label": format_date(self.env, options.get("date_from")),
             "date_to_label": format_date(self.env, options.get("date_to")),
         }
@@ -302,8 +413,8 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
     _description = "KMITL General Ledger XLSX"
     _inherit = "report.report_xlsx.abstract"
 
-    # Date | Issue | Remark | Debit | Credit | Balance
-    _AMOUNT_COLS = (3, 4, 5)
+    # Date | Issue | Account | Remark | Debit | Credit | Balance
+    _AMOUNT_COLS = (4, 5, 6)
 
     def generate_xlsx_report(self, workbook, data, objs):
         data = data or {}
@@ -332,14 +443,19 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
         num_bold = workbook.add_format(
             {"border": 1, "bold": True, "num_format": "#,##0.00"}
         )
+        # Zebra-striped variants for alternating data rows (readability).
+        cell_alt = workbook.add_format({"border": 1, "bg_color": "#F6F8FA"})
+        num_alt = workbook.add_format(
+            {"border": 1, "num_format": "#,##0.00", "bg_color": "#F6F8FA"}
+        )
 
-        sheet.merge_range(0, 0, 0, 5, company.display_name, bold)
-        sheet.merge_range(1, 0, 1, 5, _("General Ledger"), bold)
+        sheet.merge_range(0, 0, 0, 6, company.display_name, bold)
+        sheet.merge_range(1, 0, 1, 6, _("General Ledger"), bold)
         sheet.merge_range(
             2,
             0,
             2,
-            5,
+            6,
             "%s %s %s %s"
             % (
                 _("From"),
@@ -352,6 +468,7 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
         headers = [
             _("Date"),
             _("Issue"),
+            _("Account"),
             _("Remark"),
             _("Debit"),
             _("Credit"),
@@ -361,39 +478,47 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
         for col, label in enumerate(headers):
             sheet.write(row_top, col, label, head)
 
-        def write_amounts(row_idx, values, fmt):
+        def write_amounts(row_idx, values, fmt, blank_zero=True):
             for col, value in zip(self._AMOUNT_COLS, values):
-                if not value or abs(value) < 0.005:
+                if blank_zero and (not value or abs(value) < 0.005):
                     sheet.write_blank(row_idx, col, None, fmt)
                 else:
-                    sheet.write_number(row_idx, col, value, fmt)
+                    sheet.write_number(row_idx, col, value or 0.0, fmt)
 
         r = row_top + 1
         for acc in accounts:
             sheet.merge_range(
-                r, 0, r, 5, "%s - %s" % (acc["code"], acc["name"]), acc_fmt
+                r, 0, r, 6, "%s - %s" % (acc["code"], acc["name"]), acc_fmt
             )
             r += 1
             # Opening balance (ยอดยกมา)
-            sheet.merge_range(r, 0, r, 2, _("Opening Balance"), cell)
+            sheet.merge_range(r, 0, r, 3, _("Opening Balance"), cell)
             write_amounts(r, [None, None, acc["initial_balance"]], num)
             r += 1
-            for line in acc["lines"]:
-                sheet.write(r, 0, line["date"], cell)
-                sheet.write(r, 1, line["issue"], cell)
-                sheet.write(r, 2, line["narration"], cell)
-                write_amounts(r, [line["debit"], line["credit"], line["balance"]], num)
+            for idx, line in enumerate(acc["lines"]):
+                # Alternate row shading for readability.
+                row_cell = cell_alt if idx % 2 else cell
+                row_num = num_alt if idx % 2 else num
+                sheet.write(r, 0, line["date"], row_cell)
+                sheet.write(r, 1, line["issue"], row_cell)
+                sheet.write(r, 2, line["account"], row_cell)
+                sheet.write(r, 3, line["narration"], row_cell)
+                write_amounts(
+                    r, [line["debit"], line["credit"], line["balance"]], row_num
+                )
                 r += 1
-            # Closing balance (ยอดยกไป)
-            sheet.merge_range(r, 0, r, 2, _("Carried Forward"), num_bold)
+            # Closing balance (ยอดยกไป) — totals always shown, even when zero.
+            sheet.merge_range(r, 0, r, 3, _("Carried Forward"), num_bold)
             write_amounts(
                 r,
                 [acc["final_debit"], acc["final_credit"], acc["final_balance"]],
                 num_bold,
+                blank_zero=False,
             )
             r += 1
 
         sheet.set_column(0, 0, 12)
         sheet.set_column(1, 1, 18)
-        sheet.set_column(2, 2, 50)
-        sheet.set_column(3, 5, 15)
+        sheet.set_column(2, 2, 24)
+        sheet.set_column(3, 3, 50)
+        sheet.set_column(4, 6, 15)

@@ -33,6 +33,14 @@ export class AgedPartnerBalance extends Component {
             sources: [],
             funds: [],
             activities: [],
+            // Per-dimension "only the specified entry" toggles. When false
+            // (default) a selected node also matches its descendants.
+            dimOnlySelf: {
+                departments: false,
+                sources: false,
+                funds: false,
+                activities: false,
+            },
             accounts_data: [],
             totals: {},
             loading: false,
@@ -72,6 +80,7 @@ export class AgedPartnerBalance extends Component {
                 funds: this.state.funds.map((r) => r.id),
                 activities: this.state.activities.map((r) => r.id),
             },
+            dim_only_self: { ...this.state.dimOnlySelf },
         };
     }
 
@@ -121,6 +130,12 @@ export class AgedPartnerBalance extends Component {
         }
     }
 
+    // Toggle a dimension's "only the specified entry" flag (no descendants).
+    onToggleDimOnlySelf(code, value) {
+        this.state.dimOnlySelf[code] = value;
+        this.load();
+    }
+
     // ------------------------------------------------------------------
     // Rendering helpers
     // ------------------------------------------------------------------
@@ -132,6 +147,11 @@ export class AgedPartnerBalance extends Component {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
+    }
+
+    // Muted-red class for negative amounts (the minus sign carries the meaning).
+    negClass(value) {
+        return value < 0 ? "o_kmitl_amount_neg" : "";
     }
 
     async printPdf() {

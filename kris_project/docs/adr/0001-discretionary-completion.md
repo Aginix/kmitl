@@ -13,7 +13,11 @@ schedule or money-completeness:
 - A single งวด may be recorded across **multiple Receipts** and may be **over-collected**
   (its received total may exceed the งวด amount). The receipt wizard pre-fills only the
   outstanding remainder, but does not cap the entry, so a fully-received งวด stays
-  selectable for a later correction or extra income.
+  selectable for a later correction or extra income. The same allowance applies
+  **per allocator**: a Receipt's per-allocation-line amount is not capped against the
+  allocation line's `estimated_amount`, and the Installment breakdown's "remaining"
+  cell clamps at 0 once the plan is met (never negative) so over-allocation reads as
+  exhausted rather than an error.
 
 ## Why record this
 

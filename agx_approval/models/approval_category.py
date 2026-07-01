@@ -98,7 +98,6 @@ class ApprovalCategory(models.Model):
             "views": [[False, "form"]],
             "context": {
                 'form_view_initial_mode': 'edit',
-                'default_name': "/",
                 'default_category_id': self.id,
             },
         }

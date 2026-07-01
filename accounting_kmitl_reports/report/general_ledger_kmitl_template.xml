@@ -67,12 +67,16 @@
                             font-weight: bold;
                             background-color: #f6f6f6;
                         }
+                        table.kmitl-general-ledger tr.gl-stripe td {
+                            background-color: #f6f8fa;
+                        }
                     </style>
                     <table class="kmitl-general-ledger">
                         <thead style="display: table-header-group;">
                             <tr>
                                 <th style="width: 10%;">Date</th>
-                                <th style="width: 16%;">Issue</th>
+                                <th style="width: 12%;">Issue</th>
+                                <th style="width: 14%;">Account</th>
                                 <th>Remark</th>
                                 <th class="text-right" style="width: 13%;">Debit</th>
                                 <th class="text-right" style="width: 13%;">Credit</th>
@@ -82,27 +86,28 @@
                         <tbody>
                             <t t-foreach="accounts" t-as="acc">
                                 <tr class="acc">
-                                    <td colspan="6">
+                                    <td colspan="7">
                                         <t t-out="acc['code']" /> - <t t-out="acc['name']" />
                                     </td>
                                 </tr>
                                 <tr class="opening">
-                                    <td colspan="5" class="text-right" style="font-style: italic;">Opening Balance</td>
+                                    <td colspan="6" class="text-right" style="font-style: italic;">Opening Balance</td>
                                     <td class="text-right" t-out="format_amount(acc['initial_balance'])" />
                                 </tr>
-                                <tr t-foreach="acc['lines']" t-as="line">
+                                <tr t-foreach="acc['lines']" t-as="line" t-att-class="'gl-stripe' if line_index % 2 else ''">
                                     <td t-out="line['date']" />
                                     <td t-out="line['issue']" />
+                                    <td t-out="line['account']" />
                                     <td t-out="line['narration']" />
                                     <td class="text-right" t-out="format_amount(line['debit'])" />
                                     <td class="text-right" t-out="format_amount(line['credit'])" />
                                     <td class="text-right" t-out="format_amount(line['balance'])" />
                                 </tr>
                                 <tr class="ending">
-                                    <td colspan="3" class="text-right">Carried Forward</td>
-                                    <td class="text-right" t-out="format_amount(acc['final_debit'])" />
-                                    <td class="text-right" t-out="format_amount(acc['final_credit'])" />
-                                    <td class="text-right" t-out="format_amount(acc['final_balance'])" />
+                                    <td colspan="4" class="text-right">Carried Forward</td>
+                                    <td class="text-right" t-out="format_total(acc['final_debit'])" />
+                                    <td class="text-right" t-out="format_total(acc['final_credit'])" />
+                                    <td class="text-right" t-out="format_total(acc['final_balance'])" />
                                 </tr>
                             </t>
                         </tbody>

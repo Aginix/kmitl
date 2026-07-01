@@ -8,12 +8,16 @@
     "license": "AGPL-3",
     "depends": [
         "account_operating_unit",
+        "base_exception",
         "base_tier_validation",
         "budget",
         "l10n_th_account_tax",
     ],
     "data": [
         "security/security.xml",
+        "security/ir.model.access.csv",
+        "data/account_move_exception_data.xml",
+        "wizard/account_move_exception_confirm_view.xml",
         "views/account_move_views.xml",
         "views/account_payment_method_views.xml",
         "views/menuitem.xml",
