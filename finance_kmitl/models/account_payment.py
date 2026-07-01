@@ -36,6 +36,15 @@ class AccountPayment(models.Model):
         "withholding tax).",
     )
 
+    cheque_register_ids = fields.One2many(
+        comodel_name="cheque.register",
+        inverse_name="payment_id",
+        string="Cheques",
+    )
+    cheque_register_count = fields.Integer(
+        compute="_compute_cheque_register_count",
+    )
+
     @api.depends("move_id.line_ids.wht_tax_id", "move_id.line_ids.balance", "amount")
     def _compute_amount_wht(self):
         for payment in self:
@@ -43,11 +52,17 @@ class AccountPayment(models.Model):
             payment.amount_wht = sum(abs(line.balance) for line in wht_lines)
             payment.amount_before_wht = payment.amount + payment.amount_wht
 
+    @api.depends("cheque_register_ids")
+    def _compute_cheque_register_count(self):
+        for payment in self:
+            payment.cheque_register_count = len(payment.cheque_register_ids)
+
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
         for payment in self:
             if (
                 payment.payment_type == "outbound"
+                and not payment.kmitl_payment_type_id.is_cheque
                 and payment.export_status == "draft"
             ):
                 raise UserError(
@@ -55,7 +70,49 @@ class AccountPayment(models.Model):
                 )
         res = super().action_post()
         self._reconcile_source_invoice_lines()
+        self._create_cheque_register_entries()
         return res
+
+    def _create_cheque_register_entries(self):
+        """Add a cheque to the control register when a cheque-type payment posts.
+
+        The row is created in ``draft`` because the physical cheque number is
+        entered by the finance officer, who then issues it from the register.
+        """
+        for payment in self.filtered(
+            lambda p: p.kmitl_payment_type_id.is_cheque and not p.cheque_register_ids
+        ):
+            self.env["cheque.register"].create(
+                payment._prepare_cheque_register_vals()
+            )
+
+    def _prepare_cheque_register_vals(self):
+        self.ensure_one()
+        return {
+            "direction": self.payment_type,
+            "partner_id": self.partner_id.id,
+            "amount": self.amount,
+            "currency_id": self.currency_id.id,
+            "journal_id": self.journal_id.id,
+            "cheque_date": self.date,
+            "ref": self.ref or self.name,
+            "payment_id": self.id,
+            "company_id": self.company_id.id,
+        }
+
+    def action_view_cheque_register(self):
+        self.ensure_one()
+        return {
+            "name": _("Cheque Register"),
+            "type": "ir.actions.act_window",
+            "res_model": "cheque.register",
+            "view_mode": "tree,form",
+            "domain": [("payment_id", "=", self.id)],
+            "context": {
+                "default_payment_id": self.id,
+                "default_direction": self.payment_type,
+            },
+        }
 
     def _reconcile_source_invoice_lines(self):
         """Reconcile payment lines with stored source invoice lines."""

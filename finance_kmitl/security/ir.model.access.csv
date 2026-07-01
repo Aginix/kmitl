@@ -3,3 +3,6 @@ access_kmitl_payment_type_all,kmitl.payment.type.all,model_kmitl_payment_type,ba
 access_kmitl_payment_type_manager,kmitl.payment.type.manager,model_kmitl_payment_type,account.group_account_manager,1,1,1,1
 access_account_payment_budget_user,account.payment budget user,account.model_account_payment,budget.group_budget_user,1,0,0,0
 access_account_payment_budget_manager,account.payment budget manager,account.model_account_payment,budget.group_budget_manager,1,1,1,0
+access_cheque_register_user_out,cheque.register.user.out,model_cheque_register,group_finance_kmitl_user_out,1,1,1,0
+access_cheque_register_user_in,cheque.register.user.in,model_cheque_register,group_finance_kmitl_user_in,1,1,1,0
+access_cheque_register_manager,cheque.register.manager,model_cheque_register,group_finance_kmitl_manager,1,1,1,1

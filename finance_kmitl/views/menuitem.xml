@@ -76,6 +76,28 @@
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
 
+    <!-- Cheque Control Register -->
+    <menuitem
+        id="menu_cheque_register_root"
+        name="Cheque Register"
+        parent="menu_payment_root"
+        sequence="30"
+        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in" />
+    <menuitem
+        id="menu_cheque_register_outbound"
+        name="Issued Cheques"
+        parent="menu_cheque_register_root"
+        action="action_cheque_register_outbound"
+        sequence="10"
+        groups="finance_kmitl.group_finance_kmitl_user_out" />
+    <menuitem
+        id="menu_cheque_register_inbound"
+        name="Received Cheques"
+        parent="menu_cheque_register_root"
+        action="action_cheque_register_inbound"
+        sequence="20"
+        groups="finance_kmitl.group_finance_kmitl_user_in" />
+
     <!-- Settings submenu (manager only) -->
     <menuitem
         id="menu_payment_settings"

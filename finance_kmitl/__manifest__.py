@@ -2,9 +2,9 @@
 
 {
     "name": "KMITL Finance",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "category": "KMITL/Finance",
-    "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, รายรับ/ใบเสร็จ",
+    "summary": "งานการเงิน KMITL: จ่ายเงิน, bank export, WHT, ทะเบียนคุมเช็ค, รายรับ/ใบเสร็จ",
     "license": "LGPL-3",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
@@ -25,9 +25,11 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/kmitl_payment_type_data.xml",
+        "data/cheque_register_sequence.xml",
         "views/kmitl_payment_type_views.xml",
         "views/account_payment_views.xml",
         "views/bank_payment_export_views.xml",
+        "views/cheque_register_views.xml",
         "views/menuitem.xml",
         "report/paperformat.xml",
         "report/report_bank_payment_export_action.xml",
