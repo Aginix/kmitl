@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_revenue_report_line_viewer,budget.revenue.report.line viewer,model_budget_revenue_report_line,budget.group_budget_viewer,1,0,0,0
+access_budget_revenue_report_line_manager,budget.revenue.report.line manager,model_budget_revenue_report_line,budget.group_budget_manager,1,1,1,1
+access_budget_revenue_comparison_wizard_viewer,budget.revenue.comparison.wizard viewer,model_budget_revenue_comparison_wizard,budget.group_budget_viewer,1,0,1,0
