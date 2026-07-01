@@ -8,6 +8,9 @@
                 <button class="btn btn-link me-2" t-on-click="changeCriteria">
                     <i class="fa fa-sliders me-1" /><t t-esc="labels.changeCriteria" />
                 </button>
+                <button class="btn btn-secondary me-2" t-on-click="exportCsv">
+                    <i class="fa fa-file-text-o me-1" /><t t-esc="labels.exportCsv" />
+                </button>
                 <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
                     <i class="fa fa-file-excel-o me-1" /><t t-esc="labels.exportExcel" />
                 </button>
