@@ -65,7 +65,7 @@ class GeneralJournalReportKmitl(models.AbstractModel):
         if partner_ids:
             domain.append(("line_ids.partner_id", "in", partner_ids))
         for field_name, op, value in self._kmitl_build_dim_leaves(
-            options.get("dims") or {}
+            options.get("dims") or {}, options.get("dim_only_self")
         ):
             domain.append(("line_ids." + field_name, op, value))
 

@@ -12,6 +12,17 @@
                 <attribute name="statusbar_visible">draft,submitted,posted</attribute>
             </xpath>
 
+            <!-- base_exception banner: warn about detected exceptions before submit -->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
+                    <p>
+                        <strong>There are exceptions blocking this Journal Entry:</strong>
+                    </p>
+                    <field name="exceptions_summary"/>
+                    <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to submit this Journal Entry regardless of the exceptions." groups="base_exception.group_exception_rule_manager"/>
+                </div>
+            </xpath>
+
             <!-- Submit and Reset to Draft buttons.
                  Anchor on the second action_post button (the "Confirm" variant
                  for non-entry move types) via the unique attrs discriminator. -->

@@ -496,3 +496,14 @@ msgstr "มิติทางบัญชี"
 #: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.js:0
 msgid "Date-Time"
 msgstr "วันเวลา"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml:0
+#: code:addons/accounting_kmitl_reports/static/src/general_journal/general_journal.xml:0
+msgid "Expand all"
+msgstr "ขยายทุกแถว"
+
+#. module: accounting_kmitl_reports
+#: code:addons/accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml:0
+msgid "Only the specified entry"
+msgstr "เฉพาะรายการที่เลือก (ไม่รวมระดับย่อย)"

@@ -88,7 +88,9 @@ class TrialBalanceReportKmitl(models.AbstractModel):
         account_ids = self._kmitl_apply_account_range(options, company_id, account_ids)
 
         fy_start_date = self._kmitl_fy_start_date(date_from, company)
-        leaves = self._kmitl_build_dim_leaves(options.get("dims") or {})
+        leaves = self._kmitl_build_dim_leaves(
+            options.get("dims") or {}, options.get("dim_only_self")
+        )
 
         report = self.with_context(kmitl_dim_leaves=leaves)
         total_amount, accounts_data, _partners = report._get_data(

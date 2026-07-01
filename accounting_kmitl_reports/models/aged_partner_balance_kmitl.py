@@ -105,7 +105,9 @@ class AgedPartnerBalanceKmitl(models.AbstractModel):
 
         # Resolve the selected dimensions to the moves that carry them.
         move_ids = None
-        leaves = self._kmitl_build_dim_leaves(options.get("dims") or {})
+        leaves = self._kmitl_build_dim_leaves(
+            options.get("dims") or {}, options.get("dim_only_self")
+        )
         if leaves:
             move_ids = self.env["account.move.line"].search(leaves).move_id.ids
 
