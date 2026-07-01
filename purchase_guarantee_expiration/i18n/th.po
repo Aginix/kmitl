@@ -6,19 +6,105 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-05 10:55+0000\n"
-"PO-Revision-Date: 2026-03-05 17:55+0700\n"
+"POT-Creation-Date: 2026-06-11 11:17+0000\n"
+"PO-Revision-Date: 2026-06-11 11:17+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.6\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model.fields.selection,name:purchase_guarantee_expiration.selection__purchase_guarantee__expire_range__0-15
+msgid "0-15 Days"
+msgstr "อายุประกัน 0-15"
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model.fields.selection,name:purchase_guarantee_expiration.selection__purchase_guarantee__expire_range__16-30
+msgid "16-30 Days"
+msgstr "อายุประกัน 16-30"
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model.fields.selection,name:purchase_guarantee_expiration.selection__purchase_guarantee__expire_range__31-60
+msgid "31-60 Days"
+msgstr "อายุประกัน 31-60"
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model,name:purchase_guarantee_expiration.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model.fields,field_description:purchase_guarantee_expiration.field_purchase_guarantee__days_to_expire
+#: model:ir.model.fields,field_description:purchase_guarantee_expiration.field_purchase_guarantee__days_to_expire_display
+msgid "Days to Expire"
+msgstr "วันที่คงเหลือของสัญญา"
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model.fields,field_description:purchase_guarantee_expiration.field_purchase_guarantee__expire_range
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_expiration.view_purchase_guarantee_search_expiring
+msgid "Expire Range"
+msgstr "วันที่คงเหลือของสัญญา"
+
+#. module: purchase_guarantee_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_expiration.view_purchase_guarantee_search_expiring
+msgid "Group By"
+msgstr ""
 
 #. module: purchase_guarantee_expiration
 #: model:ir.actions.act_window,name:purchase_guarantee_expiration.action_guarantees_expiring
 #: model:ir.ui.menu,name:purchase_guarantee_expiration.menu_purchase_guarantee_expire
 msgid "Guarantee Expire"
 msgstr "หลักประกันหมดอายุ"
+
+#. module: purchase_guarantee_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_expiration.res_config_settings_view_form_guarantee_notification
+msgid "Guarantee Expiry Notification"
+msgstr ""
+
+#. module: purchase_guarantee_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_expiration.view_purchase_guarantee_tree_expiring
+msgid "Guarantees Nearly Expiring"
+msgstr ""
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model.fields.selection,name:purchase_guarantee_expiration.selection__purchase_guarantee__expire_range__60+
+msgid "Morethan 60 Days"
+msgstr "อายุประกันมากกว่า 60 วัน"
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model.fields,field_description:purchase_guarantee_expiration.field_res_config_settings__purchase_guarantee_notify_days
+msgid "Notify Before Guarantee Expiry (Days)"
+msgstr ""
+
+#. module: purchase_guarantee_expiration
+#: model:ir.actions.server,name:purchase_guarantee_expiration.ir_cron_notify_guarantee_expire_ir_actions_server
+#: model:ir.cron,cron_name:purchase_guarantee_expiration.ir_cron_notify_guarantee_expire
+msgid "Notify Guarantee Nearly Expire"
+msgstr ""
+
+#. module: purchase_guarantee_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_expiration.res_config_settings_view_form_guarantee_notification
+msgid "Notify purchase users when guarantee expires within this many days"
+msgstr ""
+
+#. module: purchase_guarantee_expiration
+#: model:ir.model,name:purchase_guarantee_expiration.model_purchase_guarantee
+msgid "Purchase Guarantee"
+msgstr ""
+
+#. module: purchase_guarantee_expiration
+#: model:ir.actions.server,name:purchase_guarantee_expiration.ir_cron_recompute_guarantee_expire_ir_actions_server
+#: model:ir.cron,cron_name:purchase_guarantee_expiration.ir_cron_recompute_guarantee_expire
+msgid "Recompute Guarantee Expire Days"
+msgstr ""
+
+#. module: purchase_guarantee_expiration
+#. odoo-python
+#: code:addons/purchase_guarantee_expiration/models/purchase_guarantee.py:0
+#, python-format
+msgid ""
+"There are %s guarantees that are about to expire. <a "
+"href=\"/web#action=%s\">Click to review</a>"
+msgstr "มีหลักประกัน %s ฉบับที่กำลังจะหมดอายุ<a href=\"/web#action=%s\">คลิกเพื่อตรวจสอบ</a>"

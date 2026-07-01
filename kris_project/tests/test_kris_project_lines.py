@@ -235,6 +235,45 @@ class TestKrisProjectLines(KrisProjectCommon):
         self.assertAlmostEqual(ia.allocated_amount, 0.0, 2)
         self.assertAlmostEqual(ia.remaining_amount, 100_000.0, 2)
 
+    def test_installment_allocation_remaining_clamps_at_zero(self):
+        # When prior installments have already met or exceeded the line's plan,
+        # the breakdown's "remaining" cell shows 0, never a negative figure.
+        p = self._make_project(project_value=1_200_000.0, equipment_cost=200_000.0)
+        line = self.AllocationLine.create(
+            {
+                "project_id": p.id,
+                "item_id": self.item_a.id,
+                "estimated_amount": 100_000.0,
+            }
+        )
+        inst1 = self.Installment.create(
+            {"project_id": p.id, "name": "งวด 1", "amount": 100_000.0}
+        )
+        inst2 = self.Installment.create(
+            {"project_id": p.id, "name": "งวด 2", "amount": 100_000.0}
+        )
+        # Installment 1 takes more than the plan on this line.
+        self.InstallmentAlloc.create(
+            {
+                "installment_id": inst1.id,
+                "allocation_line_id": line.id,
+                "amount": 150_000.0,
+            }
+        )
+        ia2 = self.InstallmentAlloc.create(
+            {
+                "installment_id": inst2.id,
+                "allocation_line_id": line.id,
+                "amount": 0.0,
+            }
+        )
+        self.env.invalidate_all()
+        ia2 = self.InstallmentAlloc.browse(ia2.id)
+        # Allocated still reflects the real over-allocation,
+        # but remaining is clamped at 0 (never negative).
+        self.assertAlmostEqual(ia2.allocated_amount, 150_000.0, 2)
+        self.assertAlmostEqual(ia2.remaining_amount, 0.0, 2)
+
     # ------------------------------------------------------------------
     # Guard constraints (calculation integrity)
     # ------------------------------------------------------------------
@@ -250,35 +289,9 @@ class TestKrisProjectLines(KrisProjectCommon):
                 }
             )
 
-    def test_constraint_receipt_alloc_exceeds_estimated(self):
-        p = self._make_project(project_value=1_200_000.0, equipment_cost=200_000.0)
-        line = self.AllocationLine.create(
-            {
-                "project_id": p.id,
-                "item_id": self.item_a.id,
-                "estimated_amount": 50_000.0,
-            }
-        )
-        receipt = self.Receipt.create(
-            {
-                "project_id": p.id,
-                "name": "R",
-                "date": date(2025, 1, 1),
-                "amount": 100_000.0,
-            }
-        )
-        with self.assertRaises(ValidationError):
-            self.ReceiptAlloc.create(
-                {
-                    "receipt_id": receipt.id,
-                    "allocation_line_id": line.id,
-                    "amount": 60_000.0,
-                }
-            )
-
-    def test_constraint_alloc_line_actual_exceeds_estimated(self):
-        # The line-level guard (distinct from the receipt.allocation one):
-        # lowering estimated below an already-booked actual must raise.
+    def test_receipt_alloc_may_exceed_estimated(self):
+        # ADR-0001: a งวด may be over-collected, including at the per-allocator
+        # level — Receipts are not capped against the allocation line's plan.
         p = self._make_project(project_value=1_200_000.0, equipment_cost=200_000.0)
         line = self.AllocationLine.create(
             {
@@ -299,12 +312,13 @@ class TestKrisProjectLines(KrisProjectCommon):
             {
                 "receipt_id": receipt.id,
                 "allocation_line_id": line.id,
-                "amount": 40_000.0,
+                "amount": 60_000.0,
             }
         )
-        self.assertAlmostEqual(line.actual_amount, 40_000.0, 2)
-        with self.assertRaises(ValidationError):
-            line.estimated_amount = 30_000.0
+        self.assertAlmostEqual(line.actual_amount, 60_000.0, 2)
+        # And lowering the plan below the now-booked actual must also succeed.
+        line.estimated_amount = 30_000.0
+        self.assertAlmostEqual(line.estimated_amount, 30_000.0, 2)
 
     def test_constraint_installment_extra_exceeds_project(self):
         p = self._make_project(project_value=1_000_000.0, extra_value=10_000.0)

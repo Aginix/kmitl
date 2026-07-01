@@ -429,7 +429,7 @@ class KrisProject(models.Model):
                 )
 
     @api.depends(
-        "installment_ids.amount",
+        "installment_ids.received_from_employer",
         "receipt_ids.amount",
         "receipt_ids.net_amount",
         "receipt_ids.extra_income",
@@ -437,7 +437,7 @@ class KrisProject(models.Model):
     )
     def _compute_totals(self):
         for rec in self:
-            rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
+            rec.total_installment_amount = sum(rec.installment_ids.mapped("received_from_employer"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
             rec.total_extra_received = sum(rec.receipt_ids.mapped("extra_income"))

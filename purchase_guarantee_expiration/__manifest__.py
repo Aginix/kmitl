@@ -8,7 +8,9 @@
     "category": "Purchase",
     'depends': ['purchase_kmitl', 'purchase_guarantee_kmitl'],
     'data': [
+        "data/ir_cron_data.xml",
         "views/view.xml",
+        "views/res_config_settings_views.xml",
     ],
     'installable': True,
     'auto_install': False,

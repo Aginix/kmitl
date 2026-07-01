@@ -152,11 +152,12 @@ class AccountMove(models.Model):
 
     def _schedule_approval_todo(self):
         """Push an approval Todo to every approver (manager) for these entries
-        so it surfaces in their Todo inbox. Cleared when the entry leaves the
-        ``to_approve`` workflow (approve / reject / recall)."""
+        so it surfaces in their Todo inbox — including an approver who submitted
+        the entry themselves. Cleared when the entry leaves the ``to_approve``
+        workflow (approve / reject / recall)."""
         approvers = self.env.ref(APPROVER_GROUP).users
         for move in self:
-            for approver in approvers - move.submitted_by:
+            for approver in approvers:
                 move.activity_schedule(
                     TO_APPROVE_ACTIVITY,
                     user_id=approver.id,

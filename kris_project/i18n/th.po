@@ -1244,8 +1244,8 @@ msgstr "วิธีคิดค่าบำรุง"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_allocation__currency_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__currency_id
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__currency_id
-msgid "สกุลเงิน"
-msgstr ""
+msgid "Currency"
+msgstr "สกุลเงิน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__state

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_kmitl_reports.GeneralJournal" owl="1">
+        <div class="o_kmitl_general_journal o_action_manager p-3">
+            <div class="o_kmitl_gj_header d-flex align-items-center mb-3">
+                <h2 class="m-0 flex-grow-1"><t t-esc="labels.title" /></h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
+                    <i class="fa fa-file-excel-o me-1" /><t t-esc="labels.exportExcel" />
+                </button>
+                <button class="btn btn-primary" t-on-click="printPdf">
+                    <i class="fa fa-file-pdf-o me-1" /><t t-esc="labels.printPdf" />
+                </button>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="o_kmitl_gj_filterpanel mb-3">
+                <div class="o_kmitl_gj_filters row g-2">
+                    <div class="col-md-3">
+                        <label class="o_form_label">Fiscal Year</label>
+                        <select class="form-select" t-on-change="onFiscalYearChange">
+                            <option value="">/</option>
+                            <option
+                                t-foreach="fiscalYears"
+                                t-as="fy"
+                                t-key="fy.id"
+                                t-att-value="fy.id"
+                                t-att-selected="fy.id === state.fiscalYearId"
+                            >
+                                <t t-esc="fy.name" />
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="o_form_label">Date From</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            t-att-value="state.dateFrom"
+                            t-on-change="onDateFromChange"
+                        />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="o_form_label">Date To</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            t-att-value="state.dateTo"
+                            t-on-change="onDateToChange"
+                        />
+                    </div>
+                    <div class="col-md-5 d-flex align-items-end gap-3">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="kmitl_gj_posted"
+                                t-att-checked="state.onlyPosted"
+                                t-on-change="onTogglePosted"
+                            />
+                            <label class="form-check-label" for="kmitl_gj_posted">Posted entries only</label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="kmitl_gj_expand_all"
+                                t-att-checked="state.expandAll"
+                                t-on-change="onToggleExpandAll"
+                            />
+                            <label class="form-check-label" for="kmitl_gj_expand_all">Expand all</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="o_form_label">Journals</label>
+                        <MultiRecordSelect
+                            resModel="'account.journal'"
+                            domain="[['company_id', '=', companyId]]"
+                            placeholder="labels.journals"
+                            selected="state.journals"
+                            onChange="(sel) => this.onSelectionChange('journals', sel)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Departments</label>
+                        <MultiRecordSelect
+                            resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'departments']]"
+                            placeholder="labels.departments"
+                            selected="state.departments"
+                            onChange="(sel) => this.onSelectionChange('departments', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.departments"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('departments', val)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Sources</label>
+                        <MultiRecordSelect
+                            resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'sources']]"
+                            placeholder="labels.sources"
+                            selected="state.sources"
+                            onChange="(sel) => this.onSelectionChange('sources', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.sources"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('sources', val)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Funds</label>
+                        <MultiRecordSelect
+                            resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'funds']]"
+                            placeholder="labels.funds"
+                            selected="state.funds"
+                            onChange="(sel) => this.onSelectionChange('funds', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.funds"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('funds', val)"
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="o_form_label">Activities</label>
+                        <MultiRecordSelect
+                            resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'activities']]"
+                            placeholder="labels.activities"
+                            selected="state.activities"
+                            onChange="(sel) => this.onSelectionChange('activities', sel)"
+                            withOnlySelf="true"
+                            onlySelf="state.dimOnlySelf.activities"
+                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('activities', val)"
+                        />
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-link p-0 o_kmitl_gj_more" t-on-click="toggleAdvanced">
+                            <i
+                                t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"
+                            />
+                            <t t-if="state.showAdvanced">Hide partner filter</t>
+                            <t t-else="">More filters</t>
+                        </button>
+                    </div>
+                    <t t-if="state.showAdvanced">
+                        <div class="col-md-3">
+                            <label class="o_form_label">Partners</label>
+                            <MultiRecordSelect
+                                resModel="'res.partner'"
+                                placeholder="labels.partners"
+                                selected="state.partners"
+                                onChange="(sel) => this.onSelectionChange('partners', sel)"
+                            />
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center p-5">
+                    <span class="spinner-border" role="status" />
+                </div>
+            </t>
+            <t t-elif="!state.entries.length">
+                <div class="text-center text-muted p-5">
+                    <t t-esc="labels.empty" />
+                </div>
+            </t>
+            <t t-else="">
+                <div t-if="showPager" class="o_kmitl_gj_pager d-flex align-items-center justify-content-end gap-2 mb-2">
+                    <label class="o_form_label m-0 me-1"><t t-esc="labels.rowsPerPage" /></label>
+                    <select class="form-select form-select-sm w-auto" t-on-change="setPageSize">
+                        <option value="50" t-att-selected="state.pageSize === 50">50</option>
+                        <option value="100" t-att-selected="state.pageSize === 100">100</option>
+                        <option value="200" t-att-selected="state.pageSize === 200">200</option>
+                    </select>
+                    <div class="btn-group btn-group-sm ms-2">
+                        <button
+                            class="btn btn-outline-secondary"
+                            t-att-disabled="isFirstPage"
+                            t-att-aria-label="labels.prevPage"
+                            t-on-click="prevPage"
+                        >
+                            <i class="fa fa-chevron-left" />
+                        </button>
+                        <span class="btn btn-outline-secondary disabled">
+                            <t t-esc="state.page + 1" /> / <t t-esc="pageCount" />
+                        </span>
+                        <button
+                            class="btn btn-outline-secondary"
+                            t-att-disabled="isLastPage"
+                            t-att-aria-label="labels.nextPage"
+                            t-on-click="nextPage"
+                        >
+                            <i class="fa fa-chevron-right" />
+                        </button>
+                    </div>
+                </div>
+
+                <div class="o_kmitl_gj_card">
+                    <table class="table table-sm table-hover align-middle o_kmitl_gj_table mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 24px;" />
+                                <th><t t-esc="labels.datetime" /></th>
+                                <th><t t-esc="labels.number" /></th>
+                                <th><t t-esc="labels.journal" /></th>
+                                <th><t t-esc="labels.reference" /></th>
+                                <th><t t-esc="labels.partner" /></th>
+                                <th class="text-end"><t t-esc="labels.debit" /></th>
+                                <th class="text-end"><t t-esc="labels.credit" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="pagedEntries" t-as="entry" t-key="entry.id">
+                                <tr
+                                    class="o_kmitl_gj_row"
+                                    t-att-class="entry_index % 2 ? 'o_kmitl_gj_stripe' : ''"
+                                    t-on-click="() => this.toggleExpand(entry)"
+                                >
+                                    <td>
+                                        <i
+                                            class="fa"
+                                            t-att-class="state.expanded[entry.id] ? 'fa-caret-down' : 'fa-caret-right'"
+                                        />
+                                    </td>
+                                    <td class="text-nowrap" t-esc="entry.date" />
+                                    <td t-esc="entry.name" />
+                                    <td t-esc="entry.journal" />
+                                    <td t-esc="entry.ref" />
+                                    <td t-esc="entry.partner" />
+                                    <td class="text-end" t-esc="format(entry.debit)" />
+                                    <td class="text-end" t-esc="format(entry.credit)" />
+                                </tr>
+                                <tr t-if="state.expanded[entry.id]" class="o_kmitl_gj_detail">
+                                    <td colspan="8" class="p-0">
+                                        <MoveLinesDetail
+                                            lines="state.linesByMove[entry.id] || []"
+                                            narration="entry.narration"
+                                            maker="entry.maker"
+                                            makerDate="entry.maker_date"
+                                            onOpen="() => this.openEntry(entry)"
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>
