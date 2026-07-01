@@ -81,6 +81,10 @@ class AccountMove(models.Model):
             "accounting_kmitl.action_account_move_exception_confirm"
         )
 
+    @api.model
+    def _reverse_field(self):
+        return "account_move_ids"
+
     # --- Budget validation ---
     def _check_analytic_distribution_complete(self):
         """Validate that all required analytic dimensions are present."""
