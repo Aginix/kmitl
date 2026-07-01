@@ -205,3 +205,18 @@ msgstr "ตัวช่วยยืนยันข้อยกเว้นสม
 #: model:ir.model.fields,field_description:accounting_kmitl.field_account_move_exception_confirm__related_model_id
 msgid "Journal Entry"
 msgstr "รายการบันทึกบัญชี"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "There are exceptions blocking this Journal Entry:"
+msgstr "มีข้อยกเว้นที่ต้องจัดการก่อนยืนยันรายการบันทึกบัญชีนี้:"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "Ignore Exceptions"
+msgstr "ยืนยันโดยข้ามข้อยกเว้น"
+
+#. module: accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl.view_move_form_inherit_kmitl
+msgid "Click here to be able to submit this Journal Entry regardless of the exceptions."
+msgstr "คลิกที่นี่เพื่อยืนยันรายการบันทึกบัญชีนี้โดยไม่สนใจข้อยกเว้น"
