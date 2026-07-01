@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class AccountMove(models.Model):
     _name = "account.move"
-    _inherit = ["account.move", "analytic.distribution.mixin"]
+    _inherit = ["account.move", "analytic.distribution.mixin", "base.exception"]
 
     # --- State ---
     state = fields.Selection(
@@ -44,10 +44,17 @@ class AccountMove(models.Model):
 
     # --- Actions ---
     def action_submit(self):
-        """Submit (lock) the journal entry; assign sequence number."""
+        """Submit (lock) the journal entry; assign sequence number.
+
+        Runs base_exception checks before locking so accidental entries
+        (e.g. same-account Dr/Cr self-canceling pair) are surfaced.
+        """
         for move in self:
             if move.state != "draft":
                 raise UserError(_("Only draft entries can be submitted."))
+        to_check = self.filtered(lambda m: not m.ignore_exception)
+        if to_check and to_check.detect_exceptions():
+            return to_check._popup_exceptions()
         self.write({"state": "submitted"})
         # Assign sequence number on submit
         for move in self.sorted(lambda m: (m.date, m.ref or "", m.id)):
@@ -63,7 +70,16 @@ class AccountMove(models.Model):
                     _("Only submitted entries can be reset to draft.")
                 )
             move.state = "draft"
+            move.exception_ids = False
+            move.main_exception_id = False
+            move.ignore_exception = False
         return True
+
+    @api.model
+    def _get_popup_action(self):
+        return self.env.ref(
+            "accounting_kmitl.action_account_move_exception_confirm"
+        )
 
     # --- Budget validation ---
     def _check_analytic_distribution_complete(self):
