@@ -15,6 +15,7 @@
     ],
     "data": [
         "security/security.xml",
+        "security/ir.model.access.csv",
         "data/account_move_exception_data.xml",
         "wizard/account_move_exception_confirm_view.xml",
         "views/account_move_views.xml",
