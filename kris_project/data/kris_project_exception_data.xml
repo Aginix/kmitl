@@ -23,7 +23,7 @@ if self.state == 'draft' and self.project_value &lt;= 0:
         <field name="sequence">15</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and self.extra_value &gt; 0 and not self.extra_analytic_id:
+if self.state == 'draft' and self.extra_value &gt; 0 and not self.extra_analytic_ids:
     failed = True
         </field>
         <field name="active" eval="True"/>
