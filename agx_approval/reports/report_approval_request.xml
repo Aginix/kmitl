@@ -90,6 +90,11 @@
                             </div>
                         </div>
 
+                        <!-- Budget Details -->
+                        <div class="my-4" />
+                        <p>รายละเอียดงบประมาณ</p>
+                        <t t-call="agx_approval.report_approval_request_budget" />
+
                         <!-- Expense Lines Table -->
                         <div class="my-4" />
                         <div class="row my-2">
@@ -180,11 +185,6 @@
                                 </tbody>
                             </table>
                         </t>
-
-                        <!-- Budget Details -->
-                        <div class="my-4" />
-                        <p>รายละเอียดงบประมาณ</p>
-                        <t t-call="agx_approval.report_approval_request_budget" />
                     </div>
                 </t>
             </t>
