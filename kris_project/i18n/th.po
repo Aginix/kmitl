@@ -1500,11 +1500,6 @@ msgid "Department Budget Code"
 msgstr "รหัสงบประมาณหน่วยงาน"
 
 #. module: kris_project
-#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_ids
-msgid "Extra Payees"
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
+msgid "Extra Payee"
 msgstr "ผู้รับค่า Extra"
-
-#. module: kris_project
-#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "Extra Project Management Fee Allocation"
-msgstr "การจัดสรรค่าบริหารจัดการโครงการ (Extra)"

@@ -260,6 +260,10 @@
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                     <field
+                                        name="extra_analytic_id"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
+                                    />
+                                    <field
                                         name="operating_expense"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
@@ -344,16 +348,6 @@
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
-                            <separator string="Extra Project Management Fee Allocation" name="extra_allocation_separator" />
-                            <group>
-                                <group>
-                                    <field
-                                        name="extra_analytic_ids"
-                                        widget="many2many_tags"
-                                        attrs="{'readonly': [('can_edit', '=', False)]}"
-                                    />
-                                </group>
-                            </group>
                             <separator string="3. Contract payment installments" name="installment_separator" />
                             <group>
                                 <field

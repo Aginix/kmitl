@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_kris_project_form_extra_allocation" model="ir.ui.view">
+        <field name="name">kris.project.form.extra.allocation</field>
+        <field name="model">kris.project</field>
+        <field name="inherit_id" ref="kris_project.view_kris_project_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='extra_analytic_id']" position="replace"/>
+
+            <xpath expr="//separator[@name='installment_separator']" position="before">
+                <separator
+                    string="Extra Project Management Fee Allocation"
+                    name="extra_allocation_separator"
+                />
+                <group>
+                    <group>
+                        <field
+                            name="extra_analytic_ids"
+                            widget="many2many_tags"
+                            attrs="{'readonly': [('can_edit', '=', False)]}"
+                        />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

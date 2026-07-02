@@ -139,12 +139,9 @@ class KrisProject(models.Model):
         string="Extra Value",
         tracking=True,
     )
-    extra_analytic_ids = fields.Many2many(
+    extra_analytic_id = fields.Many2one(
         "account.analytic.account",
-        relation="kris_project_extra_analytic_rel",
-        column1="kris_project_id",
-        column2="analytic_account_id",
-        string="Extra Payees",
+        string="Extra Payee",
         domain=[("root_plan_id.code", "=", "departments")],
         tracking=True,
     )
