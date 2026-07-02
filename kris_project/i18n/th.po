@@ -1180,6 +1180,24 @@ msgid "Draft"
 msgstr "ร่าง"
 
 #. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__suspended
+msgid "Suspended"
+msgstr "ชะลอโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__terminated
+msgid "Terminated"
+msgstr "ยุติโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__conditional_close
+msgid "Closed with Conditions"
+msgstr "ปิดโครงการแบบมีเงื่อนไข"
+
+#. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_item__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__sequence

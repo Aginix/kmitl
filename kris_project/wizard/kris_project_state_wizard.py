@@ -23,12 +23,30 @@ class KrisProjectStateWizard(models.TransientModel):
         "kris.project",
         string="Project",
         required=True,
-        default=lambda self: self.env.context.get("active_id"),
     )
     current_state = fields.Selection(
-        related="project_id.state",
+        selection=[
+            ("draft", "Draft"),
+            ("in_progress", "In Progress"),
+            ("suspended", "Suspended"),
+            ("terminated", "Terminated"),
+            ("conditional_close", "Closed with Conditions"),
+            ("done", "Done"),
+            ("cancel", "Cancel"),
+        ],
         readonly=True,
     )
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        active_id = self.env.context.get("active_id")
+        active_model = self.env.context.get("active_model")
+        if active_id and active_model == "kris.project":
+            project = self.env["kris.project"].browse(active_id)
+            res.setdefault("project_id", project.id)
+            res.setdefault("current_state", project.state)
+        return res
     # Two separate selection fields — the view shows the one matching current_state.
     # This avoids per-option "invisible" attrs which Odoo Selection widgets don't support.
     new_state_from_in_progress = fields.Selection(
