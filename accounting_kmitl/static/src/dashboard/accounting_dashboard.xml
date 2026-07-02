@@ -16,17 +16,17 @@
             </t>
             <t t-else="">
                 <div class="row g-3">
-                    <t t-foreach="cardDefs" t-as="def" t-key="def.id">
+                    <t t-foreach="cards" t-as="card" t-key="card.id">
                         <div class="col-12 col-sm-6 col-lg-4">
                             <div class="card o_ak_card h-100"
-                                 t-on-click="() => this.openCard(def)">
+                                 t-on-click="() => this.openCard(card)">
                                 <div class="card-body">
-                                    <div class="o_ak_card_title text-muted" t-esc="def.title"/>
-                                    <div t-attf-class="o_ak_card_count fw-bold text-{{def.color}}"
-                                         t-esc="cardValue(def).count"/>
-                                    <div t-if="def.money" class="o_ak_card_amount text-muted">
+                                    <div class="o_ak_card_title text-muted" t-esc="card.title"/>
+                                    <div t-attf-class="o_ak_card_count fw-bold text-{{card.color}}"
+                                         t-esc="card.count"/>
+                                    <div t-if="card.amount !== undefined" class="o_ak_card_amount text-muted">
                                         <t t-esc="state.data.currency_symbol"/>
-                                        <t t-esc="formatAmount(cardValue(def).amount)"/>
+                                        <t t-esc="formatAmount(card.amount)"/>
                                     </div>
                                 </div>
                             </div>

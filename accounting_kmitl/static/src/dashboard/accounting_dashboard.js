@@ -6,16 +6,17 @@ import { _t } from "@web/core/l10n/translation";
 import { Component, onWillStart, useState } from "@odoo/owl";
 
 // Landing "work launchpad" for the Accounting app: a grid of KPI cards that
-// each open a filtered account.move list, plus quick-create buttons. All the
-// figures (and the domain behind every card) come from the
-// accounting.kmitl.dashboard server model.
+// each open a filtered list, plus quick-create buttons. The cards (labels,
+// colours, domains and counts) are fully defined by the
+// accounting.kmitl.dashboard server model, so other modules can add cards
+// without touching this component.
 export class AccountingDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
         this.state = useState({
             loading: true,
-            data: { currency_symbol: "", cards: {} },
+            data: { currency_symbol: "", cards: [] },
         });
 
         onWillStart(async () => {
@@ -28,40 +29,11 @@ export class AccountingDashboard extends Component {
         });
     }
 
-    // Card display metadata (render order + labels + accent colour). The values
-    // themselves are matched by id from the server payload.
-    get cardDefs() {
-        return [
-            { id: "my_drafts", title: _t("My draft documents"), color: "secondary" },
-            {
-                id: "submitted",
-                title: _t("Submitted (awaiting posting)"),
-                color: "info",
-            },
-            {
-                id: "unpaid_ap",
-                title: _t("Unpaid vendor bills"),
-                color: "warning",
-                money: true,
-            },
-            {
-                id: "overdue_ap",
-                title: _t("Overdue vendor bills"),
-                color: "danger",
-                money: true,
-            },
-            {
-                id: "unpaid_ar",
-                title: _t("Unpaid customer invoices"),
-                color: "primary",
-                money: true,
-            },
-            {
-                id: "exceptions",
-                title: _t("Documents with exceptions"),
-                color: "danger",
-            },
-        ];
+    // Cards as delivered by the server, in display order.
+    get cards() {
+        return [...(this.state.data.cards || [])].sort(
+            (a, b) => a.sequence - b.sequence
+        );
     }
 
     get text() {
@@ -75,10 +47,6 @@ export class AccountingDashboard extends Component {
         };
     }
 
-    cardValue(def) {
-        return this.state.data.cards[def.id] || { count: 0, amount: 0 };
-    }
-
     formatAmount(value) {
         return (value || 0).toLocaleString("th-TH", {
             minimumFractionDigits: 2,
@@ -86,17 +54,16 @@ export class AccountingDashboard extends Component {
         });
     }
 
-    // Open the account.move list filtered to exactly the card's domain, so the
-    // list contents match the number shown on the card.
-    openCard(def) {
-        const card = this.cardValue(def);
+    // Open the card's model filtered to exactly its domain, so the list
+    // contents match the number shown on the card.
+    openCard(card) {
         if (!card.domain) {
             return;
         }
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: def.title,
-            res_model: "account.move",
+            name: card.title,
+            res_model: card.res_model,
             domain: card.domain,
             views: [
                 [false, "list"],
