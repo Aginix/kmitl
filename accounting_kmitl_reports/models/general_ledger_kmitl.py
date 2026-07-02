@@ -381,6 +381,12 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             options, "accounting_kmitl_reports.action_report_general_ledger_kmitl_xlsx"
         )
 
+    @api.model
+    def action_export_csv(self, options):
+        return self._kmitl_report_action(
+            options, "accounting_kmitl_reports.action_report_general_ledger_kmitl_csv"
+        )
+
     # ------------------------------------------------------------------
     # QWeb PDF rendering — reuse the shared compute (do NOT call the OCA
     # ``_get_report_values``, which expects the column-based wizard data dict).
@@ -522,3 +528,49 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
         sheet.set_column(2, 2, 24)
         sheet.set_column(3, 3, 50)
         sheet.set_column(4, 6, 15)
+
+
+class GeneralLedgerCsvKmitl(models.AbstractModel):
+    """CSV export of the general ledger — one flat row per ledger line, with
+    the account code/name repeated on every row (no opening/carried rows), so
+    the file is ready for pivot/analysis. Shares the compute with the screen /
+    PDF / XLSX."""
+
+    _name = "report.accounting_kmitl_reports.general_ledger_csv"
+    _inherit = "accounting_kmitl_reports.csv.report"
+    _description = "KMITL General Ledger CSV"
+
+    def _kmitl_csv_rows(self, options):
+        report = self.env["report.accounting_kmitl_reports.general_ledger_kmitl"]
+        result = report.get_general_ledger_data(options)
+        rows = [
+            [
+                _("Account Code"),
+                _("Account Name"),
+                _("Date"),
+                _("Issue"),
+                _("Counterpart Account"),
+                _("Partner"),
+                _("Remark"),
+                _("Debit"),
+                _("Credit"),
+                _("Balance"),
+            ]
+        ]
+        for acc in result["accounts"]:
+            for line in acc["lines"]:
+                rows.append(
+                    [
+                        acc["code"],
+                        acc["name"],
+                        line["date"],
+                        line["issue"],
+                        line["account"],
+                        line["partner"],
+                        line["narration"],
+                        self._csv_num(line["debit"]),
+                        self._csv_num(line["credit"]),
+                        self._csv_num(line["balance"]),
+                    ]
+                )
+        return rows
