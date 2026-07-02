@@ -6,17 +6,18 @@ _logger = logging.getLogger(__name__)
 
 # Journal master data. ``account`` is the account code used as the journal's
 # default account (resolved after the chart is loaded); ``None`` when the
-# journal has no default account.
+# journal has no default account. Bank journals also point their payment method
+# lines at that same default account.
 JOURNALS = [
-    {"xmlid": "journal_jv", "code": "JV", "name": "สมุดรายวันทั่วไป", "type": "general", "sequence": 10, "account": None},
-    {"xmlid": "journal_pv", "code": "PV", "name": "สมุดรายวันจ่าย", "type": "bank", "sequence": 20, "account": "1112210004"},
-    {"xmlid": "journal_rv", "code": "RV", "name": "สมุดรายวันรับ", "type": "bank", "sequence": 30, "account": "1112210004"},
-    {"xmlid": "journal_ar", "code": "AR", "name": "สมุดรายวันขาย", "type": "sale", "sequence": 40, "account": "4000000000"},
-    {"xmlid": "journal_ap", "code": "AP", "name": "สมุดรายวันซื้อ", "type": "purchase", "sequence": 50, "account": "5000000000"},
+    {"xmlid": "journal_jv", "code": "JV", "name": "ใบสำคัญทั่วไป", "type": "general", "sequence": 10, "account": None},
+    {"xmlid": "journal_pv", "code": "PV", "name": "ใบสำคัญจ่าย", "type": "bank", "sequence": 20, "account": "1112210004"},
+    {"xmlid": "journal_pvr", "code": "PVR", "name": "ใบสำคัญส่งคืนลูกหนี้เงินยืม", "type": "bank", "sequence": 30, "account": "1112000006"},
+    {"xmlid": "journal_rv", "code": "RV", "name": "ใบสำคัญรับ", "type": "bank", "sequence": 40, "account": "1112210004"},
+    {"xmlid": "journal_par", "code": "PAR", "name": "ใบสำคัญจ่ายลูกหนี้เงินยืม", "type": "bank", "sequence": 50, "account": "1112110004"},
+    {"xmlid": "journal_car", "code": "CAR", "name": "ใบสำคัญล้างลูกหนี้เงินยืม", "type": "general", "sequence": 60, "account": None},
+    {"xmlid": "journal_ar", "code": "AR", "name": "ใบสำคัญลูกหนี้", "type": "sale", "sequence": 70, "account": "4000000000"},
+    {"xmlid": "journal_ap", "code": "AP", "name": "ใบสำคัญซื้อ", "type": "purchase", "sequence": 80, "account": "5000000000"},
 ]
-
-# Account used as payment_account_id on the bank journals' payment method lines.
-BANK_PAYMENT_ACCOUNT_CODE = "1112210004"
 
 # Account codes other modules reference. The chart loader assigns real accounts a
 # company-prefixed external id (``account_kmitl.1_a_<code>``); we publish a stable,
@@ -67,6 +68,7 @@ def _create_journals(env, company):
         journal = Journal.search(
             [("code", "=", data["code"]), ("company_id", "=", company.id)], limit=1
         )
+        account = get_account(data["account"]) if data["account"] else Account.browse()
         if not journal:
             vals = {
                 "name": data["name"],
@@ -75,9 +77,12 @@ def _create_journals(env, company):
                 "company_id": company.id,
                 "sequence": data["sequence"],
             }
-            if data["account"]:
-                vals["default_account_id"] = get_account(data["account"]).id or False
+            if account:
+                vals["default_account_id"] = account.id
             journal = Journal.create(vals)
+        elif account and not journal.default_account_id:
+            # Backfill a default account added after the journal was created.
+            journal.default_account_id = account.id
         env["ir.model.data"]._update_xmlids(
             [
                 {
@@ -88,21 +93,21 @@ def _create_journals(env, company):
             ]
         )
 
-    # Set payment_account_id on bank journal payment method lines
-    payment_account = get_account(BANK_PAYMENT_ACCOUNT_CODE)
-    if payment_account:
-        bank_codes = [j["code"] for j in JOURNALS if j["type"] == "bank"]
-        bank_journals = Journal.search(
-            [
-                ("company_id", "=", company.id),
-                ("code", "in", bank_codes),
-            ]
-        )
-        payment_method_lines = (
-            bank_journals.inbound_payment_method_line_ids
-            + bank_journals.outbound_payment_method_line_ids
-        )
-        payment_method_lines.payment_account_id = payment_account
+    # Point each bank journal's payment method lines at its own default account.
+    bank_codes = [j["code"] for j in JOURNALS if j["type"] == "bank"]
+    bank_journals = Journal.search(
+        [
+            ("company_id", "=", company.id),
+            ("code", "in", bank_codes),
+        ]
+    )
+    for journal in bank_journals:
+        if journal.default_account_id:
+            lines = (
+                journal.inbound_payment_method_line_ids
+                + journal.outbound_payment_method_line_ids
+            )
+            lines.payment_account_id = journal.default_account_id
 
 
 def _register_account_xmlids(env, company):
