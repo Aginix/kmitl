@@ -76,6 +76,9 @@ class KrisProject(models.Model):
         selection=[
             ("draft", "Draft"),
             ("in_progress", "In Progress"),
+            ("suspended", "Suspended"),
+            ("terminated", "Terminated"),
+            ("conditional_close", "Closed with Conditions"),
             ("done", "Done"),
             ("cancel", "Cancel"),
         ],

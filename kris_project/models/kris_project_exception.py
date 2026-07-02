@@ -40,23 +40,11 @@ class KrisProject(models.Model):
             )._popup_exceptions()
         self.write({"state": "in_progress", "ignore_exception": False})
 
-    def action_done(self):
-        for rec in self:
-            if rec.state != "in_progress":
-                raise UserError(
-                    _("Only confirmed projects can be closed.")
-                )
-        if self.detect_exceptions() and not self.ignore_exception:
-            return self.with_context(
-                kris_exception_action="action_done"
-            )._popup_exceptions()
-        self.write({"state": "done", "ignore_exception": False})
-
     def action_cancel(self):
         for rec in self:
-            if rec.state == "cancel":
+            if rec.state != "draft":
                 raise UserError(
-                    _("This project is already cancelled.")
+                    _("Only draft projects can be cancelled.")
                 )
         # Cancelling abandons the project, so it must not be gated by the
         # confirm/done validation rules; skip exception detection here.

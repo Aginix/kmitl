@@ -96,26 +96,27 @@
                 <header>
                     <button
                         name="action_confirm"
-                        string="Confirm"
+                        string="ยืนยัน"
                         type="object"
                         class="btn-primary"
                         states="draft"
                         groups="kris_project.group_kris_project_officer"
                     />
                     <button
-                        name="action_done"
-                        string="Done"
+                        name="action_cancel"
+                        string="ยกเลิก"
                         type="object"
-                        class="btn-primary"
-                        states="in_progress"
+                        states="draft"
                         groups="kris_project.group_kris_project_officer"
                     />
                     <button
-                        name="action_cancel"
-                        string="Cancel"
-                        type="object"
-                        states="draft,in_progress,done"
+                        name="%(kris_project.action_kris_project_state_wizard)d"
+                        string="ปรับสถานะโครงการ"
+                        type="action"
+                        class="btn-primary"
+                        states="in_progress,suspended"
                         groups="kris_project.group_kris_project_officer"
+                        context="{'active_id': active_id, 'active_model': 'kris.project'}"
                     />
                     <button
                         name="action_draft"
@@ -127,7 +128,7 @@
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,in_progress,done"
+                        statusbar_visible="draft,in_progress,suspended,done"
                     />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
