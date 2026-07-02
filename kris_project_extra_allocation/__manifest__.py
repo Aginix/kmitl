@@ -10,6 +10,7 @@
         "kris_project",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "data/kris_project_exception_data.xml",
         "data/kris_project_tracking_data.xml",
         "views/kris_project_views.xml",
