@@ -218,12 +218,6 @@
                         <span t-field="o.budget_commitment_id" />
                     </td>
                 </tr>
-                <tr class="o_field_budget_commitment_amount">
-                    <td>มูลค่างบประมาณ</td>
-                    <td>
-                        <span t-field="o.budget_commitment_amount" />
-                    </td>
-                </tr>
                 <tr class="o_field_budget_account_id">
                     <td>รหัสงบประมาณค่าใช้จ่าย</td>
                     <td>
@@ -252,6 +246,12 @@
                     <td>กองทุน</td>
                     <td>
                         <span t-field="o.fund_analytic_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_budget_commitment_amount">
+                    <td>มูลค่างบประมาณ</td>
+                    <td>
+                        <span t-field="o.budget_commitment_amount" />
                     </td>
                 </tr>
             </tbody>
