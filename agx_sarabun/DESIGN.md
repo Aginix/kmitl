@@ -151,7 +151,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `addressee_position_id` | M2o → `sarabun.position` | Optional structured suggest source for `addressee` (the final-approve Position). |
 | `through` | Char | **ผ่าน (Through)** free-text ("เรียน X ผ่าน Y"). |
 | `sender_user_id` | M2o → `res.users` (readonly) | The composer. |
-| `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — drives register resolution `(ส่วนงาน × type)`. |
+| `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — drives register resolution (one register per ส่วนงาน). |
 | `sender_suffix` | Char | Sub-unit / extension display. |
 | `urgency` | Selection | `normal`/`urgent`/`very_urgent`/`immediate`. |
 | `secrecy` | Selection | `normal`/`confidential`/`secret`/`top_secret`. **v1 = display label only**; need-to-know enforcement is phase-2. |
@@ -510,7 +510,7 @@ recipients with no `user_id` could not see the document.
 
 | Method | On | Purpose |
 |---|---|---|
-| `action_send()` | `sarabun.document` | draft → circulating. Seeds the Route, `_register()`s the number atomically (§4), activates stage 1 (resolve+snapshot+notify). If no sequence for (sender ส่วนงาน × type), **block with a clear error**. Fires `_on_sarabun_circulating`. |
+| `action_send()` | `sarabun.document` | draft → circulating. Seeds the Route, `_register()`s the number atomically (§4), activates stage 1 (resolve+snapshot+notify). If no sequence for (sender ส่วนงาน), **block with a clear error**. Fires `_on_sarabun_circulating`. |
 | `_seed_route_from_template()` | `sarabun.document` | Materialise template lines into `waiting` steps. |
 | `_advance_stage()` | `sarabun.document` | If current stage complete, activate next stage or complete the Document. |
 | `act_on_step(disposition, payload, *, actor=None, token=None)` | `sarabun.routing.step` | **Single token-ready entry point** for all 5 dispositions. Validates the caller is a current holder of an `active` step (or a valid magic-link token in phase-2), dispatches to the disposition handler, fires the origin callback **in the same transaction** (a failing callback rolls the action back — ADR-0004), then `_advance_stage()`. |
@@ -644,7 +644,7 @@ raise `UserError`/`ValidationError` with a clear message — **never** silently 
 
 | # | Event (method) | From | Guard | To | Side effects |
 |---|---|---|---|---|---|
-| 1 | **Send** `action_send()` | `draft`, `returned` | (a) Route has ≥1 gating step; (b) a register sequence resolves for *(sender ส่วนงาน × type)* — else block with clear error; (c) for `returned`-restart, chain already re-seeded (#4a). | `circulating` | `_register()`: allocate `name` atomically (row-lock + `unique(sequence,counter,fiscal_year)` backstop + retry; render พ.ศ., reset per ปีงบประมาณ); `_advance_stage()` activates stage 1 (`active`, **snapshot** holders into `actor_user_ids`, fire `mail.activity`). **Fire `_on_sarabun_circulating(document)`** in the same transaction. Document becomes read-locked. |
+| 1 | **Send** `action_send()` | `draft`, `returned` | (a) Route has ≥1 gating step; (b) a register sequence resolves for *(sender ส่วนงาน)* — else block with clear error; (c) for `returned`-restart, chain already re-seeded (#4a). | `circulating` | `_register()`: allocate `name` atomically (row-lock + `unique(sequence,counter,fiscal_year)` backstop + retry; render พ.ศ., reset per ปีงบประมาณ); `_advance_stage()` activates stage 1 (`active`, **snapshot** holders into `actor_user_ids`, fire `mail.activity`). **Fire `_on_sarabun_circulating(document)`** in the same transaction. Document becomes read-locked. |
 | 2 | **Complete** (auto) `_advance_stage()` → `_complete_document()` | `circulating` | Every *gating* step in the **current Stage** positively completed; รับทราบ/`for_info` never blocks; no further gating step remains downstream. | `completed` | Freeze **ฉบับลงนาม** (`_freeze_signed_copy()`): render cover sheet + signature block + เกษียน trail, merge with origin report → immutable `signed_pdf`; portal/print now serve the frozen file. Recompute `strongest_verb_done`. Call `_on_sarabun_completed(document)` in the same transaction (failure rolls back — ADR-0004). Clear residual `mail.activity`. |
 | 3 | **Direct / Delegate** `act_on_step(...)` | `circulating` (step-level) | Actor is a snapshot holder of an *active* step with authority. | `circulating` (no state change) | Direct inserts the NEXT step(s); Delegate reassigns THIS step. `note` recorded. Re-evaluate `_advance_stage()`. Generic `_on_sarabun_step(step, disposition)` in-transaction. Intra-`circulating` moves, not lifecycle transitions. |
 | 4 | **Return** `action_return(destination)` | `circulating` | Actor is a snapshot holder of an *active* gating step with authority. `destination` ∈ {`sender_restart` (default), `resume_step`}. | `returned` | **Freeze the prior chain** (archive `routing_step_ids` into the attempt's frozen เกษียน trail — §3.4). Record returner, capacity, comment, destination. **Number RETAINED** (Return is recoverable). Re-seed/resume per destination (#4a/#4b). `_on_sarabun_returned(document, step)` in-transaction. Notify sender via `mail.activity`. |
@@ -734,7 +734,7 @@ def _register(self):
     self.ensure_one()
     if self.register_number_id:        # idempotent: already registered (return -> resend)
         return
-    seq = self._resolve_sequence()     # (sender ส่วนงาน × type); BLOCK on missing
+    seq = self._resolve_sequence()     # (sender ส่วนงาน); BLOCK on missing
     self.register_number_id = seq.allocate(self)   # atomic
 ```
 
@@ -742,9 +742,9 @@ Idempotency: a `returned` Document keeps its number when re-sent, so `_register(
 is a no-op if `register_number_id` is already set. Only `rejected`/`cancelled`
 void the number (§4.7), and those never re-enter `circulating`.
 
-### 4.2 Sequence resolution — (sender ส่วนงาน × type), per-unit, BLOCK on missing
+### 4.2 Sequence resolution — (sender ส่วนงาน), per-unit, BLOCK on missing
 
-The sequence is resolved from **(sender ส่วนงาน × type)**; each ส่วนงาน issues
+The sequence is resolved from **(sender ส่วนงาน)**; each ส่วนงาน issues
 from its own register. The old `is_shared`/`department_ids` "leave empty = all
 departments" fallback is **dropped** — silent institute-wide numbering is the
 exact anti-pattern CONTEXT forbids. No match ⇒ **block the send** with a clear,
@@ -776,7 +776,7 @@ points at exactly one kind.
 
 ```mermaid
 flowchart LR
-    D[sarabun.document<br/>sender_department_id + type_id] -->|exact match| Q{sequence for<br/>unit × type?}
+    D[sarabun.document<br/>sender_department_id] -->|exact match| Q{sequence for<br/>unit?}
     Q -->|found| S[sarabun.document.sequence<br/>per-unit register]
     Q -->|none| B[BLOCK send<br/>UserError]
     S --> A[allocate · atomic]
@@ -960,14 +960,17 @@ before any ลงนาม-อนุมัติ step has occurred); after a sig
 
 ### 4.8 Model & field tables
 
-**`sarabun.document.sequence`** — one per (ส่วนงาน × type) register
+**`sarabun.document.sequence`** — one register per ส่วนงาน (shared across all document types)
+
+> **Updated (feedback):** the register is keyed by **ส่วนงาน only** — within one unit
+> all document types share a single running number. The earlier `(ส่วนงาน × type)`
+> split was dropped; `document_type_id` is removed from the register.
 
 | field | type | notes |
 |---|---|---|
-| `name` | Char, required | e.g. "ทะเบียนหนังสือกองคลัง – บันทึกข้อความ" |
+| `name` | Char, required | e.g. "ทะเบียนหนังสือกองคลัง" |
 | `code` | Char, required, `unique` | stable identifier |
-| `sender_department_id` | M2o `hr.department`, required, indexed | the **issuing ส่วนงาน**; part of the resolution key |
-| `document_type_id` | M2o `sarabun.document.type`, required, indexed | the other half of the key (binds to one kind) |
+| `sender_department_id` | M2o `hr.department`, required, indexed | the **issuing ส่วนงาน** — the whole resolution key |
 | `prefix` / `suffix` | Char | rendered, not stored on the number |
 | `padding` | Integer, default 4 | zero-pad width of the counter |
 | `reset_period` | Selection `fiscal_year`(default) / `yearly` / `never` | **fiscal_year** is the regulation default; **drops the broken `yearly`-only-calendar semantics** |
@@ -975,8 +978,8 @@ before any ลงนาม-อนุมัติ step has occurred); after a sig
 | `number_ids` | O2m → `sarabun.document.number` | allocated counters (used/reserved/voided) |
 | `next_counter` (compute) | Integer | display-only `MAX(counter)+1` for current FY; **never** the allocation source |
 
-`_sql_constraints`: `unique(sender_department_id, document_type_id)` — one register
-per (ส่วนงาน × type), making `_resolve_sequence`'s `limit=1` exact.
+`_sql_constraints`: `unique(sender_department_id)` — one register per ส่วนงาน,
+making `_resolve_sequence`'s `limit=1` exact.
 
 **`sarabun.document.number`** — the register ledger
 
@@ -1012,7 +1015,7 @@ sequenceDiagram
     participant DB as PostgreSQL
     U->>D: action_send()
     D->>D: _register()  %% SEAM (phase-2 clerk gate)
-    D->>D: _resolve_sequence() (unit × type)
+    D->>D: _resolve_sequence() (per unit)
     alt no register configured
         D-->>U: UserError — BLOCK
     else resolved

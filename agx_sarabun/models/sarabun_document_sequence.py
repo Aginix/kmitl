@@ -22,12 +22,9 @@ class SarabunDocumentSequence(models.Model):
     code = fields.Char(required=True)
     active = fields.Boolean(default=True)
 
-    # === Resolution key (ส่วนงาน × type) ===
+    # === Resolution key: one register per ส่วนงาน, shared across ALL document types ===
     sender_department_id = fields.Many2one(
         "hr.department", string="ส่วนงาน (Issuing Unit)", required=True, index=True,
-    )
-    document_type_id = fields.Many2one(
-        "sarabun.document.type", string="Document Type", required=True, index=True,
     )
 
     # === Rendering ===
@@ -48,8 +45,8 @@ class SarabunDocumentSequence(models.Model):
 
     _sql_constraints = [
         ("code_uniq", "unique(code)", "Register code must be unique!"),
-        ("unit_type_uniq", "unique(sender_department_id, document_type_id)",
-         "Only one register per ส่วนงาน × type."),
+        ("unit_uniq", "unique(sender_department_id)",
+         "Only one register per ส่วนงาน (all document types share it)."),
     ]
 
     # ------------------------------------------------------------------ helpers

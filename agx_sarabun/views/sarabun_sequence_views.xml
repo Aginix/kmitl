@@ -8,7 +8,6 @@
             <tree>
                 <field name="name"/>
                 <field name="sender_department_id"/>
-                <field name="document_type_id"/>
                 <field name="reset_period"/>
                 <field name="next_counter"/>
                 <field name="active" widget="boolean_toggle"/>
@@ -23,12 +22,11 @@
             <form>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="ทะเบียนหนังสือกองคลัง – บันทึกข้อความ"/></h1>
+                        <h1><field name="name" placeholder="ทะเบียนหนังสือกองคลัง"/></h1>
                     </div>
                     <group>
-                        <group string="Resolution key (ส่วนงาน × type)">
+                        <group string="Resolution key (ส่วนงาน — one register per unit)">
                             <field name="sender_department_id"/>
-                            <field name="document_type_id"/>
                             <field name="code"/>
                             <field name="active" widget="boolean_toggle"/>
                         </group>

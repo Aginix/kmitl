@@ -113,7 +113,6 @@ class SarabunCommon(TransactionCase):
                 "name": "ทะเบียนหนังสือ กองทดสอบ",
                 "code": "REG-TEST",
                 "sender_department_id": cls.dept.id,
-                "document_type_id": cls.doc_type.id,
             }
         )
 

@@ -628,23 +628,20 @@ class SarabunDocument(models.Model):
                 ))
 
     def _resolve_sequence(self):
-        """Resolve the register from (sender ส่วนงาน × type). Block on missing —
-        never silently number from a shared/default pool (DESIGN §4.2)."""
+        """Resolve the register from the sender ส่วนงาน — one shared register per
+        unit across all document types. Block on missing; never number from a
+        default pool (DESIGN §4.2)."""
         self.ensure_one()
         seq = self.env["sarabun.document.sequence"].search([
             ("sender_department_id", "=", self.sender_department_id.id),
-            ("document_type_id", "=", self.type_id.id),
             ("active", "=", True),
         ], limit=1)
         if not seq:
             raise UserError(_(
-                "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s' ประเภท '%(type)s'. "
-                "(No register configured for unit '%(unit)s' × type '%(type)s'.) "
+                "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. "
+                "(No register configured for unit '%(unit)s'.) "
                 "Configure a register before sending."
-            ) % {
-                "unit": self.sender_department_id.display_name,
-                "type": self.type_id.name,
-            })
+            ) % {"unit": self.sender_department_id.display_name})
         return seq
 
     def _assign_register_number(self):
@@ -705,6 +702,15 @@ class SarabunDocument(models.Model):
             and s.verb in ("endorse", "sign_approve")
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
+    def _acted_signature_steps(self):
+        """Every step someone positively acted on — รับทราบ / เห็นชอบ / ลงนาม alike.
+        Drives the trailing signature sheet (each carries the actor's signature
+        image), so acknowledgers appear too, not only ลงนาม-อนุมัติ signers."""
+        self.ensure_one()
+        return self.routing_step_ids.filtered(
+            lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
+        ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
+
     def _get_delegated_report_action(self):
         """The origin's report used as the cover-sheet body (delegation contract)."""
         self.ensure_one()
@@ -722,7 +728,8 @@ class SarabunDocument(models.Model):
         return f"{name} - {self.subject or ''}".strip()
 
     def _render_official_pdf(self):
-        """Cover sheet (this module) + origin body (delegated), merged into one PDF.
+        """The frozen ฉบับลงนาม, merged in order: cover header (this module) +
+        origin body (delegated) + trailing route/signature sheet appended LAST.
         Rendered with sudo — the frozen copy is the system's official record."""
         self.ensure_one()
         Report = self.env["ir.actions.report"].sudo()
@@ -735,7 +742,11 @@ class SarabunDocument(models.Model):
             body_pdf, _dummy = Report._render_qweb_pdf(
                 delegated.report_name, [self.origin_res_id]
             )
-        return merge_pdf([p for p in (cover_pdf, body_pdf) if p])
+        # เส้นทางเอกสาร + ลายมือชื่อผู้ลงนาม/รับทราบ — appended at the very end.
+        route_pdf, _dummy = Report._render_qweb_pdf(
+            "agx_sarabun.action_report_sarabun_route", [self.id]
+        )
+        return merge_pdf([p for p in (cover_pdf, body_pdf, route_pdf) if p])
 
     def _get_official_pdf(self):
         """Frozen bytes once completed; a live render before that (§5.4)."""

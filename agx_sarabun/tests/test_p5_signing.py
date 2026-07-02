@@ -67,3 +67,18 @@ class TestP5Signing(SarabunCommon):
             self._act(step, "complete", self.user_a, signed_as_position_id=self.pos.id)
         self.assertEqual(step.signed_as_position_id, self.pos)
         self.assertTrue(doc.is_completed)
+
+    def test_acted_signature_steps_covers_all_actors(self):
+        """The trailing signature sheet includes รับทราบ/เห็นชอบ/ลงนาม, not only signers."""
+        doc = self._make_doc()
+        s_ack = self._add_step(doc, order=10, verb="acknowledge",
+                               target_mode="person", user=self.user_a)
+        s_end = self._add_step(doc, order=20, verb="endorse", user=self.user_a)
+        s_sign = self._add_step(doc, order=30, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        self._act(s_ack, "complete", self.user_a)   # non-gating acknowledge
+        self._act(s_end, "complete", self.user_a)    # endorse → advances to sign stage
+        with self.mute_pdf():
+            self._act(s_sign, "complete", self.user_b)
+        self.assertEqual(doc._acted_signature_steps(), s_ack | s_end | s_sign)
+        self.assertEqual(doc._signature_steps(), s_sign)  # only ลงนาม-อนุมัติ

@@ -240,27 +240,22 @@ def _create_budget_appropriation(
 
 
 def _ensure_sarabun_register(env, department):
-    """Seed a (ส่วนงาน × from_record) register so action_send can allocate a number.
+    """Seed a per-ส่วนงาน register so action_send can allocate a number.
 
     The rebuilt engine (P3) blocks send when no sarabun.document.sequence exists
-    for the issuing unit × document type, so the demo must provide one.
-    Idempotent — the sequence is unique per (department, type).
+    for the issuing unit, so the demo must provide one. One register per unit,
+    shared across all document types. Idempotent (unique per department).
     """
-    doc_type = env.ref("agx_sarabun.document_type_from_record")
     seq = env["sarabun.document.sequence"].search(
-        [
-            ("sender_department_id", "=", department.id),
-            ("document_type_id", "=", doc_type.id),
-        ],
+        [("sender_department_id", "=", department.id)],
         limit=1,
     )
     if not seq:
         seq = env["sarabun.document.sequence"].create(
             {
                 "name": "ทะเบียนหนังสือ %s" % department.display_name,
-                "code": "REG-FR-%s" % department.id,
+                "code": "REG-%s" % department.id,
                 "sender_department_id": department.id,
-                "document_type_id": doc_type.id,
             }
         )
     return seq
