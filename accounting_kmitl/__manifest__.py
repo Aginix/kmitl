@@ -20,8 +20,16 @@
         "wizard/account_move_exception_confirm_view.xml",
         "views/account_move_views.xml",
         "views/account_payment_method_views.xml",
+        "views/accounting_dashboard_views.xml",
         "views/menuitem.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "accounting_kmitl/static/src/dashboard/accounting_dashboard.scss",
+            "accounting_kmitl/static/src/dashboard/accounting_dashboard.js",
+            "accounting_kmitl/static/src/dashboard/accounting_dashboard.xml",
+        ],
+    },
     "installable": True,
     "auto_install": False,
     "application": True,

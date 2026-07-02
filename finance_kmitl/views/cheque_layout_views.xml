@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_cheque_layout_tree" model="ir.ui.view">
+        <field name="name">cheque.layout.tree</field>
+        <field name="model">cheque.layout</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_cheque_layout_form" model="ir.ui.view">
+        <field name="name">cheque.layout.form</field>
+        <field name="model">cheque.layout</field>
+        <field name="arch" type="xml">
+            <form string="Cheque Layout">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field name="name" placeholder="e.g. KTB Cheque" /></h1>
+                    </div>
+                    <group>
+                        <group string="Layout Settings">
+                            <field name="active" />
+                            <field name="company_id" groups="base.group_multi_company" />
+                            <field name="font_size" />
+                            <field name="date_buddhist_year" />
+                            <field name="date_spacing" />
+                        </group>
+                        <group string="Cheque Books (assign on the journal)">
+                            <field name="journal_ids" nolabel="1" readonly="1">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="type" />
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <separator string="Field Positions (mm from top-left of the cheque)" />
+                    <group>
+                        <group string="Date (DDMMYYYY boxes)">
+                            <field name="date_top" />
+                            <field name="date_left" />
+                        </group>
+                        <group string="Payee">
+                            <field name="payee_top" />
+                            <field name="payee_left" />
+                        </group>
+                        <group string="Amount (figures)">
+                            <field name="amount_figure_top" />
+                            <field name="amount_figure_left" />
+                        </group>
+                        <group string="Amount (words)">
+                            <field name="amount_text_top" />
+                            <field name="amount_text_left" />
+                        </group>
+                        <group string="A/C Payee Only crossing">
+                            <field name="crossing_top" />
+                            <field name="crossing_left" />
+                        </group>
+                        <group string="'or bearer' strike">
+                            <field name="bearer_top" />
+                            <field name="bearer_left" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cheque_layout" model="ir.actions.act_window">
+        <field name="name">Cheque Layouts</field>
+        <field name="res_model">cheque.layout</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
