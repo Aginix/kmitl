@@ -138,3 +138,9 @@ msgstr "ใบตั้งหนี้ผู้ขาย"
 #, python-format
 msgid "Cannot cancel: bill(s) %s already posted. Reverse the bill(s) first."
 msgstr "ไม่สามารถยกเลิกได้: ใบตั้งหนี้ %s ลงบัญชีแล้ว กรุณายกเลิกใบตั้งหนี้ก่อน"
+
+#. module: disbursement_accounting_kmitl
+#: code:addons/disbursement_accounting_kmitl/models/accounting_kmitl_dashboard.py:0
+#, python-format
+msgid "Disbursement requests awaiting billing"
+msgstr "ใบขอเบิกอนุมัติแล้ว รอตั้งหนี้"
