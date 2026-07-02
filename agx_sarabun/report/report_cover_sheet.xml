@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ใบปะหน้าสารบรรณ (Cover sheet): the official header only. Merged FIRST with
-         the origin's delegated report (the body); the route + signatures are a
-         separate sheet appended LAST (report_sarabun_route_document). -->
+    <!-- ใบปะหน้าสารบรรณ (Cover sheet): official header + signature block + เกษียน trail.
+         Merged with the origin's delegated report (the body) into the frozen ฉบับลงนาม. -->
     <record id="action_report_sarabun_cover" model="ir.actions.report">
         <field name="name">ใบปะหน้าสารบรรณ (Cover Sheet)</field>
         <field name="model">sarabun.document</field>
@@ -64,77 +63,42 @@
                                 <li t-foreach="doc.enclosure_ids" t-as="e"><span t-out="e.description"/></li>
                             </ol>
                         </div>
-                    </div>
-                </t>
-            </t>
-        </t>
-    </template>
 
-    <!-- เส้นทางเอกสาร + ลายมือชื่อ (Route & Signatures): appended LAST to the frozen
-         ฉบับลงนาม so the full path and every signer/acknowledger's signature sit at
-         the end of the whole document. -->
-    <record id="action_report_sarabun_route" model="ir.actions.report">
-        <field name="name">เส้นทางเอกสารและลายมือชื่อ (Route &amp; Signatures)</field>
-        <field name="model">sarabun.document</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">agx_sarabun.report_sarabun_route_document</field>
-        <field name="report_file">agx_sarabun.report_sarabun_route_document</field>
-        <field name="paperformat_id" ref="paperformat_sarabun_a4"/>
-        <field name="binding_model_id" eval="False"/>
-    </record>
+                        <hr/>
 
-    <template id="report_sarabun_route_document">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <t t-call="web.basic_layout">
-                    <div class="page" style="font-family: 'Sarabun','THSarabunNew',sans-serif;">
-                        <h4 class="text-center" style="margin-bottom:2px;">เส้นทางเอกสาร (Document Route)</h4>
-                        <div class="text-center" style="margin-bottom:10px;">
-                            <small>
-                                <strong>ที่</strong> <span t-field="doc.name"/>
-                                <span t-if="doc.subject" t-out="' — ' + doc.subject"/>
-                            </small>
+                        <!-- เกษียน trail -->
+                        <div style="margin-top:8px;">
+                            <strong>การเดินเรื่อง / เกษียน</strong>
+                            <table style="width:100%; border-collapse:collapse;" class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:left;">ลำดับ</th>
+                                        <th style="text-align:left;">ตำแหน่ง / ผู้พิจารณา</th>
+                                        <th style="text-align:left;">การดำเนินการ</th>
+                                        <th style="text-align:left;">วันที่</th>
+                                        <th style="text-align:left;">ความเห็น (เกษียน)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="doc._kasian_trail_steps()" t-as="step">
+                                        <td t-out="step.order"/>
+                                        <td>
+                                            <span t-out="step.signed_as_position_id.name or step.target_name"/><br/>
+                                            <!-- academic prefix (academic_standing_title) deferred to a later phase -->
+                                            <small t-out="step.acted_by_id.employee_id.name or step.acted_by_id.name"/>
+                                        </td>
+                                        <td t-out="dict(step._fields['verb'].selection).get(step.verb)"/>
+                                        <td><span t-field="step.acted_date"/></td>
+                                        <td t-out="step.note"/>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
 
-                        <!-- เส้นทาง: every step of the current attempt in order -->
-                        <table style="width:100%; border-collapse:collapse;" class="table table-sm table-bordered">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:center;">ขั้น</th>
-                                    <th style="text-align:left;">ผู้รับ / ตำแหน่ง</th>
-                                    <th style="text-align:left;">การดำเนินการ</th>
-                                    <th style="text-align:center;">สถานะ</th>
-                                    <th style="text-align:left;">ผู้ดำเนินการ</th>
-                                    <th style="text-align:center;">วันที่</th>
-                                    <th style="text-align:left;">ความเห็น (เกษียน)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="doc.routing_step_ids.sorted('order')" t-as="step">
-                                    <td style="text-align:center;" t-out="step.order"/>
-                                    <td>
-                                        <span t-out="step.signed_as_position_id.name or step.target_name"/>
-                                        <span t-if="step.for_info"> (สำเนา)</span>
-                                    </td>
-                                    <td t-out="dict(step._fields['verb'].selection).get(step.verb)"/>
-                                    <td style="text-align:center;" t-out="dict(step._fields['state'].selection).get(step.state)"/>
-                                    <td t-out="step.acted_by_id.employee_id.name or step.acted_by_id.name or ''"/>
-                                    <td style="text-align:center;">
-                                        <span t-if="step.acted_date" t-field="step.acted_date"/>
-                                    </td>
-                                    <td t-out="step.note or ''"/>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <!-- ลายมือชื่อ: everyone who acted (รับทราบ / เห็นชอบ / ลงนาม-อนุมัติ) -->
-                        <h4 style="margin-top:24px;">ลายมือชื่อ</h4>
-                        <div t-if="not doc._acted_signature_steps()" class="text-muted">
-                            <em>ยังไม่มีการลงนาม</em>
-                        </div>
-                        <div class="row" style="margin-top:8px;">
-                            <div t-foreach="doc._acted_signature_steps()" t-as="sig" class="col-4 text-center"
-                                 style="margin-bottom:20px;">
+                        <!-- Signature block(s) — ลงนาม-อนุมัติ -->
+                        <div class="row" style="margin-top:24px;">
+                            <div t-foreach="doc._signature_steps()" t-as="sig" class="col-4 text-center"
+                                 style="margin-bottom:16px;">
                                 <div t-if="sig.acted_by_id.employee_id.signature">
                                     <img t-att-src="image_data_uri(sig.acted_by_id.employee_id.signature)"
                                          style="max-height:60px;"/>
@@ -144,10 +108,7 @@
                                     <!-- academic prefix (academic_standing_title) deferred to a later phase -->
                                     (<span t-out="sig.acted_by_id.employee_id.name or sig.acted_by_id.name"/>)
                                 </div>
-                                <div t-if="sig.signed_as_position_id" t-out="sig.signed_as_position_id.name"/>
-                                <div t-else="" class="text-muted">
-                                    <small t-out="dict(sig._fields['verb'].selection).get(sig.verb)"/>
-                                </div>
+                                <div t-out="sig.signed_as_position_id.name"/>
                                 <div t-if="sig.acted_date">
                                     <span t-out="sig.acted_date.day"/>/<span t-out="sig.acted_date.month"/>/<span
                                         t-out="sig.acted_date.year + 543"/>

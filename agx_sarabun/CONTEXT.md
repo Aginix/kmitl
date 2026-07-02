@@ -92,7 +92,7 @@ _Avoid_: all-must-approve quorum on a single step
 ### Numbering
 
 **ลงทะเบียน (Register)**:
-The act of assigning a Document its official running number from a sequence. In v1 it fires **automatically at send** (draft → circulating), but is kept a *distinct event* so a สารบรรณกลาง clerk-gate can be inserted in phase 2. The sequence is resolved automatically from **(sender ส่วนงาน × type)** — each ส่วนงาน issues from **its own register**, not one institute-wide pool; if no sequence is configured for that unit the send is **blocked with a clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ (fiscal year, Oct–Sep)** by default and render in พ.ศ. A number is allocated atomically (row-locked) and never recycled (see Voided number).
+The act of assigning a Document its official running number from a sequence. In v1 it fires **automatically at send** (draft → circulating), but is kept a *distinct event* so a สารบรรณกลาง clerk-gate can be inserted in phase 2. The sequence is resolved automatically from the **sender ส่วนงาน** — each ส่วนงาน issues from **one register shared across all its document types** (a หน่วยงาน keeps a single running number series; the earlier per-`(ส่วนงาน × type)` split was dropped on feedback), not one institute-wide pool; if no sequence is configured for that unit the send is **blocked with a clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ (fiscal year, Oct–Sep)** by default and render in พ.ศ. A number is allocated atomically (row-locked) and never recycled (see Voided number).
 _Avoid_: numbering (reserve "register" for the official, audited act)
 
 ### Signing & record
@@ -115,6 +115,12 @@ _Avoid_: history, log
 Who may read a Document — the **sender**, plus the snapshot actors of any step that is **active or completed**. Steps not yet reached (waiting/future) grant **no** visibility, even if pre-seeded with a named person — you don't see a หนังสือ before it routes to you. Acting is permitted only to the actor of an *active* step. ชั้นความลับ need-to-know restriction is **phase-2**; v1 treats secrecy as a display label and keeps manager-see-all. Acting is backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add passwordless **magic-link** approval from email.
 _Avoid_: recipient-only access (the old `recipient_ids.user_id` rule that hid documents from Position/Unit actors)
 
+### Notifications
+
+**Inbox (กล่องหนังสือเข้า)**:
+The set of หนังสือ **awaiting the current user's action** — documents with an *active* step whose snapshot holders include them. Surfaced as a top-bar **systray tray** (live count + list, pushed realtime over the bus when a step activates/clears) plus a matching menu, alongside a native `mail.activity` raised per active *gating* step. It always reflects Route visibility, so it shows only หนังสือ the user is entitled to see and act on.
+_Avoid_: read/unread mailbox semantics — the inbox means "awaiting my action", not "unread mail"
+
 ### Classification
 
 **Document kind**:
@@ -122,8 +128,8 @@ The behaviour/format axis of a Document — `memo` (บันทึกข้อ�
 _Avoid_: the old hardcoded `code` selection that doubled as both behaviour key and identifier
 
 **Document type (`sarabun.document.type`)**:
-An **admin-configurable** record naming a concrete type ("บันทึกข้อความกองคลัง") and binding its sequence / default route / template, pointing at one Document kind. The configurable layer above the fixed kind axis.
-_Avoid_: treating type and kind as one field
+An **admin-configurable** record naming a concrete type ("บันทึกข้อความกองคลัง") and binding its default route / template, pointing at one Document kind. The configurable layer above the fixed kind axis. (The register/number sequence is resolved per **ส่วนงาน**, not per type — see Register.)
+_Avoid_: treating type and kind as one field; expecting the type to carry its own number series
 
 ### Attachments & links
 

@@ -376,3 +376,35 @@ File: `agx_construction/models/construction_project.py` — `construction.projec
 **Rollback procedure:** revert the merge commit. Because nothing is in production there is no data to unwind; the only blast radius is the 5 consumers, which are reverted in the same commit. Land behind a feature branch (`16.0-imp-agx_sarabun-workflow`) and require the full install + integration suite green before merge.
 
 **Recommended landing order:** P1 → P2 → P3 → P4 → P5 as internal commits on the branch (each installable + green), then P6 (adapter + 5 consumers) as the single cutover commit, then P7 hardening. Do **not** merge to `16.0` until P6 lands, since the old models can only be deleted once consumers are migrated.
+
+---
+
+## 5. Status & remaining work (updated 2026-07-02)
+
+### Done — on branch `16.0-imp-agx_sarabun-workflow` (PR #842), installs + tests green
+- **P1–P7** complete: data model, routing engine + lifecycle, numbering/register, access + `mail.activity` notifications, signing/freeze, adapter + **all consumers migrated** (incl. `kmitl_demo` driver — the 6th consumer the plan missed), 50 tests passing.
+- **P4-tray** (systray inbox กล่องหนังสือเข้า) — OWL tray + bus realtime + `get_my_sarabun_inbox` + inbox action/menu.
+- **Register = one per ส่วนงาน** (shared across document types; `unique(sender_department_id)`) — per testing feedback.
+- **Re-issue after terminal** — `sarabun_has_live_document` gates the consumers' "create หนังสือ" buttons (rejected/cancelled → button returns; returned → revise in place).
+- **Route templates target a Position** (placeholder holder = admin, `noupdate="1"`), not a hardcoded user.
+- Fixed the reserved `_register` ORM-name collision (→ `_assign_register_number`).
+
+### Reverted — needs a better solution
+- **เส้นทาง + ลายมือชื่อ ต่อท้ายเอกสาร (trailing route + signature sheet).** Tried appending a route/signature sheet after the body; reverted on feedback. Current behaviour is the original: signature block + เกษียน trail render **on the cover sheet**, merged with the origin body. TODO: design a cleaner "full route + all-actor signatures" layout before re-attempting.
+
+### v1 polish — open (decisions / small builds)
+- **Document-route widget on consumer forms** (the main queued item): show the active document's route (+ inline "ดำเนินการ" act button) on every consumer form, so users don't click into Sarabun. Plan: mixin `sarabun_routing_step_ids` (pseudo-o2m of the live doc's steps) → Tier 1 readonly tree (reuse the Sarabun routing columns) + inline act button → Tier 2 OWL stepper/timeline. Per-consumer cost = 1 line (Odoo has no global form-injection).
+- **Auto-wire route templates at send** — `_seed_route_from_template` should fall back to `find_matching_templates(origin)` so per-origin templates actually apply; currently latent (decision: changes send behaviour).
+- **agx_approval fail-loud on budget-commitment cancel** — base `action_cancel/draft` deliberately swallow; recommend a **narrow sarabun-scoped guard** in `agx_approval_sarabun`, not a base change (decision).
+- **Assign real Position holders** for the four placeholder approver positions (config, before go-live).
+- Minor: `sender_display` → department vs person on reports (decision); return/cancel landing states per consumer (confirm); stale i18n `.po` entries (cosmetic).
+
+### Phase 2 — deferred (seams in place)
+- **รักษาการ / มอบอำนาจ** (acting & delegated authority) — `sarabun.position.acting_ids` seam.
+- **ชั้นความลับ enforcement** (need-to-know record rule) — v1 = display label only.
+- **Portal magic-link acting** (passwordless approve from email) — `act_on_step` is token-ready.
+- **ทะเบียนหนังสือรับ (incoming register)** + Unit-targeted receipt workflow.
+- **memo / circular full compose templates** (v1 focuses on `from_record`); `external`/`order`/`announcement` kinds.
+- **สารบรรณกลาง clerk-gate** at ลงทะเบียน (register-event seam).
+- **PKI / digital signature** (`_sign_pdf` no-op seam); **academic prefix** in the signature block (`hr_employee_academic_standing_thailand`).
+- **SLA / escalation / due-date / reminder.**
