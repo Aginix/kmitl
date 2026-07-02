@@ -213,17 +213,6 @@ class ChequeRegister(models.Model):
         self.ensure_one()
         if not self.cheque_number:
             raise UserError(_("Enter the cheque number before printing."))
-        if not self.journal_id:
-            raise UserError(
-                _("Select the bank/cheque book (journal) before printing.")
-            )
-        if not self.journal_id.cheque_layout_id:
-            raise UserError(
-                _(
-                    "Configure a Cheque Layout on journal '%s' before printing.",
-                )
-                % self.journal_id.display_name
-            )
         return self.env.ref(
             "finance_kmitl.action_report_cheque_print"
         ).report_action(self)
