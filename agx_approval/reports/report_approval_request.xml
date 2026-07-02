@@ -128,6 +128,9 @@
                                     <tr>
                                         <td colspan="3" class="text-center fw-bolder">
                                             รวมทั้งสิ้น
+                                            <div class="fw-normal">
+                                                (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(grand_total)" />)
+                                            </div>
                                         </td>
                                         <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
                                     </tr>
@@ -179,6 +182,9 @@
                                     <tr>
                                         <td colspan="3" class="text-center fw-bolder">
                                             รวมทั้งสิ้น
+                                            <div class="fw-normal">
+                                                (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(grand_total)" />)
+                                            </div>
                                         </td>
                                         <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
                                     </tr>
@@ -198,6 +204,12 @@
                     <td>เลขที่ใบจองงบประมาณ</td>
                     <td>
                         <span t-field="o.budget_commitment_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_budget_commitment_amount">
+                    <td>มูลค่างบประมาณ</td>
+                    <td>
+                        <span t-field="o.budget_commitment_amount" />
                     </td>
                 </tr>
                 <tr class="o_field_budget_account_id">
