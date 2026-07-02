@@ -24,12 +24,12 @@ patch(FormCompiler.prototype, "web_notebook_invalid_indicator", {
         const noteBook = this._super(el, params);
 
         const pageSlots = [...noteBook.children].filter(
-            (c) => c.tagName === "t" && c.hasAttribute("t-set-slot")
+            (c) => c.nodeName.toLowerCase() === "t" && c.hasAttribute("t-set-slot")
         );
 
         let slotIdx = 0;
         for (const child of el.children) {
-            if (child.tagName.toLowerCase() !== "page") {
+            if (child.nodeName.toLowerCase() !== "page") {
                 continue;
             }
             const invisible = getModifier(child, "invisible");
@@ -41,11 +41,10 @@ patch(FormCompiler.prototype, "web_notebook_invalid_indicator", {
                 continue;
             }
             const fieldNames = collectPageFieldNames(child);
-            if (!fieldNames.length) {
-                continue;
-            }
             const originalExpr = pageSlot.getAttribute("className") || '""';
-            const invalidCheck = `${JSON.stringify(fieldNames)}.some(f => props.record.isInvalid(f))`;
+            const invalidCheck = fieldNames.length
+                ? `${JSON.stringify(fieldNames)}.some(f => props.record.isInvalid(f))`
+                : "false";
             pageSlot.setAttribute(
                 "className",
                 `(${originalExpr}) + (${invalidCheck} ? " ${INVALID_CLASS}" : "")`
