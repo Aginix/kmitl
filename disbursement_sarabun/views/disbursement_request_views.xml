@@ -13,6 +13,7 @@
 
             <!-- Submit to Sarabun button: visible when submitted and no active Sarabun -->
             <xpath expr="//button[@name='action_sign']" position="before">
+                <field name="sarabun_has_live_document" invisible="1"/>
                 <button name="action_submit_to_sarabun"
                         string="Submit to Sarabun"
                         type="object"

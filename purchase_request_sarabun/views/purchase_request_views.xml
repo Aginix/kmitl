@@ -19,6 +19,7 @@
             <!-- Add Sarabun Documents smart button -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="sarabun_document_count" invisible="1" />
+                <field name="sarabun_has_live_document" invisible="1" />
                 <button
                     type="object"
                     name="action_view_sarabun_documents"

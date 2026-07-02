@@ -73,6 +73,7 @@
                         class="oe_highlight"
                     />
                     <field name="sarabun_document_count" invisible="1" />
+                    <field name="sarabun_has_live_document" invisible="1" />
                     <button
                         name="action_submit_to_sarabun"
                         string="Create Sarabun"
