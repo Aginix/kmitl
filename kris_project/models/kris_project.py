@@ -7,9 +7,11 @@ from odoo.tools import float_compare
 _logger = logging.getLogger(__name__)
 
 CLIENT_ORG_TYPE_SELECTION = [
-    ("government", "Government"),
+    ("government", "Government Agency"),
     ("state_enterprise", "State Enterprise"),
-    ("private", "Private"),
+    ("public_organization", "Public Organization"),
+    ("independent_organization", "Independent Organization"),
+    ("private", "Private Company"),
     ("other", "Other"),
 ]
 
