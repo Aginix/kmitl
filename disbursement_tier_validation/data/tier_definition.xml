@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Two sequential approval tiers for disbursement requests, approved in
+         order: หัวหน้างานบัญชี (Accounting Head) then ผู้อำนวยการกองคลัง (Finance
+         Director).
+
+         IMPORTANT — tier ordering: base_tier_validation.request_validation
+         searches definitions with order="sequence desc" and numbers the
+         resulting reviews 1..n, and approve_sequence approves the LOWEST review
+         number first. So the definition with the HIGHER `sequence` is reviewed
+         FIRST. Hence the first approver (Accounting Head) has sequence 20 and
+         the second (Finance Director) has sequence 10.
+
+         The has_*comment flags make Validate/Reject open the (translated)
+         comment dialog. -->
+    <record id="tier_definition_disbursement_accounting_head" model="tier.definition">
+        <field name="name">หัวหน้างานบัญชี</field>
+        <field name="model_id" ref="disbursement.model_disbursement_request" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="group_disbursement_accounting_head" />
+        <field name="approve_sequence">True</field>
+        <field name="has_comment">True</field>
+        <field name="has_approve_comment">True</field>
+        <field name="has_reject_comment">True</field>
+        <field name="notify_on_create">True</field>
+        <field name="notify_on_accepted">True</field>
+        <field name="notify_on_rejected">True</field>
+        <field name="sequence">20</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="tier_definition_disbursement_finance_director" model="tier.definition">
+        <field name="name">ผู้อำนวยการกองคลัง</field>
+        <field name="model_id" ref="disbursement.model_disbursement_request" />
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="group_disbursement_finance_director" />
+        <field name="approve_sequence">True</field>
+        <field name="has_comment">True</field>
+        <field name="has_approve_comment">True</field>
+        <field name="has_reject_comment">True</field>
+        <field name="notify_on_create">True</field>
+        <field name="notify_on_accepted">True</field>
+        <field name="notify_on_rejected">True</field>
+        <field name="sequence">10</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

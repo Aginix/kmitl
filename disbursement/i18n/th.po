@@ -123,7 +123,7 @@ msgstr ""
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 msgid "Are you sure you want to validate this request?"
-msgstr ""
+msgstr "ยืนยันการตรวจสอบใบขอเบิกนี้ใช่หรือไม่?"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__message_attachment_count

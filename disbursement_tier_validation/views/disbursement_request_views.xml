@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_disbursement_request_form_tier" model="ir.ui.view">
+        <field name="name">disbursement.request.form.tier</field>
+        <field name="model">disbursement.request</field>
+        <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
+        <field name="arch" type="xml">
+            <!-- Fields consumed by the Approve button's attrs (also injected by
+                 the tier mixin; declared here so the button resolves them). -->
+            <button name="action_approve" position="before">
+                <field name="validation_status" invisible="1" />
+                <field name="need_validation" invisible="1" />
+            </button>
+            <!-- Approval is driven by the two-tier Validate/Reject buttons.
+                 The manual Approve stays only as a fallback, shown once fully
+                 validated (normally the auto-approve in _validate_tier fires
+                 first and moves the request out of 'verified'). -->
+            <button name="action_approve" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('state', '!=', 'verified'), ('validation_status', '!=', 'validated')]}</attribute>
+            </button>
+        </field>
+    </record>
+</odoo>
