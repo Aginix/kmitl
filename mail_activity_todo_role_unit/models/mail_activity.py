@@ -77,3 +77,37 @@ class MailActivity(models.Model):
         to_release.write({"user_id": False})
         self._todo_notify(to_release._todo_recipient_partners())
         return True
+
+    def action_reassign(self, user):
+        """มอบหมายให้… — hand a group Todo to a specific user within role ∩ OU.
+
+        Symmetric with ``action_claim``: caller is responsible for filtering the
+        recordset to group Todos and enforcing the role ∩ OU domain on ``user``.
+        Notifies both the pre-write recipients (whose inbox drops the Todo) and
+        the new assignee (whose inbox picks it up).
+        """
+        to_reassign = self.filtered("responsible_role_id")
+        partners_before = to_reassign._todo_recipient_partners()
+        to_reassign.write({"user_id": user.id})
+        self._todo_notify(partners_before | user.partner_id)
+        return True
+
+    def action_open_reassign_wizard(self):
+        """Open the delegate wizard on the selected activities (Inbox entry point).
+
+        The wizard also opens from a source record via
+        ``todo.assignable.action_reassign_todo_on_record``; both paths funnel
+        through the same wizard.
+        """
+        return {
+            "type": "ir.actions.act_window",
+            "name": "มอบหมายให้...",
+            "res_model": "todo.assign.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "active_model": "mail.activity",
+                "active_ids": self.ids,
+                "active_id": self.id if len(self) == 1 else False,
+            },
+        }
