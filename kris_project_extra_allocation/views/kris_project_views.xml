@@ -8,17 +8,32 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='extra_analytic_id']" position="replace"/>
 
+            <xpath expr="//field[@name='extra_value']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <xpath expr="//separator[@name='installment_separator']" position="before">
                 <separator
                     string="Extra Project Management Fee Allocation"
                     name="extra_allocation_separator"
                 />
+                <field
+                    name="extra_analytic_ids"
+                    attrs="{'readonly': [('can_edit', '=', False)]}"
+                >
+                    <tree editable="bottom">
+                        <field name="analytic_account_id"/>
+                        <field name="amount" sum="Total"/>
+                        <field name="percentage" widget="percentage" readonly="1"/>
+                        <field name="currency_id" invisible="1"/>
+                    </tree>
+                </field>
                 <group>
                     <group>
                         <field
-                            name="extra_analytic_ids"
-                            widget="many2many_tags"
-                            attrs="{'readonly': [('can_edit', '=', False)]}"
+                            name="extra_value"
+                            string="Total Extra Value of Project"
+                            readonly="1"
                         />
                     </group>
                 </group>
