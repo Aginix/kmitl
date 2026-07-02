@@ -7,7 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 class ChequeRegister(models.Model):
     _name = "cheque.register"
     _description = "Cheque Control Register"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "thai.date.mixin"]
     _order = "cheque_date desc, id desc"
 
     name = fields.Char(
@@ -72,6 +72,17 @@ class ChequeRegister(models.Model):
     deposit_date = fields.Date(string="Deposit Date", tracking=True)
     clearing_date = fields.Date(string="Clearing Date", tracking=True)
     note = fields.Text(string="Notes")
+    crossed = fields.Boolean(
+        string="A/C Payee Only",
+        default=True,
+        help="Print the 'A/C PAYEE ONLY' crossing when printing the cheque.",
+    )
+    strike_bearer = fields.Boolean(
+        string="Strike 'or Bearer'",
+        default=True,
+        help="Strike out the pre-printed 'หรือผู้ถือ' (or bearer) wording when "
+        "printing the cheque.",
+    )
     company_id = fields.Many2one(
         comodel_name="res.company",
         default=lambda self: self.env.company,
@@ -178,3 +189,41 @@ class ChequeRegister(models.Model):
 
     def action_reset_draft(self):
         self.write({"state": "draft"})
+
+    # ------------------------------------------------------------------
+    # Cheque printing
+    # ------------------------------------------------------------------
+    def amount_in_words(self):
+        """Amount spelled out in Thai baht text (for the cheque)."""
+        self.ensure_one()
+        return self.currency_id.with_context(lang="th_TH").amount_to_text(
+            self.amount
+        )
+
+    def date_digits(self, buddhist_year=False):
+        """Return the cheque date as ``DDMMYYYY`` digits for the date boxes."""
+        self.ensure_one()
+        if not self.cheque_date:
+            return ""
+        d = self.cheque_date
+        year = d.year + 543 if buddhist_year else d.year
+        return "%02d%02d%04d" % (d.day, d.month, year)
+
+    def action_print_cheque(self):
+        self.ensure_one()
+        if not self.cheque_number:
+            raise UserError(_("Enter the cheque number before printing."))
+        if not self.journal_id:
+            raise UserError(
+                _("Select the bank/cheque book (journal) before printing.")
+            )
+        if not self.journal_id.cheque_layout_id:
+            raise UserError(
+                _(
+                    "Configure a Cheque Layout on journal '%s' before printing.",
+                )
+                % self.journal_id.display_name
+            )
+        return self.env.ref(
+            "finance_kmitl.action_report_cheque_print"
+        ).report_action(self)

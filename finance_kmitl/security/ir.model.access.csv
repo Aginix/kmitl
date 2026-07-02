@@ -6,3 +6,5 @@ access_account_payment_budget_manager,account.payment budget manager,account.mod
 access_cheque_register_user_out,cheque.register.user.out,model_cheque_register,group_finance_kmitl_user_out,1,1,1,0
 access_cheque_register_user_in,cheque.register.user.in,model_cheque_register,group_finance_kmitl_user_in,1,1,1,0
 access_cheque_register_manager,cheque.register.manager,model_cheque_register,group_finance_kmitl_manager,1,1,1,1
+access_cheque_layout_all,cheque.layout.all,model_cheque_layout,base.group_user,1,0,0,0
+access_cheque_layout_manager,cheque.layout.manager,model_cheque_layout,account.group_account_manager,1,1,1,1

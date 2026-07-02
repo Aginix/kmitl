@@ -127,5 +127,12 @@
         action="action_kmitl_payment_type"
         sequence="5"
     />
+    <menuitem
+        id="menu_settings_cheque_layout"
+        name="Cheque Layouts"
+        parent="menu_payment_settings"
+        action="action_cheque_layout"
+        sequence="15"
+    />
 
 </odoo>

@@ -144,6 +144,7 @@ msgstr "ผู้ชำระเงิน"
 
 #. module: finance_kmitl
 #: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_payment_form_inherit
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
 msgid "Payee"
 msgstr "ผู้รับเงิน"
 
@@ -543,3 +544,145 @@ msgstr "เช็คเด้งได้เฉพาะเช็คที่ค
 #, python-format
 msgid "Cleared cheques cannot be cancelled."
 msgstr "เช็คที่ขึ้นเงินแล้วยกเลิกไม่ได้"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_cheque_layout
+msgid "Cheque Print Layout"
+msgstr "รูปแบบการพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__name
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__journal_ids
+msgid "Cheque Books"
+msgstr "สมุดเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__font_size
+msgid "Font Size (pt)"
+msgstr "ขนาดตัวอักษร (pt)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_buddhist_year
+msgid "Buddhist Era Date"
+msgstr "ใช้ปี พ.ศ."
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_spacing
+msgid "Date Digit Spacing (mm)"
+msgstr "ระยะห่างตัวเลขวันที่ (มม.)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_top
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__payee_top
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_figure_top
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_text_top
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__crossing_top
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__bearer_top
+msgid "Top"
+msgstr "บน"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__date_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__payee_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_figure_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__amount_text_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__crossing_left
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_layout__bearer_left
+msgid "Left"
+msgstr "ซ้าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__crossed
+msgid "A/C Payee Only"
+msgstr "ขีดคร่อม A/C Payee Only"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_cheque_register__strike_bearer
+msgid "Strike 'or Bearer'"
+msgstr "ขีดฆ่า 'หรือผู้ถือ'"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_journal__cheque_layout_id
+msgid "Cheque Layout"
+msgstr "รูปแบบการพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Layout Settings"
+msgstr "ตั้งค่ารูปแบบ"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Cheque Books (assign on the journal)"
+msgstr "สมุดเช็ค (กำหนดที่สมุดรายวัน)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Field Positions (mm from top-left of the cheque)"
+msgstr "ตำแหน่งฟิลด์ (มม. จากมุมซ้ายบนของเช็ค)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Date (DDMMYYYY boxes)"
+msgstr "วันที่ (ช่อง DDMMYYYY)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Amount (figures)"
+msgstr "จำนวนเงิน (ตัวเลข)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "Amount (words)"
+msgstr "จำนวนเงิน (ตัวอักษร)"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "A/C Payee Only crossing"
+msgstr "ขีดคร่อม A/C Payee Only"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_layout_form
+msgid "'or bearer' strike"
+msgstr "ขีดฆ่า 'หรือผู้ถือ'"
+
+#. module: finance_kmitl
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_account_journal_form_cheque
+msgid "Cheque"
+msgstr "เช็ค"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#: model:ir.actions.report,name:finance_kmitl.action_report_cheque_print
+#: model_terms:ir.ui.view,arch_db:finance_kmitl.view_cheque_register_form
+#, python-format
+msgid "Print Cheque"
+msgstr "พิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: model:ir.actions.act_window,name:finance_kmitl.action_cheque_layout
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_cheque_layout
+msgid "Cheque Layouts"
+msgstr "รูปแบบการพิมพ์เช็ค"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "Enter the cheque number before printing."
+msgstr "กรุณาระบุเลขที่เช็คก่อนพิมพ์"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "Select the bank/cheque book (journal) before printing."
+msgstr "กรุณาเลือกสมุดเช็ค (สมุดรายวัน) ก่อนพิมพ์"
+
+#. module: finance_kmitl
+#: code:addons/finance_kmitl/models/cheque_register.py:0
+#, python-format
+msgid "Configure a Cheque Layout on journal '%s' before printing."
+msgstr "กรุณาตั้งค่ารูปแบบการพิมพ์เช็คให้สมุดรายวัน '%s' ก่อนพิมพ์"
