@@ -6,14 +6,6 @@ ALLOWED_TRANSITIONS = {
     "suspended": ("in_progress", "terminated", "conditional_close", "done"),
 }
 
-STATE_LABELS = {
-    "in_progress": "ดำเนินการต่อ",
-    "suspended": "ชะลอโครงการ",
-    "terminated": "ยุติโครงการ",
-    "conditional_close": "ปิดโครงการแบบมีเงื่อนไข",
-    "done": "เสร็จสิ้น",
-}
-
 
 class KrisProjectStateWizard(models.TransientModel):
     _name = "kris.project.state.wizard"
@@ -105,13 +97,13 @@ class KrisProjectStateWizard(models.TransientModel):
                 _("Cannot change status from %s to %s.")
                 % (self.current_state, target)
             )
-        if target != "done" and not (self.note and self.note.strip()):
+        note = (self.note or "").strip()
+        if target != "done" and not note:
             raise UserError(_("กรุณาระบุหมายเหตุสำหรับการปรับสถานะนี้"))
 
-        self.project_id.write({"state": target})
-        if self.note and self.note.strip():
-            self.project_id.message_post(
-                body=_("<b>ปรับสถานะเป็น %s</b><br/>หมายเหตุ: %s")
-                % (STATE_LABELS.get(target, target), self.note),
+        if note:
+            self.project_id._track_set_log_message(
+                _("<b>หมายเหตุ:</b> %s") % note,
             )
+        self.project_id.write({"state": target})
         return {"type": "ir.actions.act_window_close"}

@@ -122,13 +122,13 @@
                         name="action_draft"
                         string="Reset to Draft"
                         type="object"
-                        states="cancel"
+                        states="cancel,in_progress"
                         groups="kris_project.group_kris_project_manager"
                     />
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,in_progress,suspended,done"
+                        statusbar_visible="draft,in_progress"
                     />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"

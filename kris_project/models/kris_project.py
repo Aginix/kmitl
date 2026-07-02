@@ -559,9 +559,9 @@ class KrisProject(models.Model):
 
     def action_draft(self):
         for rec in self:
-            if rec.state != "cancel":
+            if rec.state not in ("cancel", "in_progress"):
                 raise UserError(
-                    _("Only canceled projects can be reset.")
+                    _("Only cancelled or in-progress projects can be reset to draft.")
                 )
         self.write({
             "state": "draft",
