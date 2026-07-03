@@ -117,6 +117,13 @@
                         <field name="company_id" groups="base.group_multi_company" />
                         <field name="notes" />
                     </group>
+                    <group string="Budget Details" attrs="{'readonly': [('is_editable','=', False)]}">
+                        <field name="analytic_distribution" widget="analytic_distribution"/>
+                        <field name="source_analytic_id" required="1" />
+                        <field name="department_analytic_id" required="1" />
+                        <field name="fund_analytic_id" required="1" />
+                        <field name="activity_analytic_id" required="1" />
+                    </group>
                     <notebook>
                         <page string="List">
                             <field
@@ -146,15 +153,6 @@
                                     name="total_amount"
                                     readonly="1"
                                 />
-                            </group>
-                        </page>
-                        <page string="Analytic">
-                            <group attrs="{'readonly': [('is_editable','=', False)]}">
-                                <field name="analytic_distribution" widget="analytic_distribution"/>
-                                <field name="source_analytic_id" required="0" />
-                                <field name="department_analytic_id" required="0" />
-                                <field name="fund_analytic_id" required="0" />
-                                <field name="activity_analytic_id" required="0" />
                             </group>
                         </page>
                     </notebook>
