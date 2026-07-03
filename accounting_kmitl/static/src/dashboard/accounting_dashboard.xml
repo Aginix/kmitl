@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_kmitl.AccountingDashboard" owl="1">
+        <div class="o_ak_dashboard p-3">
+
+            <div class="o_ak_header mb-3">
+                <h2 class="mb-0" t-esc="text.title"/>
+                <span class="text-muted" t-esc="text.subtitle"/>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center text-muted py-5">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="row g-3">
+                    <t t-foreach="cards" t-as="card" t-key="card.id">
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="card o_ak_card h-100"
+                                 t-on-click="() => this.openCard(card)">
+                                <div class="card-body">
+                                    <div class="o_ak_card_title text-muted" t-esc="card.title"/>
+                                    <div t-attf-class="o_ak_card_count fw-bold text-{{card.color}}"
+                                         t-esc="card.count"/>
+                                    <div t-if="card.amount !== undefined" class="o_ak_card_amount text-muted">
+                                        <t t-esc="state.data.currency_symbol"/>
+                                        <t t-esc="formatAmount(card.amount)"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <div class="o_ak_quick_actions mt-4">
+                    <h5 class="text-muted" t-esc="text.quickActions"/>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-primary" t-on-click="() => this.newDoc('in_invoice')">
+                            <i class="fa fa-plus me-1"/><t t-esc="text.newVendorBill"/>
+                        </button>
+                        <button class="btn btn-primary" t-on-click="() => this.newDoc('out_invoice')">
+                            <i class="fa fa-plus me-1"/><t t-esc="text.newCustomerInvoice"/>
+                        </button>
+                        <button class="btn btn-secondary" t-on-click="() => this.newDoc('entry')">
+                            <i class="fa fa-plus me-1"/><t t-esc="text.newJournalEntry"/>
+                        </button>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -40,6 +40,15 @@
                     <t t-esc="opt.name" />
                 </div>
             </div>
+            <div class="form-check o_kmitl_ms_onlyself" t-if="props.withOnlySelf">
+                <input
+                    type="checkbox"
+                    class="form-check-input"
+                    t-att-checked="props.onlySelf"
+                    t-on-change="(ev) => props.onOnlySelfChange(ev.target.checked)"
+                />
+                <label class="form-check-label">Only the specified entry</label>
+            </div>
         </div>
     </t>
 
@@ -47,6 +56,9 @@
         <div class="o_kmitl_trial_balance o_action_manager p-3">
             <div class="o_kmitl_tb_header d-flex align-items-center mb-3">
                 <h2 class="m-0 flex-grow-1">Trial Balance</h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportCsv">
+                    <i class="fa fa-file-text-o me-1" />Export CSV
+                </button>
                 <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
                     <i class="fa fa-file-excel-o me-1" />Export Excel
                 </button>
@@ -126,6 +138,9 @@
                         placeholder="labels.departments"
                         selected="state.departments"
                         onChange="(sel) => this.onSelectionChange('departments', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.departments"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('departments', val)"
                     />
                 </div>
                 <div class="col-md-3">
@@ -136,6 +151,9 @@
                         placeholder="labels.sources"
                         selected="state.sources"
                         onChange="(sel) => this.onSelectionChange('sources', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.sources"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('sources', val)"
                     />
                 </div>
                 <div class="col-md-3">
@@ -146,6 +164,9 @@
                         placeholder="labels.funds"
                         selected="state.funds"
                         onChange="(sel) => this.onSelectionChange('funds', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.funds"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('funds', val)"
                     />
                 </div>
                 <div class="col-md-3">
@@ -156,6 +177,9 @@
                         placeholder="labels.activities"
                         selected="state.activities"
                         onChange="(sel) => this.onSelectionChange('activities', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.activities"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('activities', val)"
                     />
                 </div>
 
