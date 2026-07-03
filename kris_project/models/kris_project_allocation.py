@@ -86,12 +86,14 @@ class KrisProjectAllocationLine(models.Model):
 
     @api.constrains("estimated_amount")
     def _check_estimated_amount_sum(self):
+        # Allow up to 0.02 baht of cumulative Monetary rounding drift when a
+        # template's % lines are applied on a decimal fixed base amount.
         for line in self:
             base = line.project_id.maintenance_deduction_amount
             if not base:
                 continue
             total = sum(line.project_id.allocation_line_ids.mapped("estimated_amount"))
-            if total > base + 1e-9:
+            if total - base > 0.02:
                 raise ValidationError(
                     _(
                         "ผลรวมประมาณการจัดสรรต้องไม่เกินมูลค่าหักค่าบำรุง (%.2f บาท)"
