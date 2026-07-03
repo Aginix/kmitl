@@ -46,7 +46,7 @@ class KrisProjectExtraAnalyticLine(models.Model):
     def _compute_percentage(self):
         for line in self:
             total = sum(line.project_id.extra_analytic_ids.mapped("amount"))
-            line.percentage = (line.amount / total * 100.0) if total else 0.0
+            line.percentage = (line.amount / total) if total else 0.0
 
     @api.constrains("project_id", "analytic_account_id")
     def _check_unique_analytic_per_project(self):
