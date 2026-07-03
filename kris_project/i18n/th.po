@@ -1521,3 +1521,45 @@ msgstr "รหัสงบประมาณหน่วยงาน"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
 msgid "Extra Payee"
 msgstr "ผู้รับค่า Extra"
+
+#. module: kris_project
+#: model:ir.actions.act_window,name:kris_project.action_kris_project_state_wizard
+#: model:ir.model,name:kris_project.model_kris_project_state_wizard
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
+msgid "Change Project Status"
+msgstr "ปรับสถานะโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__new_state_from_in_progress
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__new_state_from_suspended
+msgid "New Status"
+msgstr "สถานะใหม่"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__in_progress
+msgid "Resume"
+msgstr "ดำเนินการต่อ"
+
+#. module: kris_project
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
+msgid "Enter the reason for this status change..."
+msgstr "ระบุเหตุผลของการปรับสถานะ..."
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "Please select a new status."
+msgstr "กรุณาเลือกสถานะใหม่"
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "Please provide a note for this status change."
+msgstr "กรุณาระบุหมายเหตุสำหรับการปรับสถานะนี้"
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "<b>Note:</b> %s"
+msgstr "<b>หมายเหตุ:</b> %s"

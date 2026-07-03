@@ -96,7 +96,7 @@
                 <header>
                     <button
                         name="action_confirm"
-                        string="ยืนยัน"
+                        string="Confirm"
                         type="object"
                         class="btn-primary"
                         states="draft"
@@ -104,14 +104,14 @@
                     />
                     <button
                         name="action_cancel"
-                        string="ยกเลิก"
+                        string="Cancel"
                         type="object"
                         states="draft"
                         groups="kris_project.group_kris_project_officer"
                     />
                     <button
                         name="%(kris_project.action_kris_project_state_wizard)d"
-                        string="ปรับสถานะโครงการ"
+                        string="Change Project Status"
                         type="action"
                         class="btn-primary"
                         states="in_progress,suspended"

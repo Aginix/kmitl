@@ -43,21 +43,21 @@ class KrisProjectStateWizard(models.TransientModel):
     # This avoids per-option "invisible" attrs which Odoo Selection widgets don't support.
     new_state_from_in_progress = fields.Selection(
         selection=[
-            ("suspended", "ชะลอโครงการ"),
-            ("terminated", "ยุติโครงการ"),
-            ("conditional_close", "ปิดโครงการแบบมีเงื่อนไข"),
-            ("done", "เสร็จสิ้น"),
+            ("suspended", "Suspended"),
+            ("terminated", "Terminated"),
+            ("conditional_close", "Closed with Conditions"),
+            ("done", "Done"),
         ],
-        string="สถานะใหม่",
+        string="New Status",
     )
     new_state_from_suspended = fields.Selection(
         selection=[
-            ("in_progress", "ดำเนินการต่อ (Resume)"),
-            ("terminated", "ยุติโครงการ"),
-            ("conditional_close", "ปิดโครงการแบบมีเงื่อนไข"),
-            ("done", "เสร็จสิ้น"),
+            ("in_progress", "Resume"),
+            ("terminated", "Terminated"),
+            ("conditional_close", "Closed with Conditions"),
+            ("done", "Done"),
         ],
-        string="สถานะใหม่",
+        string="New Status",
     )
     new_state = fields.Selection(
         selection=[
@@ -70,7 +70,7 @@ class KrisProjectStateWizard(models.TransientModel):
         compute="_compute_new_state",
         store=False,
     )
-    note = fields.Text(string="หมายเหตุ")
+    note = fields.Text(string="Note")
 
     @api.depends(
         "current_state",
@@ -90,7 +90,7 @@ class KrisProjectStateWizard(models.TransientModel):
         self.ensure_one()
         target = self.new_state
         if not target:
-            raise UserError(_("กรุณาเลือกสถานะใหม่"))
+            raise UserError(_("Please select a new status."))
         allowed = ALLOWED_TRANSITIONS.get(self.current_state, ())
         if target not in allowed:
             raise UserError(
@@ -99,11 +99,11 @@ class KrisProjectStateWizard(models.TransientModel):
             )
         note = (self.note or "").strip()
         if target != "done" and not note:
-            raise UserError(_("กรุณาระบุหมายเหตุสำหรับการปรับสถานะนี้"))
+            raise UserError(_("Please provide a note for this status change."))
 
         if note:
             self.project_id._track_set_log_message(
-                _("<b>หมายเหตุ:</b> %s") % note,
+                _("<b>Note:</b> %s") % note,
             )
         self.project_id.write({"state": target})
         return {"type": "ir.actions.act_window_close"}

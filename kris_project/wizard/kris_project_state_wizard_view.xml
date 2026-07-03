@@ -4,7 +4,7 @@
         <field name="name">kris.project.state.wizard.form</field>
         <field name="model">kris.project.state.wizard</field>
         <field name="arch" type="xml">
-            <form string="ปรับสถานะโครงการ">
+            <form string="Change Project Status">
                 <field name="current_state" invisible="1" />
                 <field name="new_state" invisible="1" />
                 <group>
@@ -20,25 +20,25 @@
                     />
                     <field
                         name="note"
-                        placeholder="ระบุเหตุผลของการปรับสถานะ..."
+                        placeholder="Enter the reason for this status change..."
                         attrs="{'required': [('new_state', 'not in', ('done', False))]}"
                     />
                 </group>
                 <footer>
                     <button
                         name="action_apply"
-                        string="ยืนยัน"
+                        string="Confirm"
                         type="object"
                         class="btn-primary"
                     />
-                    <button string="ยกเลิก" class="btn-secondary" special="cancel" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_kris_project_state_wizard" model="ir.actions.act_window">
-        <field name="name">ปรับสถานะโครงการ</field>
+        <field name="name">Change Project Status</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">kris.project.state.wizard</field>
         <field name="view_mode">form</field>
