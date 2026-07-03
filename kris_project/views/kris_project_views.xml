@@ -10,6 +10,7 @@
         <field name="model">kris.project.receipt</field>
         <field name="arch" type="xml">
             <form string="Revenue Record">
+                <sheet>
                 <field name="currency_id" invisible="1"/>
                 <group>
                     <field name="project_id" readonly="1"/>
@@ -69,6 +70,7 @@
                         </field>
                     </page>
                 </notebook>
+                </sheet>
             </form>
         </field>
     </record>
