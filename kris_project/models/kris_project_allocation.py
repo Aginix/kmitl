@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -86,14 +87,14 @@ class KrisProjectAllocationLine(models.Model):
 
     @api.constrains("estimated_amount")
     def _check_estimated_amount_sum(self):
-        # Allow up to 0.02 baht of cumulative Monetary rounding drift when a
-        # template's % lines are applied on a decimal fixed base amount.
         for line in self:
             base = line.project_id.maintenance_deduction_amount
             if not base:
                 continue
-            total = sum(line.project_id.allocation_line_ids.mapped("estimated_amount"))
-            if total - base > 0.02:
+            rounding = line.currency_id.rounding or 0.01
+            lines = line.project_id.allocation_line_ids
+            total = sum(lines.mapped("estimated_amount"))
+            if float_compare(total, base, precision_rounding=rounding * len(lines)) > 0:
                 raise ValidationError(
                     _(
                         "ผลรวมประมาณการจัดสรรต้องไม่เกินมูลค่าหักค่าบำรุง (%.2f บาท)"

@@ -322,9 +322,6 @@ class KrisProject(models.Model):
         "receipt_ids",
     )
     def _compute_warnings(self):
-        # Allocation / installment sums are treated as matching when within
-        # 0.02 baht — absorbs cumulative Monetary rounding when % distributions
-        # are applied on a decimal fixed base amount.
         prec = self.env["decimal.precision"].precision_get("Account")
         for rec in self:
             rec.warn_cancel_with_receipts = bool(rec.receipt_ids) and rec.state in (
@@ -342,17 +339,30 @@ class KrisProject(models.Model):
             alloc_total = sum(rec.allocation_line_ids.mapped("estimated_amount"))
             rec.warn_allocation_mismatch = (
                 bool(rec.allocation_line_ids)
-                and abs(alloc_total - rec.maintenance_deduction_amount) > 0.02
+                and float_compare(
+                    alloc_total, rec.maintenance_deduction_amount, precision_digits=prec
+                )
+                != 0
             )
             if rec.installment_ids:
                 maint_total = sum(rec.installment_ids.mapped("maintenance_fee"))
                 rec.warn_installment_maintenance_mismatch = (
                     not rec.no_installment_tracking
-                    and abs(maint_total - rec.maintenance_deduction_amount) > 0.02
+                    and float_compare(
+                        maint_total,
+                        rec.maintenance_deduction_amount,
+                        precision_digits=prec,
+                    )
+                    != 0
                 )
                 rec.warn_installment_total_mismatch = (
                     not rec.no_installment_tracking
-                    and abs(rec.total_installment_amount - rec.project_value) > 0.02
+                    and float_compare(
+                        rec.total_installment_amount,
+                        rec.project_value,
+                        precision_digits=prec,
+                    )
+                    != 0
                 )
                 extra_total = sum(rec.installment_ids.mapped("extra_income"))
                 rec.warn_extra_overshoot = (
