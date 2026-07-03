@@ -83,6 +83,10 @@
                         <field name="through" placeholder="ผ่าน... (optional)"/>
                         <field name="addressee_position_id"/>
                     </group>
+                    <separator string="เนื้อหา (Content)"/>
+                    <field name="content" nolabel="1"
+                           placeholder="พิมพ์เนื้อหาหนังสือ... (สำหรับหนังสือจากระบบงาน ใช้เป็นข้อความปะหน้าเหนือเอกสารต้นเรื่อง)"
+                           attrs="{'readonly': [('is_editable', '=', False)]}"/>
                     <group name="numbering" string="เลขที่หนังสือ (Numbering)"
                            attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}">
                         <field name="numbering_mode"/>

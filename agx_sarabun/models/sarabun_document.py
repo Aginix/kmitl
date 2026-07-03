@@ -77,6 +77,14 @@ class SarabunDocument(models.Model):
         string="ผ่าน (Through)",
         help='Free text for "เรียน X ผ่าน Y".',
     )
+    content = fields.Html(
+        string="เนื้อหา (Content)",
+        sanitize=True,
+        help="The body of the หนังสือ. For a composed memo/circular this IS the "
+        "letter body; for a from_record document it is an optional covering note "
+        "rendered above the origin's report. Full regulation บันทึกข้อความ layout "
+        "is phase-2 — v1 is free rich text.",
+    )
 
     # === Sender (ส่วนงานเจ้าของเรื่อง) ===
     sender_user_id = fields.Many2one(

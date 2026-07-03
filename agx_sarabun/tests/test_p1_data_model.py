@@ -74,3 +74,9 @@ class TestP1DataModel(SarabunCommon):
         with self.assertRaises(ValidationError):
             doc.numbering_mode = "manual"
             doc.flush_recordset()
+
+    def test_content_body_is_editable_rich_text(self):
+        """The หนังสือ carries its own rich-text body (เนื้อหา), editable while draft."""
+        doc = self._make_doc(content="<p>เรียนเพื่อโปรดพิจารณาอนุมัติ</p>")
+        self.assertIn("โปรดพิจารณา", doc.content)
+        self.assertTrue(doc.is_editable)  # draft is editable

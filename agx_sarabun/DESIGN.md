@@ -150,6 +150,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `addressee` | Char | **เรียน (Addressee)** — own header field, manual or origin-set; optional suggest from final ลงนาม-อนุมัติ step's Position. Replaces old free-text `recipient`/"To". |
 | `addressee_position_id` | M2o → `sarabun.position` | Optional structured suggest source for `addressee` (the final-approve Position). |
 | `through` | Char | **ผ่าน (Through)** free-text ("เรียน X ผ่าน Y"). |
+| `content` | Html (sanitized) | **เนื้อหา (body)** — free rich text. The letter body for composed memo/circular; an optional covering note above the origin report for `from_record`. Editable while `draft`/`returned`; rendered on the cover sheet. Full regulation memo layout is phase-2. |
 | `sender_user_id` | M2o → `res.users` (readonly) | The composer. |
 | `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — drives register resolution (one register per ส่วนงาน). |
 | `sender_suffix` | Char | Sub-unit / extension display. |

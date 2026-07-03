@@ -64,6 +64,12 @@
                             </ol>
                         </div>
 
+                        <!-- เนื้อหา (body) — the composed content; for from_record it is the
+                             covering note above the appended origin report. -->
+                        <div t-if="doc.content" style="margin:8px 0;">
+                            <div t-field="doc.content"/>
+                        </div>
+
                         <hr/>
 
                         <!-- เกษียน trail -->

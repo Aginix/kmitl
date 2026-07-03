@@ -147,6 +147,10 @@ _Avoid_: bare attachment with no order or caption
 The ceremonial recipient printed on the หนังสือ header — its **own field**, set manually or by the origin (with an optional suggest from the final ลงนาม-อนุมัติ step's Position). Deliberately separate from the routing actors (you address "เรียน คณบดี" while the หนังสือ still routes clerk → หัวหน้างาน → คณบดี). An optional **ผ่าน (Through)** free-text captures "เรียน X ผ่าน Y".
 _Avoid_: the old free-text `recipient` / "To" that floated free of routing; conflating the addressee with the people who actually act
 
+**เนื้อหา (Content / body, `content`)**:
+The หนังสือ's own body — free **rich text** typed on the form. For a composed memo/circular it **is** the letter body; for a `from_record` Document it is an **optional covering note** rendered on the cover **above** the appended origin report. v1 is plain rich text — the full regulation บันทึกข้อความ layout (ครุฑ, formatted body per ระเบียบ) is still phase-2.
+_Avoid_: assuming the body always comes from the origin report (from_record); treating this rich-text box as the regulation memo template
+
 **ใบปะหน้าสารบรรณ (Cover sheet)**:
-The system-rendered front page wrapping a `from_record` Document — official header (number / date / เรื่อง / เรียน / ผ่าน), the signature block, and the เกษียน trail. The origin's report is appended as the body; the frozen ฉบับลงนาม is the two merged into one PDF. A full reformat of origin content into a บันทึกข้อความ body is deferred.
+The system-rendered front page — official header (number / date / เรื่อง / เรียน / ผ่าน), the **เนื้อหา (content) body**, the signature block, and the เกษียน trail. For a `from_record` Document the origin's report is appended after it as further body; the frozen ฉบับลงนาม is the merge. A full reformat of origin content into a บันทึกข้อความ body is deferred.
 _Avoid_: re-keying origin content into a memo template
