@@ -1503,3 +1503,67 @@ msgstr "รหัสงบประมาณหน่วยงาน"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__extra_analytic_id
 msgid "Extra Payee"
 msgstr "ผู้รับค่า Extra"
+
+#. module: kris_project
+#: model:ir.model,name:kris_project.model_kris_project_document_type
+msgid "KRIS Project Document Type"
+msgstr "ประเภทเอกสารโครงการ KRIS"
+
+#. module: kris_project
+#: model:ir.model,name:kris_project.model_kris_project_receipt_wizard_attachment
+msgid "KRIS Project Receipt Wizard Attachment"
+msgstr "เอกสารแนบใบเสร็จโครงการ KRIS"
+
+#. module: kris_project
+#: model:ir.actions.act_window,name:kris_project.action_kris_project_document_type
+#: model:ir.ui.menu,name:kris_project.menu_kris_project_document_type
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_document_type_tree
+msgid "Document Types"
+msgstr "ประเภทเอกสาร"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_ir_attachment__document_type_id
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_attachment__document_type_id
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
+msgid "Document Type"
+msgstr "ประเภทเอกสาร"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_attachment__filename
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
+msgid "Filename"
+msgstr "ชื่อไฟล์"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__wizard_attachment_ids
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: kris_project
+#: model:kris.project.document.type,name:kris_project.document_type_receipt
+msgid "ใบเสร็จรับเงิน"
+msgstr "ใบเสร็จรับเงิน"
+
+#. module: kris_project
+#: model:kris.project.document.type,name:kris_project.document_type_invoice
+msgid "ใบแจ้งหนี้"
+msgstr "ใบแจ้งหนี้"
+
+#. module: kris_project
+#: model:kris.project.document.type,name:kris_project.document_type_contract
+msgid "สัญญา"
+msgstr "สัญญา"
+
+#. module: kris_project
+#: model:kris.project.document.type,name:kris_project.document_type_report
+msgid "รายงานผลการดำเนินงาน"
+msgstr "รายงานผลการดำเนินงาน"
+
+#. module: kris_project
+#: model:kris.project.document.type,name:kris_project.document_type_other
+msgid "อื่นๆ"
+msgstr "อื่นๆ"

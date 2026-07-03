@@ -22,16 +22,35 @@
                     <field name="net_amount" readonly="1"/>
                     <field name="note"/>
                 </group>
-                <separator string="Allocation based on revenue."/>
-                <field name="allocation_ids">
-                    <tree create="0" delete="0" editable="bottom">
-                        <field name="allocation_line_id" invisible="1" />
-                        <field name="name" string="Allocator" />
-                        <field name="remaining_amount" readonly="1" />
-                        <field name="amount" />
-                        <field name="currency_id" invisible="1" />
-                    </tree>
-                </field>
+                <notebook>
+                    <page string="Allocation" name="allocation">
+                        <field name="allocation_ids">
+                            <tree create="0" delete="0" editable="bottom">
+                                <field name="allocation_line_id" invisible="1" />
+                                <field name="name" string="Allocator" />
+                                <field name="remaining_amount" readonly="1" />
+                                <field name="amount" />
+                                <field name="currency_id" invisible="1" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Attachment" name="attachments">
+                        <field
+                            name="attachment_ids"
+                            context="{'default_res_model': 'kris.project.receipt', 'default_res_id': id}"
+                        >
+                            <tree editable="bottom">
+                                <field name="name" string="Filename"/>
+                                <field name="document_type_id"/>
+                                <field
+                                    name="datas"
+                                    filename="name"
+                                    string="File"
+                                />
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
             </form>
         </field>
     </record>
@@ -464,7 +483,10 @@
 
                         <!-- Tab 3: เอกสารแนบ -->
                         <page string="Attachment" name="attachments">
-                            <field name="attachment_ids">
+                            <field
+                                name="attachment_ids"
+                                context="{'default_res_model': 'kris.project', 'default_res_id': id}"
+                            >
                                 <tree editable="bottom">
                                     <field name="name" string="Filename"/>
                                     <field name="document_type_id"/>
