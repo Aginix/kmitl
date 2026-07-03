@@ -37,17 +37,35 @@
                     <page string="Attachment" name="attachments">
                         <field
                             name="attachment_ids"
-                            context="{'default_res_model': 'kris.project.receipt', 'default_res_id': id}"
+                            context="{'default_res_model': 'kris.project.receipt'}"
                         >
-                            <tree editable="bottom">
+                            <tree>
                                 <field name="name" string="Filename"/>
                                 <field name="document_type_id"/>
-                                <field
-                                    name="datas"
-                                    filename="name"
-                                    string="File"
-                                />
                             </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field
+                                            name="res_model"
+                                            invisible="1"
+                                            readonly="0"
+                                        />
+                                        <field
+                                            name="res_id"
+                                            invisible="1"
+                                            readonly="0"
+                                        />
+                                        <field name="document_type_id"/>
+                                        <field name="name" invisible="1"/>
+                                        <field
+                                            name="datas"
+                                            filename="name"
+                                            required="1"
+                                        />
+                                    </group>
+                                </sheet>
+                            </form>
                         </field>
                     </page>
                 </notebook>
@@ -485,17 +503,35 @@
                         <page string="Attachment" name="attachments">
                             <field
                                 name="attachment_ids"
-                                context="{'default_res_model': 'kris.project', 'default_res_id': id}"
+                                context="{'default_res_model': 'kris.project'}"
                             >
-                                <tree editable="bottom">
+                                <tree>
                                     <field name="name" string="Filename"/>
                                     <field name="document_type_id"/>
-                                    <field
-                                        name="datas"
-                                        filename="name"
-                                        string="File"
-                                    />
                                 </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field
+                                                name="res_model"
+                                                invisible="1"
+                                                readonly="0"
+                                            />
+                                            <field
+                                                name="res_id"
+                                                invisible="1"
+                                                readonly="0"
+                                            />
+                                            <field name="document_type_id"/>
+                                            <field name="name" invisible="1"/>
+                                            <field
+                                                name="datas"
+                                                filename="name"
+                                                required="1"
+                                            />
+                                        </group>
+                                    </sheet>
+                                </form>
                             </field>
                         </page>
 
