@@ -128,7 +128,14 @@
                     <field
                         name="state"
                         widget="statusbar"
+                        statusbar_visible="draft,in_progress,done"
+                        attrs="{'invisible': [('state', 'in', ('terminated', 'conditional_close'))]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
                         statusbar_visible="draft,in_progress"
+                        attrs="{'invisible': [('state', 'not in', ('terminated', 'conditional_close'))]}"
                     />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
