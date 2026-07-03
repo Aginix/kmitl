@@ -2,6 +2,7 @@
 
 import { patch } from "@web/core/utils/patch";
 import { FormCompiler } from "@web/views/form/form_compiler";
+import { FormRenderer } from "@web/views/form/form_renderer";
 import { getModifier } from "@web/views/view_compiler";
 
 const INVALID_CLASS = "o_notebook_page_invalid";
@@ -18,6 +19,21 @@ function collectPageFieldNames(pageEl) {
     }
     return [...names];
 }
+
+patch(FormRenderer.prototype, "web_notebook_invalid_indicator", {
+    hasInvalidNotebookField(fieldNames) {
+        const record = this.props.record;
+        if (!record || !record._invalidFields || !record._invalidFields.size) {
+            return false;
+        }
+        for (const fieldName of fieldNames) {
+            if (record._invalidFields.has(fieldName)) {
+                return true;
+            }
+        }
+        return false;
+    },
+});
 
 patch(FormCompiler.prototype, "web_notebook_invalid_indicator", {
     compileNotebook(el, params) {
@@ -43,7 +59,7 @@ patch(FormCompiler.prototype, "web_notebook_invalid_indicator", {
             const fieldNames = collectPageFieldNames(child);
             const originalExpr = pageSlot.getAttribute("className") || '""';
             const invalidCheck = fieldNames.length
-                ? `${JSON.stringify(fieldNames)}.some(f => props.record.isInvalid(f))`
+                ? `this.hasInvalidNotebookField(${JSON.stringify(fieldNames)})`
                 : "false";
             pageSlot.setAttribute(
                 "className",
