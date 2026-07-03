@@ -1021,9 +1021,11 @@ msgstr ""
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__cancel
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__cancel
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -1069,6 +1071,7 @@ msgstr "ยังเก็บรายได้ไม่ครบ"
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__confirmed
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
 msgid "Confirm"
 msgstr "ยืนยัน"
 
@@ -1182,18 +1185,26 @@ msgstr "ร่าง"
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__suspended
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__suspended
 msgid "Suspended"
 msgstr "ชะลอโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__terminated
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__terminated
 msgid "Terminated"
 msgstr "ยุติโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__conditional_close
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__conditional_close
 msgid "Closed with Conditions"
 msgstr "ปิดโครงการแบบมีเงื่อนไข"
 
@@ -1322,6 +1333,7 @@ msgstr "หมวดหมู่"
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__note
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__note
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 msgid "Note"
 msgstr "หมายเหตุ"
@@ -1398,6 +1410,10 @@ msgstr "เลือกแม่แบบ..."
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__done
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "Done"
