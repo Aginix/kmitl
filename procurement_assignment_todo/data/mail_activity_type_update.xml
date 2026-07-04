@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+      Tag the officer-assignment activity type so those notifications surface
+      in the unified Todo inbox. Acknowledgement (not Execution): nothing in
+      the assignment lifecycle ever marks the notification "done" (the
+      activity is only unlinked on unassign/reassign), so the assignee
+      dismisses it with "Mark as Read" and the retention cron sweeps it.
+      noupdate defaults to 0 so the field is set on install/upgrade.
+    -->
+    <record
+        id="procurement_assignment_kmitl.mail_activity_assignment"
+        model="mail.activity.type"
+    >
+        <field name="todo_category">acknowledgement</field>
+    </record>
+</odoo>

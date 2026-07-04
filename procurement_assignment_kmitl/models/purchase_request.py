@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
 
-from .assignment import AssignedOfficerMixin
 
-
-class PurchaseRequest(AssignedOfficerMixin, models.Model):
-    _inherit = "purchase.request"
+class PurchaseRequest(models.Model):
+    _name = "purchase.request"
+    _inherit = ["purchase.request", "assignment.mixin"]
 
     _assign_user_group = "purchase_request.group_purchase_request_user"
     _assign_manager_group = "purchase_request.group_purchase_request_manager"
@@ -14,7 +13,4 @@ class PurchaseRequest(AssignedOfficerMixin, models.Model):
     assigned_to = fields.Many2one(
         string="Assigned Officer",
         tracking=True,
-    )
-    assignment_can_assign_me = fields.Boolean(
-        compute="_compute_assignment_can_assign_me",
     )

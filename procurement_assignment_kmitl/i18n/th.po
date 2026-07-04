@@ -44,8 +44,7 @@ msgid "Assign Procurement Officer"
 msgstr "มอบหมายเจ้าหน้าที่จัดซื้อจัดจ้าง"
 
 #. module: procurement_assignment_kmitl
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assignment_buttons_alert
 msgid "Assign to me"
 msgstr "มอบหมายให้ฉัน"
 
@@ -59,11 +58,32 @@ msgid "Assigned Officer"
 msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
 
 #. module: procurement_assignment_kmitl
+#: model:mail.activity.type,name:procurement_assignment_kmitl.mail_activity_assignment
+msgid "Assigned as responsible officer"
+msgstr "ถูกมอบหมายเป็นเจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: procurement_assignment_kmitl
 #. odoo-python
 #: code:addons/procurement_assignment_kmitl/models/assignment.py:0
+#: model:mail.activity.type,summary:procurement_assignment_kmitl.mail_activity_assignment
 #, python-format
 msgid "Assigned as responsible procurement officer"
 msgstr "ถูกมอบหมายให้เป็นเจ้าหน้าที่จัดซื้อที่รับผิดชอบ"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assignment_buttons_alert
+msgid "Assigned Officer:"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ:"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model,name:procurement_assignment_kmitl.model_assignment_mixin
+msgid "Assigned Officer (mixin)"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ (mixin)"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assignment_buttons_alert
+msgid "This document has no assigned officer."
+msgstr "เอกสารนี้ยังไม่มีเจ้าหน้าที่ผู้รับผิดชอบ"
 
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
@@ -79,8 +99,7 @@ msgid "Assignment Can Assign Me"
 msgstr "สามารถมอบหมายให้ตัวเองได้"
 
 #. module: procurement_assignment_kmitl
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assignment_buttons_alert
 msgid "Assign…"
 msgstr "มอบหมายให้..."
 
@@ -188,8 +207,7 @@ msgid "This document is already assigned to %s."
 msgstr "เอกสารนี้ถูกมอบหมายให้ %s แล้ว"
 
 #. module: procurement_assignment_kmitl
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
-#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assignment_buttons_alert
 msgid "Unassign"
 msgstr "ยกเลิกการมอบหมาย"
 

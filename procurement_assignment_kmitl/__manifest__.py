@@ -12,6 +12,8 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "data/mail_activity_type.xml",
+        "templates/assignment_templates.xml",
         "wizards/assign_officer_wizard_views.xml",
         "views/purchase_request_views.xml",
         "views/purchase_order_views.xml",

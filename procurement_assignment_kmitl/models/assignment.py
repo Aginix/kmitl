@@ -1,40 +1,46 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api
-from odoo.exceptions import AccessError, UserError
-from odoo.tools.misc import str2bool
+from lxml import etree
 
-# The "To Do" activity scheduled on a document when an officer is assigned.
-ASSIGN_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError
+from odoo.tools.misc import frozendict, str2bool
+
+# The activity scheduled on a document when an officer is assigned. A dedicated
+# type (not mail.mail_activity_data_todo) so the Todo-inbox bridge can tag it
+# with a todo_category without affecting every native To-Do in the system, and
+# so _assignment_clear_activity never collides with user-scheduled To-Dos.
+ASSIGN_ACTIVITY_XMLID = "procurement_assignment_kmitl.mail_activity_assignment"
 
 # ir.config_parameter that relaxes the self-claim guard (see Purchase settings).
 TAKEOVER_PARAM = "procurement_assignment_kmitl.allow_takeover_assigned"
 
 
-class AssignedOfficerMixin:
+class AssignmentMixin(models.AbstractModel):
     """Shared behaviour for documents carrying an Assigned Officer
     (เจ้าหน้าที่ผู้รับผิดชอบ), stored in ``assigned_to``.
 
-    This is a *plain Python* mixin used only to share method code between
-    ``purchase.request`` and ``purchase.order``. It is intentionally **not** an
-    Odoo ``AbstractModel``: when a non-purchase document needs the same
-    behaviour, lift this into an ``assignment.mixin`` parameterised by the two
-    group hooks below. See docs/adr/0001-assigned-officer-model.md.
+    Inheriting this mixin auto-injects the assignment alert (Assign to me /
+    Assign… / Unassign) above the form's sheet — mirroring how
+    ``base_tier_validation`` injects its label via a ``get_view`` override —
+    so consumers never edit their own form XML and the buttons stay out of
+    the header's workflow buttons.
 
     Each consuming model must declare:
-      * the ``assigned_to`` field (Many2one res.users),
-      * the ``assignment_can_assign_me`` computed Boolean, and
+      * the ``assigned_to`` field (Many2one res.users) — not declared here, so
+        ``purchase.request`` keeps the OCA field's attributes untouched, and
       * the two group hooks ``_assign_user_group`` / ``_assign_manager_group``.
     """
 
-    # Empty slots: a plain mixin without ``__slots__`` would add a ``__dict__``
-    # to the instance layout of the consuming Odoo model, breaking the
-    # ``cls.__bases__`` reassignment Odoo performs in ``_prepare_setup``
-    # ("object layout differs"). Odoo models are slotted, so we must be too.
-    __slots__ = ()
+    _name = "assignment.mixin"
+    _description = "Assigned Officer (mixin)"
 
     # Override per consuming model.
     _assign_user_group = None  # group allowed to self-claim unassigned work
     _assign_manager_group = None  # group allowed to assign others / unassign
+
+    assignment_can_assign_me = fields.Boolean(
+        compute="_compute_assignment_can_assign_me",
+    )
 
     # -- guards ------------------------------------------------------------
     def _assignment_takeover_allowed(self):
@@ -77,11 +83,8 @@ class AssignedOfficerMixin:
         """Drop the open assignment to-do previously raised for ``user``."""
         self.ensure_one()
         activity_type = self.env.ref(ASSIGN_ACTIVITY_XMLID)
-        summary = self._assignment_activity_summary()
         stale = self.activity_ids.filtered(
-            lambda a: a.user_id == user
-            and a.activity_type_id == activity_type
-            and a.summary == summary
+            lambda a: a.user_id == user and a.activity_type_id == activity_type
         )
         stale.unlink()
 
@@ -125,3 +128,42 @@ class AssignedOfficerMixin:
                 "default_res_id": self.id,
             },
         }
+
+    # ------------------------------------------------------------------
+    # Auto-inject the assignment alert above the sheet, following the
+    # base_tier_validation label pattern (tier_validation.py get_view).
+    # ------------------------------------------------------------------
+    @api.model
+    def get_view(self, view_id=None, view_type="form", **options):
+        res = super().get_view(view_id=view_id, view_type=view_type, **options)
+        if view_type != "form":
+            return res
+        if not (self._assign_user_group and self._assign_manager_group):
+            return res
+        doc = etree.XML(res["arch"])
+        sheet_nodes = doc.xpath("/form/sheet")
+        if not sheet_nodes:
+            return res
+        View = self.env["ir.ui.view"]
+        rendered = self.env["ir.qweb"]._render(
+            "procurement_assignment_kmitl.assignment_buttons_alert",
+            {
+                "user_group": self._assign_user_group,
+                "manager_group": self._assign_manager_group,
+            },
+        )
+        template_node = etree.fromstring(rendered)
+        new_arch, new_models = View.postprocess_and_fields(template_node, self._name)
+        template_node = etree.fromstring(new_arch)
+        for sheet in sheet_nodes:
+            for child in template_node:
+                sheet.addprevious(child)
+        all_models = dict(res["models"])
+        for model, view_fields in new_models.items():
+            if model in all_models:
+                all_models[model] = tuple(set(all_models[model]) | set(view_fields))
+            else:
+                all_models[model] = tuple(view_fields)
+        res["arch"] = etree.tostring(doc)
+        res["models"] = frozendict(all_models)
+        return res

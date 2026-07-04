@@ -2,7 +2,7 @@
 from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import TransactionCase, tagged
 
-from ..models.assignment import TAKEOVER_PARAM
+from ..models.assignment import ASSIGN_ACTIVITY_XMLID, TAKEOVER_PARAM
 
 
 @tagged("post_install", "-at_install")
@@ -58,12 +58,9 @@ class TestProcurementAssignment(TransactionCase):
         cls.pr = cls.PR.create({"picking_type_id": picking_type.id})
 
     def _todo_activities(self, record, user):
-        todo = self.env.ref("mail.mail_activity_data_todo")
-        summary = record._assignment_activity_summary()
+        todo = self.env.ref(ASSIGN_ACTIVITY_XMLID)
         return record.activity_ids.filtered(
-            lambda a: a.user_id == user
-            and a.activity_type_id == todo
-            and a.summary == summary
+            lambda a: a.user_id == user and a.activity_type_id == todo
         )
 
     # -- self claim --------------------------------------------------------

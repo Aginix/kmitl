@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
 
-from .assignment import AssignedOfficerMixin
 
-
-class PurchaseOrder(AssignedOfficerMixin, models.Model):
-    _inherit = "purchase.order"
+class PurchaseOrder(models.Model):
+    _name = "purchase.order"
+    _inherit = ["purchase.order", "assignment.mixin"]
 
     _assign_user_group = "purchase.group_purchase_user"
     _assign_manager_group = "purchase.group_purchase_manager"
@@ -16,7 +15,4 @@ class PurchaseOrder(AssignedOfficerMixin, models.Model):
         copy=False,
         index=True,
         tracking=True,
-    )
-    assignment_can_assign_me = fields.Boolean(
-        compute="_compute_assignment_can_assign_me",
     )
