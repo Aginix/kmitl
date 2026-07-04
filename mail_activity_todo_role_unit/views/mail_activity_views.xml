@@ -31,13 +31,6 @@
                     icon="fa-hand-o-up"
                     attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '=', False)]}"
                 />
-                <button
-                    name="action_open_reassign_wizard"
-                    type="object"
-                    string="มอบหมายให้..."
-                    icon="fa-share"
-                    attrs="{'invisible': [('responsible_role_id', '=', False)]}"
-                />
             </button>
         </field>
     </record>
@@ -70,14 +63,6 @@
                     string="Release"
                     icon="fa-hand-o-up"
                     attrs="{'invisible': ['|', ('responsible_role_id', '=', False), ('user_id', '=', False)]}"
-                />
-                <button
-                    name="action_open_reassign_wizard"
-                    type="object"
-                    string="มอบหมายให้..."
-                    class="btn-secondary"
-                    icon="fa-share"
-                    attrs="{'invisible': [('responsible_role_id', '=', False)]}"
                 />
             </button>
         </field>

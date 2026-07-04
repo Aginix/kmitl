@@ -6,12 +6,10 @@ PLAN_OFFICER_ROLE = "procurement_plan_todo.role_procurement_plan_officer"
 
 class ProcurementPlan(models.Model):
     # Add the activity mixin to procurement.plan (it had only mail.thread).
-    # ``todo.assignable`` extends ``mail.activity.mixin`` and adds the Claim /
-    # Delegate alert on the form.
     # _name is required: with a multi-element _inherit list and no _name, Odoo
     # cannot infer the target model and falls back to the class name.
     _name = "procurement.plan"
-    _inherit = ["procurement.plan", "todo.assignable"]
+    _inherit = ["procurement.plan", "mail.activity.mixin"]
 
     # ------------------------------------------------------------------
     # UC1 — Execution Todo: fill the operating plan before a PR (พ.1) can be made

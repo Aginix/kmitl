@@ -42,10 +42,6 @@ _Avoid_: treating Mark as Read as completing the work
 Optionally taking a group Todo as your own (sets the activity's `user_id`), so colleagues can see it is being handled.
 _Avoid_: assign (the system never force-assigns a group Todo to one person)
 
-**Delegate (มอบหมายให้…)**:
-Handing a group Todo to a specific member of the same role-in-unit cohort (sets the activity's `user_id` to another user). Same mechanism as Claim; the difference is the target — Claim = me, Delegate = one specific colleague within the responsible group. The candidate list is confined to the current `role ∩ OU` membership (never a free-form user picker), preserving "responsible ≠ permitted".
-_Avoid_: reassign (used for any user_id write; Delegate is specifically the within-cohort human choice)
-
 **Completed Todo (history)**:
 A finished Todo, snapshotted into `todo.log` at completion — the underlying `mail.activity` is deleted when done, so the log is the only record. Shown in the app's "Completed" view with who completed it and when.
 _Avoid_: archived activity (the activity is gone, not archived)

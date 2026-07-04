@@ -13,9 +13,6 @@
     ],
     "data": [
         "security/security.xml",
-        "security/ir.model.access.csv",
-        "templates/todo_assignment_templates.xml",
-        "wizards/todo_assign_wizard_views.xml",
         "views/mail_activity_views.xml",
     ],
     "installable": True,
