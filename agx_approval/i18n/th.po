@@ -935,3 +935,9 @@ msgid ""
 "category."
 msgstr "อนุญาตให้เลือกนักศึกษาเป็นผู้รับเงินในรายการของหมวดนี้"
 
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__payee_ids
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Payees"
+msgstr "ข้อมูลการจ่ายเงิน"
+
