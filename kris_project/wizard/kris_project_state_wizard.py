@@ -101,9 +101,7 @@ class KrisProjectStateWizard(models.TransientModel):
         if target != "done" and not note:
             raise UserError(_("Please provide a note for this status change."))
 
-        if note:
-            self.project_id._track_set_log_message(
-                _("<b>Note:</b> %s") % note,
-            )
-        self.project_id.write({"state": target})
+        self.project_id.with_context(
+            kris_state_change_note=note or False,
+        ).write({"state": target})
         return {"type": "ir.actions.act_window_close"}
