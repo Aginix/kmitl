@@ -104,9 +104,9 @@ class KrisProjectStateWizard(models.TransientModel):
             raise UserError(_("Please provide a note for this status change."))
 
         if note:
-            body = Markup("<ul><li><b>%s:</b> %s</li></ul>") % (
-                _("Note"), escape(note),
-            )
+            body = Markup(
+                '<ul class="mb-0 ps-4"><li><b>%s:</b> %s</li></ul>'
+            ) % (_("Note"), escape(note))
             self.project_id._track_set_log_message(body)
         self.project_id.write({"state": target})
         return {"type": "ir.actions.act_window_close"}
