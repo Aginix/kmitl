@@ -1,0 +1,391 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* accounting_kmitl_workflow
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__workflow_state
+msgid "Approval"
+msgstr "การอนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_move_form_inherit_workflow
+msgid "Approval Workflow"
+msgstr "ขั้นตอนการอนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__workflow_state__approved
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__approved_by
+#: model:ir.actions.act_window,name:accounting_kmitl_workflow.action_approved_moves
+#: model:ir.ui.menu,name:accounting_kmitl_workflow.menu_approved_moves
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__approved_by
+msgid "Approved By"
+msgstr "ผู้อนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__approved_date
+msgid "Approved On"
+msgstr "วันที่อนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_move_form_inherit_workflow
+msgid "Approve"
+msgstr "อนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model,name:accounting_kmitl_workflow.model_account_move_reject_reason
+msgid "Account Move Reject Reason"
+msgstr "เหตุผลการไม่อนุมัติรายการบัญชี"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__display_state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิก"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__display_state__draft
+msgid "Draft"
+msgstr "ร่าง"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__workflow_state__none
+msgid "None"
+msgstr "ไม่มี"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__display_state__posted
+msgid "Posted"
+msgstr "ลงบัญชีแล้ว"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move_reject_reason__reason
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: accounting_kmitl_workflow
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_account_move_reject_reason_form
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_move_form_inherit_workflow
+msgid "Reject"
+msgstr "ไม่อนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Reject Entry"
+msgstr "ไม่อนุมัติรายการ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__workflow_state__rejected
+msgid "Rejected"
+msgstr "ไม่อนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Rejected: %s"
+msgstr "ไม่อนุมัติ: %s"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__display_state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__display_state__submitted
+msgid "Submitted"
+msgstr "ส่งแล้ว"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__submitted_by
+msgid "Submitted By"
+msgstr "ผู้จัดทำ/ผู้ตรวจสอบ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__submitted_date
+msgid "Submitted On"
+msgstr "วันที่ส่ง"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__workflow_state__to_approve
+#: model:ir.model.fields.selection,name:accounting_kmitl_workflow.selection__account_move__display_state__to_approve
+msgid "To Approve"
+msgstr "รออนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.model.fields,field_description:accounting_kmitl_workflow.field_account_move__can_submit
+msgid "Can Submit"
+msgstr "ยืนยันได้"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Only the creator of this entry can submit it."
+msgstr "เฉพาะผู้สร้างรายการนี้เท่านั้นที่ยืนยันได้"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Only entries awaiting approval can be approved."
+msgstr "อนุมัติได้เฉพาะรายการที่รออนุมัติเท่านั้น"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Only entries awaiting approval can be rejected."
+msgstr "ไม่อนุมัติได้เฉพาะรายการที่รออนุมัติเท่านั้น"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Only the submitter or an approver can recall this entry."
+msgstr "เฉพาะผู้จัดทำหรือผู้อนุมัติเท่านั้นที่เรียกคืนรายการนี้ได้"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "no reason given"
+msgstr "ไม่ได้ระบุเหตุผล"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.actions.act_window,name:accounting_kmitl_workflow.action_account_move_approval_queue
+#: model:ir.ui.menu,name:accounting_kmitl_workflow.menu_account_move_approval_queue
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_account_move_approval_queue_tree
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_account_move_filter_workflow
+msgid "Pending Approval"
+msgstr "รออนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_account_move_approval_queue_tree
+msgid "Approve Selected"
+msgstr "อนุมัติรายการที่เลือก"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "%s entry/entries approved."
+msgstr "อนุมัติแล้ว %s รายการ"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "Could not approve:"
+msgstr "ไม่สามารถอนุมัติ:"
+
+#. module: accounting_kmitl_workflow
+#: code:addons/accounting_kmitl_workflow/models/account_move.py:0
+msgid "error"
+msgstr "ข้อผิดพลาด"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.ui.menu,name:accounting_kmitl_workflow.menu_approver_root
+msgid "Approver"
+msgstr "ผู้อนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model:ir.actions.client,name:accounting_kmitl_workflow.action_approval_queue
+#: model:ir.ui.menu,name:accounting_kmitl_workflow.menu_account_move_approval_queue
+msgid "Approval List"
+msgstr "รายการรออนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_account_move_approval_queue_form
+msgid "Information"
+msgstr "ข้อมูล"
+
+#. module: accounting_kmitl_workflow
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_account_move_approval_queue_form
+msgid "Narration"
+msgstr "หมายเหตุ"
+
+#. module: accounting_kmitl_workflow
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_workflow.view_account_move_approval_queue_form
+msgid "Accounting Dimensions"
+msgstr "มิติบัญชี"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "No entries pending approval."
+msgstr "ไม่มีรายการรออนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Number"
+msgstr "เลขที่"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Date"
+msgstr "วันที่"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Partner"
+msgstr "คู่ค้า"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Journal"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Total"
+msgstr "รวม"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Actions"
+msgstr "การดำเนินการ"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Label"
+msgstr "คำอธิบาย"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Debit"
+msgstr "เดบิต"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Credit"
+msgstr "เครดิต"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Date From"
+msgstr "วันที่เริ่ม"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Date To"
+msgstr "วันที่ถึง"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Funds"
+msgstr "กองทุน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Activities"
+msgstr "กิจกรรม"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Journals"
+msgstr "สมุดรายวัน"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Partners"
+msgstr "คู่ค้า"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Hide filters"
+msgstr "ซ่อนตัวกรอง"
+
+#. module: accounting_kmitl_workflow
+#. odoo-javascript
+#: code:addons/accounting_kmitl_workflow/static/src/approval_queue/approval_queue.js:0
+msgid "Open"
+msgstr "เปิดเอกสาร"
+
+#. module: accounting_kmitl_workflow
+#: model:mail.activity.type,name:accounting_kmitl_workflow.mail_activity_move_rejected
+msgid "Entry rejected"
+msgstr "ถูกปฏิเสธ"
+
+#. module: accounting_kmitl_workflow
+#: model:mail.activity.type,summary:accounting_kmitl_workflow.mail_activity_move_rejected
+msgid "Your entry was rejected — please revise and resubmit"
+msgstr "รายการของคุณถูกปฏิเสธ — โปรดแก้ไขและส่งใหม่"
+
+#. module: accounting_kmitl_workflow
+#: model:mail.activity.type,name:accounting_kmitl_workflow.mail_activity_move_to_approve
+msgid "Entry to approve"
+msgstr "รายการรออนุมัติ"
+
+#. module: accounting_kmitl_workflow
+#: model:mail.activity.type,summary:accounting_kmitl_workflow.mail_activity_move_to_approve
+msgid "An entry was submitted and is waiting for your approval"
+msgstr "มีรายการถูกส่งมารอการอนุมัติของคุณ"

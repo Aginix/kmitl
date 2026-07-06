@@ -1,0 +1,71 @@
+.o_kmitl_cash_flow {
+    height: 100%;
+    overflow: auto;
+
+    // Group the filter controls in a light panel, set apart from the data.
+    .o_kmitl_cf_filterpanel {
+        padding: 0.75rem 0.75rem 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    .o_kmitl_cf_table_wrap {
+        overflow-x: auto;
+        max-width: 60rem;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    .o_kmitl_cf_table {
+        th {
+            background-color: #f8f9fa;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        td,
+        th {
+            font-size: 1rem;
+            // Tabular figures keep the amount column aligned (no digit jitter).
+            font-variant-numeric: tabular-nums;
+        }
+        .o_kmitl_cf_item {
+            min-width: 28rem;
+        }
+        .o_kmitl_cf_amount {
+            min-width: 12rem;
+        }
+
+        // Row levels
+        .o_kmitl_cf_section td {
+            font-weight: bold;
+            padding-top: 0.6rem;
+        }
+        .o_kmitl_cf_group td:first-child {
+            padding-left: 1.5rem;
+            font-style: italic;
+        }
+        .o_kmitl_cf_detail td:first-child {
+            padding-left: 3rem;
+            color: #555;
+        }
+        .o_kmitl_cf_total td {
+            font-weight: bold;
+            border-top: 1px solid #adb5bd;
+        }
+        .o_kmitl_cf_grand_total td {
+            font-weight: bold;
+            border-top: 2px solid #000;
+            border-bottom: 1px solid #000;
+        }
+        .o_kmitl_cf_summary td {
+            font-weight: bold;
+        }
+
+        // Negative amounts in a muted accounting red. The minus sign already
+        // carries the meaning, so colour is only a secondary cue.
+        .o_kmitl_amount_neg {
+            color: #b03030;
+        }
+    }
+}

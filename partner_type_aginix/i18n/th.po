@@ -326,3 +326,13 @@ msgstr "ไม่สามารถลบประเภทคู่ค้าท
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_report_search
 msgid "Vendors"
 msgstr "คู่ค้า"
+
+#. module: partner_type_aginix
+#: model_terms:ir.ui.view,arch_db:partner_type_aginix.view_res_partner_form
+msgid "Attachment for Vendor"
+msgstr "เอกสารประกอบคู่ค้า"
+
+#. module: partner_type_aginix
+#: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"

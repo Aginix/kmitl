@@ -12,6 +12,17 @@
                 <attribute name="statusbar_visible">draft,submitted,posted</attribute>
             </xpath>
 
+            <!-- base_exception banner: warn about detected exceptions before submit -->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
+                    <p>
+                        <strong>There are exceptions blocking this Journal Entry:</strong>
+                    </p>
+                    <field name="exceptions_summary"/>
+                    <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to submit this Journal Entry regardless of the exceptions." groups="base_exception.group_exception_rule_manager"/>
+                </div>
+            </xpath>
+
             <!-- Submit and Reset to Draft buttons.
                  Anchor on the second action_post button (the "Confirm" variant
                  for non-entry move types) via the unique attrs discriminator. -->
@@ -44,14 +55,24 @@
                 }</attribute>
             </xpath>
 
+            <!-- Rename the Journal Items notebook tab (unique source for translation) -->
+            <xpath expr="//page[@id='aml_tab']" position="attributes">
+                <attribute name="string">Account Items</attribute>
+            </xpath>
+
+            <!-- Bill Date is required for vendor bills -->
+            <xpath expr="//field[@name='invoice_date']" position="attributes">
+                <attribute name="attrs">{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))], 'required': [('move_type', '=', 'in_invoice')]}</attribute>
+            </xpath>
+
             <!-- Budget fields on main form (before invoice_tab notebook) -->
             <xpath expr="//page[@id='invoice_tab']/.." position="before">
                 <group name="budget_root" string="Accounting Dimensions">
                     <group name="analytic_dimensions">
-                        <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                        <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                        <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                        <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                        <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
                     <group name="budget_info">
                         <field name="analytic_distribution" widget="analytic_distribution" invisible="1"/>
@@ -62,7 +83,7 @@
             <!-- Move narration field out of other_tab_entry page to main form, wrapped in a new group -->
             <xpath expr="//page[@id='invoice_tab']/.." position="before">
                 <group name="narration_group" string="Additional Information">
-                    <field name="narration" placeholder="Add an internal note..." nolabel="1" colspan="2"/>
+                    <field name="narration" placeholder="Add an internal note..." nolabel="1" colspan="2" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                 </group>
             </xpath>
             <xpath expr="//page[@id='other_tab_entry']/field[@name='narration']" position="replace"/>
@@ -71,7 +92,7 @@
                  with the same many2many_binary widget disbursement.request uses) -->
             <xpath expr="//page[@id='invoice_tab']/.." position="before">
                 <group name="attachment" string="Attachments">
-                    <field name="attachment_ids" widget="many2many_binary" nolabel="1" colspan="2" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="attachment_ids" widget="many2many_binary" nolabel="1" colspan="2" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                 </group>
             </xpath>
 

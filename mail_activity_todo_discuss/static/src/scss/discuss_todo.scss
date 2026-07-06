@@ -1,0 +1,40 @@
+.o_DiscussTodoView {
+    .o_DiscussTodoView_icon {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    // Let the text column truncate inside the flex row.
+    .o_DiscussTodoView_text {
+        min-width: 0;
+    }
+
+    .o_DiscussTodoView_item:hover {
+        background-color: $gray-200;
+    }
+}
+
+.o_DiscussTodoSidebar {
+    // Let the group's text column truncate inside the flex row.
+    .min-w-0 {
+        min-width: 0;
+    }
+
+    .o_DiscussTodoSidebar_caret,
+    .o_DiscussTodoSidebar_title {
+        cursor: pointer;
+    }
+
+    .o_DiscussTodoSidebar_icon {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .o_DiscussTodoSidebar_group:hover {
+        background-color: $gray-200;
+    }
+}

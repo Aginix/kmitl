@@ -2,26 +2,10 @@
 <odoo>
     <record id="asset_profile_001" model="account.asset.profile">
         <field name="name">ครุภัณฑ์สำนักงาน</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010004').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1251000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1251000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010004"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -36,26 +20,10 @@
 
     <record id="asset_profile_002" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ยานพาหนะและขนส่ง</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1252000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1252000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010005').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1252000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1252000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010005"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -70,26 +38,10 @@
 
     <record id="asset_profile_003" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ไฟฟ้าและวิทยุ</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1253000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1253000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010006"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -104,26 +56,10 @@
 
     <record id="asset_profile_004" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ไฟฟ้าและวิทยุ-เครื่องกำเนิดไฟฟ้า</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1253000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1253000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010006"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -138,26 +74,10 @@
 
     <record id="asset_profile_005" model="account.asset.profile">
         <field name="name">ครุภัณฑ์โฆษณาและเผยแพร่</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1254000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1254000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010007').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1254000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1254000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010007"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -172,26 +92,10 @@
 
     <record id="asset_profile_006" model="account.asset.profile">
         <field name="name">ครุภัณฑ์การเกษตร-เครื่องมือและอุปกรณ์</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1255000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1255000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010008"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -206,26 +110,10 @@
 
     <record id="asset_profile_007" model="account.asset.profile">
         <field name="name">ครุภัณฑ์การเกษตร-เครื่องจักรกล</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1255000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1255000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010008"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -240,26 +128,10 @@
 
     <record id="asset_profile_008" model="account.asset.profile">
         <field name="name">ครุภัณฑ์โรงงาน-เครื่องมือและอุปกรณ์</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1256000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1256000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010009"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -274,26 +146,10 @@
 
     <record id="asset_profile_009" model="account.asset.profile">
         <field name="name">ครุภัณฑ์โรงงาน-เครื่องจักรกล</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1256000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1256000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010009"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -308,26 +164,10 @@
 
     <record id="asset_profile_010" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ก่อสร้าง-เครื่องมือและอุปกรณ์</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1257000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1257000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010010"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -342,26 +182,10 @@
 
     <record id="asset_profile_011" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ก่อสร้าง-เครื่องจักรกล</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1257000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1257000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010010"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -376,26 +200,10 @@
 
     <record id="asset_profile_012" model="account.asset.profile">
         <field name="name">ครุภัณฑ์สำรวจ</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1258000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1258000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010011').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1258000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1258000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010011"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -410,26 +218,10 @@
 
     <record id="asset_profile_013" model="account.asset.profile">
         <field name="name">ครุภัณฑ์วิทยาศาสตร์และการแพทย์</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1259000001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1259000003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010012').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1259000001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1259000003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010012"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -444,26 +236,10 @@
 
     <record id="asset_profile_014" model="account.asset.profile">
         <field name="name">ครุภัณฑ์คอมพิวเตอร์</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251100001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251100003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010013').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1251100001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1251100003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010013"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -478,26 +254,10 @@
 
     <record id="asset_profile_015" model="account.asset.profile">
         <field name="name">ครุภัณฑ์กีฬา/กายภาพ</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251400001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251400003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010016').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1251400001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1251400003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010016"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -512,26 +272,10 @@
 
     <record id="asset_profile_016" model="account.asset.profile">
         <field name="name">ครุภัณฑ์สนาม</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251700001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251700003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010019').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1251700001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1251700003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010019"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -546,26 +290,10 @@
 
     <record id="asset_profile_017" model="account.asset.profile">
         <field name="name">ครุภัณฑ์งานบ้านงานครัว</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251300001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251300003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010015').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1251300001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1251300003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010015"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -580,26 +308,10 @@
 
     <record id="asset_profile_018" model="account.asset.profile">
         <field name="name">ครุภัณฑ์การศึกษา</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251200001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251200003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010014').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1251200001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1251200003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010014"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
@@ -614,26 +326,10 @@
 
     <record id="asset_profile_019" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ดนตรี/นาฏศิลป์</field>
-        <field
-            name="account_asset_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251500001').code)])"
-        />
-        <field
-            name="account_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251500003').code)])"
-        />
-        <field
-            name="account_expense_depreciation_id"
-            model="base"
-            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010017').code)])"
-        />
-        <field
-            name="journal_id"
-            model="base"
-            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
-        />
+        <field name="account_asset_id" ref="account_kmitl.account_1251500001"/>
+        <field name="account_depreciation_id" ref="account_kmitl.account_1251500003"/>
+        <field name="account_expense_depreciation_id" ref="account_kmitl.account_5105010017"/>
+        <field name="journal_id" ref="account_kmitl.journal_jv" />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear-limit</field>
