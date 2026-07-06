@@ -10,7 +10,7 @@ ASSIGN_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
 # ir.config_parameter that relaxes the self-claim guard. Defaults to True:
 # because assignment is advisory, an officer may claim a mis-routed request
 # out of the box. Set to False to lock claims to the assigned officer/manager.
-TAKEOVER_PARAM = "disbursement_assignment_kmitl.allow_takeover_assigned"
+TAKEOVER_PARAM = "disbursement.allow_takeover_assigned"
 
 OFFICER_GROUP = "disbursement.group_disbursement_officer"
 MANAGER_GROUP = "disbursement.group_disbursement_manager"

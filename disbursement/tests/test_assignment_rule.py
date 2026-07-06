@@ -3,7 +3,10 @@
 from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import TransactionCase, tagged
 
-from ..models.disbursement_request import ASSIGN_ACTIVITY_XMLID, TAKEOVER_PARAM
+from ..models.disbursement_request_assignment import (
+    ASSIGN_ACTIVITY_XMLID,
+    TAKEOVER_PARAM,
+)
 
 
 @tagged("post_install", "-at_install")

@@ -28,7 +28,7 @@
         name="Verification"
         parent="disbursement.menu_disbursement_root"
         sequence="20"
-        groups="disbursement_assignment_kmitl.group_disbursement_verification"
+        groups="group_disbursement_verification"
     />
     <menuitem
         id="menu_disbursement_my_verifications"
