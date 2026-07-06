@@ -16,6 +16,10 @@ import { useService } from "@web/core/utils/hooks";
  *  - single: keep at most one selection (used for the account code range)
  *  - selected: Array<{id, name}> currently selected (controlled by parent)
  *  - onChange: called with the new Array<{id, name}>
+ *  - withOnlySelf: render an "only the specified entry" checkbox below the box
+ *    (used by the hierarchical KMITL dimension filters)
+ *  - onlySelf: current state of that checkbox (controlled by parent)
+ *  - onOnlySelfChange: called with the new boolean when the checkbox toggles
  */
 export class MultiRecordSelect extends Component {
     setup() {
@@ -83,10 +87,15 @@ MultiRecordSelect.props = {
     single: { type: Boolean, optional: true },
     selected: { type: Array, optional: true },
     onChange: Function,
+    withOnlySelf: { type: Boolean, optional: true },
+    onlySelf: { type: Boolean, optional: true },
+    onOnlySelfChange: { type: Function, optional: true },
 };
 MultiRecordSelect.defaultProps = {
     domain: [],
     placeholder: "",
     single: false,
     selected: [],
+    withOnlySelf: false,
+    onlySelf: false,
 };

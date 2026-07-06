@@ -12,6 +12,7 @@
         "budget",
         "base_exception",
         "account_fiscal_year_enhance",
+        "l10n_th_amount_to_text",
     ],
     "data": [
         "security/security.xml",

@@ -20,6 +20,16 @@
                     </div>
                 </button>
             </xpath>
+            <!-- Show the budget already consumed from the linked Disbursement Request -->
+            <xpath expr="//group[@name='budget_info']" position="after">
+                <group name="disbursement_budget" string="Budget Consumed from DR"
+                       attrs="{'invisible': [('disbursement_request_id', '=', False)]}">
+                    <field name="disbursement_request_id" invisible="1"/>
+                    <field name="disbursement_budget_consumed_amount"/>
+                    <field name="disbursement_budget_consumed_date"/>
+                    <field name="disbursement_budget_commitment_id"/>
+                </group>
+            </xpath>
         </field>
     </record>
 

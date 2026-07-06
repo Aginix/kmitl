@@ -8,10 +8,19 @@
         </record>
 
         <!-- User Group -->
+        <!-- Inherit account (Billing) + budget groups so disbursement users
+             can read the related models the DR form relies on (account,
+             tax, journal, fiscal year, bills) and read/commit budget
+             (obligate on approve, reverse on cancel). Cascades to head /
+             officer / manager, which imply this group. -->
         <record id="group_disbursement_user" model="res.groups">
             <field name="name">Disbursement User</field>
             <field name="category_id" ref="disbursement.module_category_disbursement"/>
-            <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+            <field name="implied_ids" eval="[(6, 0, [
+                ref('base.group_user'),
+                ref('account.group_account_invoice'),
+                ref('budget.group_budget_user'),
+            ])]"/>
         </record>
 
         <!-- Head Group (inherits from User) -->
