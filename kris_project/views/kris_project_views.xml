@@ -246,7 +246,7 @@
                         <!-- Tab 1: มูลค่าและงวดงาน -->
                         <page string="Financials" name="financials">
                             <group>
-                                <group string="1. Project Value">
+                                <group string="1. Project Value" name="project_value">
                                     <field
                                         name="project_value"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"

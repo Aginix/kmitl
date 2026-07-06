@@ -9,7 +9,7 @@
         <field name="model">kris.project</field>
         <field name="inherit_id" ref="kris_project.view_kris_project_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='1. Project Value']/field[@name='project_value']"
+            <xpath expr="//group[@name='project_value']/field[@name='project_value']"
                    position="before">
                 <field name="is_research_category" invisible="1"/>
                 <field
@@ -27,7 +27,7 @@
                     }"
                 />
             </xpath>
-            <xpath expr="//group[@string='1. Project Value']/field[@name='project_value']"
+            <xpath expr="//group[@name='project_value']/field[@name='project_value']"
                    position="attributes">
                 <attribute name="attrs">{
                     'readonly': ['|', ('is_research_category', '=', True), ('can_edit', '=', False)],
