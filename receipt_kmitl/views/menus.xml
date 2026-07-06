@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="menu_receipt_kmitl_root"
+              name="Receipts"
+              sequence="48"
+              groups="receipt_kmitl.group_receipt_kmitl_cashier"/>
+
+    <menuitem id="menu_receipt_kmitl_operations"
+              name="Operations"
+              parent="menu_receipt_kmitl_root"
+              sequence="10"/>
+
+    <menuitem id="menu_receipt_kmitl_receipts"
+              name="Receipts"
+              parent="menu_receipt_kmitl_operations"
+              action="action_receipt_kmitl"
+              sequence="10"/>
+
+    <menuitem id="menu_receipt_kmitl_cash_deposits"
+              name="Cash Deposits"
+              parent="menu_receipt_kmitl_operations"
+              action="action_cash_deposit"
+              sequence="20"/>
+
+    <menuitem id="menu_receipt_kmitl_configuration"
+              name="Configuration"
+              parent="menu_receipt_kmitl_root"
+              sequence="90"
+              groups="receipt_kmitl.group_receipt_kmitl_manager"/>
+
+    <menuitem id="menu_receipt_kmitl_payment_methods"
+              name="Payment Methods"
+              parent="menu_receipt_kmitl_configuration"
+              action="action_payment_method"
+              sequence="10"/>
+
+    <menuitem id="menu_receipt_kmitl_settings"
+              name="Settings"
+              parent="menu_receipt_kmitl_configuration"
+              action="action_receipt_kmitl_config"
+              sequence="20"/>
+</odoo>
