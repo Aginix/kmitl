@@ -109,6 +109,7 @@
                             <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
                                     <field name="allowed_product_ids" invisible="1"/>
+                                    <field name="allowed_partner_type_ids" invisible="1"/>
                                     <field name="sequence" widget="handle"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="partner_id"/>
