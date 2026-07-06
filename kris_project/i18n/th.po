@@ -1330,11 +1330,13 @@ msgid "Category"
 msgstr "หมวดหมู่"
 
 #. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__note
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#, python-format
 msgid "Note"
 msgstr "หมายเหตุ"
 
