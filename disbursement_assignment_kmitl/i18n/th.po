@@ -111,3 +111,23 @@ msgstr "เฉพาะผู้จัดการเท่านั้นที
 #. module: disbursement_assignment_kmitl
 msgid "Only a manager can assign another officer."
 msgstr "เฉพาะผู้จัดการเท่านั้นที่มอบหมายผู้รับผิดชอบคนอื่นได้"
+
+#. module: disbursement_assignment_kmitl
+msgid "Disbursement Verification"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement_assignment_kmitl
+msgid "Verification"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement_assignment_kmitl
+msgid "My Work"
+msgstr "งานของฉัน"
+
+#. module: disbursement_assignment_kmitl
+msgid "All Disbursement Requests"
+msgstr "ใบขอเบิกทั้งหมด"
+
+#. module: disbursement_assignment_kmitl
+msgid "No disbursement request is assigned to you."
+msgstr "ยังไม่มีใบขอเบิกที่มอบหมายให้คุณ"

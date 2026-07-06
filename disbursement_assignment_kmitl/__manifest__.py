@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement Assignment KMITL",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": "Auto-assign a responsible verification officer to disbursement "
     "requests by rules",
     "category": "Disbursement",
@@ -13,10 +13,12 @@
         "disbursement",
     ],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "wizards/assign_officer_wizard_views.xml",
         "views/assignment_rule_views.xml",
         "views/disbursement_request_views.xml",
+        "views/disbursement_verification_menus.xml",
     ],
     "installable": True,
     "auto_install": False,
