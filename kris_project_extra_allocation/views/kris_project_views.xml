@@ -34,6 +34,12 @@
                             string="Total Extra Value of Project"
                             readonly="1"
                         />
+                        <field
+                            name="extra_value_project_pct"
+                            string="As % of Project Value"
+                            widget="percentage"
+                            readonly="1"
+                        />
                     </group>
                 </group>
             </xpath>

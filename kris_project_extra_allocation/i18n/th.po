@@ -58,6 +58,12 @@ msgid "Total Extra Value of Project"
 msgstr "ค่า Extra รวม"
 
 #. module: kris_project_extra_allocation
+#: model:ir.model.fields,field_description:kris_project_extra_allocation.field_kris_project__extra_value_project_pct
+#: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
+msgid "As % of Project Value"
+msgstr "คิดเป็น % ของมูลค่างาน"
+
+#. module: kris_project_extra_allocation
 #: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
 msgid "Total"
 msgstr "รวม"
