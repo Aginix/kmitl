@@ -55,7 +55,7 @@ msgstr "การจัดสรรค่าบริหารจัดการ
 #. module: kris_project_extra_allocation
 #: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
 msgid "Total Extra Value of Project"
-msgstr "ค่า Extra ทั้งหมดของโครงการ"
+msgstr "ค่า Extra รวม"
 
 #. module: kris_project_extra_allocation
 #: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
