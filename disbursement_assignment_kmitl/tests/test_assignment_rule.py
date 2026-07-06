@@ -99,24 +99,29 @@ class TestDisbursementAssignment(TransactionCase):
         source=None,
         department=None,
         partner=None,
-        partner_type="single",
+        partners=None,
         sign=True,
         sign_as=None,
     ):
         source = source or self.source_gov
         department = department or self.dept_child
-        partner = partner or self.partner_a
-        line_vals = {
-            "product_id": self.product.id,
-            "name": "Test line",
-            "quantity": 1.0,
-            "price_unit": 100.0,
+        partners = partners or [partner or self.partner_a]
+        vals = {
+            "line_ids": [
+                (
+                    0,
+                    0,
+                    {
+                        "product_id": self.product.id,
+                        "name": "Test line",
+                        "quantity": 1.0,
+                        "price_unit": 100.0,
+                        "partner_id": p.id,
+                    },
+                )
+                for p in partners
+            ]
         }
-        vals = {"partner_type": partner_type, "line_ids": [(0, 0, line_vals)]}
-        if partner_type == "single":
-            vals["partner_id"] = partner.id
-        else:
-            line_vals["partner_id"] = partner.id
         dr = self.DR.create(vals)
         dr.analytic_distribution = {
             str(department.id): 100,
@@ -213,12 +218,14 @@ class TestDisbursementAssignment(TransactionCase):
         dr_b = self._make_dr(partner=self.partner_b)
         self.assertEqual(dr_b.assigned_to, self.officer_b)
 
-    def test_multi_partner_matches_only_agnostic_rule(self):
+    def test_mixed_partner_types_match_only_agnostic_rule(self):
         self.Rule.create(
             {"user_id": self.officer_a.id, "partner_type_id": self.pt_a.id}
         )
         self.Rule.create({"user_id": self.officer_b.id})
-        dr = self._make_dr(partner_type="multi", partner=self.partner_a)
+        # Lines with different partner types -> no single partner type to key
+        # on, so only the partner-type-agnostic (wildcard) rule matches.
+        dr = self._make_dr(partners=[self.partner_a, self.partner_b])
         self.assertEqual(dr.assigned_to, self.officer_b)
 
     def test_no_rule_leaves_unassigned(self):

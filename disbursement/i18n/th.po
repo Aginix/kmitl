@@ -1249,3 +1249,35 @@ msgstr "เอกสารประกอบใบขอเบิก"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__attachment_ids
 msgid "Document Attachments"
 msgstr "เอกสารแนบ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type
+msgid "Payment Type"
+msgstr "วิธีการจ่ายเงิน"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
+msgid "Advance"
+msgstr "เงินยืมทดรอง"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__prepaid
+msgid "Prepaid"
+msgstr "จ่ายล่วงหน้า"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_line.py:0
+#, python-format
+msgid "Partner is required on each line."
+msgstr "ต้องระบุผู้รับเงินในทุกบรรทัด"
