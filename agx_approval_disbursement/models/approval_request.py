@@ -1,8 +1,31 @@
 from odoo import Command, _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
+
+    def action_ready_to_bill(self):
+        """Clerical staff marks a direct/prepaid request ready for the finance
+        officer to bill. Requires at least one disbursement document."""
+        self.ensure_one()
+        if self.state != "approved":
+            raise UserError(
+                _("Only approved requests can be marked ready to bill.")
+            )
+        if self.payment_type not in ("direct", "prepaid"):
+            raise UserError(
+                _("Only direct or prepaid requests use the ready-to-bill step.")
+            )
+        if not self.disbursement_attachment_ids:
+            raise UserError(
+                _(
+                    "Please attach at least one disbursement document before "
+                    "marking this request ready to bill."
+                )
+            )
+        self.state = "ready_to_bill"
+        return True
 
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
