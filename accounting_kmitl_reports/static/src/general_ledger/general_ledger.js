@@ -75,6 +75,7 @@ export class GeneralLedger extends Component {
             changeCriteria: _t("Change criteria"),
             printPdf: _t("Print PDF"),
             exportExcel: _t("Export Excel"),
+            exportCsv: _t("Export CSV"),
             empty: _t("No entries for the selected criteria."),
             opening: _t("Opening Balance"),
             carried: _t("Carried Forward"),
@@ -456,6 +457,13 @@ export class GeneralLedger extends Component {
 
     async exportXlsx() {
         const action = await this.orm.call(REPORT_MODEL, "action_export_xlsx", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
+    }
+
+    async exportCsv() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_csv", [
             this.options,
         ]);
         await this.action.doAction(action);

@@ -198,6 +198,13 @@ export class CashFlow extends Component {
         ]);
         await this.action.doAction(action);
     }
+
+    async exportCsv() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_csv", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
+    }
 }
 
 CashFlow.template = "accounting_kmitl_reports.CashFlow";

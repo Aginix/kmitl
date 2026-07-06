@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_cheque" model="report.paperformat">
+        <field name="name">Cheque</field>
+        <field name="default" eval="False"/>
+        <field name="disable_shrinking" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_width">200</field>
+        <field name="page_height">95</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">110</field>
+    </record>
+
+    <record id="action_report_cheque_print" model="ir.actions.report">
+        <field name="name">Print Cheque</field>
+        <field name="model">cheque.register</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">finance_kmitl.report_cheque_print</field>
+        <field name="report_file">finance_kmitl.report_cheque_print</field>
+        <field name="binding_model_id" ref="model_cheque_register"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_cheque"/>
+    </record>
+</odoo>

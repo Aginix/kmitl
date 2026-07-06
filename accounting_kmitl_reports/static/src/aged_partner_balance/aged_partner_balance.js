@@ -163,6 +163,11 @@ export class AgedPartnerBalance extends Component {
         const action = await this.orm.call(REPORT_MODEL, "action_export_xlsx", [this.options]);
         await this.action.doAction(action);
     }
+
+    async exportCsv() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_csv", [this.options]);
+        await this.action.doAction(action);
+    }
 }
 
 AgedPartnerBalance.template = "accounting_kmitl_reports.AgedPartnerBalance";

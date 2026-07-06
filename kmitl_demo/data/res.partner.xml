@@ -15,8 +15,8 @@
             <field name="phone">+66 2 678 9012</field>
             <field name="email">info@moderntech.co.th</field>
             <field name="website">www.moderntech.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_002" model="res.partner">
@@ -32,8 +32,8 @@
             <field name="phone">+66 2 258 7410</field>
             <field name="email">contact@compsystem.co.th</field>
             <field name="website">www.compsystem.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_003" model="res.partner">
@@ -49,8 +49,8 @@
             <field name="phone">+66 2 538 9123</field>
             <field name="email">sales@digitalsolution.co.th</field>
             <field name="website">www.digitalsolution.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_004" model="res.partner">
@@ -66,8 +66,8 @@
             <field name="phone">+66 2 275 8456</field>
             <field name="email">order@thaistationery.co.th</field>
             <field name="website">www.thaistationery.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_005" model="res.partner">
@@ -82,8 +82,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 2 643 2178</field>
             <field name="email">info@officesupply.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_006" model="res.partner">
@@ -99,8 +99,8 @@
             <field name="phone">+66 2 254 7890</field>
             <field name="email">contract@construction-maint.co.th</field>
             <field name="website">www.construction-maint.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_007" model="res.partner">
@@ -115,8 +115,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 2 589 3456</field>
             <field name="email">service@engineering-service.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_008" model="res.partner">
@@ -132,8 +132,8 @@
             <field name="phone">+66 2 561 2345</field>
             <field name="email">sales@scienceinstrument.co.th</field>
             <field name="website">www.scienceinstrument.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_009" model="res.partner">
@@ -149,8 +149,8 @@
             <field name="phone">+66 2 617 8901</field>
             <field name="email">info@labequipment.co.th</field>
             <field name="website">www.labequipment.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <record id="vendor_demo_010" model="res.partner">
@@ -166,8 +166,8 @@
             <field name="phone">+66 2 743 5678</field>
             <field name="email">contact@consulting-training.co.th</field>
             <field name="website">www.consulting-training.co.th</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000001"/>
         </record>
 
         <!-- Individual Vendors -->
@@ -183,8 +183,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 81 234 5678</field>
             <field name="email">dr.somchai.w@gmail.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
 
         </record>
 
@@ -200,8 +200,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 89 567 1234</field>
             <field name="email">prasit.tech@hotmail.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_013" model="res.partner">
@@ -216,8 +216,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 82 345 6789</field>
             <field name="email">somying.research@yahoo.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_014" model="res.partner">
@@ -232,8 +232,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 86 456 7890</field>
             <field name="email">vipa.consult@outlook.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_015" model="res.partner">
@@ -248,8 +248,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 91 567 8901</field>
             <field name="email">anucha.trainer@gmail.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_016" model="res.partner">
@@ -264,8 +264,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 84 678 9012</field>
             <field name="email">pimjai.design@gmail.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_017" model="res.partner">
@@ -280,8 +280,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 85 789 0123</field>
             <field name="email">dr.veera.eng@hotmail.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_018" model="res.partner">
@@ -296,8 +296,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 92 890 1234</field>
             <field name="email">surachai.repair@gmail.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_019" model="res.partner">
@@ -312,8 +312,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 83 901 2345</field>
             <field name="email">napa.programmer@outlook.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
 
         <record id="vendor_demo_020" model="res.partner">
@@ -328,8 +328,8 @@
             <field name="country_id" ref="base.th"/>
             <field name="phone">+66 87 012 3456</field>
             <field name="email">thana.accountant@gmail.com</field>
-            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
-            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+            <field name="property_account_receivable_id" ref="account_kmitl.account_1126000001"/>
+            <field name="property_account_payable_id" ref="account_kmitl.account_2110000099"/>
         </record>
     </data>
 </odoo>

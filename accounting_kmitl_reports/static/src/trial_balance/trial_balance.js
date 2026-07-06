@@ -230,6 +230,13 @@ export class TrialBalance extends Component {
         ]);
         await this.action.doAction(action);
     }
+
+    async exportCsv() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_csv", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
+    }
 }
 
 TrialBalance.template = "accounting_kmitl_reports.TrialBalance";

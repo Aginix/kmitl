@@ -205,6 +205,12 @@ class TrialBalanceReportKmitl(models.AbstractModel):
             options, "accounting_kmitl_reports.action_report_trial_balance_kmitl_xlsx"
         )
 
+    @api.model
+    def action_export_csv(self, options):
+        return self._kmitl_report_action(
+            options, "accounting_kmitl_reports.action_report_trial_balance_kmitl_csv"
+        )
+
     # ------------------------------------------------------------------
     # QWeb PDF rendering — reuse the shared compute, do NOT call the OCA
     # ``_get_report_values`` (it expects a column-based wizard we no longer
@@ -325,3 +331,49 @@ class TrialBalanceXlsxKmitl(models.AbstractModel):
 
         sheet.set_column(0, 0, 42)
         sheet.set_column(1, 9, 15)
+
+
+class TrialBalanceCsvKmitl(models.AbstractModel):
+    """CSV export of the trial balance — one flat row per account (no
+    subtotals), sharing the compute with the screen / PDF / XLSX."""
+
+    _name = "report.accounting_kmitl_reports.trial_balance_csv"
+    _inherit = "accounting_kmitl_reports.csv.report"
+    _description = "KMITL Trial Balance CSV"
+
+    _COLS = (
+        "opening_debit",
+        "opening_credit",
+        "opening_balance",
+        "period_debit",
+        "period_credit",
+        "period_balance",
+        "ending_debit",
+        "ending_credit",
+        "ending_balance",
+    )
+
+    def _kmitl_csv_rows(self, options):
+        report = self.env["report.accounting_kmitl_reports.trial_balance_kmitl"]
+        result = report.get_trial_balance_data(options)
+        rows = [
+            [
+                _("Account Code"),
+                _("Account Name"),
+                _("Opening Debit"),
+                _("Opening Credit"),
+                _("Opening Balance"),
+                _("Period Debit"),
+                _("Period Credit"),
+                _("Period Balance"),
+                _("Ending Debit"),
+                _("Ending Credit"),
+                _("Ending Balance"),
+            ]
+        ]
+        for row in result["rows"]:
+            rows.append(
+                [row["code"], row["name"]]
+                + [self._csv_num(row[k]) for k in self._COLS]
+            )
+        return rows
