@@ -108,14 +108,14 @@ class KrisProjectStateWizard(models.TransientModel):
                 '<ul class="o_Message_trackingValues mb-0 ps-4">'
                 '<li>'
                 '<div class="o_TrackingValue d-flex align-items-center flex-wrap mb-1" role="group">'
-                '<span class="o_TrackingValue_oldValue me-1 px-1 text-muted fw-bold fst-italic"></span>'
+                '<span class="o_TrackingValue_oldValue me-1 px-1 text-muted fw-bold fst-italic">%s</span>'
                 '<i class="o_TrackingValue_separator fa fa-long-arrow-right mx-1 text-600"></i>'
                 '<span class="o_TrackingValue_newValue me-1 fw-bold text-info">%s</span>'
                 '<span class="o_TrackingValue_fieldName ms-1 fst-italic text-muted">(%s)</span>'
                 '</div>'
                 '</li>'
                 '</ul>'
-            ) % (escape(note), _("Note"))
+            ) % (_("None"), escape(note), _("Note"))
             self.project_id._track_set_log_message(body)
         self.project_id.write({"state": target})
         return {"type": "ir.actions.act_window_close"}

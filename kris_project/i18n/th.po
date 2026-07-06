@@ -1579,3 +1579,9 @@ msgstr "กรุณาระบุหมายเหตุสำหรับก
 #, python-format
 msgid "<b>Note:</b> %s"
 msgstr "<b>หมายเหตุ:</b> %s"
+
+#. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "None"
+msgstr "ไม่มี"
