@@ -535,20 +535,6 @@ class KrisProject(models.Model):
         )
         return action
 
-    def _mail_track(self, tracked_fields, initial):
-        changes, tracking_value_ids = super()._mail_track(tracked_fields, initial)
-        note = self.env.context.get("kris_state_change_note")
-        if note and "state" in changes:
-            state_field = self.env["ir.model.fields"]._get(self._name, "state")
-            tracking_value_ids.append((0, 0, {
-                "field": state_field.id,
-                "field_desc": _("Note"),
-                "field_type": "char",
-                "new_value_char": note,
-                "tracking_sequence": 200,
-            }))
-        return changes, tracking_value_ids
-
     def action_confirm(self):
         for rec in self:
             if rec.state != "draft":
