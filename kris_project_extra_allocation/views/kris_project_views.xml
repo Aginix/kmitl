@@ -23,7 +23,7 @@
                 >
                     <tree editable="bottom">
                         <field name="analytic_account_id"/>
-                        <field name="amount" sum="Total"/>
+                        <field name="amount" />
                         <field name="currency_id" invisible="1"/>
                     </tree>
                 </field>
