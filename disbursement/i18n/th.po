@@ -1375,3 +1375,55 @@ msgstr "ใบขอเบิกทั้งหมด"
 #. module: disbursement
 msgid "No disbursement request is assigned to you."
 msgstr "ยังไม่มีใบขอเบิกที่มอบหมายให้คุณ"
+
+#. module: disbursement
+msgid "Return"
+msgstr "ตีกลับ"
+
+#. module: disbursement
+msgid "Return for Correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+msgid "Returned for Correction"
+msgstr "ถูกตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: disbursement
+msgid "Reason for returning this request…"
+msgstr "ระบุเหตุผลที่ตีกลับใบขอเบิกนี้…"
+
+#. module: disbursement
+msgid "Resubmit to Verification"
+msgstr "ส่งกลับหมวดตรวจ"
+
+#. module: disbursement
+#, python-format
+msgid "Returned for correction: %s"
+msgstr "ตีกลับเพื่อแก้ไข: %s"
+
+#. module: disbursement
+msgid "Returned for correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+msgid "Corrected and returned to verification."
+msgstr "แก้ไขแล้ว ส่งกลับหมวดตรวจ"
+
+#. module: disbursement
+#, python-format
+msgid "Only a request under verification (signed) can be returned."
+msgstr "ตีกลับได้เฉพาะใบที่อยู่ระหว่างหมวดตรวจ (สถานะ signed) เท่านั้น"
+
+#. module: disbursement
+#, python-format
+msgid "Only a returned request in draft can be resubmitted."
+msgstr "ส่งกลับได้เฉพาะใบที่ถูกตีกลับและอยู่สถานะ draft เท่านั้น"
+
+#. module: disbursement
+#, python-format
+msgid "Cannot resubmit a disbursement request with no lines."
+msgstr "ส่งกลับไม่ได้ เพราะใบขอเบิกไม่มีรายการ"
