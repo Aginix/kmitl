@@ -234,6 +234,15 @@ class AccountAssetBatch(models.Model):
             res["analytic_distribution"] = self._asset_analytic_distribution(
                 purchase.analytic_distribution
             )
+            # Populate the convenience dimension fields directly so they display
+            # on the fresh form (the stored compute from analytic_distribution
+            # does not reliably fire for a new record).
+            res.update({
+                "source_analytic_id": purchase.source_analytic_id.id,
+                "department_analytic_id": purchase.department_analytic_id.id,
+                "fund_analytic_id": purchase.fund_analytic_id.id,
+                "activity_analytic_id": purchase.activity_analytic_id.id,
+            })
         return res
 
     def _asset_analytic_distribution(self, raw_dist):

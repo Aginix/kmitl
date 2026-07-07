@@ -118,11 +118,11 @@
                         <field name="notes" />
                     </group>
                     <group string="Budget Details" >
-                        <field name="analytic_distribution" widget="analytic_distribution" attrs="{'readonly': [('is_editable','=', False)]}" groups="account_asset_batch.account_asset_batch_manager"/>
-                        <field name="source_analytic_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <field name="department_analytic_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <field name="fund_analytic_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <field name="activity_analytic_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="analytic_distribution" widget="analytic_distribution" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}" groups="account_asset_batch.account_asset_batch_manager"/>
+                        <field name="source_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
+                        <field name="department_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
+                        <field name="fund_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
+                        <field name="activity_analytic_id" required="1" attrs="{'readonly': ['|', ('is_editable','=', False), ('purchase_id','!=', False)]}"/>
                     </group>
                     <notebook>
                         <page string="List">

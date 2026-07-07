@@ -128,6 +128,12 @@
                     {'readonly': [('state', '!=', 'draft')]}
                 </attribute>
             </xpath>
+
+            <xpath expr="//field[@name='asset_sub_state_id']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('state', '!=', 'draft')]}
+                </attribute>
+            </xpath>
         </field>
     </record>
 
