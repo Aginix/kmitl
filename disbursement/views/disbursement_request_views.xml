@@ -94,7 +94,7 @@
                             <field name="partner_bank_id" invisible="1" />
                             <field name="is_company" invisible="1" />
                         </group>
-                        <group id="budget" string="Analytic Dimensions">
+                        <group id="budget" string="Budget Information">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
                             <field name="budget_commitment_id" />
                             <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />

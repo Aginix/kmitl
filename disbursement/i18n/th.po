@@ -995,8 +995,8 @@ msgstr "กิจกรรม"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Analytic Dimensions"
-msgstr "มิติทางบัญชี"
+msgid "Budget Information"
+msgstr "ข้อมูลงบประมาณ"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
