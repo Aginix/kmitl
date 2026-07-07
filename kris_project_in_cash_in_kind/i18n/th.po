@@ -16,9 +16,9 @@ msgstr ""
 #. module: kris_project_in_cash_in_kind
 #: model:ir.model.fields,field_description:kris_project_in_cash_in_kind.field_kris_project__in_cash
 msgid "In Cash"
-msgstr "ทุนเงินสด"
+msgstr "ทุนวิจัย In-cash"
 
 #. module: kris_project_in_cash_in_kind
 #: model:ir.model.fields,field_description:kris_project_in_cash_in_kind.field_kris_project__in_kind
 msgid "In Kind"
-msgstr "ทุนสิ่งของ"
+msgstr "ทุนวิจัย In-kind"
