@@ -10,7 +10,7 @@ ASSIGN_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
 # ir.config_parameter that relaxes the self-claim guard. Defaults to True:
 # because assignment is advisory, an officer may claim a mis-routed request
 # out of the box. Set to False to lock claims to the assigned officer/manager.
-TAKEOVER_PARAM = "disbursement_assignment_kmitl.allow_takeover_assigned"
+TAKEOVER_PARAM = "disbursement.allow_takeover_assigned"
 
 OFFICER_GROUP = "disbursement.group_disbursement_officer"
 MANAGER_GROUP = "disbursement.group_disbursement_manager"
@@ -30,6 +30,12 @@ class DisbursementRequest(models.Model):
     # ``signed`` state, which is exactly where officers are assigned.
     assignment_can_assign_me = fields.Boolean(
         compute="_compute_assignment_can_assign_me",
+    )
+    # Set when verification returns a signed request to the creator for a fix.
+    # Drives the resubmit path (draft -> signed, skipping a second head sign).
+    returned_for_edit = fields.Boolean(
+        string="Returned for Correction",
+        copy=False,
     )
 
     # -- guards ----------------------------------------------------------
@@ -134,6 +140,68 @@ class DisbursementRequest(models.Model):
             "target": "new",
             "context": {"default_request_id": self.id},
         }
+
+    # -- return for correction -------------------------------------------
+    def action_return_open_wizard(self):
+        """Open the wizard that collects the mandatory return reason."""
+        self.ensure_one()
+        return {
+            "name": _("Return for Correction"),
+            "type": "ir.actions.act_window",
+            "res_model": "disbursement.return.request.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_request_id": self.id},
+        }
+
+    def _action_return_for_edit(self, reason):
+        """Send a signed request back to the creator for correction.
+
+        Verification returns the request to ``draft`` so the creator can edit
+        it, records the reason on the chatter, and raises a To-Do for the
+        creator. The responsible officer is kept, so once the creator resubmits
+        it goes straight back to verification (see ``action_resubmit_verification``)
+        without a second head sign.
+        """
+        self.ensure_one()
+        if self.state != "signed":
+            raise UserError(
+                _("Only a request under verification (signed) can be returned.")
+            )
+        self.returned_for_edit = True
+        # signed -> draft; the assignment override also closes the officer's
+        # verification to-do.
+        self.action_draft()
+        self.message_post(
+            body=_("Returned for correction: %s") % reason,
+        )
+        if self.user_id:
+            self.activity_schedule(
+                ASSIGN_ACTIVITY_XMLID,
+                user_id=self.user_id.id,
+                summary=_("Returned for correction"),
+                note=reason,
+            )
+
+    def action_resubmit_verification(self):
+        """Creator resubmits a corrected request straight back to verification.
+
+        Skips the head sign (already done before the return) and re-notifies
+        the responsible officer.
+        """
+        self.ensure_one()
+        if not (self.state == "draft" and self.returned_for_edit):
+            raise UserError(
+                _("Only a returned request in draft can be resubmitted.")
+            )
+        if not self.line_ids:
+            raise UserError(
+                _("Cannot resubmit a disbursement request with no lines.")
+            )
+        self.returned_for_edit = False
+        self.state = "signed"
+        self._assignment_auto_assign()
+        self.message_post(body=_("Corrected and returned to verification."))
 
     # -- auto-assign + workflow hooks ------------------------------------
     def _assignment_auto_assign(self):

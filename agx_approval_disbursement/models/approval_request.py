@@ -107,6 +107,7 @@ class ApprovalRequest(models.Model):
             "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
             "partner_type": "multi",
+            "payment_type": self.payment_type,
             "line_ids": [
                 Command.create(
                     {
