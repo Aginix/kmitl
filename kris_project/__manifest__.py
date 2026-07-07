@@ -27,6 +27,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "wizard/kris_project_exception_confirm_view.xml",
+        "wizard/kris_project_state_wizard_view.xml",
         "views/kris_project_type_views.xml",
         "views/kris_project_allocation_views.xml",
         "views/kris_project_receipt_wizard_views.xml",

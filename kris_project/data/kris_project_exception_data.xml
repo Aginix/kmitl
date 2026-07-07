@@ -125,6 +125,18 @@ if self.state == 'draft' and not self.no_installment_tracking and self.installme
         <field name="active" eval="True"/>
     </record>
 
+    <record id="kris_excep_received_total_mismatch" model="exception.rule">
+        <field name="name">ยอดรับจากผู้ว่าจ้างรวมไม่ตรงกับมูลค่าโครงการ</field>
+        <field name="description">ผลรวมของยอดรับจากผู้ว่าจ้างทุกงวดไม่เท่ากับมูลค่าโครงการ</field>
+        <field name="sequence">45</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.no_installment_tracking and self.installment_ids and self.warn_installment_total_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
     <record id="kris_excep_installment_maintenance_mismatch" model="exception.rule">
         <field name="name">The maintenance fee for this period does not match.</field>
         <field name="description">The sum of institutional maintenance fees in the work period does not equal the value after deduction of maintenance fees.</field>

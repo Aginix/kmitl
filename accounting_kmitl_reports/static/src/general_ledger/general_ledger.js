@@ -65,7 +65,6 @@ export class GeneralLedger extends Component {
             // (default) a selected node also matches its descendants.
             dimOnlySelf: {
                 departments: false,
-                sources: false,
                 funds: false,
                 activities: false,
             },
