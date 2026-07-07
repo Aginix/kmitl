@@ -168,3 +168,110 @@ msgid ""
 "Please attach at least one disbursement document before marking this "
 "request ready to bill."
 msgstr "กรุณาแนบเอกสารเบิกจริงอย่างน้อย 1 ไฟล์ก่อนทำเครื่องหมายพร้อมส่งเบิกจริง"
+
+#. module: agx_approval_disbursement
+#: model:ir.model.fields.selection,name:agx_approval_disbursement.selection__approval_request__state__returned
+msgid "Returned"
+msgstr "ถูกตีกลับ"
+
+#. module: agx_approval_disbursement
+#: model:ir.model.fields,field_description:agx_approval_disbursement.field_disbursement_request__returned_to_approval
+msgid "Returned to Approval Request"
+msgstr "ถูกตีกลับไปคำขออนุมัติ"
+
+#. module: agx_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
+msgid "Confirm Correction"
+msgstr "ยืนยันการแก้ไข"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/approval_request.py:0
+#, python-format
+msgid "Only billed requests can be returned."
+msgstr "ตีกลับได้เฉพาะคำขอที่ออกใบขอเบิกแล้วเท่านั้น"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/approval_request.py:0
+#, python-format
+msgid "Only returned requests can confirm a correction."
+msgstr "ยืนยันการแก้ไขได้เฉพาะคำขอที่ถูกตีกลับเท่านั้น"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/approval_request.py:0
+#, python-format
+msgid "Correction confirmed; disbursement %(dr)s updated."
+msgstr "ยืนยันการแก้ไขแล้ว อัปเดตใบขอเบิก %(dr)s"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only a request under verification (signed) can be returned."
+msgstr "ตีกลับได้เฉพาะใบที่อยู่ระหว่างหมวดตรวจ (สถานะ signed) เท่านั้น"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"This request was returned to its approval request. Please wait for the "
+"corrected approval to be confirmed before validating."
+msgstr ""
+"ใบขอเบิกนี้ถูกตีกลับไปยังคำขออนุมัติ กรุณารอการยืนยันการแก้ไขคำขออนุมัติก่อนจึงจะตรวจสอบได้"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Returned to approval request: %s"
+msgstr "ตีกลับไปคำขออนุมัติ: %s"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Disbursement %(dr)s was returned for correction: %(reason)s"
+msgstr "ใบขอเบิก %(dr)s ถูกตีกลับเพื่อแก้ไข: %(reason)s"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Correct and confirm approval request"
+msgstr "แก้ไขและยืนยันคำขออนุมัติ"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Approval correction applied: payee bank, description and evidence updated. "
+"Please continue verification."
+msgstr ""
+"ปรับตามการแก้ไขคำขออนุมัติแล้ว: เลขบัญชีผู้รับเงิน คำอธิบาย และหลักฐานถูกอัปเดต "
+"กรุณาดำเนินการตรวจสอบต่อ"
+
+#. module: agx_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.view_disbursement_request_form
+msgid "Returned:"
+msgstr "ถูกตีกลับ:"
+
+#. module: agx_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
+msgid ""
+"This request was returned from its disbursement. Correct the payee bank, "
+"description or disbursement evidence, then click Confirm Correction."
+msgstr ""
+"คำขอนี้ถูกตีกลับจากใบขอเบิก กรุณาแก้ไขเลขบัญชีผู้รับเงิน คำอธิบาย "
+"หรือหลักฐานส่งเบิก แล้วกดยืนยันการแก้ไข"
+
+#. module: agx_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.view_disbursement_request_form
+msgid ""
+"This disbursement request was returned to its approval request for a "
+"corrected version."
+msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังใบขออนุมัติเพื่อจัดทำฉบับแก้ไข"
