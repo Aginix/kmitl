@@ -278,6 +278,7 @@ class AccountAssetBatch(models.Model):
                         "operating_unit_id": batch.operating_unit_id.id,
                         "department_id": batch.department_id.id,
                         "purchase_id": batch.purchase_id.id if batch.purchase_id else False,
+                        "partner_id": batch.purchase_id.partner_id.id if batch.purchase_id else False,
                         "gpsc_id": line.gpsc_id.id,
                         "profile_id": line.profile_id.id,
                         "purchase_value": line.price_per_unit,
