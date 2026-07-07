@@ -19,6 +19,7 @@ class ApprovalRequest(models.Model):
         "to_verify": [("readonly", True)],
         "submitted": [("readonly", True)],
         "approved": [("readonly", True)],
+        "ready_to_bill": [("readonly", True)],
         "billed": [("readonly", True)],
         "rejected": [("readonly", True)],
     }
@@ -84,15 +85,6 @@ class ApprovalRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    department_id = fields.Many2one(
-        string="Department",
-        comodel_name="hr.department",
-        default=lambda self: self.env.user.employee_id.department_id,
-        required=True,
-        tracking=True,
-        states=READONLY_STATES,
-    )
-
     name = fields.Char(
         string="Name",
         default="/",
@@ -112,8 +104,8 @@ class ApprovalRequest(models.Model):
 
     owner_id = fields.Many2one(
         string="Request Owner",
-        comodel_name="res.users",
-        default=lambda self: self.env.uid,
+        comodel_name="hr.employee",
+        default=lambda self: self.env.user.employee_id,
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -198,6 +190,7 @@ class ApprovalRequest(models.Model):
         ("submitted", "Submitted"),
         ("validated", "Validated"),
         ("approved", "Approved"),
+        ("ready_to_bill", "Ready to Bill"),
         ("billed", "Billed"),
         ("rejected", "Rejected"),
     ],
@@ -329,10 +322,6 @@ class ApprovalRequest(models.Model):
                     distribution[str(analytic.id)] = 100
             self.analytic_distribution = distribution or False
 
-    @api.onchange("owner_id")
-    def _onchange_owner_id(self):
-        self.department_id = self.owner_id.employee_id.department_id
-
     @api.model
     def _search_source_analytic_id(self, operator, value):
         account_ids = []
@@ -463,7 +452,7 @@ class ApprovalRequest(models.Model):
 
     def action_bill(self):
         for record in self:
-            if record.state != "approved":
+            if record.state not in ("approved", "ready_to_bill"):
                 raise UserError(_("Only approved requests can be billed."))
             record.state = "billed"
         return True
@@ -644,6 +633,7 @@ class ApprovalRequest(models.Model):
                 "submitted",
                 "validated",
                 "approved",
+                "ready_to_bill",
                 "billed",
                 "rejected"
             ):

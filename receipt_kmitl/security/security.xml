@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+        <!-- Module Category -->
+        <record id="module_category_receipt_kmitl" model="ir.module.category">
+            <field name="name">Receipt KMITL</field>
+            <field name="description">User groups for KMITL receipt management</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <!-- Cashier (department-level) -->
+        <record id="group_receipt_kmitl_cashier" model="res.groups">
+            <field name="name">Cashier</field>
+            <field name="category_id" ref="receipt_kmitl.module_category_receipt_kmitl"/>
+            <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+        </record>
+
+        <!-- Central Finance staff -->
+        <record id="group_receipt_kmitl_central_finance" model="res.groups">
+            <field name="name">Central Finance</field>
+            <field name="category_id" ref="receipt_kmitl.module_category_receipt_kmitl"/>
+            <field name="implied_ids" eval="[(4, ref('group_receipt_kmitl_cashier')), (4, ref('account.group_account_invoice'))]"/>
+        </record>
+
+        <!-- Central Finance Manager -->
+        <record id="group_receipt_kmitl_manager" model="res.groups">
+            <field name="name">Central Finance Manager</field>
+            <field name="category_id" ref="receipt_kmitl.module_category_receipt_kmitl"/>
+            <field name="implied_ids" eval="[(4, ref('group_receipt_kmitl_central_finance')), (4, ref('account.group_account_manager'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- Record Rules -->
+        <!-- Cashier sees receipts of their own departments; Central sees all -->
+        <record id="receipt_kmitl_rule_cashier" model="ir.rule">
+            <field name="name">Receipt: cashier sees own departments</field>
+            <field name="model_id" ref="model_kmitl_receipt"/>
+            <field name="domain_force">[('department_id', 'in', user.kmitl_department_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('group_receipt_kmitl_cashier'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        <record id="receipt_kmitl_rule_central" model="ir.rule">
+            <field name="name">Receipt: central finance sees all</field>
+            <field name="model_id" ref="model_kmitl_receipt"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_receipt_kmitl_central_finance'))]"/>
+        </record>
+
+        <record id="cash_deposit_rule_cashier" model="ir.rule">
+            <field name="name">Cash Deposit: cashier sees own departments</field>
+            <field name="model_id" ref="model_kmitl_cash_deposit"/>
+            <field name="domain_force">[('department_id', 'in', user.kmitl_department_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('group_receipt_kmitl_cashier'))]"/>
+        </record>
+        <record id="cash_deposit_rule_central" model="ir.rule">
+            <field name="name">Cash Deposit: central finance sees all</field>
+            <field name="model_id" ref="model_kmitl_cash_deposit"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_receipt_kmitl_central_finance'))]"/>
+        </record>
+
+    </data>
+</odoo>

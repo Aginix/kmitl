@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL Accounting Reports",
-    "version": "16.0.7.0.0",
+    "version": "16.0.8.0.0",
     "category": "KMITL/Accounting",
     "summary": "KMITL accounting reports: Trial Balance, General Ledger, "
     "Profit and Loss, Balance Sheet, Cash Flow Statement, "
@@ -19,6 +19,7 @@
         "mis_builder_cash_flow",
         "account_financial_report",
         "report_xlsx",
+        "report_csv",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -31,15 +32,20 @@
         "data/report_action_aged_partner_balance_kmitl.xml",
         "data/report_action_cash_flow_kmitl.xml",
         "data/report_action_general_ledger_kmitl.xml",
+        "data/report_action_general_journal_kmitl.xml",
         "report/trial_balance_kmitl_template.xml",
         "report/aged_partner_balance_kmitl_template.xml",
         "report/cash_flow_kmitl_template.xml",
         "report/general_ledger_kmitl_template.xml",
+        "report/general_journal_kmitl_template.xml",
         "views/general_ledger_wizard_views.xml",
         "views/menuitem.xml",
     ],
     "assets": {
         "web.assets_backend": [
+            "accounting_kmitl_reports/static/src/common/move_lines_detail.js",
+            "accounting_kmitl_reports/static/src/common/move_lines_detail.xml",
+            "accounting_kmitl_reports/static/src/common/move_lines_detail.scss",
             "accounting_kmitl_reports/static/src/trial_balance/multi_record_select.js",
             "accounting_kmitl_reports/static/src/trial_balance/trial_balance.js",
             "accounting_kmitl_reports/static/src/trial_balance/trial_balance.xml",
@@ -53,6 +59,9 @@
             "accounting_kmitl_reports/static/src/general_ledger/general_ledger.js",
             "accounting_kmitl_reports/static/src/general_ledger/general_ledger.xml",
             "accounting_kmitl_reports/static/src/general_ledger/general_ledger.scss",
+            "accounting_kmitl_reports/static/src/general_journal/general_journal.js",
+            "accounting_kmitl_reports/static/src/general_journal/general_journal.xml",
+            "accounting_kmitl_reports/static/src/general_journal/general_journal.scss",
         ],
     },
     "installable": True,

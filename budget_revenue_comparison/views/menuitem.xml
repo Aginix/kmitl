@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Budget vs Actual Revenue: OWL client action, opened straight from the
+         budget reporting menu (defaults to the current fiscal year, filterable
+         by the KMITL accounting dimensions). -->
+    <record id="action_budget_revenue_comparison" model="ir.actions.client">
+        <field name="name">เปรียบเทียบงบประมาณรายรับ - รายรับจริง</field>
+        <field name="tag">budget_revenue_comparison</field>
+    </record>
+
+    <menuitem
+        id="menu_budget_revenue_comparison"
+        name="เปรียบเทียบรายรับ (งบประมาณ vs จริง)"
+        parent="budget.budget_reporting_menu"
+        action="action_budget_revenue_comparison"
+        sequence="10"
+    />
+
+</odoo>

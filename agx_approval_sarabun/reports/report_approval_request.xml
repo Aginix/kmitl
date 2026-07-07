@@ -95,7 +95,7 @@
                             />
                             <span class="ms-2">สังกัด</span>
                             <span
-                                t-field="o.department_id"
+                                t-field="o.owner_id.department_id"
                                 class="fw-bolder text-decoration-underline"
                             />
                         </p>
@@ -142,6 +142,13 @@
                             </div>
                         </div>
 
+                        <!-- Budget Details -->
+                        <div class="my-4" />
+                        <p>รายละเอียดงบประมาณ</p>
+                        <t
+                            t-call="agx_approval_sarabun.report_approval_request_budget"
+                        />
+
                         <!-- Expense Lines Table -->
                         <div class="my-4" />
                         <div class="row my-2">
@@ -179,6 +186,11 @@
                                 <tr>
                                     <td colspan="3" class="text-center fw-bolder">
                                         รวมทั้งสิ้น
+                                        <div class="fw-normal">
+                                            (<t
+                                                t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(total)"
+                                            />)
+                                        </div>
                                     </td>
                                     <td
                                         class="text-end fw-bolder"
@@ -187,13 +199,6 @@
                                 </tr>
                             </tbody>
                         </table>
-
-                        <!-- Budget Details -->
-                        <div class="my-4" />
-                        <p>รายละเอียดงบประมาณ</p>
-                        <t
-                            t-call="agx_approval_sarabun.report_approval_request_budget"
-                        />
 
                         <!-- Signature Section -->
                         <div class="my-5" style="height: 10px" />
@@ -243,6 +248,12 @@
                         <span t-field="o.fund_analytic_id" />
                     </td>
                 </tr>
+                <tr class="o_field_budget_commitment_amount">
+                    <td>มูลค่างบประมาณ</td>
+                    <td>
+                        <span t-field="o.budget_commitment_amount" />
+                    </td>
+                </tr>
             </tbody>
         </table>
     </template>
@@ -269,7 +280,7 @@
                 <div>ลงชื่อ <t t-out="'.' * 80" /></div>
                 <div class="text-center">( <span t-field="o.owner_id" /> )</div>
                 <div class="text-center">
-                    คณบดี <span t-out="o.department_id.master_department_id.name" />
+                    คณบดี <span t-out="o.owner_id.department_id.master_department_id.name" />
                 </div>
             </div>
         </div>

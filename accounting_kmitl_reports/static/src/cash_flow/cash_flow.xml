@@ -5,6 +5,9 @@
         <div class="o_kmitl_cash_flow o_action_manager p-3">
             <div class="o_kmitl_cf_header d-flex align-items-center mb-3">
                 <h2 class="m-0 flex-grow-1">Cash Flow Statement</h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportCsv">
+                    <i class="fa fa-file-text-o me-1" />Export CSV
+                </button>
                 <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
                     <i class="fa fa-file-excel-o me-1" />Export Excel
                 </button>
@@ -14,7 +17,8 @@
             </div>
 
             <!-- Filter bar -->
-            <div class="o_kmitl_cf_filters row g-2 mb-3">
+            <div class="o_kmitl_cf_filterpanel mb-3">
+                <div class="o_kmitl_cf_filters row g-2">
                 <div class="col-md-3">
                     <label class="o_form_label">Fiscal Year</label>
                     <select class="form-select" t-on-change="onFiscalYearChange">
@@ -80,6 +84,9 @@
                         placeholder="labels.departments"
                         selected="state.departments"
                         onChange="(sel) => this.onSelectionChange('departments', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.departments"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('departments', val)"
                     />
                 </div>
                 <div class="col-md-3">
@@ -100,6 +107,9 @@
                         placeholder="labels.funds"
                         selected="state.funds"
                         onChange="(sel) => this.onSelectionChange('funds', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.funds"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('funds', val)"
                     />
                 </div>
                 <div class="col-md-3">
@@ -110,7 +120,11 @@
                         placeholder="labels.activities"
                         selected="state.activities"
                         onChange="(sel) => this.onSelectionChange('activities', sel)"
+                        withOnlySelf="true"
+                        onlySelf="state.dimOnlySelf.activities"
+                        onOnlySelfChange="(val) => this.onToggleDimOnlySelf('activities', val)"
                     />
+                </div>
                 </div>
             </div>
 
@@ -137,7 +151,7 @@
                             t-att-class="'o_kmitl_cf_' + row.level"
                         >
                             <td t-esc="rowLabel(row)" />
-                            <td class="text-end" t-esc="format(row.amount)" />
+                            <td class="text-end" t-att-class="negClass(row.amount)" t-esc="format(row.amount)" />
                         </tr>
                     </tbody>
                 </table>
