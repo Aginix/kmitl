@@ -127,8 +127,15 @@ class AccountAssetBatch(models.Model):
         default=lambda self: self.env.context.get('default_source_of_asset'),
     )
     
-    received_from_agency = fields.Char(
+    received_from_agency = fields.Many2one(
+        "res.users",
         string="received from agency",
+        tracking=True,
+    )
+
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Partner",
         tracking=True,
     )
 
@@ -231,6 +238,7 @@ class AccountAssetBatch(models.Model):
             purchase = self.env["purchase.order"].browse(purchase_id)
             if purchase.operating_unit_id:
                 res["operating_unit_id"] = purchase.operating_unit_id.id
+            res["partner_id"] = purchase.partner_id.id
             res["analytic_distribution"] = self._asset_analytic_distribution(
                 purchase.analytic_distribution
             )
@@ -287,7 +295,7 @@ class AccountAssetBatch(models.Model):
                         "operating_unit_id": batch.operating_unit_id.id,
                         "department_id": batch.department_id.id,
                         "purchase_id": batch.purchase_id.id if batch.purchase_id else False,
-                        "partner_id": batch.purchase_id.partner_id.id if batch.purchase_id else False,
+                        "partner_id": batch.partner_id.id,
                         "gpsc_id": line.gpsc_id.id,
                         "profile_id": line.profile_id.id,
                         "purchase_value": line.price_per_unit,

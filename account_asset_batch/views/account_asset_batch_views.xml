@@ -105,6 +105,7 @@
                         <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="contract_number" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
                         <field name="purchase_id" readonly="1" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
+                        <field name="partner_id" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field
                             name="received_from_agency"
                             attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))], 'readonly': [('is_editable','=', False)]}"
