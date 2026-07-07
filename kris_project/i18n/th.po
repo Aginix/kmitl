@@ -1597,3 +1597,34 @@ msgstr "<b>หมายเหตุ:</b> %s"
 #, python-format
 msgid "None"
 msgstr "ไม่มี"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_expense_line__expense_type_id
+msgid "Expense Type"
+msgstr "ประเภทค่าใช้จ่าย"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__expense_line_ids
+msgid "Deductible Cost"
+msgstr "ค่าใช้จ่าย (หักก่อนคิดค่าบำรุง)"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__deductible_cost_in_installment
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__deductible_cost_in_installment
+msgid "Deductible Cost in Installment"
+msgstr "ค่าหักในงวด"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_expense_type__category_ids
+msgid "Project Categories"
+msgstr "ประเภทโครงการ"
+
+#. module: kris_project
+#: model:ir.model,name:kris_project.model_kris_project_expense_type
+msgid "KRIS Project Expense Type"
+msgstr "ประเภทค่าใช้จ่ายโครงการ KRIS"
+
+#. module: kris_project
+#: model:ir.model,name:kris_project.model_kris_project_expense_line
+msgid "KRIS Project Expense Line"
+msgstr "รายการค่าใช้จ่ายโครงการ KRIS"
