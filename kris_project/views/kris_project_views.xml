@@ -560,7 +560,7 @@
                 />
                 <separator/>
                 <filter name="contract_start" string="Contract Start Date" date="date_contract_start"/>
-                <!-- Group By -->
+                <!-- Group By ต่างๆ -->
                 <group expand="0" string="จัดกลุ่มตาม">
                     <filter name="group_category" string="Project Category" context="{'group_by': 'project_category_id'}"/>
                     <filter name="group_type" string="Project Type" context="{'group_by': 'project_type_id'}"/>
