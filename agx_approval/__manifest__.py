@@ -13,6 +13,8 @@
         "base_exception",
         "account_fiscal_year_enhance",
         "l10n_th_amount_to_text",
+        "partner_type_aginix",
+        "hr_employee_name_detail_kmitl",
     ],
     "data": [
         "security/security.xml",

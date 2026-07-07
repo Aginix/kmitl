@@ -35,7 +35,7 @@ class ApprovalRequest(models.Model):
             rec.show_create_advance_payment_button = (
                 rec.state == "approved"
                 and rec.payment_type == "advance"
-                and rec.owner_id == self.env.user
+                and rec.owner_id.user_id == self.env.user
                 and not rec.advance_payment_id
             )
 
@@ -69,8 +69,8 @@ class ApprovalRequest(models.Model):
         self.ensure_one()
         loan_type = self.env.ref("advance_payment.loan_type_other")
         return {
-            "requested_by": self.owner_id.id,
-            "department_id": self.department_id.id,
+            "requested_by": self.owner_id.user_id.id or self.env.user.id,
+            "department_id": self.owner_id.department_id.id,
             "loan_reason": self.description or "",
             "loan_amount": self.total_amount,
             "loan_type_id": loan_type.id,

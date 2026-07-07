@@ -85,15 +85,6 @@ class ApprovalRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    department_id = fields.Many2one(
-        string="Department",
-        comodel_name="hr.department",
-        default=lambda self: self.env.user.employee_id.department_id,
-        required=True,
-        tracking=True,
-        states=READONLY_STATES,
-    )
-
     name = fields.Char(
         string="Name",
         default="/",
@@ -113,8 +104,8 @@ class ApprovalRequest(models.Model):
 
     owner_id = fields.Many2one(
         string="Request Owner",
-        comodel_name="res.users",
-        default=lambda self: self.env.uid,
+        comodel_name="hr.employee",
+        default=lambda self: self.env.user.employee_id,
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -330,10 +321,6 @@ class ApprovalRequest(models.Model):
                 if analytic:
                     distribution[str(analytic.id)] = 100
             self.analytic_distribution = distribution or False
-
-    @api.onchange("owner_id")
-    def _onchange_owner_id(self):
-        self.department_id = self.owner_id.employee_id.department_id
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
