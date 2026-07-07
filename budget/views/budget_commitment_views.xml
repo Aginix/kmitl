@@ -71,14 +71,14 @@
                     </div>
 
                     <group>
-                        <group string="Basic Information">
+                        <group name="basic_information" string="Basic Information">
                             <field name="date" invisible="1" />
                             <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="account_fiscal_year_id"
                                 options="{'no_create': True, 'no_open': True}"
                                 attrs="{'readonly': [('id', '!=', False)]}"/>
                         </group>
-                        <group string="Budget Details">
+                        <group name="budget_details" string="Budget Details">
                             <field name="account_id"
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="department_analytic_id" required="1"
@@ -195,7 +195,7 @@
                     domain="[('user_id', '=', uid)]"/>
                 <separator/>
 
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Status" name="group_state"
                         context="{'group_by': 'state'}"/>
                     <filter string="Fiscal Year" name="group_fy"
@@ -275,7 +275,7 @@
                         </button>
                     </div>
                     <group>
-                        <group string="ข้อมูลทั่วไป">
+                        <group name="general_info" string="ข้อมูลทั่วไป">
                             <field name="commitment_id" options="{'no_create': True}"/>
                             <field name="date"/>
                             <field name="move_type"/>
@@ -286,7 +286,7 @@
                                 decoration-success="state == 'posted'"
                                 decoration-danger="state == 'cancel'"/>
                         </group>
-                        <group string="มิติบัญชี">
+                        <group name="analytic_dimensions" string="มิติบัญชี">
                             <field name="account_id" options="{'no_open': True}"/>
                             <field name="department_analytic_id" options="{'no_open': True}"/>
                             <field name="source_analytic_id" options="{'no_open': True}"/>
@@ -294,7 +294,7 @@
                             <field name="fund_analytic_id" options="{'no_open': True}"/>
                         </group>
                     </group>
-                    <group string="รายละเอียด">
+                    <group name="details" string="รายละเอียด">
                         <field name="name"/>
                         <field name="res_name" string="เอกสารต้นทาง"/>
                         <field name="res_model" invisible="1"/>
@@ -328,7 +328,7 @@
                 <separator/>
                 <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
                 <filter string="Cancelled" name="cancel" domain="[('state', '=', 'cancel')]"/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="ประเภท" name="group_move_type" context="{'group_by': 'move_type'}"/>
                     <filter string="รหัสงบประมาณ" name="group_account" context="{'group_by': 'account_id'}"/>
                     <filter string="ส่วนงาน" name="group_department" context="{'group_by': 'department_analytic_id'}"/>

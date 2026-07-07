@@ -43,7 +43,7 @@
                 </button>
             </xpath>
             <xpath expr="//group[@name='attachment']" position="after">
-                <group string="Attachment for Disbursement"
+                <group name="attachment_for_disbursement" string="Attachment for Disbursement"
                     attrs="{'invisible': [('state', 'not in', ['approved', 'ready_to_bill', 'billed'])]}">
                     <field name="disbursement_attachment_ids"
                         widget="many2many_binary"

@@ -84,7 +84,7 @@
                 <field name="name"/>
                 <field name="ref"/>
                 <field name="department_id"/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Department" name="group_department" context="{'group_by': 'department_id'}"/>
                 </group>
             </search>

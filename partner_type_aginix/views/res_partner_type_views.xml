@@ -30,7 +30,7 @@
                             <field name="company_type"/>
                         </group>
                     </group>
-                    <group string="Accounting Settings">
+                    <group name="accounting_settings" string="Accounting Settings">
                         <group>
                             <field name="property_account_receivable_id"/>
                             <field name="property_account_payable_id"/>

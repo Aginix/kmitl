@@ -46,13 +46,13 @@
                             <field name="role_type" widget="radio"/>
                         </group>
                     </group>
-                    <group string="Static Role Settings" attrs="{'invisible': [('role_type', '!=', 'static')]}">
+                    <group name="static_role_settings" string="Static Role Settings" attrs="{'invisible': [('role_type', '!=', 'static')]}">
                         <field name="user_ids" widget="many2many_tags"/>
                     </group>
-                    <group string="Dynamic Role Settings" attrs="{'invisible': [('role_type', '!=', 'dynamic')]}">
+                    <group name="dynamic_role_settings" string="Dynamic Role Settings" attrs="{'invisible': [('role_type', '!=', 'dynamic')]}">
                         <field name="dynamic_method"/>
                     </group>
-                    <group string="Department Scope">
+                    <group name="department_scope" string="Department Scope">
                         <field name="department_ids" widget="many2many_tags" colspan="2" nolabel="1"/>
                         <span class="text-muted" colspan="2">Leave empty to make this role available for all departments.</span>
                     </group>
@@ -80,7 +80,7 @@
                 <filter string="Dynamic" name="dynamic" domain="[('role_type', '=', 'dynamic')]"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Category" name="group_category" context="{'group_by': 'role_category'}"/>
                     <filter string="Role Type" name="group_type" context="{'group_by': 'role_type'}"/>
                 </group>
