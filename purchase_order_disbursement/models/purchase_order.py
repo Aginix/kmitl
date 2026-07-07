@@ -51,8 +51,12 @@ class PurchaseOrder(models.Model):
         return {
             "reference": "purchase.order,%d" % self.id,
             "partner_id": self.partner_id.id,
+            "partner_type": "multi",
             "line_ids": [
-                Command.create(line._prepare_disbursement_request_line_vals())
+                Command.create({
+                    **line._prepare_disbursement_request_line_vals(),
+                    "partner_id": self.partner_id.id,
+                })
                 for line in self.order_line
                 if not line.display_type
             ],

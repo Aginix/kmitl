@@ -19,6 +19,7 @@ class ApprovalRequest(models.Model):
         "to_verify": [("readonly", True)],
         "submitted": [("readonly", True)],
         "approved": [("readonly", True)],
+        "ready_to_bill": [("readonly", True)],
         "billed": [("readonly", True)],
         "rejected": [("readonly", True)],
     }
@@ -189,6 +190,7 @@ class ApprovalRequest(models.Model):
         ("submitted", "Submitted"),
         ("validated", "Validated"),
         ("approved", "Approved"),
+        ("ready_to_bill", "Ready to Bill"),
         ("billed", "Billed"),
         ("rejected", "Rejected"),
     ],
@@ -450,7 +452,7 @@ class ApprovalRequest(models.Model):
 
     def action_bill(self):
         for record in self:
-            if record.state != "approved":
+            if record.state not in ("approved", "ready_to_bill"):
                 raise UserError(_("Only approved requests can be billed."))
             record.state = "billed"
         return True
@@ -631,6 +633,7 @@ class ApprovalRequest(models.Model):
                 "submitted",
                 "validated",
                 "approved",
+                "ready_to_bill",
                 "billed",
                 "rejected"
             ):

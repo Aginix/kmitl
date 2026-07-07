@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_disbursement_assignment_rule_user,disbursement.assignment.rule user,model_disbursement_assignment_rule,disbursement.group_disbursement_user,1,0,0,0
-access_disbursement_assignment_rule_manager,disbursement.assignment.rule manager,model_disbursement_assignment_rule,disbursement.group_disbursement_manager,1,1,1,1
-access_disbursement_assign_officer_wizard,disbursement.assign.officer.wizard,model_disbursement_assign_officer_wizard,disbursement.group_disbursement_officer,1,1,1,1

@@ -107,12 +107,8 @@ if self.state == 'draft' and not self.no_installment_tracking and self.installme
         <field name="sequence">45</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and not self.no_installment_tracking and self.installment_ids:
-    from odoo.tools import float_compare
-    prec = self.env['decimal.precision'].precision_get('Account')
-    total_received = sum(self.installment_ids.mapped('received_from_employer'))
-    if float_compare(total_received, self.project_value, precision_digits=prec) != 0:
-        failed = True
+if self.state == 'draft' and not self.no_installment_tracking and self.installment_ids and self.warn_installment_total_mismatch:
+    failed = True
         </field>
         <field name="active" eval="True"/>
     </record>

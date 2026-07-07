@@ -58,8 +58,10 @@ class ApprovalRequest(models.Model):
                     and not rec.has_active_disbursement
                 )
             else:
+                # Direct/prepaid go through the ready_to_bill handoff: the
+                # finance officer bills only once clerical staff confirmed.
                 rec.show_create_disbursement_button = (
-                    rec.state in ("approved", "billed")
+                    rec.state == "ready_to_bill"
                     and not rec.has_active_disbursement
                 )
 
