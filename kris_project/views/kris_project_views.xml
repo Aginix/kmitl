@@ -142,31 +142,39 @@
                         groups="kris_project.group_kris_project_officer"
                     />
                     <button
-                        name="action_done"
-                        string="Done"
-                        type="object"
-                        class="btn-primary"
-                        states="in_progress"
-                        groups="kris_project.group_kris_project_officer"
-                    />
-                    <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="draft,in_progress,done"
+                        states="draft"
                         groups="kris_project.group_kris_project_officer"
+                    />
+                    <button
+                        name="%(kris_project.action_kris_project_state_wizard)d"
+                        string="Change Project Status"
+                        type="action"
+                        class="btn-primary"
+                        states="in_progress,suspended"
+                        groups="kris_project.group_kris_project_officer"
+                        context="{'active_id': active_id, 'active_model': 'kris.project'}"
                     />
                     <button
                         name="action_draft"
                         string="Reset to Draft"
                         type="object"
-                        states="cancel"
+                        states="cancel,in_progress"
                         groups="kris_project.group_kris_project_manager"
                     />
                     <field
                         name="state"
                         widget="statusbar"
                         statusbar_visible="draft,in_progress,done"
+                        attrs="{'invisible': [('state', 'in', ('terminated', 'conditional_close', 'cancel'))]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,in_progress"
+                        attrs="{'invisible': [('state', 'not in', ('terminated', 'conditional_close', 'cancel'))]}"
                     />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"

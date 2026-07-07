@@ -1023,9 +1023,11 @@ msgstr ""
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__cancel
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__cancel
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -1071,6 +1073,7 @@ msgstr "ยังเก็บรายได้ไม่ครบ"
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__confirmed
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
 msgid "Confirm"
 msgstr "ยืนยัน"
 
@@ -1182,6 +1185,32 @@ msgid "Draft"
 msgstr "ร่าง"
 
 #. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__suspended
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__suspended
+msgid "Suspended"
+msgstr "ชะลอโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__terminated
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__terminated
+msgid "Terminated"
+msgstr "ยุติโครงการ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__conditional_close
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__conditional_close
+msgid "Closed with Conditions"
+msgstr "ปิดโครงการแบบมีเงื่อนไข"
+
+#. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_item__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_line__sequence
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_allocation_template_line__sequence
@@ -1290,8 +1319,18 @@ msgstr "หน่วยงานของหัวหน้าโครงกา
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__government
-msgid "Government"
-msgstr "หน่วยงานรัฐ"
+msgid "Government Agency"
+msgstr "ส่วนราชการ/หน่วยงานของรัฐ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__public_organization
+msgid "Public Organization"
+msgstr "หน่วยงานในกำกับของรัฐ"
+
+#. module: kris_project
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__independent_organization
+msgid "Independent Organization"
+msgstr "องค์กรอิสระ"
 
 #. module: kris_project
 #. odoo-javascript
@@ -1303,10 +1342,13 @@ msgid "Category"
 msgstr "หมวดหมู่"
 
 #. module: kris_project
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__note
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__note
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__note
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#, python-format
 msgid "Note"
 msgstr "หมายเหตุ"
 
@@ -1382,6 +1424,10 @@ msgstr "เลือกแม่แบบ..."
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__current_state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_in_progress__done
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__done
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_search
 msgid "Done"
@@ -1389,8 +1435,8 @@ msgstr "โครงการเสร็จสิ้น"
 
 #. module: kris_project
 #: model:ir.model.fields.selection,name:kris_project.selection__kris_project__client_org_type__private
-msgid "Private"
-msgstr "เอกชน"
+msgid "Private Company"
+msgstr "บริษัทเอกชน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__attachment_ids
@@ -1509,65 +1555,49 @@ msgid "Extra Payee"
 msgstr "ผู้รับค่า Extra"
 
 #. module: kris_project
-#: model:ir.model,name:kris_project.model_kris_project_document_type
-msgid "KRIS Project Document Type"
-msgstr "ประเภทเอกสารโครงการ KRIS"
-
-#. module: kris_project
-#: model:ir.model,name:kris_project.model_kris_project_receipt_wizard_attachment
-msgid "KRIS Project Receipt Wizard Attachment"
-msgstr "เอกสารแนบใบเสร็จโครงการ KRIS"
-
-#. module: kris_project
-#: model:ir.actions.act_window,name:kris_project.action_kris_project_document_type
-#: model:ir.ui.menu,name:kris_project.menu_kris_project_document_type
-#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_document_type_tree
-msgid "Document Types"
-msgstr "ประเภทเอกสาร"
-
-#. module: kris_project
-#: model:ir.model.fields,field_description:kris_project.field_ir_attachment__document_type_id
-#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_attachment__document_type_id
+#: model:ir.actions.act_window,name:kris_project.action_kris_project_state_wizard
+#: model:ir.model,name:kris_project.model_kris_project_state_wizard
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
-#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
-msgid "Document Type"
-msgstr "ประเภทเอกสาร"
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
+msgid "Change Project Status"
+msgstr "ปรับสถานะโครงการ"
 
 #. module: kris_project
-#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_attachment__filename
-#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
-msgid "Filename"
-msgstr "ชื่อไฟล์"
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__new_state_from_in_progress
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_state_wizard__new_state_from_suspended
+msgid "New Status"
+msgstr "สถานะใหม่"
 
 #. module: kris_project
-#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__wizard_attachment_ids
-#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
-msgid "Attachments"
-msgstr "เอกสารแนบ"
+#: model:ir.model.fields.selection,name:kris_project.selection__kris_project_state_wizard__new_state_from_suspended__in_progress
+msgid "Resume"
+msgstr "ดำเนินการต่อ"
 
 #. module: kris_project
-#: model:kris.project.document.type,name:kris_project.document_type_receipt
-msgid "ใบเสร็จรับเงิน"
-msgstr "ใบเสร็จรับเงิน"
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_state_wizard_form
+msgid "Enter the reason for this status change..."
+msgstr "ระบุเหตุผลของการปรับสถานะ..."
 
 #. module: kris_project
-#: model:kris.project.document.type,name:kris_project.document_type_invoice
-msgid "ใบแจ้งหนี้"
-msgstr "ใบแจ้งหนี้"
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "Please select a new status."
+msgstr "กรุณาเลือกสถานะใหม่"
 
 #. module: kris_project
-#: model:kris.project.document.type,name:kris_project.document_type_contract
-msgid "สัญญา"
-msgstr "สัญญา"
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "Please provide a note for this status change."
+msgstr "กรุณาระบุหมายเหตุสำหรับการปรับสถานะนี้"
 
 #. module: kris_project
-#: model:kris.project.document.type,name:kris_project.document_type_report
-msgid "รายงานผลการดำเนินงาน"
-msgstr "รายงานผลการดำเนินงาน"
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "<b>Note:</b> %s"
+msgstr "<b>หมายเหตุ:</b> %s"
 
 #. module: kris_project
-#: model:kris.project.document.type,name:kris_project.document_type_other
-msgid "อื่นๆ"
-msgstr "อื่นๆ"
+#: code:addons/kris_project/wizard/kris_project_state_wizard.py:0
+#, python-format
+msgid "None"
+msgstr "ไม่มี"
