@@ -4,3 +4,7 @@ from . import disbursement_request
 from . import disbursement_request_line
 from . import budget_commitment
 from . import exception_rule
+from . import assignment_rule
+# Imported after disbursement_request so its action_sign/validate/draft/cancel
+# overrides sit on top of the base model in the method resolution order.
+from . import disbursement_request_assignment
