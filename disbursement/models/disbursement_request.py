@@ -74,7 +74,7 @@ class DisbursementRequest(models.Model):
             ("multi", "Multiple Partners"),
         ],
         string="Partner Type",
-        default="single",
+        default="multi",
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -120,6 +120,23 @@ class DisbursementRequest(models.Model):
     ref = fields.Char(
         string="Reference",
         tracking=True,
+        states=READONLY_STATES,
+    )
+
+    payment_type = fields.Selection(
+        selection=[
+            ("direct", "Direct paid"),
+            ("advance", "Advance"),
+            ("prepaid", "Prepaid"),
+        ],
+        string="Payment Type",
+        default="direct",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    note = fields.Text(
+        string="Note",
         states=READONLY_STATES,
     )
 
@@ -311,7 +328,7 @@ class DisbursementRequest(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -437,6 +454,18 @@ class DisbursementRequest(models.Model):
         for line in self:
             line._update_analytic_distribution("sources")
 
+    @api.depends("analytic_distribution")
+    def _compute_analytic_id(self):
+        # Reset every convenience field first so a stored one (here
+        # department_analytic_id, used for the "Group By Department" filter)
+        # does not keep a stale value when its dimension is removed from the
+        # distribution. The shared mixin only assigns dimensions that are
+        # present, so without this reset a stored field would never clear.
+        for rec in self:
+            for field_name in self._analytic_keys.values():
+                rec[field_name] = False
+        return super()._compute_analytic_id()
+
     def _log_budget_commitment_linked(self):
         self.ensure_one()
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
@@ -547,36 +576,7 @@ class DisbursementRequest(models.Model):
         for rec in self:
             if rec.reference and hasattr(rec.reference, "partner_id"):
                 rec.partner_id = rec.reference.partner_id
-                rec.partner_type = "single"
         self._compute_analytic()
-
-    @api.constrains("partner_type", "partner_id")
-    def _check_partner_required(self):
-        for rec in self:
-            if rec.partner_type == "single" and not rec.partner_id:
-                raise ValidationError(
-                    _("Partner is required in single-partner mode.")
-                )
-
-    @api.onchange("partner_type")
-    def _onchange_partner_type(self):
-        if self.partner_type == "single":
-            line_partners = self.line_ids.mapped("partner_id")
-            if len(line_partners) > 1:
-                self.line_ids.update(
-                    {"partner_id": False, "partner_bank_id": False}
-                )
-                return {
-                    "warning": {
-                        "title": _("Warning"),
-                        "message": _(
-                            "Partner fields on lines have been cleared."
-                        ),
-                    }
-                }
-        elif self.partner_type == "multi":
-            self.partner_id = False
-            self.partner_bank_id = False
 
     def _compute_analytic(self):
         """Hook for extension modules to merge analytics from reference document."""

@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col">
                                 หน่วยงาน
-                                <span class="ms-2" t-field="o.department_id" />
+                                <span class="ms-2" t-field="o.owner_id.department_id" />
                             </div>
                         </div>
                         <div class="row">
@@ -60,7 +60,7 @@
                             ผู้ขออนุมัติ
                             <span t-field="o.owner_id" class="fw-bolder text-decoration-underline" />
                             <span class="ms-2">สังกัด</span>
-                            <span t-field="o.department_id" class="fw-bolder text-decoration-underline" />
+                            <span t-field="o.owner_id.department_id" class="fw-bolder text-decoration-underline" />
                         </p>
 
                         <div class="row">
@@ -89,6 +89,11 @@
                                 <span class="fw-bolder text-decoration-underline" t-field="o.date_end" />
                             </div>
                         </div>
+
+                        <!-- Budget Details -->
+                        <div class="my-4" />
+                        <p>รายละเอียดงบประมาณ</p>
+                        <t t-call="agx_approval.report_approval_request_budget" />
 
                         <!-- Expense Lines Table -->
                         <div class="my-4" />
@@ -123,6 +128,9 @@
                                     <tr>
                                         <td colspan="3" class="text-center fw-bolder">
                                             รวมทั้งสิ้น
+                                            <div class="fw-normal">
+                                                (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(grand_total)" />)
+                                            </div>
                                         </td>
                                         <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
                                     </tr>
@@ -174,17 +182,15 @@
                                     <tr>
                                         <td colspan="3" class="text-center fw-bolder">
                                             รวมทั้งสิ้น
+                                            <div class="fw-normal">
+                                                (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(grand_total)" />)
+                                            </div>
                                         </td>
                                         <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand_total)" />
                                     </tr>
                                 </tbody>
                             </table>
                         </t>
-
-                        <!-- Budget Details -->
-                        <div class="my-4" />
-                        <p>รายละเอียดงบประมาณ</p>
-                        <t t-call="agx_approval.report_approval_request_budget" />
                     </div>
                 </t>
             </t>
@@ -228,6 +234,12 @@
                     <td>กองทุน</td>
                     <td>
                         <span t-field="o.fund_analytic_id" />
+                    </td>
+                </tr>
+                <tr class="o_field_budget_commitment_amount">
+                    <td>มูลค่างบประมาณ</td>
+                    <td>
+                        <span t-field="o.budget_commitment_amount" />
                     </td>
                 </tr>
             </tbody>

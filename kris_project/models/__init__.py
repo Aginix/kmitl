@@ -2,7 +2,6 @@ from . import kris_project_type
 from . import kris_project_allocation_template
 from . import kris_project_expense
 from . import kris_project
-from . import kris_project_exception
 from . import exception_rule
 from . import kris_project_installment
 from . import kris_project_installment_allocation
