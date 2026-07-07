@@ -890,6 +890,12 @@ msgid "Update Actual Amount Wizard"
 msgstr "แก้ไขยอดเบิกจริง"
 
 #. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__ready_to_bill
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Ready to Bill"
+msgstr "พร้อมส่งเบิกจริง"
+
+#. module: agx_approval
 #: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard_line
 msgid "Update Actual Amount Wizard Line"
 msgstr ""
