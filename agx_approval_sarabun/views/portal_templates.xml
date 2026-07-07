@@ -47,7 +47,7 @@
                                 <span t-field="req.date"/>
                             </td>
                             <td>
-                                <span t-field="req.department_id"/>
+                                <span t-field="req.owner_id.department_id"/>
                             </td>
                             <td>
                                 <span t-field="req.category_id"/>
@@ -108,7 +108,7 @@
                                         <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(approval_request.owner_id.avatar_128)" alt="Contact"/>
                                     </div>
                                     <div class="col ps-0">
-                                        <span t-field="approval_request.owner_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
+                                        <span t-field="approval_request.owner_id"/>
                                         <a href="#discussion" class="small">
                                             <i class="fa fa-fw fa-comments"/>
                                             <b>Send message</b>
