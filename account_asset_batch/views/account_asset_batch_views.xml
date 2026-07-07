@@ -107,7 +107,7 @@
                         <field name="purchase_id" readonly="1" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
                         <field
                             name="received_from_agency"
-                            attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))]}"
+                            attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))], 'readonly': [('is_editable','=', False)]}"
                         />
                         <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                         <field
