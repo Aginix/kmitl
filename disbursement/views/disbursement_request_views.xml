@@ -76,15 +76,6 @@
                         </h1>
                     </div>
                     <group>
-                        <group id="header_left_group" string="Partner Information">
-                            <field name="partner_type" invisible="1" />
-                            <field name="partner_id" invisible="1" />
-                            <field name="partner_bank_id" invisible="1" />
-                            <field name="company_id" groups="base.group_multi_company" />
-                            <field name="is_company" readonly="1" invisible="1" />
-                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
-                            <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
-                        </group>
                         <group id="header_right_group" string="Disbursement Information">
                             <field name="date" />
                             <field name="payment_type" widget="radio" options="{'horizontal': true}" required="1" />
@@ -96,6 +87,12 @@
                             <field name="reference_model" invisible="1" />
                             <field name="ref" />
                             <field name="note" />
+                            <!-- Recipients live on the request lines (pay-by-name);
+                                 keep the header partner fields hidden. -->
+                            <field name="partner_type" invisible="1" />
+                            <field name="partner_id" invisible="1" />
+                            <field name="partner_bank_id" invisible="1" />
+                            <field name="is_company" invisible="1" />
                         </group>
                         <group id="budget" string="Analytic Dimensions">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
@@ -112,8 +109,11 @@
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group id="other_information" string="Other Information">
+                            <field name="company_id" groups="base.group_multi_company" />
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
+                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
+                            <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
                         </group>
                     </group>
 
