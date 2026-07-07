@@ -29,36 +29,40 @@
             <t t-else="">
                 <div class="o_DiscussTodoView_list flex-grow-1 overflow-auto">
                     <t t-foreach="state.todos" t-as="todo" t-key="todo.id">
+                        <t t-set="deadline" t-value="deadlineInfo(todo)"/>
                         <button class="o_DiscussTodoView_item btn d-flex align-items-start w-100 text-start px-4 py-2 border-0 border-bottom rounded-0"
                             t-on-click="() => this.onTodoClick(todo)"
                             t-att-title="todo.summary"
                         >
-                            <img t-if="todo.icon" t-att-src="todo.icon" class="o_DiscussTodoView_icon me-3" alt=""/>
+                            <img t-if="todo.icon" t-att-src="todo.icon" class="o_DiscussTodoView_icon me-3 mt-1" alt=""/>
                             <i t-else="" class="fa fa-fw fa-check-square-o me-3 mt-1"/>
                             <div class="o_DiscussTodoView_text flex-grow-1">
-                                <small class="text-muted d-flex align-items-center">
-                                    <t t-if="todo.activity_type" t-esc="todo.activity_type" />
-                                    <span t-if="todo.todo_category" class="badge bg-light text-dark border ms-2" t-esc="categoryLabel(todo.todo_category)"/>
-                                </small>
                                 <div class="d-flex align-items-center">
-                                    <span class="fw-medium text-truncate" t-esc="todo.summary"/>
+                                    <small class="text-muted text-truncate flex-grow-1" t-if="todo.activity_type" t-esc="todo.activity_type"/>
+                                    <small t-if="deadline"
+                                        class="o_DiscussTodoView_deadline ms-2 text-nowrap"
+                                        t-att-class="deadline.className"
+                                        t-att-title="deadline.exact"
+                                    >
+                                        <i class="fa fa-fw me-1" t-att-class="deadline.icon"/><t t-esc="deadline.label"/>
+                                    </small>
                                 </div>
+                                <div class="fw-medium text-truncate" t-esc="todo.summary"/>
                                 <small class="text-muted text-truncate d-block">
                                     <span t-if="todo.app" t-esc="todo.app"/>
                                     <t t-if="todo.res_name"> · <t t-esc="todo.res_name"/></t>
-                                    <t t-if="todo.assigned"> · <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/></t>
                                 </small>
                                 <span class="text-sm text-muted fst-italic text-truncate d-block" t-if="todo.note" t-out="todo.note"/>
+                                <small class="o_DiscussTodoView_meta text-muted d-flex align-items-center flex-wrap mt-1">
+                                    <span t-if="todo.assigned" class="me-2 text-truncate">
+                                        <i class="fa fa-user-o me-1"/><t t-esc="todo.assigned"/>
+                                    </span>
+                                    <span t-if="todo.create_date" class="text-truncate" t-att-title="createdTooltip(todo)">
+                                        <i class="fa fa-clock-o me-1"/>created <t t-esc="createdAgo(todo)"/>
+                                        <t t-if="todo.create_uid"> by <t t-esc="todo.create_uid"/></t>
+                                    </span>
+                                </small>
                             </div>
-                            <small t-if="todo.date_deadline"
-                                class="ms-3 text-nowrap"
-                                t-att-class="{
-                                    'text-danger': todo.state === 'overdue',
-                                    'text-warning': todo.state === 'today',
-                                    'text-muted': todo.state === 'planned',
-                                }"
-                                t-esc="todo.date_deadline"
-                            />
                         </button>
                     </t>
                 </div>

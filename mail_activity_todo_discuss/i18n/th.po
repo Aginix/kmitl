@@ -96,6 +96,20 @@ msgstr "ผู้ใช้"
 #. odoo-javascript
 #: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
 #, python-format
+msgid "by"
+msgstr "โดย"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
+msgid "created"
+msgstr "สร้างเมื่อ"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
 msgid "of"
 msgstr "ของ"
 
