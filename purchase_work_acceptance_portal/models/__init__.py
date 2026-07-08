@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import mail_activity
 from . import purchase_order
 from . import work_acceptance
 from . import work_acceptance_committee

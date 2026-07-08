@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 WA_REVIEW_ACT_TYPE_XMLID = (
@@ -10,11 +10,65 @@ WA_REVIEW_ACT_TYPE_XMLID = (
 class WorkAcceptance(models.Model):
     _inherit = 'work.acceptance'
 
+    is_current_user_committee = fields.Boolean(
+        compute="_compute_is_current_user_committee",
+        help="Technical: env.user is one of the committee members on this WA. "
+        "Drives visibility of the portal smart button.",
+    )
+
+    @api.depends("work_acceptance_committee_ids.employee_id.user_id")
+    @api.depends_context("uid")
+    def _compute_is_current_user_committee(self):
+        uid = self.env.uid
+        for wa in self:
+            wa.is_current_user_committee = uid in wa.work_acceptance_committee_ids.mapped(
+                "employee_id.user_id.id"
+            )
+
     def get_portal_link(self):
         self.ensure_one()
         self._portal_ensure_token()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         return f"{base_url}/wa/view/{self.id}?access_token={self.access_token}"
+
+    def action_open_committee_portal(self):
+        """Smart button: open the WA portal page in a new tab, carrying the
+        current user's own ``committee_token`` so accept/reject controls
+        resolve against the right committee row.
+        """
+        self.ensure_one()
+        committee = self.work_acceptance_committee_ids.filtered(
+            lambda c: c.employee_id.user_id == self.env.user
+        )[:1]
+        if not committee:
+            raise UserError(_(
+                "You are not a committee member of this Work Acceptance."
+            ))
+        return {
+            "type": "ir.actions.act_url",
+            "url": "%s&committee_token=%s" % (
+                self.get_portal_link(), committee.access_token,
+            ),
+            "target": "new",
+        }
+
+    def action_open_purchase_portal(self):
+        """Smart button: open the linked PO portal page, gated by the WA's
+        own ``access_token`` re-used as ``wa_token``.
+        """
+        self.ensure_one()
+        if not self.purchase_id:
+            raise UserError(_(
+                "This Work Acceptance has no linked Purchase Order."
+            ))
+        self._portal_ensure_token()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "%s&wa_token=%s" % (
+                self.purchase_id.get_portal_link(), self.access_token,
+            ),
+            "target": "new",
+        }
 
     def _notify_review_requested(self, tier_reviews):
         """Suppress tier validation mail notifications — committee review

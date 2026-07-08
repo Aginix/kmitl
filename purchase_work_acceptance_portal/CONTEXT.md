@@ -17,10 +17,10 @@ The `access_token` on `work.acceptance.committee` (inherited from `portal.mixin`
 _Avoid_: confusing with `wa_token` (the WA's access_token re-used in a PO portal URL).
 
 **WA Portal Link**:
-A URL of the form `/wa/view/<wa_id>?access_token=<wa_token>&committee_token=<committee_token>`. The page committee members open to review a WA — accept/reject buttons are gated on the committee_token. Surfaced on the review Todo as an [Action Link](./docs/adr/0002-portal-links-on-review-todo.md).
+A URL of the form `/wa/view/<wa_id>?access_token=<wa_token>&committee_token=<committee_token>`. The page committee members open to review a WA — accept/reject buttons are gated on the committee_token. Reached from a [smart button](./docs/adr/0003-portal-links-as-smart-buttons.md) on the WA backend form (visible only when the current user is on the committee); the Todo's primary "Open Source" action lands the user on that form.
 
 **PO Portal Link**:
-A URL of the form `/purchase/view/<po_id>?access_token=<po_token>&wa_token=<wa_token>`. The supporting purchase order page the committee member can open from the same review Todo to see what they're accepting against.
+A URL of the form `/purchase/view/<po_id>?access_token=<po_token>&wa_token=<wa_token>`. The supporting purchase order page a viewer of the WA can open to see what is being accepted against. Reached from a [smart button](./docs/adr/0003-portal-links-as-smart-buttons.md) on the WA backend form (visible when the WA has a linked PO).
 
 **Review Todo**:
 A `mail.activity` of type `mail_activity_type_wa_review`, category Approval — one per (committee user, WA). Scheduled when `request_validation()` runs; closed by `activity_feedback` when that committee member sets their `status`; unlinked (no log entry) when the WA returns to draft or the committee member is removed.

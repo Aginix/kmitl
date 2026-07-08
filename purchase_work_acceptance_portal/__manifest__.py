@@ -11,18 +11,13 @@
         'purchase_order_kmitl',
         'portal',
         'mail_activity_todo',
-        'mail_activity_todo_discuss',
     ],
     "data": [
         "data/mail_activity_type_data.xml",
         "views/purchase_order_portal_template.xml",
         "views/work_acceptance_portal_template.xml",
+        "views/work_acceptance_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "purchase_work_acceptance_portal/static/src/xml/discuss_todo_action_links.xml",
-        ],
-    },
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',

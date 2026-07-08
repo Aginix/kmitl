@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_work_acceptance_form_portal_smart_buttons" model="ir.ui.view">
+        <field name="name">work.acceptance.form.portal.smart.buttons</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_committee_portal"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-external-link"
+                        attrs="{'invisible': [('is_current_user_committee', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">ตรวจรับ</span>
+                        <span class="o_stat_text">ใน Portal</span>
+                    </div>
+                </button>
+                <button name="action_open_purchase_portal"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        attrs="{'invisible': [('purchase_id', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">เอกสาร</span>
+                        <span class="o_stat_text">สัญญา (PO)</span>
+                    </div>
+                </button>
+                <field name="is_current_user_committee" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
