@@ -14,9 +14,10 @@ A collapsible "Todos" section in the Discuss sidebar (next to
 Inbox/Starred/History) lists pending Todos grouped by source app with live
 counts. Clicking the header opens the full Todo page in the main content pane;
 clicking an app group opens it filtered to that app. The page lists each Todo
-with its detail (app, source record, activity type, category, assignee, note
-and a colour-coded deadline), each clickable straight to its source document,
-plus a link to the full Todo app. The activity systray routes here too.
+with its detail (app, source record, activity type, assignee, note, who created
+it and when — as a relative time — and a colour-coded deadline countdown), each
+clickable straight to its source document, plus a link to the full Todo app. The
+activity systray routes here too, opening the page filtered to the clicked app.
 """,
     "depends": [
         "mail_activity_todo",

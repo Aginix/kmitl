@@ -76,7 +76,7 @@
         <field name="arch" type="xml">
             <search string="Approval category">
                 <field name="name" />
-                <group string="Group By">
+                <group name="group_by" string="Group By">
                     <filter string="Category Group" name="group_by_group_id" context="{'group_by': 'group_id'}"/>
                 </group>
             </search>

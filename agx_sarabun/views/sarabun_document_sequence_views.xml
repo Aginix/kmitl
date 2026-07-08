@@ -40,7 +40,7 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="Configuration">
+                        <group name="configuration" string="Configuration">
                             <field name="code"/>
                             <field name="prefix" placeholder="e.g., สจล./"/>
                             <field name="suffix"/>
@@ -48,7 +48,7 @@
                             <field name="reset_period"/>
                             <field name="current_year"/>
                         </group>
-                        <group string="Statistics">
+                        <group name="statistics" string="Statistics">
                             <field name="next_number"/>
                             <field name="is_shared"/>
                             <field name="active"/>
@@ -135,20 +135,20 @@
                 </header>
                 <sheet>
                     <group>
-                        <group string="Number Info">
+                        <group name="number_info" string="Number Info">
                             <field name="sequence_id"/>
                             <field name="number"/>
                             <field name="year"/>
                             <field name="formatted_number"/>
                             <field name="state" widget="badge"/>
                         </group>
-                        <group string="Reservation">
+                        <group name="reservation" string="Reservation">
                             <field name="reserved_by_id"/>
                             <field name="reserved_date"/>
                             <field name="note"/>
                         </group>
                     </group>
-                    <group string="Usage" attrs="{'invisible': [('state', '!=', 'used')]}">
+                    <group name="usage" string="Usage" attrs="{'invisible': [('state', '!=', 'used')]}">
                         <field name="document_id"/>
                         <field name="used_date"/>
                     </group>
@@ -173,7 +173,7 @@
                 <separator/>
                 <filter string="Current Year" name="current_year" domain="[('year', '=', context_today().year)]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Sequence" name="group_sequence" context="{'group_by': 'sequence_id'}"/>
                     <filter string="Year" name="group_year" context="{'group_by': 'year'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>

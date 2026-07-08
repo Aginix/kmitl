@@ -223,12 +223,13 @@ msgstr "การแนบ"
 msgid "Attachment Count"
 msgstr ""
 
-#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl, purchase_work_acceptance_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_select_work_acceptance_wizard
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_committee_wizard_form
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -287,6 +288,7 @@ msgid "Config Settings"
 msgstr "ตั้งค่าการกำหนดค่า"
 
 #. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_comment_wizard_wa_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_committee_wizard_form
 msgid "Confirm"
 msgstr "ยืนยัน"
@@ -306,8 +308,9 @@ msgstr "วันที่เสร็จถูกต้องตามสัญ
 msgid "Create Vendor Bill"
 msgstr ""
 
-#. module: purchase_work_acceptance
+#. module: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
 msgid "Create WA"
 msgstr "สร้างใบตรวจรับ"
 
@@ -616,9 +619,18 @@ msgid "Late day(s) from Received Date - Due Date"
 msgstr ""
 
 #. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__comment_wizard__wa_reason__leave
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__note__leave
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__leave
-#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__leave
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__reason__leave
 msgid "Leave"
+msgstr "ลา"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__comment_wizard__wa_reason__on_duty
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__note__on_duty
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__reason__on_duty
+msgid "On Duty"
 msgstr "ติดภารกิจ"
 
 #. module: purchase_work_acceptance_kmitl
@@ -692,7 +704,10 @@ msgid "Not Accept"
 msgstr "ไม่ตรวจรับ"
 
 #. module: purchase_work_acceptance_kmitl
+#. odoo-python
+#: code:addons/purchase_work_acceptance_kmitl/models/tier_validation.py:0
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__note
+#, python-format
 msgid "Note"
 msgstr "หมายเหตุ"
 
@@ -837,6 +852,7 @@ msgid "Quantity"
 msgstr "จำนวน"
 
 #. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_comment_wizard__wa_reason
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__reason
 msgid "Reason"
 msgstr "หมายเหตุ"
@@ -1008,10 +1024,11 @@ msgstr ""
 msgid "Timestamp"
 msgstr "เวลาที่ตรวจ"
 
-#. module: purchase_work_acceptance
+#. module: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__quantity
 msgid "To Accept"
-msgstr ""
+msgstr "ตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__qty_to_accept
@@ -1219,7 +1236,7 @@ msgstr ""
 msgid "Wizard"
 msgstr ""
 
-#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl, purchase_work_acceptance_invoice_plan
 #: model:ir.actions.act_window,name:purchase_work_acceptance.action_work_acceptance
 #: model:ir.model,name:purchase_work_acceptance_kmitl.model_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__wa_id
@@ -1228,6 +1245,7 @@ msgstr ""
 #: model:ir.ui.menu,name:purchase_work_acceptance.menu_work_acceptance
 #: model:ir.ui.menu,name:purchase_work_acceptance_kmitl.menu_purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.res_config_settings_view_form_purchase
+#: model:ir.actions.act_window,name:purchase_work_acceptance_invoice_plan.action_view_wa_installment
 msgid "Work Acceptance"
 msgstr "การตรวจรับ"
 
@@ -1615,3 +1633,54 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.purchase_order_form_inherit
 msgid "Create WA by Installment"
 msgstr "สร้างใบตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_uom
+msgid "Product Unit of Measure"
+msgstr "หน่วยนับ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__installment_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_work_acceptance__installment_id
+msgid "Invoice Plan"
+msgstr "งวดงาน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__apply_method_id
+msgid "Base On"
+msgstr "อ้างอิงตาม"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_all_product_line
+msgid "All product lines"
+msgstr "ทุกรายการสินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_matched_amount
+msgid "Product line with matched amount"
+msgstr "เฉพาะรายการสินค้าที่มียอดตรงกัน"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_line_ids
+msgid "Product Filter"
+msgstr "ตัวกรองสินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Leave blank to apply to all purchase lines"
+msgstr "หากไม่ระบุ จะมีผลกับทุกรายการในใบสั่งซื้อ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__order_line_id
+msgid "Product Line"
+msgstr "รายการ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__qty_not_accepted
+msgid "Not Accepted"
+msgstr "จำนวนที่เหลือ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__amount
+msgid "Amount"
+msgstr "มูลค่า"

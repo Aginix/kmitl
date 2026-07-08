@@ -188,7 +188,7 @@ msgstr ""
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.view_comment_wizard
 msgid "Cancel"
-msgstr ""
+msgstr "ยกเลิก"
 
 #. module: base_tier_validation
 #. odoo-javascript
