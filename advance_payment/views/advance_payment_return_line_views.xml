@@ -59,18 +59,18 @@
                 </header>
                 <sheet>
                     <group>
-                        <group string="รายละเอียด">
+                        <group name="details" string="รายละเอียด">
                             <field name="agreement_id"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="date"/>
                         </group>
-                        <group string="การชำระเงิน">
+                        <group name="payment_info" string="การชำระเงิน">
                             <field name="payment_id"
                                 attrs="{'invisible': [('payment_id', '=', False)]}"/>
                             <field name="amount"/>
                         </group>
                     </group>
-                    <group string="หมายเหตุ">
+                    <group name="note" string="หมายเหตุ">
                         <field name="note" colspan="2" nolabel="1"/>
                     </group>
                     <notebook>

@@ -156,7 +156,7 @@
                                     <field name="amount_net" sum="รวม" />
                                 </tree>
                             </field>
-                            <group class="oe_subtotal_footer oe_right" string="สรุปตามประเภทงบ">
+                            <group class="oe_subtotal_footer oe_right" name="summary_by_budget_type" string="สรุปตามประเภทงบ">
                               <field name="reserve_fund_amount" />
                               <field name="personnel_expense_amount" />
                               <field name="operating_expense_amount" />
@@ -186,7 +186,7 @@
                                 </group>
                             </group>
 
-                            <group string="ด้านการศึกษา (Education)">
+                            <group name="education" string="ด้านการศึกษา (Education)">
                                 <field name="education_impact_line_ids" nolabel="1" colspan="2"
                                         context="{'default_impact_type': 'education'}">
                                     <tree editable="bottom">
@@ -197,7 +197,7 @@
                                     </tree>
                                 </field>
                             </group>
-                            <group string="ด้านการวิจัย (Academic)">
+                            <group name="academic" string="ด้านการวิจัย (Academic)">
                                 <field name="academic_impact_line_ids" nolabel="1" colspan="2"
                                         context="{'default_impact_type': 'academic'}">
                                     <tree editable="bottom">
@@ -208,7 +208,7 @@
                                     </tree>
                                 </field>
                             </group>
-                            <group string="ด้านอุตสาหกรรม (Industrial)">
+                            <group name="industrial" string="ด้านอุตสาหกรรม (Industrial)">
                                 <field name="industrial_impact_line_ids" nolabel="1" colspan="2"
                                         context="{'default_impact_type': 'industrial'}">
                                     <tree editable="bottom">
@@ -219,7 +219,7 @@
                                     </tree>
                                 </field>
                             </group>
-                            <group string="ด้านสังคม (Social)">
+                            <group name="social" string="ด้านสังคม (Social)">
                                 <field name="social_impact_line_ids" nolabel="1" colspan="2"
                                         context="{'default_impact_type': 'social'}">
                                     <tree editable="bottom">
@@ -418,7 +418,7 @@
                     domain="[('state', '=', 'confirmed')]"
                 />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         string="แหล่งเงิน"
                         name="group_by_source"

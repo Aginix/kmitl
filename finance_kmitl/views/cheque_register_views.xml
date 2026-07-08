@@ -50,7 +50,7 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="Cheque Information">
+                        <group name="cheque_information" string="Cheque Information">
                             <field name="direction" widget="radio" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="cheque_number" attrs="{'required': [('state', '!=', 'draft')], 'readonly': [('state', 'in', ('cleared', 'cancelled'))]}" />
                             <field name="cheque_date" />
@@ -59,20 +59,20 @@
                             <field name="crossed" attrs="{'invisible': [('direction', '!=', 'outbound')]}" />
                             <field name="strike_bearer" attrs="{'invisible': [('direction', '!=', 'outbound')]}" />
                         </group>
-                        <group string="Payment Information">
+                        <group name="payment_information" string="Payment Information">
                             <field name="partner_id" />
                             <field name="amount" />
                             <field name="currency_id" invisible="1" />
                             <field name="ref" />
                             <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}" />
                         </group>
-                        <group string="Dates &amp; Status">
+                        <group name="dates_and_status" string="Dates &amp; Status">
                             <field name="handover_date" />
                             <field name="deposit_date" attrs="{'invisible': [('direction', '!=', 'inbound')]}" />
                             <field name="clearing_date" />
                         </group>
                     </group>
-                    <group string="Notes">
+                    <group name="notes" string="Notes">
                         <field name="note" nolabel="1" placeholder="Remarks..." />
                     </group>
                 </sheet>
@@ -101,7 +101,7 @@
                 <separator />
                 <filter name="issued" string="Issued" domain="[('direction', '=', 'outbound')]" />
                 <filter name="received" string="Received" domain="[('direction', '=', 'inbound')]" />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}" />
                     <filter name="group_journal" string="Bank/Cheque Book" context="{'group_by': 'journal_id'}" />
                     <filter name="group_direction" string="Direction" context="{'group_by': 'direction'}" />

@@ -8,7 +8,7 @@
         <field name="inherit_id" ref="budget.view_budget_account_form" />
         <field name="arch" type="xml">
             <xpath expr="//group" position="inside">
-                <group string="หักโอน (รายรับ)" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
+                <group name="revenue_deduction" string="หักโอน (รายรับ)" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
                     <field name="deduct"  />
                     <field name="default_deduct_analytic_id" attrs="{'invisible': [('deduct', '!=', True)]}" />
                 </group>

@@ -104,7 +104,7 @@
                         </group>
                     </group>
 
-                    <group string="Document Information">
+                    <group name="document_information" string="Document Information">
                         <!-- Sender Department (ต้นทาง) -->
                         <label for="sender_department_id" string="From (ต้นทาง)"/>
                         <div class="o_row">
@@ -174,7 +174,7 @@
 
                         <page string="References" name="references">
                             <span />
-                            <group string="Referenced Documents">
+                            <group name="referenced_documents" string="Referenced Documents">
                                 <field name="referenced_document_ids" colspan="2" nolabel="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
                                     <tree>
                                         <field name="name"/>
@@ -184,7 +184,7 @@
                                     </tree>
                                 </field>
                             </group>
-                            <group string="Other References">
+                            <group name="other_references" string="Other References">
                                 <field name="reference_ids" colspan="2" nolabel="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
                                     <tree editable="bottom">
                                         <field name="res_model"/>
@@ -256,7 +256,7 @@
                 <separator/>
                 <filter string="Urgent" name="urgent" domain="[('urgency', 'in', ['urgent', 'very_urgent', 'immediate'])]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Document Type" name="group_type" context="{'group_by': 'document_type_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Sender Department" name="group_sender" context="{'group_by': 'sender_department_id'}"/>
