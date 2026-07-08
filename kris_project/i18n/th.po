@@ -975,7 +975,7 @@ msgstr "มูลค่าครุภัณฑ์ในงวด"
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__project_value
 msgid "Project Value"
-msgstr "มูลค่างาน"
+msgstr "มูลค่างานทั้งหมด"
 
 #. module: kris_project
 #: model:exception.rule,description:kris_project.kris_excep_no_project_value
