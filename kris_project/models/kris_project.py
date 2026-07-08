@@ -560,10 +560,17 @@ class KrisProject(models.Model):
         self.write({"state": "cancel", "ignore_exception": False})
 
     def action_draft(self):
+        allowed = (
+            "cancel",
+            "in_progress",
+            "done",
+            "terminated",
+            "conditional_close",
+        )
         for rec in self:
-            if rec.state not in ("cancel", "in_progress"):
+            if rec.state not in allowed:
                 raise UserError(
-                    _("Only cancelled or in-progress projects can be reset to draft.")
+                    _("This project cannot be reset to draft from its current state.")
                 )
         self.write({
             "state": "draft",
