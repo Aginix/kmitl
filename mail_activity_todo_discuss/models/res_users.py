@@ -67,6 +67,14 @@ class ResUsers(models.Model):
                     else False
                 ),
                 "state": act.state,
+                # Serialized UTC datetime; the client renders it as a locale-aware
+                # relative time ("3 hours ago") and formats the tooltip.
+                "create_date": (
+                    fields.Datetime.to_string(act.create_date)
+                    if act.create_date
+                    else False
+                ),
+                "create_uid": act.create_uid.display_name or "",
             }
             for act in activities
         ]

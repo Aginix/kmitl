@@ -84,18 +84,3 @@ class KrisProjectAllocationLine(models.Model):
         for line in self:
             line.actual_amount = sum(line.receipt_allocation_ids.mapped("amount"))
 
-    @api.constrains("estimated_amount")
-    def _check_estimated_amount_sum(self):
-        for line in self:
-            base = line.project_id.maintenance_deduction_amount
-            if not base:
-                continue
-            total = sum(line.project_id.allocation_line_ids.mapped("estimated_amount"))
-            if total > base + 1e-9:
-                raise ValidationError(
-                    _(
-                        "ผลรวมประมาณการจัดสรรต้องไม่เกินมูลค่าหักค่าบำรุง (%.2f บาท)"
-                    )
-                    % base
-                )
-

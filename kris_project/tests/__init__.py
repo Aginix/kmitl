@@ -1,4 +1,5 @@
 from . import common
+from . import test_action_draft
 from . import test_copy
 from . import test_kris_project_compute
 from . import test_kris_project_dashboard
