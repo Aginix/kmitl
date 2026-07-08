@@ -30,11 +30,11 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="Basic">
+                        <group name="basic" string="Basic">
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>
-                        <group string="Description">
+                        <group name="description" string="Description">
                             <field name="description" placeholder="Description..." nolabel="1"/>
                         </group>
                     </group>
@@ -53,12 +53,12 @@
                         </page>
                         <page string="Scope &amp; Conditions" name="scope">
                             <group>
-                                <group string="Scope">
+                                <group name="scope" string="Scope">
                                     <field name="department_id" options="{'no_create': True}"/>
                                     <field name="document_type_id" options="{'no_create': True}"/>
                                     <field name="origin_model"/>
                                 </group>
-                                <group string="Condition">
+                                <group name="condition" string="Condition">
                                     <field name="condition_domain" placeholder="[('amount_total', '>=', 100000)]"/>
                                 </group>
                             </group>

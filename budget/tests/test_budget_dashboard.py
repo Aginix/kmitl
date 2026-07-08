@@ -396,3 +396,29 @@ class TestBudgetDashboard(TransactionCase):
         child = {r["id"]: r for r in data["rows"]}[self.child.id]
         self.assertEqual(child["cap"], 30_000)  # only Fund A commitment
         self.assertEqual(child["used"], 30_000)  # only Fund A reserve
+
+    def test_returned_column_releases_reserved(self):
+        """(g) ส่งคืนเงินเหลือจ่าย = Σ คืนจอง; b/e drop, f rises, and it rolls up."""
+        self._post_appropriation(self.child, 100_000, "initial")
+        commitment = self._reserve(self.child, 60_000)
+        self._add_line(commitment, "obligate", 50_000)
+        self._add_line(commitment, "consume", 50_000)
+        # Return the 10k leftover (คืนจอง): a negative reserve line, is_return.
+        self.env["budget.commitment.line"].create(
+            {
+                "commitment_id": commitment.id,
+                "move_type": "reserve",
+                "is_return": True,
+                "account_id": commitment.account_id.id,
+                "amount": -10_000,
+                "name": "ส่งคืนเงินเหลือจ่าย",
+            }
+        )
+        rows = self._rows()
+        child = rows[self.child.id]
+        self.assertEqual(child["returned"], 10_000)  # g, shown positive
+        self.assertEqual(child["reserved"], 0)  # b = 50 net reserve - 50 obligate
+        self.assertEqual(child["used"], 50_000)  # e = net reserve
+        self.assertEqual(child["remaining"], 50_000)  # f = 100 - 50
+        parent = rows[self.parent.id]
+        self.assertEqual(parent["returned"], 10_000)  # rolls up the tree

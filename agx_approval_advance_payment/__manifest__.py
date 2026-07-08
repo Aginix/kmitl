@@ -1,6 +1,6 @@
 {
     "name": "Approval - Advance Payment Bridge",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "KMITL",
     "category": "KMITL",
     "depends": [

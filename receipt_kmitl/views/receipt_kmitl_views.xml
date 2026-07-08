@@ -58,14 +58,14 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="Header">
+                        <group name="header" string="Header">
                             <field name="date"/>
                             <field name="department_id"
                                    options="{'no_create': True}"/>
                             <field name="payment_method_id"/>
                             <field name="user_id"/>
                         </group>
-                        <group string="Customer">
+                        <group name="customer" string="Customer">
                             <field name="partner_id"/>
                             <field name="customer_name"/>
                             <field name="customer_tax_id"/>
@@ -138,7 +138,7 @@
                 <separator/>
                 <filter string="Pending Deposit" name="pending_deposit"
                         domain="[('state','=','confirmed'),('deposit_id','=',False)]"/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Department" name="group_department" context="{'group_by':'department_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Date" name="group_date" context="{'group_by':'date'}"/>

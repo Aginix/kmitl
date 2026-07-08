@@ -461,6 +461,51 @@ class BudgetCommitment(models.Model):
             },
         }
 
+    def action_return_leftover(self):
+        """Open the confirmation wizard to return leftover reserved budget (คืนจอง).
+
+        The leftover = ``available_to_obligate`` (reserved − obligated, which
+        equals reserved − consumed because the KMITL flows post obligate and
+        consume together). Confirming posts a single negative ``reserve`` line
+        (``is_return=True``) that releases the unspent earmark back to the pool
+        without cancelling the commitment (see CONTEXT.md / ADR-0009).
+        Reserved/in-progress only.
+        """
+        self.ensure_one()
+        if self.state not in ("reserved", "partial"):
+            raise UserError(
+                _(
+                    "Can only return leftover budget on a reserved or "
+                    "in-progress commitment."
+                )
+            )
+        return self._action_return_leftover_wizard()
+
+    def _action_return_leftover_wizard(self, res_model=False, res_id=False):
+        """Build the act_window that opens the return-leftover (คืนจอง) wizard.
+
+        Shared by the commitment button and the disbursement-request shortcut so
+        the wizard model, the label and the "no leftover" guard live in one
+        place. ``res_model``/``res_id`` stamp the initiating document on the
+        posted return line for drill-down traceability.
+        """
+        self.ensure_one()
+        if self.available_to_obligate <= 0:
+            raise UserError(_("No leftover reserved budget to return."))
+        context = {"default_commitment_id": self.id}
+        if res_model:
+            context["default_res_model"] = res_model
+        if res_id:
+            context["default_res_id"] = res_id
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ส่งคืนเงินเหลือจ่าย"),
+            "res_model": "budget.commitment.return.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+
     def action_view_budget_moves(self):
         """View related budget moves"""
         self.ensure_one()

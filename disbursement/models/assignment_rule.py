@@ -98,12 +98,14 @@ class DisbursementAssignmentRule(models.Model):
                 if i
             ]
             domain.append((field, "in", ancestors + [False]))
-        # Only single-partner requests carry a partner type; multi-partner
-        # requests (blank header partner) match partner-type-agnostic rules
-        # only -- guessing from line partners is magic an admin can't predict.
-        ptype = request.partner_type == "single" and request.partner_id.partner_type_id
+        # Every request pays a name list, so there is no single header partner
+        # to key on. Match partner-type rules only when all line partners share
+        # one partner type; otherwise fall back to the partner-type-agnostic
+        # (wildcard) rules to avoid unpredictable routing.
+        line_ptypes = request.line_ids.mapped("partner_id.partner_type_id")
+        ptype = line_ptypes if len(line_ptypes) == 1 else line_ptypes.browse()
         domain.append(
-            ("partner_type_id", "in", ([ptype.id] if ptype else []) + [False])
+            ("partner_type_id", "in", ptype.ids + [False])
         )
         return self.search(domain, limit=1)
 
