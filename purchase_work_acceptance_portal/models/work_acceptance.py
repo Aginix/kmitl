@@ -27,7 +27,9 @@ class WorkAcceptance(models.Model):
 
     def get_portal_link(self):
         self.ensure_one()
-        self._portal_ensure_token()
+        # Token generation writes access_token; a committee user may hold
+        # read but not write on the WA, so escalate just this call.
+        self.sudo()._portal_ensure_token()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         return f"{base_url}/wa/view/{self.id}?access_token={self.access_token}"
 
@@ -44,10 +46,14 @@ class WorkAcceptance(models.Model):
             raise UserError(_(
                 "You are not a committee member of this Work Acceptance."
             ))
+        # sudo: ensure_token writes the committee's access_token, and a
+        # committee user typically lacks write access on the committee row.
+        committee_sudo = committee.sudo()
+        committee_sudo._portal_ensure_token()
         return {
             "type": "ir.actions.act_url",
             "url": "%s&committee_token=%s" % (
-                self.get_portal_link(), committee.access_token,
+                self.get_portal_link(), committee_sudo.access_token,
             ),
             "target": "new",
         }
@@ -57,15 +63,20 @@ class WorkAcceptance(models.Model):
         own ``access_token`` re-used as ``wa_token``.
         """
         self.ensure_one()
-        if not self.purchase_id:
+        # A committee member may lack backend access to the linked PO
+        # under an operating-unit rule — the portal URL is precisely the
+        # token-gated path around that. Sudo the PO read + token gen.
+        wa_sudo = self.sudo()
+        po = wa_sudo.purchase_id
+        if not po:
             raise UserError(_(
                 "This Work Acceptance has no linked Purchase Order."
             ))
-        self._portal_ensure_token()
+        wa_sudo._portal_ensure_token()
         return {
             "type": "ir.actions.act_url",
             "url": "%s&wa_token=%s" % (
-                self.purchase_id.get_portal_link(), self.access_token,
+                po.get_portal_link(), wa_sudo.access_token,
             ),
             "target": "new",
         }

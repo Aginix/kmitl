@@ -72,5 +72,10 @@ the WA can open it.
   no indexes. It re-evaluates whenever the form renders because it depends
   on `uid` context, so it stays correct across users without a compute-on-
   read pitfall.
-- `env.user` on committee membership check follows normal record access
-  rules; no `sudo()` needed.
+- **Sudo is required for token generation and cross-OU PO reads.**
+  `_portal_ensure_token()` writes `access_token`; committee users hold
+  read on the WA and committee row but usually not write. The linked PO
+  is also frequently behind an operating-unit rule the committee is not
+  in. Both smart buttons `sudo()` the affected records only where they
+  must — the URL itself is portal-gated by tokens, so no privileged data
+  leaves the server.
