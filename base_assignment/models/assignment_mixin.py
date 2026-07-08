@@ -33,7 +33,17 @@ class AssignmentMixin(models.AbstractModel):
 
     _name = "assignment.mixin"
     _description = "Assigned Officer (mixin)"
-    _inherit = "mail.thread"  # activity_schedule / activity_ids
+    # Deliberately NOT inheriting mail.thread / mail.activity.mixin here:
+    # consumers already inherit them (they need chatter + activities for their
+    # own reasons), and adding them again would force a linear MRO across
+    # every consumer's chain (portal.mixin, base.exception, budget.commitment.mixin,
+    # …) that Python cannot always resolve — for instance disbursement.request:
+    #   TypeError: Cannot create a consistent method resolution order (MRO)
+    #   for bases mail.thread, mail.activity.mixin, portal.mixin,
+    #   budget.commitment.mixin, base.exception, assignment.mixin
+    # This mixin uses ``activity_schedule`` / ``activity_ids`` on the *consumer*
+    # instance, which are always present because a document worth assigning
+    # already has a chatter.
 
     # Class-attribute hooks (required per consumer)
     _assign_user_group = None  # xmlid of the officer group
