@@ -8,6 +8,12 @@
             ref="agx_approval.approval_request_view_form"
         />
         <field name="arch" type="xml">
+            <xpath expr="//header" position="after">
+                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
+                    attrs="{'invisible': [('state', '!=', 'returned')]}">
+                    <p><strong>Returned:</strong> This request was returned from its disbursement. Correct the payee bank, description or disbursement evidence, then click Confirm Correction.</p>
+                </div>
+            </xpath>
             <xpath expr="//header/button[@name='action_to_verify']" position="after">
                 <field name="has_active_disbursement" invisible="1" />
                 <button
@@ -27,6 +33,19 @@
                     attrs="{'invisible': ['|', ('state', '!=', 'ready_to_bill'), ('has_active_disbursement', '=', True)]}"
                 />
             </xpath>
+            <xpath expr="//header/button[@name='action_cancel']" position="after">
+                <button
+                    name="action_confirm_correction"
+                    string="Confirm Correction"
+                    type="object"
+                    class="oe_highlight"
+                    groups="agx_approval.group_approval_user"
+                    attrs="{'invisible': [('state', '!=', 'returned')]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='payee_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
+            </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
                     name="action_view_disbursement_request"
@@ -44,10 +63,10 @@
             </xpath>
             <xpath expr="//group[@name='attachment']" position="after">
                 <group name="attachment_for_disbursement" string="Attachment for Disbursement"
-                    attrs="{'invisible': [('state', 'not in', ['approved', 'ready_to_bill', 'billed'])]}">
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'ready_to_bill', 'billed', 'returned'])]}">
                     <field name="disbursement_attachment_ids"
                         widget="many2many_binary"
-                        attrs="{'readonly': [('disbursement_request_count', '>', 0)]}">
+                        attrs="{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('state', '!=', 'returned')]}">
                     </field>
                 </group>
             </xpath>
