@@ -85,7 +85,7 @@
             <field name="client_location">นนทบุรี</field>
             <field name="client_tax_number">0105565012345</field>
             <field name="client_org_type">private</field>
-            <field name="contract_number">สญ.67-004</field>
+            <field name="project_code">สญ.67-004</field>
             <field name="date_contract_start">2024-10-01</field>
             <field name="date_contract_end">2025-03-31</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
@@ -103,7 +103,7 @@
             <field name="client_name">สำนักงานส่งเสริมเศรษฐกิจดิจิทัล (DEPA)</field>
             <field name="client_org_type">state_enterprise</field>
             <field name="project_value">1500000.0</field>
-            <field name="contract_number">สญ.67-005</field>
+            <field name="project_code">สญ.67-005</field>
             <field name="date_contract_start">2024-11-01</field>
             <field name="date_contract_end">2025-10-31</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
@@ -125,7 +125,7 @@
             <field name="client_location">กรุงเทพมหานคร</field>
             <field name="client_org_type">government</field>
             <field name="project_value">1000000.0</field>
-            <field name="contract_number">สญ.67-006</field>
+            <field name="project_code">สญ.67-006</field>
             <field name="date_contract_start">2024-10-01</field>
             <field name="date_contract_end">2025-09-30</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
@@ -261,7 +261,7 @@
             <field name="client_location">กรุงเทพมหานคร</field>
             <field name="client_org_type">government</field>
             <field name="project_value">500000.0</field>
-            <field name="contract_number">สญ.67-007</field>
+            <field name="project_code">สญ.67-007</field>
             <field name="date_contract_start">2025-01-01</field>
             <field name="date_contract_end">2025-06-30</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
@@ -423,7 +423,7 @@
             <field name="client_tax_number">0105565098765</field>
             <field name="client_org_type">private</field>
             <field name="project_value">2000000.0</field>
-            <field name="contract_number">สญ.66-008</field>
+            <field name="project_code">สญ.66-008</field>
             <field name="date_contract_start">2023-10-01</field>
             <field name="date_contract_end">2024-09-30</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
@@ -638,7 +638,7 @@
             <field name="client_name">สำนักงาน ก.พ.</field>
             <field name="client_org_type">government</field>
             <field name="project_value">300000.0</field>
-            <field name="contract_number">สญ.66-009</field>
+            <field name="project_code">สญ.66-009</field>
             <field name="date_contract_start">2023-11-01</field>
             <field name="date_contract_end">2024-01-31</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03"/>
@@ -699,7 +699,7 @@
             <field name="client_location">กรุงเทพมหานคร</field>
             <field name="client_org_type">government</field>
             <field name="project_value">1500000.0</field>
-            <field name="contract_number">สญ.67-013</field>
+            <field name="project_code">สญ.67-013</field>
             <field name="date_contract_start">2024-12-01</field>
             <field name="date_contract_end">2025-11-30</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
@@ -834,7 +834,7 @@
             <field name="client_location">ชลบุรี</field>
             <field name="client_org_type">private</field>
             <field name="project_value">800000.0</field>
-            <field name="contract_number">สญ.67-014</field>
+            <field name="project_code">สญ.67-014</field>
             <field name="date_contract_start">2025-02-01</field>
             <field name="date_contract_end">2025-08-31</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
@@ -899,7 +899,7 @@
             <field name="client_location">กรุงเทพมหานคร</field>
             <field name="client_org_type">government</field>
             <field name="project_value">600000.0</field>
-            <field name="contract_number">สญ.66-015</field>
+            <field name="project_code">สญ.66-015</field>
             <field name="date_contract_start">2023-12-01</field>
             <field name="date_contract_end">2024-05-31</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03"/>
@@ -1004,7 +1004,7 @@
             <field name="client_location">กรุงเทพมหานคร</field>
             <field name="client_org_type">government</field>
             <field name="project_value">3000000.0</field>
-            <field name="contract_number">สญ.66-016</field>
+            <field name="project_code">สญ.66-016</field>
             <field name="date_contract_start">2023-10-01</field>
             <field name="date_contract_end">2024-09-30</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05"/>
@@ -1166,7 +1166,8 @@
             <field name="client_location">ปทุมธานี</field>
             <field name="client_org_type">private</field>
             <field name="project_value">1000000.0</field>
-            <field name="contract_number">สญ.67-017</field>
+            <field name="equipment_cost">200000.0</field>
+            <field name="project_code">สญ.67-017</field>
             <field name="date_contract_start">2024-11-15</field>
             <field name="date_contract_end">2025-11-14</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
@@ -1304,7 +1305,7 @@
             <field name="client_tax_number">0994000165676</field>
             <field name="client_org_type">state_enterprise</field>
             <field name="project_value">1200000.0</field>
-            <field name="contract_number">สญ.67-018</field>
+            <field name="project_code">สญ.67-018</field>
             <field name="date_contract_start">2025-03-01</field>
             <field name="date_contract_end">2026-02-28</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
@@ -1345,7 +1346,7 @@
             <field name="client_tax_number">0215564003421</field>
             <field name="client_org_type">private</field>
             <field name="project_value">1200000.0</field>
-            <field name="contract_number">สญ.66-020</field>
+            <field name="project_code">สญ.66-020</field>
             <field name="date_contract_start">2023-09-01</field>
             <field name="date_contract_end">2024-08-31</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>

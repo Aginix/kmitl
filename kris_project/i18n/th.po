@@ -670,8 +670,18 @@ msgstr "ข้อมูลงวด"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
-msgid "Contract Information"
-msgstr "ข้อมูลสัญญา"
+msgid "Contract Information (Institute - Employer)"
+msgstr "ข้อมูลสัญญา (สถาบัน - ผู้ว่าจ้าง)"
+
+#. module: kris_project
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+msgid "Contract/MOU Information (KRIS - Project Manager)"
+msgstr "ข้อมูลสัญญา/บันทึกข้อตกลง (KRIS - หัวหน้าโครงการ)"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__kris_contract_date
+msgid "Contract/MOU Date"
+msgstr "วันที่จัดทำสัญญา/บันทึกข้อตกลง"
 
 #. module: kris_project
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
@@ -1400,8 +1410,13 @@ msgstr "เพิ่มรายรับ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__contract_number
-msgid "Contract Number"
-msgstr "เลขที่สัญญา"
+msgid "Employer Contract Number"
+msgstr "เลขที่สัญญาผู้ว่าจ้าง"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_kris_project__project_code
+msgid "Project Code"
+msgstr "รหัสโครงการ"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__name
