@@ -67,8 +67,10 @@ class KrisProject(models.Model):
 
     @api.depends("cash_target", "equipment_cost")
     def _compute_operating_expense(self):
+        super()._compute_operating_expense()
         for rec in self:
-            rec.operating_expense = rec.cash_target - rec.equipment_cost
+            if rec.is_research_category:
+                rec.operating_expense = rec.cash_target - rec.equipment_cost
 
     @api.depends(
         "installment_ids.received_from_employer",
@@ -78,14 +80,12 @@ class KrisProject(models.Model):
         "cash_target",
     )
     def _compute_totals(self):
+        super()._compute_totals()
         for rec in self:
-            rec.total_installment_amount = sum(rec.installment_ids.mapped("received_from_employer"))
-            rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
-            rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
-            rec.total_extra_received = sum(rec.receipt_ids.mapped("extra_income"))
-            diff = rec.cash_target - rec.total_received_amount
-            rec.revenue_remaining = max(0.0, diff)
-            rec.over_revenue = max(0.0, -diff)
+            if rec.is_research_category:
+                diff = rec.cash_target - rec.total_received_amount
+                rec.revenue_remaining = max(0.0, diff)
+                rec.over_revenue = max(0.0, -diff)
 
     @api.depends(
         "maintenance_deduction_amount",
@@ -101,57 +101,22 @@ class KrisProject(models.Model):
         "receipt_ids",
     )
     def _compute_warnings(self):
+        super()._compute_warnings()
         prec = self.env["decimal.precision"].precision_get("Account")
         for rec in self:
-            rec.warn_cancel_with_receipts = bool(rec.receipt_ids) and rec.state in (
-                "draft",
-                "in_progress",
-            )
-            rec.warn_maintenance_exceeds_expense = (
-                float_compare(
-                    rec.maintenance_deduction_amount,
-                    rec.operating_expense,
-                    precision_digits=prec,
-                )
-                > 0
-            )
-            alloc_total = sum(rec.allocation_line_ids.mapped("estimated_amount"))
-            rec.warn_allocation_mismatch = (
-                bool(rec.allocation_line_ids)
-                and float_compare(
-                    alloc_total, rec.maintenance_deduction_amount, precision_digits=prec
-                )
-                != 0
-            )
-            if rec.installment_ids:
-                maint_total = sum(rec.installment_ids.mapped("maintenance_fee"))
-                rec.warn_installment_maintenance_mismatch = (
-                    not rec.no_installment_tracking
-                    and float_compare(
-                        maint_total,
-                        rec.maintenance_deduction_amount,
-                        precision_digits=prec,
-                    )
-                    != 0
-                )
+            if (
+                rec.is_research_category
+                and rec.installment_ids
+                and not rec.no_installment_tracking
+            ):
                 rec.warn_installment_total_mismatch = (
-                    not rec.no_installment_tracking
-                    and float_compare(
+                    float_compare(
                         rec.total_installment_amount,
                         rec.cash_target,
                         precision_digits=prec,
                     )
                     != 0
                 )
-                extra_total = sum(rec.installment_ids.mapped("extra_income"))
-                rec.warn_extra_overshoot = (
-                    float_compare(extra_total, rec.extra_value, precision_digits=prec)
-                    > 0
-                )
-            else:
-                rec.warn_installment_maintenance_mismatch = False
-                rec.warn_installment_total_mismatch = False
-                rec.warn_extra_overshoot = False
 
     @api.onchange("project_category_id")
     def _onchange_project_category_id_research_switch(self):
