@@ -56,7 +56,7 @@
                     string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                     class="btn btn-primary mb-2" icon="fa-sitemap"
                     attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
-                <group string="Budget Details">
+                <group name="budget_details" string="Budget Details">
                     <field name="is_budget_editable" invisible="1" />
                     <field name="analytic_distribution" invisible="1" />
 

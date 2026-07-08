@@ -68,7 +68,7 @@
                         ('line_date', '&lt;=', (context_today() + relativedelta(month=12, day=31)).strftime('%Y-%m-%d')),
                     ]"
                 />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         name="group_profile"
                         string="Asset Profile"
