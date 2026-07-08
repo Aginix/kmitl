@@ -169,6 +169,13 @@ class GeneralJournalReportKmitl(models.AbstractModel):
             "accounting_kmitl_reports.action_report_general_journal_kmitl_xlsx",
         )
 
+    @api.model
+    def action_export_csv(self, options):
+        return self._kmitl_report_action(
+            options,
+            "accounting_kmitl_reports.action_report_general_journal_kmitl_csv",
+        )
+
     # ------------------------------------------------------------------
     # QWeb PDF rendering — reuse the shared compute (with lines).
     # ------------------------------------------------------------------
@@ -297,3 +304,49 @@ class GeneralJournalXlsxKmitl(models.AbstractModel):
         sheet.set_column(4, 4, 32)
         sheet.set_column(5, 5, 30)
         sheet.set_column(6, 7, 15)
+
+
+class GeneralJournalCsvKmitl(models.AbstractModel):
+    """CSV export of the general journal — one flat row per posting line, with
+    the entry context (date-time / number / journal / reference / partner)
+    repeated on every row, so the file is ready for pivot/analysis. Shares the
+    compute with the screen / PDF / XLSX."""
+
+    _name = "report.accounting_kmitl_reports.general_journal_csv"
+    _inherit = "accounting_kmitl_reports.csv.report"
+    _description = "KMITL General Journal CSV"
+
+    def _kmitl_csv_rows(self, options):
+        report = self.env["report.accounting_kmitl_reports.general_journal_kmitl"]
+        result = report.get_general_journal_data(options, with_lines=True)
+        rows = [
+            [
+                _("Date-Time"),
+                _("Number"),
+                _("Journal"),
+                _("Reference"),
+                _("Partner"),
+                _("Account"),
+                _("Label"),
+                _("Dimensions"),
+                _("Debit"),
+                _("Credit"),
+            ]
+        ]
+        for entry in result["entries"]:
+            for line in entry["lines"]:
+                rows.append(
+                    [
+                        entry["date"],
+                        entry["name"],
+                        entry["journal"],
+                        entry["ref"],
+                        entry["partner"],
+                        line["account"],
+                        line["label"],
+                        line["dim_text"],
+                        self._csv_num(line["debit"]),
+                        self._csv_num(line["credit"]),
+                    ]
+                )
+        return rows

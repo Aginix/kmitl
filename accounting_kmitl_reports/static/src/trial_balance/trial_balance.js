@@ -49,7 +49,6 @@ export class TrialBalance extends Component {
             // (default) a selected node also matches its descendants.
             dimOnlySelf: {
                 departments: false,
-                sources: false,
                 funds: false,
                 activities: false,
             },
@@ -226,6 +225,13 @@ export class TrialBalance extends Component {
 
     async exportXlsx() {
         const action = await this.orm.call(REPORT_MODEL, "action_export_xlsx", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
+    }
+
+    async exportCsv() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_csv", [
             this.options,
         ]);
         await this.action.doAction(action);

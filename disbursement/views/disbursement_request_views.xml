@@ -24,6 +24,7 @@
                 <field name="pipeline_status" invisible="1" />
                 <field name="main_exception_id" />
                 <field name="budget_commitment_id" optional="hide" />
+                <field name="department_analytic_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
             </tree>
         </field>
@@ -40,6 +41,8 @@
                     <button name="action_sign" string="Sign" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_manager" />
+                    <button name="action_return_leftover_budget" string="ส่งคืนเงินเหลือจ่าย" type="object" attrs="{'invisible': ['|', ('budget_consumed_amount', '&lt;=', 0), ('budget_available_to_obligate', '&lt;=', 0)]}" groups="disbursement.group_disbursement_manager" />
+                    <field name="budget_available_to_obligate" invisible="1"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
                     <field name="state" invisible="1"/>
@@ -75,24 +78,9 @@
                         </h1>
                     </div>
                     <group>
-                        <group id="header_left_group" string="Partner Information">
-                            <field name="partner_type" widget="radio"
-                                attrs="{'readonly': ['|', ('reference_model', '!=', False), ('state', '!=', 'draft')]}" />
-                            <field name="partner_id" widget="res_partner_many2one"
-                                context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}"
-                                options='{"always_reload": True}'
-                                attrs="{'invisible': [('partner_type', '=', 'multi')], 'required': [('partner_type', '=', 'single')]}" />
-                            <field name="partner_bank_id"
-                                context="{'default_partner_id': partner_id}"
-                                domain="[('partner_id', '=', partner_id)]"
-                                attrs="{'invisible': [('partner_type', '=', 'multi')]}" />
-                            <field name="company_id" groups="base.group_multi_company" />
-                            <field name="is_company" readonly="1" invisible="1" />
-                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
-                            <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
-                        </group>
                         <group id="header_right_group" string="Disbursement Information">
                             <field name="date" />
+                            <field name="payment_type" widget="radio" options="{'horizontal': true}" required="1" />
                             <field name="reference_model_name" readonly="1"
                                 attrs="{'invisible': ['|', ('id', '=', False), ('reference_model_name', '=', False)]}" />
                             <field name="reference"
@@ -100,8 +88,15 @@
                                 force_save="1" />
                             <field name="reference_model" invisible="1" />
                             <field name="ref" />
+                            <field name="note" />
+                            <!-- Recipients live on the request lines (pay-by-name);
+                                 keep the header partner fields hidden. -->
+                            <field name="partner_type" invisible="1" />
+                            <field name="partner_id" invisible="1" />
+                            <field name="partner_bank_id" invisible="1" />
+                            <field name="is_company" invisible="1" />
                         </group>
-                        <group id="budget" string="Analytic Dimensions">
+                        <group id="budget" string="Budget Information">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
                             <field name="budget_commitment_id" />
                             <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
@@ -116,8 +111,11 @@
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group id="other_information" string="Other Information">
+                            <field name="company_id" groups="base.group_multi_company" />
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
+                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
+                            <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
                         </group>
                     </group>
 
@@ -132,16 +130,13 @@
                             <field name="line_ids" widget="one2many" context="{'default_request_id': active_id}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
-                                    <field name="partner_id"
-                                        attrs="{'column_invisible': [('parent.partner_type', '!=', 'multi')], 'required': [('parent.partner_type', '=', 'multi')]}" />
-                                    <field name="partner_bank_id"
-                                        attrs="{'column_invisible': [('parent.partner_type', '!=', 'multi')]}"
-                                        optional="hide" />
+                                    <field name="partner_id" required="1" />
+                                    <field name="partner_bank_id" optional="hide" />
                                     <field name="product_id" />
                                     <field name="name" optional="hide" />
                                     <field name="quantity" />
                                     <field name="price_unit" />
-                                    <field name="tax_ids" widget="many2many_tags" />
+                                    <field name="tax_ids" widget="many2many_tags" optional="hide" />
                                     <field name="wht_tax_id" optional="show"/>
                                     <field name="account_id" optional="hide" />
                                     <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" optional="hide" />
@@ -153,8 +148,8 @@
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right">
-                                <field name="amount_untaxed" />
-                                <field name="amount_tax" />
+                                <field name="amount_untaxed" attrs="{'invisible': [('amount_tax', '=', 0)]}" />
+                                <field name="amount_tax" attrs="{'invisible': [('amount_tax', '=', 0)]}" />
                                 <field name="amount_total" />
                                 <field name="amount_wht" />
                                 <field name="amount_net" class="oe_subtotal_footer_separator" />
@@ -211,13 +206,12 @@
                 <filter string="Payment Posted" name="payment_posted" domain="[('pipeline_status', '=', 'payment_posted')]" />
                 <filter string="Done" name="done" domain="[('pipeline_status', '=', 'done')]" />
                 <separator />
-                <filter string="Multi-Partner" name="multi_partner" domain="[('partner_type', '=', 'multi')]" />
-                <separator />
                 <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
                 <separator />
                 <filter name="date" string="Date" date="date" />
                 <group expand="0" string="Group By">
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
+                    <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
                     <filter string="State" name="state" context="{'group_by': 'state'}" />
                 </group>

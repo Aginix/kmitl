@@ -5,6 +5,9 @@
         <div class="o_kmitl_general_journal o_action_manager p-3">
             <div class="o_kmitl_gj_header d-flex align-items-center mb-3">
                 <h2 class="m-0 flex-grow-1"><t t-esc="labels.title" /></h2>
+                <button class="btn btn-secondary me-2" t-on-click="exportCsv">
+                    <i class="fa fa-file-text-o me-1" /><t t-esc="labels.exportCsv" />
+                </button>
                 <button class="btn btn-secondary me-2" t-on-click="exportXlsx">
                     <i class="fa fa-file-excel-o me-1" /><t t-esc="labels.exportExcel" />
                 </button>
@@ -103,9 +106,6 @@
                             placeholder="labels.sources"
                             selected="state.sources"
                             onChange="(sel) => this.onSelectionChange('sources', sel)"
-                            withOnlySelf="true"
-                            onlySelf="state.dimOnlySelf.sources"
-                            onOnlySelfChange="(val) => this.onToggleDimOnlySelf('sources', val)"
                         />
                     </div>
                     <div class="col-md-3">

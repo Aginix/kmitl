@@ -11,11 +11,20 @@
             <xpath expr="//header/button[@name='action_to_verify']" position="after">
                 <field name="has_active_disbursement" invisible="1" />
                 <button
+                    name="action_ready_to_bill"
+                    string="Confirm Ready to Bill"
+                    type="object"
+                    class="oe_highlight"
+                    groups="agx_approval.group_approval_user"
+                    attrs="{'invisible': ['|', '|', ('state', '!=', 'approved'), ('payment_type', 'not in', ['direct', 'prepaid']), ('has_active_disbursement', '=', True)]}"
+                />
+                <button
                     name="action_create_disbursement_request"
                     string="Create Bill"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', 'not in', ['approved', 'billed']), ('has_active_disbursement', '=', True)]}"
+                    groups="disbursement.group_disbursement_user"
+                    attrs="{'invisible': ['|', ('state', '!=', 'ready_to_bill'), ('has_active_disbursement', '=', True)]}"
                 />
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -35,7 +44,7 @@
             </xpath>
             <xpath expr="//group[@name='attachment']" position="after">
                 <group string="Attachment for Disbursement"
-                    attrs="{'invisible': [('state', 'not in', ['approved', 'billed'])]}">
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'ready_to_bill', 'billed'])]}">
                     <field name="disbursement_attachment_ids"
                         widget="many2many_binary"
                         attrs="{'readonly': [('disbursement_request_count', '>', 0)]}">

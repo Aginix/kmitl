@@ -140,3 +140,31 @@ msgid ""
 "This record has been created from: <a href=\"%(link)s\" "
 "target=\"_blank\">%(name)s</a>"
 msgstr ""
+
+#. module: agx_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:agx_approval_disbursement.approval_request_view_form
+msgid "Confirm Ready to Bill"
+msgstr "ยืนยันพร้อมส่งเบิกจริง"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/approval_request.py:0
+#, python-format
+msgid "Only approved requests can be marked ready to bill."
+msgstr "เฉพาะคำขอที่อนุมัติแล้วเท่านั้นที่ทำเครื่องหมายพร้อมส่งเบิกจริงได้"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/approval_request.py:0
+#, python-format
+msgid "Only direct or prepaid requests use the ready-to-bill step."
+msgstr "เฉพาะคำขอแบบจ่ายตรงหรือจ่ายล่วงหน้าเท่านั้นที่ใช้ขั้นตอนพร้อมส่งเบิกจริง"
+
+#. module: agx_approval_disbursement
+#. odoo-python
+#: code:addons/agx_approval_disbursement/models/approval_request.py:0
+#, python-format
+msgid ""
+"Please attach at least one disbursement document before marking this "
+"request ready to bill."
+msgstr "กรุณาแนบเอกสารเบิกจริงอย่างน้อย 1 ไฟล์ก่อนทำเครื่องหมายพร้อมส่งเบิกจริง"

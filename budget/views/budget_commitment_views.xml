@@ -46,6 +46,9 @@
                     <button name="action_consume" string="ตัดงบ" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
+                    <button name="action_return_leftover" string="ส่งคืนเงินเหลือจ่าย"
+                        type="object"
+                        attrs="{'invisible': ['|', ('state', 'not in', ['reserved', 'partial']), ('available_to_obligate', '&lt;=', 0)]}"/>
                     <button name="action_done" string="Mark as Done" type="object"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
                     <button name="action_cancel" string="Cancel" type="object"
