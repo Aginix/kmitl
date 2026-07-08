@@ -23,14 +23,14 @@
                         <h1><field name="name" placeholder="e.g. KTB Cheque" /></h1>
                     </div>
                     <group>
-                        <group string="Layout Settings">
+                        <group name="layout_settings" string="Layout Settings">
                             <field name="active" />
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="font_size" />
                             <field name="date_buddhist_year" />
                             <field name="date_spacing" />
                         </group>
-                        <group string="Cheque Books (assign on the journal)">
+                        <group name="cheque_books_assign_on_the_journal" string="Cheque Books (assign on the journal)">
                             <field name="journal_ids" nolabel="1" readonly="1">
                                 <tree>
                                     <field name="name" />
@@ -41,27 +41,27 @@
                     </group>
                     <separator string="Field Positions (mm from top-left of the cheque)" />
                     <group>
-                        <group string="Date (DDMMYYYY boxes)">
+                        <group name="date_ddmmyyyy_boxes" string="Date (DDMMYYYY boxes)">
                             <field name="date_top" />
                             <field name="date_left" />
                         </group>
-                        <group string="Payee">
+                        <group name="payee" string="Payee">
                             <field name="payee_top" />
                             <field name="payee_left" />
                         </group>
-                        <group string="Amount (figures)">
+                        <group name="amount_figures" string="Amount (figures)">
                             <field name="amount_figure_top" />
                             <field name="amount_figure_left" />
                         </group>
-                        <group string="Amount (words)">
+                        <group name="amount_words" string="Amount (words)">
                             <field name="amount_text_top" />
                             <field name="amount_text_left" />
                         </group>
-                        <group string="A/C Payee Only crossing">
+                        <group name="a_c_payee_only_crossing" string="A/C Payee Only crossing">
                             <field name="crossing_top" />
                             <field name="crossing_left" />
                         </group>
-                        <group string="'or bearer' strike">
+                        <group name="or_bearer_strike" string="'or bearer' strike">
                             <field name="bearer_top" />
                             <field name="bearer_left" />
                         </group>

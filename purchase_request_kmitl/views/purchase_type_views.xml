@@ -54,7 +54,7 @@
                         <field name="visible_on_purchase_request" />
                         <field name="visible_on_expense" />
                     </group>
-                    <group string="Description">
+                    <group name="description" string="Description">
                         <field name="description" nolabel="1" />
                     </group>
                 </sheet>

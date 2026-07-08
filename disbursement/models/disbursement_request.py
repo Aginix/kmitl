@@ -310,6 +310,14 @@ class DisbursementRequest(models.Model):
         readonly=True,
     )
 
+    # Leftover reserved budget still on the linked commitment (reserved −
+    # obligated). Drives the "ส่งคืนเงินเหลือจ่าย" button visibility.
+    budget_available_to_obligate = fields.Monetary(
+        related="budget_commitment_id.available_to_obligate",
+        string="งบจองคงเหลือ",
+        currency_field="currency_id",
+    )
+
     # Analytic dimension fields
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -816,6 +824,23 @@ class DisbursementRequest(models.Model):
             body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
             % {"amount": self.amount_total, "name": commitment.name},
             subtype_xmlid="mail.mt_note",
+        )
+
+    def action_return_leftover_budget(self):
+        """Shortcut from the DR to the leftover-return (คืนจอง) confirmation.
+
+        Opens the same ``budget.commitment.return.wizard`` the commitment uses,
+        scoped to this DR's linked commitment, and stamps this DR as the source
+        document on the posted return line. The wizard works on the whole
+        commitment (which may be shared across งวด), returning its full
+        unconsumed remainder — consistent with the manual, no-guard policy.
+        """
+        self.ensure_one()
+        commitment = self.budget_commitment_id
+        if not commitment:
+            raise UserError(_("No budget commitment linked to this request."))
+        return commitment._action_return_leftover_wizard(
+            res_model="disbursement.request", res_id=self.id
         )
 
     def _check_commitment_obligable(self):

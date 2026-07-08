@@ -159,7 +159,7 @@
                 <filter string="Deprecated" name="deprecated" domain="[('deprecated', '=', True)]" />
 
                 <!-- Group By Options -->
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Budget Type" name="group_budget_type" domain="[]" context="{'group_by': 'budget_type'}" />
                     <filter string="Parent Account" name="group_parent" domain="[]" context="{'group_by': 'parent_id'}" />
                     <filter string="Budgetable" name="group_budgetable" domain="[]" context="{'group_by': 'budgetable'}" />
