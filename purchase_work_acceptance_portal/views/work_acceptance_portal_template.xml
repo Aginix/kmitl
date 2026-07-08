@@ -72,7 +72,7 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#modaldecline"
                                         >
-                                            ตรวจรับแบบมีเงื่อนไข
+                                            อื่นๆ
                                         </button>
                                     </div>
                                 </div>
@@ -149,11 +149,29 @@
                                             name="access_token"
                                             t-att-value="work_acceptance.access_token"
                                         />
-                                        <textarea
-                                            name="comment"
-                                            class="form-control"
-                                            placeholder="ใส่เหตุผล"
-                                        ></textarea>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    name="comment"
+                                                    id="reason_leave"
+                                                    value="leave"
+                                                    required="required"
+                                                />
+                                                <label class="form-check-label" for="reason_leave">ลา</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    name="comment"
+                                                    id="reason_on_duty"
+                                                    value="on_duty"
+                                                />
+                                                <label class="form-check-label" for="reason_on_duty">ติดภารกิจ</label>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="submit" class="btn btn-secondary">
@@ -232,7 +250,15 @@
                                             <tr>
                                                 <th class="ps-0 pb-0">หมายเหตุ:</th>
                                                 <td class="w-100 pb-0 text-wrap">
-                                                    <t t-esc="work_acceptance.notes" />
+                                                    <t t-if="wa_committee and wa_committee.note == 'leave'">ลา</t>
+                                                    <t t-elif="wa_committee and wa_committee.note == 'on_duty'">ติดภารกิจ</t>
+                                                    <t t-else=""><t t-esc="work_acceptance.notes" /></t>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-0 pb-0">สิ่งของที่ต้องส่งมอบ:</th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t t-esc="work_acceptance.deliverables" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -361,7 +387,7 @@
                                                         <t
                                                             t-if="committee.approve_role == 'chairman'"
                                                         >
-                                                            <span>ประธาน</span>
+                                                            <span>ประธานกรรมการ</span>
                                                         </t>
                                                         <t
                                                             t-elif="committee.approve_role == 'committee'"
@@ -388,13 +414,15 @@
                                                         <t
                                                             t-if="committee.status == 'other'"
                                                         >
-                                                            <span class="text-secondary"
-                                                                >เห็นชอบตรวจรับแบบมีเงื่อนไข</span
+                                                            <span class="text-success"
+                                                                >อื่นๆ</span
                                                             >
                                                         </t>
                                                     </td>
                                                     <td>
-                                                        <t t-esc="committee.note" />
+                                                        <t t-if="committee.note == 'leave'">ลา</t>
+                                                        <t t-elif="committee.note == 'on_duty'">ติดภารกิจ</t>
+                                                        <t t-else=""><t t-esc="committee.note" /></t>
                                                     </td>
                                                 </tr>
                                             </t>

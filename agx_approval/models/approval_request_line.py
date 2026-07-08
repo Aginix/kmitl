@@ -19,6 +19,8 @@ class ApprovalRequestLine(models.Model):
     partner_id = fields.Many2one(
         string="Payee",
         comodel_name="res.partner",
+        domain="[('partner_type_id', 'in', allowed_partner_type_ids)]"
+        " if allowed_partner_type_ids else []",
         required=True
     )
 
@@ -26,6 +28,12 @@ class ApprovalRequestLine(models.Model):
         string='Allowed Product IDs',
         compute='_compute_allowed_product_ids',
         comodel_name="product.product"
+    )
+
+    allowed_partner_type_ids = fields.Many2many(
+        string="Allowed Partner Types",
+        compute="_compute_allowed_partner_type_ids",
+        comodel_name="res.partner.type",
     )
 
     product_id = fields.Many2one(
@@ -49,7 +57,7 @@ class ApprovalRequestLine(models.Model):
     )
 
     total_amount = fields.Monetary(
-        string="Total",
+        string="Requested Amount",
         currency_field='currency_id',
         required=True,
     )
@@ -77,3 +85,28 @@ class ApprovalRequestLine(models.Model):
     def _compute_allowed_product_ids(self):
         for record in self:
             record.allowed_product_ids = record.request_id.category_id.allowed_product_ids
+
+    @api.depends(
+        "request_id.category_id.allow_internal_partner",
+        "request_id.category_id.allow_external_partner",
+        "request_id.category_id.allow_student_partner",
+    )
+    def _compute_allowed_partner_type_ids(self):
+        for record in self:
+            category = record.request_id.category_id
+            types = self.env["res.partner.type"]
+            if category.allow_internal_partner:
+                types |= self.env.ref("partner_type_aginix.partner_type_employee")
+            if category.allow_external_partner:
+                types |= self.env.ref("partner_type_aginix.partner_type_other")
+                types |= self.env.ref("partner_type_aginix.partner_type_company")
+            if category.allow_student_partner:
+                types |= self.env.ref("partner_type_aginix.partner_type_student")
+            record.allowed_partner_type_ids = types
+
+    def _get_payee_bank(self):
+        self.ensure_one()
+        payee = self.request_id.payee_ids.filtered(
+            lambda p: p.partner_id == self.partner_id
+        )[:1]
+        return payee.partner_bank_id

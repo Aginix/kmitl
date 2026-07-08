@@ -12,10 +12,12 @@
     "depends": [
         "disbursement",
         "accounting_kmitl",
+        "accounting_kmitl_workflow",
     ],
     "data": [
         "security/ir.model.access.csv",
         "views/disbursement_request_views.xml",
+        "views/account_move_views.xml",
         "views/account_move_line_views.xml",
     ],
     "installable": True,

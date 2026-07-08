@@ -59,11 +59,17 @@ class WorkAcceptanceCommittee(models.Model):
     status = fields.Selection(
         selection=[
             ("accept", "Accepted"),
+            ("leave", "Leave"),
             ("not_accept", "No Accepted"),
             ("other", "Other"),
         ],
     )
-    note = fields.Text()
+    note = fields.Selection(
+        selection=[
+            ("leave", "Leave"),
+            ("on_duty", "On Duty"),
+        ],
+    )
     _sql_constraints = [
         (
             "committee_wa_uniq",

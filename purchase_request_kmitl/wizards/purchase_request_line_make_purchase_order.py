@@ -18,6 +18,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             "account_fiscal_year_id": self.item_ids.request_id.account_fiscal_year_id.id,
             "requesting_operating_unit_id": self.item_ids.request_id.operating_unit_id.id,
             "payment_type": self.item_ids.request_id.payment_type,
+            "procurement_method_id": self.item_ids.request_id.procurement_method_id.id,
         })
         return vals
 

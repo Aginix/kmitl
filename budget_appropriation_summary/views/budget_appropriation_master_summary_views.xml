@@ -150,7 +150,7 @@
                         </group>
                     </group>
                     <group>
-                        <group string="ประมาณการรายรับ">
+                        <group name="revenue_estimation" string="ประมาณการรายรับ">
                             <field name="amount_revenue_gross" />
                             <field name="amount_revenue_deduct" />
                             <field
@@ -158,7 +158,7 @@
                                 name="amount_revenue_total"
                             />
                         </group>
-                        <group string="สรุปตามประเภทงบ">
+                        <group name="summary_by_budget_type" string="สรุปตามประเภทงบ">
                             <field name="personnel_expense_amount" />
                             <field name="operating_expense_amount" />
                             <field name="capital_expenditure_amount" />
@@ -259,7 +259,7 @@
                     domain="[('state', '=', 'confirmed')]"
                 />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         string="ปีงบประมาณ"
                         name="group_by_fiscal_year"

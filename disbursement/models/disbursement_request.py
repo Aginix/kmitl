@@ -30,6 +30,7 @@ class DisbursementRequest(models.Model):
         "signed": [("readonly", True)],
         "verified": [("readonly", True)],
         "approved": [("readonly", True)],
+        "bills_posted": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
 
@@ -73,7 +74,7 @@ class DisbursementRequest(models.Model):
             ("multi", "Multiple Partners"),
         ],
         string="Partner Type",
-        default="single",
+        default="multi",
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -119,6 +120,23 @@ class DisbursementRequest(models.Model):
     ref = fields.Char(
         string="Reference",
         tracking=True,
+        states=READONLY_STATES,
+    )
+
+    payment_type = fields.Selection(
+        selection=[
+            ("direct", "Direct paid"),
+            ("advance", "Advance"),
+            ("prepaid", "Prepaid"),
+        ],
+        string="Payment Type",
+        default="direct",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    note = fields.Text(
+        string="Note",
         states=READONLY_STATES,
     )
 
@@ -292,6 +310,14 @@ class DisbursementRequest(models.Model):
         readonly=True,
     )
 
+    # Leftover reserved budget still on the linked commitment (reserved −
+    # obligated). Drives the "ส่งคืนเงินเหลือจ่าย" button visibility.
+    budget_available_to_obligate = fields.Monetary(
+        related="budget_commitment_id.available_to_obligate",
+        string="งบจองคงเหลือ",
+        currency_field="currency_id",
+    )
+
     # Analytic dimension fields
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -310,7 +336,7 @@ class DisbursementRequest(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -366,23 +392,23 @@ class DisbursementRequest(models.Model):
                 rec.budget_account_id = budget.account_id
                 rec.analytic_distribution = budget.analytic_distribution
 
-    @api.constrains("analytic_distribution")
+    @api.constrains("analytic_distribution", "state")
     def _check_analytic_distribution_complete(self):
-        required_plan_codes = {"activities", "departments", "funds", "sources"}
-        # for rec in self:
-        #     if rec.state == "cancel":
-        #         continue
-        #     if not rec.analytic_distribution:
-        #         raise ValidationError(_("Analytic distribution is required."))
-        #     account_ids = [int(k) for k in rec.analytic_distribution.keys()]
-        #     accounts = self.env["account.analytic.account"].browse(account_ids)
-        #     present_codes = set(accounts.mapped("root_plan_id.code"))
-        #     missing = required_plan_codes - present_codes
-        #     if missing:
-        #         raise ValidationError(
-        #             _("Missing required analytic dimensions: %s")
-        #             % ", ".join(missing)
-        #         )
+        required_plan_codes = set(self._analytic_keys.keys())
+        for rec in self:
+            if rec.state in ("draft", "cancel"):
+                continue
+            if not rec.analytic_distribution:
+                raise ValidationError(_("Analytic distribution is required."))
+            account_ids = [int(k) for k in rec.analytic_distribution.keys()]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            present_codes = set(accounts.mapped("root_plan_id.code"))
+            missing = required_plan_codes - present_codes
+            if missing:
+                raise ValidationError(
+                    _("Missing required analytic dimensions: %s")
+                    % ", ".join(sorted(missing))
+                )
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
@@ -435,6 +461,18 @@ class DisbursementRequest(models.Model):
         """Update distribution when source changes"""
         for line in self:
             line._update_analytic_distribution("sources")
+
+    @api.depends("analytic_distribution")
+    def _compute_analytic_id(self):
+        # Reset every convenience field first so a stored one (here
+        # department_analytic_id, used for the "Group By Department" filter)
+        # does not keep a stale value when its dimension is removed from the
+        # distribution. The shared mixin only assigns dimensions that are
+        # present, so without this reset a stored field would never clear.
+        for rec in self:
+            for field_name in self._analytic_keys.values():
+                rec[field_name] = False
+        return super()._compute_analytic_id()
 
     def _log_budget_commitment_linked(self):
         self.ensure_one()
@@ -546,36 +584,7 @@ class DisbursementRequest(models.Model):
         for rec in self:
             if rec.reference and hasattr(rec.reference, "partner_id"):
                 rec.partner_id = rec.reference.partner_id
-                rec.partner_type = "single"
         self._compute_analytic()
-
-    @api.constrains("partner_type", "partner_id")
-    def _check_partner_required(self):
-        for rec in self:
-            if rec.partner_type == "single" and not rec.partner_id:
-                raise ValidationError(
-                    _("Partner is required in single-partner mode.")
-                )
-
-    @api.onchange("partner_type")
-    def _onchange_partner_type(self):
-        if self.partner_type == "single":
-            line_partners = self.line_ids.mapped("partner_id")
-            if len(line_partners) > 1:
-                self.line_ids.update(
-                    {"partner_id": False, "partner_bank_id": False}
-                )
-                return {
-                    "warning": {
-                        "title": _("Warning"),
-                        "message": _(
-                            "Partner fields on lines have been cleared."
-                        ),
-                    }
-                }
-        elif self.partner_type == "multi":
-            self.partner_id = False
-            self.partner_bank_id = False
 
     def _compute_analytic(self):
         """Hook for extension modules to merge analytics from reference document."""
@@ -804,6 +813,39 @@ class DisbursementRequest(models.Model):
         consume line for the DR amount, leaving the BC open for other DRs.
         """
         self.ensure_one()
+        commitment = self._check_commitment_obligable()
+        first_reserve = self._get_commitment_reserve_line(commitment)
+        self.env["budget.commitment.line"].create(
+            self._prepare_budget_obligate_lines(commitment, first_reserve)
+        )
+        self.budget_consumed_amount = self.amount_total
+        self.budget_consumed_date = fields.Datetime.now()
+        self.message_post(
+            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
+            % {"amount": self.amount_total, "name": commitment.name},
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def action_return_leftover_budget(self):
+        """Shortcut from the DR to the leftover-return (คืนจอง) confirmation.
+
+        Opens the same ``budget.commitment.return.wizard`` the commitment uses,
+        scoped to this DR's linked commitment, and stamps this DR as the source
+        document on the posted return line. The wizard works on the whole
+        commitment (which may be shared across งวด), returning its full
+        unconsumed remainder — consistent with the manual, no-guard policy.
+        """
+        self.ensure_one()
+        commitment = self.budget_commitment_id
+        if not commitment:
+            raise UserError(_("No budget commitment linked to this request."))
+        return commitment._action_return_leftover_wizard(
+            res_model="disbursement.request", res_id=self.id
+        )
+
+    def _check_commitment_obligable(self):
+        """Validate the linked commitment can absorb this DR's amount."""
+        self.ensure_one()
         if not self.budget_commitment_id:
             raise UserError(
                 _("Budget commitment is required before approval. "
@@ -826,6 +868,10 @@ class DisbursementRequest(models.Model):
                     "required": self.amount_total,
                 }
             )
+        return commitment
+
+    def _get_commitment_reserve_line(self, commitment):
+        """Return the first active reserve line on the commitment."""
         first_reserve = commitment.line_ids.filtered(
             lambda l: l.move_type == "reserve" and l.state == "posted"
         )[:1]
@@ -833,31 +879,38 @@ class DisbursementRequest(models.Model):
             raise UserError(
                 _("No active reserve line on commitment %s.") % commitment.name
             )
-        self.env["budget.commitment.line"].create([
-            {
-                "commitment_id": commitment.id,
-                "move_type": "obligate",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": self.amount_total,
-                "name": _("Obligation: %s") % self.name,
-            },
-            {
-                "commitment_id": commitment.id,
-                "move_type": "consume",
-                "account_id": first_reserve.account_id.id,
-                "analytic_distribution": first_reserve.analytic_distribution,
-                "amount": self.amount_total,
-                "name": _("Consumption: %s") % self.name,
-            },
-        ])
-        self.budget_consumed_amount = self.amount_total
-        self.budget_consumed_date = fields.Datetime.now()
-        self.message_post(
-            body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
-            % {"amount": self.amount_total, "name": commitment.name},
-            subtype_xmlid="mail.mt_note",
+        return first_reserve
+
+    def _prepare_budget_obligate_lines(self, commitment, reserve_line):
+        """Build the obligate + consume commitment lines for this DR."""
+        self.ensure_one()
+        common = {
+            "commitment_id": commitment.id,
+            "account_id": reserve_line.account_id.id,
+            "analytic_distribution": reserve_line.analytic_distribution,
+            "amount": self.amount_total,
+            "res_model": "disbursement.request",
+            "res_id": self.id,
+        }
+        return [
+            dict(common, move_type="obligate",
+                 name=_("Obligation: %s") % self.name),
+            dict(common, move_type="consume",
+                 name=_("Consumption: %s") % self.name),
+        ]
+
+    def _reverse_own_commitment_lines(self, commitment):
+        """Cancel only the obligate/consume lines THIS request created on a
+        shared commitment, leaving the reservation open for other requests."""
+        self.ensure_one()
+        own = commitment.line_ids.filtered(
+            lambda l: l.state == "posted"
+            and l.move_type in ("obligate", "consume")
+            and l.res_model == "disbursement.request"
+            and l.res_id == self.id
         )
+        own.action_cancel()
+        return True
 
     def action_cancel(self):
         """Cancel the request.
@@ -870,14 +923,34 @@ class DisbursementRequest(models.Model):
                 raise UserError(
                     _("Cannot cancel an already cancelled request.")
                 )
-            if record.budget_commitment_id:
+            commitment = record.budget_commitment_id
+            if commitment:
                 try:
-                    record._cancel_budget_commitment()
-                    record.message_post(
-                        body=_("Budget commitment %s cancelled.")
-                        % record.budget_commitment_id.name,
-                        subtype_xmlid="mail.mt_note",
+                    plan_owned = (
+                        "procurement_plan_id" in commitment._fields
+                        and commitment.procurement_plan_id
                     )
+                    is_shared = (
+                        plan_owned
+                        or len(commitment.disbursement_request_ids) > 1
+                    )
+                    if is_shared:
+                        record._reverse_own_commitment_lines(commitment)
+                        record.message_post(
+                            body=_(
+                                "Reversed this request's lines on shared "
+                                "commitment %s."
+                            )
+                            % commitment.name,
+                            subtype_xmlid="mail.mt_note",
+                        )
+                    else:
+                        record._cancel_budget_commitment()
+                        record.message_post(
+                            body=_("Budget commitment %s cancelled.")
+                            % commitment.name,
+                            subtype_xmlid="mail.mt_note",
+                        )
                 except UserError as e:
                     record.message_post(
                         body=_("Warning: %s") % str(e),
@@ -909,6 +982,19 @@ class DisbursementRequest(models.Model):
         """Return the base filename for the report."""
         self.ensure_one()
         return f"Disbursement Request-{self.name}"
+
+    @api.model
+    def _get_masked_acc_number(self, acc_number):
+        """Mask a bank account number, keeping the first 3 and last 4 digits."""
+        acc = acc_number or ""
+        digit_positions = [i for i, c in enumerate(acc) if c.isdigit()]
+        if len(digit_positions) <= 7:
+            return acc
+        keep = set(digit_positions[:3]) | set(digit_positions[-4:])
+        return "".join(
+            c if (not c.isdigit() or i in keep) else "X"
+            for i, c in enumerate(acc)
+        )
 
     def open_preview(self):
         """Open preview in portal."""

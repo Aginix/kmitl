@@ -30,4 +30,10 @@ class KmitlPaymentType(models.Model):
         string="Override Account",
         help="Override the destination account. Leave empty to use partner's default.",
     )
+    is_cheque = fields.Boolean(
+        string="Paid/Received by Cheque",
+        help="Payments of this type are settled by cheque. They are exempt from "
+        "the bank-export gate and post directly, and a cheque is added to the "
+        "cheque control register when the payment is posted.",
+    )
 

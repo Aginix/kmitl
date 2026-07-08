@@ -8,7 +8,7 @@ class ProcurementPlanDashboardController(http.Controller):
     STATE_LABELS = {
         "draft": "ฉบับร่าง",
         "new": "ยังไม่เริ่ม",
-        "on_hold": "รอดำเนินการ",
+        "on_hold": "ชะลอโครงการ",
         "in_progress": "กำลังดำเนินการ",
         "done": "เสร็จสิ้น",
         "cancel": "ยกเลิก",
@@ -133,9 +133,6 @@ class ProcurementPlanDashboardController(http.Controller):
                 "state_display": self.STATE_LABELS.get(plan.state, plan.state),
                 "department": plan.department_analytic_id.complete_name or "-",
                 "source": plan.source_analytic_id.name or "-",
-                "method": plan.procurement_method_id.name
-                if plan.procurement_method_id
-                else "-",
             })
 
         return {

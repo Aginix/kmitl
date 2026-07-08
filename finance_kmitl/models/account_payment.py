@@ -20,12 +20,49 @@ class AccountPayment(models.Model):
         string="Lines to Reconcile",
         copy=False,
     )
+    amount_wht = fields.Monetary(
+        string="Withholding Tax",
+        compute="_compute_amount_wht",
+        currency_field="currency_id",
+        help="Total withholding tax withheld on this payment. Derived from the "
+        "payment move lines carrying a WHT tax, so it is visible in every state "
+        "(the native withholding moves are only created on posting).",
+    )
+    amount_before_wht = fields.Monetary(
+        string="Amount Before Withholding",
+        compute="_compute_amount_wht",
+        currency_field="currency_id",
+        help="Gross amount before withholding tax (net amount paid plus the "
+        "withholding tax).",
+    )
+
+    cheque_register_ids = fields.One2many(
+        comodel_name="cheque.register",
+        inverse_name="payment_id",
+        string="Cheques",
+    )
+    cheque_register_count = fields.Integer(
+        compute="_compute_cheque_register_count",
+    )
+
+    @api.depends("move_id.line_ids.wht_tax_id", "move_id.line_ids.balance", "amount")
+    def _compute_amount_wht(self):
+        for payment in self:
+            wht_lines = payment.move_id.line_ids.filtered("wht_tax_id")
+            payment.amount_wht = sum(abs(line.balance) for line in wht_lines)
+            payment.amount_before_wht = payment.amount + payment.amount_wht
+
+    @api.depends("cheque_register_ids")
+    def _compute_cheque_register_count(self):
+        for payment in self:
+            payment.cheque_register_count = len(payment.cheque_register_ids)
 
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
         for payment in self:
             if (
                 payment.payment_type == "outbound"
+                and not payment.kmitl_payment_type_id.is_cheque
                 and payment.export_status == "draft"
             ):
                 raise UserError(
@@ -33,7 +70,49 @@ class AccountPayment(models.Model):
                 )
         res = super().action_post()
         self._reconcile_source_invoice_lines()
+        self._create_cheque_register_entries()
         return res
+
+    def _create_cheque_register_entries(self):
+        """Add a cheque to the control register when a cheque-type payment posts.
+
+        The row is created in ``draft`` because the physical cheque number is
+        entered by the finance officer, who then issues it from the register.
+        """
+        for payment in self.filtered(
+            lambda p: p.kmitl_payment_type_id.is_cheque and not p.cheque_register_ids
+        ):
+            self.env["cheque.register"].create(
+                payment._prepare_cheque_register_vals()
+            )
+
+    def _prepare_cheque_register_vals(self):
+        self.ensure_one()
+        return {
+            "direction": self.payment_type,
+            "partner_id": self.partner_id.id,
+            "amount": self.amount,
+            "currency_id": self.currency_id.id,
+            "journal_id": self.journal_id.id,
+            "cheque_date": self.date,
+            "ref": self.ref or self.name,
+            "payment_id": self.id,
+            "company_id": self.company_id.id,
+        }
+
+    def action_view_cheque_register(self):
+        self.ensure_one()
+        return {
+            "name": _("Cheque Register"),
+            "type": "ir.actions.act_window",
+            "res_model": "cheque.register",
+            "view_mode": "tree,form",
+            "domain": [("payment_id", "=", self.id)],
+            "context": {
+                "default_payment_id": self.id,
+                "default_direction": self.payment_type,
+            },
+        }
 
     def _reconcile_source_invoice_lines(self):
         """Reconcile payment lines with stored source invoice lines."""
@@ -54,12 +133,24 @@ class AccountPayment(models.Model):
     def action_submit(self):
         """Submit payment without triggering tier validation.
 
-        Validation is triggered after bank export, not on submit.
+        Validation is triggered after bank export, not on submit. Assign the
+        move sequence on submit so every payment gets a number immediately,
+        instead of some staying unnamed ("Draft") until they are posted
+        (the native name is only assigned for the first move of a period
+        while it is unposted).
         """
         for payment in self:
-            if payment.move_id.state != "draft":
+            move = payment.move_id
+            if move.state != "draft":
                 raise UserError(_("Only draft payments can be submitted."))
-            payment.move_id.state = "submitted"
+            move.state = "submitted"
+            # Payment moves do not flow through account.move.action_submit, so
+            # enrol them in the approval workflow explicitly (step 1).
+            move.workflow_state = "to_approve"
+            move.submitted_by = self.env.user
+            move.submitted_date = fields.Datetime.now()
+            if move.date and (not move.name or move.name == "/"):
+                move._set_next_sequence()
 
     @api.onchange("kmitl_payment_type_id")
     def _onchange_kmitl_payment_type_id(self):
@@ -125,32 +216,3 @@ class AccountPayment(models.Model):
             "kmitl_payment_type_id",
         )
 
-    # --- Budget commitment (delegates to account.move via _inherits) ---
-
-    @api.onchange("budget_commitment_id")
-    def _onchange_budget_commitment_id(self):
-        """Auto-populate budget account and analytic distribution
-        from budget commitment.
-
-        Note: budget fields live on account.move and are accessed here
-        via _inherits delegation. The onchange must be defined on
-        account.payment because _inherits does not cascade onchange handlers.
-        """
-        if self.budget_commitment_id:
-            self.budget_account_id = self.budget_commitment_id.account_id
-            commitment = self.budget_commitment_id
-            analytic_accounts = {}
-            if commitment.activity_analytic_id:
-                analytic_accounts[commitment.activity_analytic_id.id] = 100
-                self.activity_analytic_id = commitment.activity_analytic_id
-            if commitment.department_analytic_id:
-                analytic_accounts[commitment.department_analytic_id.id] = 100
-                self.department_analytic_id = commitment.department_analytic_id
-            if commitment.fund_analytic_id:
-                analytic_accounts[commitment.fund_analytic_id.id] = 100
-                self.fund_analytic_id = commitment.fund_analytic_id
-            if commitment.source_analytic_id:
-                analytic_accounts[commitment.source_analytic_id.id] = 100
-                self.source_analytic_id = commitment.source_analytic_id
-            if analytic_accounts:
-                self.analytic_distribution = analytic_accounts

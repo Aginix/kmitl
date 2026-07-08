@@ -164,7 +164,7 @@
             </xpath>
 
             <xpath expr="//h1" position="after">
-                <group string="รายละเอียดคำขอซื้อขอจ้าง" name="purchase_request_details_group">
+                <group string="Purchase Request Details" name="purchase_request_details_group">
                     <group>
                         <field
                             name="title"
@@ -177,6 +177,7 @@
                         />
                         <field
                             name="requested_by"
+                            widget="employee_detail_many2one" 
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
@@ -188,7 +189,7 @@
                         <field name="user_id" readonly="1" />
                     </group>
                 </group>
-                <group string="คำขอซื้อขอจ้าง" name="purchase_request_group">
+                <group string="Purchase Request" name="purchase_request_group">
                     <group>
                         <field
                             name="account_fiscal_year_id"
@@ -395,10 +396,6 @@
 
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="attrs">{'invisible': [('origin', '=', False)]}</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='date_start']" position="attributes">

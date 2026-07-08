@@ -1,0 +1,213 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* procurement_assignment_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-08 09:06+0000\n"
+"PO-Revision-Date: 2026-06-08 09:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_res_config_settings__allow_takeover_assigned
+msgid "Allow officers to take over already-assigned documents"
+msgstr "อนุญาตให้เจ้าหน้าที่สามารถรับเอกสารที่มีการมอบหมายแล้วได้"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__allowed_user_ids
+msgid "Allowed User"
+msgstr "ผู้ใช้ที่ได้รับอนุญาต"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assign_officer_wizard_form
+msgid "Assign"
+msgstr "มอบหมาย"
+
+#. module: procurement_assignment_kmitl
+#. odoo-python
+#: code:addons/procurement_assignment_kmitl/models/assignment.py:0
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assign_officer_wizard_form
+#, python-format
+msgid "Assign Officer"
+msgstr "มอบหมายเจ้าหน้าที่"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model,name:procurement_assignment_kmitl.model_assign_officer_wizard
+msgid "Assign Procurement Officer"
+msgstr "มอบหมายเจ้าหน้าที่จัดซื้อจัดจ้าง"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+msgid "Assign to me"
+msgstr "มอบหมายให้ฉัน"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__user_id
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_order__assigned_to
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request__assigned_to
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request_approval__pr_assigned_to
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
+msgid "Assigned Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: procurement_assignment_kmitl
+#. odoo-python
+#: code:addons/procurement_assignment_kmitl/models/assignment.py:0
+#, python-format
+msgid "Assigned as responsible procurement officer"
+msgstr "ถูกมอบหมายให้เป็นเจ้าหน้าที่จัดซื้อที่รับผิดชอบ"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
+msgid "Assigned to me"
+msgstr "งานของฉัน"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_order__assignment_can_assign_me
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request__assignment_can_assign_me
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request_approval__assignment_can_assign_me
+msgid "Assignment Can Assign Me"
+msgstr "สามารถมอบหมายให้ตัวเองได้"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+msgid "Assign…"
+msgstr "มอบหมายให้..."
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.assign_officer_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model,name:procurement_assignment_kmitl.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตล่าสุดโดย"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตล่าสุดเมื่อ"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.res_config_settings_view_form
+msgid ""
+"Let any officer use \"Assign to me\" to take over a\n"
+"                            document already assigned to someone else. When off,\n"
+"                            officers may only claim unassigned documents."
+msgstr ""
+"อนุญาตให้เจ้าหน้าที่คนใดก็ได้ใช้ \"มอบหมายให้ฉัน\" เพื่อรับเอกสาร\n"
+"                            ที่มอบหมายให้คนอื่นแล้ว เมื่อปิดการใช้งาน\n"
+"                            เจ้าหน้าที่จะสามารถรับเฉพาะเอกสารที่ยังไม่ได้มอบหมายเท่านั้น"
+
+#. module: procurement_assignment_kmitl
+#. odoo-python
+#: code:addons/procurement_assignment_kmitl/models/assignment.py:0
+#: code:addons/procurement_assignment_kmitl/wizards/assign_officer_wizard.py:0
+#, python-format
+msgid "Only a manager can assign another officer."
+msgstr "ผู้จัดการเท่านั้นที่สามารถมอบหมายเจ้าหน้าที่อื่นได้"
+
+#. module: procurement_assignment_kmitl
+#. odoo-python
+#: code:addons/procurement_assignment_kmitl/models/assignment.py:0
+#, python-format
+msgid "Only a manager can unassign the officer."
+msgstr "ผู้จัดการเท่านั้นที่สามารถยกเลิกการมอบหมายเจ้าหน้าที่ได้"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model,name:procurement_assignment_kmitl.model_purchase_order
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model,name:procurement_assignment_kmitl.model_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model,name:procurement_assignment_kmitl.model_purchase_request_approval
+msgid "Purchase Request Approval"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__res_id
+msgid "Res"
+msgstr "เรคอร์ด"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__res_model
+msgid "Res Model"
+msgstr "โมเดลเรคอร์ด"
+
+#. module: procurement_assignment_kmitl
+#. odoo-python
+#: code:addons/procurement_assignment_kmitl/models/assignment.py:0
+#, python-format
+msgid "This document is already assigned to %s."
+msgstr "เอกสารนี้ถูกมอบหมายให้ %s แล้ว"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
+msgid "Unassign"
+msgstr "ยกเลิกการมอบหมาย"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_search_assignment
+msgid "Unassigned"
+msgstr "ยังไม่ได้มอบหมาย"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,help:procurement_assignment_kmitl.field_res_config_settings__allow_takeover_assigned
+msgid ""
+"When enabled, any procurement officer can use 'Assign to me' to take over a "
+"document already assigned to someone else. When disabled (default), officers"
+" may only claim unassigned documents; reassigning is a manager action."
+msgstr ""
+"เมื่อเปิดใช้งาน เจ้าหน้าที่จัดซื้อจัดจ้างคนใดก็ได้สามารถใช้ 'มอบหมายให้ฉัน' "
+"เพื่อรับเอกสารที่มอบหมายให้คนอื่นแล้วได้ เมื่อปิดการใช้งาน (ค่าเริ่มต้น) "
+"เจ้าหน้าที่จะสามารถรับเฉพาะเอกสารที่ยังไม่ได้มอบหมาย "
+"การมอบหมายใหม่เป็นสิทธิ์ของผู้จัดการ"

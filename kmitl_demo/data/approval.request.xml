@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================ -->
+        <!-- 5 requests with a single payee across multiple expense lines  -->
+        <!-- ============================================================ -->
+
+        <!-- 1) International travel - 3 expense lines for one traveler -->
+        <record id="approval_request_demo_01" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_02" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_005" />
+            <field name="user_id" ref="kmitl_demo.user_demo_005" />
+            <field name="date" eval="'2025-03-15'" />
+            <field name="date_start" eval="'2025-04-10'" />
+            <field name="date_end" eval="'2025-04-17'" />
+            <field name="country_id" ref="base.jp" />
+            <field name="payment_type">advance</field>
+            <field name="description">International conference attendance in Tokyo, Japan</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_011'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020001')], limit=1).id,
+                        'total_amount': 45000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_011'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020002')], limit=1).id,
+                        'total_amount': 28000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_011'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020003')], limit=1).id,
+                        'total_amount': 14000.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 2) Local field work - 3 expense lines for one staff member -->
+        <record id="approval_request_demo_02" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_01" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_006" />
+            <field name="user_id" ref="kmitl_demo.user_demo_006" />
+            <field name="date" eval="'2025-03-20'" />
+            <field name="date_start" eval="'2025-04-02'" />
+            <field name="date_end" eval="'2025-04-04'" />
+            <field name="city">Chiang Mai</field>
+            <field name="payment_type">direct</field>
+            <field name="description">Field survey for renewable energy research project</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_015'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010001')], limit=1).id,
+                        'total_amount': 8500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_015'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010002')], limit=1).id,
+                        'total_amount': 4200.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_015'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010003')], limit=1).id,
+                        'total_amount': 2400.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 3) Operational support - single line for one payee -->
+        <record id="approval_request_demo_03" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_04" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_008" />
+            <field name="user_id" ref="kmitl_demo.user_demo_008" />
+            <field name="date" eval="'2025-03-22'" />
+            <field name="payment_type">direct</field>
+            <field name="description">Operational support payment for technical consultant</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_013'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000003')], limit=1).id,
+                        'total_amount': 30000.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 4) MC / ceremony fee - 2 lines for one host -->
+        <record id="approval_request_demo_04" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_05" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_010" />
+            <field name="user_id" ref="kmitl_demo.user_demo_010" />
+            <field name="date" eval="'2025-04-01'" />
+            <field name="payment_type">direct</field>
+            <field name="description">Master of ceremonies fee for the annual award ceremony</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_014'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000004')], limit=1).id,
+                        'total_amount': 12000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_014'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000005')], limit=1).id,
+                        'total_amount': 5000.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 5) International travel - 4 expense lines for one traveler -->
+        <record id="approval_request_demo_05" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_02" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_012" />
+            <field name="user_id" ref="kmitl_demo.user_demo_012" />
+            <field name="date" eval="'2025-04-05'" />
+            <field name="date_start" eval="'2025-05-12'" />
+            <field name="date_end" eval="'2025-05-20'" />
+            <field name="country_id" ref="base.de" />
+            <field name="payment_type">advance</field>
+            <field name="description">Research collaboration visit to Technical University of Munich</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_017'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020001')], limit=1).id,
+                        'total_amount': 62000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_017'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020002')], limit=1).id,
+                        'total_amount': 35000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_017'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020003')], limit=1).id,
+                        'total_amount': 18000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_017'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103020099')], limit=1).id,
+                        'total_amount': 6000.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- 5 requests with multiple payees                                -->
+        <!-- ============================================================ -->
+
+        <!-- 6) Meeting expenses - 3 attendees -->
+        <record id="approval_request_demo_06" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_03" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_005" />
+            <field name="user_id" ref="kmitl_demo.user_demo_005" />
+            <field name="date" eval="'2025-04-08'" />
+            <field name="date_start" eval="'2025-04-15'" />
+            <field name="date_end" eval="'2025-04-15'" />
+            <field name="payment_type">direct</field>
+            <field name="description">Quarterly faculty committee meeting allowances</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_011'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_012'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_013'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 7) Field work - team of 4 -->
+        <record id="approval_request_demo_07" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_01" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_006" />
+            <field name="user_id" ref="kmitl_demo.user_demo_006" />
+            <field name="date" eval="'2025-04-10'" />
+            <field name="date_start" eval="'2025-05-05'" />
+            <field name="date_end" eval="'2025-05-07'" />
+            <field name="city">Phuket</field>
+            <field name="payment_type">direct</field>
+            <field name="description">Coastal engineering survey team mobilization</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_014'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010001')], limit=1).id,
+                        'total_amount': 7500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_015'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010001')], limit=1).id,
+                        'total_amount': 7500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_016'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010001')], limit=1).id,
+                        'total_amount': 7500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_017'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5103010001')], limit=1).id,
+                        'total_amount': 7500.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 8) Large meeting - 5 attendees x 2 expense types each -->
+        <record id="approval_request_demo_08" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_03" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_008" />
+            <field name="user_id" ref="kmitl_demo.user_demo_008" />
+            <field name="date" eval="'2025-04-12'" />
+            <field name="date_start" eval="'2025-04-25'" />
+            <field name="date_end" eval="'2025-04-25'" />
+            <field name="payment_type">direct</field>
+            <field name="description">Curriculum review workshop attendance and meals</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_011'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_011'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104030201')], limit=1).id,
+                        'total_amount': 500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_012'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_012'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104030201')], limit=1).id,
+                        'total_amount': 500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_013'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_013'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104030201')], limit=1).id,
+                        'total_amount': 500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_014'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_014'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104030201')], limit=1).id,
+                        'total_amount': 500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_015'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 1500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_015'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104030201')], limit=1).id,
+                        'total_amount': 500.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 9) Two MCs sharing one ceremony -->
+        <record id="approval_request_demo_09" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_05" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_010" />
+            <field name="user_id" ref="kmitl_demo.user_demo_010" />
+            <field name="date" eval="'2025-04-18'" />
+            <field name="payment_type">direct</field>
+            <field name="description">Opening ceremony hosting fees for two emcees</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_018'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000004')], limit=1).id,
+                        'total_amount': 8000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_019'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5108000004')], limit=1).id,
+                        'total_amount': 8000.0,
+                    }),
+                ]"
+            />
+        </record>
+
+        <!-- 10) Training session - 3 trainers, different expense types -->
+        <record id="approval_request_demo_10" model="approval.request">
+            <field name="category_id" ref="agx_approval.approval_category_03" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_012" />
+            <field name="user_id" ref="kmitl_demo.user_demo_012" />
+            <field name="date" eval="'2025-04-22'" />
+            <field name="date_start" eval="'2025-05-10'" />
+            <field name="date_end" eval="'2025-05-10'" />
+            <field name="payment_type">direct</field>
+            <field name="description">External speakers and meal expenses for staff training day</field>
+            <field
+                name="line_ids"
+                model="base"
+                eval="[
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_012'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010202')], limit=1).id,
+                        'total_amount': 2500.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_014'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010209')], limit=1).id,
+                        'total_amount': 3000.0,
+                    }),
+                    (0, 0, {
+                        'partner_id': ref('kmitl_demo.vendor_demo_020'),
+                        'product_id': obj().env['product.product'].search([('default_code', '=', '5104010210')], limit=1).id,
+                        'total_amount': 4000.0,
+                    }),
+                ]"
+            />
+        </record>
+
+    </data>
+</odoo>

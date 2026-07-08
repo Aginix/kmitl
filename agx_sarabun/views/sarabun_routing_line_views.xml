@@ -54,7 +54,7 @@
                 <filter string="For Acknowledgement" name="acknowledge" domain="[('routing_type', '=', 'acknowledge')]"/>
                 <filter string="For Approval" name="approve" domain="[('routing_type', '=', 'approve')]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Type" name="group_type" context="{'group_by': 'routing_type'}"/>
                     <filter string="Document" name="group_document" context="{'group_by': 'document_id'}"/>
                 </group>

@@ -13,6 +13,56 @@ class AccountMove(models.Model):
         index=True,
         copy=False,
     )
+    disbursement_request_name = fields.Char(
+        related="disbursement_request_id.name",
+        string="Disbursement Request Number",
+    )
+    disbursement_budget_consumed_amount = fields.Monetary(
+        related="disbursement_request_id.budget_consumed_amount",
+        string="Budget Consumed (from DR)",
+        currency_field="currency_id",
+    )
+    disbursement_budget_consumed_date = fields.Datetime(
+        related="disbursement_request_id.budget_consumed_date",
+        string="Budget Consumed Date (DR)",
+    )
+    disbursement_budget_commitment_id = fields.Many2one(
+        related="disbursement_request_id.budget_commitment_id",
+        string="Budget Commitment (DR)",
+    )
+
+    def action_view_disbursement_request(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Disbursement Request"),
+            "res_model": "disbursement.request",
+            "res_id": self.disbursement_request_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def _post(self, soft=True):
+        """Advance the linked disbursement request to ``bills_posted`` once all
+        of its active bills are posted.
+
+        Bills no longer post directly from the request — they go through the
+        account.move approval (Approve = post). This reacts to that posting,
+        regardless of how it was triggered.
+        """
+        res = super()._post(soft=soft)
+        requests = self.mapped("disbursement_request_id").filtered(
+            lambda d: d.state == "approved"
+        )
+        for request in requests:
+            active_bills = request.bill_ids.filtered(
+                lambda b: b.state != "cancel"
+            )
+            if active_bills and all(
+                b.state == "posted" for b in active_bills
+            ):
+                request.state = "bills_posted"
+        return res
 
 
 class AccountMoveLine(models.Model):

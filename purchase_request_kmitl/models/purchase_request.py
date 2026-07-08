@@ -86,12 +86,15 @@ class PurchaseRequest(models.Model):
         copy=False,
     )
 
+    # construction
+    is_construction = fields.Boolean(string="Construction", readonly=True)
+
     # -- purchase_request_kmitl fields --
     title = fields.Char(string="title", tracking=True)
 
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal Year",
         tracking=True,
         readonly=False,
     )

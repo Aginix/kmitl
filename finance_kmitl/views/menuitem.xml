@@ -6,7 +6,7 @@
         id="menu_payment_root"
         name="Finance"
         web_icon="finance_kmitl,static/description/icon.png"
-        sequence="60"
+        sequence="8"
         groups="finance_kmitl.group_finance_kmitl_user_in,finance_kmitl.group_finance_kmitl_user_out"
     />
 
@@ -38,12 +38,14 @@
 
     <menuitem
         id="menu_account_payment_outbound"
-        name="จ่ายเงิน"
+        name="Payment List"
         parent="menu_payment_root"
         action="action_account_payment_outbound"
         sequence="10"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
+    <!-- Receive Money menu temporarily hidden (inbound receipts not in use yet) -->
+    <!--
     <menuitem
         id="menu_account_payment_inbound"
         name="รับเงิน"
@@ -52,11 +54,12 @@
         sequence="15"
         groups="finance_kmitl.group_finance_kmitl_user_in"
     />
+    -->
 
     <!-- Bank Payment Export (outbound-side workflow) -->
     <menuitem
         id="menu_bank_payment_export"
-        name="Bank Payment Export"
+        name="e-Payment List"
         parent="menu_payment_root"
         action="l10n_th_bank_payment_export.action_bank_payment_export"
         sequence="20"
@@ -72,6 +75,28 @@
         sequence="25"
         groups="finance_kmitl.group_finance_kmitl_user_out"
     />
+
+    <!-- Cheque Control Register -->
+    <menuitem
+        id="menu_cheque_register_root"
+        name="Cheque Register"
+        parent="menu_payment_root"
+        sequence="30"
+        groups="finance_kmitl.group_finance_kmitl_user_out,finance_kmitl.group_finance_kmitl_user_in" />
+    <menuitem
+        id="menu_cheque_register_outbound"
+        name="Issued Cheques"
+        parent="menu_cheque_register_root"
+        action="action_cheque_register_outbound"
+        sequence="10"
+        groups="finance_kmitl.group_finance_kmitl_user_out" />
+    <menuitem
+        id="menu_cheque_register_inbound"
+        name="Received Cheques"
+        parent="menu_cheque_register_root"
+        action="action_cheque_register_inbound"
+        sequence="20"
+        groups="finance_kmitl.group_finance_kmitl_user_in" />
 
     <!-- Settings submenu (manager only) -->
     <menuitem
@@ -101,6 +126,13 @@
         parent="menu_payment_settings"
         action="action_kmitl_payment_type"
         sequence="5"
+    />
+    <menuitem
+        id="menu_settings_cheque_layout"
+        name="Cheque Layouts"
+        parent="menu_payment_settings"
+        action="action_cheque_layout"
+        sequence="15"
     />
 
 </odoo>

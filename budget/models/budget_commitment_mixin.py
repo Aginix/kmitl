@@ -218,6 +218,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
             "line_ids": [(0, 0, line_vals)],
         }
 
+        if kwargs.get("operating_unit_id"):
+            commitment_vals["operating_unit_id"] = kwargs["operating_unit_id"]
+
         if include_company:
             commitment_vals["company_id"] = self.env.company.id
 
@@ -461,6 +464,92 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if not commitment:
             return True
         commitment.action_cancel()
+        return True
+
+    # --- Reservation picker (host-agnostic) ---
+
+    def _reservation_account_domain(self):
+        """Budget accounts a host may select in the picker (overridable).
+
+        Default: budgetable expense accounts. Hosts narrow it to match their own
+        budget-account field domain (e.g. purchase.request adds
+        ``purchase_ok`` + ``product_id``), so the picker cannot offer — and
+        :meth:`apply_reservation_selection` cannot write — an account the host
+        would reject.
+        """
+        return [("budgetable", "=", True), ("budget_type", "=", "expense")]
+
+    def action_open_reservation_picker(self):
+        """Open the reservation picker on a host document (PR / PO / DR …).
+
+        Scoped to the host's dimension combination + fiscal year so each row
+        shows the control-node available. Hosts carry a single budget account,
+        so the picker runs in select-only mode and writes that account back via
+        :meth:`apply_reservation_selection`.
+        """
+        self.ensure_one()
+        fiscal_year = getattr(self, "account_fiscal_year_id", False)
+        account = self._get_commitment_field_value("account_id")
+        root = account
+        while root and root.parent_id:
+            root = root.parent_id
+        context = {
+            "res_model": self._name,
+            "res_id": self.id,
+            "select_only": True,
+            "account_domain": self._reservation_account_domain(),
+            "default_fiscal_year_id": fiscal_year.id if fiscal_year else False,
+            "default_root_account_id": root.id if root else False,
+        }
+        # Pre-fill the picker's dimension filter bar from the host's dimensions.
+        for fname in (
+            "department_analytic_id",
+            "source_analytic_id",
+            "fund_analytic_id",
+            "activity_analytic_id",
+        ):
+            value = getattr(self, fname, False)
+            context["default_" + fname] = value.id if value else False
+        return {
+            "type": "ir.actions.client",
+            "tag": "budget_reservation_picker",
+            "target": "new",
+            "name": _("เลือกงบประมาณ"),
+            "context": context,
+        }
+
+    def apply_reservation_selection(self, selections, dims=None):
+        """Host write-back for the picker: set the budget account + dimensions.
+
+        A host document carries one budget account (``_commitment_account_id_field``);
+        the reservation itself is still created later by the host's reserve
+        action. ``selections`` = ``[{"account_id": int, ...}]`` (amount ignored
+        here — the host derives it). ``dims`` is the dimension combination chosen
+        in the picker (``analytic_distribution`` JSON), written when the host
+        carries that field. Single code only; the account is validated against
+        ``_reservation_account_domain`` server-side, since field domains do not
+        constrain ``write``.
+        """
+        self.ensure_one()
+        selections = [s for s in (selections or []) if s.get("account_id")]
+        if not selections:
+            raise UserError(_("Select a budget code."))
+        if len(selections) > 1:
+            raise UserError(_("This document supports a single budget code."))
+        account_id = selections[0]["account_id"]
+        if not self.env["budget.account"].search_count(
+            self._reservation_account_domain() + [("id", "=", account_id)]
+        ):
+            raise UserError(
+                _("The selected budget code is not allowed for this document.")
+            )
+        field = getattr(
+            self.__class__, "_commitment_account_id_field", "budget_account_id"
+        )
+        vals = {field: account_id}
+        if dims is not None and "analytic_distribution" in self._fields:
+            vals["analytic_distribution"] = dims or False
+        self.write(vals)
         return True
 
     def _obligate_budget_commitment(self):

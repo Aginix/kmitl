@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="aged_partner_balance_kmitl">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="header" style="border-bottom: 1px solid #000;">
+                    <table style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 70px; border: none; vertical-align: top;">
+                                <img
+                                    t-if="res_company.logo"
+                                    t-att-src="image_data_uri(res_company.logo)"
+                                    style="max-height: 60px; max-width: 60px;"
+                                    alt="Logo"
+                                />
+                            </td>
+                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">
+                                    <t t-out="res_company.display_name" />
+                                </div>
+                                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">
+                                    <t t-out="report_title" />
+                                </div>
+                                <div style="font-size: 12pt;">
+                                    <span>As of</span>
+                                    <t t-out="date_at_label" />
+                                </div>
+                            </td>
+                            <td style="width: 70px; border: none;" />
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer" style="text-align: right; font-size: 10pt;">
+                    <span class="page" />/<span class="topage" />
+                </div>
+
+                <div class="article">
+                    <style>
+                        table.kmitl-aged {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 9pt;
+                        }
+                        table.kmitl-aged th,
+                        table.kmitl-aged td {
+                            border: 1px solid #000;
+                            padding: 3px 5px;
+                        }
+                        table.kmitl-aged thead th {
+                            background-color: #f0f0f0;
+                            text-align: center;
+                            font-weight: bold;
+                        }
+                        table.kmitl-aged td.text-right,
+                        table.kmitl-aged th.text-right {
+                            text-align: right;
+                        }
+                        table.kmitl-aged tr.account-row td {
+                            font-weight: bold;
+                            background-color: #f7f7f7;
+                        }
+                        table.kmitl-aged tr.partner-row td.partner-name {
+                            padding-left: 18px;
+                        }
+                        table.kmitl-aged tfoot td {
+                            font-weight: bold;
+                            background-color: #f0f0f0;
+                        }
+                    </style>
+                    <table class="kmitl-aged">
+                        <thead style="display: table-header-group;">
+                            <tr>
+                                <th style="width: 28%;">Partner</th>
+                                <th class="text-right">Total</th>
+                                <th class="text-right">Current</th>
+                                <th class="text-right">1-30</th>
+                                <th class="text-right">31-60</th>
+                                <th class="text-right">61-90</th>
+                                <th class="text-right">91-120</th>
+                                <th class="text-right">120+</th>
+                            </tr>
+                        </thead>
+                        <tfoot style="display: table-footer-group;">
+                            <tr>
+                                <td>Total</td>
+                                <td class="text-right" t-out="format_amount(totals['residual'])" />
+                                <td class="text-right" t-out="format_amount(totals['current'])" />
+                                <td class="text-right" t-out="format_amount(totals['30_days'])" />
+                                <td class="text-right" t-out="format_amount(totals['60_days'])" />
+                                <td class="text-right" t-out="format_amount(totals['90_days'])" />
+                                <td class="text-right" t-out="format_amount(totals['120_days'])" />
+                                <td class="text-right" t-out="format_amount(totals['older'])" />
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            <t t-foreach="accounts" t-as="account">
+                                <tr class="account-row">
+                                    <td>
+                                        <t t-out="account['code']" /> - <t t-out="account['name']" />
+                                    </td>
+                                    <td class="text-right" t-out="format_amount(account['residual'])" />
+                                    <td class="text-right" t-out="format_amount(account['current'])" />
+                                    <td class="text-right" t-out="format_amount(account['30_days'])" />
+                                    <td class="text-right" t-out="format_amount(account['60_days'])" />
+                                    <td class="text-right" t-out="format_amount(account['90_days'])" />
+                                    <td class="text-right" t-out="format_amount(account['120_days'])" />
+                                    <td class="text-right" t-out="format_amount(account['older'])" />
+                                </tr>
+                                <tr
+                                    class="partner-row"
+                                    t-foreach="account['partners']"
+                                    t-as="partner"
+                                >
+                                    <td class="partner-name" t-out="partner['name']" />
+                                    <td class="text-right" t-out="format_amount(partner['residual'])" />
+                                    <td class="text-right" t-out="format_amount(partner['current'])" />
+                                    <td class="text-right" t-out="format_amount(partner['30_days'])" />
+                                    <td class="text-right" t-out="format_amount(partner['60_days'])" />
+                                    <td class="text-right" t-out="format_amount(partner['90_days'])" />
+                                    <td class="text-right" t-out="format_amount(partner['120_days'])" />
+                                    <td class="text-right" t-out="format_amount(partner['older'])" />
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

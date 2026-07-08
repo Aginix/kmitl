@@ -31,7 +31,7 @@
                             />
                         </div>
                         <div style="position: absolute; top: 0px; right: 0px">
-                            <div>แทน แบบ พจ.1</div>
+                            <div>แบบ พจ.1</div>
                         </div>
                         <div class="oe_structure" />
                         <div style="height: 1px" />
@@ -233,6 +233,10 @@
                         </ol>
 
                         <div class="my-5" style="height: 10px" />
+
+                        <t
+                            t-call="purchase_request_approval.report_purchase_request_sign"
+                        />
                     </div>
                 </t>
             </t>
@@ -315,12 +319,21 @@
     <template id="report_purchase_request_sign">
         <div class="my-5">
             <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้ขอให้จัดหา</div>
-                <div class="text-center my-2"> ( <span t-field="o.requested_by" /> ) </div>
+                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้รับผิดชอบ</div>
+                <div class="text-center my-2">
+                    ( <span t-field="o.requested_by" />
+                    )
+                </div>
             </div>
-        </div>
-        <div class="my-5" />
-        <div class="my-5">
+            <div class="my-5" />
+            <div class="my-2 d-inline-block">
+                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สร้างคำขอ</div>
+                <div class="text-center my-2">
+                    ( <span t-field="o.user_id" />
+                    )
+                </div>
+            </div>
+            <div class="my-5" />
             <div class="my-2 d-inline-block">
                 <div>ลงชื่อ <t t-out="'.' * 80" /></div>
                 <div class="text-center"> ( <span t-field="o.requested_by" /> ) </div>
@@ -329,5 +342,6 @@
                 </div>
             </div>
         </div>
+        <div class="my-5" />
     </template>
 </odoo>

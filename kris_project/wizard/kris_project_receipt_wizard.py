@@ -11,15 +11,10 @@ class KrisProjectReceiptWizard(models.TransientModel):
         required=True,
         readonly=True,
     )
-    available_installment_ids = fields.Many2many(
-        comodel_name="kris.project.installment",
-        string="งวดที่ใช้ได้",
-        compute="_compute_available_installment_ids",
-    )
     installment_id = fields.Many2one(
         comodel_name="kris.project.installment",
         string="Installment Number",
-        domain="[('id', 'in', available_installment_ids)]",
+        domain="[('project_id', '=', project_id)]",
         ondelete="set null",
     )
     name = fields.Char(
@@ -72,15 +67,6 @@ class KrisProjectReceiptWizard(models.TransientModel):
             ]
         return res
 
-    @api.depends("project_id", "project_id.receipt_ids.installment_id")
-    def _compute_available_installment_ids(self):
-        for wiz in self:
-            used_ids = wiz.project_id.receipt_ids.mapped("installment_id").ids
-            available = wiz.project_id.installment_ids.filtered(
-                lambda i: i.id not in used_ids
-            )
-            wiz.available_installment_ids = available
-
     @api.depends("amount", "equipment_cost_in_installment")
     def _compute_net_amount(self):
         for wiz in self:
@@ -88,15 +74,32 @@ class KrisProjectReceiptWizard(models.TransientModel):
 
     @api.onchange("installment_id")
     def _onchange_installment_id(self):
-        if self.installment_id:
-            self.amount = self.installment_id.amount
-            self.extra_income = self.installment_id.extra_income
-            inst_alloc_by_line = {
-                ia.allocation_line_id.id: ia.amount
-                for ia in self.installment_id.allocation_ids
-            }
-            for line in self.allocation_ids:
-                line.amount = inst_alloc_by_line.get(line.allocation_line_id.id, 0.0)
+        inst = self.installment_id
+        if not inst:
+            return
+        # A single installment (งวดงาน) may be recorded across several receipts,
+        # so pre-fill only the amount still outstanding on it. Pre-filling the
+        # full figures would double-count and trip the allocation / extra-income
+        # guards; a fully-received installment therefore pre-fills zero, leaving
+        # any over-collection to be entered deliberately.
+        self.amount = max(0.0, inst.amount - inst.received_total)
+        received_extra = sum(inst.receipt_ids.mapped("extra_income"))
+        self.extra_income = max(0.0, inst.extra_income - received_extra)
+        inst_alloc_by_line = {
+            ia.allocation_line_id.id: ia.amount for ia in inst.allocation_ids
+        }
+        received_by_line = {}
+        for receipt in inst.receipt_ids:
+            for ra in receipt.allocation_ids:
+                received_by_line[ra.allocation_line_id.id] = (
+                    received_by_line.get(ra.allocation_line_id.id, 0.0) + ra.amount
+                )
+        for line in self.allocation_ids:
+            lid = line.allocation_line_id.id
+            line.amount = max(
+                0.0,
+                inst_alloc_by_line.get(lid, 0.0) - received_by_line.get(lid, 0.0),
+            )
 
     def action_save(self):
         self.ensure_one()

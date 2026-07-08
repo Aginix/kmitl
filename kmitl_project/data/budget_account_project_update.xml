@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- โครงการ/กิจกรรม -->
+    <function model="budget.account" name="write">
+        <value model="budget.account" eval="obj().env['budget.account'].search([('code', 'in', ['5108000018', '5108000019', '5108000020', '5108000032'])]).ids"/>
+        <value eval="{'is_project': True, 'project_type': 'project'}"/>
+    </function>
+    <!-- โครงการยุทธศาสตร์ -->
+    <function model="budget.account" name="write">
+        <value model="budget.account" eval="obj().env['budget.account'].search([('code', 'in', ['5107010500', '5107010501', '5107010502', '5107010503', '5107010700', '5107010701', '5107010702', '5107010703'])]).ids"/>
+        <value eval="{'is_project': True, 'project_type': 'strategic_project'}"/>
+    </function>
+</odoo>

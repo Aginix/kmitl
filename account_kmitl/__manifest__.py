@@ -2,7 +2,7 @@
 
 {
     "name": "KMITL - Accounting",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.5",
     "category": "Accounting/Localizations/Account Charts",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -13,9 +13,6 @@
         "data/account_chart_post.xml",
         "data/account_tax_group.xml",
         "data/account_tax_template.xml",
-    ],
-    "demo": [
-        "demo/demo_company.xml",
     ],
     "post_init_hook": "post_init_hook",
     "license": "LGPL-3",

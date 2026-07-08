@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+     IAM-scoped, read-only department views. They show only fields the IAM
+     manager can read (hr.department is readable by every internal user);
+     employee data is never displayed. The user count and the "Users" button
+     derive their data via sudo (see models/hr_department.py). We deliberately
+     do NOT reuse hr's department form, which exposes hr.employee fields the
+     IAM manager has no access to. -->
+<odoo>
+
+    <record id="iam_hr_view_department_tree" model="ir.ui.view">
+        <field name="name">hr.department.tree.iam</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <tree string="Departments" create="0">
+                <field name="complete_name" />
+                <field name="iam_user_count" string="# Users" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="iam_hr_view_department_form" model="ir.ui.view">
+        <field name="name">hr.department.form.iam</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <form string="Department" create="0" edit="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_iam_view_users"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-users"
+                        >
+                            <field
+                                name="iam_user_count"
+                                widget="statinfo"
+                                string="Users"
+                            />
+                        </button>
+                    </div>
+                    <group>
+                        <field name="complete_name" />
+                        <field name="company_id" groups="base.group_multi_company" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_iam_department" model="ir.actions.act_window">
+        <field name="name">Departments</field>
+        <field name="res_model">hr.department</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record id="action_iam_department_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1" />
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="iam_hr_view_department_tree" />
+        <field name="act_window_id" ref="action_iam_department" />
+    </record>
+    <record id="action_iam_department_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2" />
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="iam_hr_view_department_form" />
+        <field name="act_window_id" ref="action_iam_department" />
+    </record>
+
+    <menuitem
+        id="menu_iam_departments"
+        name="Departments"
+        parent="iam.menu_iam_root"
+        action="action_iam_department"
+        sequence="35"
+    />
+
+</odoo>

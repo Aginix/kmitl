@@ -75,7 +75,7 @@
                     <field name="sarabun_document_count" invisible="1" />
                     <button
                         name="action_submit_to_sarabun"
-                        string="สร้างหนังสือ"
+                        string="Create Sarabun"
                         type="object"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('state', '!=', 'validate'), ('sarabun_document_count', '>', 0)]}"
@@ -124,7 +124,7 @@
                             class="oe_stat_button"
                             icon="fa-file-text-o"
                             attrs="{'invisible': [('sarabun_document_count', '=', 0)]}"
-                            string="หนังสือ"
+                            string="Sarabun Document"
                         />
                     </div>
                     <widget
@@ -276,7 +276,7 @@
                     domain="[('date_start', '>=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
                                 ('date_start', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"
                 />
-                <group expand="1" string="Group By">
+                <group expand="1" name="group_by" string="Group By">
                     <filter
                         name="group_by_account_fiscal_year_id"
                         string="Fiscal Year"

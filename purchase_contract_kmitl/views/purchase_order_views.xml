@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date_order']/../.." position="after">
                 <group
-                    string="รายละเอียดสัญญา/ใบสั่งซื้อ/จ้าง"
+                    string="Contract Details"
                     name="contract_info_section"
                 >
                     <group>
@@ -36,7 +36,7 @@
                         </div>
                     </group>
                 </group>
-                <group string="ค่าปรับและค่าควบคุมงาน" name="fines_supervision_section">
+                <group string="Fines Details" name="fines_supervision_section">
                     <group>
                         <field name="fines_late" invisible="1" />
                         <field name="late_days" invisible="1" />
@@ -46,7 +46,7 @@
                 </group>
             </xpath>
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="ค่าปรับล่าช้า" name="late_fines_page">
+                <page string="Fines" name="late_fines_page">
                     <group>
                         <field name="fines_late" widget="float" readonly="1" />
                         <field name="late_days" readonly="1" />
@@ -139,9 +139,6 @@
             </xpath>
             <xpath expr="//field[@name='date_planned']" position="attributes">
                 <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='amount_total']" position="after">
-                <field name="work_end_display"/>
             </xpath>
         </field>
     </record>

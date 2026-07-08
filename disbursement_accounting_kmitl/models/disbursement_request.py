@@ -130,10 +130,7 @@ class DisbursementRequest(models.Model):
                 _("Only approved requests can be used to create bills.")
             )
 
-        if self.partner_type == "single":
-            bills = self._create_single_bill()
-        else:
-            bills = self._create_multi_bills()
+        bills = self._create_bills()
 
         for bill in bills:
             bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
@@ -148,25 +145,12 @@ class DisbursementRequest(models.Model):
 
         return bills
 
-    def _create_single_bill(self):
-        """Create one bill for all lines (single-partner mode)."""
-        self.ensure_one()
-        invoice_lines = [
-            Command.create(self._prepare_bill_line_vals(line))
-            for line in self.line_ids
-        ]
-        bill = self.env["account.move"].with_context(
-            auto_submit_on_create=True
-        ).create(
-            self._prepare_bill_vals(
-                self.partner_id, self.partner_bank_id, invoice_lines
-            )
-        )
-        self._apply_wht_to_bill(bill, self.line_ids)
-        return bill
+    def _create_bills(self):
+        """Group lines by partner, create one bill per partner.
 
-    def _create_multi_bills(self):
-        """Group lines by partner, create one bill per partner."""
+        Every disbursement request pays a name list (multi-partner), so bills
+        are always split per recipient partner.
+        """
         self.ensure_one()
         partner_lines = {}
         for line in self.line_ids:
@@ -184,8 +168,8 @@ class DisbursementRequest(models.Model):
             ]
             partner_bank = lines[0].partner_bank_id
             bill = self.env["account.move"].with_context(
-            auto_submit_on_create=True
-        ).create(
+                auto_submit_on_create=True
+            ).create(
                 self._prepare_bill_vals(partner, partner_bank, invoice_lines)
             )
             self._apply_wht_to_bill(bill, lines)
@@ -204,8 +188,6 @@ class DisbursementRequest(models.Model):
             "currency_id": self.currency_id.id,
             "company_id": self.company_id.id,
             "invoice_line_ids": invoice_lines,
-            "budget_commitment_id": self.budget_commitment_id.id,
-            "budget_account_id": self.budget_account_id.id,
             "analytic_distribution": self.analytic_distribution,
         }
 
@@ -262,7 +244,12 @@ class DisbursementRequest(models.Model):
         }
 
     def action_post_bills(self):
-        """Post all unposted bills and transition DR state to bills_posted."""
+        """Post all unposted bills and transition DR state to bills_posted.
+
+        Programmatic/demo entry point only — it posts bills directly, bypassing
+        the account.move approval. In the UI bills are posted by approving them
+        on the account.move (Approve = post); there is no "Post Bills" button.
+        """
         for record in self:
             if record.state != "approved":
                 raise UserError(

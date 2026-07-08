@@ -1,0 +1,642 @@
+.o_budget_overview {
+    // Enterprise palette: navy-ink monochrome, hairline borders, deep/muted
+    // status colours used sparingly. Conservative — no bright accents.
+    --bo-ink: #0f172a;
+    --bo-text: #1f2937;
+    --bo-muted: #667085;
+    --bo-faint: #98a2b3;
+    --bo-bg: #f4f6f8;
+    --bo-surface: #ffffff;
+    --bo-border: #e4e7ec;
+    --bo-divider: #eef1f4;
+    --bo-accent: #334155;
+    --bo-green: #15803d;
+    --bo-amber: #b45309;
+    --bo-red: #b91c1c;
+    --bo-radius: 10px;
+
+    padding: 24px 28px;
+    height: 100%;
+    overflow: auto;
+    background: var(--bo-bg);
+    color: var(--bo-text);
+
+    // --- header / filters ------------------------------------------------
+    .o_bo_header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px 24px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--bo-border);
+    }
+
+    .o_bo_title {
+        h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--bo-ink);
+        }
+        .o_bo_subtitle {
+            color: var(--bo-muted);
+            font-size: 13px;
+        }
+    }
+
+    .o_bo_filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .o_bo_filter {
+        display: flex;
+        flex-direction: column;
+
+        label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--bo-faint);
+            margin-bottom: 4px;
+            letter-spacing: 0.02em;
+        }
+        select {
+            min-width: 210px;
+            height: 34px;
+            padding: 0 10px;
+            font-size: 13px;
+            color: var(--bo-ink);
+            border: 1px solid var(--bo-border);
+            border-radius: 8px;
+            background: var(--bo-surface);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+            &:focus {
+                outline: none;
+                border-color: var(--bo-accent);
+                box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
+            }
+        }
+    }
+
+    // --- section divider -------------------------------------------------
+    .o_bo_section {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 28px 0 14px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: var(--bo-muted);
+
+        &::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--bo-border);
+        }
+    }
+
+    .o_bo_loading {
+        padding: 64px;
+        text-align: center;
+        color: var(--bo-muted);
+    }
+
+    // --- KPI summary -----------------------------------------------------
+    .o_bo_kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .o_bo_kpi {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px 20px;
+        background: var(--bo-surface);
+        border: 1px solid var(--bo-border);
+        border-radius: var(--bo-radius);
+
+        .o_bo_kpi_label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--bo-faint);
+            letter-spacing: 0.04em;
+        }
+        .o_bo_kpi_value {
+            font-size: 26px;
+            font-weight: 600;
+            line-height: 1.1;
+            color: var(--bo-ink);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.01em;
+        }
+        .o_bo_kpi_sub {
+            font-size: 12px;
+            color: var(--bo-muted);
+        }
+    }
+
+    // remaining: calm ink by default, deep red only when negative
+    .o_bo_pos { color: var(--bo-ink); }
+    .o_bo_neg { color: var(--bo-red); }
+
+    // --- category cards --------------------------------------------------
+    .o_bo_cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 16px;
+        align-items: start;
+    }
+
+    .o_bo_card {
+        background: var(--bo-surface);
+        border: 1px solid var(--bo-border);
+        border-radius: var(--bo-radius);
+        padding: 18px 20px;
+        cursor: pointer;
+        transition: box-shadow 0.16s ease, border-color 0.16s ease,
+            transform 0.16s ease;
+
+        &:hover {
+            border-color: #d3d8e0;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04),
+                0 12px 28px -10px rgba(16, 24, 40, 0.16);
+            transform: translateY(-1px);
+        }
+        &:focus-visible {
+            outline: none;
+            border-color: var(--bo-accent);
+            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.14);
+        }
+
+        .o_bo_card_head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+
+            // status dot (reads the card's status class)
+            &::before {
+                content: "";
+                flex: 0 0 auto;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--bo-faint);
+            }
+        }
+        .o_bo_code {
+            font-weight: 700;
+            color: var(--bo-ink);
+            font-variant-numeric: tabular-nums;
+        }
+        .o_bo_name {
+            color: var(--bo-muted);
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .o_bo_card_remain {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            .o_bo_remain_label {
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--bo-faint);
+                letter-spacing: 0.04em;
+            }
+            .o_bo_remain_value {
+                font-size: 23px;
+                font-weight: 600;
+                line-height: 1.1;
+                color: var(--bo-ink);
+                font-variant-numeric: tabular-nums;
+                letter-spacing: -0.01em;
+            }
+        }
+
+        .o_bo_bar {
+            height: 5px;
+            border-radius: 999px;
+            background: var(--bo-divider);
+            overflow: hidden;
+            margin: 12px 0 10px;
+        }
+        .o_bo_bar_fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--bo-faint);
+            transition: width 0.3s ease;
+        }
+
+        .o_bo_card_foot {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--bo-muted);
+            b {
+                font-weight: 600;
+                font-variant-numeric: tabular-nums;
+                color: var(--bo-text);
+            }
+        }
+
+        // status: dot + bar carry the signal; the figure stays ink unless
+        // the category is over budget (danger -> red).
+        &.o_bo_ok {
+            .o_bo_card_head::before { background: var(--bo-green); }
+            .o_bo_bar_fill { background: var(--bo-green); }
+        }
+        &.o_bo_warning {
+            .o_bo_card_head::before { background: var(--bo-amber); }
+            .o_bo_bar_fill { background: var(--bo-amber); }
+        }
+        &.o_bo_danger {
+            .o_bo_card_head::before { background: var(--bo-red); }
+            .o_bo_bar_fill { background: var(--bo-red); }
+            .o_bo_remain_value { color: var(--bo-red); }
+        }
+
+        // top-level fund / activity breakdown
+        .o_bo_breakdown {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--bo-divider);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .o_bo_bd_group {
+            display: flex;
+            flex-direction: column;
+        }
+        .o_bo_bd_head,
+        .o_bo_bd_row {
+            display: grid;
+            grid-template-columns: 1fr 96px 96px;
+            column-gap: 10px;
+            align-items: baseline;
+        }
+        .o_bo_bd_head {
+            margin-bottom: 5px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--bo-divider);
+            .o_bo_bd_dim {
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.02em;
+                color: var(--bo-text);
+            }
+            .o_bo_bd_h {
+                font-size: 10px;
+                font-weight: 600;
+                color: var(--bo-faint);
+                text-align: right;
+            }
+        }
+        .o_bo_bd_row {
+            font-size: 12px;
+            padding: 2px 0;
+            .o_bo_bd_name {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: var(--bo-text);
+                b {
+                    color: var(--bo-ink);
+                    font-variant-numeric: tabular-nums;
+                }
+            }
+            .o_bo_bd_cur {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+                color: var(--bo-muted);
+            }
+            .o_bo_bd_rem {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+                font-weight: 600;
+                color: var(--bo-ink);
+            }
+        }
+    }
+
+    .o_bo_empty {
+        padding: 28px;
+        color: var(--bo-muted);
+    }
+
+    // --- recent-movement panels -----------------------------------------
+    .o_bo_panels {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+    }
+
+    .o_bo_panel {
+        background: var(--bo-surface);
+        border: 1px solid var(--bo-border);
+        border-radius: var(--bo-radius);
+        overflow: hidden;
+    }
+
+    .o_bo_panel_head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--bo-border);
+
+        .o_bo_panel_title {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--bo-ink);
+        }
+        .o_bo_viewall {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--bo-accent);
+            cursor: pointer;
+            white-space: nowrap;
+            i {
+                font-size: 9px;
+                transition: transform 0.15s ease;
+            }
+            &:hover {
+                color: var(--bo-ink);
+                i { transform: translateX(2px); }
+            }
+        }
+    }
+
+    .o_bo_recent {
+        width: 100%;
+        border-collapse: collapse;
+
+        tr {
+            cursor: pointer;
+            border-bottom: 1px solid var(--bo-divider);
+            transition: background 0.12s ease;
+            &:last-child {
+                border-bottom: none;
+            }
+            &:hover {
+                background: #f8fafc;
+            }
+        }
+        td {
+            padding: 10px 16px;
+            vertical-align: middle;
+        }
+
+        .o_bo_r_main {
+            b {
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--bo-ink);
+            }
+            .o_bo_r_date {
+                font-size: 11px;
+                color: var(--bo-faint);
+            }
+        }
+        .o_bo_type {
+            display: inline-block;
+            margin-right: 5px;
+            padding: 0 6px;
+            border-radius: 4px;
+            background: var(--bo-divider);
+            color: var(--bo-muted);
+            font-weight: 600;
+        }
+        .o_bo_r_amt {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            color: var(--bo-text);
+            white-space: nowrap;
+        }
+        .o_bo_r_state {
+            text-align: right;
+            width: 1%;
+            white-space: nowrap;
+        }
+        .o_bo_r_empty td {
+            text-align: center;
+            color: var(--bo-faint);
+            cursor: default;
+            padding: 22px;
+        }
+        .o_bo_r_empty:hover {
+            background: transparent;
+        }
+    }
+
+    // --- badges: muted corporate tags (no purple) ------------------------
+    .o_bo_badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.5;
+        white-space: nowrap;
+    }
+    .o_bo_badge_secondary { background: #eef1f4; color: #475467; }
+    .o_bo_badge_info { background: #e8eef6; color: #1d4e79; }
+    .o_bo_badge_primary { background: #e7eaf1; color: #283447; }
+    .o_bo_badge_warning { background: #f8edda; color: #92561a; }
+    .o_bo_badge_success { background: #e4f0e8; color: #1f6b39; }
+    .o_bo_badge_danger { background: #f7e4e4; color: #a52a2a; }
+
+    // --- department (ส่วนงาน) multi-select dropdown ----------------------
+    .o_bo_dept_wrap {
+        position: relative;
+    }
+    .o_bo_dept_btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 210px;
+        height: 34px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: var(--bo-ink);
+        border: 1px solid var(--bo-border);
+        border-radius: 8px;
+        background: var(--bo-surface);
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+            border-color: var(--bo-accent);
+            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
+        }
+        i { color: var(--bo-faint); font-size: 11px; }
+    }
+    .o_bo_dept_backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+    }
+    .o_bo_dept_panel {
+        position: absolute;
+        z-index: 1001;
+        top: calc(100% + 4px);
+        left: 0;
+        min-width: 260px;
+        max-width: 360px;
+        background: var(--bo-surface);
+        border: 1px solid var(--bo-border);
+        border-radius: 8px;
+        box-shadow: 0 12px 28px -10px rgba(16, 24, 40, 0.24);
+        padding: 8px;
+    }
+    .o_bo_dept_actions {
+        display: flex;
+        gap: 12px;
+        padding: 4px 6px 8px;
+        border-bottom: 1px solid var(--bo-divider);
+        margin-bottom: 6px;
+
+        a {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bo-accent);
+            cursor: pointer;
+            &:hover { color: var(--bo-ink); }
+        }
+    }
+    .o_bo_dept_list {
+        max-height: 280px;
+        overflow-y: auto;
+    }
+    .o_bo_dept_item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 6px;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--bo-text);
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover { background: #f8fafc; }
+        input { cursor: pointer; }
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    // --- monthly trend chart ---------------------------------------------
+    .o_bo_chart_panel {
+        padding: 16px 18px 8px;
+    }
+    .o_echart {
+        width: 100%;
+        height: 320px;
+    }
+
+    // --- dimension sections (extension: โครงการ/กิจกรรม, แผนจัดซื้อจัดจ้าง) -
+    .o_bo_dim_panel {
+        padding: 4px 0;
+    }
+    .o_bo_dim_table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead th {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--bo-faint);
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--bo-border);
+            white-space: nowrap;
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--bo-divider);
+            transition: background 0.12s ease;
+            &:last-child { border-bottom: none; }
+        }
+        .o_bo_clickable {
+            cursor: pointer;
+            &:hover { background: #f8fafc; }
+        }
+        td {
+            padding: 9px 16px;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+        .o_bo_dim_name {
+            color: var(--bo-text);
+            b {
+                color: var(--bo-ink);
+                font-variant-numeric: tabular-nums;
+                margin-right: 4px;
+            }
+        }
+        .o_bo_dim_num {
+            font-variant-numeric: tabular-nums;
+            color: var(--bo-text);
+            white-space: nowrap;
+        }
+        .o_bo_dim_bar_col {
+            width: 120px;
+        }
+        .o_bo_bar {
+            height: 5px;
+            border-radius: 999px;
+            background: var(--bo-divider);
+            overflow: hidden;
+        }
+        .o_bo_bar_fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--bo-faint);
+        }
+        .o_bo_r_empty td {
+            text-align: center;
+            color: var(--bo-faint);
+            padding: 22px;
+        }
+    }
+
+    // breakdown rows inside category cards become clickable drill-downs
+    .o_bo_bd_clickable {
+        cursor: pointer;
+        margin: 0 -6px;
+        padding-left: 6px;
+        padding-right: 6px;
+        border-radius: 6px;
+        &:hover { background: #f1f5f9; }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .o_budget_overview .o_bo_card,
+    .o_budget_overview .o_bo_bar_fill,
+    .o_budget_overview .o_bo_viewall i {
+        transition: none;
+    }
+}

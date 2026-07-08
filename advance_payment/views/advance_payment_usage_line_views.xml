@@ -26,7 +26,7 @@
                         <field name="amount"/>
                         <field name="note"/>
                     </group>
-                    <group string="เอกสารแนบ">
+                    <group name="attachments" string="เอกสารแนบ">
                         <field name="attachment_ids" nolabel="1" widget="many2many_binary"/>
                     </group>
                 </sheet>

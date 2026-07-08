@@ -35,7 +35,7 @@ msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้า�
 #. module: purchase_request_egp
 #: model:ir.model.fields.selection,name:purchase_request_egp.selection__purchase_request__egp_status__in_progress
 msgid "In progress e-GP"
-msgstr ""
+msgstr "อยู่ระหว่างดำเนินการ e-GP"
 
 #. module: purchase_request_egp
 #. odoo-python
@@ -67,12 +67,12 @@ msgstr ""
 #. module: purchase_request_egp
 #: model:ir.model.fields.selection,name:purchase_request_egp.selection__purchase_request__egp_status__waiting
 msgid "Waiting for e-GP"
-msgstr ""
+msgstr "กำลังรอ e-GP"
 
 #. module: purchase_request_egp
 #: model:ir.model.fields.selection,name:purchase_request_egp.selection__purchase_request__egp_status__done
 msgid "done e-GP"
-msgstr ""
+msgstr "เสร็จสิ้น"
 
 #. module: purchase_request_egp
 #: model:ir.model.fields,field_description:purchase_request_egp.field_purchase_request__is_egp

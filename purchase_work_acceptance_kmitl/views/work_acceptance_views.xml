@@ -87,12 +87,6 @@
                                     name="note"
                                     attrs="{'readonly': [('employee_id', '!=', False)]}"
                                 />
-                                <field
-                                    name="write_date"
-                                    string="Timestamp"
-                                    readonly="1"
-                                    attrs="{'invisible': [('status', '=', False)]}"
-                                />
                             </tree>
                         </field>
                 </page>
@@ -212,7 +206,7 @@
                             string="Accept"
                             attrs="{'invisible': [('can_review', '=', False)]}"
                             type="object"
-                            class="oe_inline oe_button btn-success"
+                            class="oe_inline oe_button btn-success mx-2"
                             icon="fa-thumbs-up"
                         />
                         <button
@@ -370,7 +364,7 @@
             </xpath>
 
             <xpath expr="/form/sheet/notebook" position="before">
-                <group string="รายละเอียดค่าปรับ" name="fines_section">
+                <group string="Fines Details" name="fines_section">
                     <group>
                         <field name="late_days" />
                         <field name="fines_rate" />
@@ -408,7 +402,7 @@
         <field name="arch" type="xml">
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page
-                    string="วันที่ดำเนินงาน"
+                    string="Construction"
                 >
                 <group>
                      <group>
@@ -463,6 +457,62 @@
 
             <xpath expr="//field[@name='currency_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Deliverables on WA form (shown next to the invoice plan installment) -->
+    <record id="view_work_acceptance_form_deliverables" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form.deliverables</field>
+        <field name="model">work.acceptance</field>
+        <field
+            name="inherit_id"
+            ref="purchase_work_acceptance_invoice_plan.view_work_acceptance_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='installment_id']" position="after">
+                <field name="deliverables" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Override comment.wizard: replace free-text with selection for work.acceptance -->
+    <record id="view_comment_wizard_wa_inherit" model="ir.ui.view">
+        <field name="name">comment.wizard.wa.inherit</field>
+        <field name="model">comment.wizard</field>
+        <field name="inherit_id" ref="base_tier_validation.view_comment_wizard"/>
+        <field name="arch" type="xml">
+            <field name="comment" position="before">
+                <field name="res_model" invisible="1"/>
+            </field>
+            <field name="comment" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': [('res_model', '=', 'work.acceptance')],
+                     'required': [('res_model', '!=', 'work.acceptance')]}
+                </attribute>
+            </field>
+            <field name="comment" position="after">
+                <field
+                    name="wa_reason"
+                    widget="radio"
+                    attrs="{'invisible': [('res_model', '!=', 'work.acceptance')],
+                            'required': [('res_model', '=', 'work.acceptance')]}"
+                />
+            </field>
+            <!-- For work.acceptance, relabel the submit button as "Confirm" -->
+            <xpath expr="//footer/button[@name='add_comment']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('res_model', '=', 'work.acceptance')]}</attribute>
+            </xpath>
+            <xpath expr="//footer/button[@name='add_comment']" position="before">
+                <button
+                    name="add_comment"
+                    string="Confirm"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': [('res_model', '!=', 'work.acceptance')]}"
+                />
             </xpath>
         </field>
     </record>

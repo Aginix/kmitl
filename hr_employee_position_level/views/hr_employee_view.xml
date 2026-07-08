@@ -55,7 +55,7 @@
         <field name="inherit_id" ref="hr.view_employee_filter" />
         <field name="arch" type="xml">
             <search>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         string="Position Level"
                         name="position_level_relation_id"

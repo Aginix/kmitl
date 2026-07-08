@@ -1,5 +1,6 @@
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 
 class ApprovalRequest(models.Model):
@@ -12,12 +13,13 @@ class ApprovalRequest(models.Model):
         "mail.thread",
         "mail.activity.mixin",
     ]
-    _order = "name"
+    _order = "name desc"
 
     READONLY_STATES = {
         "to_verify": [("readonly", True)],
         "submitted": [("readonly", True)],
         "approved": [("readonly", True)],
+        "ready_to_bill": [("readonly", True)],
         "billed": [("readonly", True)],
         "rejected": [("readonly", True)],
     }
@@ -83,19 +85,11 @@ class ApprovalRequest(models.Model):
         states=READONLY_STATES,
     )
 
-    department_id = fields.Many2one(
-        string="Department",
-        comodel_name="hr.department",
-        default=lambda self: self.env.user.employee_id.department_id,
-        required=True,
-        tracking=True,
-        states=READONLY_STATES,
-    )
-
     name = fields.Char(
         string="Name",
         default="/",
         required=True,
+        copy=False,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -110,8 +104,8 @@ class ApprovalRequest(models.Model):
 
     owner_id = fields.Many2one(
         string="Request Owner",
-        comodel_name="res.users",
-        default=lambda self: self.env.uid,
+        comodel_name="hr.employee",
+        default=lambda self: self.env.user.employee_id,
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -168,6 +162,14 @@ class ApprovalRequest(models.Model):
         "approval.request.line",
         "request_id",
         string="Expense Lines",
+        copy=True,
+    )
+
+    payee_ids = fields.One2many(
+        "approval.request.payee",
+        "request_id",
+        string="Payees",
+        copy=True,
     )
 
     has_period = fields.Boolean(
@@ -188,10 +190,12 @@ class ApprovalRequest(models.Model):
         ("submitted", "Submitted"),
         ("validated", "Validated"),
         ("approved", "Approved"),
+        ("ready_to_bill", "Ready to Bill"),
         ("billed", "Billed"),
         ("rejected", "Rejected"),
     ],
         default="draft",
+        copy=False,
         string="state"
     )
 
@@ -203,16 +207,45 @@ class ApprovalRequest(models.Model):
         help="Related budget commitment for this approval request",
     )
 
+    budget_commitment_amount = fields.Monetary(
+        related="budget_commitment_id.amount",
+        string="Reserved Amount",
+        currency_field="currency_id",
+        readonly=True,
+    )
+
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
         domain=lambda self: self._domain_budget_account_id(),
-        copy=False,
         tracking=True,
     )
 
     def _domain_budget_account_id(self):
         return [("purchase_ok", "=", True), ("product_id", "!=", False)]
+
+    def _reservation_account_domain(self):
+        """Budget codes selectable in the reservation picker for this request.
+
+        Mirror the budget_account_id field domain (purchasable, product-backed
+        codes) on top of the mixin's budgetable/expense baseline, so the picker
+        cannot offer — and apply_reservation_selection cannot write — a code the
+        request rejects.
+        """
+        return super()._reservation_account_domain() + self._domain_budget_account_id()
+
+    def apply_reservation_selection(self, selections, dims=None):
+        """Picker write-back: set the budget code + dimensions, then push the
+        distribution onto the request lines (the analytic_distribution onchange
+        does not fire on an ORM write)."""
+        res = super().apply_reservation_selection(selections, dims=dims)
+        if (
+            self.analytic_distribution
+            and self.line_ids
+            and "analytic_distribution" in self.line_ids._fields
+        ):
+            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
+        return res
 
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -255,6 +288,15 @@ class ApprovalRequest(models.Model):
         search="_search_source_analytic_id",
     )
 
+    account_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal Year",
+        tracking=True,
+        store=True,
+        compute="_compute_date_range_fy",
+        search="_search_date_range_fy",
+    )
+
     _analytic_keys = {
         "activities": "activity_analytic_id",
         "departments": "department_analytic_id",
@@ -279,10 +321,6 @@ class ApprovalRequest(models.Model):
                 if analytic:
                     distribution[str(analytic.id)] = 100
             self.analytic_distribution = distribution or False
-
-    @api.onchange("owner_id")
-    def _onchange_owner_id(self):
-        self.department_id = self.owner_id.employee_id.department_id
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
@@ -316,6 +354,41 @@ class ApprovalRequest(models.Model):
             )
         ]
 
+    @api.depends("date", "company_id")
+    def _compute_date_range_fy(self):
+        for rec in self:
+            date = fields.Date.to_date(rec.date)
+            company = rec.company_id
+            rec.account_fiscal_year_id = (
+                company and company.find_daterange_fy(date) or False
+            )
+
+    @api.model
+    def _search_date_range_fy(self, operator, value):
+        if operator in ("=", "!=", "in", "not in"):
+            date_range_domain = [("id", operator, value)]
+        else:
+            date_range_domain = [("name", operator, value)]
+
+        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
+
+        domain = [("id", "=", -1)]
+        for date_range in date_ranges:
+            domain = expression.OR(
+                [
+                    domain,
+                    [
+                        "&",
+                        ("date", ">=", date_range.date_from),
+                        ("date", "<=", date_range.date_to),
+                        "|",
+                        ("company_id", "=", False),
+                        ("company_id", "=", date_range.company_id.id),
+                    ],
+                ]
+            )
+        return domain
+
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all order lines"""
@@ -343,15 +416,18 @@ class ApprovalRequest(models.Model):
             line._update_analytic_distribution("sources")
     
     def action_to_verify(self):
-        # TODO: validate budget commitment before submit
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be verified."))
+            missing = record.payee_ids.filtered(lambda p: not p.partner_bank_id)
+            if missing:
+                raise UserError(_(
+                    "Please select a recipient bank for all payees: %s"
+                ) % ", ".join(missing.mapped("partner_id.name")))
             record.state = "to_verify"
         return True
 
     def action_submit(self):
-        # TODO: validate budget commitment before submit
         for record in self:
             if record.state != "to_verify":
                 raise UserError(_("Only To Verify requests can be submitted."))
@@ -365,9 +441,18 @@ class ApprovalRequest(models.Model):
             record.state = "validated"
         return True
 
+    def action_approve(self):
+        for record in self:
+            if record.state not in ("submitted", "validated"):
+                raise UserError(
+                    _("Only submitted or validated requests can be approved.")
+                )
+            record.state = "approved"
+        return True
+
     def action_bill(self):
         for record in self:
-            if record.state != "approved":
+            if record.state not in ("approved", "ready_to_bill"):
                 raise UserError(_("Only approved requests can be billed."))
             record.state = "billed"
         return True
@@ -414,21 +499,9 @@ class ApprovalRequest(models.Model):
             for record in self:
                 for line in record.line_ids.filtered(lambda l: not l.actual_amount):
                     line.actual_amount = line.total_amount
+        if "line_ids" in vals:
+            self._sync_payees()
         return result
-
-    # def write(self, values):
-    #     if (
-    #         "budget_commitment_id" in values
-    #         and values.get("budget_commitment_id") != self.budget_commitment_id.id
-    #     ):
-    #         self._log_budget_commitment_unlinked()
-
-    #     res = super().write(values)
-
-    #     if "budget_commitment_id" in values and values.get("budget_commitment_id"):
-    #         self._log_budget_commitment_linked()
-
-    #     return res
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -442,6 +515,7 @@ class ApprovalRequest(models.Model):
         for rec in lines:
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
+        lines._sync_payees()
         return lines
 
     def _log_budget_commitment_linked(self):
@@ -465,7 +539,7 @@ class ApprovalRequest(models.Model):
     def action_open_budget_commitment(self):
         self.ensure_one()
         if not self.budget_commitment_id:
-            raise UserError("ยังไม่มี Budget Commitment สำหรับเอกสารนี้")
+            raise UserError(_("ยังไม่มี Budget Commitment สำหรับเอกสารนี้"))
 
         return {
             "type": "ir.actions.act_window",
@@ -482,12 +556,16 @@ class ApprovalRequest(models.Model):
 
         amount = sum(self.line_ids.mapped("total_amount"))
 
+        # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
+        # (account_fiscal_year_id, derived from its date), not today() — otherwise a
+        # request whose FY differs from today is checked against the wrong year.
         check_result = self._check_budget_availability(
             amount=amount,
             activity_analytic_id=self.activity_analytic_id.id,
             department_analytic_id=self.department_analytic_id.id,
             fund_analytic_id=self.fund_analytic_id.id,
             source_analytic_id=self.source_analytic_id.id,
+            account_fiscal_year_id=self.account_fiscal_year_id.id,
         )
 
         if not check_result["is_sufficient"]:
@@ -506,6 +584,7 @@ class ApprovalRequest(models.Model):
                 ref=self.name,
                 description=f"Approval Request: {self.name}",
                 auto_reserve=True,
+                account_fiscal_year_id=self.account_fiscal_year_id.id,
             )
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
@@ -554,6 +633,7 @@ class ApprovalRequest(models.Model):
                 "submitted",
                 "validated",
                 "approved",
+                "ready_to_bill",
                 "billed",
                 "rejected"
             ):
@@ -591,3 +671,36 @@ class ApprovalRequest(models.Model):
     def _compute_total_actual_amount(self):
         for rec in self:
             rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))
+
+    def _sync_payees(self):
+        for rec in self:
+            seen = set()
+            partners_in_order = []
+            for line in rec.line_ids:
+                pid = line.partner_id.id
+                if pid and pid not in seen:
+                    seen.add(pid)
+                    partners_in_order.append(line.partner_id)
+            existing_partner_ids = set()
+            commands = []
+            for payee in rec.payee_ids:
+                if not payee.partner_id or payee.partner_id.id not in seen:
+                    commands.append((2, payee.id))
+                else:
+                    existing_partner_ids.add(payee.partner_id.id)
+            for partner in partners_in_order:
+                if partner.id not in existing_partner_ids:
+                    banks = partner.bank_ids.filtered(
+                        lambda b: not b.company_id
+                        or b.company_id == rec.company_id
+                    )
+                    commands.append((0, 0, {
+                        "partner_id": partner.id,
+                        "partner_bank_id": banks[:1].id if banks else False,
+                    }))
+            if commands:
+                rec.payee_ids = commands
+
+    @api.onchange("line_ids")
+    def _onchange_line_ids_sync_payees(self):
+        self._sync_payees()

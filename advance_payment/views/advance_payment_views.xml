@@ -124,7 +124,7 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="ข้อมูลผู้ยืม">
+                        <group name="borrower_info" string="ข้อมูลผู้ยืม">
                             <field name="is_locked_by_reference" invisible="1" />
                             <field name="requested_by"
                                 attrs="{'readonly': [('is_locked_by_reference', '=', True)]}"
@@ -142,7 +142,7 @@
                             <field name="book_bank" filename="book_bank_filename"
                                 attrs="{'invisible': [('use_attachment_bank', '=', False)]}" />
                         </group>
-                        <group string="ข้อมูลการยืม">
+                        <group name="loan_info" string="ข้อมูลการยืม">
                             <field name="is_reference_visible" invisible="1" />
                             <field name="loan_type_id" widget="selection"
                                 attrs="{'readonly': [('is_locked_by_reference', '=', True)]}" />
@@ -157,7 +157,7 @@
                                 attrs="{'readonly': [('is_locked_by_reference', '=', True)]}" />
                         </group>
                     </group>
-                    <group string="มิติทางบัญชี">
+                    <group name="analytic_dimensions" string="มิติทางบัญชี">
                         <field name="department_analytic_id"
                             attrs="{'readonly': [('state', '!=', 'draft')]}" />
                         <field name="source_analytic_id"
@@ -167,7 +167,7 @@
                         <field name="activity_analytic_id"
                             attrs="{'readonly': [('state', '!=', 'draft')]}" />
                     </group>
-                    <group string="สรุปยอดเงิน" attrs="{'invisible': [('state', '=', 'draft')]}">
+                    <group name="amount_summary" string="สรุปยอดเงิน" attrs="{'invisible': [('state', '=', 'draft')]}">
                         <field name="amount_used" />
                         <field name="amount_returned" />
                         <field name="amount_remaining" />
@@ -176,7 +176,7 @@
                             decoration-warning="disbursement_state == 'pending'"
                             decoration-success="disbursement_state == 'paid'" />
                     </group>
-                    <group string="เหตุผล" attrs="{'invisible': [('cancel_reason', '=', False)]}">
+                    <group name="reason" string="เหตุผล" attrs="{'invisible': [('cancel_reason', '=', False)]}">
                         <field name="cancel_reason" readonly="1" nolabel="1" />
                     </group>
                     <notebook>
@@ -231,7 +231,7 @@
                     domain="[('state','=','in_progress')]" />
                 <filter string="Done" name="done" domain="[('state','=','done')]" />
                 <filter string="Cancelled" name="cancelled" domain="[('state','=','cancel')]" />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="State" name="group_state" context="{'group_by':'state'}" />
                     <filter string="Loan Type" name="group_loan_type"
                         context="{'group_by':'loan_type_id'}" />

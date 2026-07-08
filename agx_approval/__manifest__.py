@@ -1,11 +1,21 @@
 {
     "name": "Aginix Approval",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "license": "LGPL-3",
-    "depends": ["account", "hr", "budget_product", "budget", "base_exception"],
+    "depends": [
+        "account",
+        "hr",
+        "budget_product",
+        "budget",
+        "base_exception",
+        "account_fiscal_year_enhance",
+        "l10n_th_amount_to_text",
+        "partner_type_aginix",
+        "hr_employee_name_detail_kmitl",
+    ],
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
@@ -18,6 +28,8 @@
         "data/approval_sequence.xml",
         "data/approval_category_group.xml",
         "data/approval_category.xml",
+        "reports/paperformat_approval_request.xml",
+        "reports/report_approval_request.xml",
     ],
     "license": "LGPL-3",
 }

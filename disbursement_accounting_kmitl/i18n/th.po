@@ -32,6 +32,36 @@ msgid "Disbursement Request"
 msgstr "ใบขอเบิก"
 
 #. module: disbursement_accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_account_move_form_inherit_disbursement
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_request_name
+msgid "Disbursement Request Number"
+msgstr "เลขที่ใบขอเบิก"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_consumed_amount
+msgid "Budget Consumed (from DR)"
+msgstr "มูลค่างบประมาณที่ตัดไปแล้ว (จาก DR)"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_consumed_date
+msgid "Budget Consumed Date (DR)"
+msgstr "วันที่ตัดงบ (จาก DR)"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_account_move__disbursement_budget_commitment_id
+msgid "Budget Commitment (DR)"
+msgstr "ใบผูกพันงบประมาณ (จาก DR)"
+
+#. module: disbursement_accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_account_move_form_inherit_disbursement
+msgid "Budget Consumed from DR"
+msgstr "งบประมาณที่ตัดจาก DR"
+
+#. module: disbursement_accounting_kmitl
 #: model:ir.model.fields,field_description:disbursement_accounting_kmitl.field_disbursement_request__bill_ids
 msgid "Vendor Bills"
 msgstr "ใบตั้งหนี้ผู้ขาย"
@@ -62,6 +92,12 @@ msgstr "ตั้งหนี้ - ฉบับร่าง"
 #: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bill_posted
 msgid "Bill Posted"
 msgstr "ตั้งหนี้ - ลงบัญชี"
+
+#. module: disbursement_accounting_kmitl
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__state__bills_posted
+#: model:ir.model.fields.selection,name:disbursement_accounting_kmitl.selection__disbursement_request__display_status__bills_posted
+msgid "Bills Posted"
+msgstr "ตั้งหนี้ครบ"
 
 #. module: disbursement_accounting_kmitl
 #: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
@@ -122,3 +158,9 @@ msgstr "ใบตั้งหนี้ผู้ขาย"
 #, python-format
 msgid "Cannot cancel: bill(s) %s already posted. Reverse the bill(s) first."
 msgstr "ไม่สามารถยกเลิกได้: ใบตั้งหนี้ %s ลงบัญชีแล้ว กรุณายกเลิกใบตั้งหนี้ก่อน"
+
+#. module: disbursement_accounting_kmitl
+#: code:addons/disbursement_accounting_kmitl/models/accounting_kmitl_dashboard.py:0
+#, python-format
+msgid "Disbursement requests awaiting billing"
+msgstr "ใบขอเบิกอนุมัติแล้ว รอตั้งหนี้"

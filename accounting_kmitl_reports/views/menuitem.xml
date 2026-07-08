@@ -1,12 +1,56 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <!-- Trial Balance: OWL client action, opened straight from the menu
+         (defaults to the current fiscal year, filterable by KMITL dimensions). -->
+    <record id="action_trial_balance_kmitl" model="ir.actions.client">
+        <field name="name">Trial Balance</field>
+        <field name="tag">kmitl_trial_balance</field>
+    </record>
+
+    <!-- General Ledger: OWL accordion report (OCA general_ledger engine).
+         Launched by the wizard (action_general_ledger_wizard_kmitl), which
+         seeds the chosen accounts + period; the report screen then still
+         offers the full in-screen filter bar to refine live. Each account row
+         expands its entries into the opposite-side counterpart lines with a
+         running balance. -->
+    <record id="action_general_ledger_kmitl" model="ir.actions.client">
+        <field name="name">General Ledger</field>
+        <field name="tag">kmitl_general_ledger</field>
+    </record>
+
+    <!-- General Journal: OWL report listing every journal entry in date order,
+         opened straight from the menu with an in-screen filter bar; each entry
+         row expands to its debit/credit detail lines. -->
+    <record id="action_general_journal_kmitl" model="ir.actions.client">
+        <field name="name">General Journal</field>
+        <field name="tag">kmitl_general_journal</field>
+    </record>
+
+    <!-- Aged Receivable / Aged Payable: OWL client actions sharing one
+         component; the tag selects the account type filtered. -->
+    <record id="action_aged_receivable_kmitl" model="ir.actions.client">
+        <field name="name">Aged Receivable</field>
+        <field name="tag">kmitl_aged_receivable</field>
+    </record>
+    <record id="action_aged_payable_kmitl" model="ir.actions.client">
+        <field name="name">Aged Payable</field>
+        <field name="tag">kmitl_aged_payable</field>
+    </record>
+
+    <!-- Cash Flow Statement: OWL client action (indirect / balance-variation
+         method), filterable by the KMITL accounting dimensions. -->
+    <record id="action_cash_flow_kmitl" model="ir.actions.client">
+        <field name="name">Cash Flow Statement</field>
+        <field name="tag">kmitl_cash_flow</field>
+    </record>
+
     <!-- Actions: open the pre-configured instance directly on its result
          view (the same view mis_builder.preview() uses, so the report
          renders inline without a "Preview" click). -->
 
     <record id="action_report_pl_kmitl" model="ir.actions.act_window">
-        <field name="name">งบกำไรขาดทุน</field>
+        <field name="name">Profit and Loss</field>
         <field name="res_model">mis.report.instance</field>
         <field name="res_id" eval="ref('instance_pl_kmitl')"/>
         <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
@@ -15,18 +59,9 @@
     </record>
 
     <record id="action_report_bs_kmitl" model="ir.actions.act_window">
-        <field name="name">งบแสดงฐานะการเงิน</field>
+        <field name="name">Balance Sheet</field>
         <field name="res_model">mis.report.instance</field>
         <field name="res_id" eval="ref('instance_bs_kmitl')"/>
-        <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
-        <field name="view_mode">form</field>
-        <field name="target">current</field>
-    </record>
-
-    <record id="action_report_cf_kmitl" model="ir.actions.act_window">
-        <field name="name">งบกระแสเงินสด</field>
-        <field name="res_model">mis.report.instance</field>
-        <field name="res_id" eval="ref('instance_cf_kmitl')"/>
         <field name="view_id" ref="mis_builder.mis_report_instance_result_view_form"/>
         <field name="view_mode">form</field>
         <field name="target">current</field>
@@ -35,31 +70,59 @@
     <!-- Menus under accounting_kmitl Reports submenu -->
     <menuitem
         id="menu_report_trial_balance_kmitl"
-        name="งบทดลอง"
+        name="Trial Balance"
         parent="accounting_kmitl.menu_accounting_reports"
-        action="account_financial_report.action_trial_balance_wizard"
+        action="action_trial_balance_kmitl"
         sequence="5"
     />
     <menuitem
+        id="menu_report_general_ledger_kmitl"
+        name="General Ledger"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_general_ledger_wizard_kmitl"
+        sequence="6"
+    />
+    <menuitem
+        id="menu_report_general_journal_kmitl"
+        name="General Journal"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_general_journal_kmitl"
+        sequence="7"
+    />
+    <menuitem
         id="menu_report_pl_kmitl"
-        name="งบกำไรขาดทุน"
+        name="Profit and Loss"
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_report_pl_kmitl"
         sequence="10"
     />
     <menuitem
         id="menu_report_bs_kmitl"
-        name="งบแสดงฐานะการเงิน"
+        name="Balance Sheet"
         parent="accounting_kmitl.menu_accounting_reports"
         action="action_report_bs_kmitl"
         sequence="20"
     />
     <menuitem
         id="menu_report_cf_kmitl"
-        name="งบกระแสเงินสด"
+        name="Cash Flow Statement"
         parent="accounting_kmitl.menu_accounting_reports"
-        action="action_report_cf_kmitl"
+        action="action_cash_flow_kmitl"
         sequence="30"
+    />
+    <menuitem
+        id="menu_report_aged_receivable_kmitl"
+        name="Aged Receivable"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_aged_receivable_kmitl"
+        sequence="40"
+    />
+    <menuitem
+        id="menu_report_aged_payable_kmitl"
+        name="Aged Payable"
+        parent="accounting_kmitl.menu_accounting_reports"
+        action="action_aged_payable_kmitl"
+        sequence="50"
     />
 
 </odoo>

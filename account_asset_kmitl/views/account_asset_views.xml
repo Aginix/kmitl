@@ -8,14 +8,41 @@
             ref="l10n_th_gov_account_asset_management.account_asset_view_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='asset_location_id']" position="after">
-                <field name="location" />
-                <field name="department_id" />
-            </xpath>
-
             <xpath expr="//field[@name='asset_location_id']" position="attributes">
                 <attribute name="groups">base.group_no_one</attribute>
             </xpath>
+
+            <xpath expr="//page[@name='asset_maintenance']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- page name asset_info -->
+            <xpath expr="//page[@name='asset_info']" position="replace"/>
+
+            <xpath expr="//page[.//field[@name='account_move_line_ids']]" position="after">
+                <page name="asset_info" string="Other Information">
+                    <group>
+                        <group>
+                            <field name="employee_id" />
+                            <field name="asset_location_id" />
+                            <field name="location" />
+                            <field name="department_id" />
+                        </group>
+                        <group>
+                            <field name="asset_serial_number" />
+                            <label for="asset_guarantee_start" string="Guarantee" />
+                            <div class="o_row">
+                                <field name="asset_guarantee_start" class="oe_inline" placeholder="Start Date"/>
+                                <span class="oe_inline">-</span>
+                                <field name="asset_guarantee_end" class="oe_inline" placeholder="End Date"/>
+                            </div>
+                            <field name="asset_model" />
+                            <field name="asset_brand" />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
         </field>
     </record>
     <record id="view_account_asset_kmitl_form" model="ir.ui.view">
@@ -37,10 +64,10 @@
                 />
             </xpath>
             <xpath expr="//group[@id='header_right_group']" position="inside">
-                <field name="activity_analytic_id" />
-                <field name="department_analytic_id" />
-                <field name="fund_analytic_id" />
-                <field name="source_analytic_id" />
+                <field name="activity_analytic_id" required="1" />
+                <field name="department_analytic_id" required="1" />
+                <field name="fund_analytic_id" required="1" />
+                <field name="source_analytic_id" required="1" />
             </xpath>
         </field>
     </record>

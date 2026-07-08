@@ -277,7 +277,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Assigned to me"
-msgstr ""
+msgstr "งานของฉัน"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -339,7 +339,7 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__approve_role__chairman
 msgid "Chairman"
-msgstr "ประธาน"
+msgstr "ประธานกรรมการ"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_product_product__purchase_request
@@ -1027,6 +1027,7 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model:ir.model,name:purchase_request_kmitl.model_procurement_method
 #: model:ir.model,name:purchase_request_kmitl.model_procurement_type
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_order__procurement_method_id
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__procurement_method_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search
 msgid "Procurement Method"
@@ -1514,13 +1515,13 @@ msgstr "เริ่มใหม่"
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__user_id
 msgid "Responsible"
-msgstr "ผู้รับผิดชอบ"
+msgstr "ผู้จัดทำ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_user_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_user_id
 msgid "Responsible User"
-msgstr "ผู้รับผิดชอบ"
+msgstr "ผู้จัดทำ"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__approve_role
@@ -1992,29 +1993,23 @@ msgstr "ชื่อเรื่อง"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.purchase_exception_amount_not_exceed_pr
-msgid "กรุณาเช็คยอดเงินใหม่อีกครั้ง"
-msgstr ""
+msgid "Please check your balance again."
+msgstr "กรุณาเช็คยอดเงินใหม่อีกครั้ง"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_2
-msgid ""
-"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี "
-"ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 1 รายชื่อ "
-msgstr ""
+msgid "For procurement exceeding 100,000 baht, At least one TOR committee must be selected."
+msgstr "การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 1 รายชื่อ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_3
-msgid ""
-"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง "
-"จำนวน 1 รายชื่อ "
-msgstr ""
+msgid "For procurement exceeding 100,000 baht, At least one price determine committee must be selected."
+msgstr "การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง จำนวน 1 รายชื่อ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_4
-msgid ""
-"การจัดซื้อจัดจ้าง เกิน 500,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 1 "
-"รายชื่อ "
-msgstr ""
+msgid "For procurement exceeding 100,000 baht, At least one Price Determine Committee must be selected."
+msgstr "การจัดซื้อจัดจ้าง เกิน 500,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 1 รายชื่อ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_exception_committee_2
@@ -2028,8 +2023,8 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "คำขอซื้อขอจ้าง"
-msgstr ""
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_request_kmitl
 #: model:product.template,name:purchase_request_kmitl.product_type_002_product_template
@@ -2064,8 +2059,8 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.pr_line_exception_name_required
-msgid "ชื่อรายการห้ามปล่อยว่าง"
-msgstr ""
+msgid "The item name must not be left blank."
+msgstr "ชื่อรายการห้ามปล่อยว่าง"
 
 #. module: purchase_request_kmitl
 #: model:product.template,name:purchase_request_kmitl.product_type_001_product_template
@@ -2093,23 +2088,23 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_line_exception_name_required
-msgid "ต้องกรอกชื่อรายการ"
-msgstr ""
+msgid "You need to fill in the item name."
+msgstr "ต้องกรอกชื่อรายการ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_1
-msgid "ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 1 รายชื่อ"
-msgstr ""
+msgid "At least one work acceptance committee must be selected."
+msgstr "ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 1 รายชื่อ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_exception_product_1
-msgid "ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง"
-msgstr ""
+msgid "At least one item must be listed."
+msgstr "ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__account_fiscal_year_id
-msgid "ปีงบประมาณ"
-msgstr ""
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_1
@@ -2132,18 +2127,18 @@ msgstr ""
 #: model:exception.rule,description:purchase_request_kmitl.pr_exception_committee_1
 #: model:exception.rule,description:purchase_request_kmitl.pr_exception_committee_2
 #: model:exception.rule,description:purchase_request_kmitl.pr_exception_product_1
-msgid "พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560"
-msgstr ""
+msgid "The Public Procurement and Government Supplies Management Act B.E. 2560 (2017)"
+msgstr "พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.purchase_exception_amount_not_exceed_pr
-msgid "ยอดเงินของเอกสารนี้ เกินยอดเงินในเอกสาร PR"
-msgstr ""
+msgid "The amount in this document exceeds the amount in the PR document."
+msgstr "ยอดเงินของเอกสารนี้ เกินยอดเงินในเอกสาร PR"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.pr_line_exception_price_unit_min_0
-msgid "ระบบไม่อนุญาตให้ราคาต่อหน่วยเป็น 0 หรือค่าติดลบ"
-msgstr ""
+msgid "The system does not allow the unit price to be 0 or negative."
+msgstr "ระบบไม่อนุญาตให้ราคาต่อหน่วยเป็น 0 หรือค่าติดลบ"
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_exception_2_1
@@ -2177,13 +2172,13 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.pr_line_exception_price_unit_min_0
-msgid "ราคาต่อหน่วยต้องมากกว่า 0"
-msgstr ""
+msgid "The unit price must be greater than 0."
+msgstr "ราคาต่อหน่วยต้องมากกว่า 0"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "รายละเอียดคำขอซื้อขอจ้าง"
-msgstr ""
+msgid "Purchase Request Details"
+msgstr "รายละเอียดคำขอซื้อขอจ้าง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__advance
@@ -2223,3 +2218,23 @@ msgid ""
 "When payment type is Advance, please select the advance's\n"
 "                            name in the Vendor field."
 msgstr "กรณีเลือกประเภทการจ่ายเงินเป็นเงินยืมให้เลือกชื่อยืมเงิน"
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.po_payment_type_should_be_the_same_as_pr
+msgid "The payment type in Purchase Order (PO) must match the payment type in Purchase Request (PR)"
+msgstr "ข้อมูลประเภทการเบิกจ่ายในใบสั่งซื้อ/จ้าง (PO) ต้องตรงกับในใบพ.1 (PR)"
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,description:purchase_request_kmitl.po_payment_type_should_be_the_same_as_pr
+msgid "Purchase Order Information"
+msgstr "ข้อมูลใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__is_purchase
+msgid "Is Purchase"
+msgstr "สำหรับ พ.1 ทั้วไป"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__is_construction
+msgid "Is Construction"
+msgstr "สำหรับงานก่อสร้าง"

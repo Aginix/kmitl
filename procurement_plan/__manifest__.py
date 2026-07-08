@@ -1,10 +1,10 @@
 {
     "name": "Procurement Plan",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["web", "budget", "purchase_request_kmitl"],
+    "depends": ["web", "budget"],
     "data": [
         "data/account.analytic.plan.csv",
         "data/sequence.xml",

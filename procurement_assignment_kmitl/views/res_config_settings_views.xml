@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.procurement.assignment</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="purchase.res_config_settings_view_form_purchase"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='purchase_setting_container']" position="inside">
+                <div
+                    class="col-12 col-lg-6 o_setting_box"
+                    id="procurement_assignment_settings"
+                >
+                    <div class="o_setting_left_pane">
+                        <field name="allow_takeover_assigned" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="allow_takeover_assigned" />
+                        <div class="text-muted">
+                            Let any officer use "Assign to me" to take over a
+                            document already assigned to someone else. When off,
+                            officers may only claim unassigned documents.
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

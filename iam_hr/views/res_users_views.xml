@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl). -->
+<odoo>
+
+    <record id="view_users_search_iam_hr" model="ir.ui.view">
+        <field name="name">res.users.search.iam-hr</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_search" />
+        <field name="arch" type="xml">
+            <filter name="filter_share" position="after">
+                <separator />
+                <filter
+                    name="iam_linked_employee"
+                    string="Linked to Employee"
+                    domain="[('iam_has_employee', '=', True)]"
+                />
+                <filter
+                    name="iam_not_linked_employee"
+                    string="Not Linked to Employee"
+                    domain="[('iam_has_employee', '=', False)]"
+                />
+            </filter>
+        </field>
+    </record>
+
+    <record id="view_users_tree_iam_hr" model="ir.ui.view">
+        <field name="name">res.users.tree.iam-hr</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree" />
+        <field name="arch" type="xml">
+            <field name="login_date" position="after">
+                <field name="iam_has_employee" optional="show" />
+            </field>
+        </field>
+    </record>
+
+</odoo>

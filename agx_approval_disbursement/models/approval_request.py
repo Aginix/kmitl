@@ -1,8 +1,130 @@
 from odoo import Command, _, api, fields, models
+from odoo.exceptions import UserError
+
+
+RETURNED_READONLY_STATES = {
+    "to_verify": [("readonly", True)],
+    "submitted": [("readonly", True)],
+    "approved": [("readonly", True)],
+    "ready_to_bill": [("readonly", True)],
+    "billed": [("readonly", True)],
+    "rejected": [("readonly", True)],
+    "returned": [("readonly", True)],
+}
 
 
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
+
+    state = fields.Selection(
+        selection_add=[("returned", "Returned")],
+        ondelete={"returned": "set default"},
+    )
+
+    # A returned request may correct ONLY the payee bank, description and
+    # disbursement evidence. Lock every other normally-editable field by adding
+    # 'returned' to their readonly states (only states= is overridden; the rest
+    # of each field definition is inherited). description is intentionally left
+    # editable in 'returned'.
+    payment_type = fields.Selection(states=RETURNED_READONLY_STATES)
+    category_id = fields.Many2one(states=RETURNED_READONLY_STATES)
+    date = fields.Date(states=RETURNED_READONLY_STATES)
+    owner_id = fields.Many2one(states=RETURNED_READONLY_STATES)
+    date_start = fields.Date(states=RETURNED_READONLY_STATES)
+    date_end = fields.Date(states=RETURNED_READONLY_STATES)
+    city = fields.Char(states=RETURNED_READONLY_STATES)
+    country_id = fields.Many2one(states=RETURNED_READONLY_STATES)
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        """Keep a returned request non-editable at large; the correction fields
+        are opened individually in the view instead."""
+        super()._compute_is_editable()
+        for rec in self:
+            if rec.state == "returned":
+                rec.is_editable = False
+
+    def action_return(self):
+        """Bounce a billed request back to the requester for correction.
+
+        Triggered when its disbursement request is returned by the verification
+        officer (see disbursement_request._action_return_for_edit). The
+        disbursement request is kept as-is at 'signed'; only the approval
+        request moves to 'returned', where a limited set of fields can be
+        corrected before confirming."""
+        for record in self:
+            if record.state != "billed":
+                raise UserError(_("Only billed requests can be returned."))
+            record.state = "returned"
+        return True
+
+    def action_confirm_correction(self):
+        """Confirm a returned request's correction: push the corrected payee
+        bank, description and disbursement evidence onto the existing (signed)
+        disbursement request, clear its returned banner, and move the approval
+        request back to 'billed'. The disbursement request stays at 'signed'
+        for the officer to continue verification."""
+        self.ensure_one()
+        if self.state != "returned":
+            raise UserError(
+                _("Only returned requests can confirm a correction.")
+            )
+        disbursement = self.disbursement_request_ids.filtered(
+            lambda d: d.returned_to_approval and d.state != "cancel"
+        )[:1] or self.disbursement_request_ids.filtered(
+            lambda d: d.state != "cancel"
+        )[:1]
+        self.state = "billed"
+        if disbursement:
+            disbursement.sudo()._apply_approval_correction(self)
+            self.message_post(
+                body=_(
+                    "Correction confirmed; disbursement %(dr)s updated.",
+                    dr=disbursement.name,
+                )
+            )
+        return True
+
+    def _copy_new_evidence_to_disbursement(self, disbursement):
+        """Copy disbursement-evidence attachments added during the correction
+        onto the disbursement request, skipping any already present (matched by
+        checksum) so re-confirming never duplicates files."""
+        self.ensure_one()
+        existing = set(
+            self.env["ir.attachment"].sudo().search([
+                ("res_model", "=", "disbursement.request"),
+                ("res_id", "=", disbursement.id),
+            ]).mapped("checksum")
+        )
+        for attachment in self.disbursement_attachment_ids:
+            if attachment.checksum in existing:
+                continue
+            attachment.sudo().copy({
+                "res_model": "disbursement.request",
+                "res_id": disbursement.id,
+            })
+
+    def action_ready_to_bill(self):
+        """Clerical staff marks a direct/prepaid request ready for the finance
+        officer to bill. Requires at least one disbursement document."""
+        self.ensure_one()
+        if self.state != "approved":
+            raise UserError(
+                _("Only approved requests can be marked ready to bill.")
+            )
+        if self.payment_type not in ("direct", "prepaid"):
+            raise UserError(
+                _("Only direct or prepaid requests use the ready-to-bill step.")
+            )
+        if not self.disbursement_attachment_ids:
+            raise UserError(
+                _(
+                    "Please attach at least one disbursement document before "
+                    "marking this request ready to bill."
+                )
+            )
+        self.state = "ready_to_bill"
+        return True
 
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
@@ -84,6 +206,7 @@ class ApprovalRequest(models.Model):
             "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
             "partner_type": "multi",
+            "payment_type": self.payment_type,
             "line_ids": [
                 Command.create(
                     {
@@ -94,6 +217,7 @@ class ApprovalRequest(models.Model):
                 for line in self.line_ids
             ],
             "ref": self.name,
+            "note": self.description,
             "budget_commitment_id": self.budget_commitment_id.id,
             "budget_account_id": self.budget_account_id.id,
             "analytic_distribution": self.analytic_distribution,
@@ -104,6 +228,7 @@ class ApprovalRequest(models.Model):
         self.action_bill()
         vals = self._prepare_disbursement_request_vals()
         disbursement = self.env["disbursement.request"].create(vals)
+        self._copy_attachments_to_disbursement(disbursement)
 
         link = self._get_record_url()
         disbursement.message_post(
@@ -147,6 +272,25 @@ class ApprovalRequest(models.Model):
                 ("id", "in", self.disbursement_request_ids.ids)
             ]
         return action
+
+    def _copy_attachments_to_disbursement(self, disbursement):
+        """Clone AR attachments to the given DR.
+
+        Includes both the request-side attachment_ids (filtered to
+        non-evidence on this model) and the disbursement_attachment_ids
+        many2many that gathers DR-evidence files staged on the AR.
+
+        Each clone gets its own ir.attachment row pointing at the same
+        SHA1-hashed file in the Odoo filestore, so no binary is duplicated
+        on disk.
+        """
+        self.ensure_one()
+        attachments = self.attachment_ids | self.disbursement_attachment_ids
+        for attachment in attachments:
+            attachment.copy({
+                "res_model": "disbursement.request",
+                "res_id": disbursement.id,
+            })
 
     def _get_record_url(self):
         return "/web#id={}&model={}&view_type=form".format(self.id, self._name)
