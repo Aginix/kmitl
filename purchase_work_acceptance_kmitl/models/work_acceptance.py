@@ -103,6 +103,7 @@ class WorkAcceptance(models.Model):
         readonly=False,
         tracking=True,
         help="Late day(s) from Received Date - Due Date",
+        states={"draft": [("readonly", False)]},
     )
 
     fines_rate = fields.Monetary(
