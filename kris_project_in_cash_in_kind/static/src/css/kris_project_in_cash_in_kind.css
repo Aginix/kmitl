@@ -1,3 +1,4 @@
 .o_research_underline {
-    border-bottom: 1px solid black;
+    text-decoration: underline;
+    text-decoration-color: black;
 }
