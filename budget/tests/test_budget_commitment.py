@@ -590,3 +590,75 @@ class TestBudgetCommitment(TransactionCase):
             }
         )
         self.assertEqual(explicit.appropriation_type, "supplementary")
+
+    # ====================================================================
+    # 6. Return leftover reserved budget (ส่งคืนเงินเหลือจ่าย / คืนจอง)
+    # ====================================================================
+
+    def _return_wizard(self, commitment, **ctx):
+        """Open + return the leftover via the confirmation wizard."""
+        action = commitment.action_return_leftover()
+        self.assertEqual(action["res_model"], "budget.commitment.return.wizard")
+        wizard = (
+            self.env["budget.commitment.return.wizard"]
+            .with_context(**action["context"], **ctx)
+            .create({})
+        )
+        return wizard
+
+    def test_60_return_leftover_releases_reservation(self):
+        """Returning the leftover posts a -reserve line and closes the commitment."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        # Disburse 550 (obligate + consume together, like the DR flow).
+        self._add_line(c, "obligate", 550)
+        self._add_line(c, "consume", 550)
+        self.assertEqual(c.available_to_obligate, 50)
+        self.assertEqual(c.state, "partial")
+        wizard = self._return_wizard(c)
+        self.assertEqual(wizard.return_amount, 50)
+        wizard.action_confirm()
+        # Reserved dropped to consumed; leftover back in the pool; commitment done.
+        self.assertEqual(c.total_reserved, 550)
+        self.assertEqual(c.available_to_obligate, 0)
+        self.assertEqual(c.state, "done")
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(len(ret), 1)
+        self.assertEqual(ret.move_type, "reserve")
+        self.assertEqual(ret.amount, -50)
+        self.assertFalse(ret.budget_move_id)  # no GL/budget move for คืนจอง
+
+    def test_61_return_inherits_reserve_account_and_dims(self):
+        """The return line mirrors the first reserve line's account + dimensions."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 500)
+        self._add_line(c, "consume", 500)
+        self._return_wizard(c).action_confirm()
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(ret.account_id, c.account_id)
+        self.assertEqual(ret.analytic_distribution, self._line_analytic())
+
+    def test_62_return_stamps_source_document_from_context(self):
+        """A return opened from a source doc stamps res_model/res_id for audit."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 550)
+        self._add_line(c, "consume", 550)
+        wizard = self._return_wizard(
+            c, default_res_model="budget.commitment", default_res_id=c.id
+        )
+        wizard.action_confirm()
+        ret = c.line_ids.filtered(lambda l: l.is_return)
+        self.assertEqual(ret.res_model, "budget.commitment")
+        self.assertEqual(ret.res_id, c.id)
+
+    def test_63_return_blocked_when_nothing_left(self):
+        """No leftover -> the action refuses to open the wizard."""
+        c = self._create_commitment(600)
+        c.action_reserve()
+        self._add_line(c, "obligate", 600)
+        self._add_line(c, "consume", 600)
+        self.assertEqual(c.available_to_obligate, 0)
+        with self.assertRaises(UserError):
+            c.action_return_leftover()

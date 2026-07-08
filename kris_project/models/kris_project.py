@@ -7,9 +7,11 @@ from odoo.tools import float_compare
 _logger = logging.getLogger(__name__)
 
 CLIENT_ORG_TYPE_SELECTION = [
-    ("government", "Government"),
+    ("government", "Government Agency"),
     ("state_enterprise", "State Enterprise"),
-    ("private", "Private"),
+    ("public_organization", "Public Organization"),
+    ("independent_organization", "Independent Organization"),
+    ("private", "Private Company"),
     ("other", "Other"),
 ]
 
@@ -44,8 +46,8 @@ def _compute_tiered_deduction(amount):
 class KrisProject(models.Model):
     _name = "kris.project"
     _description = "KRIS Project"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
-    _order = "name desc"
+    _inherit = ["mail.thread", "mail.activity.mixin", "base.exception"]
+    _order = "main_exception_id asc, name desc"
     _rec_name = "name"
 
     name = fields.Char(
@@ -76,7 +78,10 @@ class KrisProject(models.Model):
         selection=[
             ("draft", "Draft"),
             ("in_progress", "In Progress"),
+            ("suspended", "Suspended"),
             ("done", "Done"),
+            ("terminated", "Terminated"),
+            ("conditional_close", "Closed with Conditions"),
             ("cancel", "Cancel"),
         ],
         string="State",
@@ -514,6 +519,65 @@ class KrisProject(models.Model):
                 )
         if vals_list:
             self.env["kris.project.installment.allocation"].create(vals_list)
+
+    @api.model
+    def _reverse_field(self):
+        return "kris_project_ids"
+
+    @api.model
+    def _get_popup_action(self):
+        return self.env.ref(
+            "kris_project.action_kris_project_exception_confirm"
+        )
+
+    def _popup_exceptions(self):
+        action = super()._popup_exceptions()
+        action["context"]["kris_exception_action"] = self.env.context.get(
+            "kris_exception_action", "action_confirm"
+        )
+        return action
+
+    def action_confirm(self):
+        for rec in self:
+            if rec.state != "draft":
+                raise UserError(
+                    _("Only projects that are in draft status can be confirmed.")
+                )
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                kris_exception_action="action_confirm"
+            )._popup_exceptions()
+        self.write({"state": "in_progress", "ignore_exception": False})
+
+    def action_cancel(self):
+        for rec in self:
+            if rec.state != "draft":
+                raise UserError(
+                    _("Only draft projects can be cancelled.")
+                )
+        # Cancelling abandons the project, so it must not be gated by the
+        # confirm/done validation rules; skip exception detection here.
+        self.write({"state": "cancel", "ignore_exception": False})
+
+    def action_draft(self):
+        allowed = (
+            "cancel",
+            "in_progress",
+            "done",
+            "terminated",
+            "conditional_close",
+        )
+        for rec in self:
+            if rec.state not in allowed:
+                raise UserError(
+                    _("This project cannot be reset to draft from its current state.")
+                )
+        self.write({
+            "state": "draft",
+            "exception_ids": [(5,)],
+            "main_exception_id": False,
+            "ignore_exception": False,
+        })
 
     def action_add_receipt(self):
         self.ensure_one()

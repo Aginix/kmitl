@@ -17,11 +17,12 @@
         </field>
     </record>
 
-    <!-- DR menu in the Accounting app (DR is the navigation document) -->
+    <!-- DR menu under the เจ้าหนี้ (payable) menu — first document in the
+         payable workflow (ใบขอเบิก → ใบตั้งหนี้ → ใบล้างเจ้าหนี้) -->
     <menuitem
         id="menu_accounting_disbursement_request"
         name="Disbursement Requests"
-        parent="accounting_kmitl.menu_accounting_root"
+        parent="accounting_kmitl.menu_payable"
         action="action_disbursement_request_accounting"
         sequence="5"
     />

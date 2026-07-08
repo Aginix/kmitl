@@ -86,6 +86,10 @@ _Avoid_: encumber, commit
 The actual disbursement — money leaves the pool for good. A `consume` ledger line.
 _Avoid_: spend, pay, disburse (pick "consume" in code, "เบิกจ่าย" in UI)
 
+**Return Unused Reservation (ส่งคืนเงินเหลือจ่าย / คืนจอง)**:
+Releasing the reserved-but-unconsumed remainder of a commitment (`total_reserved − total_consumed`) back to the pool, when actual disbursement came in under the reservation. It is the **คืนจอง** reversal: a negative `reserve` ledger line that lowers the commitment's reserved total so Available / Remaining (f) rises — **without cancelling** the commitment, which stays intact for audit. Returns only the *earmark*, never money already disbursed.
+_Avoid_: คืนเงิน (refunding an already-consumed/disbursed amount — a negative `consume` line, a different operation), cancel (releases the whole commitment, not just the leftover)
+
 **Reserved (b) / Obligated (c) / Disbursed (d) / Used (e) / Remaining (f)**:
 The disbursement waterfall for an account: `b` = reserved-but-not-yet-obligated (`total_reserved − total_obligated`); `c` = obligated-but-not-yet-disbursed (`total_obligated − total_consumed`); `d` = disbursed (`total_consumed`); `e` = total locked = `b + c + d = total_reserved`; `f` = `Current Budget (a) − e`. Both KMITL flows fire obligate and consume **together** — the PO flow, and the procurement-plan flow (per งวด at each disbursement request) — so `c` stays ~0 in practice. The not-yet-disbursed remainder of a reserved procurement plan therefore sits in `b` (reserved-but-not-obligated), **not** `c`. `c` only carries a standing balance if some flow posts an obligate without an immediate matching consume (a capability the ledger supports but no current flow uses).
 _Avoid_: spent (ambiguous between c, d, e)

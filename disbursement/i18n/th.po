@@ -995,8 +995,8 @@ msgstr "กิจกรรม"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
-msgid "Analytic Dimensions"
-msgstr "มิติทางบัญชี"
+msgid "Budget Information"
+msgstr "ข้อมูลงบประมาณ"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
@@ -1249,3 +1249,181 @@ msgstr "เอกสารประกอบใบขอเบิก"
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__attachment_ids
 msgid "Document Attachments"
 msgstr "เอกสารแนบ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type
+msgid "Payment Type"
+msgstr "วิธีการจ่ายเงิน"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__advance
+msgid "Advance"
+msgstr "เงินยืมทดรอง"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__prepaid
+msgid "Prepaid"
+msgstr "จ่ายล่วงหน้า"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_line.py:0
+#, python-format
+msgid "Partner is required on each line."
+msgstr "ต้องระบุผู้รับเงินในทุกบรรทัด"
+
+#. module: disbursement
+msgid "Disbursement Assignment Rule"
+msgstr "กฎการมอบหมายใบขอเบิก"
+
+#. module: disbursement
+msgid "Assign Disbursement Verification Officer"
+msgstr "มอบหมายเจ้าหน้าที่หมวดตรวจใบขอเบิก"
+
+#. module: disbursement
+msgid "Assignment Rules"
+msgstr "กฎการมอบหมาย"
+
+#. module: disbursement
+msgid "Assigned Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: disbursement
+msgid "Assign to me"
+msgstr "รับงานนี้"
+
+#. module: disbursement
+msgid "Assign…"
+msgstr "มอบหมาย…"
+
+#. module: disbursement
+msgid "Unassign"
+msgstr "ถอนผู้รับผิดชอบ"
+
+#. module: disbursement
+msgid "Assign"
+msgstr "มอบหมาย"
+
+#. module: disbursement
+msgid "Assign Officer"
+msgstr "มอบหมายเจ้าหน้าที่"
+
+#. module: disbursement
+msgid "My Verifications"
+msgstr "งานตรวจของฉัน"
+
+#. module: disbursement
+msgid "Unassigned"
+msgstr "ยังไม่มีผู้รับผิดชอบ"
+
+#. module: disbursement
+msgid "Assigned as responsible verification officer"
+msgstr "ได้รับมอบหมายเป็นเจ้าหน้าที่หมวดตรวจผู้รับผิดชอบ"
+
+#. module: disbursement
+msgid "Apply Rules to Pending Requests"
+msgstr "นำกฎไปใช้กับใบขอเบิกที่รอตรวจ"
+
+#. module: disbursement
+msgid "Assignment Rules Applied"
+msgstr "นำกฎการมอบหมายไปใช้แล้ว"
+
+#. module: disbursement
+#, python-format
+msgid "%(assigned)s of %(total)s pending request(s) were assigned."
+msgstr "มอบหมายแล้ว %(assigned)s จาก %(total)s ใบที่รอตรวจ"
+
+#. module: disbursement
+#, python-format
+msgid "This document is already assigned to %s."
+msgstr "เอกสารนี้มีผู้รับผิดชอบแล้วคือ %s"
+
+#. module: disbursement
+msgid "Only a manager can unassign the officer."
+msgstr "เฉพาะผู้จัดการเท่านั้นที่ถอนผู้รับผิดชอบได้"
+
+#. module: disbursement
+msgid "Only a manager can assign another officer."
+msgstr "เฉพาะผู้จัดการเท่านั้นที่มอบหมายผู้รับผิดชอบคนอื่นได้"
+
+#. module: disbursement
+msgid "Disbursement Verification"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement
+msgid "Verification"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement
+msgid "My Work"
+msgstr "งานของฉัน"
+
+#. module: disbursement
+msgid "All Disbursement Requests"
+msgstr "ใบขอเบิกทั้งหมด"
+
+#. module: disbursement
+msgid "No disbursement request is assigned to you."
+msgstr "ยังไม่มีใบขอเบิกที่มอบหมายให้คุณ"
+
+#. module: disbursement
+msgid "Return"
+msgstr "ตีกลับ"
+
+#. module: disbursement
+msgid "Return for Correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+msgid "Returned for Correction"
+msgstr "ถูกตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: disbursement
+msgid "Reason for returning this request…"
+msgstr "ระบุเหตุผลที่ตีกลับใบขอเบิกนี้…"
+
+#. module: disbursement
+msgid "Resubmit to Verification"
+msgstr "ส่งกลับหมวดตรวจ"
+
+#. module: disbursement
+#, python-format
+msgid "Returned for correction: %s"
+msgstr "ตีกลับเพื่อแก้ไข: %s"
+
+#. module: disbursement
+msgid "Returned for correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement
+msgid "Corrected and returned to verification."
+msgstr "แก้ไขแล้ว ส่งกลับหมวดตรวจ"
+
+#. module: disbursement
+#, python-format
+msgid "Only a request under verification (signed) can be returned."
+msgstr "ตีกลับได้เฉพาะใบที่อยู่ระหว่างหมวดตรวจ (สถานะ signed) เท่านั้น"
+
+#. module: disbursement
+#, python-format
+msgid "Only a returned request in draft can be resubmitted."
+msgstr "ส่งกลับได้เฉพาะใบที่ถูกตีกลับและอยู่สถานะ draft เท่านั้น"
+
+#. module: disbursement
+#, python-format
+msgid "Cannot resubmit a disbursement request with no lines."
+msgstr "ส่งกลับไม่ได้ เพราะใบขอเบิกไม่มีรายการ"

@@ -31,10 +31,13 @@ Read-only dashboard for auditing budget execution per budget account, across the
 | b | จอง | `reserved − obligated` | `budget.commitment.line` posted, active commitment |
 | c | ผูกพัน | `obligated − consumed` | `budget.commitment.line` posted, active commitment |
 | d | เบิกจ่าย | `consumed` | `budget.commitment.line` posted, active commitment |
-| e | รวม | `b + c + d` (= total_reserved) | computed |
+| e | รวม | `b + c + d` (= total_reserved, net of returns) | computed |
 | f | **คงเหลือ** | `(a) − (e)` | computed |
+| g | ส่งคืนเงินเหลือจ่าย | `−Σ amount` of `is_return` reserve lines (shown positive) | `budget.commitment.line` posted, active commitment, `is_return=True` |
 
 States: budget.move **posted** only; commitment **active** only; lines **posted** only. Draft + cancel excluded everywhere.
+
+Column (g) is a **memo** of the คืนจอง returns (ส่งคืนเงินเหลือจ่าย — see ADR-0009). It does not feed b/e/f: a return is a negative `reserve` line, so the signed reserve bucket already nets it in — posting a return drops (b)/(e) and raises (f) on its own, and (g) records how much was sent back. Drill into (g) lists exactly the `is_return` lines.
 
 ## Aggregation strategy
 

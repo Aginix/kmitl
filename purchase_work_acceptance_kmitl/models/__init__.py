@@ -6,4 +6,5 @@ from . import (
     purchase,
     purchase_invoice_plan,
     tier_validation,
+    comment_wizard,
 )

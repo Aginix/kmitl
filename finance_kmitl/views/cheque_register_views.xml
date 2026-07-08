@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_cheque_register_tree" model="ir.ui.view">
+        <field name="name">cheque.register.tree</field>
+        <field name="model">cheque.register</field>
+        <field name="arch" type="xml">
+            <tree string="Cheque Register">
+                <field name="name" />
+                <field name="cheque_number" />
+                <field name="cheque_date" />
+                <field name="partner_id" />
+                <field name="journal_id" optional="show" />
+                <field name="ref" optional="show" />
+                <field name="amount" sum="Total" />
+                <field name="currency_id" invisible="1" />
+                <field name="handover_date" optional="hide" />
+                <field name="clearing_date" optional="show" />
+                <field name="direction" optional="hide" />
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'active'"
+                    decoration-success="state == 'cleared'"
+                    decoration-danger="state == 'bounced'"
+                    decoration-muted="state == 'cancelled'" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_cheque_register_form" model="ir.ui.view">
+        <field name="name">cheque.register.form</field>
+        <field name="model">cheque.register</field>
+        <field name="arch" type="xml">
+            <form string="Cheque Register">
+                <header>
+                    <button name="action_activate" string="Issue / Receive" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <button name="action_clear" string="Clear (Cashed)" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'active')]}" />
+                    <button name="action_bounce" string="Bounced" type="object" attrs="{'invisible': [('state', '!=', 'active')]}" />
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('cleared', 'cancelled'))]}" />
+                    <button name="action_reset_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '=', 'draft')]}" groups="finance_kmitl.group_finance_kmitl_manager" />
+                    <button name="action_print_cheque" string="Print Cheque" type="object" class="btn-secondary" attrs="{'invisible': ['|', ('direction', '!=', 'outbound'), ('cheque_number', '=', False)]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,cleared" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="cheque_information" string="Cheque Information">
+                            <field name="direction" widget="radio" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="cheque_number" attrs="{'required': [('state', '!=', 'draft')], 'readonly': [('state', 'in', ('cleared', 'cancelled'))]}" />
+                            <field name="cheque_date" />
+                            <field name="journal_id" />
+                            <field name="bank_id" />
+                            <field name="crossed" attrs="{'invisible': [('direction', '!=', 'outbound')]}" />
+                            <field name="strike_bearer" attrs="{'invisible': [('direction', '!=', 'outbound')]}" />
+                        </group>
+                        <group name="payment_information" string="Payment Information">
+                            <field name="partner_id" />
+                            <field name="amount" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="ref" />
+                            <field name="payment_id" readonly="1" attrs="{'invisible': [('payment_id', '=', False)]}" />
+                        </group>
+                        <group name="dates_and_status" string="Dates &amp; Status">
+                            <field name="handover_date" />
+                            <field name="deposit_date" attrs="{'invisible': [('direction', '!=', 'inbound')]}" />
+                            <field name="clearing_date" />
+                        </group>
+                    </group>
+                    <group name="notes" string="Notes">
+                        <field name="note" nolabel="1" placeholder="Remarks..." />
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_cheque_register_search" model="ir.ui.view">
+        <field name="name">cheque.register.search</field>
+        <field name="model">cheque.register</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="cheque_number" />
+                <field name="partner_id" />
+                <field name="ref" />
+                <field name="journal_id" />
+                <filter name="outstanding" string="Outstanding" domain="[('state', '=', 'active')]" />
+                <filter name="cleared" string="Cleared" domain="[('state', '=', 'cleared')]" />
+                <filter name="bounced" string="Bounced" domain="[('state', '=', 'bounced')]" />
+                <separator />
+                <filter name="issued" string="Issued" domain="[('direction', '=', 'outbound')]" />
+                <filter name="received" string="Received" domain="[('direction', '=', 'inbound')]" />
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}" />
+                    <filter name="group_journal" string="Bank/Cheque Book" context="{'group_by': 'journal_id'}" />
+                    <filter name="group_direction" string="Direction" context="{'group_by': 'direction'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_cheque_register_outbound" model="ir.actions.act_window">
+        <field name="name">Issued Cheque Register</field>
+        <field name="res_model">cheque.register</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('direction', '=', 'outbound')]</field>
+        <field name="context">{'default_direction': 'outbound', 'search_default_outstanding': 1}</field>
+    </record>
+
+    <record id="action_cheque_register_inbound" model="ir.actions.act_window">
+        <field name="name">Received Cheque Register</field>
+        <field name="res_model">cheque.register</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('direction', '=', 'inbound')]</field>
+        <field name="context">{'default_direction': 'inbound', 'search_default_outstanding': 1}</field>
+    </record>
+
+</odoo>
