@@ -16,11 +16,15 @@ class AssignmentMixin(models.AbstractModel):
     so consumers never edit their own form XML and the buttons stay out of
     the header's workflow buttons.
 
-    Each consuming model must declare:
-      * the ``assigned_to`` field (Many2one res.users) — not declared here so
-        consumers can keep any pre-existing field's attributes untouched
-        (e.g. purchase.request reuses the OCA field), and
-      * the two class-attribute group hooks ``_assign_user_group`` /
+    Each consuming model must:
+      * also inherit ``mail.activity.mixin`` (which itself brings ``mail.thread``)
+        — this mixin deliberately does NOT `_inherit` it (see the note below MRO),
+        so the activity API (``activity_schedule`` / ``activity_ids``) is
+        expected to come from the consumer's own chain,
+      * declare the ``assigned_to`` field (Many2one res.users) — not declared
+        here so consumers can keep any pre-existing field's attributes
+        untouched (e.g. purchase.request reuses the OCA field), and
+      * set the two class-attribute group hooks ``_assign_user_group`` /
         ``_assign_manager_group``.
 
     Consumers may also override method hooks:

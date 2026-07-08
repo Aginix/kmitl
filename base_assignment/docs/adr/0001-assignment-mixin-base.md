@@ -52,6 +52,37 @@ class MyDoc(models.Model):
 The class attributes are hooks (not fields) so `get_view` — running before
 any record is loaded — can read them synchronously to render the template.
 
+## Why the mixin does not `_inherit = mail.thread`
+
+The mixin uses `activity_schedule`, `activity_ids` and `message_post`, all
+of which live on `mail.thread` / `mail.activity.mixin`. It would look
+cleaner to declare `_inherit = "mail.thread"` here so the mixin advertises
+that contract itself — and an earlier draft did exactly that.
+
+That draft crashed at install with:
+
+```
+TypeError: Cannot create a consistent method resolution order (MRO) for bases
+  BaseModel, base, mail.thread, mail.activity.mixin, portal.mixin,
+  budget.commitment.mixin, base.exception, assignment.mixin
+```
+
+The consuming model was `disbursement.request`, which already inherits
+`mail.thread`, `mail.activity.mixin`, `portal.mixin`,
+`budget.commitment.mixin` and `base.exception`. When `assignment.mixin` is
+appended with `mail.thread` in its own bases, Python's C3 linearization
+sees `mail.thread` on two independent parents (once directly, once as an
+ancestor of `mail.activity.mixin`) with no consistent ordering — and
+refuses to build the class.
+
+The mixin therefore inherits **only** from `BaseModel` (via
+`models.AbstractModel`). All chatter/activity calls resolve at runtime on
+the *consumer* record — every real consumer already inherits
+`mail.activity.mixin` for its own reasons (any document worth assigning has
+a chatter), so `self.activity_schedule(...)` still works. This constraint
+is documented on the mixin's class docstring; do not add
+`_inherit = "mail.thread"` back in.
+
 ## Config parameter contract
 
 The takeover toggle uses an ir.config_parameter owned by the *consumer*
