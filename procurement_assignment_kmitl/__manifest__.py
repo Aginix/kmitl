@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Procurement Assignment KMITL",
-    "version": "16.0.1.0.0",
+    "version": "16.0.2.0.0",
     "summary": "Assign a responsible procurement officer to PR, PA and PO",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
+        "base_assignment",
         "purchase_order_kmitl",
         "purchase_request_approval",
     ],
     "data": [
         "security/ir.model.access.csv",
-        "data/mail_activity_type.xml",
-        "templates/assignment_templates.xml",
-        "wizards/assign_officer_wizard_views.xml",
         "views/purchase_request_views.xml",
         "views/purchase_order_views.xml",
         "views/purchase_request_approval_views.xml",

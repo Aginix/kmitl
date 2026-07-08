@@ -5,7 +5,7 @@ from odoo.exceptions import AccessError
 
 class AssignOfficerWizard(models.TransientModel):
     _name = "assign.officer.wizard"
-    _description = "Assign Procurement Officer"
+    _description = "Assign Officer"
 
     res_model = fields.Char(required=True)
     res_id = fields.Integer(required=True)

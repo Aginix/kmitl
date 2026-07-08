@@ -1,2 +1,1 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_assign_officer_wizard,access_assign_officer_wizard,model_assign_officer_wizard,base.group_user,1,1,1,1

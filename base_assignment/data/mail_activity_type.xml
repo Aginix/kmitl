@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+
+    <!--
+      Dedicated activity type for officer-assignment notifications. Not the
+      native mail.mail_activity_data_todo: a dedicated type lets Todo-inbox
+      bridges tag it with a todo_category without pulling every native To-Do
+      into the inbox, and keeps _assignment_clear_activity from ever touching
+      user-scheduled To-Dos. No res_model: used across every consuming model.
+    -->
+    <record id="mail_activity_assignment" model="mail.activity.type">
+        <field name="name">Assigned as responsible officer</field>
+        <field name="summary">Assigned as responsible officer</field>
+        <field name="icon">fa-user</field>
+        <field name="delay_count">0</field>
+    </record>
+
+</odoo>

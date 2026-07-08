@@ -5,15 +5,6 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.misc import frozendict, str2bool
 
-# The activity scheduled on a document when an officer is assigned. A dedicated
-# type (not mail.mail_activity_data_todo) so the Todo-inbox bridge can tag it
-# with a todo_category without affecting every native To-Do in the system, and
-# so _assignment_clear_activity never collides with user-scheduled To-Dos.
-ASSIGN_ACTIVITY_XMLID = "procurement_assignment_kmitl.mail_activity_assignment"
-
-# ir.config_parameter that relaxes the self-claim guard (see Purchase settings).
-TAKEOVER_PARAM = "procurement_assignment_kmitl.allow_takeover_assigned"
-
 
 class AssignmentMixin(models.AbstractModel):
     """Shared behaviour for documents carrying an Assigned Officer
@@ -26,28 +17,62 @@ class AssignmentMixin(models.AbstractModel):
     the header's workflow buttons.
 
     Each consuming model must declare:
-      * the ``assigned_to`` field (Many2one res.users) — not declared here, so
-        ``purchase.request`` keeps the OCA field's attributes untouched, and
-      * the two group hooks ``_assign_user_group`` / ``_assign_manager_group``.
+      * the ``assigned_to`` field (Many2one res.users) — not declared here so
+        consumers can keep any pre-existing field's attributes untouched
+        (e.g. purchase.request reuses the OCA field), and
+      * the two class-attribute group hooks ``_assign_user_group`` /
+        ``_assign_manager_group``.
+
+    Consumers may also override method hooks:
+      * ``_assignment_activity_xmlid()`` — use a different mail.activity.type
+      * ``_assignment_activity_summary()`` — the To-Do summary shown to users
+      * ``_assignment_takeover_param()`` — ir.config_parameter key that toggles
+        self-claim of an already-assigned document (None = feature off)
+      * ``_assignment_takeover_default()`` — value when the parameter is unset
     """
 
     _name = "assignment.mixin"
     _description = "Assigned Officer (mixin)"
+    _inherit = "mail.thread"  # activity_schedule / activity_ids
 
-    # Override per consuming model.
-    _assign_user_group = None  # group allowed to self-claim unassigned work
-    _assign_manager_group = None  # group allowed to assign others / unassign
+    # Class-attribute hooks (required per consumer)
+    _assign_user_group = None  # xmlid of the officer group
+    _assign_manager_group = None  # xmlid of the manager group
 
     assignment_can_assign_me = fields.Boolean(
         compute="_compute_assignment_can_assign_me",
     )
 
-    # -- guards ------------------------------------------------------------
+    # -- method hooks (optional overrides) -------------------------------
+    def _assignment_activity_xmlid(self):
+        """xmlid of the mail.activity.type used for assignment notifications.
+        Consumers may override to reuse a different type."""
+        return "base_assignment.mail_activity_assignment"
+
+    def _assignment_activity_summary(self):
+        """Summary shown on the assignment To-Do."""
+        return _("Assigned as responsible officer")
+
+    def _assignment_takeover_param(self):
+        """ir.config_parameter key that relaxes the self-claim guard. Return
+        ``None`` to disable the takeover feature (self-claim only allowed on
+        unassigned documents, and reassignment is manager-only)."""
+        return None
+
+    def _assignment_takeover_default(self):
+        """Default when ``_assignment_takeover_param()`` is unset in the DB."""
+        return False
+
+    # -- guards ----------------------------------------------------------
     def _assignment_takeover_allowed(self):
+        param = self._assignment_takeover_param()
+        if not param:
+            return False
+        default = "True" if self._assignment_takeover_default() else "False"
         return str2bool(
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param(TAKEOVER_PARAM, default=False)
+            .get_param(param, default=default)
         )
 
     def _assignment_is_manager(self):
@@ -67,14 +92,11 @@ class AssignmentMixin(models.AbstractModel):
         for rec in self:
             rec.assignment_can_assign_me = rec._assignment_can_claim()
 
-    # -- activity bookkeeping ---------------------------------------------
-    def _assignment_activity_summary(self):
-        return _("Assigned as responsible procurement officer")
-
+    # -- activity bookkeeping --------------------------------------------
     def _assignment_notify(self, user):
         self.ensure_one()
         self.activity_schedule(
-            ASSIGN_ACTIVITY_XMLID,
+            self._assignment_activity_xmlid(),
             user_id=user.id,
             summary=self._assignment_activity_summary(),
         )
@@ -82,13 +104,13 @@ class AssignmentMixin(models.AbstractModel):
     def _assignment_clear_activity(self, user):
         """Drop the open assignment to-do previously raised for ``user``."""
         self.ensure_one()
-        activity_type = self.env.ref(ASSIGN_ACTIVITY_XMLID)
+        activity_type = self.env.ref(self._assignment_activity_xmlid())
         stale = self.activity_ids.filtered(
             lambda a: a.user_id == user and a.activity_type_id == activity_type
         )
         stale.unlink()
 
-    # -- button actions ----------------------------------------------------
+    # -- button actions --------------------------------------------------
     def action_assignment_assign_me(self):
         me = self.env.user
         for rec in self:
@@ -146,7 +168,7 @@ class AssignmentMixin(models.AbstractModel):
             return res
         View = self.env["ir.ui.view"]
         rendered = self.env["ir.qweb"]._render(
-            "procurement_assignment_kmitl.assignment_buttons_alert",
+            "base_assignment.assignment_buttons_alert",
             {
                 "user_group": self._assign_user_group,
                 "manager_group": self._assign_manager_group,

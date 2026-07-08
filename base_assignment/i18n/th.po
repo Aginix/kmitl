@@ -1,0 +1,159 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* base_assignment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-10 00:00+0000\n"
+"PO-Revision-Date: 2026-07-10 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__allowed_user_ids
+msgid "Allowed User"
+msgstr "ผู้ใช้ที่ได้รับอนุญาต"
+
+#. module: base_assignment
+#: model_terms:ir.ui.view,arch_db:base_assignment.assign_officer_wizard_form
+msgid "Assign"
+msgstr "มอบหมาย"
+
+#. module: base_assignment
+#. odoo-python
+#: code:addons/base_assignment/models/assignment_mixin.py:0
+#: model_terms:ir.ui.view,arch_db:base_assignment.assign_officer_wizard_form
+#, python-format
+msgid "Assign Officer"
+msgstr "มอบหมายเจ้าหน้าที่"
+
+#. module: base_assignment
+#: model:ir.model,name:base_assignment.model_assign_officer_wizard
+msgid "Assign Officer"
+msgstr "มอบหมายเจ้าหน้าที่"
+
+#. module: base_assignment
+#: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
+msgid "Assign to me"
+msgstr "มอบหมายให้ฉัน"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__user_id
+msgid "Assigned Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: base_assignment
+#: model:mail.activity.type,name:base_assignment.mail_activity_assignment
+#: model:mail.activity.type,summary:base_assignment.mail_activity_assignment
+#. odoo-python
+#: code:addons/base_assignment/models/assignment_mixin.py:0
+#, python-format
+msgid "Assigned as responsible officer"
+msgstr "ถูกมอบหมายเป็นเจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: base_assignment
+#: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
+msgid "Assigned Officer:"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ:"
+
+#. module: base_assignment
+#: model:ir.model,name:base_assignment.model_assignment_mixin
+msgid "Assigned Officer (mixin)"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ (mixin)"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assignment_mixin__assignment_can_assign_me
+msgid "Assignment Can Assign Me"
+msgstr "สามารถมอบหมายให้ตัวเองได้"
+
+#. module: base_assignment
+#: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
+msgid "Assign…"
+msgstr "มอบหมายให้..."
+
+#. module: base_assignment
+#: model_terms:ir.ui.view,arch_db:base_assignment.assign_officer_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขล่าสุดเมื่อ"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตล่าสุดโดย"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตล่าสุดเมื่อ"
+
+#. module: base_assignment
+#. odoo-python
+#: code:addons/base_assignment/models/assignment_mixin.py:0
+#, python-format
+msgid "Only a manager can assign another officer."
+msgstr "ผู้จัดการเท่านั้นที่สามารถมอบหมายเจ้าหน้าที่อื่นได้"
+
+#. module: base_assignment
+#. odoo-python
+#: code:addons/base_assignment/models/assignment_mixin.py:0
+#, python-format
+msgid "Only a manager can unassign the officer."
+msgstr "ผู้จัดการเท่านั้นที่สามารถยกเลิกการมอบหมายเจ้าหน้าที่ได้"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__res_id
+msgid "Res"
+msgstr "เรคอร์ด"
+
+#. module: base_assignment
+#: model:ir.model.fields,field_description:base_assignment.field_assign_officer_wizard__res_model
+msgid "Res Model"
+msgstr "โมเดลเรคอร์ด"
+
+#. module: base_assignment
+#. odoo-python
+#: code:addons/base_assignment/models/assignment_mixin.py:0
+#, python-format
+msgid "This document is already assigned to %s."
+msgstr "เอกสารนี้ถูกมอบหมายให้ %s แล้ว"
+
+#. module: base_assignment
+#: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
+msgid "This document has no assigned officer."
+msgstr "เอกสารนี้ยังไม่มีเจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: base_assignment
+#: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
+msgid "Unassign"
+msgstr "ยกเลิกการมอบหมาย"

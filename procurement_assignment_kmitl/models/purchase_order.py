@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class PurchaseOrder(models.Model):
@@ -16,3 +16,9 @@ class PurchaseOrder(models.Model):
         index=True,
         tracking=True,
     )
+
+    def _assignment_activity_summary(self):
+        return _("Assigned as responsible procurement officer")
+
+    def _assignment_takeover_param(self):
+        return "procurement_assignment_kmitl.allow_takeover_assigned"

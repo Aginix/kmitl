@@ -2,7 +2,10 @@
 from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import TransactionCase, tagged
 
-from ..models.assignment import ASSIGN_ACTIVITY_XMLID, TAKEOVER_PARAM
+# Keep constants local — the mixin now lives in base_assignment and the
+# consumer exposes its parameter key through _assignment_takeover_param().
+ASSIGN_ACTIVITY_XMLID = "base_assignment.mail_activity_assignment"
+TAKEOVER_PARAM = "procurement_assignment_kmitl.allow_takeover_assigned"
 
 
 @tagged("post_install", "-at_install")

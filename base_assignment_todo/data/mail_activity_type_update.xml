@@ -9,7 +9,7 @@
       noupdate defaults to 0 so the field is set on install/upgrade.
     -->
     <record
-        id="procurement_assignment_kmitl.mail_activity_assignment"
+        id="base_assignment.mail_activity_assignment"
         model="mail.activity.type"
     >
         <field name="todo_category">acknowledgement</field>

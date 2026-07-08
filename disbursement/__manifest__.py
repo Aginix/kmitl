@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.4.2.0",
+    "version": "16.0.5.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -12,6 +12,7 @@
         "account_fiscal_year_enhance",
         "finance_kmitl",
         "base_exception",
+        "base_assignment",
         "l10n_th_account_tax",
         "l10n_th_amount_to_text",
         "base_fontawesome",
@@ -22,7 +23,6 @@
         "security/ir.model.access.csv",
         "data/sequence.xml",
         "wizards/disbursement_exception_confirm.xml",
-        "wizards/assign_officer_wizard_views.xml",
         "wizards/return_request_wizard_views.xml",
         "views/disbursement_request_views.xml",
         "views/disbursement_request_assignment_views.xml",

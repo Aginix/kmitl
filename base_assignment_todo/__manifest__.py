@@ -1,13 +1,13 @@
 {
-    "name": "Procurement Assignment Todos",
-    "version": "16.0.1.0.0",
+    "name": "Base Assignment Todos",
+    "version": "16.0.2.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "category": "KMITL",
+    "category": "Tools",
     "summary": "Surface officer-assignment notifications in the unified Todo inbox",
     "depends": [
         "mail_activity_todo",
-        "procurement_assignment_kmitl",
+        "base_assignment",
     ],
     "data": [
         "data/mail_activity_type_update.xml",

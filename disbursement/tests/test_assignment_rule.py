@@ -16,7 +16,9 @@ class TestDisbursementAssignment(TransactionCase):
         super().setUpClass()
         cls.DR = cls.env["disbursement.request"]
         cls.Rule = cls.env["disbursement.assignment.rule"]
-        cls.Wizard = cls.env["disbursement.assign.officer.wizard"]
+        # The dedicated disbursement wizard was folded into the generic
+        # ``assign.officer.wizard`` provided by ``base_assignment``.
+        cls.Wizard = cls.env["assign.officer.wizard"]
 
         # -- analytic dimensions ----------------------------------------
         AAA = cls.env["account.analytic.account"]
@@ -148,7 +150,11 @@ class TestDisbursementAssignment(TransactionCase):
 
     def _reassign(self, request, user):
         self.Wizard.with_user(self.manager).create(
-            {"request_id": request.id, "user_id": user.id}
+            {
+                "res_model": "disbursement.request",
+                "res_id": request.id,
+                "user_id": user.id,
+            }
         ).action_assign()
 
     # -- matching --------------------------------------------------------
@@ -330,7 +336,11 @@ class TestDisbursementAssignment(TransactionCase):
     def test_wizard_allowed_users_are_officer_group(self):
         dr = self._make_dr()
         wiz = self.Wizard.with_user(self.manager).create(
-            {"request_id": dr.id, "user_id": self.officer_a.id}
+            {
+                "res_model": "disbursement.request",
+                "res_id": dr.id,
+                "user_id": self.officer_a.id,
+            }
         )
         self.assertIn(self.officer_a, wiz.allowed_user_ids)
         self.assertNotIn(self.outsider, wiz.allowed_user_ids)

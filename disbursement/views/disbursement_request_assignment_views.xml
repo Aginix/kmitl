@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Form: assignment buttons + responsible officer field -->
+    <!--
+      Form: keep the Return / Resubmit workflow buttons in the header (they
+      are disbursement-specific verification workflow, not officer
+      assignment). The Assign to me / Assign… / Unassign buttons are
+      auto-injected above the sheet by ``assignment.mixin.get_view`` — do
+      not repeat them here.
+
+      Also note: the officer field is *not* rendered in "other_information"
+      anymore — the injected alert already displays it. We keep only the
+      state / returned_for_edit tweaks the workflow needs.
+    -->
     <record id="view_disbursement_request_form_assignment" model="ir.ui.view">
         <field name="name">disbursement.request.form.assignment</field>
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//header/button[@name='action_submit']" position="before">
-                <button
-                    name="action_assignment_assign_me"
-                    type="object"
-                    string="Assign to me"
-                    class="oe_highlight"
-                    groups="disbursement.group_disbursement_officer"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('assignment_can_assign_me', '=', False)]}"
-                />
-                <button
-                    name="action_assignment_open_wizard"
-                    type="object"
-                    string="Assign…"
-                    groups="disbursement.group_disbursement_manager"
-                    attrs="{'invisible': [('state', '!=', 'signed')]}"
-                />
-                <button
-                    name="action_assignment_unassign"
-                    type="object"
-                    string="Unassign"
-                    groups="disbursement.group_disbursement_manager"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('assigned_to', '=', False)]}"
-                />
                 <button
                     name="action_return_open_wizard"
                     type="object"
@@ -44,10 +32,6 @@
                     class="oe_highlight"
                     attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('returned_for_edit', '=', False)]}"
                 />
-            </xpath>
-            <xpath expr="//group[@id='other_information']" position="inside">
-                <field name="assignment_can_assign_me" invisible="1" />
-                <field name="assigned_to" readonly="1" />
             </xpath>
             <xpath expr="//header/field[@name='state']" position="after">
                 <field name="returned_for_edit" invisible="1" />
