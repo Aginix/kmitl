@@ -39,18 +39,10 @@
                         <group name="attachment" string="Attachment">
                             <field
                                 name="attachment_ids"
-                                widget="many2many_binary"
+                                widget="many2many_binary_doctype"
                                 nolabel="1"
                                 context="{'default_res_model': 'kris.project.receipt'}"
                             />
-                        </group>
-                        <group name="attachment_types" string="Document Types">
-                            <field name="attachment_ids" nolabel="1">
-                                <tree editable="bottom" create="0">
-                                    <field name="name" string="Filename" readonly="1"/>
-                                    <field name="document_type_id"/>
-                                </tree>
-                            </field>
                         </group>
                     </page>
                 </notebook>
@@ -498,18 +490,10 @@
                             <group name="attachment" string="Attachment">
                                 <field
                                     name="attachment_ids"
-                                    widget="many2many_binary"
+                                    widget="many2many_binary_doctype"
                                     nolabel="1"
                                     context="{'default_res_model': 'kris.project'}"
                                 />
-                            </group>
-                            <group name="attachment_types" string="Document Types">
-                                <field name="attachment_ids" nolabel="1">
-                                    <tree editable="bottom" create="0">
-                                        <field name="name" string="Filename" readonly="1"/>
-                                        <field name="document_type_id"/>
-                                    </tree>
-                                </field>
                             </group>
                         </page>
 
