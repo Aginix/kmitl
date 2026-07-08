@@ -78,7 +78,7 @@
                         </h1>
                     </div>
                     <group>
-                        <group id="header_right_group" string="Disbursement Information">
+                        <group id="header_right_group" name="disbursement_information" string="Disbursement Information">
                             <field name="date" />
                             <field name="payment_type" widget="radio" options="{'horizontal': true}" required="1" />
                             <field name="reference_model_name" readonly="1"
@@ -96,7 +96,7 @@
                             <field name="partner_bank_id" invisible="1" />
                             <field name="is_company" invisible="1" />
                         </group>
-                        <group id="budget" string="Budget Information">
+                        <group id="budget" name="budget_information" string="Budget Information">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
                             <field name="budget_commitment_id" />
                             <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}" />
@@ -110,7 +110,7 @@
                             <field name="budget_consumed_date" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}" />
                             <field name="currency_id" invisible="1"/>
                         </group>
-                        <group id="other_information" string="Other Information">
+                        <group id="other_information" name="other_information" string="Other Information">
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
@@ -209,7 +209,7 @@
                 <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
                 <separator />
                 <filter name="date" string="Date" date="date" />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />

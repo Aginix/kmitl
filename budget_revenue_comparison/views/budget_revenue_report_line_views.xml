@@ -41,7 +41,7 @@
                         </group>
                     </group>
                     <group
-                        string="สูตรการคำนวณ"
+                        name="calculation_formula" string="สูตรการคำนวณ"
                         attrs="{'invisible': [('row_type', '=', 'header')]}"
                     >
                         <field name="budget_formula" placeholder="เช่น  B['41%'] + B['42%']" />

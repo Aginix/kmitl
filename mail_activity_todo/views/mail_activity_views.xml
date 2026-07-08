@@ -161,7 +161,7 @@
                     string="Planned"
                     domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"
                 />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         name="group_category"
                         string="Category"

@@ -82,24 +82,24 @@
                     <field name="sequence_id" invisible="1"/>
                     <field name="selection_mode" widget="radio"/>
                 </group>
-                <group string="Number Information">
+                <group name="number_information" string="Number Information">
                     <field name="next_auto_number" readonly="1"/>
                 </group>
-                <group string="Reserved Number" attrs="{'invisible': [('selection_mode', '!=', 'reserved')]}">
+                <group name="reserved_number" string="Reserved Number" attrs="{'invisible': [('selection_mode', '!=', 'reserved')]}">
                     <field name="reserved_number_id" domain="[('sequence_id', '=', sequence_id), ('state', '=', 'reserved')]" options="{'no_create': True}"/>
                 </group>
-                <group string="Available (Gap) Numbers" attrs="{'invisible': [('selection_mode', '!=', 'available')]}">
+                <group name="available_gap_numbers" string="Available (Gap) Numbers" attrs="{'invisible': [('selection_mode', '!=', 'available')]}">
                     <field name="selected_available_number"/>
                     <p class="text-muted">
                         Enter an available number from gaps in the sequence.
                         Numbers before the next auto number that are not used or reserved.
                     </p>
                 </group>
-                <group string="Manual Entry" attrs="{'invisible': [('selection_mode', '!=', 'manual')]}">
+                <group name="manual_entry" string="Manual Entry" attrs="{'invisible': [('selection_mode', '!=', 'manual')]}">
                     <field name="manual_number"/>
                     <button name="action_reserve_number" string="Reserve This Number" type="object" class="btn-link" icon="fa-bookmark"/>
                 </group>
-                <group string="Preview" attrs="{'invisible': [('formatted_preview', '=', '')]}">
+                <group name="preview" string="Preview" attrs="{'invisible': [('formatted_preview', '=', '')]}">
                     <field name="formatted_preview" readonly="1" class="oe_inline"/>
                 </group>
                 <footer>
@@ -148,11 +148,11 @@
                     <field name="action_type" invisible="1"/>
                     <field name="available_role_ids" invisible="1"/>
                 </group>
-                <group string="Document Information">
+                <group name="document_information" string="Document Information">
                     <field name="document_name" readonly="1"/>
                     <field name="document_subject" readonly="1"/>
                 </group>
-                <group string="Select Position to Sign As">
+                <group name="select_position_to_sign_as" string="Select Position to Sign As">
                     <field name="selected_role_id" widget="radio" required="1"/>
                 </group>
                 <footer>
@@ -182,7 +182,7 @@
                     <field name="available_template_ids" invisible="1"/>
                     <field name="origin_info" readonly="1" attrs="{'invisible': [('origin_info', '=', '')]}"/>
                 </group>
-                <group string="Available Routes">
+                <group name="available_routes" string="Available Routes">
                     <field name="selected_template_id" widget="radio" options="{'horizontal': false}" required="1"/>
                 </group>
                 <footer>

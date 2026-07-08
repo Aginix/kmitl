@@ -128,7 +128,7 @@
                 />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <separator />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         string="Project"
                         name="group_project"
