@@ -9,9 +9,12 @@ import { onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
 const DETAIL_FIELDS = ["academic_standing_title", "work_email", "department_id", "kid"];
 
 /**
- * Many2one widget for ``hr.employee`` that renders the academic standing title,
- * work email, department (faculty / department) and KID as an icon-prefixed
- * detail card below the field, instead of plain ``name_get`` extra lines.
+ * Many2one widget that renders the academic standing title, work email,
+ * department (faculty / department) and KID as an icon-prefixed detail card
+ * below the field, instead of plain ``name_get`` extra lines.
+ *
+ * Supports fields pointing to ``hr.employee`` directly, or to ``res.users``
+ * (in which case the linked ``employee_id`` is resolved first).
  *
  * Usage: ``<field name="employee_id" widget="employee_detail_many2one"/>``
  */
@@ -34,7 +37,21 @@ export class EmployeeDetailMany2OneField extends Many2OneField {
             this.detail.data = null;
             return;
         }
-        const [record = {}] = await this.orm.read(this.relation, [value[0]], DETAIL_FIELDS, {
+        let employeeId = value[0];
+        if (this.relation === "res.users") {
+            const [user = {}] = await this.orm.read(
+                "res.users",
+                [value[0]],
+                ["employee_id"],
+                { context: this.context }
+            );
+            if (!user.employee_id) {
+                this.detail.data = null;
+                return;
+            }
+            employeeId = user.employee_id[0];
+        }
+        const [record = {}] = await this.orm.read("hr.employee", [employeeId], DETAIL_FIELDS, {
             context: this.context,
         });
         let department = false;
