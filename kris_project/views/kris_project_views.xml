@@ -36,38 +36,22 @@
                         </field>
                     </page>
                     <page string="Attachment" name="attachments">
-                        <field
-                            name="attachment_ids"
-                            context="{'default_res_model': 'kris.project.receipt'}"
-                        >
-                            <tree>
-                                <field name="name" string="Filename"/>
-                                <field name="document_type_id"/>
-                            </tree>
-                            <form>
-                                <sheet>
-                                    <group>
-                                        <field
-                                            name="res_model"
-                                            invisible="1"
-                                            readonly="0"
-                                        />
-                                        <field
-                                            name="res_id"
-                                            invisible="1"
-                                            readonly="0"
-                                        />
-                                        <field name="document_type_id"/>
-                                        <field name="name" invisible="1"/>
-                                        <field
-                                            name="datas"
-                                            filename="name"
-                                            required="1"
-                                        />
-                                    </group>
-                                </sheet>
-                            </form>
-                        </field>
+                        <group name="attachment" string="Attachment">
+                            <field
+                                name="attachment_ids"
+                                widget="many2many_binary"
+                                nolabel="1"
+                                context="{'default_res_model': 'kris.project.receipt'}"
+                            />
+                        </group>
+                        <group name="attachment_types" string="Document Types">
+                            <field name="attachment_ids" nolabel="1">
+                                <tree editable="bottom" create="0">
+                                    <field name="name" string="Filename" readonly="1"/>
+                                    <field name="document_type_id"/>
+                                </tree>
+                            </field>
+                        </group>
                     </page>
                 </notebook>
                 </sheet>
@@ -511,38 +495,22 @@
 
                         <!-- Tab 3: เอกสารแนบ -->
                         <page string="Attachment" name="attachments">
-                            <field
-                                name="attachment_ids"
-                                context="{'default_res_model': 'kris.project'}"
-                            >
-                                <tree>
-                                    <field name="name" string="Filename"/>
-                                    <field name="document_type_id"/>
-                                </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <field
-                                                name="res_model"
-                                                invisible="1"
-                                                readonly="0"
-                                            />
-                                            <field
-                                                name="res_id"
-                                                invisible="1"
-                                                readonly="0"
-                                            />
-                                            <field name="document_type_id"/>
-                                            <field name="name" invisible="1"/>
-                                            <field
-                                                name="datas"
-                                                filename="name"
-                                                required="1"
-                                            />
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
+                            <group name="attachment" string="Attachment">
+                                <field
+                                    name="attachment_ids"
+                                    widget="many2many_binary"
+                                    nolabel="1"
+                                    context="{'default_res_model': 'kris.project'}"
+                                />
+                            </group>
+                            <group name="attachment_types" string="Document Types">
+                                <field name="attachment_ids" nolabel="1">
+                                    <tree editable="bottom" create="0">
+                                        <field name="name" string="Filename" readonly="1"/>
+                                        <field name="document_type_id"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
 
                         <!-- Tab 4: หมายเหตุ -->
