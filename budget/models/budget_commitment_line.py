@@ -70,6 +70,14 @@ class BudgetCommitmentLine(models.Model):
         currency_field="currency_id",
         help="Positive = forward (reserve/obligate/consume), Negative = reversal",
     )
+    is_return = fields.Boolean(
+        string="ส่งคืนเงินเหลือจ่าย",
+        default=False,
+        help=(
+            "บรรทัดคืนจอง (negative reserve) ที่เกิดจากการส่งคืนเงินเหลือจ่าย "
+            "ปลดเงินจองที่ยังไม่ได้ตัดกลับเข้ากระเป๋างบประมาณ โดยไม่ยกเลิก commitment"
+        ),
+    )
     state = fields.Selection(
         selection=[
             ("posted", "Posted"),

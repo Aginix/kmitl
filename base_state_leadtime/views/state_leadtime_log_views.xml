@@ -26,12 +26,12 @@
             <form string="State Leadtime Log" create="false" edit="false">
                 <sheet>
                     <group>
-                        <group string="Record Info">
+                        <group name="record_info" string="Record Info">
                             <field name="res_model" string="Model"/>
                             <field name="res_id" string="Record ID"/>
                             <field name="user_id" string="Triggered By"/>
                         </group>
-                        <group string="Transition Info">
+                        <group name="transition_info" string="Transition Info">
                             <field name="from_state" string="From State"/>
                             <field name="to_state" string="To State"/>
                             <field name="transition_date" string="Transition Date"/>
@@ -59,7 +59,7 @@
                         string="This Month"
                         domain="[('transition_date', '>=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="group_model"    string="Model"        context="{'group_by': 'res_model'}"/>
                     <filter name="group_from"     string="From State"   context="{'group_by': 'from_state'}"/>
                     <filter name="group_to"       string="To State"     context="{'group_by': 'to_state'}"/>

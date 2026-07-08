@@ -18,7 +18,7 @@
                     <field name="has_ws_snapshot" invisible="1" />
                     <!-- WA Committee snapshots -->
                     <group
-                        string="Procurement Inspection Committee (Before)"
+                        name="procurement_inspection_committee_before" string="Procurement Inspection Committee (Before)"
                         colspan="2"
                         col="1"
                         attrs="{'invisible': [('has_wa_snapshot', '=', False)]}"
@@ -31,7 +31,7 @@
                         </field>
                     </group>
                     <group
-                        string="Procurement Inspection Committee (After)"
+                        name="procurement_inspection_committee_after" string="Procurement Inspection Committee (After)"
                         attrs="{'invisible': [('has_wa_snapshot', '=', False)]}"
                         colspan="2"
                         col="1"
@@ -45,7 +45,7 @@
                     </group>
                     <!-- Work Supervisor snapshots -->
                     <group
-                        string="Work Supervisor (Before)"
+                        name="work_supervisor_before" string="Work Supervisor (Before)"
                         attrs="{'invisible': [('has_ws_snapshot', '=', False)]}"
                         colspan="2"
                         col="1"
@@ -57,7 +57,7 @@
                         </field>
                     </group>
                     <group
-                        string="Work Supervisor (After)"
+                        name="work_supervisor_after" string="Work Supervisor (After)"
                         attrs="{'invisible': [('has_ws_snapshot', '=', False)]}"
                         colspan="2"
                         col="1"

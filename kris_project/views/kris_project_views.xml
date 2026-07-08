@@ -47,7 +47,7 @@
             <form string="Installment">
                 <field name="currency_id" invisible="1"/>
                 <group>
-                    <group string="Installment Infomation">
+                    <group name="installment_infomation" string="Installment Infomation">
                         <field name="project_id" readonly="1"/>
                         <field name="name"/>
                         <field name="due_date"/>
@@ -57,7 +57,7 @@
                             decoration-success="state == 'received'"
                         />
                     </group>
-                    <group string="Finance">
+                    <group name="finance" string="Finance">
                         <field name="amount"/>
                         <field name="deduction_guarantee"/>
                         <field name="deduction_advance"/>
@@ -122,7 +122,7 @@
                         name="action_draft"
                         string="Reset to Draft"
                         type="object"
-                        states="cancel,in_progress"
+                        states="cancel,in_progress,done,terminated,conditional_close"
                         groups="kris_project.group_kris_project_manager"
                     />
                     <field
@@ -170,7 +170,7 @@
                     </div>
                     <field name="currency_id" invisible="1"/>
                     <group>
-                        <group string="Project Information">
+                        <group name="project_information" string="Project Information">
                             <field
                                 name="project_category_id"
                                 widget="selection"
@@ -199,7 +199,7 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
-                        <group string="Contract Information">
+                        <group name="contract_information" string="Contract Information">
                             <field
                                 name="contract_number"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -231,7 +231,7 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Client/Funding Organization">
+                        <group name="client_funding_organization" string="Client/Funding Organization">
                             <field
                                 name="client_name"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -254,7 +254,7 @@
                         <!-- Tab 1: มูลค่าและงวดงาน -->
                         <page string="Financials" name="financials">
                             <group>
-                                <group string="1. Project Value" name="project_value">
+                                <group name="project_value" string="1. Project Value">
                                     <field
                                         name="project_value"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -276,7 +276,7 @@
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                 </group>
-                                <group string="Allocation">
+                                <group name="allocation" string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
                                         name="maintenance_deduction_type"
@@ -568,8 +568,8 @@
                 />
                 <separator/>
                 <filter name="contract_start" string="Contract Start Date" date="date_contract_start"/>
-                <!-- Group By ต่างๆ -->
-                <group expand="0" string="จัดกลุ่มตาม">
+                <!-- Group By -->
+                <group expand="0" name="group_by" string="จัดกลุ่มตาม">
                     <filter name="group_category" string="Project Category" context="{'group_by': 'project_category_id'}"/>
                     <filter name="group_type" string="Project Type" context="{'group_by': 'project_type_id'}"/>
                     <filter name="group_manager" string="Project Manager" context="{'group_by': 'manager_id'}"/>

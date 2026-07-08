@@ -89,7 +89,7 @@
                 <field name="office_order_id" />
                 <field name="department" />
                 <separator />
-                <group expand="1" string="Group by">
+                <group expand="1" name="group_by" string="Group by">
                     <filter
                         name="department"
                         string="Department"
