@@ -2,35 +2,39 @@
 <templates xml:space="preserve">
 
     <t t-name="kris_project.Many2ManyBinaryDocTypeField" owl="1">
-        <div t-attf-class="oe_fileupload {{props.className ? props.className : ''}}" aria-atomic="true">
-            <div class="o_attachments">
+        <div t-attf-class="oe_fileupload w-100 {{props.className ? props.className : ''}}" aria-atomic="true">
+            <div class="o_attachments_doctype d-flex flex-column gap-2">
                 <t t-foreach="files" t-as="file" t-key="file.id">
                     <t t-set="editable" t-value="!props.readonly"/>
                     <t t-set="ext" t-value="getExtension(file)"/>
-                    <div t-attf-class="o_attachment o_attachment_many2many d-flex flex-row align-items-center gap-1 #{ editable ? 'o_attachment_editable' : '' }" t-att-title="file.name">
-                        <div class="o_attachment_wrap">
-                            <div class="o_image_box float-start" t-att-data-tooltip="'Download ' + file.name">
-                                <a t-att-href="getUrl(file.id)" aria-label="Download" download="">
-                                    <span class="o_image o_hover" t-att-data-mimetype="file.mimetype" t-att-data-ext="ext" role="img"/>
+                    <div class="o_attachment_row d-flex flex-row align-items-center border rounded p-2" t-att-title="file.name">
+                        <div class="o_image_box" t-att-data-tooltip="'Download ' + file.name">
+                            <a t-att-href="getUrl(file.id)" aria-label="Download" download="">
+                                <span class="o_image" t-att-data-mimetype="file.mimetype" t-att-data-ext="ext" role="img"/>
+                            </a>
+                        </div>
+                        <div class="flex-grow-1 ms-2 text-truncate">
+                            <div class="text-truncate">
+                                <a t-att-href="getUrl(file.id)" download="">
+                                    <b t-esc="file.name"/>
                                 </a>
+                                <span class="badge text-bg-light text-uppercase ms-1" t-esc="ext"/>
                             </div>
-
-                            <div class="caption">
-                                <a class="ml4" t-att-data-tooltip="'Download ' + file.name" t-att-href="getUrl(file.id)" download=""><t t-esc="file.name"/></a>
+                            <div class="small text-muted">
+                                <span>Document Type: </span>
+                                <span t-if="file.documentTypeName" class="badge text-bg-secondary" t-esc="file.documentTypeName"/>
+                                <span t-else="" class="fst-italic">-</span>
                             </div>
-                            <div class="caption small">
-                                <a class="ml4 small text-uppercase" t-att-href="getUrl(file.id)"><b><t t-esc="ext"/></b></a>
-                                <span t-if="file.documentTypeName" class="badge text-bg-secondary ms-1" t-esc="file.documentTypeName"/>
-                            </div>
-
-                            <div t-if="editable" class="o_attachment_delete" t-on-click.stop="() => this.onFileRemove(file.id)"><span class="text-white" role="img" aria-label="Delete" title="Delete">×</span></div>
+                        </div>
+                        <div t-if="editable" class="o_attachment_delete btn btn-link text-danger" t-on-click.stop="() => this.onFileRemove(file.id)" title="Delete">
+                            <span class="fa fa-trash" role="img" aria-label="Delete"/>
                         </div>
                     </div>
                 </t>
             </div>
-            <div t-if="!props.readonly" class="oe_add">
+            <div t-if="!props.readonly" class="oe_add mt-2">
                 <button class="btn btn-secondary o_attach" data-tooltip="Attach" t-on-click="onAddClick">
-                    <span class="fa fa-paperclip" aria-label="Attach"/> <t t-esc="props.uploadText"/>
+                    <span class="fa fa-paperclip me-1" aria-label="Attach"/> <t t-esc="props.uploadText"/>
                 </button>
             </div>
         </div>
