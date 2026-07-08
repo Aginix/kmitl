@@ -550,6 +550,12 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: account_asset_batch
+#: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__partner_id
+msgid "Partner"
+msgstr "คู่ค้า"
+
+
+#. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__received_from_agency
 msgid "received from agency"
 msgstr "รับจากหน่วยงาน"
