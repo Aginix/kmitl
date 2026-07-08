@@ -15,6 +15,11 @@
     "demo": [
         "data/kris_project_demo.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "kris_project_in_cash_in_kind/static/src/css/kris_project_in_cash_in_kind.css",
+        ],
+    },
     "post_init_hook": "post_init_hook",
     "installable": True,
     "auto_install": False,
