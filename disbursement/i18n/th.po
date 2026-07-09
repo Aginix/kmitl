@@ -238,7 +238,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_config
 msgid "Configuration"
-msgstr ""
+msgstr "ตั้งค่า"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
@@ -302,7 +302,7 @@ msgstr "การขอเบิก"
 #. module: disbursement
 #: model:ir.actions.act_window,name:disbursement.action_disbursement_exception_rule
 msgid "Disbursement Exception Rules"
-msgstr ""
+msgstr "กฎข้อยกเว้นการขอเบิก"
 
 #. module: disbursement
 #: model:ir.model,name:disbursement.model_disbursement_exception_confirm
@@ -395,7 +395,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_exception_rules
 msgid "Exception Rules"
-msgstr ""
+msgstr "กฎข้อยกเว้น"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__exception_ids
@@ -1291,6 +1291,8 @@ msgid "Assign Disbursement Verification Officer"
 msgstr "มอบหมายเจ้าหน้าที่หมวดตรวจใบขอเบิก"
 
 #. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_assignment_rule
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_assignment_rule
 msgid "Assignment Rules"
 msgstr "กฎการมอบหมาย"
 
@@ -1361,14 +1363,19 @@ msgid "Disbursement Verification"
 msgstr "หมวดตรวจ"
 
 #. module: disbursement
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_verification
 msgid "Verification"
 msgstr "หมวดตรวจ"
 
 #. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_my_verifications
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_my_verifications
 msgid "My Work"
 msgstr "งานของฉัน"
 
 #. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_all
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_all_requests
 msgid "All Disbursement Requests"
 msgstr "ใบขอเบิกทั้งหมด"
 
