@@ -1,9 +1,9 @@
 /** @odoo-module **/
 
-import { Dialog } from "@web/core/dialog/dialog";
-import { Component, onWillStart, useRef, useState } from "@odoo/owl";
+import {Dialog} from "@web/core/dialog/dialog";
+import {Component, onWillStart, useRef, useState} from "@odoo/owl";
 
-export class AttachmentDocTypeDialog extends Component {
+export class AttachmentMetadataDialog extends Component {
     setup() {
         // Use the raw services (not useService) so the upload/write still
         // complete even if this dialog is destroyed mid-save (e.g. the form
@@ -12,12 +12,12 @@ export class AttachmentDocTypeDialog extends Component {
         this.http = this.env.services.http;
         this.notification = this.env.services.notification;
         this.fileInputRef = useRef("fileInput");
-        this.state = useState({ documentTypeId: "" });
-        this.docTypes = [];
+        this.state = useState({metadataId: ""});
+        this.metadataOptions = [];
         onWillStart(async () => {
-            this.docTypes = await this.orm.searchRead(
-                "kris.project.document.type",
-                [],
+            this.metadataOptions = await this.orm.searchRead(
+                this.props.metadataModel,
+                this.props.metadataDomain || [],
                 ["id", "name"]
             );
         });
@@ -58,9 +58,9 @@ export class AttachmentDocTypeDialog extends Component {
             });
             return;
         }
-        if (this.state.documentTypeId) {
+        if (this.state.metadataId) {
             await this.orm.write("ir.attachment", [attachment.id], {
-                document_type_id: Number(this.state.documentTypeId),
+                [this.props.metadataField]: Number(this.state.metadataId),
             });
         }
         await this.props.onConfirm(attachment.id);
@@ -72,11 +72,15 @@ export class AttachmentDocTypeDialog extends Component {
     }
 }
 
-AttachmentDocTypeDialog.template = "kris_project.AttachmentDocTypeDialog";
-AttachmentDocTypeDialog.components = { Dialog };
-AttachmentDocTypeDialog.props = {
-    resModel: { type: String },
-    resId: { type: Number },
-    onConfirm: { type: Function },
-    close: { type: Function },
+AttachmentMetadataDialog.template = "web_attachment_metadata.AttachmentMetadataDialog";
+AttachmentMetadataDialog.components = {Dialog};
+AttachmentMetadataDialog.props = {
+    resModel: {type: String},
+    resId: {type: Number},
+    metadataModel: {type: String},
+    metadataField: {type: String},
+    metadataLabel: {type: String},
+    metadataDomain: {type: Array, optional: true},
+    onConfirm: {type: Function},
+    close: {type: Function},
 };
