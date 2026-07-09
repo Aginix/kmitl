@@ -55,8 +55,8 @@ msgstr "ถูกมอบหมายเป็นเจ้าหน้าที
 
 #. module: base_assignment
 #: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
-msgid "Assigned Officer:"
-msgstr "เจ้าหน้าที่ผู้รับผิดชอบ:"
+msgid "<i class=\"fa fa-user\"/> Assigned Officer:"
+msgstr "<i class=\"fa fa-user\"/> เจ้าหน้าที่ผู้รับผิดชอบ:"
 
 #. module: base_assignment
 #: model:ir.model,name:base_assignment.model_assignment_mixin
@@ -153,8 +153,8 @@ msgstr "โมเดล %(model)s ไม่รองรับการมอบ�
 
 #. module: base_assignment
 #: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
-msgid "This document has no assigned officer."
-msgstr "เอกสารนี้ยังไม่มีเจ้าหน้าที่ผู้รับผิดชอบ"
+msgid "<i class=\"fa fa-user-o\"/> This document has no assigned officer."
+msgstr "<i class=\"fa fa-user-o\"/> เอกสารนี้ยังไม่มีเจ้าหน้าที่ผู้รับผิดชอบ"
 
 #. module: base_assignment
 #: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert
