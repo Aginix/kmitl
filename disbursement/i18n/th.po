@@ -989,6 +989,12 @@ msgid "Net Total"
 msgstr "มูลค่าสุทธิ"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__activity_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_analytic_id
 msgid "Activity"
 msgstr "กิจกรรม"
@@ -1020,6 +1026,7 @@ msgid "Bill Posted"
 msgstr "ตั้งหนี้แล้ว"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__department_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__department_analytic_id
 msgid "Department"
 msgstr "ส่วนงาน"
@@ -1040,6 +1047,7 @@ msgid "Done"
 msgstr "เสร็จสิ้น"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__fund_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__fund_analytic_id
 msgid "Fund"
 msgstr "กองทุน"
@@ -1071,6 +1079,7 @@ msgid "Partner Information"
 msgstr "ข้อมูลคู่ค้า"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__partner_type_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type
 msgid "Partner Type"
 msgstr "จ่ายตาม"
@@ -1140,6 +1149,7 @@ msgid "Signed"
 msgstr "ลงนามแล้ว"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__source_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__source_analytic_id
 msgid "Source"
 msgstr "แหล่งเงิน"
@@ -1297,6 +1307,7 @@ msgid "Assignment Rules"
 msgstr "กฎการมอบหมาย"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__user_id
 msgid "Assigned Officer"
 msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
 
