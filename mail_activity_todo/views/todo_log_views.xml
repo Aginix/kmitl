@@ -44,7 +44,7 @@
                     string="Last 30 days"
                     domain="[('completed_date', '&gt;=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"
                 />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         name="group_category"
                         string="Category"

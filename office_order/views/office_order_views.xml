@@ -8,7 +8,7 @@
                 <field name="ref_no" />
                 <field name="title" />
                 <field name="date" />
-                <group expand="1" string="Group By">
+                <group expand="1" name="group_by" string="Group By">
                     <filter
                         name="group_by_date"
                         string="Date"

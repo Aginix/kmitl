@@ -84,7 +84,7 @@
                             ('date', '&lt;=', (context_today() + relativedelta(years=-1, month=12, day=31)).strftime('%Y-%m-%d')),
                         ]"/>
 
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="gb_date" string="Month/Year"
                             context="{'group_by': 'date'}"/>
                     <filter name="gb_fiscal" string="Fiscal Year"

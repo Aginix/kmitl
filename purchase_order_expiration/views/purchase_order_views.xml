@@ -27,7 +27,7 @@
         <field name="model">purchase.order</field>
         <field name="arch" type="xml">
             <search>
-                <group expand="1" string="Group By">
+                <group expand="1" name="group_by" string="Group By">
                     <filter name="group_by_expire_range" string="Expire Range"
                             context="{'group_by':'expire_range'}"/>
                 </group>

@@ -47,7 +47,7 @@
             <form string="Installment">
                 <field name="currency_id" invisible="1"/>
                 <group>
-                    <group string="Installment Infomation">
+                    <group name="installment_infomation" string="Installment Infomation">
                         <field name="project_id" readonly="1"/>
                         <field name="name"/>
                         <field name="due_date"/>
@@ -57,7 +57,7 @@
                             decoration-success="state == 'received'"
                         />
                     </group>
-                    <group string="Finance">
+                    <group name="finance" string="Finance">
                         <field name="amount"/>
                         <field name="deduction_guarantee"/>
                         <field name="deduction_advance"/>
@@ -170,7 +170,7 @@
                     </div>
                     <field name="currency_id" invisible="1"/>
                     <group>
-                        <group string="Project Information">
+                        <group name="project_information" string="Project Information">
                             <field
                                 name="project_category_id"
                                 widget="selection"
@@ -199,7 +199,11 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
-                        <group string="Contract Information">
+                        <group string="Contract Information (Institute - Employer)" name="contract_information">
+                            <field
+                                name="project_code"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                            />
                             <field
                                 name="contract_number"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -231,7 +235,7 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Client/Funding Organization">
+                        <group name="client_funding_organization" string="Client/Funding Organization">
                             <field
                                 name="client_name"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -249,12 +253,15 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
+                        <group string="Contract/MOU Information (KRIS - Project Manager)">
+                            <field name="kris_contract_date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
+                        </group>
                     </group>
                     <notebook>
                         <!-- Tab 1: มูลค่าและงวดงาน -->
                         <page string="Financials" name="financials">
                             <group>
-                                <group string="1. Project Value">
+                                <group name="project_value" string="1. Project Value">
                                     <field
                                         name="project_value"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -276,7 +283,7 @@
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                 </group>
-                                <group string="Allocation">
+                                <group name="allocation" string="Allocation">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
                                         name="maintenance_deduction_type"
@@ -509,7 +516,7 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="name"/>
                 <field name="project_name"/>
-                <field name="contract_number" optional="hide"/>
+                <field name="project_code" optional="hide"/>
                 <field name="project_category_id" optional="show"/>
                 <field name="project_type_id" optional="hide"/>
                 <field name="manager_id" optional="show"/>
@@ -541,9 +548,9 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name" string="Project"
-                    filter_domain="['|', '|', '|', ('name', 'ilike', self), ('project_name', 'ilike', self), ('contract_number', 'ilike', self), ('client_name', 'ilike', self)]"/>
+                    filter_domain="['|', '|', '|', ('name', 'ilike', self), ('project_name', 'ilike', self), ('project_code', 'ilike', self), ('client_name', 'ilike', self)]"/>
                 <field name="project_name" string="Project Name"/>
-                <field name="contract_number"/>
+                <field name="project_code"/>
                 <field name="client_name"/>
                 <field name="manager_id"/>
                 <field name="department_analytic_id"/>
@@ -569,7 +576,7 @@
                 <separator/>
                 <filter name="contract_start" string="Contract Start Date" date="date_contract_start"/>
                 <!-- Group By -->
-                <group expand="0" string="จัดกลุ่มตาม">
+                <group expand="0" name="group_by" string="จัดกลุ่มตาม">
                     <filter name="group_category" string="Project Category" context="{'group_by': 'project_category_id'}"/>
                     <filter name="group_type" string="Project Type" context="{'group_by': 'project_type_id'}"/>
                     <filter name="group_manager" string="Project Manager" context="{'group_by': 'manager_id'}"/>

@@ -67,10 +67,10 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="ข้อมูลทั่วไป">
+                        <group name="general_info" string="ข้อมูลทั่วไป">
                             <field name="user_id" widget="many2one_avatar_user" required="1" />
                         </group>
-                        <group string="มิติบัญชี">
+                        <group name="analytic_dimensions" string="มิติบัญชี">
                             <field name="account_fiscal_year_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="budget_type" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" attrs="{'readonly': [('id', '!=', False)]}" />
@@ -190,7 +190,7 @@
             <search>
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
-                <group expand="1" string="Group By">
+                <group expand="1" name="group_by" string="Group By">
                     <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
             </search>
@@ -209,7 +209,7 @@
                 <field name="fund_analytic_id" domain="[('root_plan_id.code', '=', 'funds')]" />
                 <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
-                <group expand="1" string="Group By">
+                <group expand="1" name="group_by" string="Group By">
                     <filter string="Fiscal Year" name="account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}" />
                     <filter string="Department" name="department_analytic_id" domain="[]" context="{'group_by':'department_analytic_id'}" />
                     <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
