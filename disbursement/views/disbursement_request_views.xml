@@ -133,7 +133,7 @@
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="hide" />
                                     <field name="product_id" />
-                                    <field name="name" optional="hide" />
+                                    <field name="name" optional="show" />
                                     <field name="quantity" />
                                     <field name="price_unit" />
                                     <field name="tax_ids" widget="many2many_tags" optional="hide" />
