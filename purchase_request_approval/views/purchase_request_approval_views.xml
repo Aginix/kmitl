@@ -90,10 +90,10 @@
                     <!-- Add rejected state draft, validate -->
                     <button
                         name="button_rejected"
-                        states="draft,validate,to_approve"
+                        states="draft,validate,to_approve,approved"
                         string="Reject"
                         type="object"
-                        groups="purchase_request.group_purchase_request_manager"
+                        groups="purchase_request_kmitl.group_purchase_request_user_all"
                     />
                     <field
                         name="state"
