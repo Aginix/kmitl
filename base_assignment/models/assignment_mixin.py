@@ -33,6 +33,14 @@ class AssignmentMixin(models.AbstractModel):
       * ``_assignment_takeover_param()`` — ir.config_parameter key that toggles
         self-claim of an already-assigned document (None = feature off)
       * ``_assignment_takeover_default()`` — value when the parameter is unset
+      * ``_assignment_on_assigned()`` / ``_assignment_on_unassigned()`` —
+        lifecycle callbacks invoked after ``assigned_to`` is written
+
+    Class-attribute extension points:
+      * ``_assignment_manual_config = False`` — set True to disable the
+        auto-injected alert entirely (the Python API stays available)
+      * ``_assignment_alert_xpath`` / ``_assignment_alert_position`` — move the
+        injected alert to another location in the form
     """
 
     _name = "assignment.mixin"
@@ -52,6 +60,17 @@ class AssignmentMixin(models.AbstractModel):
     # Class-attribute hooks (required per consumer)
     _assign_user_group = None  # xmlid of the officer group
     _assign_manager_group = None  # xmlid of the manager group
+
+    # Set True in a consuming model to skip get_view auto-injection while
+    # keeping the Python action_* API — for documents that render their own
+    # custom banner or don't want any banner at all.
+    _assignment_manual_config = False
+
+    # Where the assignment alert lands. Defaults match base_tier_validation's
+    # label pattern: xpath at /form/sheet, insert *before*. Consumers may
+    # retarget (e.g. "//header" + "inside" to nest it inside the header).
+    _assignment_alert_xpath = "/form/sheet"
+    _assignment_alert_position = "before"  # "before" | "after" | "inside"
 
     assignment_can_assign_me = fields.Boolean(
         compute="_compute_assignment_can_assign_me",
@@ -76,6 +95,17 @@ class AssignmentMixin(models.AbstractModel):
     def _assignment_takeover_default(self):
         """Default when ``_assignment_takeover_param()`` is unset in the DB."""
         return False
+
+    def _assignment_on_assigned(self, new_user, old_user):
+        """Called after ``assigned_to`` is written to a non-empty user (claim,
+        wizard, or reassign). Consumers may override to email, log, transition
+        a state, etc. Default: no-op."""
+        return
+
+    def _assignment_on_unassigned(self, old_user):
+        """Called after ``assigned_to`` is cleared (unassign or reassign leaves
+        the previous holder). Consumers may override. Default: no-op."""
+        return
 
     # -- guards ----------------------------------------------------------
     def _assignment_takeover_allowed(self):
@@ -102,6 +132,7 @@ class AssignmentMixin(models.AbstractModel):
         return self._assignment_is_manager() or self._assignment_takeover_allowed()
 
     @api.depends("assigned_to")
+    @api.depends_context("uid")
     def _compute_assignment_can_assign_me(self):
         for rec in self:
             rec.assignment_can_assign_me = rec._assignment_can_claim()
@@ -131,22 +162,26 @@ class AssignmentMixin(models.AbstractModel):
             if rec.assigned_to == me:
                 continue
             if not rec._assignment_can_claim():
-                raise UserError(
-                    _("This document is already assigned to %s.")
-                    % rec.assigned_to.display_name
-                )
-            if rec.assigned_to:
-                rec._assignment_clear_activity(rec.assigned_to)
+                raise UserError(_(
+                    "This document is already assigned to %(user)s."
+                ) % {"user": rec.assigned_to.display_name})
+            old_user = rec.assigned_to
+            if old_user:
+                rec._assignment_clear_activity(old_user)
             rec.assigned_to = me
+            rec._assignment_on_assigned(me, old_user)
         return True
 
     def action_assignment_unassign(self):
         if not self._assignment_is_manager():
             raise AccessError(_("Only a manager can unassign the officer."))
         for rec in self:
-            if rec.assigned_to:
-                rec._assignment_clear_activity(rec.assigned_to)
+            old_user = rec.assigned_to
+            if not old_user:
+                continue
+            rec._assignment_clear_activity(old_user)
             rec.assigned_to = False
+            rec._assignment_on_unassigned(old_user)
         return True
 
     def action_assignment_open_wizard(self):
@@ -174,11 +209,15 @@ class AssignmentMixin(models.AbstractModel):
         res = super().get_view(view_id=view_id, view_type=view_type, **options)
         if view_type != "form":
             return res
+        if self._assignment_manual_config:
+            # Consumer opted out of the auto-injected banner but still uses
+            # the Python API.
+            return res
         if not (self._assign_user_group and self._assign_manager_group):
             return res
         doc = etree.XML(res["arch"])
-        sheet_nodes = doc.xpath("/form/sheet")
-        if not sheet_nodes:
+        target_nodes = doc.xpath(self._assignment_alert_xpath)
+        if not target_nodes:
             return res
         View = self.env["ir.ui.view"]
         rendered = self.env["ir.qweb"]._render(
@@ -191,9 +230,19 @@ class AssignmentMixin(models.AbstractModel):
         template_node = etree.fromstring(rendered)
         new_arch, new_models = View.postprocess_and_fields(template_node, self._name)
         template_node = etree.fromstring(new_arch)
-        for sheet in sheet_nodes:
-            for child in template_node:
-                sheet.addprevious(child)
+        position = self._assignment_alert_position
+        for target in target_nodes:
+            children = list(template_node)
+            if position == "after":
+                # Iterate reversed so the original document order is preserved.
+                for child in reversed(children):
+                    target.addnext(child)
+            elif position == "inside":
+                for child in children:
+                    target.append(child)
+            else:  # "before" (default)
+                for child in children:
+                    target.addprevious(child)
         all_models = dict(res["models"])
         for model, view_fields in new_models.items():
             if model in all_models:

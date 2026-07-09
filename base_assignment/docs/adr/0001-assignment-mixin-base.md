@@ -103,6 +103,46 @@ and `_assignment_clear_activity` can match on the type alone (no fragile
 summary-substring heuristics that would collide with user-scheduled
 To-Dos).
 
+## Extension points
+
+The mixin exposes every knob a real-world consumer has needed so far, so
+customization is a matter of overriding a hook — never rewriting the mixin.
+
+**Class attributes** (set on the consuming model, read at view-render time):
+
+| Attribute | Default | Purpose |
+|---|---|---|
+| `_assign_user_group` | `None` (required) | xmlid of the group that can self-claim |
+| `_assign_manager_group` | `None` (required) | xmlid of the group that can reassign / unassign |
+| `_assignment_manual_config` | `False` | Set `True` to skip the auto-injected alert — the Python API (`action_assignment_*`) is unaffected, so consumers can render their own banner or expose the actions from the header |
+| `_assignment_alert_xpath` | `"/form/sheet"` | Where in the form arch the alert is inserted |
+| `_assignment_alert_position` | `"before"` | `"before"` / `"after"` / `"inside"` relative to the xpath match |
+
+**Method hooks** (override on the consuming model):
+
+| Hook | Default returns | Called from |
+|---|---|---|
+| `_assignment_activity_xmlid()` | `"base_assignment.mail_activity_assignment"` | `_assignment_notify` / `_assignment_clear_activity` |
+| `_assignment_activity_summary()` | `_("Assigned as responsible officer")` | `_assignment_notify` |
+| `_assignment_takeover_param()` | `None` | `_assignment_takeover_allowed` |
+| `_assignment_takeover_default()` | `False` | `_assignment_takeover_allowed` |
+| `_assignment_on_assigned(new, old)` | `None` (no-op) | After every write that sets `assigned_to` (claim, wizard reassign) |
+| `_assignment_on_unassigned(old)` | `None` (no-op) | After `assigned_to` is cleared |
+
+The lifecycle hooks let a consumer react to any assignment change without
+overriding the action methods themselves — useful when the reaction is
+side-channel (send an email, transition a workflow state, post to chatter).
+Both hooks fire on the record after the write, so `self.assigned_to`
+reflects the new value.
+
+The `_assignment_manual_config` toggle exists for two situations we already
+know about: a document that renders its own dashboard-style card and does
+not want a duplicate banner, and a document whose form is unusual enough
+(no `<sheet>`, or a `<sheet>` inside another wrapper) that the default
+xpath does not match. If just the location is wrong, retarget with
+`_assignment_alert_xpath` / `_assignment_alert_position`; use manual config
+only when the banner has to be gone entirely.
+
 ## Considered options
 
 - **Keep the mixin in `procurement_assignment_kmitl` and depend on it from

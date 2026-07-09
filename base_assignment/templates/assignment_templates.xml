@@ -2,15 +2,43 @@
 <odoo>
 
     <!--
+      Shared button pair — "Assign to me" + "Assign…". Both branches of the
+      assignment alert render these; the *assigned* branch adds "Unassign"
+      inline. Extracted so we do not maintain two copies of the same widget
+      config.
+
+      Render params (from the caller's t-call scope):
+        * ``user_group``     — xmlid gating "Assign to me"
+        * ``manager_group``  — xmlid gating "Assign…"
+    -->
+    <template id="_assignment_common_buttons">
+        <button
+            name="action_assignment_assign_me"
+            string="Assign to me"
+            type="object"
+            class="btn-sm btn-primary mx-1"
+            icon="fa-hand-paper-o"
+            t-attf-groups="#{user_group}"
+            attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
+        />
+        <button
+            name="action_assignment_open_wizard"
+            string="Assign…"
+            type="object"
+            class="btn-sm btn-secondary mx-1"
+            icon="fa-share"
+            t-attf-groups="#{manager_group}"
+        />
+    </template>
+
+    <!--
       Assignment alert injected above the sheet of any form whose model
       inherits ``assignment.mixin`` (see get_view there) — same shape as
       base_tier_validation's tier_validation_label. Keeps the Assign to me /
       Assign… / Unassign buttons out of the header's workflow buttons.
 
-      ``user_group`` / ``manager_group`` are render params supplied per
-      consuming model from its _assign_user_group / _assign_manager_group
-      hooks. The injection loop inserts the *children* of the root div, so
-      the groups-gated wrapper must be one level down.
+      The injection loop inserts the *children* of the root div, so the
+      groups-gated wrapper must be one level down.
     -->
     <template id="assignment_buttons_alert">
         <div>
@@ -24,23 +52,7 @@
                 >
                     <p>
                         <i class="fa fa-user-o" /> This document has no assigned officer.
-                        <button
-                            name="action_assignment_assign_me"
-                            string="Assign to me"
-                            type="object"
-                            class="btn-sm btn-primary mx-1"
-                            icon="fa-hand-paper-o"
-                            t-attf-groups="#{user_group}"
-                            attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
-                        />
-                        <button
-                            name="action_assignment_open_wizard"
-                            string="Assign…"
-                            type="object"
-                            class="btn-sm btn-secondary mx-1"
-                            icon="fa-share"
-                            t-attf-groups="#{manager_group}"
-                        />
+                        <t t-call="base_assignment._assignment_common_buttons" />
                     </p>
                 </div>
                 <!-- Officer assigned -->
@@ -56,23 +68,7 @@
                             readonly="1"
                             class="fw-bold"
                         />
-                        <button
-                            name="action_assignment_assign_me"
-                            string="Assign to me"
-                            type="object"
-                            class="btn-sm btn-primary mx-1"
-                            icon="fa-hand-paper-o"
-                            t-attf-groups="#{user_group}"
-                            attrs="{'invisible': [('assignment_can_assign_me', '=', False)]}"
-                        />
-                        <button
-                            name="action_assignment_open_wizard"
-                            string="Assign…"
-                            type="object"
-                            class="btn-sm btn-secondary mx-1"
-                            icon="fa-share"
-                            t-attf-groups="#{manager_group}"
-                        />
+                        <t t-call="base_assignment._assignment_common_buttons" />
                         <button
                             name="action_assignment_unassign"
                             string="Unassign"

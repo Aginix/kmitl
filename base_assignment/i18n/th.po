@@ -28,13 +28,9 @@ msgstr "มอบหมาย"
 #. module: base_assignment
 #. odoo-python
 #: code:addons/base_assignment/models/assignment_mixin.py:0
+#: model:ir.model,name:base_assignment.model_assign_officer_wizard
 #: model_terms:ir.ui.view,arch_db:base_assignment.assign_officer_wizard_form
 #, python-format
-msgid "Assign Officer"
-msgstr "มอบหมายเจ้าหน้าที่"
-
-#. module: base_assignment
-#: model:ir.model,name:base_assignment.model_assign_officer_wizard
 msgid "Assign Officer"
 msgstr "มอบหมายเจ้าหน้าที่"
 
@@ -145,8 +141,15 @@ msgstr "โมเดลเรคอร์ด"
 #. odoo-python
 #: code:addons/base_assignment/models/assignment_mixin.py:0
 #, python-format
-msgid "This document is already assigned to %s."
-msgstr "เอกสารนี้ถูกมอบหมายให้ %s แล้ว"
+msgid "This document is already assigned to %(user)s."
+msgstr "เอกสารนี้ถูกมอบหมายให้ %(user)s แล้ว"
+
+#. module: base_assignment
+#. odoo-python
+#: code:addons/base_assignment/wizards/assign_officer_wizard.py:0
+#, python-format
+msgid "Model %(model)s does not support officer assignment."
+msgstr "โมเดล %(model)s ไม่รองรับการมอบหมายเจ้าหน้าที่"
 
 #. module: base_assignment
 #: model_terms:ir.ui.view,arch_db:base_assignment.assignment_buttons_alert

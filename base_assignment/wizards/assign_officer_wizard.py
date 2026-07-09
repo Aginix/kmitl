@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError
 
 
 class AssignOfficerWizard(models.TransientModel):
@@ -20,12 +20,27 @@ class AssignOfficerWizard(models.TransientModel):
         compute="_compute_allowed_user_ids",
     )
 
+    def _get_target_model_group_xmlid(self):
+        """Read ``_assign_user_group`` off the target model. Raise a friendly
+        error when the target model does not inherit ``assignment.mixin`` —
+        otherwise a bare AttributeError would leak up to the user."""
+        self.ensure_one()
+        if not self.res_model:
+            return None
+        Model = self.env[self.res_model]
+        group_xmlid = getattr(Model, "_assign_user_group", None)
+        if not group_xmlid:
+            raise UserError(_(
+                "Model %(model)s does not support officer assignment."
+            ) % {"model": self.res_model})
+        return group_xmlid
+
     @api.depends("res_model")
     def _compute_allowed_user_ids(self):
         for wiz in self:
             users = self.env["res.users"]
             if wiz.res_model:
-                group_xmlid = self.env[wiz.res_model]._assign_user_group
+                group_xmlid = wiz._get_target_model_group_xmlid()
                 group = self.env.ref(group_xmlid, raise_if_not_found=False)
                 if group:
                     users = group.users
@@ -51,4 +66,8 @@ class AssignOfficerWizard(models.TransientModel):
             record._assignment_clear_activity(old_officer)
         if self.user_id and self.user_id != self.env.user:
             record._assignment_notify(self.user_id)
+        # Fire the lifecycle hook on the same path claim / unassign use so a
+        # consumer can react to any assigned_to write without overriding both
+        # the mixin action and the wizard.
+        record._assignment_on_assigned(self.user_id, old_officer)
         return {"type": "ir.actions.act_window_close"}
