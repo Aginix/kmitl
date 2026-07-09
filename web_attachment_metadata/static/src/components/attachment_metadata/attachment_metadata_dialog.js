@@ -15,11 +15,31 @@ export class AttachmentMetadataDialog extends Component {
         this.state = useState({metadataId: ""});
         this.metadataOptions = [];
         onWillStart(async () => {
-            this.metadataOptions = await this.orm.searchRead(
-                this.props.metadataModel,
-                this.props.metadataDomain || [],
-                ["id", "name"]
-            );
+            if (this.props.metadataType === "selection") {
+                if (this.props.metadataSelection) {
+                    this.metadataOptions = this.props.metadataSelection.map(
+                        ([value, label]) => ({id: value, name: label})
+                    );
+                } else {
+                    const fieldsInfo = await this.orm.call(
+                        "ir.attachment",
+                        "fields_get",
+                        [[this.props.metadataField], ["selection"]]
+                    );
+                    const selection =
+                        (fieldsInfo[this.props.metadataField] || {}).selection || [];
+                    this.metadataOptions = selection.map(([value, label]) => ({
+                        id: value,
+                        name: label,
+                    }));
+                }
+            } else {
+                this.metadataOptions = await this.orm.searchRead(
+                    this.props.metadataModel,
+                    this.props.metadataDomain || [],
+                    ["id", "name"]
+                );
+            }
         });
     }
 
@@ -59,8 +79,12 @@ export class AttachmentMetadataDialog extends Component {
             return;
         }
         if (this.state.metadataId) {
+            const value =
+                this.props.metadataType === "selection"
+                    ? this.state.metadataId
+                    : Number(this.state.metadataId);
             await this.orm.write("ir.attachment", [attachment.id], {
-                [this.props.metadataField]: Number(this.state.metadataId),
+                [this.props.metadataField]: value,
             });
         }
         await this.props.onConfirm(attachment.id);
@@ -77,10 +101,12 @@ AttachmentMetadataDialog.components = {Dialog};
 AttachmentMetadataDialog.props = {
     resModel: {type: String},
     resId: {type: Number},
-    metadataModel: {type: String},
     metadataField: {type: String},
     metadataLabel: {type: String},
+    metadataType: {type: String, optional: true},
+    metadataModel: {type: String, optional: true},
     metadataDomain: {type: Array, optional: true},
+    metadataSelection: {type: Array, optional: true},
     onConfirm: {type: Function},
     close: {type: Function},
 };
