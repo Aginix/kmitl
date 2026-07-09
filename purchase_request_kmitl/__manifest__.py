@@ -14,6 +14,7 @@
         "purchase_order_kmitl",
         "purchase_operating_unit",
         "web_m2x_options",
+        "web_attachment_metadata",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -33,6 +34,11 @@
         "views/purchase_order_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "purchase_request_kmitl/static/src/**/*",
+        ],
+    },
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",

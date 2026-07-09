@@ -100,8 +100,9 @@ class PurchaseRequest(models.Model):
     )
 
     attachment_ids = fields.One2many(
-        "ir.attachment",
-        "res_id",
+        comodel_name="ir.attachment",
+        inverse_name="res_id",
+        domain=[("res_model", "=", "purchase.request")],
         string="Document Attachments",
         tracking=True,
     )
