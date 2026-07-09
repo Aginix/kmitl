@@ -52,3 +52,17 @@ The total contracted value of a project; the baseline its operating expense, mai
 
 **Installment-free project** (ไม่มีงวดงานกำกับ):
 A project whose งวด schedule isn't fixed or known up front (typically test/trial work), so it is not governed by งวด targets. Flag `no_installment_tracking`; see ADR-0001 for what this relaxes.
+
+### Contracts
+
+A project is governed by two distinct contracts that must not be conflated:
+
+**Project Code** (รหัสโครงการ):
+KRIS's internal identifier for the project (`project_code`, e.g. `สญ.67-004`). Historically mislabelled "เลขที่สัญญา" / `contract_number`, but its values were always internal codes, never an external contract identifier.
+_Avoid_: "contract number" (ambiguous with the employer's).
+
+**Institute–Employer Contract** (สัญญาสถาบัน-ผู้ว่าจ้าง):
+The external contract between KMITL (the institute) and the Employer. Identified by `contract_number` (the employer's own contract id); period bounded by `date_contract_start` / `date_contract_end`.
+
+**KRIS–Project Manager Contract/MOU** (สัญญา/บันทึกข้อตกลง KRIS-หัวหน้าโครงการ):
+The internal agreement between the KRIS unit and the Project Manager that authorises the work and its compensation. Identified by its issue date (`kris_contract_date`). May be either a สัญญา (contract) or a บันทึกข้อตกลง (MOU) — same field covers both.
