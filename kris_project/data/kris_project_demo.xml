@@ -1166,7 +1166,6 @@
             <field name="client_location">ปทุมธานี</field>
             <field name="client_org_type">private</field>
             <field name="project_value">1000000.0</field>
-            <field name="equipment_cost">200000.0</field>
             <field name="project_code">สญ.67-017</field>
             <field name="date_contract_start">2024-11-15</field>
             <field name="date_contract_end">2025-11-14</field>
