@@ -43,25 +43,21 @@
                             </div>
                             <div class="small text-muted">
                                 <span t-esc="classifierLabel" />:
-                                <t t-set="badgeStyle" t-value="editable ? 'cursor: pointer;' : ''"/>
                                 <span
                                     t-if="file.classifierName"
                                     class="badge text-bg-secondary ms-1"
-                                    t-att-style="badgeStyle"
-                                    t-att-role="editable ? 'button' : null"
-                                    t-att-title="editable ? 'Change ' + classifierLabel : null"
-                                    t-on-click="() => this.onBadgeClick(file.id, file.classifierRawId)"
                                     t-esc="file.classifierName"
                                 />
-                                <span
-                                    t-else=""
-                                    class="fst-italic ms-1"
-                                    t-att-style="badgeStyle"
-                                    t-att-role="editable ? 'button' : null"
-                                    t-att-title="editable ? 'Set ' + classifierLabel : null"
-                                    t-on-click="() => this.onBadgeClick(file.id, file.classifierRawId)"
-                                >-</span>
+                                <span t-else="" class="fst-italic ms-1">-</span>
                             </div>
+                        </div>
+                        <div
+                            t-if="editable"
+                            class="o_attachment_edit btn btn-link"
+                            t-on-click.stop="() => this.onEditClick(file.id, file.classifierRawId)"
+                            title="Edit"
+                        >
+                            <span class="fa fa-pencil" role="img" aria-label="Edit" />
                         </div>
                         <div
                             t-if="editable"

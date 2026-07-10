@@ -49,10 +49,6 @@ export class Many2ManyBinaryClassifierField extends Many2ManyBinaryField {
         return this.constructor.classifierType;
     }
 
-    get classifierEditable() {
-        return !this.props.readonly;
-    }
-
     get files() {
         const field = this.classifierField;
         return this.props.value.records.map((record) => {
@@ -94,10 +90,7 @@ export class Many2ManyBinaryClassifierField extends Many2ManyBinaryField {
         });
     }
 
-    onBadgeClick(fileId, currentValue) {
-        if (!this.classifierEditable) {
-            return;
-        }
+    onEditClick(fileId, currentValue) {
         this.dialog.add(AttachmentClassifierDialog, {
             ..._defaultsWithMode(this._dialogProps(), "edit"),
             attachmentId: fileId,

@@ -3,13 +3,15 @@
 
     <t t-name="web_attachment_classifier.AttachmentClassifierDialog" owl="1">
         <Dialog title="title" size="'md'">
-            <div t-if="!isEditMode" class="mb-3">
-                <label class="o_form_label">File</label>
+            <div class="mb-3">
+                <label class="o_form_label">
+                    <span t-esc="isEditMode ? 'Replace file (optional)' : 'File'"/>
+                </label>
                 <input
                     type="file"
                     t-ref="fileInput"
                     class="form-control"
-                    multiple="multiple"
+                    t-att-multiple="!isEditMode"
                 />
             </div>
             <div class="mb-3">

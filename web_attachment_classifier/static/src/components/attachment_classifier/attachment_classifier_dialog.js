@@ -69,6 +69,19 @@ export class AttachmentClassifierDialog extends Component {
         );
     }
 
+    _readAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const result = reader.result || "";
+                const commaIdx = result.indexOf(",");
+                resolve(commaIdx >= 0 ? result.slice(commaIdx + 1) : result);
+            };
+            reader.onerror = () => reject(reader.error || new Error("read failed"));
+            reader.readAsDataURL(file);
+        });
+    }
+
     async _uploadOne(file) {
         const params = {
             csrf_token: odoo.csrf_token,
@@ -98,9 +111,37 @@ export class AttachmentClassifierDialog extends Component {
             this._warnMissingClassifier();
             return;
         }
-        await this.orm.write("ir.attachment", [this.props.attachmentId], {
+        const fileInput = this.fileInputRef.el;
+        const file = fileInput && fileInput.files[0];
+        const writeVals = {
             [this.props.classifierField]: this._castValue(this.state.classifierId),
-        });
+        };
+        if (file) {
+            try {
+                writeVals.datas = await this._readAsBase64(file);
+                writeVals.name = file.name;
+                writeVals.mimetype = file.type || "application/octet-stream";
+            } catch (error) {
+                this.notification.add(
+                    (file.name || "") + ": " + (error.message || String(error)),
+                    {title: this.env._t("Read error"), type: "danger"}
+                );
+                return;
+            }
+        }
+        try {
+            await this.orm.write(
+                "ir.attachment",
+                [this.props.attachmentId],
+                writeVals
+            );
+        } catch (error) {
+            this.notification.add(error.message || String(error), {
+                title: this.env._t("Save error"),
+                type: "danger",
+            });
+            return;
+        }
         await this.props.onConfirm();
         this._safeClose();
     }
@@ -165,6 +206,8 @@ AttachmentClassifierDialog.props = {
     classifierDomain: {type: Array, optional: true},
     classifierSelection: {type: Array, optional: true},
     classifierRequired: {type: Boolean, optional: true},
+    // "add" (default) uploads new attachment(s) via /web/binary/upload_attachment.
+    // "edit" writes to an existing ir.attachment via ORM — required prop: attachmentId.
     mode: {type: String, optional: true},
     attachmentId: {type: Number, optional: true},
     initialClassifierId: {type: String, optional: true},
