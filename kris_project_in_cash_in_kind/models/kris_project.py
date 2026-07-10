@@ -65,12 +65,14 @@ class KrisProject(models.Model):
     # cash_target so in_kind money never leaks into maintenance fees or
     # revenue-remaining/installment-mismatch comparisons.
 
-    @api.depends("cash_target", "equipment_cost")
+    @api.depends("cash_target", "expense_line_ids.amount")
     def _compute_operating_expense(self):
         super()._compute_operating_expense()
         for rec in self:
             if rec.is_research_category:
-                rec.operating_expense = rec.cash_target - rec.equipment_cost
+                rec.operating_expense = rec.cash_target - sum(
+                    rec.expense_line_ids.mapped("amount")
+                )
 
     @api.depends(
         "installment_ids.received_from_employer",
