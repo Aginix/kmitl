@@ -238,7 +238,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_config
 msgid "Configuration"
-msgstr ""
+msgstr "ตั้งค่า"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
@@ -302,7 +302,7 @@ msgstr "การขอเบิก"
 #. module: disbursement
 #: model:ir.actions.act_window,name:disbursement.action_disbursement_exception_rule
 msgid "Disbursement Exception Rules"
-msgstr ""
+msgstr "กฎข้อยกเว้นการขอเบิก"
 
 #. module: disbursement
 #: model:ir.model,name:disbursement.model_disbursement_exception_confirm
@@ -395,7 +395,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_exception_rules
 msgid "Exception Rules"
-msgstr ""
+msgstr "กฎข้อยกเว้น"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__exception_ids
@@ -989,6 +989,12 @@ msgid "Net Total"
 msgstr "มูลค่าสุทธิ"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__activity_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_analytic_id
 msgid "Activity"
 msgstr "กิจกรรม"
@@ -1020,6 +1026,7 @@ msgid "Bill Posted"
 msgstr "ตั้งหนี้แล้ว"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__department_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__department_analytic_id
 msgid "Department"
 msgstr "ส่วนงาน"
@@ -1040,6 +1047,7 @@ msgid "Done"
 msgstr "เสร็จสิ้น"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__fund_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__fund_analytic_id
 msgid "Fund"
 msgstr "กองทุน"
@@ -1071,6 +1079,7 @@ msgid "Partner Information"
 msgstr "ข้อมูลคู่ค้า"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__partner_type_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__partner_type
 msgid "Partner Type"
 msgstr "จ่ายตาม"
@@ -1140,6 +1149,7 @@ msgid "Signed"
 msgstr "ลงนามแล้ว"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__source_analytic_id
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__source_analytic_id
 msgid "Source"
 msgstr "แหล่งเงิน"
@@ -1291,10 +1301,13 @@ msgid "Assign Disbursement Verification Officer"
 msgstr "มอบหมายเจ้าหน้าที่หมวดตรวจใบขอเบิก"
 
 #. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_assignment_rule
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_assignment_rule
 msgid "Assignment Rules"
 msgstr "กฎการมอบหมาย"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_assignment_rule__user_id
 msgid "Assigned Officer"
 msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
 
@@ -1361,14 +1374,19 @@ msgid "Disbursement Verification"
 msgstr "หมวดตรวจ"
 
 #. module: disbursement
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_verification
 msgid "Verification"
 msgstr "หมวดตรวจ"
 
 #. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_my_verifications
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_my_verifications
 msgid "My Work"
 msgstr "งานของฉัน"
 
 #. module: disbursement
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_all
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_all_requests
 msgid "All Disbursement Requests"
 msgstr "ใบขอเบิกทั้งหมด"
 
