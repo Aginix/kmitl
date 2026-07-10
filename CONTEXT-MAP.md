@@ -16,6 +16,7 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 - [Identity & Access](./iam/CONTEXT.md) — standalone app that delegates backend user/role/group/OU/access-right/record-rule administration without granting full Settings (`base.group_system`); a single `IAM Manager` group implying `erp_manager` plus one escalation guard.
 - [Todos](./mail_activity_todo/CONTEXT.md) — cross-cutting unified inbox (สิ่งที่ต้องทำ) of everything a user must act on; each Todo is a native `mail.activity` on its source record, surfaced in one consolidated page with a jump-to-source button. Owns no business state.
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an Approval Request to the Disbursement Request it is billed into; returning a disbursement keeps it intact (at `signed`) and bounces the approval request to `returned`, where the requester corrects a limited set of fields and confirms to push them back onto the disbursement.
+- [Attachment Classifier](./web_attachment_metadata/CONTEXT.md) — reusable OWL widget kit for uploading a file *together with one categorical value* (Document Type, Attachment Type, etc.); consumers own the classifier field on `ir.attachment` and bind it to a widget name via a JS factory.
 
 ## Relationships
 

@@ -5,7 +5,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",
-    "category": "Extra Tools",
+    "category": "Hidden",
     "depends": ["web"],
     "assets": {
         "web.assets_backend": [
