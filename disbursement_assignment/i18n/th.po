@@ -1,0 +1,244 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* disbursement_assignment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-10 00:00+0000\n"
+"PO-Revision-Date: 2026-07-10 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: disbursement_assignment
+#: model:ir.model,name:disbursement_assignment.model_disbursement_assignment_rule
+msgid "Disbursement Assignment Rule"
+msgstr "กฎการมอบหมายใบขอเบิก"
+
+#. module: disbursement_assignment
+#: model:ir.model,name:disbursement_assignment.model_disbursement_return_request_wizard
+msgid "Return Disbursement Request for Correction"
+msgstr "ตีกลับใบขอเบิกเพื่อแก้ไข"
+
+#. module: disbursement_assignment
+#: model:res.groups,name:disbursement_assignment.group_disbursement_verification
+msgid "Disbursement Verification"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__department_analytic_id
+msgid "Department"
+msgstr "ส่วนงาน"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__source_analytic_id
+msgid "Source"
+msgstr "แหล่งเงิน"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__fund_analytic_id
+msgid "Fund"
+msgstr "กองทุน"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__activity_analytic_id
+msgid "Activity"
+msgstr "กิจกรรม"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__partner_type_id
+msgid "Partner Type"
+msgstr "จ่ายตาม"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_assignment_rule__user_id
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_request__assigned_to
+msgid "Assigned Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_request__returned_for_edit
+msgid "Returned for Correction"
+msgstr "ถูกตีกลับเพื่อแก้ไข"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_return_request_wizard__request_id
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: disbursement_assignment
+#: model:ir.model.fields,field_description:disbursement_assignment.field_disbursement_return_request_wizard__reason
+msgid "Reason"
+msgstr "เหตุผล"
+
+#. module: disbursement_assignment
+#: model:ir.actions.act_window,name:disbursement_assignment.action_disbursement_assignment_rule
+#: model:ir.ui.menu,name:disbursement_assignment.menu_disbursement_assignment_rule
+msgid "Assignment Rules"
+msgstr "กฎการมอบหมาย"
+
+#. module: disbursement_assignment
+#: model:ir.actions.server,name:disbursement_assignment.action_apply_rules_to_pending
+msgid "Apply Rules to Pending Requests"
+msgstr "นำกฎไปใช้กับใบขอเบิกที่รอตรวจ"
+
+#. module: disbursement_assignment
+#: model:ir.ui.menu,name:disbursement_assignment.menu_disbursement_verification
+msgid "Verification"
+msgstr "หมวดตรวจ"
+
+#. module: disbursement_assignment
+#: model:ir.actions.act_window,name:disbursement_assignment.action_disbursement_my_verifications
+#: model:ir.ui.menu,name:disbursement_assignment.menu_disbursement_my_verifications
+msgid "My Work"
+msgstr "งานของฉัน"
+
+#. module: disbursement_assignment
+#: model:ir.actions.act_window,name:disbursement_assignment.action_disbursement_all
+#: model:ir.ui.menu,name:disbursement_assignment.menu_disbursement_all_requests
+msgid "All Disbursement Requests"
+msgstr "ใบขอเบิกทั้งหมด"
+
+#. module: disbursement_assignment
+#: model_terms:ir.actions.act_window,help:disbursement_assignment.action_disbursement_my_verifications
+msgid "No disbursement request is assigned to you."
+msgstr "ยังไม่มีใบขอเบิกที่มอบหมายให้คุณ"
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.view_disbursement_assignment_rule_tree
+msgid "Assignment Rules"
+msgstr "กฎการมอบหมาย"
+
+#. module: disbursement_assignment
+#: model_terms:ir.actions.act_window,help:disbursement_assignment.action_disbursement_assignment_rule
+msgid "สร้างกฎเพื่อมอบหมายใบขอเบิกที่ลงนามแล้วให้เจ้าหน้าที่ผู้รับผิดชอบ"
+msgstr ""
+
+#. module: disbursement_assignment
+#: model_terms:ir.actions.act_window,help:disbursement_assignment.action_disbursement_assignment_rule
+msgid ""
+"เว้นเงื่อนไขว่างไว้เพื่อให้เป็น wildcard (จับคู่ได้ทุกค่า) กฎจะถูกจับคู่จากบนลงล่าง\n"
+"                โดยกฎแรกที่ตรงเป็นผู้ชนะ กฎที่ตั้งบนส่วนงาน/กองทุน/กิจกรรมระดับแม่\n"
+"                จะครอบคลุมระดับลูกทั้งหมด"
+msgstr ""
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.view_disbursement_request_form_assignment
+msgid "Return"
+msgstr "ตีกลับ"
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.view_disbursement_request_form_assignment
+msgid "Resubmit to Verification"
+msgstr "ส่งกลับหมวดตรวจ"
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.view_disbursement_request_search_assignment
+msgid "My Verifications"
+msgstr "งานตรวจของฉัน"
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.view_disbursement_request_search_assignment
+msgid "Unassigned"
+msgstr "ยังไม่มีผู้รับผิดชอบ"
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.disbursement_return_request_wizard_form
+msgid "Return for Correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.disbursement_return_request_wizard_form
+msgid "Reason for returning this request…"
+msgstr "ระบุเหตุผลที่ตีกลับใบขอเบิกนี้…"
+
+#. module: disbursement_assignment
+#: model_terms:ir.ui.view,arch_db:disbursement_assignment.disbursement_return_request_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Assigned as responsible verification officer"
+msgstr "ได้รับมอบหมายเป็นเจ้าหน้าที่หมวดตรวจผู้รับผิดชอบ"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/assignment_rule.py:0
+#, python-format
+msgid "Assignment Rules Applied"
+msgstr "นำกฎการมอบหมายไปใช้แล้ว"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/assignment_rule.py:0
+#, python-format
+msgid "%(assigned)s of %(total)s pending request(s) were assigned."
+msgstr "มอบหมายแล้ว %(assigned)s จาก %(total)s ใบที่รอตรวจ"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Return for Correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Only a request under verification (signed) can be returned."
+msgstr "ตีกลับได้เฉพาะใบที่อยู่ระหว่างหมวดตรวจ (สถานะ signed) เท่านั้น"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Returned for correction: %s"
+msgstr "ตีกลับเพื่อแก้ไข: %s"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Returned for correction"
+msgstr "ตีกลับเพื่อแก้ไข"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Only a returned request in draft can be resubmitted."
+msgstr "ส่งกลับได้เฉพาะใบที่ถูกตีกลับและอยู่สถานะ draft เท่านั้น"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Cannot resubmit a disbursement request with no lines."
+msgstr "ส่งกลับไม่ได้ เพราะใบขอเบิกไม่มีรายการ"
+
+#. module: disbursement_assignment
+#. odoo-python
+#: code:addons/disbursement_assignment/models/disbursement_request_assignment.py:0
+#, python-format
+msgid "Corrected and returned to verification."
+msgstr "แก้ไขแล้ว ส่งกลับหมวดตรวจ"
