@@ -1,8 +1,8 @@
 # Classifier binding is done via a JS factory, not XML `options`
 
 Consumers register a widget by calling
-`registerAttachmentMetadataWidget({widgetName, metadataField, ...})` from
-their own JS asset, then reference `widgetName` in XML. The
+`registerAttachmentClassifierWidget({widgetName, classifierField, ...})`
+from their own JS asset, then reference `widgetName` in XML. The
 Odoo-idiomatic alternative — a single generic widget configured via XML
 `options="{'field': ..., 'model': ...}"` — was rejected because
 `Many2ManyBinaryField.fieldsToFetch` is a **static per-class contract**

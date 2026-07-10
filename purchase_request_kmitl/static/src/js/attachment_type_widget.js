@@ -1,15 +1,16 @@
 /** @odoo-module **/
 
-import {registerAttachmentMetadataWidget} from "@web_attachment_metadata/components/attachment_metadata/attachment_metadata_field";
+import {registerAttachmentClassifierWidget} from "@web_attachment_classifier/components/attachment_classifier/attachment_classifier_field";
 
-registerAttachmentMetadataWidget({
+registerAttachmentClassifierWidget({
     widgetName: "many2many_binary_attachment_type",
-    metadataType: "selection",
-    metadataField: "attachment_type",
-    metadataLabel: "Attachment Type",
-    metadataSelection: [
+    classifierType: "selection",
+    classifierField: "attachment_type",
+    classifierLabel: "Attachment Type",
+    classifierSelection: [
         ["tor", "Specification (TOR)"],
         ["rfq", "Quotation"],
         ["etc", "Etc"],
     ],
+    classifierRequired: true,
 });

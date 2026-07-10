@@ -1,6 +1,6 @@
 {
-    "name": "Web Attachment Metadata",
-    "summary": "Reusable OWL widget for attaching files together with extra metadata",
+    "name": "Web Attachment Classifier",
+    "summary": "Reusable OWL widget for attaching files together with a categorical classifier",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -9,7 +9,7 @@
     "depends": ["web"],
     "assets": {
         "web.assets_backend": [
-            "web_attachment_metadata/static/src/components/**/*",
+            "web_attachment_classifier/static/src/components/**/*",
         ],
     },
     "installable": True,

@@ -1,10 +1,11 @@
 /** @odoo-module **/
 
-import {registerAttachmentMetadataWidget} from "@web_attachment_metadata/components/attachment_metadata/attachment_metadata_field";
+import {registerAttachmentClassifierWidget} from "@web_attachment_classifier/components/attachment_classifier/attachment_classifier_field";
 
-registerAttachmentMetadataWidget({
+registerAttachmentClassifierWidget({
     widgetName: "many2many_binary_doctype",
-    metadataField: "document_type_id",
-    metadataModel: "kris.project.document.type",
-    metadataLabel: "Document Type",
+    classifierField: "document_type_id",
+    classifierModel: "kris.project.document.type",
+    classifierLabel: "Document Type",
+    classifierRequired: true,
 });

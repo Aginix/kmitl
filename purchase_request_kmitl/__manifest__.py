@@ -14,7 +14,7 @@
         "purchase_order_kmitl",
         "purchase_operating_unit",
         "web_m2x_options",
-        "web_attachment_metadata",
+        "web_attachment_classifier",
     ],
     "data": [
         "security/ir.model.access.csv",

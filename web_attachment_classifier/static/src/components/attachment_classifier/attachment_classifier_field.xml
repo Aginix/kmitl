@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
-    <t t-name="web_attachment_metadata.Many2ManyBinaryMetadataField" owl="1">
+    <t t-name="web_attachment_classifier.Many2ManyBinaryClassifierField" owl="1">
         <div
             t-attf-class="oe_fileupload w-100 {{props.className ? props.className : ''}}"
             aria-atomic="true"
         >
-            <div class="o_attachments_metadata d-flex flex-column gap-2">
+            <div class="o_attachments_classifier d-flex flex-column gap-2">
                 <t t-foreach="files" t-as="file" t-key="file.id">
                     <t t-set="editable" t-value="!props.readonly" />
                     <t t-set="ext" t-value="getExtension(file)" />
@@ -42,13 +42,25 @@
                                 />
                             </div>
                             <div class="small text-muted">
-                                <span t-esc="metadataLabel" />:
+                                <span t-esc="classifierLabel" />:
+                                <t t-set="badgeStyle" t-value="editable ? 'cursor: pointer;' : ''"/>
                                 <span
-                                    t-if="file.metadataName"
+                                    t-if="file.classifierName"
                                     class="badge text-bg-secondary ms-1"
-                                    t-esc="file.metadataName"
+                                    t-att-style="badgeStyle"
+                                    t-att-role="editable ? 'button' : null"
+                                    t-att-title="editable ? 'Change ' + classifierLabel : null"
+                                    t-on-click="() => this.onBadgeClick(file.id, file.classifierRawId)"
+                                    t-esc="file.classifierName"
                                 />
-                                <span t-else="" class="fst-italic ms-1">-</span>
+                                <span
+                                    t-else=""
+                                    class="fst-italic ms-1"
+                                    t-att-style="badgeStyle"
+                                    t-att-role="editable ? 'button' : null"
+                                    t-att-title="editable ? 'Set ' + classifierLabel : null"
+                                    t-on-click="() => this.onBadgeClick(file.id, file.classifierRawId)"
+                                >-</span>
                             </div>
                         </div>
                         <div

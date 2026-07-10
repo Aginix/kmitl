@@ -13,7 +13,7 @@
         "tracking_manager",
         "account_analytic_kmitl",
         "hr_employee_name_detail_kmitl",
-        "web_attachment_metadata",
+        "web_attachment_classifier",
     ],
     "demo": [
         "data/kris_project_demo.xml",

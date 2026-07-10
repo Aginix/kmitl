@@ -6,11 +6,6 @@ categorical value**" — a Document Type, an Attachment Type, a Fund Source,
 etc. UI-only; the classifier field itself lives on `ir.attachment` in each
 consumer module.
 
-> Historical note: this context was initially scaffolded under the name
-> "web_attachment_metadata". The domain term is **classifier**, not
-> metadata — a physical rename of the module directory is a pending
-> follow-up.
-
 ## Language
 
 **Attachment Classifier**:
@@ -37,23 +32,23 @@ a convention, not enforced.
 
 **Consumer Module**:
 Any Odoo module that `depends` on this kit and calls
-`registerAttachmentMetadataWidget(...)` in its own JS asset to bind a
+`registerAttachmentClassifierWidget(...)` in its own JS asset to bind a
 widget name to a specific Classifier Field. First consumers:
 `kris_project` and `purchase_request_kmitl`.
 _Avoid_: user (too generic), client (implies UI code, not a whole module).
 
 **Factory (registration API)**:
 The JS function that consumers call to produce a concrete widget
-subclass. Named `registerAttachmentMetadataWidget` (kept for now — will
-rename with the module). See [ADR-0001](./docs/adr/0001-factory-not-xml-options.md)
-for why this is a JS factory instead of XML `options`.
+subclass. Named `registerAttachmentClassifierWidget`. See
+[ADR-0001](./docs/adr/0001-factory-not-xml-options.md) for why this is
+a JS factory instead of XML `options`.
 
 **External Attachment**:
 An `ir.attachment` linked to the same `(res_model, res_id)` as the
 widget's One2many but *created outside the widget* — typically by mail
 chatter, Odoo report generation, or admin action. These render in the
-widget list with a "-" placeholder for the classifier and stay editable
-after the fact (see "Post-hoc edit" below).
+widget list with a "-" placeholder for the classifier; the user can click
+the placeholder to set a value (see "Post-hoc edit" below).
 
 ## Rules of the game
 
@@ -70,45 +65,40 @@ after the fact (see "Post-hoc edit" below).
   factory (recommended, matches the Python side) or lets the widget look
   them up via `fields_get` at render time (fallback for Selection whose
   values are not stable at JS-load time).
-- **Classifier is set at upload time only** — until post-hoc edit lands
-  (see backlog), the badge shown next to a file is read-only. Missing a
-  value is not an error; the badge just renders as "-".
+- **Post-hoc edit.** The badge next to each file is clickable while the
+  field is editable — clicking opens the same dialog in edit mode and
+  writes the new value via `ir.attachment.write`. This preserves the
+  attachment record and its audit trail versus a delete-and-reupload
+  round-trip.
+- **Multi-file upload.** The dialog's file input accepts multiple files
+  and applies the *same* classifier to all of them. Uploads are
+  best-effort — a failure on one file surfaces as a notification for
+  that file, and successful uploads are kept.
 
 ## Manual verification checklist
 
 Test end-to-end after touching the widget, the factory, or a consumer's
 widget registration:
 
-1. Install `web_attachment_metadata` + upgrade the consumer module
+1. Install `web_attachment_classifier` + upgrade the consumer module.
 2. Open a form that uses the widget → tab shows a card list of existing
-   attachments with a badge per file (or "-" for unclassified)
-3. Click **Attach** → dialog opens with a file picker and a dropdown
-   labelled with the consumer's `metadataLabel`
-4. Select file + classifier → **Save** → new attachment row appears with
-   the correct badge
-5. Reload the form → badge still shows the classifier label (proves
-   `fieldsToFetch` for that field is wired)
-6. Upload an attachment via mail chatter → it appears in the widget list
-   with a "-" badge (see [External Attachment](#language))
-7. Register a *second* widget in another consumer with a different
-   `metadataField` → both work on the same form without cross-talk
+   attachments with a badge per file (or "-" for unclassified).
+3. Click **Attach** → dialog opens with a file picker (multi-select
+   allowed) and a dropdown labelled with the consumer's
+   `classifierLabel`. If the widget was registered with
+   `classifierRequired: true`, an asterisk shows next to the label and
+   Save must reject an empty selection.
+4. Select two files + a classifier → **Save** → both attachment rows
+   appear with the same badge.
+5. Reload the form → badges still show. This proves `fieldsToFetch` is
+   wired for the classifier field.
+6. Click an existing badge → dialog opens in edit mode (no file picker)
+   pre-populated with the current value → change value → **Save** →
+   badge updates in place, no new attachment created.
+7. Upload an attachment via mail chatter → it appears in the widget list
+   with a "-" badge (see [External Attachment](#language)). Click "-" →
+   dialog opens in edit mode → set a value → badge updates.
+8. Register a *second* widget in another consumer with a different
+   `classifierField` → both work on the same form without cross-talk
    (validates that factory-per-consumer subclassing keeps `fieldsToFetch`
-   isolated)
-
-## Backlog (design agreed, not yet implemented)
-
-Locked in during the review that produced this document but deliberately
-out of scope for PR #969:
-
-- **Rename to `web_attachment_classifier`** — module directory + factory
-  function + all JS/XML identifiers. Follow-up PR.
-- **`required: true/false`** — factory option to force a value at upload
-  time. Consumers that previously had `required="1"` in a tree row
-  (kris_project, purchase_request_kmitl) will opt in.
-- **Post-hoc edit** — click the badge → popover to change the classifier
-  via `orm.write` (v1: `ir.attachment.write` from the client). Prefer
-  this over "delete + re-upload" to preserve the attachment record and
-  its audit trail.
-- **Multi-file upload with shared classifier** — dialog accepts
-  `multiple` files but exposes one dropdown; loops upload + write with
-  best-effort semantics (per-file notification on failure, no rollback).
+   isolated).

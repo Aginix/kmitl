@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="web_attachment_classifier.AttachmentClassifierDialog" owl="1">
+        <Dialog title="title" size="'md'">
+            <div t-if="!isEditMode" class="mb-3">
+                <label class="o_form_label">File</label>
+                <input
+                    type="file"
+                    t-ref="fileInput"
+                    class="form-control"
+                    multiple="multiple"
+                />
+            </div>
+            <div class="mb-3">
+                <label class="o_form_label">
+                    <span t-esc="props.classifierLabel" />
+                    <span
+                        t-if="props.classifierRequired"
+                        class="text-danger ms-1"
+                    >*</span>
+                </label>
+                <select class="form-select" t-model="state.classifierId">
+                    <option value="">--</option>
+                    <t t-foreach="classifierOptions" t-as="opt" t-key="opt.id">
+                        <option t-att-value="opt.id" t-esc="opt.name" />
+                    </t>
+                </select>
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary" t-on-click="onSave">Save</button>
+                <button
+                    class="btn btn-secondary"
+                    t-on-click="() => props.close()"
+                >Cancel</button>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>
