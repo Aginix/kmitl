@@ -3,7 +3,7 @@
     "version": "16.0.1.2.0",
     "category": "Accounting",
     "author": "KMITL",
-    "depends": ["agx_approval", "disbursement"],
+    "depends": ["agx_approval", "disbursement", "disbursement_assignment"],
     "data": [
         "data/mail_activity_type_data.xml",
         "data/approval_request_exception_data.xml",

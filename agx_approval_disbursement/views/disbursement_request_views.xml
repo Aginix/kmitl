@@ -36,7 +36,7 @@
         <field name="model">disbursement.request</field>
         <field
             name="inherit_id"
-            ref="disbursement.view_disbursement_request_form_assignment"
+            ref="disbursement_assignment.view_disbursement_request_form_assignment"
         />
         <field name="arch" type="xml">
             <!-- Replace (not just re-attr) the button so its "Return" label is a
