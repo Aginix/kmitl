@@ -1,0 +1,103 @@
+.o_kmitl_general_ledger {
+    height: 100%;
+    overflow: auto;
+
+    // Group the filter controls in a light panel, set apart from the data.
+    .o_kmitl_gl_filterpanel {
+        padding: 0.75rem 0.75rem 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+    }
+
+    // Each account is a self-contained card with a header strip.
+    .o_kmitl_gl_account {
+        border: 1px solid #e0e3e8;
+        border-radius: 0.5rem;
+        background-color: #fff;
+
+        .o_kmitl_gl_acc_head {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background-color: #eef1f4;
+            border-bottom: 1px solid #e0e3e8;
+            border-radius: 0.5rem 0.5rem 0 0;
+
+            .o_kmitl_gl_acc_code {
+                font-weight: 700;
+                font-variant-numeric: tabular-nums;
+            }
+            .o_kmitl_gl_acc_name {
+                color: #5a6472;
+            }
+        }
+    }
+
+    .o_kmitl_gl_table {
+        margin-bottom: 0;
+
+        // Tabular figures keep the amount columns aligned (no digit jitter).
+        td,
+        th {
+            font-variant-numeric: tabular-nums;
+        }
+
+        // Column headers stay visible while scrolling a long ledger.
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e0e3e8;
+            white-space: nowrap;
+        }
+
+        // Clickable move-line rows (accordion headers)
+        .o_kmitl_gl_row {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        // Zebra striping on data rows for readability. Set on the row so it
+        // cascades to its cells, while table-hover still wins on hover (it
+        // overrides --bs-table-accent-bg directly on the cells).
+        .o_kmitl_gl_row.o_kmitl_gl_stripe {
+            --bs-table-accent-bg: #f6f8fa;
+        }
+
+        // Opening (ยอดยกมา) / closing (ยอดยกไป) rows
+        .o_kmitl_gl_opening td {
+            background-color: #fcfcfd;
+            color: #5a6472;
+        }
+        .o_kmitl_gl_ending td {
+            background-color: #f1f3f5;
+            border-top: 2px solid #d6dae0;
+        }
+
+        // Detail panel row: the inner padded panel provides the background
+        .o_kmitl_gl_detail > td {
+            background-color: transparent;
+        }
+
+        // Negative balances in a muted accounting red. The minus sign already
+        // carries the meaning, so colour is only a secondary cue.
+        .o_kmitl_gl_neg {
+            color: #b03030;
+        }
+
+        // Amounts and dates never wrap.
+        td.text-end,
+        th.text-end {
+            white-space: nowrap;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .o_kmitl_general_ledger .o_kmitl_gl_table .o_kmitl_gl_row {
+        transition: none;
+    }
+}

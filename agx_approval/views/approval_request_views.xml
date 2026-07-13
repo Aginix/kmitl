@@ -15,7 +15,7 @@
                     <button name="action_approve" string="อนุมัติ" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['submitted', 'validated'])]}" groups="agx_approval.group_approval_manager"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'submitted'])]}" groups="agx_approval.group_approval_manager"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="agx_approval.group_approval_manager"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,submitted,approved,billed" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,submitted,approved,ready_to_bill,billed" />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary', '=', False)]}">
                     <p>
@@ -39,14 +39,13 @@
                         </h1>
                     </div>
 
-                    <group string="Approval Details">
+                    <group name="approval_details" string="Approval Details">
                         <group>
                             <field name="date" readonly="1"/>
                             <field name="id" invisible="1" />
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="payment_type" required="1" widget="radio" options="{'horizontal': true}"/>
-                            <field name="owner_id" />
-                            <field name="department_id" readonly="1"/>
+                            <field name="owner_id" widget="employee_detail_many2one"/>
                             <field name="user_id" readonly="1"/>
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
@@ -66,7 +65,7 @@
                         <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_res_model': 'approval.request'}" widget="many2many_binary">
                         </field>
                     </group>
-                    <group string="Budget">
+                    <group name="budget" string="Budget">
                         <div colspan="2" class="alert alert-success my-2" role="alert" attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
                             <i class="fa fa-check-circle me-1" title="Budget Reserved"/>
                             <strong>Budget Reserved:</strong>
@@ -109,6 +108,7 @@
                             <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
                                     <field name="allowed_product_ids" invisible="1"/>
+                                    <field name="allowed_partner_type_ids" invisible="1"/>
                                     <field name="sequence" widget="handle"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="partner_id"/>
@@ -146,10 +146,9 @@
                 <field name="name" />
                 <field name="date" />
                 <field name="category_id" />
-                <field name="department_id" />
                 <field name="owner_id" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
-                <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-danger="state == 'rejected'"/>
+                <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-info="state == 'ready_to_bill'" decoration-danger="state == 'rejected'"/>
             </tree>
         </field>
     </record>
@@ -160,13 +159,13 @@
         <field name="arch" type="xml">
             <search string="Approval Request">
                 <field name="name" />
-                <field name="department_id" />
                 <field name="category_id" />
                 <field name="account_fiscal_year_id" />
                 <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]" />
                 <filter name="filter_submitted" string="Submitted" domain="[('state', '=', 'submitted')]" />
                 <filter name="filter_validated" string="Validated" domain="[('state', '=', 'validated')]" />
                 <filter name="filter_approved" string="Approved" domain="[('state', '=', 'approved')]" />
+                <filter name="filter_ready_to_bill" string="Ready to Bill" domain="[('state', '=', 'ready_to_bill')]" />
                 <filter name="filter_billed" string="Billed" domain="[('state', '=', 'billed')]" />
                 <filter name="filter_rejected" string="Rejected" domain="[('state', '=', 'rejected')]" />
                 <separator />

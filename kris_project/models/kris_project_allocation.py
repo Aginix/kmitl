@@ -2,7 +2,6 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -84,36 +83,4 @@ class KrisProjectAllocationLine(models.Model):
     def _compute_actual_amount(self):
         for line in self:
             line.actual_amount = sum(line.receipt_allocation_ids.mapped("amount"))
-
-    @api.constrains("estimated_amount")
-    def _check_estimated_amount_sum(self):
-        for line in self:
-            base = line.project_id.maintenance_deduction_amount
-            if not base:
-                continue
-            total = sum(line.project_id.allocation_line_ids.mapped("estimated_amount"))
-            if total > base + 1e-9:
-                raise ValidationError(
-                    _(
-                        "ผลรวมประมาณการจัดสรรต้องไม่เกินมูลค่าหักค่าบำรุง (%.2f บาท)"
-                    )
-                    % base
-                )
-
-    @api.constrains("estimated_amount", "actual_amount")
-    def _check_actual_not_exceed_estimated(self):
-        prec = self.env["decimal.precision"].precision_get("Account")
-        for line in self:
-            if (
-                float_compare(
-                    line.actual_amount, line.estimated_amount, precision_digits=prec
-                )
-                > 0
-            ):
-                raise ValidationError(
-                    _(
-                        "ยอดจัดสรรจริงของ %s (%.2f บาท) เกินประมาณการ (%.2f บาท)"
-                    )
-                    % (line.name or "", line.actual_amount, line.estimated_amount)
-                )
 

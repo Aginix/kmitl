@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- "My Work": disbursement requests assigned to the current user -->
+    <record id="action_disbursement_my_verifications" model="ir.actions.act_window">
+        <field name="name">My Work</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_my_verifications": 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No disbursement request is assigned to you.
+            </p>
+        </field>
+    </record>
+
+    <!-- "All Disbursement Requests": every request, no default filter -->
+    <record id="action_disbursement_all" model="ir.actions.act_window">
+        <field name="name">All Disbursement Requests</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- "Verification" (หมวดตรวจ) section under the Disbursement app,
+         visible only to the Disbursement Verification group -->
+    <menuitem
+        id="menu_disbursement_verification"
+        name="Verification"
+        parent="disbursement.menu_disbursement_root"
+        sequence="20"
+        groups="group_disbursement_verification"
+    />
+    <menuitem
+        id="menu_disbursement_my_verifications"
+        name="My Work"
+        parent="menu_disbursement_verification"
+        action="action_disbursement_my_verifications"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_disbursement_all_requests"
+        name="All Disbursement Requests"
+        parent="menu_disbursement_verification"
+        action="action_disbursement_all"
+        sequence="20"
+    />
+</odoo>

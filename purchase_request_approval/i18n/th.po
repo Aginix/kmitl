@@ -1472,7 +1472,7 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
-msgid "แทน แบบ พจ.1"
+msgid "แบบ พจ.1"
 msgstr ""
 
 #. module: purchase_request_approval

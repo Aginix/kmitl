@@ -1,4 +1,4 @@
-from odoo import fields, models, modules
+from odoo import api, fields, models, modules
 
 
 class ResUsers(models.Model):
@@ -11,6 +11,7 @@ class ResUsers(models.Model):
             ("todo_category", "!=", False),
         ]
 
+    @api.model
     def get_my_todo_count(self):
         """Systray payload: open Todos grouped by source model with per-model
         icon and overdue/today/planned counts.
@@ -32,7 +33,12 @@ class ResUsers(models.Model):
         def ensure(model_id, model_name):
             grp = groups.get(model_id)
             if grp is None:
-                model = self.env["ir.model"].browse(model_id).model
+                # sudo: regular users have no read access to ir.model, but the
+                # technical model name is non-sensitive metadata (read_group
+                # already resolves res_model_id names via sudo). Without this the
+                # whole payload raises AccessError for non-admins and the systray
+                # / Discuss panel silently show nothing.
+                model = self.env["ir.model"].sudo().browse(model_id).model
                 icon = False
                 try:
                     icon_module = self.env[model]._original_module

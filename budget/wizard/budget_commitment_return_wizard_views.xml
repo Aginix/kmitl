@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="budget_commitment_return_wizard_form" model="ir.ui.view">
+        <field name="name">budget.commitment.return.wizard.form</field>
+        <field name="model">budget.commitment.return.wizard</field>
+        <field name="arch" type="xml">
+            <form string="ส่งคืนเงินเหลือจ่าย">
+                <div class="alert alert-info" role="alert">
+                    ยืนยันการส่งคืนเงินจองที่ยังไม่ได้ตัด กลับเข้ากระเป๋างบประมาณ
+                    เพื่อนำไปใช้ต่อได้ (commitment จะปิดเป็น "เสร็จสิ้น" หลังส่งคืน)
+                </div>
+                <group>
+                    <field name="commitment_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="date"/>
+                    <field name="account_id" readonly="1"/>
+                    <field name="department_analytic_id" readonly="1"/>
+                    <field name="source_analytic_id" readonly="1"/>
+                    <field name="activity_analytic_id" readonly="1"/>
+                    <field name="fund_analytic_id" readonly="1"/>
+                    <field name="total_reserved" widget="monetary"/>
+                    <field name="total_consumed" widget="monetary"/>
+                    <field name="return_amount" widget="monetary"/>
+                    <field name="name"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="ยืนยันส่งคืน" type="object"
+                        class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

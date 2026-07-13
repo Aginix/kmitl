@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="budget_revenue_comparison.MultiRecordSelect" owl="1">
+        <div class="o_brc_ms" t-ref="root">
+            <div class="o_brc_ms_box form-control">
+                <span
+                    t-foreach="selected"
+                    t-as="rec"
+                    t-key="rec.id"
+                    class="badge text-bg-primary o_brc_ms_tag"
+                >
+                    <t t-esc="rec.name" />
+                    <span class="o_brc_ms_x" t-on-click="() => this.remove(rec.id)">×</span>
+                </span>
+                <input
+                    type="text"
+                    class="o_brc_ms_input"
+                    t-att-placeholder="props.placeholder"
+                    t-att-value="state.query"
+                    t-on-focus="onFocus"
+                    t-on-input="onInput"
+                />
+            </div>
+            <div class="o_brc_ms_dropdown" t-if="state.open and state.options.length">
+                <div
+                    t-foreach="state.options"
+                    t-as="opt"
+                    t-key="opt.id"
+                    class="o_brc_ms_option"
+                    t-on-click="() => this.add(opt)"
+                >
+                    <t t-esc="opt.name" />
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="budget_revenue_comparison.BudgetRevenueComparison" owl="1">
+        <Layout display="{ controlPanel: { 'top-right': false, 'bottom-right': false } }">
+            <!-- Filters + actions live in the control panel -->
+            <t t-set-slot="control-panel-bottom-left">
+                <div class="o_brc_filters d-flex flex-wrap align-items-end gap-2">
+                    <div>
+                        <label class="o_form_label small mb-0">Fiscal Year</label>
+                        <select class="form-select form-select-sm" t-on-change="onFiscalYearChange">
+                            <option value="">/</option>
+                            <option
+                                t-foreach="fiscalYears"
+                                t-as="fy"
+                                t-key="fy.id"
+                                t-att-value="fy.id"
+                                t-att-selected="fy.id === state.fiscalYearId"
+                            >
+                                <t t-esc="fy.name" />
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="o_form_label small mb-0">Date From</label>
+                        <input
+                            type="date"
+                            class="form-control form-control-sm"
+                            t-att-value="state.dateFrom"
+                            t-on-change="onDateFromChange"
+                        />
+                    </div>
+                    <div>
+                        <label class="o_form_label small mb-0">Date To (as of)</label>
+                        <input
+                            type="date"
+                            class="form-control form-control-sm"
+                            t-att-value="state.dateTo"
+                            t-on-change="onDateToChange"
+                        />
+                    </div>
+                    <div class="o_brc_dim">
+                        <label class="o_form_label small mb-0">Departments</label>
+                        <MultiRecordSelect
+                            resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'departments']]"
+                            placeholder="labels.departments"
+                            selected="state.departments"
+                            onChange="(sel) => this.onSelectionChange('departments', sel)"
+                        />
+                    </div>
+                    <div class="o_brc_dim">
+                        <label class="o_form_label small mb-0">Sources</label>
+                        <MultiRecordSelect
+                            resModel="'account.analytic.account'"
+                            domain="[['root_plan_id.code', '=', 'sources']]"
+                            placeholder="labels.sources"
+                            selected="state.sources"
+                            onChange="(sel) => this.onSelectionChange('sources', sel)"
+                        />
+                    </div>
+                    <div class="form-check ms-1">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="brc_posted"
+                            t-att-checked="state.onlyPosted"
+                            t-on-change="onTogglePosted"
+                        />
+                        <label class="form-check-label" for="brc_posted">Posted entries only</label>
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="brc_group_dept"
+                            t-att-checked="state.groupByDepartment"
+                            t-on-change="onToggleGroupByDept"
+                        />
+                        <label class="form-check-label" for="brc_group_dept">จำแนกตามส่วนงาน</label>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" t-on-click="exportXlsx">
+                        <i class="fa fa-file-excel-o me-1" />Export Excel
+                    </button>
+                </div>
+            </t>
+
+            <!-- Centered report body -->
+            <div class="o_brc_body p-3">
+                <div class="o_brc_card card shadow-sm">
+                    <table class="table table-sm o_brc_table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="o_brc_item">ตัวชี้วัด</th>
+                                <th class="text-end o_brc_amount">งบประมาณรายรับ</th>
+                                <th class="text-end o_brc_amount">รายรับจริง</th>
+                                <th class="text-end o_brc_amount">ส่วนต่าง</th>
+                                <th class="text-end o_brc_pct">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-if="state.loading">
+                                <td colspan="5" class="text-center text-muted">Loading...</td>
+                            </tr>
+                            <tr t-elif="!state.rows.length">
+                                <td colspan="5" class="text-center text-muted">No data</td>
+                            </tr>
+                            <tr
+                                t-foreach="state.rows"
+                                t-as="row"
+                                t-key="row_index"
+                                t-att-class="'o_brc_' + row.row_type"
+                            >
+                                <td t-esc="row.name" />
+                                <td class="text-end" t-esc="formatAmount(row.budget)" />
+                                <td class="text-end" t-esc="formatAmount(row.actual)" />
+                                <td t-att-class="'text-end ' + varianceClass(row.variance)">
+                                    <t t-if="row.row_type === 'line' or row.row_type === 'total'" t-esc="formatAmount(row.variance)" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-if="row.row_type === 'line' or row.row_type === 'total'" t-esc="formatPercentage(row.percentage)" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </Layout>
+    </t>
+
+</templates>

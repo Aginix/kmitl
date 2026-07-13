@@ -32,8 +32,9 @@
                             <field name="journal_id"/>
                             <field name="active"/>
                         </group>
-                        <group string="Account Overrides">
+                        <group name="account_overrides" string="Account Overrides">
                             <field name="override_account_id"/>
+                            <field name="is_cheque"/>
                         </group>
                     </group>
                 </sheet>
