@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+      The Assign to me / Assign… / Unassign banner is injected above the
+      sheet by assignment.mixin's get_view — this file only adds the
+      ``assigned_to`` field to the form/tree/search views and a couple of
+      filters. See kris_project_assignment/models/kris_project.py.
+    -->
+
+    <record id="view_kris_project_form_assignment" model="ir.ui.view">
+        <field name="name">kris.project.form.assignment</field>
+        <field name="model">kris.project</field>
+        <field name="inherit_id" ref="kris_project.view_kris_project_form" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="assigned_to" widget="many2one_avatar_user" readonly="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kris_project_tree_assignment" model="ir.ui.view">
+        <field name="name">kris.project.tree.assignment</field>
+        <field name="model">kris.project</field>
+        <field name="inherit_id" ref="kris_project.view_kris_project_tree" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field
+                    name="assigned_to"
+                    widget="many2one_avatar_user"
+                    optional="hide"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_kris_project_search_assignment" model="ir.ui.view">
+        <field name="name">kris.project.search.assignment</field>
+        <field name="model">kris.project</field>
+        <field name="inherit_id" ref="kris_project.view_kris_project_search" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_projects']" position="after">
+                <filter
+                    name="assigned_to_me"
+                    string="Assigned to me"
+                    domain="[('assigned_to', '=', uid)]"
+                />
+                <filter
+                    name="unassigned"
+                    string="Unassigned"
+                    domain="[('assigned_to', '=', False)]"
+                />
+            </xpath>
+            <xpath expr="//filter[@name='group_department']" position="after">
+                <filter
+                    name="group_assigned_to"
+                    string="Assigned Officer"
+                    context="{'group_by': 'assigned_to'}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
