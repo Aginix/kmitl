@@ -12,7 +12,7 @@
                     t-on-dragenter.prevent="onDragEnter"
                     t-on-dragover.prevent="onDragOver"
                     t-on-dragleave.prevent="onDragLeave"
-                    t-on-drop.prevent.stop="onDrop"
+                    t-on-drop.prevent="onDrop"
                 >
                     <input
                         type="file"

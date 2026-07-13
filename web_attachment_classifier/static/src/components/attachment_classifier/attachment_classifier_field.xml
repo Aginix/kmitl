@@ -8,7 +8,7 @@
             t-on-dragenter.prevent="onDragEnter"
             t-on-dragover.prevent="onDragOver"
             t-on-dragleave.prevent="onDragLeave"
-            t-on-drop.prevent.stop="onDrop"
+            t-on-drop.prevent="onDrop"
         >
             <div t-if="dragState.isDraggingOver" class="o_classifier_dropzone_overlay">
                 <span class="fa fa-cloud-upload me-2"/>Drop files to attach
