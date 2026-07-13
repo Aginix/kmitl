@@ -253,11 +253,14 @@ class TestDisbursementAssignment(TransactionCase):
         self.assertFalse(dr.assigned_to)
 
     # -- notify / self-sign ---------------------------------------------
-    def test_self_sign_creates_no_todo(self):
+    def test_self_sign_creates_todo(self):
+        # Always-notify principle: even when the signer is the assigned
+        # officer, a To-Do is scheduled so the record surfaces in their
+        # Todo inbox.
         self.Rule.create({"user_id": self.officer_a.id})
         dr = self._make_dr(sign_as=self.officer_a)
         self.assertEqual(dr.assigned_to, self.officer_a)
-        self.assertFalse(self._todos(dr, self.officer_a))
+        self.assertEqual(len(self._todos(dr, self.officer_a)), 1)
 
     # -- manual override / re-sign --------------------------------------
     def test_manual_assign_not_overwritten_and_resign_keeps_officer(self):

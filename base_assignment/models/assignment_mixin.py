@@ -169,6 +169,7 @@ class AssignmentMixin(models.AbstractModel):
             if old_user:
                 rec._assignment_clear_activity(old_user)
             rec.assigned_to = me
+            rec._assignment_notify(me)
             rec._assignment_on_assigned(me, old_user)
         return True
 

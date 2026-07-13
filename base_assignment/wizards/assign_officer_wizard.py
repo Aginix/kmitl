@@ -64,8 +64,7 @@ class AssignOfficerWizard(models.TransientModel):
         record.assigned_to = self.user_id
         if old_officer and old_officer != self.user_id:
             record._assignment_clear_activity(old_officer)
-        if self.user_id and self.user_id != self.env.user:
-            record._assignment_notify(self.user_id)
+        record._assignment_notify(self.user_id)
         # Fire the lifecycle hook on the same path claim / unassign use so a
         # consumer can react to any assigned_to write without overriding both
         # the mixin action and the wizard.

@@ -103,6 +103,17 @@ and `_assignment_clear_activity` can match on the type alone (no fragile
 summary-substring heuristics that would collide with user-scheduled
 To-Dos).
 
+## Always-notify principle
+
+Every write to `assigned_to` calls `_assignment_notify(new_user)`, even when
+`new_user == env.user`. The activity is a work-tracking token surfaced in
+the Todo inbox — a user who self-claims a record still expects it in their
+inbox. Earlier drafts skipped self-notification in the wizard and
+auto-assign paths ("don't nag yourself"), but the resulting inconsistency
+across the three entry points (self-claim button, manager wizard,
+disbursement auto-assign) hid work from Todo-inbox-first users. The single
+rule now: assign → activity, no guards.
+
 ## Extension points
 
 The mixin exposes every knob a real-world consumer has needed so far, so

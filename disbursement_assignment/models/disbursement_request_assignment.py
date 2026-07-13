@@ -140,9 +140,8 @@ class DisbursementRequest(models.Model):
                 if not rule:
                     continue
                 rec.assigned_to = rule.user_id
-            if rec.assigned_to != self.env.user:
-                rec._assignment_clear_activity(rec.assigned_to)
-                rec._assignment_notify(rec.assigned_to)
+            rec._assignment_clear_activity(rec.assigned_to)
+            rec._assignment_notify(rec.assigned_to)
 
     def action_sign(self):
         res = super().action_sign()
