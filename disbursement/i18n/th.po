@@ -1538,3 +1538,45 @@ msgstr "ใบขอเบิกถูกตีกลับ - รอการแ
 #. module: disbursement
 msgid "Source corrected - continue verification"
 msgstr "ต้นเรื่องแก้ไขแล้ว - ดำเนินการตรวจสอบต่อ"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_dr_reverify
+msgid "Disbursement returned - please re-verify"
+msgstr "ใบขอเบิกถูกตีกลับ - กรุณาตรวจสอบใหม่"
+
+#. module: disbursement
+#, python-format
+msgid ""
+"<p><b>Returned to source for correction</b></p>"
+"<p>This request was returned to its source document "
+"<b>%(source)s</b> by the verification officer. It stays under "
+"verification until the correction is confirmed.<br/>"
+"Reason: <b>%(reason)s</b></p>"
+msgstr ""
+"<p><b>ตีกลับไปแก้ไขที่ต้นเรื่อง</b></p>"
+"<p>ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่อง <b>%(source)s</b> "
+"โดยเจ้าหน้าที่ตรวจสอบ และยังคงอยู่ระหว่างการตรวจสอบ "
+"จนกว่าจะมีการยืนยันการแก้ไข<br/>"
+"เหตุผล: <b>%(reason)s</b></p>"
+
+#. module: disbursement
+#, python-format
+msgid ""
+"<p><b>Returned for correction</b></p>"
+"<p>Returned to the requester and reset to draft so it can be "
+"corrected and resubmitted.<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ตีกลับเพื่อแก้ไข</b></p>"
+"<p>ตีกลับให้ผู้ขอเบิกและเปลี่ยนสถานะกลับเป็นร่าง เพื่อแก้ไขและส่งใหม่"
+"<br/>เหตุผล: <b>%s</b></p>"
+
+#. module: disbursement
+#, python-format
+msgid ""
+"<p><b>Returned to verification</b></p>"
+"<p>Returned to the verification officer for re-checking."
+"<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ตีกลับให้หมวดตรวจ</b></p>"
+"<p>ตีกลับให้เจ้าหน้าที่ตรวจสอบเพื่อตรวจสอบใหม่"
+"<br/>เหตุผล: <b>%s</b></p>"

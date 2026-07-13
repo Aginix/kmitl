@@ -217,7 +217,16 @@ class DisbursementRequest(models.Model):
         # source-side state change, chatter and To-Do.
         source = source.sudo()
         source._disbursement_return(self, reason)
-        self.message_post(body=_("Returned to source document: %s") % reason)
+        self.message_post(
+            body=_(
+                "<p><b>Returned to source for correction</b></p>"
+                "<p>This request was returned to its source document "
+                "<b>%(source)s</b> by the verification officer. It stays under "
+                "verification until the correction is confirmed.<br/>"
+                "Reason: <b>%(reason)s</b></p>"
+            ) % {"source": source.display_name, "reason": reason},
+            subtype_xmlid="mail.mt_comment",
+        )
         source.message_post(
             body=_(
                 "<p><b>Returned for correction</b></p>"

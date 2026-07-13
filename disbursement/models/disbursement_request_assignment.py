@@ -7,6 +7,10 @@ from odoo.tools.misc import str2bool
 # The "To Do" activity raised on a request when an officer is assigned.
 ASSIGN_ACTIVITY_XMLID = "mail.mail_activity_data_todo"
 
+# The "please re-verify" To-Do raised when an approver/accounting returns a
+# request to the verification officer (see _action_return_to_verification).
+_ACT_REVERIFY_XMLID = "disbursement.mail_activity_dr_reverify"
+
 # ir.config_parameter that relaxes the self-claim guard. Defaults to True:
 # because assignment is advisory, an officer may claim a mis-routed request
 # out of the box. Set to False to lock claims to the assigned officer/manager.
@@ -185,7 +189,12 @@ class DisbursementRequest(models.Model):
         # verification to-do.
         self.action_draft()
         self.message_post(
-            body=_("Returned for correction: %s") % reason,
+            body=_(
+                "<p><b>Returned for correction</b></p>"
+                "<p>Returned to the requester and reset to draft so it can be "
+                "corrected and resubmitted.<br/>Reason: <b>%s</b></p>"
+            ) % reason,
+            subtype_xmlid="mail.mt_comment",
         )
         if self.user_id:
             self.activity_schedule(
@@ -248,15 +257,37 @@ class DisbursementRequest(models.Model):
         self.returned_to_verification = True
         self.return_verification_reason = reason
         self.state = "signed"
-        self.message_post(body=_("Returned to verification: %s") % reason)
-        self._assignment_auto_assign()
+        # Always raise a "please re-verify" To-Do so the officer (or, failing
+        # that, the creator) is aware -- do not rely on the assignment-rule
+        # re-notification, which only fires when a rule/officer matches.
+        recipient = self.assigned_to or self.user_id
+        if recipient:
+            self.activity_schedule(
+                _ACT_REVERIFY_XMLID,
+                user_id=recipient.id,
+                note=reason or "",
+            )
+        self.message_post(
+            body=_(
+                "<p><b>Returned to verification</b></p>"
+                "<p>Returned to the verification officer for re-checking."
+                "<br/>Reason: <b>%s</b></p>"
+            ) % reason,
+            subtype_xmlid="mail.mt_comment",
+        )
         return True
 
     def _clear_returned_to_verification(self):
+        act_type = self.env.ref(_ACT_REVERIFY_XMLID, raise_if_not_found=False)
         for rec in self:
-            if rec.returned_to_verification:
-                rec.returned_to_verification = False
-                rec.return_verification_reason = False
+            if not rec.returned_to_verification:
+                continue
+            rec.returned_to_verification = False
+            rec.return_verification_reason = False
+            if act_type:
+                rec.activity_ids.filtered(
+                    lambda a: a.activity_type_id == act_type
+                ).unlink()
 
     # -- auto-assign + workflow hooks ------------------------------------
     def _assignment_auto_assign(self):
