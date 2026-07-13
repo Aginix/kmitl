@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import {Dialog} from "@web/core/dialog/dialog";
-import {Component, onWillStart, useRef, useState} from "@odoo/owl";
+import {Component, onMounted, onWillStart, useRef, useState} from "@odoo/owl";
 
 export class AttachmentClassifierDialog extends Component {
     setup() {
@@ -14,8 +14,15 @@ export class AttachmentClassifierDialog extends Component {
         this.fileInputRef = useRef("fileInput");
         this.state = useState({
             classifierId: this.props.initialClassifierId || "",
+            isDraggingOver: false,
         });
+        this.dragCounter = 0;
         this.classifierOptions = [];
+        onMounted(() => {
+            if (this.props.initialFiles && this.props.initialFiles.length) {
+                this._assignFilesToInput(this.props.initialFiles);
+            }
+        });
         onWillStart(async () => {
             if (this.props.classifierType === "selection") {
                 if (this.props.classifierSelection) {
@@ -67,6 +74,70 @@ export class AttachmentClassifierDialog extends Component {
             this.env._t("Please select ") + this.props.classifierLabel + ".",
             {type: "warning"}
         );
+    }
+
+    _assignFilesToInput(files) {
+        const input = this.fileInputRef.el;
+        if (!input) {
+            return;
+        }
+        const list = this.isEditMode ? files.slice(0, 1) : files;
+        const dt = new DataTransfer();
+        list.forEach((f) => dt.items.add(f));
+        input.files = dt.files;
+    }
+
+    _hasFilesPayload(ev) {
+        const types = ev.dataTransfer && ev.dataTransfer.types;
+        if (!types) {
+            return false;
+        }
+        return Array.from(types).includes("Files");
+    }
+
+    onDragEnter(ev) {
+        if (!this._hasFilesPayload(ev)) {
+            return;
+        }
+        this.dragCounter += 1;
+        this.state.isDraggingOver = true;
+    }
+
+    onDragOver(ev) {
+        if (!this._hasFilesPayload(ev)) {
+            return;
+        }
+        ev.dataTransfer.dropEffect = "copy";
+    }
+
+    onDragLeave() {
+        if (this.dragCounter > 0) {
+            this.dragCounter -= 1;
+        }
+        if (this.dragCounter === 0) {
+            this.state.isDraggingOver = false;
+        }
+    }
+
+    onDrop(ev) {
+        this.dragCounter = 0;
+        this.state.isDraggingOver = false;
+        if (!this._hasFilesPayload(ev)) {
+            return;
+        }
+        const files = Array.from(ev.dataTransfer.files || []);
+        if (!files.length) {
+            return;
+        }
+        if (this.isEditMode && files.length > 1) {
+            this.notification.add(
+                this.env._t(
+                    "Only one file can replace the current attachment; keeping the first."
+                ),
+                {type: "warning"}
+            );
+        }
+        this._assignFilesToInput(files);
     }
 
     _readAsBase64(file) {
@@ -211,6 +282,7 @@ AttachmentClassifierDialog.props = {
     mode: {type: String, optional: true},
     attachmentId: {type: Number, optional: true},
     initialClassifierId: {type: String, optional: true},
+    initialFiles: {type: Array, optional: true},
     onConfirm: {type: Function},
     close: {type: Function},
 };

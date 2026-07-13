@@ -3,9 +3,16 @@
 
     <t t-name="web_attachment_classifier.Many2ManyBinaryClassifierField" owl="1">
         <div
-            t-attf-class="oe_fileupload w-100 {{props.className ? props.className : ''}}"
+            t-attf-class="oe_fileupload o_classifier_dropzone w-100 {{props.className ? props.className : ''}} {{ dragState.isDraggingOver ? 'o_dragging_over' : '' }}"
             aria-atomic="true"
+            t-on-dragenter.prevent="onDragEnter"
+            t-on-dragover.prevent="onDragOver"
+            t-on-dragleave.prevent="onDragLeave"
+            t-on-drop.prevent.stop="onDrop"
         >
+            <div t-if="dragState.isDraggingOver" class="o_classifier_dropzone_overlay">
+                <span class="fa fa-cloud-upload me-2"/>Drop files to attach
+            </div>
             <div class="o_attachments_classifier d-flex flex-column gap-2">
                 <t t-foreach="files" t-as="file" t-key="file.id">
                     <t t-set="editable" t-value="!props.readonly" />

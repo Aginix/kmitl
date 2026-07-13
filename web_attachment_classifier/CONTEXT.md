@@ -83,6 +83,23 @@ the placeholder to set a value (see "Post-hoc edit" below).
   Uploads are best-effort — a failure on one file surfaces as a
   notification for that file, and successful uploads are kept. The
   Edit dialog's file input is single-select (replace is 1:1).
+- **Drag & drop.** Two drop zones share the same visual language
+  (dashed outline + light-blue tint on drag-over):
+  1. The widget card list — dropping files opens the Add dialog with
+     the dropped files already loaded. Widget-level drop always enters
+     Add flow; replacing an existing file goes through the pencil
+     button (which row to replace is otherwise ambiguous).
+  2. The Add/Edit dialog's file input area — dropping files fills the
+     `<input type="file">` via the `DataTransfer` API, so the existing
+     save handlers run unchanged. Edit mode keeps its 1-file rule:
+     dropping more than one file warns and keeps the first.
+  Overlays only activate when the drag payload contains files
+  (`dataTransfer.types.includes("Files")`), so dragging text or links
+  is inert. Releasing files *outside* a drop zone falls back to
+  browser default behaviour (opening the file in a new tab); this is
+  accepted for now and can be locked down later by adding a
+  document-level listener modeled on Odoo mail's
+  `useDragVisibleDropZone`.
 
 ## Manual verification checklist
 
@@ -119,7 +136,22 @@ widget registration:
    → set a classifier → **Save** → badge updates.
 10. **Badge is display-only.** Hovering the badge does not change the
     cursor; clicking it does nothing.
-11. **Register a second widget** in another consumer with a different
+11. **Drag & drop onto the widget.** Drag a file from the desktop over
+    the card list → dashed outline appears with an overlay "Drop files
+    to attach" → release → the Add dialog opens with the file
+    pre-loaded → pick a classifier → Save.
+12. **Drag & drop 3 files at once.** Same as above, three files → the
+    Add dialog opens with all three loaded → Save → three attachments
+    share the same classifier.
+13. **Drag & drop inside the dialog.** Click Attach → drag a file over
+    the file-input area → dashed border highlights → release → the
+    input shows the file → Save.
+14. **Drag & drop in edit mode (single-file rule).** Click pencil →
+    drag two files → notification "Only one file can replace…" and the
+    input holds the first file only.
+15. **Drag payload not files.** Drag a text selection or a link over
+    the widget → no overlay, no highlight.
+16. **Register a second widget** in another consumer with a different
     `classifierField` → both work on the same form without cross-talk
     (validates that factory-per-consumer subclassing keeps
     `fieldsToFetch` isolated).

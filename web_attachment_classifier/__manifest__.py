@@ -10,6 +10,7 @@
     "assets": {
         "web.assets_backend": [
             "web_attachment_classifier/static/src/components/**/*",
+            "web_attachment_classifier/static/src/scss/**/*",
         ],
     },
     "installable": True,

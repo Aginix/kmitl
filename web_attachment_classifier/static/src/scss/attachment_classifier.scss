@@ -1,0 +1,35 @@
+.o_classifier_dropzone {
+    position: relative;
+    transition: background-color 120ms ease, border-color 120ms ease;
+
+    &.o_dragging_over {
+        outline: 2px dashed var(--bs-primary, #3b82f6);
+        outline-offset: -4px;
+        background-color: rgba(59, 130, 246, 0.06);
+    }
+}
+
+.o_classifier_dropzone_overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(59, 130, 246, 0.12);
+    color: var(--bs-primary, #3b82f6);
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+.o_classifier_dialog_dropzone {
+    border-style: dashed !important;
+    border-color: var(--bs-border-color, #dee2e6) !important;
+    transition: background-color 120ms ease, border-color 120ms ease;
+
+    &.o_dragging_over {
+        border-color: var(--bs-primary, #3b82f6) !important;
+        background-color: rgba(59, 130, 246, 0.06);
+    }
+}

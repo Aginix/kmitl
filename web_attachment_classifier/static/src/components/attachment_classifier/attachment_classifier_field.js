@@ -2,7 +2,7 @@
 
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
-import {onWillStart} from "@odoo/owl";
+import {onWillStart, useState} from "@odoo/owl";
 import {Many2ManyBinaryField} from "@web/views/fields/many2many_binary/many2many_binary_field";
 import {AttachmentClassifierDialog} from "./attachment_classifier_dialog";
 
@@ -17,6 +17,8 @@ export class Many2ManyBinaryClassifierField extends Many2ManyBinaryField {
         super.setup();
         this.dialog = useService("dialog");
         this.orm = useService("orm");
+        this.dragState = useState({isDraggingOver: false});
+        this.dragCounter = 0;
         this.selectionMap = {};
         if (this.classifierType === "selection") {
             const selection = this.constructor.classifierSelection;
@@ -84,10 +86,59 @@ export class Many2ManyBinaryClassifierField extends Many2ManyBinaryField {
     }
 
     onAddClick() {
+        this._openAddDialog(null);
+    }
+
+    _openAddDialog(initialFiles) {
         this.dialog.add(AttachmentClassifierDialog, {
             ..._defaultsWithMode(this._dialogProps(), "add"),
+            initialFiles: initialFiles || undefined,
             onConfirm: (attachmentIds) => this.operations.saveRecord(attachmentIds),
         });
+    }
+
+    _hasFilesPayload(ev) {
+        const types = ev.dataTransfer && ev.dataTransfer.types;
+        if (!types) {
+            return false;
+        }
+        return Array.from(types).includes("Files");
+    }
+
+    onDragEnter(ev) {
+        if (this.props.readonly || !this._hasFilesPayload(ev)) {
+            return;
+        }
+        this.dragCounter += 1;
+        this.dragState.isDraggingOver = true;
+    }
+
+    onDragOver(ev) {
+        if (this.props.readonly || !this._hasFilesPayload(ev)) {
+            return;
+        }
+        ev.dataTransfer.dropEffect = "copy";
+    }
+
+    onDragLeave() {
+        if (this.dragCounter > 0) {
+            this.dragCounter -= 1;
+        }
+        if (this.dragCounter === 0) {
+            this.dragState.isDraggingOver = false;
+        }
+    }
+
+    onDrop(ev) {
+        this.dragCounter = 0;
+        this.dragState.isDraggingOver = false;
+        if (this.props.readonly || !this._hasFilesPayload(ev)) {
+            return;
+        }
+        const files = Array.from(ev.dataTransfer.files || []);
+        if (files.length) {
+            this._openAddDialog(files);
+        }
     }
 
     onEditClick(fileId, currentValue) {

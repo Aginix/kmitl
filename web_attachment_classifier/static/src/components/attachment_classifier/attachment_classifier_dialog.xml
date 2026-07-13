@@ -7,12 +7,23 @@
                 <label class="o_form_label">
                     <span t-esc="isEditMode ? 'Replace file (optional)' : 'File'"/>
                 </label>
-                <input
-                    type="file"
-                    t-ref="fileInput"
-                    class="form-control"
-                    t-att-multiple="!isEditMode"
-                />
+                <div
+                    t-attf-class="o_classifier_dialog_dropzone p-2 border rounded {{ state.isDraggingOver ? 'o_dragging_over' : '' }}"
+                    t-on-dragenter.prevent="onDragEnter"
+                    t-on-dragover.prevent="onDragOver"
+                    t-on-dragleave.prevent="onDragLeave"
+                    t-on-drop.prevent.stop="onDrop"
+                >
+                    <input
+                        type="file"
+                        t-ref="fileInput"
+                        class="form-control"
+                        t-att-multiple="!isEditMode"
+                    />
+                    <div class="small text-muted mt-1">
+                        <span class="fa fa-cloud-upload me-1"/>Or drop <t t-esc="isEditMode ? 'a file' : 'files'"/> here
+                    </div>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="o_form_label">
