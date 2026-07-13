@@ -56,6 +56,18 @@
                     <span> เมื่อ </span>
                     <field name="budget_consumed_date" class="oe_inline" nolabel="1"/>
                 </div>
+                <!-- Returned to source for correction -->
+                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('returned_to_source', '=', False)]}">
+                    <field name="returned_to_source" invisible="1"/>
+                    <strong>Returned to source for correction:</strong>
+                    <field name="return_source_reason" class="oe_inline" nolabel="1" readonly="1"/>
+                </div>
+                <!-- Returned to the verification officer for a re-check -->
+                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('returned_to_verification', '=', False)]}">
+                    <field name="returned_to_verification" invisible="1"/>
+                    <strong>Returned to verification:</strong>
+                    <field name="return_verification_reason" class="oe_inline" nolabel="1" readonly="1"/>
+                </div>
                 <!-- Exception Alert -->
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
                     <p>

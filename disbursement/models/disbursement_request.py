@@ -813,6 +813,10 @@ class DisbursementRequest(models.Model):
         consume line for the DR amount, leaving the BC open for other DRs.
         """
         self.ensure_one()
+        # Idempotent: a request returned to verification (approved -> signed)
+        # keeps its obligation, so re-approving must not double-cut the budget.
+        if self._has_own_budget_obligation():
+            return
         commitment = self._check_commitment_obligable()
         first_reserve = self._get_commitment_reserve_line(commitment)
         self.env["budget.commitment.line"].create(
@@ -911,6 +915,21 @@ class DisbursementRequest(models.Model):
         )
         own.action_cancel()
         return True
+
+    def _has_own_budget_obligation(self):
+        """Whether this request already has a posted obligate line on its
+        commitment (used to keep _action_approve_budget idempotent across a
+        return-to-verification round trip)."""
+        self.ensure_one()
+        commitment = self.budget_commitment_id
+        return bool(commitment) and bool(
+            commitment.line_ids.filtered(
+                lambda l: l.state == "posted"
+                and l.move_type == "obligate"
+                and l.res_model == "disbursement.request"
+                and l.res_id == self.id
+            )
+        )
 
     def action_cancel(self):
         """Cancel the request.

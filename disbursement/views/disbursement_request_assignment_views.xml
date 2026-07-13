@@ -35,7 +35,7 @@
                     string="Return"
                     class="btn-warning"
                     groups="disbursement.group_disbursement_officer"
-                    attrs="{'invisible': [('state', '!=', 'signed')]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('returned_to_source', '=', True)]}"
                 />
                 <button
                     name="action_resubmit_verification"
@@ -43,6 +43,14 @@
                     string="Resubmit to Verification"
                     class="oe_highlight"
                     attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('returned_for_edit', '=', False)]}"
+                />
+                <button
+                    name="action_return_verification_open_wizard"
+                    type="object"
+                    string="Return to Verification"
+                    class="btn-warning"
+                    groups="disbursement.group_disbursement_manager"
+                    attrs="{'invisible': [('state', '!=', 'verified')]}"
                 />
             </xpath>
             <xpath expr="//group[@id='other_information']" position="inside">

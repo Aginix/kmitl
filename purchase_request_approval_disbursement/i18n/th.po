@@ -157,3 +157,28 @@ msgstr "อยู่ระหว่างเบิกจ่าย"
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
 msgid "Purchase Request Approval Form"
 msgstr "แบบรายงานคำขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Confirm Correction"
+msgstr "ยืนยันการแก้ไข"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Disbursement Correction"
+msgstr "การแก้ไขใบขอเบิก"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_return_attachment_ids
+msgid "Correction Evidence"
+msgstr "เอกสารหลักฐานการแก้ไข"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_return_note
+msgid "Correction Note"
+msgstr "หมายเหตุการแก้ไข"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_return_bank_id
+msgid "Correction Bank Account"
+msgstr "บัญชีธนาคารที่แก้ไข"

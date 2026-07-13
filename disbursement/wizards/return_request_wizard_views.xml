@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <form string="Return for Correction">
                 <field name="request_id" invisible="1" />
+                <field name="mode" invisible="1" />
                 <group>
                     <field name="reason" placeholder="Reason for returning this request…" />
                 </group>

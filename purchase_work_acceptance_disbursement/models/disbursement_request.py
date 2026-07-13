@@ -51,6 +51,13 @@ class DisbursementRequest(models.Model):
         for rec in self:
             rec.wa_count = len(rec.wa_ids)
 
+    def _get_return_source(self):
+        """A DR backed by a Work Acceptance returns to the WA (not the PO its
+        ``reference`` points at): the correctable data lives on the WA. This
+        bridge depends on purchase_order_disbursement, so this override wins over
+        the PO one in the MRO."""
+        return self.wa_ids[:1] or super()._get_return_source()
+
     def action_sign(self):
         """Override: mark WA as disbursed เมื่อ submitted → unlock สร้าง WA ใหม่ได้"""
         res = super().action_sign()
