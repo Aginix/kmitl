@@ -43,6 +43,10 @@ class ApprovalRequestLine(models.Model):
         required=True
     )
 
+    note = fields.Text(
+        string="Note",
+    )
+
     company_id = fields.Many2one(
         string="Company",
         comodel_name="res.company",
