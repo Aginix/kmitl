@@ -160,7 +160,6 @@
                             <field name="wht_line_ids" nolabel="1">
                                 <tree create="0" delete="0" edit="0">
                                     <field name="partner_id" string="Disburser"/>
-                                    <field name="name" string="Name"/>
                                     <field name="wht_tax_id" string="WHT Item"/>
                                     <field name="price_subtotal" string="Amount Before WHT"/>
                                     <field name="amount_wht" string="WHT Deduction"/>
