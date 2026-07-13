@@ -7,6 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "hr",
+        "hr_employee_name_detail_kmitl",
         "purchase_exception",
         "purchase_request_exception",
         "purchase_request_operating_unit",
