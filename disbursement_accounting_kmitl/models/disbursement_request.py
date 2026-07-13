@@ -328,3 +328,20 @@ class DisbursementRequest(models.Model):
             if draft_bills:
                 draft_bills.button_cancel()
         return super().action_cancel()
+
+    def _action_return_to_verification(self, reason):
+        """Accounting may return a request to verification only before a bill
+        exists; once billed the accountant must cancel the bill(s) first."""
+        for record in self:
+            active_bills = record.bill_ids.filtered(
+                lambda b: b.state != "cancel"
+            )
+            if active_bills:
+                raise UserError(
+                    _(
+                        "Cannot return to verification: bill(s) %s exist. "
+                        "Cancel the bill(s) first."
+                    )
+                    % ", ".join(active_bills.mapped("name"))
+                )
+        return super()._action_return_to_verification(reason)

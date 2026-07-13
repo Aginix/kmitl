@@ -37,6 +37,18 @@ class DisbursementRequest(models.Model):
         string="Returned for Correction",
         copy=False,
     )
+    # Set when an approver (verified) or the accounting room (approved) returns
+    # the request to the verification officer for a re-check. The request goes
+    # back to 'signed'; cleared once the officer re-validates it.
+    returned_to_verification = fields.Boolean(
+        string="Returned to Verification",
+        copy=False,
+        tracking=True,
+    )
+    return_verification_reason = fields.Text(
+        string="Return to Verification Reason",
+        copy=False,
+    )
 
     # -- guards ----------------------------------------------------------
     def _assignment_takeover_allowed(self):
@@ -203,6 +215,49 @@ class DisbursementRequest(models.Model):
         self._assignment_auto_assign()
         self.message_post(body=_("Corrected and returned to verification."))
 
+    # -- return to verification (approver / accounting -> officer) -------
+    def action_return_verification_open_wizard(self):
+        """Open the reason wizard for returning the request to the verification
+        officer (used by the approver at 'verified' and accounting at 'approved')."""
+        self.ensure_one()
+        return {
+            "name": _("Return to Verification"),
+            "type": "ir.actions.act_window",
+            "res_model": "disbursement.return.request.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_request_id": self.id,
+                "default_mode": "verification",
+            },
+        }
+
+    def _action_return_to_verification(self, reason):
+        """Send a verified/approved request back to the verification officer.
+
+        Moves the request to 'signed' (where the officer re-verifies), records
+        the reason, and re-raises the officer's To-Do. The budget is left
+        untouched: an approved request keeps its obligation/consumption, and a
+        re-approval will not double-cut it (see _action_approve_budget)."""
+        self.ensure_one()
+        if self.state not in ("verified", "approved"):
+            raise UserError(
+                _("Only a verified or approved request can be returned to "
+                  "verification.")
+            )
+        self.returned_to_verification = True
+        self.return_verification_reason = reason
+        self.state = "signed"
+        self.message_post(body=_("Returned to verification: %s") % reason)
+        self._assignment_auto_assign()
+        return True
+
+    def _clear_returned_to_verification(self):
+        for rec in self:
+            if rec.returned_to_verification:
+                rec.returned_to_verification = False
+                rec.return_verification_reason = False
+
     # -- auto-assign + workflow hooks ------------------------------------
     def _assignment_auto_assign(self):
         """Assign the matching officer to signed requests and raise a To-Do.
@@ -231,14 +286,17 @@ class DisbursementRequest(models.Model):
     def action_validate(self):
         res = super().action_validate()
         self._assignment_close_activity()
+        self._clear_returned_to_verification()
         return res
 
     def action_draft(self):
         res = super().action_draft()
         self._assignment_close_activity()
+        self._clear_returned_to_verification()
         return res
 
     def action_cancel(self):
         res = super().action_cancel()
         self._assignment_close_activity()
+        self._clear_returned_to_verification()
         return res

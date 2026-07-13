@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Generic return/correction To-Do activity types. Matched by
+         activity_type_id (language-independent) rather than by translated
+         summary text. The source-side types carry no res_model so they can be
+         raised on any correctable source document (approval.request,
+         purchase.order, purchase.request.approval, work.acceptance, ...). -->
+    <record id="mail_activity_source_correct" model="mail.activity.type">
+        <field name="name">Correct and confirm the returned document</field>
+    </record>
+    <record id="mail_activity_source_done" model="mail.activity.type">
+        <field name="name">Correction submitted to the disbursement officer</field>
+    </record>
+    <record id="mail_activity_dr_await" model="mail.activity.type">
+        <field name="name">Disbursement returned - awaiting source correction</field>
+        <field name="res_model">disbursement.request</field>
+    </record>
+    <record id="mail_activity_dr_continue" model="mail.activity.type">
+        <field name="name">Source corrected - continue verification</field>
+        <field name="res_model">disbursement.request</field>
+    </record>
+</odoo>

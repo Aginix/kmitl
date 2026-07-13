@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.4.2.0",
+    "version": "16.0.4.3.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -21,6 +21,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/sequence.xml",
+        "data/mail_activity_type_data.xml",
         "wizards/disbursement_exception_confirm.xml",
         "wizards/assign_officer_wizard_views.xml",
         "wizards/return_request_wizard_views.xml",

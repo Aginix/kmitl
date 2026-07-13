@@ -8,13 +8,9 @@
             ref="disbursement.view_disbursement_request_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//header" position="after">
-                <field name="returned_to_approval" invisible="1" />
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('returned_to_approval', '=', False)]}">
-                    <p><strong>Returned:</strong> This disbursement request was returned to its approval request for correction.</p>
-                </div>
-            </xpath>
+            <!-- The "returned to source" banner and the hide-Return-when-returned
+                 behaviour are now generic (base disbursement view + assignment
+                 view, keyed on returned_to_source). -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="approval_request_id" invisible="1" />
                 <button
@@ -24,32 +20,6 @@
                     icon="fa-check-circle"
                     string="Approval"
                     attrs="{'invisible': [('approval_request_id', '=', False)]}"
-                />
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Hide the Return button once returned, until the requester confirms the
-         correction (returned_to_approval is cleared). -->
-    <record id="view_disbursement_request_form_assignment_return" model="ir.ui.view">
-        <field name="name">disbursement.request.form.assignment.return.approval</field>
-        <field name="model">disbursement.request</field>
-        <field
-            name="inherit_id"
-            ref="disbursement.view_disbursement_request_form_assignment"
-        />
-        <field name="arch" type="xml">
-            <!-- Replace (not just re-attr) the button so its "Return" label is a
-                 translatable term owned by this module's view; the core
-                 disbursement translation for it is not applied. -->
-            <xpath expr="//button[@name='action_return_open_wizard']" position="replace">
-                <button
-                    name="action_return_open_wizard"
-                    type="object"
-                    string="Return"
-                    class="btn-warning"
-                    groups="disbursement.group_disbursement_officer"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('returned_to_approval', '=', True)]}"
                 />
             </xpath>
         </field>
