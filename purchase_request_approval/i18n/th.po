@@ -91,6 +91,21 @@ msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__advance
+msgid "Advance"
+msgstr "เงินยืม"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__payment_type__prepaid
+msgid "Prepaid"
+msgstr "สำรองจ่าย"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_state
 msgid "Activity State"
 msgstr ""
@@ -1539,4 +1554,4 @@ msgstr "ราคาต่อหน่วย"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__estimated_cost
 msgid "Estimated Cost"
-msgstr "มูลค่าประมาณการ"
+msgstr "จำนวนเงิน"

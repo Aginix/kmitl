@@ -149,19 +149,19 @@
                             <field name="department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
-                            <field name="procurement_type_id" readonly="1" />
-                            <field name="procurement_method_id" readonly="1" />
-                            <field name="account_fiscal_year_id" readonly="1" />
-                            <field name="estimated_cost" readonly="1" />
-                            <field name="payment_type" readonly="1"/>
+                            <field name="procurement_type_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="procurement_method_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="account_fiscal_year_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="estimated_cost" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="payment_type" attrs="{'readonly': [('state', '!=', 'draft')]}/>
                         </group>
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
-                            <field name="line_ids" readonly="1">
+                            <field name="line_ids">
                                 <tree>
-                                    <field name="product_id" />
-                                    <field name="name"/>
+                                    <field name="product_id" readonly="1" />
+                                    <field name="name" readonly="1"/>
                                     <field name="product_qty"/>
                                     <field name="estimated_cost" optional="show"/>
                                 </tree>
