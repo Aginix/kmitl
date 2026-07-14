@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from odoo import _, api, fields, models
 
 
@@ -186,3 +188,90 @@ class AccountingKmitlDashboard(models.AbstractModel):
                 }
             )
         return {"items": items}
+
+    @api.model
+    def get_analytics(self):
+        """As-of-today cash & payables analytics for the dashboard charts.
+
+        Unlike the expense chart, these are current-state figures (not scoped
+        by fiscal year), mirroring the operational cards. All aggregation uses
+        ORM ``read_group`` so record rules apply (no ``sudo``). Amounts are the
+        summed ``amount_residual`` (outstanding balance) in company currency.
+
+        Returns::
+
+            {
+              # bucketed by overdue days from the due date:
+              #   [not-due, 1-30, 31-60, 61-90, 90+]
+              "aging": {"ap": [5 amounts], "ar": [5 amounts]},
+              # AP bucketed by days until the due date:
+              #   [overdue, 0-7, 8-30, 31-60, 61-90, 90+]
+              "forecast": [6 amounts],
+              # top 10 vendors by outstanding payable:
+              "top_vendors": [{"id", "name", "amount"}, ...],
+            }
+        """
+        today = fields.Date.context_today(self)
+        move = self.env["account.move"]
+        due = "invoice_date_due"
+
+        def amount(domain):
+            groups = move.read_group(domain, ["amount_residual:sum"], [])
+            return (groups[0]["amount_residual"] if groups else 0.0) or 0.0
+
+        unpaid = [
+            ("state", "=", "posted"),
+            ("payment_state", "in", self._UNPAID_STATES),
+        ]
+        ap = unpaid + [("move_type", "=", "in_invoice")]
+        ar = unpaid + [("move_type", "=", "out_invoice")]
+
+        p30, p60, p90 = (today - timedelta(days=d) for d in (30, 60, 90))
+
+        def aging(base):
+            # A missing due date is treated as not-yet-due.
+            return [
+                amount(base + ["|", (due, "=", False), (due, ">=", today)]),
+                amount(base + [(due, ">=", p30), (due, "<", today)]),
+                amount(base + [(due, ">=", p60), (due, "<", p30)]),
+                amount(base + [(due, ">=", p90), (due, "<", p60)]),
+                amount(base + [(due, "<", p90)]),
+            ]
+
+        f7, f30, f60, f90 = (today + timedelta(days=d) for d in (7, 30, 60, 90))
+        # A missing due date is treated as already due (needs attention).
+        forecast = [
+            amount(ap + ["|", (due, "=", False), (due, "<", today)]),
+            amount(ap + [(due, ">=", today), (due, "<=", f7)]),
+            amount(ap + [(due, ">", f7), (due, "<=", f30)]),
+            amount(ap + [(due, ">", f30), (due, "<=", f60)]),
+            amount(ap + [(due, ">", f60), (due, "<=", f90)]),
+            amount(ap + [(due, ">", f90)]),
+        ]
+
+        vendor_groups = move.read_group(
+            ap, ["amount_residual:sum"], ["partner_id"]
+        )
+        vendor_groups = sorted(
+            vendor_groups,
+            key=lambda group: (group.get("amount_residual") or 0.0),
+            reverse=True,
+        )[:10]
+        top_vendors = [
+            {
+                "id": group["partner_id"][0] if group["partner_id"] else 0,
+                "name": (
+                    group["partner_id"][1]
+                    if group["partner_id"]
+                    else _("(no vendor)")
+                ),
+                "amount": group["amount_residual"] or 0.0,
+            }
+            for group in vendor_groups
+        ]
+
+        return {
+            "aging": {"ap": aging(ap), "ar": aging(ar)},
+            "forecast": forecast,
+            "top_vendors": top_vendors,
+        }

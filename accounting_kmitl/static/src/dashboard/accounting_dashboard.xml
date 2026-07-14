@@ -34,6 +34,44 @@
                     </t>
                 </div>
 
+                <div class="row g-3 mt-1">
+                    <div class="col-12 col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-2" t-esc="text.agingTitle"/>
+                                <div class="o_ak_chart_sm">
+                                    <EChart option="agingChartOption"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-2" t-esc="text.forecastTitle"/>
+                                <div class="o_ak_chart_sm">
+                                    <EChart option="forecastChartOption"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-2" t-esc="text.topVendorsTitle"/>
+                                <t t-if="state.analytics.top_vendors.length">
+                                    <div class="o_ak_chart_sm">
+                                        <EChart option="topVendorsChartOption"/>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="text-muted py-3" t-esc="text.noData"/>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="o_ak_chart mt-4">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                         <h5 class="text-muted mb-0" t-esc="text.expenseTitle"/>

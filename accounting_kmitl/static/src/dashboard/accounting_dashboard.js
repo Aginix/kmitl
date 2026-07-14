@@ -28,6 +28,8 @@ export class AccountingDashboard extends Component {
             fiscalYearId: false,
             expense: { items: [] },
             expenseLoading: true,
+            analytics: { aging: { ap: [], ar: [] }, forecast: [], top_vendors: [] },
+            analyticsLoading: true,
         });
 
         onWillStart(async () => {
@@ -53,10 +55,21 @@ export class AccountingDashboard extends Component {
                     []
                 ),
                 this.loadExpense(),
+                this.loadAnalytics(),
             ]);
             this.state.data = data;
             this.state.loading = false;
         });
+    }
+
+    // Current-state cash & payables analytics (not fiscal-year scoped).
+    async loadAnalytics() {
+        this.state.analytics = await this.orm.call(
+            "accounting.kmitl.dashboard",
+            "get_analytics",
+            []
+        );
+        this.state.analyticsLoading = false;
     }
 
     // Reload just the expense chart for the currently selected fiscal year.
@@ -94,6 +107,123 @@ export class AccountingDashboard extends Component {
             fiscalYear: _t("Fiscal year"),
             all: _t("All"),
             noData: _t("No data"),
+            agingTitle: _t("Payables / receivables aging"),
+            forecastTitle: _t("Payment forecast"),
+            topVendorsTitle: _t("Top vendors by amount due"),
+        };
+    }
+
+    // Compact currency-agnostic number for chart axes/labels (e.g. 1.2M, 340K).
+    _compact(value) {
+        const n = value || 0;
+        const abs = Math.abs(n);
+        if (abs >= 1e6) {
+            return (n / 1e6).toFixed(1) + "M";
+        }
+        if (abs >= 1e3) {
+            return (n / 1e3).toFixed(0) + "K";
+        }
+        return String(Math.round(n));
+    }
+
+    // AP vs AR outstanding balance, grouped by overdue-days bucket.
+    get agingChartOption() {
+        const aging = this.state.analytics.aging || { ap: [], ar: [] };
+        const labels = [_t("Not due"), "1-30", "31-60", "61-90", "90+"];
+        const payables = _t("Payables");
+        const receivables = _t("Receivables");
+        return {
+            tooltip: {
+                trigger: "axis",
+                axisPointer: { type: "shadow" },
+                valueFormatter: (v) => this.formatAmount(v),
+            },
+            legend: { data: [payables, receivables], bottom: 0 },
+            grid: { left: 8, right: 16, top: 16, bottom: 40, containLabel: true },
+            xAxis: { type: "category", data: labels },
+            yAxis: {
+                type: "value",
+                axisLabel: { formatter: (v) => this._compact(v) },
+            },
+            series: [
+                {
+                    name: payables,
+                    type: "bar",
+                    itemStyle: { color: "#d97706" },
+                    data: aging.ap,
+                },
+                {
+                    name: receivables,
+                    type: "bar",
+                    itemStyle: { color: "#3b82f6" },
+                    data: aging.ar,
+                },
+            ],
+        };
+    }
+
+    // Outstanding payables bucketed by days until due (bucket 0 = overdue, red).
+    get forecastChartOption() {
+        const forecast = this.state.analytics.forecast || [];
+        const labels = [_t("Overdue"), "0-7", "8-30", "31-60", "61-90", "90+"];
+        return {
+            tooltip: {
+                trigger: "axis",
+                axisPointer: { type: "shadow" },
+                valueFormatter: (v) => this.formatAmount(v),
+            },
+            grid: { left: 8, right: 16, top: 16, bottom: 24, containLabel: true },
+            xAxis: { type: "category", data: labels },
+            yAxis: {
+                type: "value",
+                axisLabel: { formatter: (v) => this._compact(v) },
+            },
+            series: [
+                {
+                    type: "bar",
+                    data: forecast.map((value, i) => ({
+                        value,
+                        itemStyle: { color: i === 0 ? "#dc3545" : "#15803d" },
+                    })),
+                    barMaxWidth: 40,
+                },
+            ],
+        };
+    }
+
+    // Top vendors by outstanding payable (horizontal bar, highest on top).
+    get topVendorsChartOption() {
+        const rev = [...(this.state.analytics.top_vendors || [])].reverse();
+        const sym = this.state.data.currency_symbol || "";
+        return {
+            grid: { left: 8, right: 72, top: 8, bottom: 8, containLabel: true },
+            tooltip: {
+                trigger: "axis",
+                axisPointer: { type: "shadow" },
+                valueFormatter: (v) => sym + this.formatAmount(v),
+            },
+            xAxis: {
+                type: "value",
+                axisLabel: { formatter: (v) => this._compact(v) },
+            },
+            yAxis: {
+                type: "category",
+                data: rev.map((v) => v.name),
+                axisLabel: { fontSize: 11, width: 160, overflow: "truncate" },
+            },
+            series: [
+                {
+                    type: "bar",
+                    data: rev.map((v) => v.amount),
+                    itemStyle: { color: "#d97706" },
+                    barMaxWidth: 22,
+                    label: {
+                        show: true,
+                        position: "right",
+                        formatter: (p) => this._compact(p.value),
+                    },
+                },
+            ],
         };
     }
 
