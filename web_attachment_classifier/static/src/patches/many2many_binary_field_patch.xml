@@ -22,7 +22,7 @@
     </t>
 
     <t
-        t-inherit="Many2ManyBinaryField.attachment_preview"
+        t-inherit="web.Many2ManyBinaryField.attachment_preview"
         t-inherit-mode="extension"
         owl="1"
     >
