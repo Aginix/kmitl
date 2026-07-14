@@ -1,4 +1,8 @@
 .o_ak_dashboard {
+    // Fill the action area and scroll internally; without an explicit height
+    // the div grows past the viewport and Odoo's action container clips it
+    // (no scrollbar) once the charts make the page taller than the screen.
+    height: 100%;
     overflow: auto;
 
     .o_ak_card {
