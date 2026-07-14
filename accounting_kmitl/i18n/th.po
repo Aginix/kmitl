@@ -301,3 +301,80 @@ msgstr "สร้างใบตั้งหนี้ลูกหนี้"
 #: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
 msgid "New journal entry"
 msgstr "สร้างรายการสมุดรายวัน"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Most-used expense codes"
+msgstr "รหัสค่าใช้จ่ายที่ใช้บ่อยที่สุด"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Fiscal year"
+msgstr "ปีงบประมาณ"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "All"
+msgstr "ทั้งหมด"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "No data"
+msgstr "ไม่มีข้อมูล"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "documents"
+msgstr "เอกสาร"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Payables / receivables aging"
+msgstr "อายุหนี้ค้างจ่าย / ค้างรับ"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Payment forecast"
+msgstr "ประมาณการชำระเงิน"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Top vendors by amount due"
+msgstr "เจ้าหนี้ค้างจ่ายสูงสุด"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Not due"
+msgstr "ยังไม่ครบกำหนด"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Payables"
+msgstr "เจ้าหนี้"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Receivables"
+msgstr "ลูกหนี้"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Overdue"
+msgstr "เกินกำหนด"
+
+#. module: accounting_kmitl
+#: code:addons/accounting_kmitl/models/accounting_kmitl_dashboard.py:0
+msgid "(no vendor)"
+msgstr "(ไม่ระบุเจ้าหนี้)"
