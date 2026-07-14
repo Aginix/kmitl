@@ -1,22 +1,18 @@
-# Classifier binding is done via a JS factory, not XML `options`
+# Classifier binding via a JS factory (superseded by ADR-0002)
 
-Consumers register a widget by calling
-`registerAttachmentClassifierWidget({widgetName, classifierField, ...})`
-from their own JS asset, then reference `widgetName` in XML. The
-Odoo-idiomatic alternative — a single generic widget configured via XML
-`options="{'field': ..., 'model': ...}"` — was rejected because
-`Many2ManyBinaryField.fieldsToFetch` is a **static per-class contract**
-read once at widget-class registration time. Making it dynamic per
-instance (i.e. per view) would drop the classifier field out of the
-framework's child-record fetch, breaking reactive display of the badge
-without an extra manual `orm.read` per render.
+**Status**: superseded by [ADR-0002](./0002-patched-many2many-binary.md).
 
-## Consequences
+Earlier design: each consumer module registered its own widget class
+via a JS factory `registerAttachmentClassifierWidget({widgetName,
+classifierField, ...})`, then referenced `widgetName` in XML. The
+Odoo-idiomatic alternative — a single generic widget configured via
+XML `options` — was rejected because `Many2ManyBinaryField.fieldsToFetch`
+is a static per-class contract and can't be resolved from per-instance
+`options` without breaking reactive badge display.
 
-- Every consumer needs an `assets` bundle (some, e.g. the original
-  `purchase_request_kmitl`, didn't have one — this adds a small amount
-  of boilerplate per consumer).
-- Adding a new classifier variant requires editing consumer JS, not just
-  a view — this is on-purpose. See CONTEXT.md > Factory.
-- The factory returns the concrete subclass so tests and downstream
-  extensions can subclass further.
+Superseded because we pivoted away from the "per-consumer widget name"
+model entirely: the classifier is now a single shared field on
+`ir.attachment` with a data-driven scope (`res_model_ids`), and the
+`many2many_binary` standard widget itself is patched via `patch()` so
+no widget name change is needed anywhere. See ADR-0002 for the current
+architecture and why.

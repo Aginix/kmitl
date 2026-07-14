@@ -37,7 +37,7 @@
                         <group name="attachment" string="Attachment">
                             <field
                                 name="attachment_ids"
-                                widget="many2many_binary_doctype"
+                                widget="many2many_binary"
                                 nolabel="1"
                                 colspan="2"
                             />

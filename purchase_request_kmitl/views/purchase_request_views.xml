@@ -288,7 +288,7 @@
                 <page name="document" string="Attachment">
                     <field
                         name="attachment_ids"
-                        widget="many2many_binary_attachment_type"
+                        widget="many2many_binary"
                         attrs="{'readonly': [('is_editable','=', False)]}"
                     />
                 </page>

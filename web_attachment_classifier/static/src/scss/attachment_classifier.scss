@@ -1,11 +1,11 @@
-.o_classifier_dropzone {
+.oe_fileupload {
     position: relative;
-    transition: background-color 120ms ease, border-color 120ms ease;
 
-    &.o_dragging_over {
+    &.o_classifier_dragging_over {
         outline: 2px dashed var(--bs-primary, #3b82f6);
         outline-offset: -4px;
         background-color: rgba(59, 130, 246, 0.06);
+        border-radius: 4px;
     }
 }
 
@@ -23,13 +23,20 @@
     border-radius: 4px;
 }
 
-.o_classifier_dialog_dropzone {
-    border-style: dashed !important;
-    border-color: var(--bs-border-color, #dee2e6) !important;
-    transition: background-color 120ms ease, border-color 120ms ease;
+// Edit (pencil) icon styled to match the delete (trash) icon standard uses
+.o_attachment_edit {
+    position: absolute;
+    top: 0;
+    right: 24px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 2px 4px;
 
-    &.o_dragging_over {
-        border-color: var(--bs-primary, #3b82f6) !important;
-        background-color: rgba(59, 130, 246, 0.06);
+    .fa-pencil {
+        color: #6c757d;
+    }
+
+    &:hover .fa-pencil {
+        color: #212529;
     }
 }

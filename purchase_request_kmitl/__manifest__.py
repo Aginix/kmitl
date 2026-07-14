@@ -1,6 +1,6 @@
 {
     "name": "Purchase Request KMITL",
-    "version": "16.0.0.0.0",
+    "version": "16.0.0.1.0",
     "summary": """ Purchase Request KMITL""",
     "category": "KMITL",
     "author": "Aginix Technologies",
@@ -26,6 +26,7 @@
         "data/procurement_type.xml",
         "data/procurement_method.xml",
         "data/purchase_type.xml",
+        "data/attachment_document_type.xml",
         "views/procurement_method_views.xml",
         "views/procurement_type_views.xml",
         "views/purchase_type_views.xml",
@@ -35,11 +36,6 @@
         "views/purchase_order_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "purchase_request_kmitl/static/src/**/*",
-        ],
-    },
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",

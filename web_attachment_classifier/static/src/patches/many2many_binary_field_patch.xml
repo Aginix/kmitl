@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="web.Many2ManyBinaryField" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@aria-atomic='true']" position="attributes">
+            <attribute
+                name="t-attf-class"
+            >oe_fileupload {{props.className ? props.className : ''}} {{ classifierState.isDraggingOver ? 'o_classifier_dragging_over' : '' }}</attribute>
+            <attribute name="t-on-dragenter.prevent">onDragEnter</attribute>
+            <attribute name="t-on-dragover.prevent">onDragOver</attribute>
+            <attribute name="t-on-dragleave.prevent">onDragLeave</attribute>
+            <attribute name="t-on-drop.prevent">onDrop</attribute>
+        </xpath>
+        <xpath expr="//div[@aria-atomic='true']" position="inside">
+            <div
+                t-if="classifierState.isDraggingOver"
+                class="o_classifier_dropzone_overlay"
+            >
+                <span class="fa fa-cloud-upload me-2" />Drop files to attach
+            </div>
+        </xpath>
+    </t>
+
+    <t
+        t-inherit="Many2ManyBinaryField.attachment_preview"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <xpath
+            expr="//div[hasclass('caption') and hasclass('small')]"
+            position="after"
+        >
+            <div t-if="hasClassifier" class="caption small text-muted">
+                <span>Document Type:</span>
+                <span
+                    t-if="file.document_type_id"
+                    class="badge text-bg-secondary ms-1"
+                    t-esc="file.document_type_id[1]"
+                />
+                <span t-else="" class="fst-italic ms-1">-</span>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('o_attachment_delete')]" position="before">
+            <div
+                t-if="hasClassifier and editable"
+                class="o_attachment_edit"
+                t-on-click.stop="() => this.onEditClick(file.id, file.document_type_id and file.document_type_id[0])"
+                title="Edit Document Type"
+                style="cursor: pointer;"
+            >
+                <span
+                    class="text-white"
+                    role="img"
+                    aria-label="Edit"
+                    title="Edit Document Type"
+                >
+                    <i class="fa fa-pencil" />
+                </span>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

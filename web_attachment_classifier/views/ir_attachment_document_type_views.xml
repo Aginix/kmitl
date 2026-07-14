@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_ir_attachment_document_type_tree" model="ir.ui.view">
+        <field name="name">ir.attachment.document.type.tree</field>
+        <field name="model">ir.attachment.document.type</field>
+        <field name="arch" type="xml">
+            <tree string="Attachment Document Types">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="res_model_ids" widget="many2many_tags"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ir_attachment_document_type_form" model="ir.ui.view">
+        <field name="name">ir.attachment.document.type.form</field>
+        <field name="model">ir.attachment.document.type</field>
+        <field name="arch" type="xml">
+            <form string="Attachment Document Type">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Applies to Models" name="res_models">
+                            <field
+                                name="res_model_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True}"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ir_attachment_document_type" model="ir.actions.act_window">
+        <field name="name">Attachment Document Types</field>
+        <field name="res_model">ir.attachment.document.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_ir_attachment_document_type"
+        name="Attachment Document Types"
+        parent="base.menu_ir_property"
+        action="action_ir_attachment_document_type"
+        sequence="90"
+    />
+
+</odoo>

@@ -1,157 +1,137 @@
 # Web Attachment Classifier
 
-Reusable OWL widget kit that lets consumer modules replace the standard
-"attach a file" affordance with "attach a file **together with one
-categorical value**" — a Document Type, an Attachment Type, a Fund Source,
-etc. UI-only; the classifier field itself lives on `ir.attachment` in each
-consumer module.
+Odoo web enhancement that adds two things to the standard
+`many2many_binary` attachment widget:
+
+1. **Drag & drop** file upload — always on, for every place in Odoo that
+   uses `many2many_binary`.
+2. **Document Type classification** — an optional Many2one on
+   `ir.attachment` picking from a shared taxonomy (`ir.attachment.document.type`)
+   whose values are scoped per parent model via a `res_model_ids` link.
+   The classifier UI (badge + pencil button) shows up only on forms whose
+   `res_model` has at least one doctype mapped to it.
+
+There is no custom widget name to remember and no per-consumer JS. A
+consumer module that wants classification just declares one or more
+`ir.attachment.document.type` records via XML data and points their
+`res_model_ids` at whatever parent models it owns.
 
 ## Language
 
-**Attachment Classifier**:
-A *single* categorical value attached to an `ir.attachment` alongside the
-file itself — either a Many2one to a taxonomy model (e.g.
-`kris.project.document.type`) or a Selection field (e.g.
-`ir.attachment.attachment_type`). One classifier per widget instance.
-_Avoid_: metadata (too broad — a classifier is *one* categorical
-dimension, not an open bag of fields), tag (implies multi-value), category
-(overloaded in Odoo).
+**Document Type**:
+A record in `ir.attachment.document.type`. The taxonomy of possible
+"kinds" of attachment (Contract, Receipt, TOR, etc.) that live *anywhere*
+in Odoo. Each type declares which parent models it applies to via
+`res_model_ids`.
+_Avoid_: classifier (implementation-level jargon), metadata (too broad),
+category (overloaded in Odoo), attachment type (was the old Selection
+field name — now migrated away).
 
-**Classifier Value**:
-The value the user selects — for Many2one, the target record; for
-Selection, the raw string value. Stored on `ir.attachment.<consumer-field>`.
-Optional at upload time by default; consumers can require it via factory
-config.
+**Scope (of a Document Type)**:
+The set of parent models a doctype is offered on, stored in
+`res_model_ids` (Many2many to `ir.model`). A doctype is *visible* on a
+form's attachment widget iff the form's `res_model` is in this set.
+Doctypes with an empty scope are hidden everywhere by design (management
+records only).
 
-**Classifier Field**:
-The Python field on `ir.attachment` that stores the Classifier Value.
-Declared by the *consumer* module, never by this module. Naming
-convention: prefix with the consumer's short name to avoid cross-consumer
-collisions (e.g. `kris_document_type_id`, `pr_attachment_type`) — this is
-a convention, not enforced.
+**Attached-to Model** (or *parent model*):
+The `res_model` of an `ir.attachment` row — the model of the record the
+file is attached to (e.g., `kris.project`, `purchase.request`,
+`account.move`).
+
+**Base Widget** vs **Patched Widget**:
+Base = the stock `Many2ManyBinaryField` from
+`@web/views/fields/many2many_binary/`. Patched = the same class after
+`web_attachment_classifier` has applied its `patch()` — everywhere in
+Odoo that uses `widget="many2many_binary"` sees the patched behaviour.
 
 **Consumer Module**:
-Any Odoo module that `depends` on this kit and calls
-`registerAttachmentClassifierWidget(...)` in its own JS asset to bind a
-widget name to a specific Classifier Field. First consumers:
-`kris_project` and `purchase_request_kmitl`.
-_Avoid_: user (too generic), client (implies UI code, not a whole module).
-
-**Factory (registration API)**:
-The JS function that consumers call to produce a concrete widget
-subclass. Named `registerAttachmentClassifierWidget`. See
-[ADR-0001](./docs/adr/0001-factory-not-xml-options.md) for why this is
-a JS factory instead of XML `options`.
-
-**External Attachment**:
-An `ir.attachment` linked to the same `(res_model, res_id)` as the
-widget's One2many but *created outside the widget* — typically by mail
-chatter, Odoo report generation, or admin action. These render in the
-widget list with a "-" placeholder for the classifier; the user can click
-the placeholder to set a value (see "Post-hoc edit" below).
+Any Odoo module that adds one or more `ir.attachment.document.type`
+records via a data XML file and points their `res_model_ids` at its own
+models. Consumers hold no Python or JS related to the widget. First
+consumers: `kris_project` and `purchase_request_kmitl`.
 
 ## Rules of the game
 
-- **Single dimension only.** One widget = one Classifier Field. Extension
-  to *N* classifiers per widget is possible but not implemented — would
-  require changing the factory signature to accept a list and reworking
-  the dialog to render N dropdowns.
-- **UI kit, no data model.** This module *never* touches `ir.attachment`.
-  All classifier fields are owned by consumer modules. As a result, the
-  module is `category = "Hidden"` — installing it standalone provides no
-  visible feature.
-- **Selection tuples are consumer-declared.** For Selection classifiers,
-  the consumer either passes the `[[value,label],...]` tuples to the
-  factory (recommended, matches the Python side) or lets the widget look
-  them up via `fields_get` at render time (fallback for Selection whose
-  values are not stable at JS-load time).
+- **Doctype is always optional.** `ir.attachment.document_type_id` is
+  declared `required=False` at base. Files coming in through any path
+  (widget Attach button, drag & drop, mail chatter, API, import) are
+  accepted with `document_type_id = NULL`. The badge displays "-" for
+  those, and the user can set the value later via the pencil button.
+- **Business rule "must have doctype" is a consumer concern.** If a
+  workflow needs every attachment classified before a state transition
+  (e.g. `kris.project.action_confirm`), the consumer writes an
+  `@api.constrains` or a check in the transition method that raises
+  `UserError` when `attachment_ids.filtered(lambda a: not a.document_type_id)`
+  is non-empty. Base does not enforce.
+- **Scope is data.** Adding a new doctype to a new parent model = one
+  XML record in a data file. No JS, no widget re-registration, no view
+  edits. The dropdown/badge/pencil appear automatically on that model's
+  form.
+- **UI is conditional.** A form whose `res_model` has zero doctypes
+  mapped to it renders the widget unchanged from Odoo standard — no
+  badge, no pencil, no dropdown. It does still get drag & drop
+  (unconditional).
 - **Post-hoc edit via pencil button.** Each attachment row shows a
-  pencil icon (before the trash icon) while the field is editable —
-  clicking opens the dialog in edit mode with an optional file picker
-  plus the classifier dropdown pre-populated. Save issues one
-  `ir.attachment.write` covering both the new file (base64) and the
-  classifier, so the `ir.attachment.id` is preserved (no dangling
-  reference in chatter or downstream logs). The badge itself is
-  display-only — all edits go through the pencil button.
-- **File size ceiling for replace.** File replacement writes `datas` as
-  base64 via ORM. Effective ceiling ≈ `web.max_upload_size` ÷ 1.33
-  (Odoo 16 default ~128 MB → ~90 MB usable). Files larger than that
-  should still use delete + Attach — this is a documented ceiling, not
-  an error the UI shows.
-- **Multi-file upload (add only).** The Add dialog's file input accepts
-  multiple files and applies the *same* classifier to all of them.
-  Uploads are best-effort — a failure on one file surfaces as a
-  notification for that file, and successful uploads are kept. The
-  Edit dialog's file input is single-select (replace is 1:1).
-- **Drag & drop.** Two drop zones share the same visual language
-  (dashed outline + light-blue tint on drag-over):
-  1. The widget card list — dropping files opens the Add dialog with
-     the dropped files already loaded. Widget-level drop always enters
-     Add flow; replacing an existing file goes through the pencil
-     button (which row to replace is otherwise ambiguous).
-  2. The Add/Edit dialog's file input area — dropping files fills the
-     `<input type="file">` via the `DataTransfer` API, so the existing
-     save handlers run unchanged. Edit mode keeps its 1-file rule:
-     dropping more than one file warns and keeps the first.
-  Overlays only activate when the drag payload contains files
-  (`dataTransfer.types.includes("Files")`), so dragging text or links
-  is inert. Releasing files *outside* a drop zone falls back to
-  browser default behaviour (opening the file in a new tab); this is
-  accepted for now and can be locked down later by adding a
-  document-level listener modeled on Odoo mail's
-  `useDragVisibleDropZone`.
+  pencil icon (before the trash icon) when doctypes exist for the
+  parent model. Clicking it opens a small dialog with a single dropdown
+  pre-populated. Save writes `document_type_id` via `orm.write`; Cancel
+  closes. The attachment record itself and its id are preserved
+  through-out.
+- **Drag & drop is always on.** All 12 Odoo core usages of
+  `many2many_binary` (mail composer, hr leaves, account invoice send,
+  survey, etc.) and 17 in this repo (disbursement, advance_payment,
+  agx_approval, …) get drag & drop for free — pure UX enhancement, no
+  behavioural change.
+- **Attach button behaviour is unchanged.** Clicking Attach still opens
+  the OS file picker via Odoo's `FileInput` component and uploads via
+  `/web/binary/upload_attachment`. The doctype is set (or left empty)
+  post-upload via the pencil button.
+- **`document_type_id` is fetched reactively.** Added to
+  `Many2ManyBinaryField.fieldsToFetch` at patch time, so the badge
+  updates immediately when a user edits it — no full-form reload
+  needed.
 
 ## Manual verification checklist
 
-Test end-to-end after touching the widget, the factory, or a consumer's
-widget registration:
+Test end-to-end after touching the patch or the taxonomy model:
 
-1. Install `web_attachment_classifier` + upgrade the consumer module.
-2. Open a form that uses the widget → tab shows a card list of existing
-   attachments with a badge per file (or "-" for unclassified).
-3. Click **Attach** → dialog opens with a file picker (multi-select
-   allowed) and a dropdown labelled with the consumer's
-   `classifierLabel`. If the widget was registered with
-   `classifierRequired: true`, an asterisk shows next to the label and
-   Save must reject an empty selection.
-4. Select two files + a classifier → **Save** → both attachment rows
-   appear with the same badge.
-5. Reload the form → badges still show. This proves `fieldsToFetch` is
-   wired for the classifier field.
-6. **Edit classifier only.** Click the pencil button on a row → dialog
-   opens in edit mode with an empty file picker and the classifier
-   dropdown pre-populated → change the value → **Save** → badge updates
-   in place. Confirm via Settings > Technical > Attachments that
-   `ir.attachment.id` is unchanged.
-7. **Replace file only.** Click pencil → pick a new file of a different
-   type (e.g. `.png` in place of `.pdf`) → leave the classifier as-is
-   → **Save** → the row's filename/extension update while the badge
-   stays. Confirm `ir.attachment.id` is unchanged.
-8. **Replace file + classifier.** Click pencil → pick a new file *and*
-   change the dropdown → **Save** → both the file and the badge
-   update; `ir.attachment.id` still unchanged.
-9. **External attachment.** Upload an attachment via mail chatter → it
-   appears in the widget list with a "-" badge (see
-   [External Attachment](#language)) and a pencil button → click pencil
-   → set a classifier → **Save** → badge updates.
-10. **Badge is display-only.** Hovering the badge does not change the
-    cursor; clicking it does nothing.
-11. **Drag & drop onto the widget.** Drag a file from the desktop over
-    the card list → dashed outline appears with an overlay "Drop files
-    to attach" → release → the Add dialog opens with the file
-    pre-loaded → pick a classifier → Save.
-12. **Drag & drop 3 files at once.** Same as above, three files → the
-    Add dialog opens with all three loaded → Save → three attachments
-    share the same classifier.
-13. **Drag & drop inside the dialog.** Click Attach → drag a file over
-    the file-input area → dashed border highlights → release → the
-    input shows the file → Save.
-14. **Drag & drop in edit mode (single-file rule).** Click pencil →
-    drag two files → notification "Only one file can replace…" and the
-    input holds the first file only.
-15. **Drag payload not files.** Drag a text selection or a link over
-    the widget → no overlay, no highlight.
-16. **Register a second widget** in another consumer with a different
-    `classifierField` → both work on the same form without cross-talk
-    (validates that factory-per-consumer subclassing keeps
-    `fieldsToFetch` isolated).
+1. Install `web_attachment_classifier`, upgrade `kris_project` and
+   `purchase_request_kmitl` so migrations run.
+2. Migration lands cleanly (log has "remapped N attachments" lines for
+   old doctype rows; legacy `kris_project_document_type` table dropped;
+   `ir_attachment.attachment_type` column dropped).
+3. Open a `kris.project` form → attachment tab uses the standard
+   `many2many_binary`:
+   - Drag a file over the card list → dashed outline overlay "Drop
+     files to attach" appears → release → file uploads → row appears
+     with a pencil icon and a "-" badge.
+   - Click pencil → dialog with a Document Type dropdown showing
+     kris_project's doctypes (Contract / Purchase / Receipt) → pick a
+     value → Save → badge updates.
+4. Open a `purchase.request` form → same behaviour but the dropdown
+   lists TOR / Quotation / Etc.
+5. Open a vendor bill (`account.move`) or any other form with
+   `many2many_binary` and no doctypes mapped → drag & drop still works,
+   but there is **no** badge, **no** pencil, **no** dropdown — widget
+   looks exactly like Odoo standard.
+6. Reload a form after tagging → badges still show. This confirms
+   `document_type_id` is in `fieldsToFetch`.
+7. Settings > Technical > Attachment Document Types → tree/form UI
+   works; create a doctype with `res_model_ids = [purchase.order]` →
+   open a PO form → pencil + dropdown appear immediately for the new
+   type, no JS reload.
+8. Historical attachments (created before the migration) still show
+   their correct badges: the migration mapped their old
+   `kris.project.document.type` id / `attachment_type` Selection value
+   to the new `ir.attachment.document.type` records by NAME/value
+   respectively.
+9. Chatter D&D bug (see commit `97af33e`) still works: dragging over a
+   form with a chatter and dropping on the attachment widget does not
+   leave the chatter drop overlay stuck.
+10. Upload via mail chatter → attachment appears in the widget list
+    with a "-" badge → pencil to set doctype.
+11. Consumer constraint enforcement: if `kris.project.action_confirm`
+    is wired to check `attachment_ids` doctypes, confirming a project
+    that has an unclassified attachment raises `UserError` — implement
+    this only where the workflow actually needs it, not by default.
