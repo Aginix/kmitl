@@ -34,7 +34,23 @@ class PurchaseRequest(models.Model):
             "date_approved": False,
             "assigned_to": False,
             "state": "draft",
-            "validation_status": "no"
+            "validation_status": "no",
+            "procurement_type_id": self.procurement_type_id.id,
+            "procurement_method_id": self.procurement_method_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "estimated_cost": self.estimated_cost,
+            "payment_type": self.payment_type,
+            "line_ids": [
+                (0, 0, {
+                    "product_id": line.product_id.id,
+                    "name": line.name,
+                    "product_qty": line.product_qty,
+                    "product_uom_id": line.product_uom_id.id,
+                    "price_unit": line.price_unit,
+                    "estimated_cost": line.estimated_cost,
+                })
+                for line in self.line_ids
+            ],
         }
 
     def button_create_approval(self):

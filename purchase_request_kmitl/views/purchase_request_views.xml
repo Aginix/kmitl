@@ -91,6 +91,15 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='line_ids']" position="before">
+                <group>
+                    <group>
+                        <field
+                            name="partner_id"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                        />
+                    </group>
+                </group>
                 <group name="warning_prepaid">
                     <group>
                         <div

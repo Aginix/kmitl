@@ -86,6 +86,8 @@ class PurchaseRequest(models.Model):
         copy=False,
     )
 
+    partner_id = fields.Many2one("res.partner", tracking=True)
+
     # construction
     is_construction = fields.Boolean(string="Construction", readonly=True)
 

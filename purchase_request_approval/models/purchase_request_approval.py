@@ -10,8 +10,14 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestApproval(models.Model):
     _name = "purchase.request.approval"
-    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "tier.validation", "sarabun.document.mixin"]
-    _inherits = {"purchase.request": "request_id"}
+    _inherit = [
+        "mail.thread",
+        "mail.activity.mixin",
+        "portal.mixin",
+        "thai.date.mixin",
+        "tier.validation",
+        "sarabun.document.mixin",
+    ]
 
     _description = "Purchase Request Approval"
     _order = "date_start desc, name desc"
@@ -101,7 +107,9 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+    requesting_department_id = fields.Many2one(
+        "hr.department", string="Department", tracking=True
+    )
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 
@@ -111,13 +119,57 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    # _sql_constraints = [
-    #     (
-    #         "request_id_uniq",
-    #         "unique(request_id)",
-    #         _("A purchase approval already exists!"),
-    #     )
-    # ]
+    # == Own fields (copied from purchase.request on creation) ==
+    procurement_type_id = fields.Many2one(
+        comodel_name="procurement.type",
+        string="Procurement Type",
+    )
+    procurement_method_id = fields.Many2one(
+        comodel_name="procurement.method",
+        string="Procurement Method",
+    )
+    account_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal Year",
+    )
+    estimated_cost = fields.Float(string="Estimated Cost")
+    payment_type = fields.Selection(
+        [("direct", "Direct paid"), ("advance", "Advance"), ("prepaid", "Prepaid")],
+    )
+    line_ids = fields.One2many(
+        comodel_name="purchase.request.approval.line",
+        inverse_name="approval_id",
+        string="Lines",
+    )
+
+    # == Related fields (read-through to purchase.request) ==
+    title = fields.Char(related="request_id.title")
+    description = fields.Text(related="request_id.description")
+    requested_by = fields.Many2one(related="request_id.requested_by")
+    department_id = fields.Many2one(related="request_id.department_id")
+    company_id = fields.Many2one(related="request_id.company_id", store=True)
+    partner_id = fields.Many2one(related="request_id.partner_id")
+    user_id = fields.Many2one(related="request_id.user_id")
+    product_id = fields.Many2one(related="request_id.product_id")
+    currency_id = fields.Many2one(related="request_id.currency_id")
+    amount_total = fields.Monetary(related="request_id.amount_total")
+    amount_untaxed = fields.Monetary(related="request_id.amount_untaxed")
+    amount_tax = fields.Monetary(related="request_id.amount_tax")
+    source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
+    budget_account_id = fields.Many2one(related="request_id.budget_account_id")
+    budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
+    analytic_distribution = fields.Json(related="request_id.analytic_distribution")
+    attachment_ids = fields.One2many(related="request_id.attachment_ids")
+    work_acceptance_committee_ids = fields.One2many(
+        related="request_id.work_acceptance_committee_ids"
+    )
+    tor_committee_ids = fields.One2many(related="request_id.tor_committee_ids")
+    price_determine_committee_ids = fields.One2many(
+        related="request_id.price_determine_committee_ids"
+    )
+    evaluation_committee_ids = fields.One2many(
+        related="request_id.evaluation_committee_ids"
+    )
 
     def button_draft(self):
         return self.write({"state": "draft"})
@@ -140,12 +192,11 @@ class PurchaseRequestApproval(models.Model):
             [self.id],
         )
         filename = self.name + ".pdf"
-        attachment = self.env["ir.attachment"].create(
+        self.env["ir.attachment"].create(
             {
                 "name": filename,
                 "res_id": self.id,
                 "res_model": self._name,
-                # "raw": base64.b64encode(report[0]),
                 "datas": base64.b64encode(report[0]),
                 "type": "binary",
                 "mimetype": "application/pdf",
@@ -168,12 +219,16 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def button_approved(self):
-        # Check if sarabun routing is pending
         for rec in self:
-            if rec.main_sarabun_document_id and rec.main_sarabun_document_id.state == "sent":
+            if (
+                rec.main_sarabun_document_id
+                and rec.main_sarabun_document_id.state == "sent"
+            ):
                 raise UserError(
-                    _("Cannot manually approve while Sarabun routing is pending. "
-                      "Please wait for the routing to complete or cancel the Sarabun document.")
+                    _(
+                        "Cannot manually approve while Sarabun routing is pending. "
+                        "Please wait for the routing to complete or cancel the Sarabun document."
+                    )
                 )
         for rec in self:
             message = (
@@ -191,8 +246,8 @@ class PurchaseRequestApproval(models.Model):
 
     def button_rejected(self):
         for rec in self:
-            message = rec.request_id._purchase_request_approval_rejected_message_content(
-                rec
+            message = (
+                rec.request_id._purchase_request_approval_rejected_message_content(rec)
             )
             rec.request_id.message_post(body=message, message_type="comment")
             rec.write({"state": "rejected"})
@@ -218,8 +273,12 @@ class PurchaseRequestApproval(models.Model):
         return self.state == "draft"
 
     def unlink(self):
-        if not self.env.user.has_group("purchase_request.group_purchase_request_manager"):
-            raise UserError(_("You do not have permission to delete purchase approvals."))
+        if not self.env.user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        ):
+            raise UserError(
+                _("You do not have permission to delete purchase approvals.")
+            )
         for rec in self:
             if not rec._can_be_deleted():
                 raise UserError(
@@ -228,7 +287,6 @@ class PurchaseRequestApproval(models.Model):
         return super().unlink()
 
     def _compute_access_url(self):
-        """Compute the access URL for portal access."""
         super()._compute_access_url()
         for request in self:
             request.access_url = f"/my/purchase_request_approval/{request.id}"
@@ -262,24 +320,14 @@ class PurchaseRequestApproval(models.Model):
         action["res_id"] = self.request_id.id
         return action
 
-    @api.depends("state")
-    def _compute_is_editable(self):
-        """Override to make validate state non-editable."""
-        super()._compute_is_editable()
-        for record in self:
-            if record.state in ("validate", "to_approve", "approved", "rejected"):
-                record.is_editable = False
-
     # === Sarabun Document Integration ===
 
     def button_validate(self):
-        """Move to validate state for data confirmation before routing."""
         self.ensure_one()
         self.write({"state": "validate"})
         self.message_post(body=_("Document validated and ready for routing."))
 
     def _prepare_sarabun_document_vals(self):
-        """Prepare values for creating a sarabun document."""
         self.ensure_one()
         vals = super()._prepare_sarabun_document_vals()
         vals["subject"] = self.title or self.name
@@ -288,22 +336,17 @@ class PurchaseRequestApproval(models.Model):
         return vals
 
     def action_submit_to_sarabun(self):
-        """Submit PA to Sarabun for approval routing."""
         self.ensure_one()
 
-        # Create sarabun document
         result = self.action_create_sarabun_document()
         document = self.env["sarabun.document"].browse(result.get("res_id"))
 
-        # Link to PA
         self.main_sarabun_document_id = document
 
-        # Log to chatter
         self.message_post(
             body=_("Submitted to Sarabun for approval: %s") % document.name,
         )
 
-        # Open sarabun document form for routing selection
         return {
             "type": "ir.actions.act_window",
             "res_model": "sarabun.document",
@@ -313,13 +356,11 @@ class PurchaseRequestApproval(models.Model):
         }
 
     def _on_sarabun_sent(self, document):
-        """
-        Called when sarabun document is sent (routing started).
-        Changes PA state to 'to_approve'.
-        """
         _logger.info(
             "Sarabun sent callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
+            self.name,
+            self.id,
+            document.name,
         )
         self.write({"state": "to_approve"})
         self.message_post(
@@ -327,13 +368,11 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def _on_sarabun_completed(self, document):
-        """
-        Called when sarabun document routing is completed.
-        Auto-approves the PA.
-        """
         _logger.info(
             "Sarabun completed callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
+            self.name,
+            self.id,
+            document.name,
         )
         self.button_approved()
         self.message_post(
@@ -341,13 +380,11 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def _on_sarabun_rejected(self, document, recipient):
-        """
-        Called when sarabun document is rejected.
-        Changes PA state to rejected.
-        """
         _logger.info(
             "Sarabun rejected callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
+            self.name,
+            self.id,
+            document.name,
         )
         self.button_rejected()
         reason = recipient.comment if recipient else _("No reason provided")
@@ -356,7 +393,6 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def _get_sarabun_report_action(self):
-        """Delegate Sarabun report to Purchase Request Approval report."""
         return self.env.ref(
             "purchase_request_approval.action_report_purchase_request_approvals"
         )

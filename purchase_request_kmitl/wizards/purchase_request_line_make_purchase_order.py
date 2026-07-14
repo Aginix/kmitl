@@ -11,6 +11,18 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _inherit = 'purchase.request.line.make.purchase.order'
 
     @api.model
+    def default_get(self, fields):
+        res = super().default_get(fields)
+        active_model = self.env.context.get("active_model", False)
+        if active_model != "purchase.request":
+            return res
+        active_id = self.env.context.get("active_id", False)
+        request = self.env[active_model].browse(active_id)
+        if request and request.partner_id:
+            res["supplier_id"] = request.partner_id.id
+        return res
+
+    @api.model
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
         vals = super()._prepare_purchase_order(picking_type, group_id, company, origin)
         vals.update({
