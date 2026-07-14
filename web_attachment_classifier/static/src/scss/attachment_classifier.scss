@@ -23,20 +23,18 @@
     border-radius: 4px;
 }
 
-// Edit (pencil) icon styled to match the delete (trash) icon standard uses
-.o_attachment_edit {
-    position: absolute;
-    top: 0;
-    right: 24px;
+.o_classifier_badge_clickable {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.5);
-    padding: 2px 4px;
+    transition: filter 100ms ease, transform 100ms ease;
 
-    .fa-pencil {
-        color: #6c757d;
+    &:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+        text-decoration: none;
     }
 
-    &:hover .fa-pencil {
-        color: #212529;
+    &:active {
+        transform: translateY(0);
+        filter: brightness(0.95);
     }
 }

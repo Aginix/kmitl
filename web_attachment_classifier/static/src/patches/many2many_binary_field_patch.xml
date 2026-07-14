@@ -19,6 +19,9 @@
                 <span class="fa fa-cloud-upload me-2" />Drop files to attach
             </div>
         </xpath>
+        <xpath expr="//FileInput" position="attributes">
+            <attribute name="beforeOpen.bind">beforeAttachClick</attribute>
+        </xpath>
     </t>
 
     <t
@@ -30,32 +33,26 @@
             expr="//div[hasclass('caption') and hasclass('small')]"
             position="after"
         >
-            <div t-if="classifierState.options.length" class="caption small text-muted">
+            <div
+                t-if="classifierState.options.length"
+                class="caption small text-muted"
+            >
                 <span>Document Type:</span>
                 <span
                     t-if="file.document_type_id"
-                    class="badge text-bg-secondary ms-1"
+                    t-attf-class="badge text-bg-primary ms-1 {{ editable ? 'o_classifier_badge_clickable' : '' }}"
+                    t-att-role="editable ? 'button' : null"
+                    t-att-title="editable ? 'Change Document Type' : null"
+                    t-on-click="() => this.onBadgeClick(file.id, file.document_type_id[0])"
                     t-esc="file.document_type_id[1]"
                 />
-                <span t-else="" class="fst-italic ms-1">-</span>
-            </div>
-        </xpath>
-        <xpath expr="//div[hasclass('o_attachment_delete')]" position="before">
-            <div
-                t-if="classifierState.options.length and editable"
-                class="o_attachment_edit"
-                t-on-click.stop="() => this.onEditClick(file.id, file.document_type_id and file.document_type_id[0])"
-                title="Edit Document Type"
-                style="cursor: pointer;"
-            >
                 <span
-                    class="text-white"
-                    role="img"
-                    aria-label="Edit"
-                    title="Edit Document Type"
-                >
-                    <i class="fa fa-pencil" />
-                </span>
+                    t-else=""
+                    t-attf-class="badge text-bg-warning ms-1 {{ editable ? 'o_classifier_badge_clickable' : '' }}"
+                    t-att-role="editable ? 'button' : null"
+                    t-att-title="editable ? 'Set Document Type' : null"
+                    t-on-click="() => this.onBadgeClick(file.id, null)"
+                >- Set type -</span>
             </div>
         </xpath>
     </t>

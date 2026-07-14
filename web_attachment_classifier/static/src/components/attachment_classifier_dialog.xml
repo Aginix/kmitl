@@ -2,7 +2,16 @@
 <templates xml:space="preserve">
 
     <t t-name="web_attachment_classifier.AttachmentClassifierDialog" owl="1">
-        <Dialog title="props.title || env._t('Document Type')" size="'sm'">
+        <Dialog title="title" size="'md'">
+            <div t-if="isAddMode" class="mb-3">
+                <label class="o_form_label">File</label>
+                <input
+                    type="file"
+                    t-ref="fileInput"
+                    class="form-control"
+                    t-att-multiple="true"
+                />
+            </div>
             <div class="mb-3">
                 <label class="o_form_label">Document Type</label>
                 <select class="form-select" t-model="state.value">
@@ -14,7 +23,7 @@
             </div>
             <t t-set-slot="footer">
                 <button class="btn btn-primary" t-on-click="onSave">Save</button>
-                <button class="btn btn-secondary" t-on-click="onSkip">Cancel</button>
+                <button class="btn btn-secondary" t-on-click="onCancel">Cancel</button>
             </t>
         </Dialog>
     </t>

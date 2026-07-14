@@ -7,7 +7,7 @@ import {Many2ManyBinaryField} from "@web/views/fields/many2many_binary/many2many
 import {AttachmentClassifierDialog} from "@web_attachment_classifier/components/attachment_classifier_dialog";
 
 // Ensure the doctype field is fetched for each attachment record so the
-// badge and pencil can render reactively.
+// badge renders reactively.
 Many2ManyBinaryField.fieldsToFetch = {
     ...Many2ManyBinaryField.fieldsToFetch,
     document_type_id: {
@@ -32,9 +32,6 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
             if (!resModel) {
                 return;
             }
-            // Search doctypes whose res_model_names include our resModel.
-            // res_model_names is a stored comma-joined helper; ilike is
-            // approximate but the JS filter below tightens it.
             const rows = await this._classifierOrm.searchRead(
                 "ir.attachment.document.type",
                 [["res_model_names", "ilike", resModel]],
@@ -46,6 +43,81 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
         });
     },
 
+    // ------------------------------------------------------------------
+    // Attach flow — intercept the FileInput trigger so that when doctypes
+    // exist for this res_model we open our dialog instead of the OS file
+    // picker. Return `true` to fall through to the standard behaviour.
+    // ------------------------------------------------------------------
+    async beforeAttachClick() {
+        if (!this.classifierState.options.length) {
+            return true;
+        }
+        this._openAddDialog();
+        return false;
+    },
+
+    _openAddDialog() {
+        this._classifierDialogService.add(AttachmentClassifierDialog, {
+            mode: "add",
+            options: this.classifierState.options,
+            onSave: async ({files, value}) => {
+                await this._uploadAndLink(files, value ? Number(value) : false);
+            },
+        });
+    },
+
+    // Shared: POST files to /web/binary/upload_attachment, write the
+    // classifier when supplied, and link the successful ids to the parent.
+    async _uploadAndLink(files, doctypeId) {
+        const http = this.env.services.http;
+        const notification = this.env.services.notification;
+        const params = {
+            csrf_token: odoo.csrf_token,
+            ufile: files,
+            model: this.props.record.resModel,
+            id: this.props.record.data.id || 0,
+        };
+        let parsed;
+        try {
+            const raw = await http.post(
+                "/web/binary/upload_attachment",
+                params,
+                "text"
+            );
+            parsed = JSON.parse(raw);
+        } catch (error) {
+            notification.add(error.message || String(error), {
+                title: this.env._t("Uploading error"),
+                type: "danger",
+            });
+            return;
+        }
+        const okIds = [];
+        for (const att of parsed) {
+            if (att.error) {
+                notification.add(att.error, {
+                    title: this.env._t("Uploading error"),
+                    type: "danger",
+                });
+            } else {
+                okIds.push(att.id);
+            }
+        }
+        if (!okIds.length) {
+            return;
+        }
+        if (doctypeId) {
+            await this._classifierOrm.write("ir.attachment", okIds, {
+                document_type_id: doctypeId,
+            });
+        }
+        await this.operations.saveRecord(okIds);
+    },
+
+    // ------------------------------------------------------------------
+    // Drag & drop — uploads immediately without asking for a doctype;
+    // user can tag the newly-added attachments via the badge afterward.
+    // ------------------------------------------------------------------
     _hasFilesPayload(ev) {
         const types = ev.dataTransfer && ev.dataTransfer.types;
         if (!types) {
@@ -88,56 +160,24 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
         if (!files.length) {
             return;
         }
-        await this._uploadDroppedFiles(files);
+        await this._uploadAndLink(files, false);
     },
 
-    async _uploadDroppedFiles(files) {
-        const http = this.env.services.http;
-        const notification = this.env.services.notification;
-        const params = {
-            csrf_token: odoo.csrf_token,
-            ufile: files,
-            model: this.props.record.resModel,
-            id: this.props.record.data.id || 0,
-        };
-        let parsed;
-        try {
-            const raw = await http.post(
-                "/web/binary/upload_attachment",
-                params,
-                "text"
-            );
-            parsed = JSON.parse(raw);
-        } catch (error) {
-            notification.add(error.message || String(error), {
-                title: this.env._t("Uploading error"),
-                type: "danger",
-            });
+    // ------------------------------------------------------------------
+    // Post-hoc edit: click the doctype badge to change (or set) it.
+    // No pencil button — the badge itself is the affordance.
+    // ------------------------------------------------------------------
+    onBadgeClick(fileId, currentValue) {
+        if (this.props.readonly || !this.classifierState.options.length) {
             return;
         }
-        const okIds = [];
-        for (const att of parsed) {
-            if (att.error) {
-                notification.add(att.error, {
-                    title: this.env._t("Uploading error"),
-                    type: "danger",
-                });
-            } else {
-                okIds.push(att.id);
-            }
-        }
-        if (okIds.length) {
-            await this.operations.saveRecord(okIds);
-        }
-    },
-
-    onEditClick(fileId, currentValue) {
         this._classifierDialogService.add(AttachmentClassifierDialog, {
+            mode: "edit",
             options: this.classifierState.options,
             initialValue: currentValue == null ? "" : String(currentValue),
-            onSave: async (newValue) => {
+            onSave: async ({value}) => {
                 await this._classifierOrm.write("ir.attachment", [fileId], {
-                    document_type_id: newValue ? Number(newValue) : false,
+                    document_type_id: value ? Number(value) : false,
                 });
                 await this.props.record.load();
             },
