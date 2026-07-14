@@ -30,7 +30,7 @@
             expr="//div[hasclass('caption') and hasclass('small')]"
             position="after"
         >
-            <div t-if="hasClassifier" class="caption small text-muted">
+            <div t-if="classifierState.options.length" class="caption small text-muted">
                 <span>Document Type:</span>
                 <span
                     t-if="file.document_type_id"
@@ -42,7 +42,7 @@
         </xpath>
         <xpath expr="//div[hasclass('o_attachment_delete')]" position="before">
             <div
-                t-if="hasClassifier and editable"
+                t-if="classifierState.options.length and editable"
                 class="o_attachment_edit"
                 t-on-click.stop="() => this.onEditClick(file.id, file.document_type_id and file.document_type_id[0])"
                 title="Edit Document Type"

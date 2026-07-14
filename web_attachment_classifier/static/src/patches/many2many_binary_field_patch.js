@@ -46,10 +46,6 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
         });
     },
 
-    get hasClassifier() {
-        return this.classifierState.options.length > 0;
-    },
-
     _hasFilesPayload(ev) {
         const types = ev.dataTransfer && ev.dataTransfer.types;
         if (!types) {
