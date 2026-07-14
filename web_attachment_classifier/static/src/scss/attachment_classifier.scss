@@ -23,6 +23,17 @@
     border-radius: 4px;
 }
 
+.o_classifier_dialog_dropzone {
+    border-style: dashed !important;
+    border-color: var(--bs-border-color, #dee2e6) !important;
+    transition: background-color 120ms ease, border-color 120ms ease;
+
+    &.o_classifier_dragging_over {
+        border-color: var(--bs-primary, #3b82f6) !important;
+        background-color: rgba(59, 130, 246, 0.06);
+    }
+}
+
 .o_classifier_badge_clickable {
     cursor: pointer;
     transition: filter 100ms ease, transform 100ms ease;

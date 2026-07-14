@@ -10,14 +10,18 @@ import {Component, useRef, useState} from "@odoo/owl";
  *   an existing attachment. onSave({value}).
  *
  * mode="add": file input (multiple) + dropdown. onSave({files, value}).
- *   Caller uploads and links.
+ *   The file input accepts drag & drop; dropped files are pushed onto
+ *   the underlying <input type="file"> via the DataTransfer API so the
+ *   save path is uniform.
  */
 export class AttachmentClassifierDialog extends Component {
     setup() {
         this.notification = this.env.services.notification;
         this.state = useState({
             value: this.props.initialValue || "",
+            isDraggingOver: false,
         });
+        this._dragCounter = 0;
         this.fileInputRef = useRef("fileInput");
     }
 
@@ -34,6 +38,72 @@ export class AttachmentClassifierDialog extends Component {
         );
     }
 
+    onValueChange(ev) {
+        this.state.value = ev.target.value;
+    }
+
+    // -----------------------------------------------------------------
+    // Drag & drop on the file input area (add mode only)
+    // -----------------------------------------------------------------
+    _hasFilesPayload(ev) {
+        const types = ev.dataTransfer && ev.dataTransfer.types;
+        if (!types) {
+            return false;
+        }
+        return Array.from(types).includes("Files");
+    }
+
+    _assignFilesToInput(files) {
+        const input = this.fileInputRef.el;
+        if (!input) {
+            return;
+        }
+        const dt = new DataTransfer();
+        for (const f of files) {
+            dt.items.add(f);
+        }
+        input.files = dt.files;
+    }
+
+    onDragEnter(ev) {
+        if (!this.isAddMode || !this._hasFilesPayload(ev)) {
+            return;
+        }
+        this._dragCounter += 1;
+        this.state.isDraggingOver = true;
+    }
+
+    onDragOver(ev) {
+        if (!this.isAddMode || !this._hasFilesPayload(ev)) {
+            return;
+        }
+        ev.dataTransfer.dropEffect = "copy";
+    }
+
+    onDragLeave() {
+        if (this._dragCounter > 0) {
+            this._dragCounter -= 1;
+        }
+        if (this._dragCounter === 0) {
+            this.state.isDraggingOver = false;
+        }
+    }
+
+    onDrop(ev) {
+        this._dragCounter = 0;
+        this.state.isDraggingOver = false;
+        if (!this.isAddMode || !this._hasFilesPayload(ev)) {
+            return;
+        }
+        const files = Array.from(ev.dataTransfer.files || []);
+        if (files.length) {
+            this._assignFilesToInput(files);
+        }
+    }
+
+    // -----------------------------------------------------------------
+    // Save / cancel
+    // -----------------------------------------------------------------
     async onSave() {
         if (this.isAddMode) {
             const fileInput = this.fileInputRef.el;

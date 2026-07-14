@@ -179,8 +179,28 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
                 await this._classifierOrm.write("ir.attachment", [fileId], {
                     document_type_id: value ? Number(value) : false,
                 });
-                await this.props.record.load();
+                // Reload the specific child record so its fieldsToFetch
+                // (including document_type_id) re-fetches; a plain
+                // props.record.load() on the parent doesn't propagate to
+                // x2many children in Odoo 16.
+                const target = this.props.value.records.find(
+                    (r) => r.data.id === fileId
+                );
+                if (target) {
+                    await target.load();
+                } else {
+                    await this.props.record.load();
+                }
             },
         });
+    },
+
+    // Serve attachments inline (open in a new tab) instead of forcing a
+    // download. Combined with the template patch that strips the HTML5
+    // `download` attribute from the anchors, clicking a filename now
+    // opens the file in the browser; right-click → Save link as… still
+    // works for the download intent.
+    getUrl(id) {
+        return `/web/content/${id}?download=false`;
     },
 });

@@ -29,6 +29,10 @@
         t-inherit-mode="extension"
         owl="1"
     >
+        <xpath expr="//a[@download='']" position="attributes">
+            <attribute name="download" />
+            <attribute name="target">_blank</attribute>
+        </xpath>
         <xpath
             expr="//div[hasclass('caption') and hasclass('small')]"
             position="after"

@@ -5,19 +5,41 @@
         <Dialog title="title" size="'md'">
             <div t-if="isAddMode" class="mb-3">
                 <label class="o_form_label">File</label>
-                <input
-                    type="file"
-                    t-ref="fileInput"
-                    class="form-control"
-                    t-att-multiple="true"
-                />
+                <div
+                    t-attf-class="o_classifier_dialog_dropzone p-2 border rounded {{ state.isDraggingOver ? 'o_classifier_dragging_over' : '' }}"
+                    t-on-dragenter.prevent="onDragEnter"
+                    t-on-dragover.prevent="onDragOver"
+                    t-on-dragleave.prevent="onDragLeave"
+                    t-on-drop.prevent="onDrop"
+                >
+                    <input
+                        type="file"
+                        t-ref="fileInput"
+                        class="form-control"
+                        t-att-multiple="true"
+                    />
+                    <div class="small text-muted mt-1">
+                        <span class="fa fa-cloud-upload me-1" />Or drop files here
+                    </div>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="o_form_label">Document Type</label>
-                <select class="form-select" t-model="state.value">
-                    <option value="">--</option>
+                <select
+                    class="form-select"
+                    t-att-value="state.value"
+                    t-on-change="onValueChange"
+                >
+                    <option
+                        value=""
+                        t-att-selected="state.value === ''"
+                    >--</option>
                     <t t-foreach="props.options" t-as="opt" t-key="opt.id">
-                        <option t-att-value="opt.id" t-esc="opt.name" />
+                        <option
+                            t-att-value="opt.id"
+                            t-att-selected="String(opt.id) === state.value"
+                            t-esc="opt.name"
+                        />
                     </t>
                 </select>
             </div>
