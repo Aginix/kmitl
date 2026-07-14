@@ -1475,6 +1475,7 @@ msgstr "ตีกลับให้หมวดตรวจ"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_verification
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_assignment
 msgid "Returned to Verification"
 msgstr "ถูกตีกลับให้หมวดตรวจ"
 
@@ -1496,6 +1497,7 @@ msgstr "ตีกลับให้หมวดตรวจได้เฉพา
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_source
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_assignment
 msgid "Returned to Source"
 msgstr "ถูกตีกลับไปต้นเรื่อง"
 
