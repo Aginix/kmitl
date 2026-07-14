@@ -521,6 +521,7 @@ msgstr "ส่งออก CSV"
 #: code:addons/accounting_kmitl_reports/models/aged_partner_balance_kmitl.py:0
 #: code:addons/accounting_kmitl_reports/models/general_ledger_kmitl.py:0
 #: code:addons/accounting_kmitl_reports/models/trial_balance_kmitl.py:0
+#: model_terms:ir.ui.view,arch_db:accounting_kmitl_reports.general_ledger_kmitl
 msgid "Account Code"
 msgstr "รหัสบัญชี"
 

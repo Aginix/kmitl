@@ -19,6 +19,14 @@
                                     <t t-out="res_company.display_name" />
                                 </div>
                                 <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">General Ledger</div>
+                                <div
+                                    t-if="single_account"
+                                    style="font-size: 12pt; font-weight: bold; margin-bottom: 6px;"
+                                >
+                                    <t t-out="single_account['name']" />
+                                    <span>Account Code</span>
+                                    <t t-out="single_account['code']" />
+                                </div>
                                 <div style="font-size: 12pt;">
                                     <span>From</span>
                                     <t t-out="date_from_label" />
@@ -85,7 +93,7 @@
                         </thead>
                         <tbody>
                             <t t-foreach="accounts" t-as="acc">
-                                <tr class="acc">
+                                <tr class="acc" t-if="not single_account">
                                     <td colspan="7">
                                         <t t-out="acc['code']" /> - <t t-out="acc['name']" />
                                     </td>
@@ -95,7 +103,7 @@
                                     <td class="text-right" t-out="format_amount(acc['initial_balance'])" />
                                 </tr>
                                 <tr t-foreach="acc['lines']" t-as="line" t-att-class="'gl-stripe' if line_index % 2 else ''">
-                                    <td t-out="line['date']" />
+                                    <td t-out="format_date_be(line['date'])" />
                                     <td t-out="line['issue']" />
                                     <td t-out="line['account']" />
                                     <td t-out="line['narration']" />

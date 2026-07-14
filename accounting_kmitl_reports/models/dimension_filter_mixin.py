@@ -7,9 +7,6 @@ from odoo.tools import date_utils
 # order. Read from each move line's ``analytic_distribution`` (a JSON of
 # {analytic_account_id: percentage}).
 DIMENSION_CODES = ("departments", "sources", "funds", "activities")
-# Flat dimensions have no parent/child hierarchy: their selection must match
-# the picked analytic accounts exactly and is never expanded to descendants.
-FLAT_DIMENSION_CODES = ("sources",)
 # Display order of the dimension chips shown in the shared expand-detail panel.
 DETAIL_DIM_PLANS = ("funds", "departments", "activities", "sources")
 # Lines never shown in the detail panel.
@@ -37,10 +34,7 @@ class DimensionFilterMixin(models.AbstractModel):
         ``dim_only_self``: optional ``{code: bool}``. When truthy for a
         dimension only the exact selected analytic accounts match; otherwise
         (the default) the selection is expanded to include all of its
-        descendants, since the KMITL dimensions are hierarchical. Flat
-        dimensions (``FLAT_DIMENSION_CODES``, e.g. ``sources``) have no
-        hierarchy, so they always match the selected accounts exactly
-        regardless of the toggle.
+        descendants, since the KMITL dimensions are hierarchical.
         """
         analytic = self.env["account.analytic.account"]
         use_child = "parent_id" in analytic._fields
@@ -50,11 +44,7 @@ class DimensionFilterMixin(models.AbstractModel):
             ids = (dims or {}).get(code) or []
             if not ids:
                 continue
-            if (
-                use_child
-                and code not in FLAT_DIMENSION_CODES
-                and not dim_only_self.get(code)
-            ):
+            if use_child and not dim_only_self.get(code):
                 ids = analytic.search([("id", "child_of", ids)]).ids
             leaves.append(("analytic_distribution", "in", ids))
         return leaves

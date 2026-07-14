@@ -1,7 +1,8 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
-from odoo.tools import format_date, html2plaintext
+from odoo.addons.thai_date_utils.models.thai_date_mixin import MONTHS_TH_SHORT
+from odoo.tools import html2plaintext
 
 
 class GeneralLedgerReportKmitl(models.AbstractModel):
@@ -352,6 +353,19 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         ``0.00`` — used by the carried-forward column totals."""
         return "{:,.2f}".format(value or 0.0)
 
+    @api.model
+    def _kmitl_format_date_be(self, value):
+        """Format an ISO date string / date as a Thai Buddhist-era short date,
+        e.g. ``"2 ต.ค. 2568"``. Date-only (no timezone shift) so it can format
+        both the header range and each line's date on the PDF / XLSX / CSV
+        without touching the shared compute (the on-screen table keeps ISO)."""
+        if not value:
+            return ""
+        date = fields.Date.to_date(value)
+        if not date:
+            return value
+        return "%s %s %s" % (date.day, MONTHS_TH_SHORT[date.month], date.year + 543)
+
     # ------------------------------------------------------------------
     # PDF / XLSX export — return the report action so the OWL client action
     # can ``doAction`` it. Filters travel in ``data`` so the output mirrors the
@@ -395,6 +409,7 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
         data = data or {}
         options = data.get("options") or {}
         result = self.get_general_ledger_data(options)
+        accounts = result["accounts"]
         company = self.env["res.company"].browse(
             options.get("company_id") or self.env.company.id
         )
@@ -403,11 +418,16 @@ class GeneralLedgerReportKmitl(models.AbstractModel):
             "doc_model": "general.ledger.report.wizard.kmitl",
             "docs": self.env["general.ledger.report.wizard.kmitl"].browse(docids or []),
             "res_company": company,
-            "accounts": result["accounts"],
+            "accounts": accounts,
             "format_amount": self._kmitl_format_amount,
             "format_total": self._kmitl_format_total,
-            "date_from_label": format_date(self.env, options.get("date_from")),
-            "date_to_label": format_date(self.env, options.get("date_to")),
+            "format_date_be": self._kmitl_format_date_be,
+            # When exactly one account is reported, show its name/code in the
+            # header (and drop the in-table section row) — mirrors the KMITL
+            # per-account ledger layout.
+            "single_account": accounts[0] if len(accounts) == 1 else False,
+            "date_from_label": self._kmitl_format_date_be(options.get("date_from")),
+            "date_to_label": self._kmitl_format_date_be(options.get("date_to")),
         }
 
 
@@ -457,17 +477,31 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
 
         sheet.merge_range(0, 0, 0, 6, company.display_name, bold)
         sheet.merge_range(1, 0, 1, 6, _("General Ledger"), bold)
+        # When a single account is reported, show its name/code (mirrors the PDF).
+        single_account = accounts[0] if len(accounts) == 1 else False
+        header_row = 2
+        if single_account:
+            sheet.merge_range(
+                header_row,
+                0,
+                header_row,
+                6,
+                "%s %s %s"
+                % (single_account["name"], _("Account Code"), single_account["code"]),
+                bold,
+            )
+            header_row += 1
         sheet.merge_range(
-            2,
+            header_row,
             0,
-            2,
+            header_row,
             6,
             "%s %s %s %s"
             % (
                 _("From"),
-                options.get("date_from") or "",
+                report._kmitl_format_date_be(options.get("date_from")),
                 _("to"),
-                options.get("date_to") or "",
+                report._kmitl_format_date_be(options.get("date_to")),
             ),
         )
 
@@ -480,7 +514,7 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
             _("Credit"),
             _("Balance"),
         ]
-        row_top = 4
+        row_top = header_row + 2
         for col, label in enumerate(headers):
             sheet.write(row_top, col, label, head)
 
@@ -505,7 +539,7 @@ class GeneralLedgerXlsxKmitl(models.AbstractModel):
                 # Alternate row shading for readability.
                 row_cell = cell_alt if idx % 2 else cell
                 row_num = num_alt if idx % 2 else num
-                sheet.write(r, 0, line["date"], row_cell)
+                sheet.write(r, 0, report._kmitl_format_date_be(line["date"]), row_cell)
                 sheet.write(r, 1, line["issue"], row_cell)
                 sheet.write(r, 2, line["account"], row_cell)
                 sheet.write(r, 3, line["narration"], row_cell)
@@ -563,7 +597,7 @@ class GeneralLedgerCsvKmitl(models.AbstractModel):
                     [
                         acc["code"],
                         acc["name"],
-                        line["date"],
+                        report._kmitl_format_date_be(line["date"]),
                         line["issue"],
                         line["account"],
                         line["partner"],
