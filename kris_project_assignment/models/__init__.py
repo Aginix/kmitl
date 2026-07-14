@@ -1,1 +1,1 @@
-from . import kris_project  # noqa: F401
+from . import kris_project
