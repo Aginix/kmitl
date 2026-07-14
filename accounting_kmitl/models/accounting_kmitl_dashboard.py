@@ -122,3 +122,67 @@ class AccountingKmitlDashboard(models.AbstractModel):
             "currency_symbol": self.env.company.currency_id.symbol,
             "cards": cards,
         }
+
+    @api.model
+    def get_expense_frequency(self, fiscal_year_id=None, limit=20):
+        """Top-N expense accounts ranked by number of distinct posted documents.
+
+        Mirrors the legacy "most-used expense codes" report: for each expense
+        account (``account_type == 'expense'`` -- i.e. every KMITL 5xxx code),
+        count the *distinct* ``account.move`` that touch it on a posted line,
+        optionally within a fiscal year.
+
+        ``read_group`` cannot ``COUNT(DISTINCT ...)``, so we run an aggregate
+        query. It still honours record rules (no ``sudo``): the WHERE clause is
+        built from the ORM via ``_where_calc`` + ``_apply_ir_rules``, so every
+        figure stays scoped to what the current user may see.
+
+        Returns ``{"items": [{id, code, name, count}, ...]}`` sorted desc.
+        """
+        domain = [
+            ("parent_state", "=", "posted"),
+            ("account_id.account_type", "=", "expense"),
+        ]
+        if fiscal_year_id:
+            fy = self.env["account.fiscal.year"].browse(fiscal_year_id)
+            if fy.exists() and fy.date_from and fy.date_to:
+                domain += [("date", ">=", fy.date_from), ("date", "<=", fy.date_to)]
+
+        aml = self.env["account.move.line"]
+        aml.flush_model()
+        query = aml._where_calc(domain)
+        aml._apply_ir_rules(query, "read")
+        from_clause, where_clause, params = query.get_sql()
+        # ``from_clause`` (not a hard-coded table) is required because record
+        # rules may add JOINs; qualify columns to avoid ambiguity. The ``%s``
+        # placeholders (from ``where_clause`` and LIMIT) are filled by execute.
+        self.env.cr.execute(
+            f"""
+            SELECT account_move_line.account_id AS account_id,
+                   COUNT(DISTINCT account_move_line.move_id) AS doc_count
+            FROM {from_clause}
+            WHERE {where_clause}
+            GROUP BY account_move_line.account_id
+            ORDER BY doc_count DESC, account_move_line.account_id
+            LIMIT %s
+            """,
+            params + [limit],
+        )
+        rows = self.env.cr.dictfetchall()
+
+        accounts = self.env["account.account"].browse(
+            [row["account_id"] for row in rows]
+        )
+        by_id = {account.id: account for account in accounts}
+        items = []
+        for row in rows:
+            account = by_id.get(row["account_id"])
+            items.append(
+                {
+                    "id": row["account_id"],
+                    "code": account.code if account else "",
+                    "name": account.name if account else "",
+                    "count": row["doc_count"],
+                }
+            )
+        return {"items": items}

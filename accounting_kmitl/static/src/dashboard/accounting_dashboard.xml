@@ -34,6 +34,38 @@
                     </t>
                 </div>
 
+                <div class="o_ak_chart mt-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                        <h5 class="text-muted mb-0" t-esc="text.expenseTitle"/>
+                        <div class="o_ak_period">
+                            <label class="me-2 text-muted" t-esc="text.fiscalYear"/>
+                            <select class="form-select form-select-sm d-inline-block w-auto"
+                                    t-on-change="onPeriodChange">
+                                <option value="0" t-att-selected="!state.fiscalYearId">
+                                    <t t-esc="text.all"/>
+                                </option>
+                                <t t-foreach="state.fiscalYears" t-as="fy" t-key="fy.id">
+                                    <option t-att-value="fy.id"
+                                            t-att-selected="fy.id === state.fiscalYearId">
+                                        <t t-esc="fy.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                    <t t-if="state.expenseLoading">
+                        <div class="text-center text-muted py-5">
+                            <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+                        </div>
+                    </t>
+                    <t t-elif="state.expense.items.length">
+                        <EChart option="expenseChartOption"/>
+                    </t>
+                    <t t-else="">
+                        <div class="text-muted py-3" t-esc="text.noData"/>
+                    </t>
+                </div>
+
                 <div class="o_ak_quick_actions mt-4">
                     <h5 class="text-muted" t-esc="text.quickActions"/>
                     <div class="d-flex flex-wrap gap-2">

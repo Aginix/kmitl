@@ -47,6 +47,24 @@ class TestAccountingDashboard(TransactionCase):
         )
         cls.Dashboard = cls.env["accounting.kmitl.dashboard"]
 
+        # Dedicated accounts for the expense-frequency chart tests.
+        def _make_account(code, name, account_type):
+            return cls.env["account.account"].create(
+                {
+                    "name": name,
+                    "code": code,
+                    "account_type": account_type,
+                    "company_id": cls.company.id,
+                }
+            )
+
+        cls.exp1 = _make_account("TEXP001", "Test Expense 1", "expense")
+        cls.exp2 = _make_account("TEXP002", "Test Expense 2", "expense")
+        cls.exp3 = _make_account("TEXP003", "Test Expense 3", "expense")
+        cls.credit_account = _make_account(
+            "TLIA001", "Test Liability", "liability_current"
+        )
+
     def _cards_by_id(self, data):
         return {card["id"]: card for card in data["cards"]}
 
@@ -85,6 +103,37 @@ class TestAccountingDashboard(TransactionCase):
                 {"account_id": self.account_a.id, "debit": 0.0, "credit": 100.0}
             ),
         ]
+
+    def _post_expense(self, account, date=None):
+        """Create + post a balanced entry that debits ``account``."""
+        move = self.env["account.move"].create(
+            {
+                "move_type": "entry",
+                "journal_id": self.journal.id,
+                "date": date or fields.Date.today(),
+                "line_ids": [
+                    Command.create(
+                        {"account_id": account.id, "debit": 100.0, "credit": 0.0}
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.credit_account.id,
+                            "debit": 0.0,
+                            "credit": 100.0,
+                        }
+                    ),
+                ],
+            }
+        )
+        move.action_post()
+        return move
+
+    def _expense_row(self, account, **kwargs):
+        items = (
+            self.Dashboard.with_user(self.maker)
+            .get_expense_frequency(**kwargs)["items"]
+        )
+        return next((row for row in items if row["id"] == account.id), None)
 
     def test_structure_and_domain_self_consistency(self):
         """Every card is self-describing and its count equals a fresh
@@ -143,3 +192,119 @@ class TestAccountingDashboard(TransactionCase):
 
         data = self.Dashboard.with_user(self.maker).get_dashboard_data()
         self.assertGreaterEqual(self._cards_by_id(data)["exceptions"]["count"], 1)
+
+    def test_expense_frequency_counts_distinct_documents(self):
+        """Two separate posted documents on the same expense account count 2,
+        and the row carries the account code/name."""
+        self._post_expense(self.exp1)
+        self._post_expense(self.exp1)
+
+        row = self._expense_row(self.exp1)
+        self.assertIsNotNone(row)
+        self.assertEqual(row["count"], 2)
+        self.assertEqual(row["code"], self.exp1.code)
+        self.assertEqual(row["name"], self.exp1.name)
+
+    def test_expense_frequency_multiple_lines_same_doc_count_once(self):
+        """Two lines on the same account within ONE document count as one
+        distinct document (metric is COUNT(DISTINCT move_id), not lines)."""
+        move = self.env["account.move"].create(
+            {
+                "move_type": "entry",
+                "journal_id": self.journal.id,
+                "date": fields.Date.today(),
+                "line_ids": [
+                    Command.create(
+                        {"account_id": self.exp2.id, "debit": 100.0, "credit": 0.0}
+                    ),
+                    Command.create(
+                        {"account_id": self.exp2.id, "debit": 100.0, "credit": 0.0}
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.credit_account.id,
+                            "debit": 0.0,
+                            "credit": 200.0,
+                        }
+                    ),
+                ],
+            }
+        )
+        move.action_post()
+
+        row = self._expense_row(self.exp2)
+        self.assertIsNotNone(row)
+        self.assertEqual(row["count"], 1)
+
+    def test_expense_frequency_excludes_draft_and_non_expense(self):
+        """Draft (unposted) usage is ignored, and non-expense accounts never
+        appear in the ranking."""
+        self.env["account.move"].create(
+            {
+                "move_type": "entry",
+                "journal_id": self.journal.id,
+                "date": fields.Date.today(),
+                "line_ids": [
+                    Command.create(
+                        {"account_id": self.exp3.id, "debit": 100.0, "credit": 0.0}
+                    ),
+                    Command.create(
+                        {
+                            "account_id": self.credit_account.id,
+                            "debit": 0.0,
+                            "credit": 100.0,
+                        }
+                    ),
+                ],
+            }
+        )  # left in draft on purpose
+
+        items = (
+            self.Dashboard.with_user(self.maker).get_expense_frequency()["items"]
+        )
+        self.assertFalse(
+            any(row["id"] == self.exp3.id for row in items),
+            "draft usage must not be counted",
+        )
+        self.assertFalse(
+            any(row["id"] == self.credit_account.id for row in items),
+            "non-expense account must never appear",
+        )
+
+    def test_expense_frequency_limit_and_ordering(self):
+        """Result respects the limit and is sorted by count descending."""
+        self._post_expense(self.exp1)
+        self._post_expense(self.exp1)
+        self._post_expense(self.exp2)
+
+        items = (
+            self.Dashboard.with_user(self.maker).get_expense_frequency(limit=1)[
+                "items"
+            ]
+        )
+        self.assertLessEqual(len(items), 1)
+
+        counts = [
+            row["count"]
+            for row in self.Dashboard.with_user(self.maker).get_expense_frequency()[
+                "items"
+            ]
+        ]
+        self.assertEqual(counts, sorted(counts, reverse=True))
+
+    def test_expense_frequency_fiscal_year_filter(self):
+        """The fiscal_year_id argument restricts the count to that period."""
+        fy = self.env["account.fiscal.year"].create(
+            {
+                "name": "FY-TEST-2020",
+                "date_from": "2020-01-01",
+                "date_to": "2020-12-31",
+                "company_id": self.company.id,
+            }
+        )
+        self._post_expense(self.exp1, date="2020-06-01")  # inside the FY
+        self._post_expense(self.exp1)  # today -> outside the FY
+
+        row = self._expense_row(self.exp1, fiscal_year_id=fy.id)
+        self.assertIsNotNone(row)
+        self.assertEqual(row["count"], 1)

@@ -301,3 +301,33 @@ msgstr "สร้างใบตั้งหนี้ลูกหนี้"
 #: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
 msgid "New journal entry"
 msgstr "สร้างรายการสมุดรายวัน"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Most-used expense codes"
+msgstr "รหัสค่าใช้จ่ายที่ใช้บ่อยที่สุด"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "Fiscal year"
+msgstr "ปีงบประมาณ"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "All"
+msgstr "ทั้งหมด"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "No data"
+msgstr "ไม่มีข้อมูล"
+
+#. module: accounting_kmitl
+#. odoo-javascript
+#: code:addons/accounting_kmitl/static/src/dashboard/accounting_dashboard.js:0
+msgid "documents"
+msgstr "เอกสาร"
