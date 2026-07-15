@@ -98,6 +98,17 @@
                     string="Unassigned"
                     domain="[('assigned_to', '=', False)]"
                 />
+                <separator />
+                <filter
+                    name="returned_to_source"
+                    string="Returned to Source"
+                    domain="[('returned_to_source', '=', True)]"
+                />
+                <filter
+                    name="returned_to_verification"
+                    string="Returned to Verification"
+                    domain="[('returned_to_verification', '=', True)]"
+                />
             </xpath>
             <xpath expr="//filter[@name='state']" position="after">
                 <filter
