@@ -2,6 +2,7 @@
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -20,6 +21,33 @@ class PurchaseRequest(models.Model):
         string="Main Sarabun Document",
         copy=False,
     )
+
+    @api.depends("state", "main_sarabun_document_id")
+    def _compute_is_editable(self):
+        super()._compute_is_editable()
+        for rec in self:
+            if rec.state == "to_approve" and not rec.main_sarabun_document_id:
+                rec.is_editable = True
+            if rec.main_sarabun_document_id:
+                rec.is_editable = False
+
+    @api.depends(
+        "state",
+        "budget_commitment_id",
+        "budget_commitment_id.state",
+        "main_sarabun_document_id",
+    )
+    def _compute_is_budget_editable(self):
+        super()._compute_is_budget_editable()
+        for rec in self:
+            if rec.main_sarabun_document_id:
+                rec.is_budget_editable = False
+                continue
+            if (
+                rec.budget_commitment_id
+                and rec.budget_commitment_id.state != "cancel"
+            ):
+                rec.is_budget_editable = False
 
     def _compute_access_url(self):
         """Compute the access URL for portal access."""
@@ -70,6 +98,8 @@ class PurchaseRequest(models.Model):
     def action_submit_to_sarabun(self):
         """Submit PR to Sarabun for approval routing."""
         self.ensure_one()
+        if self.is_over_reserved_budget:
+            raise UserError(self.budget_shortage_message)
         result = self.action_create_sarabun_document()
         document = self.env["sarabun.document"].browse(result.get("res_id"))
         self.main_sarabun_document_id = document
@@ -88,3 +118,21 @@ class PurchaseRequest(models.Model):
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Purchase Request report."""
         return self.env.ref("purchase_request.action_report_purchase_requests")
+
+
+class PurchaseRequestLine(models.Model):
+    _inherit = "purchase.request.line"
+
+    @api.depends("request_id.state", "request_id.main_sarabun_document_id")
+    def _compute_is_editable(self):
+        super()._compute_is_editable()
+        for rec in self:
+            if rec.purchase_lines:
+                continue
+            if (
+                rec.request_id.state == "to_approve"
+                and not rec.request_id.main_sarabun_document_id
+            ):
+                rec.is_editable = True
+            if rec.request_id.main_sarabun_document_id:
+                rec.is_editable = False

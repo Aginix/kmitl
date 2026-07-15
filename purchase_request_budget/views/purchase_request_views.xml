@@ -52,6 +52,14 @@
             </xpath>
 
             <xpath expr="//notebook" position="before">
+                <field name="is_over_reserved_budget" invisible="1"/>
+                <div class="alert alert-warning" role="alert"
+                     attrs="{'invisible': [('is_over_reserved_budget', '=', False)]}"
+                     style="margin: 10px 0;">
+                    <strong>ยอดรายการเกินยอดจองงบ: </strong>
+                    <field name="budget_shortage_message" nolabel="1" readonly="1"
+                           class="oe_inline"/>
+                </div>
                 <button name="action_open_reservation_picker" type="object"
                     string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                     class="btn btn-primary mb-2" icon="fa-sitemap"

@@ -3,6 +3,7 @@ import logging
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -101,6 +102,27 @@ class PurchaseRequest(models.Model):
         compute="_compute_hide_reserve_budget_button"
     )
 
+    budget_reserved_amount = fields.Monetary(
+        string="ยอดจองงบ",
+        related="budget_commitment_id.total_reserved",
+        currency_field="currency_id",
+        readonly=True,
+    )
+
+    line_estimated_cost_total = fields.Monetary(
+        string="ยอดรวมรายการ",
+        compute="_compute_line_estimated_cost_total",
+        currency_field="currency_id",
+    )
+
+    is_over_reserved_budget = fields.Boolean(
+        compute="_compute_over_reserved_budget",
+    )
+
+    budget_shortage_message = fields.Text(
+        compute="_compute_over_reserved_budget",
+    )
+
     product_id = fields.Many2one(related=False, readonly=False)
 
     @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
@@ -125,6 +147,41 @@ class PurchaseRequest(models.Model):
                 rec.hide_reserve_budget_button = False
             else:
                 rec.hide_reserve_budget_button = True
+
+    @api.depends("line_ids.estimated_cost")
+    def _compute_line_estimated_cost_total(self):
+        for rec in self:
+            rec.line_estimated_cost_total = sum(rec.line_ids.mapped("estimated_cost"))
+
+    @api.depends(
+        "line_ids.estimated_cost",
+        "budget_commitment_id",
+        "budget_commitment_id.total_reserved",
+        "budget_commitment_id.state",
+    )
+    def _compute_over_reserved_budget(self):
+        for rec in self:
+            commitment = rec.budget_commitment_id
+            if not commitment or commitment.state == "cancel":
+                rec.is_over_reserved_budget = False
+                rec.budget_shortage_message = False
+                continue
+            line_total = sum(rec.line_ids.mapped("estimated_cost"))
+            reserved = commitment.total_reserved
+            rounding = rec.currency_id.rounding or 0.01
+            if float_compare(line_total, reserved, precision_rounding=rounding) > 0:
+                shortage = line_total - reserved
+                rec.is_over_reserved_budget = True
+                rec.budget_shortage_message = _(
+                    "ยอดรวมรายการ %s บาท เกินยอดจองงบ %s บาท (เกินอยู่ %s บาท)"
+                ) % (
+                    "{:,.2f}".format(line_total),
+                    "{:,.2f}".format(reserved),
+                    "{:,.2f}".format(shortage),
+                )
+            else:
+                rec.is_over_reserved_budget = False
+                rec.budget_shortage_message = False
 
     def _inverse_activity_analytic(self):
         """Update distribution when activity changes"""

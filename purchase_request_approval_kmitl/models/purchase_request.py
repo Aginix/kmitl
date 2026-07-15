@@ -33,13 +33,6 @@ class PurchaseRequest(models.Model):
             return self._popup_exceptions()
         self.write({"state": "to_verify"})
 
-    @api.depends("state")
-    def _compute_is_editable(self):
-        res = super()._compute_is_editable()
-        for record in self:
-            if record.state in ("to_verify"):
-                record.is_editable = False
-
     @api.depends("requested_by")
     def _compute_can_request(self):
         current_user = self.env.user
