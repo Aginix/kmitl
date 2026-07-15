@@ -10,18 +10,18 @@
                                 <img
                                     t-if="res_company.logo"
                                     t-att-src="image_data_uri(res_company.logo)"
-                                    style="max-height: 60px; max-width: 60px;"
+                                    style="max-height: 40px; max-width: 40px;"
                                     alt="Logo"
                                 />
                             </td>
-                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.6;">
-                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 4px;">
+                            <td style="border: none; text-align: center; vertical-align: middle; line-height: 1.2;">
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 1px;">
                                     <t t-out="res_company.display_name" />
                                 </div>
-                                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 6px;">General Ledger</div>
+                                <div style="font-size: 16pt; font-weight: bold; margin-bottom: 1px;">General Ledger</div>
                                 <div
                                     t-if="single_account"
-                                    style="font-size: 12pt; font-weight: bold; margin-bottom: 6px;"
+                                    style="font-size: 12pt; font-weight: bold; margin-bottom: 1px;"
                                 >
                                     <t t-out="single_account['name']" />
                                     <span>Account Code</span>
