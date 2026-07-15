@@ -28,6 +28,12 @@
                     string="Sarabun Document"
                 />
             </xpath>
+
+            <!-- Key line_ids readonly off is_editable instead of the OCA base's
+                 hardcoded state check, so lines stay editable until sarabun submission -->
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_editable', '=', False)]}</attribute>
+            </xpath>
         </field>
     </record>
 
