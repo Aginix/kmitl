@@ -1,0 +1,156 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* web_attachment_classifier
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-14 00:00+0000\n"
+"PO-Revision-Date: 2026-07-14 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+# ---------------------------------------------------------------------------
+# Model / field metadata
+# ---------------------------------------------------------------------------
+
+#. module: web_attachment_classifier
+#: model:ir.model,name:web_attachment_classifier.model_ir_attachment_document_type
+msgid "Attachment Document Type"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+
+#. module: web_attachment_classifier
+#: model:ir.actions.act_window,name:web_attachment_classifier.action_ir_attachment_document_type
+#: model:ir.ui.menu,name:web_attachment_classifier.menu_ir_attachment_document_type
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_tree
+msgid "Attachment Document Types"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment__document_type_id
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__display_name
+msgid "Document Type"
+msgstr "ประเภทเอกสาร"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__name
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__res_model_ids
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_form
+msgid "Applies to Models"
+msgstr "ใช้กับโมเดล"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,help:web_attachment_classifier.field_ir_attachment_document_type__res_model_ids
+msgid ""
+"Parent models where this document type may be assigned to an attachment. "
+"The widget on those forms will offer this doctype in its dropdown."
+msgstr ""
+"โมเดลของ record แม่ที่จะสามารถเลือกประเภทเอกสารนี้ให้กับไฟล์แนบได้ "
+"widget บนฟอร์มของโมเดลเหล่านั้นจะแสดงประเภทเอกสารนี้ใน dropdown"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,help:web_attachment_classifier.field_ir_attachment_document_type__res_model_names
+msgid ""
+"Comma-separated technical names of res_model_ids; used by the widget to "
+"filter doctypes for the current form's res_model."
+msgstr ""
+"รายชื่อทางเทคนิคของ res_model_ids คั่นด้วย comma; "
+"widget ใช้เพื่อกรองประเภทเอกสารตาม res_model ของฟอร์มปัจจุบัน"
+
+# ---------------------------------------------------------------------------
+# OWL templates — XML text nodes
+# ---------------------------------------------------------------------------
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+msgid "File"
+msgstr "ไฟล์"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+msgid "Or drop files here"
+msgstr "หรือลากไฟล์มาวางที่นี่"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+msgid "Save"
+msgstr "บันทึก"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.xml:0
+msgid "Drop files to attach"
+msgstr "ลากไฟล์มาวางที่นี่เพื่อแนบ"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.xml:0
+msgid "Document Type:"
+msgstr "ประเภทเอกสาร:"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.xml:0
+msgid "- Set type -"
+msgstr "- ระบุประเภท -"
+
+# ---------------------------------------------------------------------------
+# JS strings (env._t)
+# ---------------------------------------------------------------------------
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.js:0
+msgid "Add Attachment"
+msgstr "เพิ่มไฟล์แนบ"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.js:0
+msgid "Please select a file."
+msgstr "กรุณาเลือกไฟล์"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.js:0
+msgid "Uploading error"
+msgstr "อัปโหลดผิดพลาด"
+
+# ---------------------------------------------------------------------------
+# Python strings (_())
+# ---------------------------------------------------------------------------
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/models/ir_attachment.py:0
+#, python-format
+msgid "(none)"
+msgstr "(ไม่ระบุ)"
+
+#. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/models/ir_attachment.py:0
+#, python-format
+msgid ""
+"Document Type of attachment <b>%(name)s</b>: <i>%(old)s</i> → "
+"<i>%(new)s</i>"
+msgstr ""
+"เปลี่ยนประเภทเอกสารของไฟล์แนบ <b>%(name)s</b>: <i>%(old)s</i> → "
+"<i>%(new)s</i>"
