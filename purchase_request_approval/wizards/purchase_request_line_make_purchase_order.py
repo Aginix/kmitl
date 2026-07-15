@@ -43,6 +43,5 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         if idx < len(pa_lines):
             pa_line = pa_lines[idx]
             res["product_qty"] = pa_line.product_qty
-            if "price_unit" in res:
-                res["price_unit"] = pa_line.price_unit
+            res["price_unit"] = pa_line.price_unit
         return res
