@@ -179,18 +179,23 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
                 await this._classifierOrm.write("ir.attachment", [fileId], {
                     document_type_id: value ? Number(value) : false,
                 });
-                // Reload the specific child record so its fieldsToFetch
-                // (including document_type_id) re-fetches; a plain
-                // props.record.load() on the parent doesn't propagate to
-                // x2many children in Odoo 16.
+                // Re-fetch the child attachment record so its
+                // fieldsToFetch (badge) picks up the new value, then
+                // re-fetch the root form so the chatter shows the
+                // tracking message posted server-side by
+                // ir.attachment.write.
                 const target = this.props.value.records.find(
                     (r) => r.data.id === fileId
                 );
                 if (target) {
                     await target.load();
-                } else {
-                    await this.props.record.load();
                 }
+                await this.props.record.load();
+                // Odoo 16's Record.load() does not fire model.notify()
+                // at the end, so OWL doesn't know the data has moved —
+                // components watching these records stay stale until a
+                // full page reload. Kick the reactivity system manually.
+                this.props.record.model.notify();
             },
         });
     },
