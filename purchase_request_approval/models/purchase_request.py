@@ -196,10 +196,16 @@ class PurchaseRequest(models.Model):
 
     def _create_purchase_order_from_approval(self):
         self.ensure_one()
+        approval = self.request_approval_ids.filtered(
+            lambda a: a.state == "approved"
+        )[:1]
         wizard = (
             self.env["purchase.request.line.make.purchase.order"]
             .with_context(
-                active_model="purchase.request", active_ids=self.ids, active_id=self.id
+                active_model="purchase.request",
+                active_ids=self.ids,
+                active_id=self.id,
+                approval_id=approval.id,
             )
             .create({"supplier_id": self.partner_id.id})
         )
