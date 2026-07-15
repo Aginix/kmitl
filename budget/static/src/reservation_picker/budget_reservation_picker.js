@@ -52,10 +52,10 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.state.accountSearch = ev.target.value;
     }
 
-    // Client-side filter on the budget-account code. Keeps each matching account
-    // row plus its ancestor (dimension) rows so the full hierarchy still shows,
-    // and ignores collapse/hide-zero so a match is never hidden. Matches the code
-    // only (feedback), case-insensitively.
+    // Client-side filter on the budget-account code or name. Keeps each matching
+    // account row plus its ancestor (dimension) rows so the full hierarchy still
+    // shows, and ignores collapse/hide-zero so a match is never hidden. Matches
+    // code or name (feedback), case-insensitively.
     get visibleRows() {
         const query = (this.state.accountSearch || "").trim().toLowerCase();
         if (!query) {
@@ -66,7 +66,8 @@ export class BudgetReservationPicker extends BudgetDashboard {
         for (const row of this.state.rows) {
             if (
                 row.row_type === "account" &&
-                (row.code || "").toLowerCase().includes(query)
+                ((row.code || "").toLowerCase().includes(query) ||
+                    (row.name || "").toLowerCase().includes(query))
             ) {
                 keep.add(row.key);
                 let pk = row.parent_key;
