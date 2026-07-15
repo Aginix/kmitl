@@ -33,6 +33,50 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.accountDomain = ctx.account_domain || false;
         this.state.selectedId = false;
         this.state.amounts = {};
+        // Free-text search on the budget-account code (feedback: not autocomplete).
+        this.state.accountSearch = "";
+        // The picker must open with a blank filter bar — never pre-seeded from the
+        // host's current selection (feedback: no default filters). The host still
+        // passes its dimensions as context defaults (the read-only dashboard uses
+        // them), so clear them here after super.setup() read them. แหล่งเงิน then
+        // falls back to its neutral system default in onWillStart (source code "2"),
+        // not the document's source. ประเภทงบ (root category) is kept as the
+        // browsing scope: clearing it would force a full expense-chart load before
+        // onWillStart re-picks a category.
+        this.state.filters = {};
+        this.state.filterLabels = {};
+        this.state.sourceId = false;
+    }
+
+    onAccountSearchInput(ev) {
+        this.state.accountSearch = ev.target.value;
+    }
+
+    // Client-side filter on the budget-account code. Keeps each matching account
+    // row plus its ancestor (dimension) rows so the full hierarchy still shows,
+    // and ignores collapse/hide-zero so a match is never hidden. Matches the code
+    // only (feedback), case-insensitively.
+    get visibleRows() {
+        const query = (this.state.accountSearch || "").trim().toLowerCase();
+        if (!query) {
+            return super.visibleRows;
+        }
+        const byKey = this.rowsByKey;
+        const keep = new Set();
+        for (const row of this.state.rows) {
+            if (
+                row.row_type === "account" &&
+                (row.code || "").toLowerCase().includes(query)
+            ) {
+                keep.add(row.key);
+                let pk = row.parent_key;
+                while (pk && !keep.has(pk)) {
+                    keep.add(pk);
+                    pk = byKey[pk] ? byKey[pk].parent_key : false;
+                }
+            }
+        }
+        return this.state.rows.filter((row) => keep.has(row.key));
     }
 
     // The picker's breakdown is fixed (always on, no toggles) — the table always
