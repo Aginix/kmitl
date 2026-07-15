@@ -42,6 +42,16 @@ export class AttachmentClassifierDialog extends Component {
         this.state.value = ev.target.value;
     }
 
+    // Compares a raw option id (typically Number) against the currently
+    // selected value stored as a String in state. Exposed on the
+    // component so the template can call it without needing the global
+    // `String` (OWL 1 templates run in a ctx scope that doesn't expose
+    // JS globals).
+    isSelected(rawValue) {
+        const asString = rawValue == null ? "" : "" + rawValue;
+        return asString === this.state.value;
+    }
+
     // -----------------------------------------------------------------
     // Drag & drop on the file input area (add mode only)
     // -----------------------------------------------------------------

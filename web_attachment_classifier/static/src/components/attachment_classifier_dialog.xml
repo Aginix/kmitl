@@ -32,12 +32,12 @@
                 >
                     <option
                         value=""
-                        t-att-selected="state.value === ''"
+                        t-att-selected="isSelected('')"
                     >--</option>
                     <t t-foreach="props.options" t-as="opt" t-key="opt.id">
                         <option
                             t-att-value="opt.id"
-                            t-att-selected="String(opt.id) === state.value"
+                            t-att-selected="isSelected(opt.id)"
                             t-esc="opt.name"
                         />
                     </t>
