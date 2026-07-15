@@ -510,7 +510,7 @@ msgstr "หน่วยงาน"
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.purchase_type_view_form
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Description"
-msgstr "ชื่อรายการ"
+msgstr "เหตุผล/ความจำเป็น"
 
 #. module: purchase_request
 #. odoo-python
