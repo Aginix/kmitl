@@ -23,7 +23,7 @@ class ProcurementCommittee(models.Model):
     )
     name = fields.Char(
         string="Committee Name",
-        compute="_compute_default_name",
+        compute="_compute_name",
         store=True,
         readonly=False,
         required=True,
@@ -62,11 +62,6 @@ class ProcurementCommittee(models.Model):
         ],
         string="Role",
         required=True,
-        ondelete={
-            "chairman": "set default",
-            "committee": "set default",
-            "secretary": "set default",
-        },
         default="committee",
     )
     note = fields.Text()
@@ -80,13 +75,14 @@ class ProcurementCommittee(models.Model):
     ]
 
     @api.depends("employee_id")
-    def _compute_default_name(self):
+    def _compute_name(self):
         for rec in self:
-            rec.name = rec.employee_id.display_name if rec.employee_id else ""
+            rec.name = rec.employee_id.display_name or ""
 
     @api.constrains("employee_id", "request_id", "committee_type")
     def _check_committee_cross_type_unique(self):
-        allowed_overlap = {"tor_committee", "evaluation" , "work_supervisor"}
+        # TOR, Evaluation and Work Supervisor committees may share members
+        allowed_overlap = {"tor_committee", "evaluation", "work_supervisor"}
         for rec in self:
             if not rec.employee_id or not rec.request_id:
                 continue
@@ -101,7 +97,7 @@ class ProcurementCommittee(models.Model):
                 raise ValidationError(
                     _(
                         "Employee %s cannot appear in multiple committees "
-                        "except TOR and Evaluation committees.",
+                        "except TOR, Evaluation, and Work Supervisor committees.",
                         rec.employee_id.name,
                     )
                 )

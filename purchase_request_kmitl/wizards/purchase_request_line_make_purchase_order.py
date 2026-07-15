@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-import logging
+# Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
-    _inherit = 'purchase.request.line.make.purchase.order'
+    _inherit = "purchase.request.line.make.purchase.order"
 
     @api.model
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
@@ -26,16 +24,14 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         for item in self.item_ids:
             line = item.line_id
             if line.purchase_lines:
-                raise UserError(_(
-                    "The purchase request '%s' already has a Purchase Order."
-                ) % line.display_name)
-
-        res = super().make_purchase_order()
-        return res
+                raise UserError(
+                    _("The purchase request '%s' already has a Purchase Order.", line.display_name)
+                )
+        return super().make_purchase_order()
 
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
-    _inherit = 'purchase.request.line.make.purchase.order.item'
+    _inherit = "purchase.request.line.make.purchase.order.item"
 
     keep_description = fields.Boolean(
         default=True,

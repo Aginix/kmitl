@@ -48,6 +48,5 @@ class PurchaseType(models.Model):
 
     @api.constrains("active", "is_default")
     def _check_is_default(self):
-        purchase_types = self.env["purchase.type"].search([("is_default", "=", True)])
-        if len(purchase_types) > 1:
+        if self.env["purchase.type"].search_count([("is_default", "=", True)]) > 1:
             raise UserError(_("Purchase type must have only one default."))

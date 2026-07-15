@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
-import logging
+# Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import fields, models
 
 
 class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
+    _inherit = "purchase.order"
 
     procurement_method_id = fields.Many2one(
         comodel_name="procurement.method",
