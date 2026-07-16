@@ -1,6 +1,3 @@
-# Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -48,6 +45,5 @@ class PurchaseType(models.Model):
 
     @api.constrains("active", "is_default")
     def _check_is_default(self):
-        purchase_types = self.env["purchase.type"].search([("is_default", "=", True)])
-        if len(purchase_types) > 1:
+        if self.search_count([("is_default", "=", True)]) > 1:
             raise UserError(_("Purchase type must have only one default."))

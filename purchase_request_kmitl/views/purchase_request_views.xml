@@ -177,7 +177,7 @@
                         />
                         <field
                             name="requested_by"
-                            widget="employee_detail_many2one" 
+                            widget="employee_detail_many2one"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
