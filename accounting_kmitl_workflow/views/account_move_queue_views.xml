@@ -38,10 +38,10 @@
                 <field name="submitted_by"/>
                 <field name="approved_by"/>
                 <field name="approved_date"/>
-                <field name="amount_total_signed" sum="Total" string="Total"/>
+                <field name="amount_total" sum="Total" string="Total"/>
                 <field name="display_state" widget="badge"
                        decoration-success="display_state == 'posted'"/>
-                <field name="company_currency_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
             </tree>
         </field>
     </record>
