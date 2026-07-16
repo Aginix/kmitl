@@ -8,12 +8,16 @@ class PurchaseRequestDashboardController(http.Controller):
 
     SUMMARY_STATES = [
         ("draft", "ร่าง"),
-        ("to_verify", "รอจองเงิน"),
-        ("to_approve", "รออนุมัติ"),
-        ("approved", "อนุมัติแล้ว"),
-        ("in_progress", "อยู่ระหว่างจัดซื้อ/จ้าง"),
-        ("done", "จัดซื้อ/จ้างเสร็จสิ้น"),
-        ("rejected", "ยกเลิก"),
+        ("reserve_budget", "รอจองงบประมาณ"),
+        ("confirm", "รอผู้ขอยืนยัน"),
+        ("to_submit", "รอส่งเรื่องอนุมัติให้จัดหา"),
+        ("to_approve", "รออนุมัติให้จัดหา"),
+        ("egp", "รอดำเนินการ e-GP"),
+        ("approved", "อนุมัติให้จัดหา"),
+        ("in_pa", "อยู่ระหว่างจัดหา"),
+        ("purchasing", "อยู่ระหว่างจัดซื้อจัดจ้าง"),
+        ("done", "จัดซื้อจัดจ้างเสร็จสิ้น"),
+        ("cancel", "ยกเลิก"),
     ]
 
     # Thai fiscal year runs Oct → Sep (e.g., FY 2569 = Oct 2025 - Sep 2026)
@@ -87,16 +91,11 @@ class PurchaseRequestDashboardController(http.Controller):
         dept_cache = self._build_root_department_map(records)
 
         # State filtering for charts only (summary boxes always show all records).
-        # The UI shows "ร่าง" (draft) as a single status, but internally Odoo uses
-        # both "draft" and "to_examine" states, so selecting "draft" must include both.
         if selected_states:
-            state_set = set(selected_states)
-            if "draft" in state_set:
-                state_set.add("to_examine")
-            chart_records = records.filtered(lambda r: r.state in state_set)
+            chart_records = records.filtered(lambda r: r.state in set(selected_states))
         else:
-            # Default: exclude rejected from charts (cancelled data shouldn't pollute charts)
-            chart_records = records.filtered(lambda r: r.state != "rejected")
+            # Default: exclude cancelled from charts
+            chart_records = records.filtered(lambda r: r.state != "cancel")
 
         return {
             "filter_options": {
@@ -368,11 +367,11 @@ class PurchaseRequestDashboardController(http.Controller):
     def _get_chart4_approved_trend(self, records):
         """Stacked line: estimated_cost trend by procurement type for approved records.
 
-        Only includes records in approved/in_progress/done states.
+        Only includes records in approved/in_pa/purchasing/done states.
         Uses date_approved (the date the request was approved) for the month axis.
         """
         approved_recs = records.filtered(
-            lambda r: r.state in ("approved", "in_progress", "done")
+            lambda r: r.state in ("approved", "in_pa", "purchasing", "done")
         )
         return self._aggregate_by_month(
             approved_recs,
@@ -406,11 +405,12 @@ class PurchaseRequestDashboardController(http.Controller):
 
     def _get_chart7_leadtime_heatmap(self, fiscal_year_id=None):
         TRACKED_TRANSITIONS = [
-            ('draft',       'to_verify',   'จัดทำคำขอ'),
-            ('to_verify',   'to_approve',  'จองเงิน'),
-            ('to_approve',  'approved',    'ขออนุมัติคำขอ'),
-            ('approved',    'in_progress', 'จัดซื้อจัดจ้าง'),
-            ('in_progress', 'done',        'จัดทำสัญญา'),
+            ('draft',       'reserve_budget', 'จัดทำคำขอ'),
+            ('reserve_budget', 'confirm',     'จองงบประมาณ'),
+            ('confirm',     'to_submit',      'ยืนยันข้อมูล'),
+            ('to_submit',   'to_approve',     'ส่ง Sarabun'),
+            ('to_approve',  'approved',       'ขออนุมัติ'),
+            ('purchasing',  'done',           'จัดทำสัญญา/PO'),
         ]
 
         res_ids = None

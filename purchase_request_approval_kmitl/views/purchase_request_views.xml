@@ -5,21 +5,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <!-- state change -->
-            <field name="state" position="attributes">
-                <attribute
-                    name="statusbar_visible"
-                >draft,to_verify,to_approve,approved,done,in_progress</attribute>
-            </field>
-            <button name="button_to_approve" position="after">
-                <button
-                    name="button_to_verify"
-                    states="draft"
-                    string="Request approval"
-                    type="object"
-                    class="oe_highlight"
-                />
-            </button>
+            <!-- button_approved is handled by sarabun callback only -->
             <button name="button_approved" position="attributes">
                 <attribute name="invisible">1</attribute>
             </button>

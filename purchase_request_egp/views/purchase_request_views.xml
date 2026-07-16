@@ -6,36 +6,22 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='origin']" position="before">
-                <field
-                    name="egp_status"
-                    readonly="1"
-                    widget="badge"
-                    decoration-info="egp_status == 'waiting'"
-                    decoration-warning="egp_status == 'in_progress'"
-                    decoration-success="egp_status == 'done'"
-                    attrs="{'invisible': [('egp_status', '=', False)]}"
-                />
                 <field name="can_edit_egp" invisible="1" />
                 <field
                     name="is_egp"
-                    attrs="{'readonly': ['|', ('estimated_cost', '>', 100000), ('is_editable', '=', False)]}"
+                    attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
                 />
             </xpath>
             <xpath expr="//sheet/notebook" position="inside">
                 <page
                     string="e-GP"
                     name="egp_page"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'done'))]}"
+                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('egp', 'purchasing', 'done'))]}"
                 >
                     <group>
-                        <!-- remove required in attrs -->
                         <field
                             name="egp_project_id"
-                            attrs="{
-                                'readonly': [('can_edit_egp', '=', False)],
-                                'required': [('egp_status', '=', 'in_progress')],
-                            }"
-                            class="o_required_modifier"
+                            attrs="{'readonly': [('can_edit_egp', '=', False)]}"
                         />
                         <field name="egp_project_url" widget="url" />
                     </group>
@@ -48,29 +34,24 @@
                     </div>
                 </page>
             </xpath>
+            <!-- egp → purchasing button -->
             <xpath expr="//button[@name='button_done']" position="after">
                 <button
                     name="action_egp_in_progress"
                     type="object"
-                    string="อยู่ในกระบวนการ e-GP"
-                    attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}"
+                    string="ยืนยัน e-GP"
+                    attrs="{'invisible': [('state', '!=', 'egp')]}"
                     class="btn-primary"
-                />
-                <!-- Add reject button on state approved when EGP -->
-                <button
-                    name="button_rejected_egp"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'approved')]}"
-                    string="Reject"
-                    type="object"
-                    groups="purchase_request.group_purchase_request_manager"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
             </xpath>
+            <!-- Create PO from egp path (shown only in purchasing state for egp PRs) -->
             <xpath expr="//button[@type='action']" position="after">
                 <field name="show_egp_create_purchase_order_button" invisible="1" />
                 <button
                     name="action_egp_create_purchase_order"
                     type="object"
-                    string="Create PO"
+                    string="สร้างใบสั่งซื้อ/จ้าง"
                     attrs="{'invisible': [('show_egp_create_purchase_order_button', '=', False)]}"
                     groups="purchase.group_purchase_user"
                     class="btn-primary"
@@ -79,7 +60,7 @@
         </field>
     </record>
 
-    <!-- View purchase.request tree -->
+    <!-- Tree: only show is_egp column (egp_status removed) -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.tree (e-GP)</field>
         <field name="model">purchase.request</field>
@@ -87,19 +68,11 @@
         <field name="arch" type="xml">
             <field name="state" position="after">
                 <field name="is_egp" invisible="1" />
-                <field
-                    name="egp_status"
-                    widget="badge"
-                    decoration-info="egp_status == 'waiting'"
-                    decoration-warning="egp_status == 'in_progress'"
-                    decoration-success="egp_status == 'done'"
-                    optional="show"
-                />
             </field>
         </field>
     </record>
 
-    <!-- View purchase.request kanban -->
+    <!-- Kanban: keep is_egp indicator -->
     <record id="view_purchase_request_kanban" model="ir.ui.view">
         <field name="name">view.purchase.request.kanban (e-GP)</field>
         <field name="model">purchase.request</field>
@@ -111,9 +84,9 @@
         </field>
     </record>
 
-    <!-- View purchase.request search -->
+    <!-- Search: keep egp_project_id and is_egp filters -->
     <record id="view_purchase_request_search" model="ir.ui.view">
-        <field name="name">view.purchase.request.search</field>
+        <field name="name">view.purchase.request.search (e-GP)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
@@ -124,35 +97,7 @@
         </field>
     </record>
 
-    <!-- View purchase.request kanban -->
-    <record id="view_purchase_request_kanban" model="ir.ui.view">
-        <field name="name">view.purchase.request.kanban</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban" />
-        <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('o_kanban_record_bottom')]" position="after">
-                <div class="o_kanban_record_bottom">
-                    <div class="oe_kanban_bottom_left">
-                        <span>e-GP</span>
-                        <field name="is_egp" />
-                    </div>
-                    <div class="oe_kanban_bottom_right">
-                        <field name="egp_project_id" />
-                    </div>
-                </div>
-            </xpath>
-        </field>
-    </record>
-
-    <menuitem
-        action="base_tier_validation.tier_validation_exception_action"
-        id="menu_purchase_request_tier_validation_exception"
-        parent="purchase.menu_purchase_config"
-    />
-
-    <!-- UX override: move is_egp into the purchase_request_group (defined in
-         purchase_request_kmitl.view_purchase_request_form_ux). This view inherits from
-         the UX view so it is applied right after the UX restructure. -->
+    <!-- UX override: move is_egp into purchase_request_group -->
     <record id="view_purchase_request_form_ux" model="ir.ui.view">
         <field name="name">view.purchase.request.form.ux (e-GP)</field>
         <field name="model">purchase.request</field>
@@ -161,7 +106,7 @@
             ref="purchase_request_kmitl.view_purchase_request_form"
         />
         <field name="arch" type="xml">
-            <!-- Hide is_egp from its original position (near origin) -->
+            <!-- Hide is_egp from original position (near origin) -->
             <xpath expr="//field[@name='is_egp']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -177,4 +122,10 @@
             </xpath>
         </field>
     </record>
+
+    <menuitem
+        action="base_tier_validation.tier_validation_exception_action"
+        id="menu_purchase_request_tier_validation_exception"
+        parent="purchase.menu_purchase_config"
+    />
 </odoo>

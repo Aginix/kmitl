@@ -12,23 +12,23 @@ class TestPurchaseRequestLeadtime(TransactionCase):
         self.assertIn('state_leadtime_ids', pr_fields)
 
     def test_rejected_transition_creates_no_log(self):
-        """_excluded_transitions = [('*', 'rejected')] must suppress log for any → rejected."""
+        """_excluded_transitions = [('*', 'cancel')] must suppress log for any → rejected."""
         pr = self.env['purchase.request'].create({
             'name': 'Test PR',
         })
         initial_state = pr.state
 
         try:
-            pr.write({'state': 'rejected'})
+            pr.write({'state': 'cancel'})
         except Exception:
-            self.skipTest("Could not write 'rejected' state directly — check purchase_request_kmitl")
+            self.skipTest("Could not write 'cancel' state directly — check purchase_request_kmitl")
 
         logs = self.env['state.leadtime.log'].search([
             ('res_model', '=', 'purchase.request'),
             ('res_id', '=', pr.id),
-            ('to_state', '=', 'rejected'),
+            ('to_state', '=', 'cancel'),
         ])
-        self.assertEqual(len(logs), 0, "Transition to 'rejected' must not be logged")
+        self.assertEqual(len(logs), 0, "Transition to 'cancel' must not be logged")
 
     def test_non_rejected_transition_creates_log(self):
         """Transitions that are not excluded must still be logged."""
@@ -44,7 +44,7 @@ class TestPurchaseRequestLeadtime(TransactionCase):
 
         other_states = [
             k for k, _ in pr_field.selection
-            if k not in ('rejected', initial_state)
+            if k not in ('cancel', initial_state)
         ]
         if not other_states:
             self.skipTest("No non-excluded states available to test")

@@ -10,12 +10,16 @@ class PurchaseRequest(models.Model):
         string="Construction Project",
         domain=[("state", "=", "in_progress")],
         states={
-            "to_verify": [("readonly", True)],
+            "reserve_budget": [("readonly", True)],
+            "confirm": [("readonly", True)],
+            "to_submit": [("readonly", True)],
             "to_approve": [("readonly", True)],
+            "egp": [("readonly", True)],
             "approved": [("readonly", True)],
-            "in_progress": [("readonly", True)],
+            "in_pa": [("readonly", True)],
+            "purchasing": [("readonly", True)],
             "done": [("readonly", True)],
-            "rejected": [("readonly", True)],
+            "cancel": [("readonly", True)],
         },
     )
 

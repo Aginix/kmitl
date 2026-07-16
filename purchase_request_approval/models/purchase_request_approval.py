@@ -182,6 +182,8 @@ class PurchaseRequestApproval(models.Model):
             rec.request_id.message_post(body=message, message_type="comment")
             rec._activity_awaiting_create_purchase_order()
             rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
+            # Advance PR: in_pa → purchasing
+            rec.request_id._on_pa_approved()
 
     def _activity_awaiting_create_purchase_order(self):
         self.request_id.activity_schedule(
@@ -196,8 +198,9 @@ class PurchaseRequestApproval(models.Model):
             )
             rec.request_id.message_post(body=message, message_type="comment")
             rec.write({"state": "rejected"})
+            # Bounce PR back to approved (budget commitment kept — ADR-0002)
             if rec.request_id:
-                rec.request_id.button_rejected()
+                rec.request_id._on_pa_rejected_or_deleted()
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -225,6 +228,10 @@ class PurchaseRequestApproval(models.Model):
                 raise UserError(
                     _("You cannot delete a purchase approval which is not draft.")
                 )
+        # Bounce PR back to approved if it is waiting for this PA
+        for rec in self:
+            if rec.request_id and rec.request_id.state == "in_pa":
+                rec.request_id._on_pa_rejected_or_deleted()
         return super().unlink()
 
     def _compute_access_url(self):

@@ -21,10 +21,9 @@
                     groups="budget.group_budget_commitment"
                 />
             </xpath>
+            <!-- button_approved is driven by sarabun callback only (ADR-0003) -->
             <button name="button_approved" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'invisible':[('state','!=','to_approve')]}</attribute>
+                <attribute name="invisible">1</attribute>
             </button>
             <xpath expr="//sheet/div[hasclass('oe_button_box')]" position="inside">
                 <button

@@ -10,8 +10,7 @@ class PurchaseRequest(models.Model):
     _name = 'purchase.request'
     _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
 
-    # To disable tier validation
-    # todo: refactor move out to individual module
+    # Disable tier validation (sarabun is the sole approval driver — ADR-0003)
     _state_from = [""]
     _state_to = [""]
 
@@ -22,7 +21,6 @@ class PurchaseRequest(models.Model):
     )
 
     def _compute_access_url(self):
-        """Compute the access URL for portal access."""
         super()._compute_access_url()
         for request in self:
             request.access_url = f"/my/purchase_request/{request.id}"
@@ -40,7 +38,6 @@ class PurchaseRequest(models.Model):
             }
 
     def _prepare_sarabun_document_vals(self):
-        """Prepare values for creating a sarabun document."""
         self.ensure_one()
         vals = super()._prepare_sarabun_document_vals()
         vals["subject"] = self.title
@@ -49,34 +46,40 @@ class PurchaseRequest(models.Model):
         return vals
 
     def _on_sarabun_completed(self, document):
-        """Called when sarabun document routing is completed."""
+        """Sarabun approval callback: branch to egp or approved based on is_egp flag."""
         _logger.info(
             "Sarabun completed callback for PR %s (id=%s) from document %s",
             self.name, self.id, document.name
         )
-        self.button_approved()
-        self.message_post(
-            body=_("Approved via Sarabun document: %s") % document.name,
-        )
+        if self.is_egp:
+            self.write({"state": "egp"})
+            self.message_post(
+                body=_("อนุมัติให้จัดหาผ่าน Sarabun: %s — ต้องดำเนินการ e-GP") % document.name,
+            )
+        else:
+            self.button_approved()
+            self.message_post(
+                body=_("อนุมัติให้จัดหาผ่าน Sarabun: %s") % document.name,
+            )
 
     def _on_sarabun_rejected(self, document, recipient):
-        """Called when sarabun document is rejected."""
-        self.button_rejected()
+        """Sarabun rejection callback: cancel the PR and release budget."""
         reason = recipient.comment if recipient else _("No reason provided")
+        self.button_rejected()
         self.message_post(
-            body=_("Rejected via Sarabun. Reason: %s") % reason,
+            body=_("ปฏิเสธผ่าน Sarabun. เหตุผล: %s") % reason,
         )
 
     def action_submit_to_sarabun(self):
-        """Submit PR to Sarabun for approval routing."""
+        """to_submit → to_approve then open sarabun document for routing."""
         self.ensure_one()
+        self.write({"state": "to_approve"})
         result = self.action_create_sarabun_document()
         document = self.env["sarabun.document"].browse(result.get("res_id"))
         self.main_sarabun_document_id = document
         self.message_post(
-            body=_("Submitted to Sarabun for approval: %s") % document.name,
+            body=_("ส่งเรื่องเข้า Sarabun เพื่อขออนุมัติ: %s") % document.name,
         )
-        # return document.action_select_route()
         return {
             "type": "ir.actions.act_window",
             "res_model": 'sarabun.document',
@@ -86,5 +89,4 @@ class PurchaseRequest(models.Model):
         }
 
     def _get_sarabun_report_action(self):
-        """Delegate Sarabun report to Purchase Request report."""
         return self.env.ref("purchase_request.action_report_purchase_requests")

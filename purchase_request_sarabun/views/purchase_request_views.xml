@@ -5,14 +5,15 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <!-- Add Submit to Sarabun button after Request approval button -->
-            <xpath expr="//button[@name='button_to_approve']" position="after">
+            <!-- to_submit → to_approve: Send to Sarabun for procurement approval -->
+            <xpath expr="//header" position="inside">
                 <button
                     name="action_submit_to_sarabun"
-                    string="Create Sarabun"
+                    string="ส่ง Sarabun"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_document_count', '>', 0)]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_submit'), ('sarabun_document_count', '>', 0)]}"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
             </xpath>
 

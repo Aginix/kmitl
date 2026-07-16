@@ -91,12 +91,12 @@
                 <field
                     name="state"
                     widget="badge"
-                    decoration-success="state in ('done', 'approved', 'in_progress')"
+                    decoration-success="state in ('done', 'approved', 'purchasing', 'in_pa')"
                     decoration-muted="state == 'draft'"
                     decoration-warning="state == 'to_approve'"
-                    decoration-danger="state == 'rejected'"
+                    decoration-danger="state == 'cancel'"
                 />
-                <field name="egp_status" optional="show"/>
+                <field name="is_egp" optional="hide" invisible="1"/>
                 <field name="main_exception_id" optional="hide"/>
                 <field name="budget_account_id" optional="hide"/>
                 <field name="department_analytic_id" optional="hide"/>

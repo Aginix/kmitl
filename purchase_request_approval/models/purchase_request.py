@@ -38,12 +38,12 @@ class PurchaseRequest(models.Model):
         }
 
     def button_create_approval(self):
+        """approved → in_pa: create the PA document and move PR to in_pa."""
         self.ensure_one()
 
         exists = self.env["purchase.request.approval"].search(
             [("request_id", "=", self.id)], limit=1
         )
-
         if exists:
             raise UserError(_("Purchase Request Approval has already been created"))
 
@@ -60,7 +60,9 @@ class PurchaseRequest(models.Model):
 
         message = self._purchase_request_approval_create_message_content(approval)
         self.message_post(body=message, message_type="comment")
-        self.button_in_progress()
+
+        # Transition PR: approved → in_pa
+        self.write({"state": "in_pa"})
 
         return {
             "name": _("Purchase Request Approval"),
@@ -74,49 +76,37 @@ class PurchaseRequest(models.Model):
     def button_approved(self):
         res = super().button_approved()
         self._activity_awaiting_approval_creation()
-
         return res
 
     def _activity_awaiting_approval_creation(self):
-        if self.request_approval_count < 1 and self.estimated_cost <= 100000:
+        if self.request_approval_count < 1 and not self.is_egp:
             self.activity_schedule(
                 "purchase_request_approval.mail_activity_awaiting_approval_creation",
                 user_id=self.user_id.id,
             )
 
     def _purchase_request_approval_create_message_content(self, approval):
-        message = _(
+        return _(
             "Purchase approval %(pa_name)s for your Request %(pr_name)s created successfully, waiting for operation."
-        ) % {
-            "pr_name": self.name,
-            "pa_name": approval.name,
-        }
-
-        return message
+        ) % {"pr_name": self.name, "pa_name": approval.name}
 
     def _purchase_request_approval_approved_message_content(self, approval):
-        message = _("Purchase approval %(pa_name)s was successfully approved 👍.") % {
-            "pa_name": approval.name,
+        return _("Purchase approval %(pa_name)s was successfully approved 👍.") % {
             "pa_name": approval.name,
         }
-        return message
 
     def _purchase_request_approval_rejected_message_content(self, approval):
         title = _(
             "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected 👎."
-        ) % {
-            "pr_name": self.name,
-            "pa_name": approval.name,
-        }
-        message = '<span class="text-danger">%s</span>' % title
-        return message
+        ) % {"pr_name": self.name, "pa_name": approval.name}
+        return '<span class="text-danger">%s</span>' % title
 
-    @api.depends("state", "estimated_cost", "request_approval_count")
+    @api.depends("state", "estimated_cost", "request_approval_count", "is_egp")
     def _compute_hide_create_approval_button(self):
         for rec in self:
             if rec.request_approval_count > 0:
                 rec.hide_create_approval_button = True
-            elif rec.state in ("approved") and rec.estimated_cost <= 100000 and not rec.is_egp:
+            elif rec.state == "approved" and not rec.is_egp:
                 rec.hide_create_approval_button = False
             else:
                 rec.hide_create_approval_button = True
@@ -131,7 +121,6 @@ class PurchaseRequest(models.Model):
             .sudo()
             .read()[0]
         )
-
         if len(self.request_approval_ids) > 1:
             action["domain"] = [("id", "in", self.request_approval_ids.ids)]
         elif self.request_approval_ids:
@@ -159,14 +148,12 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.request_approval_count = len(rec.request_approval_ids)
 
-    @api.depends('state')
+    @api.depends("state", "purchase_count")
     def _hide_create_po_button(self):
         for rec in self:
-            rec.hide_create_po_button = True
-            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
-                rec.hide_create_po_button = False
-            if rec.estimated_cost <= 100000:
-                rec.hide_create_po_button = True
+            rec.hide_create_po_button = (
+                rec.state != "purchasing" or rec.purchase_count > 0
+            )
 
     def approval_make_purchase_order(self):
         self.ensure_one()
@@ -192,7 +179,6 @@ class PurchaseRequest(models.Model):
 
     @api.depends(
         "state",
-        "estimated_cost",
         "purchase_count",
         "request_approval_ids",
         "request_approval_ids.state",
@@ -200,14 +186,9 @@ class PurchaseRequest(models.Model):
     )
     def _compute_need_make_purchase_order(self):
         for rec in self:
-            if (
-                rec.state in ("approved", "in_progress")
-                and rec.estimated_cost <= 100000
+            rec.need_make_purchase_order = (
+                rec.state == "purchasing"
                 and rec.purchase_count == 0
-                and rec.request_approval_ids
-                and rec.request_approval_ids.state in ("approved")
-                and rec.is_egp
-            ):
-                rec.need_make_purchase_order = True
-            else:
-                rec.need_make_purchase_order = False
+                and bool(rec.request_approval_ids)
+                and rec.request_approval_ids.filtered(lambda a: a.state == "approved")
+            )

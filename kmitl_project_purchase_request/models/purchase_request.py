@@ -237,7 +237,7 @@ class KmitlProject(models.Model):
         return sum(
             sum(pr.line_ids.mapped("estimated_cost"))
             for pr in self.purchase_request_ids.filtered(
-                lambda r: r.state != "rejected"
+                lambda r: r.state != "cancel"
             )
         )
 

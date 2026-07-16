@@ -3,7 +3,7 @@
     <record id="tier_validation_exception_purchase_request" model="tier.validation.exception">
         <field name="name">Purchase Request e-GP Validation Exception</field>
         <field name="model_id" ref="model_purchase_request"/>
-        <field name="field_ids" eval="[(6, 0, [ref('purchase_request_egp.field_purchase_request__egp_status'), ref('purchase_request_egp.field_purchase_request__egp_project_id')])]"/>
+        <field name="field_ids" eval="[(6, 0, [ref('purchase_request_egp.field_purchase_request__egp_project_id')])]"/>
         <field name="group_ids" eval="[(6, 0, [ref('purchase_request_kmitl.group_purchase_request_user_all')])]"/>
         <field name="allowed_to_write_after_validation">True</field>
         <field name="allowed_to_write_under_validation">False</field>

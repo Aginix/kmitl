@@ -115,22 +115,71 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <!-- Hide all old OCA transition buttons — new workflow uses specific buttons below -->
             <button name="button_rejected" position="attributes">
-                <attribute name="states">to_approve</attribute>
-                <attribute
-                    name="groups"
-                >purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="invisible">1</attribute>
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify,rejected</attribute>
-                <attribute name="groups"></attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_to_approve']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_approved']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_approve,approved,in_progress,done</attribute>
+                >draft,reserve_budget,confirm,to_submit,to_approve,egp,approved,in_pa,purchasing,done</attribute>
+            </xpath>
+
+            <!-- New workflow buttons -->
+            <xpath expr="//button[@name='button_rejected']" position="after">
+                <!-- draft → reserve_budget (พัสดุ) -->
+                <button
+                    name="button_send_reserve_budget"
+                    states="draft"
+                    string="ส่งจองงบประมาณ"
+                    type="object"
+                    class="oe_highlight"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
+                <!-- confirm → to_submit (ผู้ขอ) -->
+                <button
+                    name="button_confirm_data"
+                    states="confirm"
+                    string="ยืนยันข้อมูล"
+                    type="object"
+                    class="oe_highlight"
+                />
+                <!-- confirm → draft (ผู้ขอ ดึงกลับ) -->
+                <button
+                    name="button_pullback_to_draft"
+                    states="confirm"
+                    string="ดึงกลับ"
+                    type="object"
+                />
+                <!-- confirm → cancel (ผู้ขอ ยกเลิก) -->
+                <button
+                    name="button_cancel_confirm"
+                    states="confirm"
+                    string="ยกเลิก"
+                    type="object"
+                    groups="purchase_request.group_purchase_request_manager"
+                />
+                <!-- to_submit → draft (พัสดุ ตีกลับ) -->
+                <button
+                    name="button_return_to_draft"
+                    states="to_submit"
+                    string="ตีกลับ"
+                    type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
@@ -140,7 +189,7 @@
             <xpath expr="//field[@name='assigned_to']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('state','not in', ['to_approve', 'approved'])]}</attribute>
+                >{'readonly': [('state', 'in', ['egp', 'done', 'cancel'])]}</attribute>
             </xpath>
 
             <field name="requested_by" position="before">

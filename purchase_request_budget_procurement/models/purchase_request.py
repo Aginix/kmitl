@@ -131,7 +131,8 @@ class PurchaseRequest(models.Model):
             self.budget_commitment_id = commitment.id
             if plan.state == "ready":
                 plan.action_in_progress()
-            self.button_to_approve()
+            # Transition: reserve_budget → confirm
+            self.write({"state": "confirm"})
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -168,7 +169,7 @@ class PurchaseRequest(models.Model):
         if not self.use_procurement_plan:
             self.use_procurement_plan = True
         active_others = plan.purchase_request_ids.filtered(
-            lambda r: r.id != self.id and r.state != "rejected"
+            lambda r: r.id != self.id and r.state != "cancel"
         )
         if active_others:
             raise UserError(
@@ -202,7 +203,7 @@ class PurchaseRequest(models.Model):
         if not plan or plan.state != "in_progress":
             return
         active_others = plan.purchase_request_ids.filtered(
-            lambda r: r.id != self.id and r.state != "rejected"
+            lambda r: r.id != self.id and r.state != "cancel"
         )
         consumed = any(c.total_consumed for c in plan.budget_commitment_ids)
         if active_others or consumed:
@@ -273,7 +274,7 @@ class ProcurementPlan(models.Model):
         officers discover the next step."""
         for rec in self:
             active = rec.purchase_request_ids.filtered(
-                lambda r: r.state != "rejected"
+                lambda r: r.state != "cancel"
             )
             rec.can_create_purchase_request = (
                 rec.state in ("new", "ready") and not active
@@ -296,7 +297,7 @@ class ProcurementPlan(models.Model):
             raise UserError(
                 _("สร้างใบขอซื้อได้เฉพาะแผนที่อยู่สถานะรอดำเนินการเท่านั้น")
             )
-        if self.purchase_request_ids.filtered(lambda r: r.state != "rejected"):
+        if self.purchase_request_ids.filtered(lambda r: r.state != "cancel"):
             raise UserError(
                 _("แผนนี้มีใบขอซื้อที่ยังดำเนินการอยู่แล้ว (1 แผน ต่อ 1 ใบขอซื้อ)")
             )

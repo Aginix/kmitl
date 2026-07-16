@@ -11,4 +11,4 @@ class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ['purchase.request', 'state.leadtime.mixin']
 
-    _excluded_transitions = [('*', 'rejected')]
+    _excluded_transitions = [('*', 'cancel')]

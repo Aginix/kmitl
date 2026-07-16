@@ -105,22 +105,15 @@ class PurchaseRequest(models.Model):
 
     @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
     def _compute_is_budget_editable(self):
-        can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state in ("to_verify", "to_approve") and (
-                not rec.budget_commitment_id
-                or rec.budget_commitment_id.state == "cancel"
-            ):
-                rec.is_budget_editable = can_edit
-            else:
-                rec.is_budget_editable = rec.is_editable
+            rec.is_budget_editable = rec.is_editable
 
     @api.depends("state", "budget_commitment_id")
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
-            if rec.state in ("to_approve") and (
-                rec.budget_commitment_id.state == "cancel"
-                or not rec.budget_commitment_id
+            if rec.state == "reserve_budget" and (
+                not rec.budget_commitment_id
+                or rec.budget_commitment_id.state == "cancel"
             ):
                 rec.hide_reserve_budget_button = False
             else:
@@ -243,7 +236,8 @@ class PurchaseRequest(models.Model):
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.button_to_approve()
+            # Transition: reserve_budget → confirm
+            self.write({"state": "confirm"})
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",

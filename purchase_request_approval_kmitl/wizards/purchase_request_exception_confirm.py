@@ -9,5 +9,4 @@ class PurchaseRequestExceptionConfirm(models.TransientModel):
         if self.ignore:
             self.related_model_id.button_draft()
             self.related_model_id.ignore_exception = True
-            self.related_model_id.button_to_verify()
-
+            self.related_model_id.button_confirm_data()
