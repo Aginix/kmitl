@@ -2,7 +2,7 @@
     "name": "Web Attachment Classifier",
     "summary": "Drag & drop + document-type classification for the standard "
     "many2many_binary attachment widget",
-    "version": "16.0.2.0.1",
+    "version": "16.0.2.0.2",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",

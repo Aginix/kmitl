@@ -13,8 +13,8 @@ msgstr ""
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 # ---------------------------------------------------------------------------
 # Model / field metadata
@@ -33,6 +33,7 @@ msgid "Attachment Document Types"
 msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.js:0
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment__document_type_id
@@ -81,41 +82,55 @@ msgstr ""
 "widget ใช้เพื่อกรองประเภทเอกสารตาม res_model ของฟอร์มปัจจุบัน"
 
 # ---------------------------------------------------------------------------
-# OWL templates — XML text nodes
+# OWL templates — XML text nodes (odoo-javascript)
 # ---------------------------------------------------------------------------
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+#, python-format
 msgid "File"
 msgstr "ไฟล์"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+#, python-format
 msgid "Or drop files here"
 msgstr "หรือลากไฟล์มาวางที่นี่"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+#, python-format
 msgid "Save"
 msgstr "บันทึก"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
+#, python-format
 msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
 msgid "Drop files to attach"
 msgstr "ลากไฟล์มาวางที่นี่เพื่อแนบ"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
 msgid "Document Type:"
 msgstr "ประเภทเอกสาร:"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
 msgid "- Set type -"
 msgstr "- ระบุประเภท -"
 
@@ -124,17 +139,23 @@ msgstr "- ระบุประเภท -"
 # ---------------------------------------------------------------------------
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.js:0
+#, python-format
 msgid "Add Attachment"
 msgstr "เพิ่มไฟล์แนบ"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.js:0
+#, python-format
 msgid "Please select a file."
 msgstr "กรุณาเลือกไฟล์"
 
 #. module: web_attachment_classifier
+#. odoo-javascript
 #: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.js:0
+#, python-format
 msgid "Uploading error"
 msgstr "อัปโหลดผิดพลาด"
 
@@ -143,12 +164,14 @@ msgstr "อัปโหลดผิดพลาด"
 # ---------------------------------------------------------------------------
 
 #. module: web_attachment_classifier
+#. odoo-python
 #: code:addons/web_attachment_classifier/models/ir_attachment.py:0
 #, python-format
 msgid "(none)"
 msgstr "(ไม่ระบุ)"
 
 #. module: web_attachment_classifier
+#. odoo-python
 #: code:addons/web_attachment_classifier/models/ir_attachment.py:0
 #, python-format
 msgid ""
