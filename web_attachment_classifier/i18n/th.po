@@ -33,8 +33,11 @@ msgid "Attachment Document Types"
 msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 #. module: web_attachment_classifier
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.js:0
+#: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment__document_type_id
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__display_name
+#, python-format
 msgid "Document Type"
 msgstr "ประเภทเอกสาร"
 
