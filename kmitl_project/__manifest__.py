@@ -42,6 +42,7 @@
         "views/project_global_index_views.xml",
         "views/project_impact_views.xml",
         "views/project_methodology_views.xml",
+        "views/project_expense_item_views.xml",
         "views/project_strategic_plan_views.xml",
         "views/kmitl_project_report.xml",
     ],

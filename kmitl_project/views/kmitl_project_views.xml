@@ -170,6 +170,17 @@
                                 </field>
                             </group>
                         </page>
+                        <page name="expense" string="รายจ่ายโครงการ">
+                            <div class="alert alert-info" role="alert">
+                                <i>วางแผนรายจ่ายของโครงการ โดยแยกตามประเภทงบ เพิ่มรายการค่าใช้จ่ายในแต่ละประเภทงบ พร้อมคำอธิบายการแตกตัวคูณและจำนวนเงิน</i>
+                            </div>
+                            <separator string="งบบุคลากร" />
+                            <field name="expense_personnel_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'personnel'}" />
+                            <separator string="งบดำเนินงาน" />
+                            <field name="expense_operating_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'operating'}" />
+                            <separator string="งบอุดหนุน" />
+                            <field name="expense_subsidy_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'subsidy'}" />
+                        </page>
                         <page string="การดำเนินโครงการ">
                             <group>
                                 <group name="project_execution" string="การดำเนินโครงการ">
@@ -288,6 +299,21 @@
                     <filter string="Operating Unit" name="by_operating_unit" domain="[]" context="{'group_by':'operating_unit_id'}" groups="operating_unit.group_multi_operating_unit"/>
                 </group>
             </search>
+        </field>
+    </record>
+
+    <record id="view_project_expense_tree" model="ir.ui.view">
+        <field name="name">view.project.expense.tree</field>
+        <field name="model">project.expense</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="budget_type" invisible="1" />
+                <field name="expense_item_id" options="{'no_open': True}" />
+                <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />
+                <field name="amount" sum="รวม" />
+                <field name="note" placeholder="หมายเหตุ" />
+            </tree>
         </field>
     </record>
 
