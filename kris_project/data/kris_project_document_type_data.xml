@@ -1,34 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
 
+    <!-- Document type master records -->
+
+    <record id="doctype_contract" model="ir.attachment.document.type">
+        <field name="name">สัญญา</field>
+    </record>
+
     <record id="doctype_receipt" model="ir.attachment.document.type">
         <field name="name">เอกสารเบิกจ่ายและใบเสร็จ</field>
-        <field name="sequence">20</field>
-        <field
-            name="res_model_ids"
-            eval="[(6, 0, [ref('kris_project.model_kris_project'),
-                           ref('kris_project.model_kris_project_receipt')])]"
-        />
     </record>
 
     <record id="doctype_purchase" model="ir.attachment.document.type">
         <field name="name">จัดซื้อจัดจ้าง</field>
-        <field name="sequence">30</field>
-        <field
-            name="res_model_ids"
-            eval="[(6, 0, [ref('kris_project.model_kris_project'),
-                           ref('kris_project.model_kris_project_receipt')])]"
-        />
     </record>
 
-    <record id="doctype_contract" model="ir.attachment.document.type">
-        <field name="name">สัญญา</field>
+    <!-- Mapping: which doctypes apply to which parent model, in what order -->
+
+    <record id="rel_contract_project" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="kris_project.model_kris_project"/>
+        <field name="document_type_id" ref="doctype_contract"/>
         <field name="sequence">10</field>
-        <field
-            name="res_model_ids"
-            eval="[(6, 0, [ref('kris_project.model_kris_project'),
-                           ref('kris_project.model_kris_project_receipt')])]"
-        />
+    </record>
+
+    <record id="rel_receipt_project" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="kris_project.model_kris_project"/>
+        <field name="document_type_id" ref="doctype_receipt"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="rel_purchase_project" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="kris_project.model_kris_project"/>
+        <field name="document_type_id" ref="doctype_purchase"/>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="rel_contract_receipt" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="kris_project.model_kris_project_receipt"/>
+        <field name="document_type_id" ref="doctype_contract"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="rel_receipt_receipt" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="kris_project.model_kris_project_receipt"/>
+        <field name="document_type_id" ref="doctype_receipt"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="rel_purchase_receipt" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="kris_project.model_kris_project_receipt"/>
+        <field name="document_type_id" ref="doctype_purchase"/>
+        <field name="sequence">30</field>
     </record>
 
 </odoo>

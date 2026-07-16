@@ -32,14 +32,21 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
             if (!resModel) {
                 return;
             }
-            const rows = await this._classifierOrm.searchRead(
-                "ir.attachment.document.type",
-                [["res_model_names", "ilike", resModel]],
-                ["id", "name", "res_model_names"]
+            // Query the per-model mapping table directly — filtered by
+            // exact `res_model_name` and ordered by `sequence` — instead
+            // of scanning all doctypes with an ilike + JS post-filter.
+            const rels = await this._classifierOrm.searchRead(
+                "ir.attachment.document.type.rel",
+                [["res_model_name", "=", resModel]],
+                ["document_type_id"],
+                {order: "sequence, id"}
             );
-            this.classifierState.options = rows.filter((r) =>
-                (r.res_model_names || "").split(",").includes(resModel)
-            );
+            this.classifierState.options = rels
+                .filter((r) => r.document_type_id)
+                .map((r) => ({
+                    id: r.document_type_id[0],
+                    name: r.document_type_id[1],
+                }));
         });
     },
 

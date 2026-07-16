@@ -6,33 +6,44 @@ Odoo web enhancement that adds two things to the standard
 1. **Drag & drop** file upload — always on, for every place in Odoo that
    uses `many2many_binary`.
 2. **Document Type classification** — an optional Many2one on
-   `ir.attachment` picking from a shared taxonomy (`ir.attachment.document.type`)
-   whose values are scoped per parent model via a `res_model_ids` link.
-   The classifier UI (badge + pencil button) shows up only on forms whose
-   `res_model` has at least one doctype mapped to it.
+   `ir.attachment` picking from a shared taxonomy
+   (`ir.attachment.document.type`). Which doctypes appear on which
+   forms is configured per model in a Mapping table
+   (`ir.attachment.document.type.rel`) that also holds the display
+   `sequence`. The classifier UI (dropdown + badge) shows up only on
+   forms whose `res_model` has at least one Mapping.
 
 There is no custom widget name to remember and no per-consumer JS. A
-consumer module that wants classification just declares one or more
-`ir.attachment.document.type` records via XML data and points their
-`res_model_ids` at whatever parent models it owns.
+consumer module that wants classification ships two kinds of data XML
+records: `ir.attachment.document.type` (the doctype names) and
+`ir.attachment.document.type.rel` (the (model, doctype, sequence)
+mappings).
 
 ## Language
 
 **Document Type**:
-A record in `ir.attachment.document.type`. The taxonomy of possible
-"kinds" of attachment (Contract, Receipt, TOR, etc.) that live *anywhere*
-in Odoo. Each type declares which parent models it applies to via
-`res_model_ids`.
+A record in `ir.attachment.document.type` — the master name for a
+"kind" of attachment (Contract, Receipt, TOR, etc.). Holds only its
+`name` and `active` flag; scope and ordering are on the Mappings that
+point to it, not on the doctype itself.
 _Avoid_: classifier (implementation-level jargon), metadata (too broad),
 category (overloaded in Odoo), attachment type (was the old Selection
 field name — now migrated away).
 
+**Mapping**:
+A row in `ir.attachment.document.type.rel` — the association between a
+`Model` (via `res_model_id`) and a `Document Type`, plus a `sequence`
+that controls the display order in the widget dropdown for that model.
+There is at most one Mapping per (model, doctype) pair (SQL unique).
+A doctype may have zero or more Mappings; a Model may have zero or
+more Mappings.
+_Avoid_: link (too generic), assignment (implies workflow), scope
+(now derived from Mappings rather than a field on the doctype).
+
 **Scope (of a Document Type)**:
-The set of parent models a doctype is offered on, stored in
-`res_model_ids` (Many2many to `ir.model`). A doctype is *visible* on a
-form's attachment widget iff the form's `res_model` is in this set.
-Doctypes with an empty scope are hidden everywhere by design (management
-records only).
+The set of Models a doctype is offered on, derived from its inbound
+Mappings. Not a stored field — read via the widget's query on the
+Mapping table filtered by `res_model_name`.
 
 **Attached-to Model** (or *parent model*):
 The `res_model` of an `ir.attachment` row — the model of the record the
@@ -46,9 +57,10 @@ Base = the stock `Many2ManyBinaryField` from
 Odoo that uses `widget="many2many_binary"` sees the patched behaviour.
 
 **Consumer Module**:
-Any Odoo module that adds one or more `ir.attachment.document.type`
-records via a data XML file and points their `res_model_ids` at its own
-models. Consumers hold no Python or JS related to the widget. First
+Any Odoo module that ships one or more `ir.attachment.document.type`
+records (the doctype master data) plus `ir.attachment.document.type.rel`
+records (the Mappings that pin those doctypes to its own models) via
+data XML. Consumers hold no Python or JS related to the widget. First
 consumers: `kris_project` and `purchase_request_kmitl`.
 
 ## Rules of the game
@@ -64,10 +76,16 @@ consumers: `kris_project` and `purchase_request_kmitl`.
   `@api.constrains` or a check in the transition method that raises
   `UserError` when `attachment_ids.filtered(lambda a: not a.document_type_id)`
   is non-empty. Base does not enforce.
-- **Scope is data.** Adding a new doctype to a new parent model = one
-  XML record in a data file. No JS, no widget re-registration, no view
-  edits. The dropdown/badge/pencil appear automatically on that model's
-  form.
+- **Scope is data — configured per model.** To offer a doctype on a
+  new parent model, ship (or add via UI) two records: the doctype
+  master (`ir.attachment.document.type`, one per name) and a Mapping
+  (`ir.attachment.document.type.rel`) linking that doctype to the
+  model with a `sequence`. Settings → Technical → Attachments →
+  **Doctype per Model** is the primary entry: pick a model, edit an
+  inline table of doctypes with their sequences. **Document Types** is
+  the master list of doctype names.
+- **Sequence lives on the Mapping, not on the Doctype.** The same
+  doctype can appear in a different position under different models.
 - **UI is conditional.** A form whose `res_model` has zero doctypes
   mapped to it renders the widget unchanged from Odoo standard — no
   badge, no pencil, no dropdown. It does still get drag & drop
@@ -117,10 +135,12 @@ Test end-to-end after touching the patch or the taxonomy model:
    looks exactly like Odoo standard.
 6. Reload a form after tagging → badges still show. This confirms
    `document_type_id` is in `fieldsToFetch`.
-7. Settings > Technical > Attachment Document Types → tree/form UI
-   works; create a doctype with `res_model_ids = [purchase.order]` →
-   open a PO form → pencil + dropdown appear immediately for the new
-   type, no JS reload.
+7. Settings > Technical > Attachments →
+   **Document Types**: add a new doctype (name only).
+   **Doctype per Model**: pick a model (e.g. `purchase.order`) →
+   inline table → add a row with the new doctype + sequence → save.
+   Open a PO form → dropdown + badge appear immediately (order matches
+   the sequence just set), no JS reload.
 8. Historical attachments (created before the migration) still show
    their correct badges: the migration mapped their old
    `kris.project.document.type` id / `attachment_type` Selection value

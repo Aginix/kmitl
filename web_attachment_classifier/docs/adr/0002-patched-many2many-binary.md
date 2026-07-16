@@ -8,10 +8,11 @@ widget rename, no per-consumer JS, no view edits.
 
 Chosen over the earlier "custom widget name + JS factory per consumer"
 route (ADR-0001) because consumers really want *"turn on document
-classification for this model"* to be one XML data record, not a JS
-`register()` call plus a view attribute change. Scope is stored on the
-taxonomy itself (`ir.attachment.document.type.res_model_ids`) so
-turning classification on/off per model is data, not code.
+classification for this model"* to be a couple of XML data records,
+not a JS `register()` call plus a view attribute change. Scope lives
+in a dedicated Mapping table (`ir.attachment.document.type.rel` — one
+row per (model, doctype), with a `sequence`) so turning classification
+on/off per model, and ordering the dropdown, are data, not code.
 
 ## Consequences
 

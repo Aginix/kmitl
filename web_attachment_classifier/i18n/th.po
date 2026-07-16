@@ -17,6 +17,39 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 # ---------------------------------------------------------------------------
+# Menu / action / view titles
+# ---------------------------------------------------------------------------
+
+#. module: web_attachment_classifier
+#: model:ir.ui.menu,name:web_attachment_classifier.menu_attachment_classifier_root
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: web_attachment_classifier
+#: model:ir.actions.act_window,name:web_attachment_classifier.action_ir_attachment_document_type
+#: model:ir.ui.menu,name:web_attachment_classifier.menu_ir_attachment_document_type
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_tree
+msgid "Document Types"
+msgstr "ประเภทเอกสาร"
+
+#. module: web_attachment_classifier
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_form
+msgid "Document Type"
+msgstr "ประเภทเอกสาร"
+
+#. module: web_attachment_classifier
+#: model:ir.actions.act_window,name:web_attachment_classifier.action_ir_model_classifier
+#: model:ir.ui.menu,name:web_attachment_classifier.menu_ir_model_classifier
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_model_classifier_tree
+msgid "Doctype per Model"
+msgstr "ประเภทเอกสารต่อโมเดล"
+
+#. module: web_attachment_classifier
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_model_classifier_form
+msgid "Attachment Document Types"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+
+# ---------------------------------------------------------------------------
 # Model / field metadata
 # ---------------------------------------------------------------------------
 
@@ -26,11 +59,9 @@ msgid "Attachment Document Type"
 msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 #. module: web_attachment_classifier
-#: model:ir.actions.act_window,name:web_attachment_classifier.action_ir_attachment_document_type
-#: model:ir.ui.menu,name:web_attachment_classifier.menu_ir_attachment_document_type
-#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_tree
-msgid "Attachment Document Types"
-msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+#: model:ir.model,name:web_attachment_classifier.model_ir_attachment_document_type_rel
+msgid "Attachment Document Type Mapping"
+msgstr "การผูกประเภทเอกสารกับโมเดล"
 
 #. module: web_attachment_classifier
 #. odoo-javascript
@@ -38,6 +69,7 @@ msgstr "ประเภทเอกสารสำหรับไฟล์แน
 #: code:addons/web_attachment_classifier/static/src/components/attachment_classifier_dialog.xml:0
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment__document_type_id
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__display_name
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type_rel__document_type_id
 #, python-format
 msgid "Document Type"
 msgstr "ประเภทเอกสาร"
@@ -48,38 +80,29 @@ msgid "Name"
 msgstr "ชื่อ"
 
 #. module: web_attachment_classifier
-#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__sequence
-msgid "Sequence"
-msgstr "ลำดับ"
-
-#. module: web_attachment_classifier
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__active
 msgid "Active"
 msgstr "ใช้งาน"
 
 #. module: web_attachment_classifier
-#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__res_model_ids
-#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_form
-msgid "Applies to Models"
-msgstr "ใช้กับโมเดล"
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type_rel__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
 
 #. module: web_attachment_classifier
-#: model:ir.model.fields,help:web_attachment_classifier.field_ir_attachment_document_type__res_model_ids
-msgid ""
-"Parent models where this document type may be assigned to an attachment. "
-"The widget on those forms will offer this doctype in its dropdown."
-msgstr ""
-"โมเดลของ record แม่ที่จะสามารถเลือกประเภทเอกสารนี้ให้กับไฟล์แนบได้ "
-"widget บนฟอร์มของโมเดลเหล่านั้นจะแสดงประเภทเอกสารนี้ใน dropdown"
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type_rel__res_model_id
+msgid "Model"
+msgstr "โมเดล"
 
 #. module: web_attachment_classifier
-#: model:ir.model.fields,help:web_attachment_classifier.field_ir_attachment_document_type__res_model_names
-msgid ""
-"Comma-separated technical names of res_model_ids; used by the widget to "
-"filter doctypes for the current form's res_model."
-msgstr ""
-"รายชื่อทางเทคนิคของ res_model_ids คั่นด้วย comma; "
-"widget ใช้เพื่อกรองประเภทเอกสารตาม res_model ของฟอร์มปัจจุบัน"
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type_rel__res_model_name
+msgid "Model Technical Name"
+msgstr "ชื่อทางเทคนิคของโมเดล"
+
+#. module: web_attachment_classifier
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_model__attachment_doctype_rel_ids
+msgid "Attachment Document Types"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 # ---------------------------------------------------------------------------
 # OWL templates — XML text nodes (odoo-javascript)
@@ -180,3 +203,12 @@ msgid ""
 msgstr ""
 "เปลี่ยนประเภทเอกสารของไฟล์แนบ <b>%(name)s</b>: <i>%(old)s</i> → "
 "<i>%(new)s</i>"
+
+# ---------------------------------------------------------------------------
+# SQL constraint
+# ---------------------------------------------------------------------------
+
+#. module: web_attachment_classifier
+#: model:ir.model.constraint,message:web_attachment_classifier.constraint_ir_attachment_document_type_rel_uniq_model_doctype
+msgid "This document type is already linked to this model."
+msgstr "ประเภทเอกสารนี้ถูกผูกกับโมเดลนี้ไว้อยู่แล้ว"

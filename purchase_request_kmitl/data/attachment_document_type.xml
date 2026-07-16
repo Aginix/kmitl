@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
 
+    <!-- Document type master records -->
+
     <record id="doctype_tor" model="ir.attachment.document.type">
         <field name="name">Specification (TOR)</field>
-        <field name="sequence">10</field>
-        <field
-            name="res_model_ids"
-            eval="[(6, 0, [ref('purchase_request.model_purchase_request')])]"
-        />
     </record>
 
     <record id="doctype_rfq" model="ir.attachment.document.type">
         <field name="name">Quotation</field>
-        <field name="sequence">20</field>
-        <field
-            name="res_model_ids"
-            eval="[(6, 0, [ref('purchase_request.model_purchase_request')])]"
-        />
     </record>
 
     <record id="doctype_etc" model="ir.attachment.document.type">
         <field name="name">Etc</field>
+    </record>
+
+    <!-- Mapping: which doctypes apply to purchase.request -->
+
+    <record id="rel_tor_pr" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="document_type_id" ref="doctype_tor"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="rel_rfq_pr" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="document_type_id" ref="doctype_rfq"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="rel_etc_pr" model="ir.attachment.document.type.rel">
+        <field name="res_model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="document_type_id" ref="doctype_etc"/>
         <field name="sequence">30</field>
-        <field
-            name="res_model_ids"
-            eval="[(6, 0, [ref('purchase_request.model_purchase_request')])]"
-        />
     </record>
 
 </odoo>

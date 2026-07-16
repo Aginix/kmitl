@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <!-- ================================================================
+         Attachment Document Type (master data — name + active only)
+         ================================================================ -->
+
     <record id="view_ir_attachment_document_type_tree" model="ir.ui.view">
         <field name="name">ir.attachment.document.type.tree</field>
         <field name="model">ir.attachment.document.type</field>
         <field name="arch" type="xml">
-            <tree string="Attachment Document Types">
-                <field name="sequence" widget="handle"/>
+            <tree string="Document Types">
                 <field name="name"/>
-                <field name="res_model_ids" widget="many2many_tags"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -18,41 +20,107 @@
         <field name="name">ir.attachment.document.type.form</field>
         <field name="model">ir.attachment.document.type</field>
         <field name="arch" type="xml">
-            <form string="Attachment Document Type">
+            <form string="Document Type">
                 <sheet>
                     <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="sequence"/>
-                            <field name="active"/>
-                        </group>
+                        <field name="name"/>
+                        <field name="active"/>
                     </group>
-                    <notebook>
-                        <page string="Applies to Models" name="res_models">
-                            <field
-                                name="res_model_ids"
-                                widget="many2many_tags"
-                                options="{'no_create': True}"
-                            />
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
 
     <record id="action_ir_attachment_document_type" model="ir.actions.act_window">
-        <field name="name">Attachment Document Types</field>
+        <field name="name">Document Types</field>
         <field name="res_model">ir.attachment.document.type</field>
         <field name="view_mode">tree,form</field>
     </record>
 
+    <!-- ================================================================
+         Doctype per Model (primary settings entry — model-first)
+         Custom views on ir.model that only expose the classifier tab so
+         we don't inherit Odoo core's dense technical form.
+         ================================================================ -->
+
+    <record id="view_ir_model_classifier_tree" model="ir.ui.view">
+        <field name="name">ir.model.classifier.tree</field>
+        <field name="model">ir.model</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree
+                string="Doctype per Model"
+                default_order="name"
+                create="false"
+            >
+                <field name="name"/>
+                <field name="model"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ir_model_classifier_form" model="ir.ui.view">
+        <field name="name">ir.model.classifier.form</field>
+        <field name="model">ir.model</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form string="Attachment Document Types" create="false">
+                <sheet>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="model" readonly="1"/>
+                    </group>
+                    <field name="attachment_doctype_rel_ids">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field
+                                name="document_type_id"
+                                options="{'no_create_edit': True}"
+                            />
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ir_model_classifier" model="ir.actions.act_window">
+        <field name="name">Doctype per Model</field>
+        <field name="res_model">ir.model</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'view_mode': 'tree', 'view_id': ref('view_ir_model_classifier_tree')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('view_ir_model_classifier_form')})]"
+        />
+    </record>
+
+    <!-- ================================================================
+         Menu
+         ================================================================ -->
+
+    <menuitem
+        id="menu_attachment_classifier_root"
+        name="Attachments"
+        parent="base.menu_ir_property"
+        sequence="90"
+    />
+
+    <menuitem
+        id="menu_ir_model_classifier"
+        name="Doctype per Model"
+        parent="menu_attachment_classifier_root"
+        action="action_ir_model_classifier"
+        sequence="10"
+    />
+
     <menuitem
         id="menu_ir_attachment_document_type"
-        name="Attachment Document Types"
-        parent="base.menu_ir_property"
+        name="Document Types"
+        parent="menu_attachment_classifier_root"
         action="action_ir_attachment_document_type"
-        sequence="90"
+        sequence="20"
     />
 
 </odoo>
