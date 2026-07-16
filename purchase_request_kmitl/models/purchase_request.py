@@ -10,30 +10,11 @@ class PurchaseRequest(models.Model):
         ondelete="restrict",
         index=True,
     )
-    purchase_type_id = fields.Many2one(
-        comodel_name="purchase.type",
-        string="Purchase Type",
-        ondelete="restrict",
-        index=True,
-        domain=[("visible_on_purchase_request", "=", True)],
-        default=lambda self: self.env["purchase.type"].search(
-            [("is_default", "=", True)], limit=1
-        ),
-    )
     procurement_method_id = fields.Many2one(
         comodel_name="procurement.method",
         string="Procurement Method",
         ondelete="restrict",
         index=True,
-    )
-    to_create = fields.Selection(
-        related="purchase_type_id.to_create",
-    )
-    procurement_method_ids = fields.Many2many(
-        related="purchase_type_id.procurement_method_ids",
-    )
-    expense_reason = fields.Text(
-        string="Reason",
     )
     procurement_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
@@ -135,29 +116,9 @@ class PurchaseRequest(models.Model):
             )
 
     def get_estimated_cost_currency(self, date=False):
-        """Return estimated cost converted into the company currency."""
+        """Return the total estimated cost across all lines."""
         self.ensure_one()
-        date = date or fields.Date.context_today(self)
-        estimated_cost = sum(self.line_ids.mapped("estimated_cost"))
-        if self.currency_id == self.company_id.currency_id:
-            return estimated_cost
-        # Optional module `purchase_request_manual_currency` overrides
-        # the standard rate with a user-provided one.
-        if hasattr(self, "manual_currency") and self.manual_currency:
-            rate = (
-                self.custom_rate
-                if self.type_currency == "inverse_company_rate"
-                else (1.0 / self.custom_rate)
-            )
-            return estimated_cost * rate
-        return self.currency_id._convert(
-            estimated_cost, self.company_id.currency_id, self.company_id, date
-        )
-
-    @api.onchange("purchase_type_id")
-    def _onchange_purchase_type_id(self):
-        methods = self.purchase_type_id.procurement_method_ids
-        self.procurement_method_id = methods if len(methods) == 1 else False
+        return sum(self.line_ids.mapped("estimated_cost"))
 
     def button_approved(self):
         self.write(
