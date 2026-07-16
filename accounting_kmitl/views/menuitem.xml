@@ -79,7 +79,7 @@
         id="menu_account_entries"
         name="Account Entries"
         parent="menu_journal_entries"
-        action="account.action_move_journal_line"
+        action="action_account_entries"
         sequence="5"
     />
 
