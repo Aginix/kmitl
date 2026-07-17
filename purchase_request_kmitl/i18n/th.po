@@ -1752,7 +1752,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "To Approve"
-msgstr "รออนุมัติให้จัดหา"
+msgstr "รอพิจารณาให้จัดหา"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__to_approve_allowed
@@ -1768,7 +1768,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__to_approve
 msgid "To be approved"
-msgstr "รออนุมัติให้จัดหา"
+msgstr "รอพิจารณาให้จัดหา"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__estimated_cost
@@ -2239,7 +2239,7 @@ msgstr "สำหรับ พ.1 ทั้วไป"
 msgid "Is Construction"
 msgstr "สำหรับงานก่อสร้าง"
 
-#. module: purchase_request_verify_state
-#: model:ir.model.fields.selection,name:purchase_request_verify_state.selection__purchase_request__state__to_submit
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
 msgid "To Submit"
-msgstr "รอส่งเรื่องอนุมัติให้จัดหา"
+msgstr "รอส่งข้อความเห็นชอบให้จัดหา"
