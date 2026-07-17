@@ -7,9 +7,10 @@
         <field name="model">project.expense.item</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
-                <field name="sequence" widget="handle" />
                 <field name="budget_type" />
+                <field name="parent_id" options="{'no_create': True}" domain="[('parent_id', '=', False)]" />
                 <field name="name" />
+                <field name="complete_name" optional="hide" />
             </tree>
         </field>
     </record>
@@ -20,12 +21,15 @@
         <field name="model">project.expense.item</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" />
-                <filter name="personnel" string="งบบุคลากร" domain="[('budget_type', '=', 'personnel')]" />
-                <filter name="operating" string="งบดำเนินงาน" domain="[('budget_type', '=', 'operating')]" />
-                <filter name="subsidy" string="งบอุดหนุน" domain="[('budget_type', '=', 'subsidy')]" />
+                <field name="complete_name" string="รายการ" filter_domain="['|', ('name', 'ilike', self), ('complete_name', 'ilike', self)]" />
+                <field name="parent_id" />
+                <filter name="income" string="รายรับ" domain="[('budget_type', '=', 'income')]" />
+                <filter name="expense" string="รายจ่าย" domain="[('budget_type', '=', 'expense')]" />
+                <separator />
+                <filter name="roots" string="ประเภทงบ (รายการหลัก)" domain="[('parent_id', '=', False)]" />
                 <group expand="1" name="group_by" string="Group By">
-                    <filter string="ประเภทงบ" name="group_budget_type" domain="[]" context="{'group_by': 'budget_type'}" />
+                    <filter string="ประเภท" name="group_budget_type" domain="[]" context="{'group_by': 'budget_type'}" />
+                    <filter string="ประเภทงบ" name="group_parent" domain="[]" context="{'group_by': 'parent_id'}" />
                 </group>
             </search>
         </field>
@@ -33,17 +37,17 @@
 
     <!-- Action project.expense.item -->
     <record id="action_project_expense_item" model="ir.actions.act_window">
-        <field name="name">รายการค่าใช้จ่ายโครงการ</field>
+        <field name="name">รายการงบประมาณโครงการ</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">project.expense.item</field>
         <field name="view_mode">tree</field>
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                คลิกเพื่อเพิ่มรายการค่าใช้จ่ายโครงการ
+                คลิกเพื่อเพิ่มรายการงบประมาณโครงการ (รายรับ/รายจ่าย)
             </p>
         </field>
     </record>
 
-    <menuitem id="project_expense_item_config_menu" name="รายการค่าใช้จ่าย" action="action_project_expense_item" parent="menu_project_config" sequence="35" />
+    <menuitem id="project_expense_item_config_menu" name="รายการงบประมาณ" action="action_project_expense_item" parent="menu_project_config" sequence="35" />
 </odoo>

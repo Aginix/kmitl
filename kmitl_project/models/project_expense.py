@@ -10,11 +10,12 @@ _logger = logging.getLogger(__name__)
 
 
 class ProjectExpense(models.Model):
-    """A planned project expense (รายจ่ายโครงการ) — one line under a budget type,
-    pointing at a configured expense item with its แตกตัวคูณ breakdown and amount."""
+    """A planned project budget line — one income (รายรับ) or expense (รายจ่าย)
+    line pointing at a configured leaf item, with its แตกตัวคูณ breakdown and
+    amount."""
 
     _name = "project.expense"
-    _description = "รายจ่ายโครงการ"
+    _description = "รายรับ/รายจ่ายโครงการ"
     _order = "budget_type, sequence, id"
 
     sequence = fields.Integer(default=10)
@@ -26,14 +27,14 @@ class ProjectExpense(models.Model):
     )
     budget_type = fields.Selection(
         BUDGET_TYPE_SELECTION,
-        string="ประเภทงบ",
+        string="ประเภท",
         required=True,
     )
     expense_item_id = fields.Many2one(
         comodel_name="project.expense.item",
-        string="รายการค่าใช้จ่าย",
+        string="รายการ",
         required=True,
-        domain="[('budget_type', '=', budget_type)]",
+        domain="[('budget_type', '=', budget_type), ('child_ids', '=', False)]",
     )
     description = fields.Text(
         string="คำอธิบาย",

@@ -259,29 +259,20 @@ class KmitlProject(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    expense_personnel_ids = fields.One2many(
+    income_line_ids = fields.One2many(
         "project.expense",
         "project_id",
-        string="งบบุคลากร",
-        domain=[("budget_type", "=", "personnel")],
+        string="รายรับ",
+        domain=[("budget_type", "=", "income")],
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
 
-    expense_operating_ids = fields.One2many(
+    expense_line_ids = fields.One2many(
         "project.expense",
         "project_id",
-        string="งบดำเนินงาน",
-        domain=[("budget_type", "=", "operating")],
-        readonly=True,
-        states={"draft": [("readonly", False)]},
-    )
-
-    expense_subsidy_ids = fields.One2many(
-        "project.expense",
-        "project_id",
-        string="งบอุดหนุน",
-        domain=[("budget_type", "=", "subsidy")],
+        string="รายจ่าย",
+        domain=[("budget_type", "=", "expense")],
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
