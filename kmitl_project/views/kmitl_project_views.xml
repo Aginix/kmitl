@@ -172,12 +172,16 @@
                         </page>
                         <page name="project_budget" string="งบประมาณโครงการ">
                             <div class="alert alert-info" role="alert">
-                                <i>วางแผนงบประมาณของโครงการ แยกเป็นรายรับและรายจ่าย รายการรายจ่ายเลือกได้จากรายการภายใต้ประเภทงบ (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน) พร้อมคำอธิบายการแตกตัวคูณและจำนวนเงิน</i>
+                                <i>วางแผนงบประมาณของโครงการ แยกเป็นรายรับและรายจ่าย ฝั่งรายจ่ายแบ่งเป็นหมวดตามประเภทงบ (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน) พร้อมคำอธิบายการแตกตัวคูณและจำนวนเงิน</i>
                             </div>
                             <separator string="รายรับ" />
                             <field name="income_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'income'}" />
-                            <separator string="รายจ่าย" />
-                            <field name="expense_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'expense'}" />
+                            <separator string="รายจ่าย : งบบุคลากร" />
+                            <field name="expense_personnel_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'expense', 'default_budget_category_ref': 'kmitl_project.expense_root_personnel'}" />
+                            <separator string="รายจ่าย : งบดำเนินงาน" />
+                            <field name="expense_operating_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'expense', 'default_budget_category_ref': 'kmitl_project.expense_root_operating'}" />
+                            <separator string="รายจ่าย : งบอุดหนุน" />
+                            <field name="expense_subsidy_line_ids" nolabel="1" colspan="2" context="{'default_budget_type': 'expense', 'default_budget_category_ref': 'kmitl_project.expense_root_subsidy'}" />
                         </page>
                         <page string="การดำเนินโครงการ">
                             <group>
@@ -307,6 +311,7 @@
             <tree editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="budget_type" invisible="1" />
+                <field name="budget_category_id" invisible="1" />
                 <field name="budget_item_id" options="{'no_create': True, 'no_open': True}" />
                 <field name="unit" />
                 <field name="unit_price" />

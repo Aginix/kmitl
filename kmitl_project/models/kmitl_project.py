@@ -277,6 +277,40 @@ class KmitlProject(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
+    # Per-root views of the expense lines so the form can present one section per
+    # ประเภทงบ. Each domain pins budget_category_id to its seeded root, which also
+    # pre-fills it on lines added in that section (drives the section's picker).
+    expense_personnel_line_ids = fields.One2many(
+        "project.budget.line",
+        "project_id",
+        string="งบบุคลากร",
+        domain=lambda self: self._budget_root_domain(
+            "kmitl_project.expense_root_personnel"
+        ),
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+    expense_operating_line_ids = fields.One2many(
+        "project.budget.line",
+        "project_id",
+        string="งบดำเนินงาน",
+        domain=lambda self: self._budget_root_domain(
+            "kmitl_project.expense_root_operating"
+        ),
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+    expense_subsidy_line_ids = fields.One2many(
+        "project.budget.line",
+        "project_id",
+        string="งบอุดหนุน",
+        domain=lambda self: self._budget_root_domain(
+            "kmitl_project.expense_root_subsidy"
+        ),
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
     expected_outcome_ids = fields.One2many(
         "project.expected.outcome",
         "project_id",
@@ -466,6 +500,14 @@ class KmitlProject(models.Model):
                 rec.is_editable = True
             else:
                 rec.is_editable = False
+
+    @api.model
+    def _budget_root_domain(self, xmlid):
+        """Domain selecting expense budget lines under a given seeded root
+        (ประเภทงบ), used by the per-section One2many fields. Falls back to a
+        never-match domain if the root is missing."""
+        root = self.env.ref(xmlid, raise_if_not_found=False)
+        return [("budget_category_id", "=", root.id)] if root else [("id", "=", 0)]
 
     def unlink(self):
         for rec in self:

@@ -53,7 +53,7 @@ class ProjectBudgetItem(models.Model):
     unit_price = fields.Float(
         string="ราคาต่อหน่วย", digits="Product Price", tracking=True
     )
-    note = fields.Char(string="หมายเหตุ", tracking=True)
+    note = fields.Text(string="หมายเหตุ", tracking=True)
     parent_id = fields.Many2one(
         "project.budget.item",
         string="อยู่ภายใต้ประเภทงบ",
