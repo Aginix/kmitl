@@ -37,11 +37,6 @@ class TestPurchaseRequestAdvancePayment(TransactionCase):
                 {"name": "Test Procurement"}
             )
 
-        # Purchase type
-        cls.purchase_type = cls.env["purchase.type"].search(
-            [("is_default", "=", True)], limit=1
-        )
-
         # Procurement method
         cls.procurement_method = cls.env["procurement.method"].search([], limit=1)
         if not cls.procurement_method:
