@@ -1,0 +1,92 @@
+"""Migrate legacy purchase.request state values to the split post-Sarabun states.
+
+See docs/adr/0005-post-sarabun-state-split.md.
+"""
+import logging
+
+_logger = logging.getLogger(__name__)
+
+
+def migrate(cr, version):
+    if not version:
+        return
+
+    # Case 1: approved + is_egp + no PA -> in_egp (fill egp_status='waiting' if null)
+    cr.execute(
+        """
+        UPDATE purchase_request pr
+           SET state = 'in_egp',
+               egp_status = COALESCE(egp_status, 'waiting')
+         WHERE pr.state = 'approved'
+           AND pr.is_egp IS TRUE
+           AND NOT EXISTS (
+               SELECT 1 FROM purchase_request_approval pa
+                WHERE pa.request_id = pr.id
+           )
+        """
+    )
+    _logger.info("post-migration: case 1 (approved+is_egp) updated %s rows", cr.rowcount)
+
+    # Case 2: approved + not is_egp + has PA -> in_approval
+    cr.execute(
+        """
+        UPDATE purchase_request pr
+           SET state = 'in_approval'
+         WHERE pr.state = 'approved'
+           AND (pr.is_egp IS NOT TRUE)
+           AND EXISTS (
+               SELECT 1 FROM purchase_request_approval pa
+                WHERE pa.request_id = pr.id
+           )
+        """
+    )
+    _logger.info("post-migration: case 2 (approved+non-egp+has PA) updated %s rows", cr.rowcount)
+
+    # Case 3: approved + not is_egp + no PA -> leave alone; log the IDs for ops.
+    cr.execute(
+        """
+        SELECT id, name
+          FROM purchase_request
+         WHERE state = 'approved'
+           AND (is_egp IS NOT TRUE)
+           AND NOT EXISTS (
+               SELECT 1 FROM purchase_request_approval pa
+                WHERE pa.request_id = purchase_request.id
+           )
+        """
+    )
+    residual = cr.fetchall()
+    if residual:
+        _logger.warning(
+            "post-migration: case 3 (approved+non-egp+no PA) left %s rows in 'approved'; "
+            "ops must trigger PA creation manually. IDs: %s",
+            len(residual),
+            [(rid, name) for rid, name in residual],
+        )
+
+    # Case 4: in_progress + has PA in approved -> in_purchase
+    cr.execute(
+        """
+        UPDATE purchase_request pr
+           SET state = 'in_purchase'
+         WHERE pr.state = 'in_progress'
+           AND EXISTS (
+               SELECT 1 FROM purchase_request_approval pa
+                WHERE pa.request_id = pr.id
+                  AND pa.state = 'approved'
+           )
+        """
+    )
+    _logger.info("post-migration: case 4 (in_progress+PA approved) updated %s rows", cr.rowcount)
+
+    # Case 5: in_progress + is_egp + egp_status = 'in_progress' -> in_purchase
+    cr.execute(
+        """
+        UPDATE purchase_request
+           SET state = 'in_purchase'
+         WHERE state = 'in_progress'
+           AND is_egp IS TRUE
+           AND egp_status = 'in_progress'
+        """
+    )
+    _logger.info("post-migration: case 5 (in_progress+egp_status=in_progress) updated %s rows", cr.rowcount)

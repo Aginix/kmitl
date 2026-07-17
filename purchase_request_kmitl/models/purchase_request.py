@@ -8,9 +8,9 @@ class PurchaseRequest(models.Model):
         selection_add=[
             ("to_submit", "To Submit"),
             ("to_approve",),
-            ("cancel", "Cancel"),
+            ("cancelled", "Cancelled"),
         ],
-        ondelete={"to_submit": "set default", "cancel": "set default"},
+        ondelete={"to_submit": "set default", "cancelled": "set default"},
     )
 
     procurement_type_id = fields.Many2one(
@@ -121,7 +121,8 @@ class PurchaseRequest(models.Model):
     def _hide_create_po_button(self):
         for rec in self:
             rec.hide_create_po_button = not (
-                rec.state in ("approved", "in_progress") and rec.purchase_count == 0
+                rec.state in ("approved", "in_progress")
+                and rec.purchase_count == 0
             )
 
     def get_estimated_cost_currency(self, date=False):
@@ -129,17 +130,30 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         return sum(self.line_ids.mapped("estimated_cost"))
 
-    def button_approved(self):
+    def _apply_sarabun_approve_metadata(self):
         self.write(
             {
                 "approved_by": self.env.user.id,
                 "date_approved": fields.Date.context_today(self),
             }
         )
+
+    def _transition_after_sarabun_approve(self):
+        """Dispatch state transition after Sarabun completes routing.
+
+        Overridden in purchase_request_egp (is_egp=True → in_egp) and
+        purchase_request_approval (is_egp=False → in_approval + auto-PA).
+        The base fallback writes 'approved' if neither branch is installed.
+        """
+        self._apply_sarabun_approve_metadata()
+        self.write({"state": "approved"})
+
+    def button_approved(self):
+        self._apply_sarabun_approve_metadata()
         return super().button_approved()
 
     def button_to_submit(self):
-        return self.write(({"state": "to_submit"}))
+        return self.write({"state": "to_submit"})
 
     def button_cancel(self):
-        return self.write({"state": "cancel"})
+        return self.write({"state": "cancelled"})

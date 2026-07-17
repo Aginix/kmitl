@@ -1,0 +1,183 @@
+<mxfile host="Electron">
+  <diagram id="purchase-workflow-v2" name="Purchase Workflow v2 (Round-2 Grill)">
+    <mxGraphModel dx="514" dy="447" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;" value="กระบวนการจัดซื้อจัดจ้าง KMITL — v2 (Round-2 Redesign)&lt;br&gt;&lt;span style=&quot;font-size:11px;font-weight:normal&quot;&gt;พ.1 (PR) master · พจ.1 (PA) child swimlane · Sarabun = sole approval authority · Auto-create PA on non-e-GP&lt;/span&gt;" vertex="1">
+          <mxGeometry height="50" width="920" x="40" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="grill_notes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;การเปลี่ยนแปลงหลัก (round-2 grill)&lt;/b&gt;&lt;br&gt;✔ ตัด state &quot;รอผู้ขอยืนยัน&quot; (to_confirm) — การเงินจองงบเสร็จ → พัสดุถือของต่อทันที&lt;br&gt;✔ Sarabun reject บน พ.1 = terminal (rejected) พร้อม cancel commitment&lt;br&gt;✔ Non-e-GP: Sarabun approve พ.1 → auto-create พจ.1 (draft) atomic&lt;br&gt;✔ พจ.1 เหลือ 4 states (merge validate↔to_approve; rename rejected→cancelled)&lt;br&gt;✔ PA reject/cancel → cascade PR = cancelled + cancel commitment&lt;br&gt;✔ ลบ manual button &quot;สร้าง พจ.1&quot; ทิ้ง&lt;br&gt;&lt;br&gt;&lt;b&gt;Deferred:&lt;/b&gt; ประเภทการจ่ายเงิน &quot;เงินยืม&quot; (loan)" vertex="1">
+          <mxGeometry height="200" width="440" x="1080" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="start" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="เริ่ม&lt;br&gt;(ผู้ขอสร้าง พ.1)" vertex="1">
+          <mxGeometry height="50" width="160" x="420" y="75" as="geometry" />
+        </mxCell>
+        <mxCell id="s_draft" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="ร่าง (draft)" vertex="1">
+          <mxGeometry height="45" width="200" x="400" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="s_to_reserve" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="รอจองงบประมาณ (to_verify)" vertex="1">
+          <mxGeometry height="45" width="200" x="400" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="s_to_submit" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="รอส่งขอความเห็นชอบให้จัดหา&amp;nbsp;(to_submit)" vertex="1">
+          <mxGeometry height="45" width="200" x="400" y="315" as="geometry" />
+        </mxCell>
+        <mxCell id="s_to_approve" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="รอพิจารณาให้จัดหา&amp;nbsp;(to_approve)&lt;br&gt;&lt;i&gt;Sarabun running&lt;/i&gt;" vertex="1">
+          <mxGeometry height="55" width="200" x="400" y="395" as="geometry" />
+        </mxCell>
+        <mxCell id="d_egp" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="e-GP ?&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;is_egp?&lt;/span&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="440" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="s_in_egp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="รอดำเนินการ e-GP (in_egp)&lt;br&gt;&lt;i&gt;กรอกเลขที่โครงการ&lt;/i&gt;" vertex="1">
+          <mxGeometry height="55" width="200" x="140" y="595" as="geometry" />
+        </mxCell>
+        <mxCell id="s_in_procurement" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="อยู่ระหว่างจัดทำพจ.1&amp;nbsp;(in_approval)&lt;br&gt;&lt;i&gt;พจ.1 กำลังดำเนินการ&lt;/i&gt;" vertex="1">
+          <mxGeometry height="55" width="200" x="400" y="595" as="geometry" />
+        </mxCell>
+        <mxCell id="s_in_purchase" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="อยู่ระหว่างจัดซื้อจัดจ้าง (in_purchase)" vertex="1">
+          <mxGeometry height="45" width="240" x="380" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="s_done" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="จัดซื้อจัดจ้างเสร็จสิ้น (done)&lt;br&gt;&lt;i&gt;สร้างสัญญา/PO เสร็จ — จบเฟส 1&lt;/i&gt;" vertex="1">
+          <mxGeometry height="55" width="240" x="380" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="end" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="จบ" vertex="1">
+          <mxGeometry height="40" width="80" x="460" y="960" as="geometry" />
+        </mxCell>
+        <mxCell id="5QxQNXcnoSDf4U6ZAHTW-1" edge="1" parent="1" source="s_rejected" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="s_cancelled">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_rejected" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="ปฏิเสธ (rejected)&lt;br&gt;&lt;i&gt;Sarabun reject only&lt;/i&gt;" vertex="1">
+          <mxGeometry height="55" width="160" x="750" y="395" as="geometry" />
+        </mxCell>
+        <mxCell id="s_cancelled" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="ยกเลิก (cancelled)&lt;br&gt;&lt;i&gt;user / PA cascade&lt;/i&gt;" vertex="1">
+          <mxGeometry height="55" width="160" x="750" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_box" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;verticalAlign=top;" value="พจ.1 (PA) — โมเดลแยก · purchase.request.approval · 4 states" vertex="1">
+          <mxGeometry height="330" width="340" x="1080" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_draft" parent="pa_box" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f0fa;strokeColor=#9673a6;" value="ร่าง พจ.1 (draft)&lt;br&gt;&lt;i&gt;snapshot จาก พ.1&lt;/i&gt;" vertex="1">
+          <mxGeometry height="50" width="280" x="30" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_to_approve" parent="pa_box" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f0fa;strokeColor=#9673a6;" value="รออนุมัติจัดซื้อ (to_approve)&lt;br&gt;&lt;i&gt;pre-Sarabun ↔ Sarabun running&lt;br&gt;แยกด้วย main_sarabun_document_id&lt;/i&gt;" vertex="1">
+          <mxGeometry height="60" width="280" x="30" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_approved" parent="pa_box" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="อนุมัติแล้ว (approved)" vertex="1">
+          <mxGeometry height="45" width="280" x="30" y="205" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_cancelled" parent="pa_box" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="ยกเลิก (cancelled)&lt;br&gt;&lt;i&gt;from Sarabun reject OR manager กด &quot;ยกเลิก&quot;&lt;/i&gt;" vertex="1">
+          <mxGeometry height="55" width="280" x="30" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_e1" edge="1" parent="pa_box" source="pa_draft" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="pa_to_approve" value="ยืนยันข้อมูล [พัสดุ]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_e2" edge="1" parent="pa_box" source="pa_to_approve" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="pa_approved" value="Sarabun approve">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_e3" edge="1" parent="pa_box" source="pa_to_approve" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="pa_cancelled" value="ปฏิเสธ (Sarabun) /&lt;br&gt;ยกเลิก [หัวหน้าพัสดุ]&lt;br&gt;&lt;i&gt;ยกเลิก visible เฉพาะ pre-Sarabun&lt;/i&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="325" y="150" />
+              <mxPoint x="325" y="292" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_start" edge="1" parent="1" source="start" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="s_draft">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="s_draft" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="s_to_reserve" value="ส่งข้อมูลไปการเงิน [ผู้ขอ]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="s_to_reserve" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="s_to_submit" value="จองงบ [การเงิน/ธุรการ]&lt;br&gt;✔ ตรวจงบเพียงพอ">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="s_to_submit" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="s_to_approve" value="ส่งเรื่องเข้า Sarabun [พัสดุ]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pull" edge="1" parent="1" source="s_to_submit" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_draft" value="ดึงกลับ [ผู้ขอ]&lt;br&gt;+ release commitment">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="337" />
+              <mxPoint x="360" y="177" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cancel_draft" edge="1" parent="1" source="s_draft" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_cancelled" value="ยกเลิก [ผู้ขอ]">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="177" />
+              <mxPoint x="680" y="262" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cancel_reserve" edge="1" parent="1" source="s_to_reserve" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_cancelled" value="ยกเลิก [ผู้ขอ]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="s_to_approve" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="d_egp" value="Sarabun approve">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sarabun_reject" edge="1" parent="1" source="s_to_approve" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_rejected" value="Sarabun reject&lt;br&gt;+ cancel commitment&lt;br&gt;&lt;b&gt;(terminal)&lt;/b&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_egp_yes" edge="1" parent="1" source="d_egp" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="s_in_egp" value="ใช่ (is_egp = True)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_egp_no" edge="1" parent="1" source="d_egp" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="s_in_procurement" value="ไม่ใช่ (is_egp = False)&lt;br&gt;→ auto-create PA(draft)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_autocreate" edge="1" parent="1" source="s_in_procurement" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;endArrow=open;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" target="pa_box" value="auto-create PA + snapshot (ADR-0004)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pa_appr" edge="1" parent="1" source="pa_approved" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="s_in_purchase" value="PA approved cascade">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="900" y="822" />
+              <mxPoint x="900" y="793" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_pa_cancel" edge="1" parent="1" source="pa_cancelled" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="s_cancelled" value="PA cancelled cascade&lt;br&gt;+ cancel commitment">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="882" />
+              <mxPoint x="1000" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_egp_purch" edge="1" parent="1" source="s_in_egp" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_in_purchase" value="กรอกเลข e-GP + ยืนยัน [พัสดุ]">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="793" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_po" edge="1" parent="1" source="s_in_purchase" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" target="s_done" value="สร้าง PO/สัญญา [พัสดุ]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_end" edge="1" parent="1" source="s_done" style="edgeStyle=orthogonalEdgeStyle;html=1;" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note_removed" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;ตัดออกจาก v1&lt;/b&gt;&lt;br&gt;• state &quot;รอผู้ขอยืนยัน&quot; (to_confirm)&lt;br&gt;• edge &quot;ตีกลับ + ยกเลิกใบจอง&quot; (soft return from s_submit)&lt;br&gt;• edge &quot;ตีกลับ&quot; ใน PA swimlane (return to draft)&lt;br&gt;• state &quot;อนุมัติให้จัดหา (รอทำ พจ.1)&quot; — merged กับ in_procurement" vertex="1">
+          <mxGeometry height="115" width="340" x="1080" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="note_procmode" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;โหมดจัดหา (ตั้งบน พ.1)&lt;/b&gt;&lt;br&gt;• &quot;ให้พัสดุจัดหา&quot; → คู่ค้า+VAT ไม่บังคับ (พัสดุกรอกที่ พจ.1)&lt;br&gt;• &quot;ผู้ขอระบุเอง&quot; → คู่ค้า+VAT บังคับตั้งแต่ พ.1&lt;br&gt;• งบไม่บังคับที่ตอนสร้าง; ประเภท/วิธีจัดซื้อบังคับ" vertex="1">
+          <mxGeometry height="100" width="330" x="20" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="note_pull_cancel" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;สิทธิ์ผู้ขอ (post-round-2)&lt;/b&gt;&lt;br&gt;&lt;b&gt;ดึงกลับ&lt;/b&gt;: เฉพาะ to_submit → draft (release commitment)&lt;br&gt;&lt;b&gt;ยกเลิก&lt;/b&gt;: เฉพาะ draft, to_reserve → cancelled&lt;br&gt;หลัง Sarabun submitted (to_approve) → ผู้ขอไม่มีปุ่ม; รอ Sarabun ตัดสิน" vertex="1">
+          <mxGeometry height="100" width="330" x="20" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="note_egp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;เกณฑ์เข้า e-GP&lt;/b&gt;&lt;br&gt;is_egp = computed default (วงเงิน ≥ ฿100,000) + เจ้าหน้าที่ override ได้&lt;br&gt;เกณฑ์เก็บใน config เดียว — เลิก hardcode ฿100,000 (6 จุด/3 โมดูล)&lt;br&gt;&lt;b&gt;e-GP path ข้าม PA ทั้งหมด&lt;/b&gt; — 1 PR:1 PA คือ upper bound ไม่ mandatory" vertex="1">
+          <mxGeometry height="100" width="330" x="20" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="note_pa_subphase" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;strokeColor=#9673a6;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;PA to_approve — 2 sub-phases&lt;/b&gt;&lt;br&gt;• &lt;b&gt;Pre-Sarabun&lt;/b&gt; (main_sarabun_document_id is None): พัสดุ edit vendor/price/tax ได้; &lt;u&gt;ปุ่ม &quot;ยกเลิก&quot; ของ manager visible&lt;/u&gt;&lt;br&gt;• &lt;b&gt;Sarabun running&lt;/b&gt; (main_sarabun_document_id is set): locked ตาม ADR-0003; ทางออก = Sarabun approve → approved / Sarabun reject → cancelled" vertex="1">
+          <mxGeometry height="115" width="440" x="1080" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="note_cascade" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;Cancel/Reject cascade (พ.1)&lt;/b&gt;&lt;br&gt;• &lt;b&gt;rejected&lt;/b&gt; — Sarabun reject บน พ.1 โดยตรง (มีทางเดียว)&lt;br&gt;• &lt;b&gt;cancelled&lt;/b&gt; — 3 ทาง: ผู้ขอกด ✓ | PA cascade ✓ | (deferred: PA cancel via manager) ✓&lt;br&gt;ทั้ง 2 state → cancel commitment เสมอ&lt;br&gt;หลัง terminal — ไม่มี revive path; สร้าง PR ใหม่ (copy) แทน" vertex="1">
+          <mxGeometry height="115" width="440" x="1080" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#ffffff;strokeColor=#666666;fontSize=11;verticalAlign=top;spacing=6;" value="&lt;b&gt;คำอธิบาย&lt;/b&gt;&lt;br&gt;น้ำเงิน = สถานะของ พ.1 (master, 10 states รวม terminal)&lt;br&gt;ม่วง = สถานะของ พจ.1 (child, 4 states)&lt;br&gt;เขียว = เริ่ม/จบ (happy terminal)&lt;br&gt;แดง = terminal ไม่ happy (rejected/cancelled)&lt;br&gt;เหลือง = จุดตัดสินใจ&lt;br&gt;เทา = หมายเหตุ · [ ] = actor · เส้นประ = ย้อนกลับ / relationship" vertex="1">
+          <mxGeometry height="130" width="360" x="20" y="990" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

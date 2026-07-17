@@ -25,7 +25,7 @@
                 <page
                     string="e-GP"
                     name="egp_page"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'done'))]}"
+                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'in_egp', 'in_purchase', 'done'))]}"
                 >
                     <group>
                         <!-- remove required in attrs -->
@@ -53,13 +53,13 @@
                     name="action_egp_in_progress"
                     type="object"
                     string="อยู่ในกระบวนการ e-GP"
-                    attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'in_egp'), ('egp_status', '!=', 'waiting')]}"
                     class="btn-primary"
                 />
-                <!-- Add reject button on state approved when EGP -->
+                <!-- Reject button while parked in e-GP -->
                 <button
                     name="button_rejected_egp"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'approved')]}"
+                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'in_egp')]}"
                     string="Reject"
                     type="object"
                     groups="purchase_request.group_purchase_request_manager"

@@ -139,7 +139,7 @@
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_submit,to_approve,approved,in_progress,done</attribute>
+                >draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
@@ -149,7 +149,7 @@
             <xpath expr="//field[@name='assigned_to']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('state','not in', ['to_approve', 'approved'])]}</attribute>
+                >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_purchase'])]}</attribute>
             </xpath>
 
 

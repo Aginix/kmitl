@@ -54,7 +54,7 @@ class PurchaseRequest(models.Model):
             "Sarabun completed callback for PR %s (id=%s) from document %s",
             self.name, self.id, document.name
         )
-        self.button_approved()
+        self._transition_after_sarabun_approve()
         self.message_post(
             body=_("Approved via Sarabun document: %s") % document.name,
         )

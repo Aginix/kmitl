@@ -182,6 +182,8 @@ class PurchaseRequestApproval(models.Model):
             rec.request_id.message_post(body=message, message_type="comment")
             rec._activity_awaiting_create_purchase_order()
             rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
+            if rec.request_id and rec.request_id.state == "in_approval":
+                rec.request_id.write({"state": "in_purchase"})
 
     def _activity_awaiting_create_purchase_order(self):
         self.request_id.activity_schedule(
