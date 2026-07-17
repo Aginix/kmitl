@@ -6,6 +6,16 @@
         max-width: 100%;
         width: 95vw;
     }
+
+    // The picker draws its own ยกเลิก / ยืนยัน bar inside the body (.o_brp_footer).
+    // The action dialog also renders a default "โอเค" button in .modal-footer that
+    // only closes the dialog without applying the selection — users mistook it for
+    // the confirm. It auto-hides only when buttons are injected into .modal-footer
+    // (see action_dialog.js), which this body-level footer never does, so hide the
+    // redundant default footer here. This also frees vertical space on short screens.
+    .modal-footer {
+        display: none;
+    }
 }
 
 .o_budget_reservation_picker {
