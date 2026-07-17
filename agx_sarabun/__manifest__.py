@@ -22,6 +22,8 @@
         "security/ir.model.access.csv",
         # Master data
         "data/sarabun_activity_data.xml",
+        "data/sarabun_verb_data.xml",
+        "data/sarabun_addressee_prefix_data.xml",
         "data/sarabun_document_type.xml",
         # Reports
         "report/paperformat.xml",
@@ -31,6 +33,8 @@
         # Views
         "views/sarabun_document_type_views.xml",
         "views/sarabun_position_views.xml",
+        "views/sarabun_verb_views.xml",
+        "views/sarabun_addressee_prefix_views.xml",
         "views/sarabun_route_template_views.xml",
         "views/sarabun_sequence_views.xml",
         "views/sarabun_document_views.xml",
@@ -39,6 +43,7 @@
     "assets": {
         "web.assets_backend": [
             "agx_sarabun/static/src/scss/sarabun_systray.scss",
+            "agx_sarabun/static/src/scss/sarabun_form.scss",
             "agx_sarabun/static/src/js/sarabun_notification_handler.esm.js",
             "agx_sarabun/static/src/js/sarabun_systray.esm.js",
             "agx_sarabun/static/src/xml/sarabun_systray.xml",

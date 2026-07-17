@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Built-in routing verbs. noupdate so admin relabels survive upgrades; the
+         engine references these by xmlid/code and by the behaviour flags below. -->
+    <data noupdate="1">
+        <record id="verb_acknowledge" model="sarabun.verb">
+            <field name="name">รับทราบ (Acknowledge)</field>
+            <field name="code">acknowledge</field>
+            <field name="sequence">10</field>
+            <field name="rank">1</field>
+            <field name="gating" eval="False"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
+        <record id="verb_endorse" model="sarabun.verb">
+            <field name="name">เห็นชอบ (Endorse)</field>
+            <field name="code">endorse</field>
+            <field name="sequence">20</field>
+            <field name="rank">2</field>
+            <field name="gating" eval="True"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
+        <record id="verb_sign_approve" model="sarabun.verb">
+            <field name="name">ลงนาม-อนุมัติ (Sign/Approve)</field>
+            <field name="code">sign_approve</field>
+            <field name="sequence">30</field>
+            <field name="rank">3</field>
+            <field name="gating" eval="True"/>
+            <field name="is_signature" eval="True"/>
+        </record>
+    </data>
+</odoo>

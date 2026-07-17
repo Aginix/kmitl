@@ -39,6 +39,18 @@
               action="action_sarabun_position"
               sequence="20"/>
 
+    <menuitem id="menu_sarabun_verb"
+              name="Verbs (การดำเนินการ)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_verb"
+              sequence="25"/>
+
+    <menuitem id="menu_sarabun_addressee_prefix"
+              name="Addressee Prefixes (คำขึ้นต้น)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_addressee_prefix"
+              sequence="27"/>
+
     <menuitem id="menu_sarabun_route_template"
               name="Route Templates"
               parent="menu_sarabun_config"

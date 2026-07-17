@@ -18,21 +18,14 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-# Keep in sync with sarabun_route_template.py
-VERB_SELECTION = [
-    ("acknowledge", "รับทราบ (Acknowledge)"),
-    ("endorse", "เห็นชอบ (Endorse)"),
-    ("sign_approve", "ลงนาม-อนุมัติ (Sign/Approve)"),
-]
 TARGET_MODE = [
     ("position", "Position (ตำแหน่ง)"),
     ("person", "Person (บุคคล)"),
     ("unit", "Unit (สารบรรณกลาง)"),
 ]
-# Ranking for the document's strongest_verb_done (Recall guard, ADR-0002).
-VERB_RANK = {"acknowledge": 1, "endorse": 2, "sign_approve": 3}
-
-GATING_VERBS = ("endorse", "sign_approve")
+# Verb strength/gating/signature now live on sarabun.verb records (master data);
+# the engine reads verb.rank / verb.gating / verb.is_signature. Only the
+# disposition axis remains a fixed Selection.
 POSITIVE_DISPOSITIONS = ("complete", "direct")
 
 
@@ -50,8 +43,15 @@ class SarabunRoutingStep(models.Model):
         help="Steps sharing one order form a Stage and run in parallel.",
     )
 
-    # === Verb ===
-    verb = fields.Selection(VERB_SELECTION, required=True, default="endorse", tracking=True)
+    # === Verb (การดำเนินการ — configurable master data) ===
+    verb = fields.Many2one(
+        "sarabun.verb",
+        string="Verb",
+        required=True,
+        default=lambda self: self._default_verb(),
+        ondelete="restrict",
+        tracking=True,
+    )
     for_info = fields.Boolean(
         string="สำเนาเรียน (CC)",
         help="A non-gating acknowledge step (CC). Never blocks advancement/completion.",
@@ -129,11 +129,28 @@ class SarabunRoutingStep(models.Model):
     # === Related (display) ===
     document_state = fields.Selection(related="document_id.state", string="Document Status")
 
+    # ------------------------------------------------------------------ defaults
+    @api.model
+    def _default_verb(self):
+        return self.env.ref("agx_sarabun.verb_endorse", raise_if_not_found=False)
+
+    @api.model
+    def _coerce_verb(self, value):
+        """Accept a verb id, record, or ``code`` string → verb id (programmable
+        seam so external callers may insert steps by stable code)."""
+        if not value:
+            return False
+        if isinstance(value, models.BaseModel):
+            return value.id
+        if isinstance(value, str):
+            return self.env["sarabun.verb"]._by_code(value).id
+        return int(value)
+
     # ------------------------------------------------------------------ computes
-    @api.depends("verb", "for_info")
+    @api.depends("verb.gating", "for_info")
     def _compute_gating(self):
         for step in self:
-            step.gating = step.verb in GATING_VERBS and not step.for_info
+            step.gating = step.verb.gating and not step.for_info
 
     @api.depends("target_mode", "position_id", "user_id", "department_id")
     def _compute_target_name(self):
@@ -175,8 +192,7 @@ class SarabunRoutingStep(models.Model):
 
     def _activity_summary(self):
         self.ensure_one()
-        labels = dict(VERB_SELECTION)
-        return labels.get(self.verb, self.verb)
+        return self.verb.name or self.verb.code
 
     def _schedule_activities(self):
         """One 'action required' mail.activity per snapshot holder of each active
@@ -282,7 +298,7 @@ class SarabunRoutingStep(models.Model):
     def _resolve_capacity(self, signed_as_position_id):
         """Validate/derive the capacity for a sign_approve step (ADR-0003)."""
         self.ensure_one()
-        if self.verb != "sign_approve":
+        if not self.verb.is_signature:
             return self.env["sarabun.position"]
         capacity = self.env["sarabun.position"].browse(signed_as_position_id) if signed_as_position_id else self.position_id
         # In Position mode you sign in the step's capacity (acting capacity = phase-2).
@@ -308,7 +324,7 @@ class SarabunRoutingStep(models.Model):
             "created_by_disposition": "direct",
             "attempt_seq": self.document_id.attempt_seq,
             "state": "waiting",
-            "verb": vals.get("verb", "endorse"),
+            "verb": self._coerce_verb(vals.get("verb")) or self._default_verb().id,
             "for_info": vals.get("for_info", False),
             "target_mode": vals.get("target_mode", "position"),
             "position_id": vals.get("position_id", False),

@@ -5,7 +5,7 @@ mirroring the engine's single ``act_on_step`` entry point.
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.sarabun_routing_step import TARGET_MODE, VERB_SELECTION
+from ..models.sarabun_routing_step import TARGET_MODE
 
 
 class SarabunStepActWizard(models.TransientModel):
@@ -14,7 +14,7 @@ class SarabunStepActWizard(models.TransientModel):
 
     step_id = fields.Many2one("sarabun.routing.step", required=True, readonly=True)
     document_id = fields.Many2one(related="step_id.document_id", readonly=True)
-    step_verb = fields.Selection(related="step_id.verb", readonly=True)
+    step_verb = fields.Many2one("sarabun.verb", related="step_id.verb", readonly=True)
     target_name = fields.Char(related="step_id.target_name", readonly=True)
 
     disposition = fields.Selection(
@@ -42,7 +42,11 @@ class SarabunStepActWizard(models.TransientModel):
     target_position_id = fields.Many2one("sarabun.position", string="Target Position")
     target_user_id = fields.Many2one("res.users", string="Target User")
     target_department_id = fields.Many2one("hr.department", string="Target Unit")
-    new_verb = fields.Selection(VERB_SELECTION, string="Next Step Verb", default="endorse")
+    new_verb = fields.Many2one(
+        "sarabun.verb",
+        string="Next Step Verb",
+        default=lambda self: self.env.ref("agx_sarabun.verb_endorse", raise_if_not_found=False),
+    )
     new_for_info = fields.Boolean(string="สำเนาเรียน (CC)")
 
     # return
@@ -60,13 +64,13 @@ class SarabunStepActWizard(models.TransientModel):
     @api.depends("disposition", "step_verb")
     def _compute_flags(self):
         for w in self:
-            w.is_sign = w.disposition == "complete" and w.step_verb == "sign_approve"
+            w.is_sign = w.disposition == "complete" and w.step_verb.is_signature
             w.needs_target = w.disposition in ("direct", "delegate")
             w.is_return = w.disposition == "return"
 
     @api.onchange("step_id")
     def _onchange_step_id(self):
-        if self.step_id and self.step_id.verb == "sign_approve":
+        if self.step_id and self.step_id.verb.is_signature:
             self.signed_as_position_id = self.step_id.position_id
 
     def action_confirm(self):
@@ -88,7 +92,7 @@ class SarabunStepActWizard(models.TransientModel):
                 "department_id": self.target_department_id.id,
             })
             if self.disposition == "direct":
-                vals.update({"verb": self.new_verb, "for_info": self.new_for_info})
+                vals.update({"verb": self.new_verb.id, "for_info": self.new_for_info})
         elif self.disposition == "return":
             if self.destination == "resume_step" and not self.resume_step_id:
                 raise UserError(_("Pick the step to resume from."))

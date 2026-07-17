@@ -13,11 +13,6 @@ TARGET_MODE = [
     ("person", "Person (บุคคล)"),
     ("unit", "Unit (สารบรรณกลาง)"),
 ]
-VERB_SELECTION = [
-    ("acknowledge", "รับทราบ (Acknowledge)"),
-    ("endorse", "เห็นชอบ (Endorse)"),
-    ("sign_approve", "ลงนาม-อนุมัติ (Sign/Approve)"),
-]
 
 
 class SarabunRouteTemplate(models.Model):
@@ -78,7 +73,13 @@ class SarabunRouteTemplateLine(models.Model):
         "sarabun.route.template", required=True, ondelete="cascade"
     )
     order = fields.Integer(string="Stage", default=10, help="Steps sharing one order run in parallel.")
-    verb = fields.Selection(VERB_SELECTION, required=True, default="endorse")
+    verb = fields.Many2one(
+        "sarabun.verb",
+        string="Verb",
+        required=True,
+        default=lambda self: self.env.ref("agx_sarabun.verb_endorse", raise_if_not_found=False),
+        ondelete="restrict",
+    )
     for_info = fields.Boolean(string="สำเนาเรียน (CC)", help="Non-gating acknowledge (CC).")
     target_mode = fields.Selection(TARGET_MODE, required=True, default="position")
     position_id = fields.Many2one("sarabun.position", string="Position")
@@ -90,7 +91,7 @@ class SarabunRouteTemplateLine(models.Model):
         self.ensure_one()
         return {
             "order": self.order,
-            "verb": self.verb,
+            "verb": self.verb.id,
             "for_info": self.for_info,
             "target_mode": self.target_mode,
             "position_id": self.position_id.id,

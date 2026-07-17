@@ -278,7 +278,7 @@ def _process_sarabun_approve(env, origin_record, admin_user, department):
         {
             "document_id": doc.id,
             "order": 10,
-            "verb": "sign_approve",
+            "verb": env.ref("agx_sarabun.verb_sign_approve").id,
             "target_mode": "person",
             "user_id": admin_user.id,
             "state": "waiting",

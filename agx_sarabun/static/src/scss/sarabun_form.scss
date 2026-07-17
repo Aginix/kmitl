@@ -1,0 +1,15 @@
+// Give the หนังสือ rich-text areas a sane default height so the form reads like
+// a document (content ~10 rows, หมายเหตุ ~4 rows) instead of a one-line box.
+.o_sarabun_content {
+    .note-editable,
+    .odoo-editor-editable {
+        min-height: 15rem;
+    }
+}
+
+.o_sarabun_remark {
+    .note-editable,
+    .odoo-editor-editable {
+        min-height: 6rem;
+    }
+}

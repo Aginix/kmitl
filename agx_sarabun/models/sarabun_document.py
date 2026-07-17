@@ -14,7 +14,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.pdf import merge_pdf
 
-from .sarabun_routing_step import POSITIVE_DISPOSITIONS, VERB_RANK
+from .sarabun_routing_step import POSITIVE_DISPOSITIONS
 
 _logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class SarabunDocument(models.Model):
     )
 
     # === Header (เรื่อง / เรียน / วันที่) ===
-    subject = fields.Char(string="เรื่อง (Subject)", required=True, tracking=True)
+    subject = fields.Text(string="เรื่อง (Subject)", required=True, tracking=True)
     date = fields.Date(
         string="วันที่ (Document Date)",
         required=True,
@@ -63,7 +63,15 @@ class SarabunDocument(models.Model):
         help="Defaults to today at creation (auto). Kept read-only in the form for "
         "now; making it editable is a later phase.",
     )
-    addressee = fields.Char(
+    addressee_prefix_id = fields.Many2one(
+        comodel_name="sarabun.addressee.prefix",
+        string="คำขึ้นต้น (Prefix)",
+        default=lambda self: self.env.ref(
+            "agx_sarabun.addressee_prefix_rian", raise_if_not_found=False
+        ),
+        help="Salutation opening the เรียน line (เรียน / กราบทูล / เสนอ …).",
+    )
+    addressee = fields.Text(
         string="เรียน (Addressee)",
         tracking=True,
         help="The ceremonial recipient on the หนังสือ header — its own field, "
@@ -76,6 +84,11 @@ class SarabunDocument(models.Model):
         "letter body; for a from_record document it is an optional covering note "
         "rendered above the origin's report. Full regulation บันทึกข้อความ layout "
         "is phase-2 — v1 is free rich text.",
+    )
+    remark = fields.Html(
+        string="หมายเหตุ (Remark)",
+        sanitize=True,
+        help="Optional internal note — not part of the letter body.",
     )
 
     # === Sender (ส่วนงานเจ้าของเรื่อง) ===
@@ -180,19 +193,13 @@ class SarabunDocument(models.Model):
         help="Generation counter bumped on each re-send so prior attempts survive "
         "as history (ADR-0002 §3.4).",
     )
-    strongest_verb_done = fields.Selection(
-        selection=[
-            ("none", "None"),
-            ("acknowledge", "รับทราบ"),
-            ("endorse", "เห็นชอบ"),
-            ("sign_approve", "ลงนาม-อนุมัติ"),
-        ],
+    strongest_verb_id = fields.Many2one(
+        comodel_name="sarabun.verb",
         string="Strongest Verb Done",
         compute="_compute_strongest_verb_done",
         store=True,
-        default="none",
-        help="Highest verb positively completed so far. Drives the Recall window "
-        "(Recall blocked once a ลงนาม-อนุมัติ step has occurred — ADR-0002).",
+        help="Highest-ranked verb positively completed so far. Drives the Recall "
+        "window (Recall blocked once a signing step has occurred — ADR-0002).",
     )
     has_signed = fields.Boolean(compute="_compute_strongest_verb_done", store=True)
 
@@ -318,11 +325,9 @@ class SarabunDocument(models.Model):
             done = record.routing_step_ids.filtered(
                 lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
             )
-            rank = max((VERB_RANK.get(s.verb, 0) for s in done), default=0)
-            record.strongest_verb_done = {
-                0: "none", 1: "acknowledge", 2: "endorse", 3: "sign_approve",
-            }[rank]
-            record.has_signed = rank >= VERB_RANK["sign_approve"]
+            strongest = done.mapped("verb").sorted(key=lambda v: v.rank)[-1:]
+            record.strongest_verb_id = strongest
+            record.has_signed = any(s.verb.is_signature for s in done)
 
     @api.depends("routing_step_ids.state", "routing_step_ids.actor_user_ids")
     def _compute_my_active_step(self):
@@ -665,7 +670,7 @@ class SarabunDocument(models.Model):
         return self.routing_step_ids.filtered(
             lambda s: s.state == "done"
             and s.disposition in POSITIVE_DISPOSITIONS
-            and s.verb == "sign_approve"
+            and s.verb.is_signature
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _kasian_trail_steps(self):
@@ -674,7 +679,7 @@ class SarabunDocument(models.Model):
         return self.routing_step_ids.filtered(
             lambda s: s.state == "done"
             and s.disposition in POSITIVE_DISPOSITIONS
-            and s.verb in ("endorse", "sign_approve")
+            and s.verb.gating
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _get_delegated_report_action(self):

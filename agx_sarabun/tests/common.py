@@ -168,7 +168,8 @@ class SarabunCommon(TransactionCase):
         v = {
             "document_id": doc.id,
             "order": order,
-            "verb": verb,
+            # accept a verb code string (e.g. "sign_approve"), a record, or an id
+            "verb": self.Step._coerce_verb(verb),
             "target_mode": target_mode,
             "for_info": for_info,
             "state": "waiting",

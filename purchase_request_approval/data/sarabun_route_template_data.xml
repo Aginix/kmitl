@@ -27,7 +27,7 @@
         <record id="route_template_line_pa_approve" model="sarabun.route.template.line">
             <field name="template_id" ref="route_template_purchase_request_approval"/>
             <field name="order">10</field>
-            <field name="verb">sign_approve</field>
+            <field name="verb" ref="agx_sarabun.verb_sign_approve"/>
             <field name="target_mode">position</field>
             <field name="position_id" ref="position_pa_approver"/>
         </record>
