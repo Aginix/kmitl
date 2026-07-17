@@ -12,7 +12,6 @@
                 <field name="subject"/>
                 <field name="addressee"/>
                 <field name="sender_department_id" optional="show"/>
-                <field name="urgency" optional="hide"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'circulating'"
                        decoration-success="state == 'completed'"
@@ -55,33 +54,27 @@
                             </div>
                         </button>
                     </div>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1><field name="name" readonly="1"/></h1>
-                    </div>
+                    <!-- Header laid out to mirror the หนังสือ (cf. report_cover_sheet):
+                         ส่วนราชการ (หน่วยงาน)  |  ที่ · วันที่  →  เรื่อง  →  เรียน.
+                         No banner headline: ที่ (name) is '/' until numbered at send,
+                         so it lives as a small register field like on the real document. -->
                     <group>
-                        <group name="classification"
+                        <group name="unit" string="หน่วยงาน"
                                attrs="{'readonly': [('is_editable', '=', False)]}">
-                            <field name="type_id"/>
-                            <field name="kind" readonly="1"/>
-                            <field name="date"/>
-                            <field name="urgency"/>
-                            <field name="secrecy"/>
+                            <field name="sender_department_id" string="ส่วนราชการ"/>
+                            <field name="sender_suffix" string="งาน / โทร."
+                                   placeholder="เช่น งานการวิเคราะห์ฯ โทร. ๓๑๗๖"/>
                         </group>
-                        <group name="sender">
-                            <field name="sender_user_id"/>
-                            <field name="sender_department_id"
+                        <group name="doc_meta" string="ทะเบียนหนังสือ">
+                            <field name="name" string="ที่" readonly="1"/>
+                            <field name="date" string="วันที่" readonly="1"/>
+                            <field name="type_id"
                                    attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="sender_suffix"
-                                   attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <group name="header" attrs="{'readonly': [('is_editable', '=', False)]}">
                         <field name="subject" placeholder="เรื่อง..."/>
                         <field name="addressee" placeholder="เรียน..."/>
-                        <field name="through" placeholder="ผ่าน... (optional)"/>
-                        <field name="addressee_position_id"/>
                     </group>
                     <separator string="เนื้อหา (Content)"/>
                     <field name="content" nolabel="1"
@@ -95,7 +88,12 @@
                         <field name="manual_counter"
                                attrs="{'invisible': [('numbering_mode', 'not in', ('manual', 'gap'))]}"/>
                     </group>
+                    <group name="system" string="ข้อมูลระบบ (System)">
+                        <field name="sender_user_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
                     <!-- helper flags used by attrs -->
+                    <field name="kind" invisible="1"/>
                     <field name="is_editable" invisible="1"/>
                     <field name="has_signed" invisible="1"/>
                     <field name="my_active_step_id" invisible="1"/>

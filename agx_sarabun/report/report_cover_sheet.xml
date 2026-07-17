@@ -32,19 +32,12 @@
                             <tr>
                                 <td colspan="2">
                                     <strong>วันที่</strong> <span t-field="doc.date"/>
-                                    <span t-if="doc.urgency != 'normal'"
-                                          t-out="' [' + dict(doc._fields['urgency'].selection).get(doc.urgency) + ']'"
-                                          style="color:#c00;font-weight:bold;"/>
-                                    <span t-if="doc.secrecy != 'normal'"
-                                          t-out="' [' + dict(doc._fields['secrecy'].selection).get(doc.secrecy) + ']'"
-                                          style="color:#c00;font-weight:bold;"/>
                                 </td>
                             </tr>
                             <tr><td colspan="2"><strong>เรื่อง</strong> <span t-field="doc.subject"/></td></tr>
                             <tr>
                                 <td colspan="2">
                                     <strong>เรียน</strong> <span t-out="doc.addressee"/>
-                                    <span t-if="doc.through" t-out="' (ผ่าน ' + doc.through + ')'"/>
                                 </td>
                             </tr>
                         </table>

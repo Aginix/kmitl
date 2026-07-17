@@ -61,7 +61,7 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Managers see everything (v1: incl. secrecy-labelled; need-to-know is phase-2) -->
+        <!-- Managers see everything -->
         <record id="sarabun_document_manager_rule" model="ir.rule">
             <field name="name">Sarabun Document: Manager Access</field>
             <field name="model_id" ref="model_sarabun_document"/>

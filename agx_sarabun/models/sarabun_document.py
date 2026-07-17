@@ -53,29 +53,21 @@ class SarabunDocument(models.Model):
         readonly=True,
     )
 
-    # === Header (เรื่อง / เรียน / ผ่าน / วันที่) ===
+    # === Header (เรื่อง / เรียน / วันที่) ===
     subject = fields.Char(string="เรื่อง (Subject)", required=True, tracking=True)
     date = fields.Date(
         string="วันที่ (Document Date)",
         required=True,
         default=fields.Date.context_today,
         tracking=True,
+        help="Defaults to today at creation (auto). Kept read-only in the form for "
+        "now; making it editable is a later phase.",
     )
     addressee = fields.Char(
         string="เรียน (Addressee)",
         tracking=True,
         help="The ceremonial recipient on the หนังสือ header — its own field, "
         "separate from the routing actors. Manual or origin-set.",
-    )
-    addressee_position_id = fields.Many2one(
-        comodel_name="sarabun.position",
-        string="Addressee Position",
-        help="Optional structured suggest source for เรียน (e.g. the final "
-        "ลงนาม-อนุมัติ step's Position).",
-    )
-    through = fields.Char(
-        string="ผ่าน (Through)",
-        help='Free text for "เรียน X ผ่าน Y".',
     )
     content = fields.Html(
         string="เนื้อหา (Content)",
@@ -106,31 +98,6 @@ class SarabunDocument(models.Model):
     sender_suffix = fields.Char(
         string="Sender Suffix",
         help="Sub-unit name or extension (e.g. 'สำนักงานคณบดี', 'ต่อ 1234').",
-    )
-
-    # === Levels ===
-    urgency = fields.Selection(
-        selection=[
-            ("normal", "ปกติ (Normal)"),
-            ("urgent", "ด่วน (Urgent)"),
-            ("very_urgent", "ด่วนมาก (Very Urgent)"),
-            ("immediate", "ด่วนที่สุด (Immediate)"),
-        ],
-        string="ชั้นความเร็ว (Urgency)",
-        default="normal",
-        tracking=True,
-    )
-    secrecy = fields.Selection(
-        selection=[
-            ("normal", "ปกติ (Normal)"),
-            ("confidential", "ลับ (Confidential)"),
-            ("secret", "ลับมาก (Secret)"),
-            ("top_secret", "ลับที่สุด (Top Secret)"),
-        ],
-        string="ชั้นความลับ (Secrecy)",
-        default="normal",
-        tracking=True,
-        help="v1: display label only. Need-to-know enforcement is phase-2.",
     )
 
     # === Lifecycle (state field; the state MACHINE is P2 — ADR-0002) ===
