@@ -28,6 +28,7 @@
         "data/project.global.index.csv",
         "data/project.impact.csv",
         "data/project.methodology.csv",
+        "data/project.expense.item.csv",
         "data/project.strategic.plan.csv",
         "data/budget_account_project_update.xml",
         "security/security.xml",

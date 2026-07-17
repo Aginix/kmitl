@@ -1,0 +1,11 @@
+id,sequence,budget_type,name
+expense_item_salary_wage,10,personnel,เงินเดือนและค่าจ้าง
+expense_item_permanent_wage,20,personnel,ค่าจ้างประจำ
+expense_item_temporary_wage,30,personnel,ค่าจ้างชั่วคราว
+expense_item_remuneration,40,operating,ค่าตอบแทน
+expense_item_use_of_supplies,50,operating,ค่าใช้สอย
+expense_item_materials,60,operating,ค่าวัสดุ
+expense_item_utilities,70,operating,ค่าสาธารณูปโภค
+expense_item_subsidy_general,80,subsidy,ค่าใช้จ่ายงบเงินอุดหนุน
+expense_item_equipment,90,subsidy,ค่าครุภัณฑ์
+expense_item_construction,100,subsidy,ค่าที่ดินและสิ่งก่อสร้าง

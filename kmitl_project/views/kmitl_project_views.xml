@@ -309,7 +309,7 @@
             <tree editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="budget_type" invisible="1" />
-                <field name="expense_item_id" options="{'no_open': True}" />
+                <field name="expense_item_id" options="{'no_create': True, 'no_open': True}" />
                 <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />
                 <field name="amount" sum="รวม" />
                 <field name="note" placeholder="หมายเหตุ" />
