@@ -37,4 +37,10 @@
         width: 120px;
         display: inline-block;
     }
+
+    // Budget-account code search sits in the filter bar next to the dimension
+    // filters; match their width so the controls line up.
+    .o_brp_search input {
+        min-width: 200px;
+    }
 }
