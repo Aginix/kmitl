@@ -20,6 +20,7 @@ export class AttachmentClassifierDialog extends Component {
         this.state = useState({
             value: this.props.initialValue || "",
             isDraggingOver: false,
+            saving: false,
         });
         this._dragCounter = 0;
         this.fileInputRef = useRef("fileInput");
@@ -115,6 +116,9 @@ export class AttachmentClassifierDialog extends Component {
     // Save / cancel
     // -----------------------------------------------------------------
     async onSave() {
+        if (this.state.saving) {
+            return;
+        }
         if (this.isAddMode) {
             const fileInput = this.fileInputRef.el;
             const files = fileInput ? Array.from(fileInput.files) : [];
@@ -124,9 +128,21 @@ export class AttachmentClassifierDialog extends Component {
                 });
                 return;
             }
-            await this.props.onSave({files, value: this.state.value});
+            this.state.saving = true;
+            try {
+                await this.props.onSave({files, value: this.state.value});
+            } catch (error) {
+                this.state.saving = false;
+                throw error;
+            }
         } else {
-            await this.props.onSave({value: this.state.value});
+            this.state.saving = true;
+            try {
+                await this.props.onSave({value: this.state.value});
+            } catch (error) {
+                this.state.saving = false;
+                throw error;
+            }
         }
         this._safeClose();
     }

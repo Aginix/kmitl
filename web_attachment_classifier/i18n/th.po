@@ -169,6 +169,20 @@ msgstr "กรุณาเลือกไฟล์"
 msgid "Uploading error"
 msgstr "อัปโหลดผิดพลาด"
 
+#. module: web_attachment_classifier
+#. odoo-javascript
+#: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.js:0
+#, python-format
+msgid "Attachment(s) added"
+msgstr "แนบไฟล์เรียบร้อย"
+
+#. module: web_attachment_classifier
+#. odoo-javascript
+#: code:addons/web_attachment_classifier/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
+msgid "Uploading..."
+msgstr "กำลังอัปโหลด..."
+
 # ---------------------------------------------------------------------------
 # Python strings (_())
 # ---------------------------------------------------------------------------

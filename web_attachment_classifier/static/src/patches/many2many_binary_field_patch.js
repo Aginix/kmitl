@@ -25,6 +25,7 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
         this.classifierState = useState({
             options: [],
             isDraggingOver: false,
+            uploading: false,
         });
         this._dragCounter = 0;
         onWillStart(async () => {
@@ -75,50 +76,62 @@ patch(Many2ManyBinaryField.prototype, "web_attachment_classifier.Many2ManyBinary
 
     // Shared: POST files to /web/binary/upload_attachment, write the
     // classifier when supplied, and link the successful ids to the parent.
+    // Toggles `classifierState.uploading` so the widget can render an
+    // overlay + spinner, and drops a success toast once the ids are
+    // linked so the user has a positive confirmation instead of
+    // wondering whether to click Attach again.
     async _uploadAndLink(files, doctypeId) {
         const http = this.env.services.http;
         const notification = this.env.services.notification;
-        const params = {
-            csrf_token: odoo.csrf_token,
-            ufile: files,
-            model: this.props.record.resModel,
-            id: this.props.record.data.id || 0,
-        };
-        let parsed;
+        this.classifierState.uploading = true;
         try {
-            const raw = await http.post(
-                "/web/binary/upload_attachment",
-                params,
-                "text"
-            );
-            parsed = JSON.parse(raw);
-        } catch (error) {
-            notification.add(error.message || String(error), {
-                title: this.env._t("Uploading error"),
-                type: "danger",
-            });
-            return;
-        }
-        const okIds = [];
-        for (const att of parsed) {
-            if (att.error) {
-                notification.add(att.error, {
+            const params = {
+                csrf_token: odoo.csrf_token,
+                ufile: files,
+                model: this.props.record.resModel,
+                id: this.props.record.data.id || 0,
+            };
+            let parsed;
+            try {
+                const raw = await http.post(
+                    "/web/binary/upload_attachment",
+                    params,
+                    "text"
+                );
+                parsed = JSON.parse(raw);
+            } catch (error) {
+                notification.add(error.message || String(error), {
                     title: this.env._t("Uploading error"),
                     type: "danger",
                 });
-            } else {
-                okIds.push(att.id);
+                return;
             }
-        }
-        if (!okIds.length) {
-            return;
-        }
-        if (doctypeId) {
-            await this._classifierOrm.write("ir.attachment", okIds, {
-                document_type_id: doctypeId,
+            const okIds = [];
+            for (const att of parsed) {
+                if (att.error) {
+                    notification.add(att.error, {
+                        title: this.env._t("Uploading error"),
+                        type: "danger",
+                    });
+                } else {
+                    okIds.push(att.id);
+                }
+            }
+            if (!okIds.length) {
+                return;
+            }
+            if (doctypeId) {
+                await this._classifierOrm.write("ir.attachment", okIds, {
+                    document_type_id: doctypeId,
+                });
+            }
+            await this.operations.saveRecord(okIds);
+            notification.add(this.env._t("Attachment(s) added"), {
+                type: "success",
             });
+        } finally {
+            this.classifierState.uploading = false;
         }
-        await this.operations.saveRecord(okIds);
     },
 
     // ------------------------------------------------------------------

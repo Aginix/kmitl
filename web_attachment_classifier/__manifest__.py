@@ -7,7 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "development_status": "Beta",
     "category": "Hidden",
-    "depends": ["web"],
+    "depends": ["web", "mail"],
     "data": [
         "security/ir.model.access.csv",
         "views/ir_attachment_document_type_views.xml",

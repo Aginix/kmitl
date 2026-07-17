@@ -10,6 +10,23 @@ class IrAttachment(models.Model):
         ondelete="restrict",
     )
 
+    def _attachment_format(self, legacy=False):
+        # Inject document_type_id's display name into the payload mail's
+        # chatter sends to the browser, so the AttachmentCard template
+        # can render the same badge that the many2many_binary widget
+        # shows on the form. Only attachments that actually have a
+        # doctype gain the extra key.
+        res_list = super()._attachment_format(legacy=legacy)
+        doctype_by_id = {
+            att.id: att.document_type_id.name
+            for att in self
+            if att.document_type_id
+        }
+        for res in res_list:
+            if res["id"] in doctype_by_id:
+                res["documentTypeName"] = doctype_by_id[res["id"]]
+        return res_list
+
     def write(self, vals):
         # Snapshot the old doctype only when it's about to change, so we
         # can post a tracking message onto the parent record's chatter

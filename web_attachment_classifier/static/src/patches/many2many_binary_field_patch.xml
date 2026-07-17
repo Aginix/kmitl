@@ -18,6 +18,12 @@
             >
                 <span class="fa fa-cloud-upload me-2" />Drop files to attach
             </div>
+            <div
+                t-if="classifierState.uploading"
+                class="o_classifier_uploading_overlay"
+            >
+                <span class="fa fa-spin fa-spinner me-2" />Uploading...
+            </div>
         </xpath>
         <xpath expr="//FileInput" position="attributes">
             <attribute name="beforeOpen.bind">beforeAttachClick</attribute>

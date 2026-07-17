@@ -44,8 +44,21 @@
                 </select>
             </div>
             <t t-set-slot="footer">
-                <button class="btn btn-primary" t-on-click="onSave">Save</button>
-                <button class="btn btn-secondary" t-on-click="onCancel">Cancel</button>
+                <button
+                    class="btn btn-primary"
+                    t-on-click="onSave"
+                    t-att-disabled="state.saving"
+                >
+                    <i
+                        t-if="state.saving"
+                        class="fa fa-spin fa-spinner me-1"
+                    />Save
+                </button>
+                <button
+                    class="btn btn-secondary"
+                    t-on-click="onCancel"
+                    t-att-disabled="state.saving"
+                >Cancel</button>
             </t>
         </Dialog>
     </t>
