@@ -66,9 +66,9 @@
                     <group>
                         <group name="unit" string="หน่วยงาน"
                                attrs="{'readonly': [('is_editable', '=', False)]}">
-                            <field name="sender_department_id" string="ส่วนราชการ"/>
-                            <field name="sender_suffix" string="งาน / โทร."
-                                   placeholder="เช่น งานการวิเคราะห์ฯ โทร. ๓๑๗๖"/>
+                            <field name="sender_department_id" string="หน่วยงาน"/>
+                            <field name="sender_suffix" string="ต่อท้ายส่วนราชการ"
+                                   placeholder="พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"/>
                         </group>
                         <group name="doc_meta" string="ทะเบียนหนังสือ">
                             <field name="name" string="ที่" readonly="1"/>
@@ -84,11 +84,8 @@
                     </group>
                     <group name="header" attrs="{'readonly': [('is_editable', '=', False)]}">
                         <field name="subject" placeholder="เรื่อง..."/>
-                        <!-- เรียน line on one row: [คำขึ้นต้น] [ผู้รับ] — mirrors the document.
-                             Label is neutral (not "เรียน") so it doesn't fight a non-เรียน prefix. -->
-                        <label for="addressee_prefix_id" string="คำขึ้นต้น"/>
+                        <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"/>
                         <div class="o_row">
-                            <field name="addressee_prefix_id" nolabel="1"/>
                             <field name="addressee" nolabel="1" placeholder="ผู้รับ / ตำแหน่ง..."/>
                         </div>
                     </group>
