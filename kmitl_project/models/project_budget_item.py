@@ -2,7 +2,7 @@
 import logging
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -27,12 +27,13 @@ class ProjectBudgetItem(models.Model):
 
     _name = "project.budget.item"
     _description = "รายการงบประมาณโครงการ"
+    _inherit = ["mail.thread"]
     _parent_store = True
     _parent_name = "parent_id"
     _order = "parent_path"
 
     sequence = fields.Integer(default=10)
-    name = fields.Char(string="ชื่อรายการ", required=True)
+    name = fields.Char(string="ชื่อรายการ", required=True, tracking=True)
     complete_name = fields.Char(
         string="รายการ",
         compute="_compute_complete_name",
@@ -43,24 +44,28 @@ class ProjectBudgetItem(models.Model):
         BUDGET_TYPE_SELECTION,
         string="ประเภท",
         required=True,
+        tracking=True,
     )
     # Standard rate-card reference values — informational only (the plan line's
     # amount is entered manually, not computed from these; see ADR-0002).
-    description = fields.Text(string="คำอธิบาย")
-    unit = fields.Char(string="หน่วยนับ", help="เช่น คน / ครั้ง / วัน")
-    unit_price = fields.Float(string="ราคาต่อหน่วย", digits="Product Price")
-    note = fields.Char(string="หมายเหตุ")
+    description = fields.Text(string="คำอธิบาย", tracking=True)
+    unit = fields.Char(string="หน่วยนับ", help="เช่น คน / ครั้ง / วัน", tracking=True)
+    unit_price = fields.Float(
+        string="ราคาต่อหน่วย", digits="Product Price", tracking=True
+    )
+    note = fields.Char(string="หมายเหตุ", tracking=True)
     parent_id = fields.Many2one(
         "project.budget.item",
         string="อยู่ภายใต้ประเภทงบ",
         ondelete="cascade",
         index=True,
+        tracking=True,
     )
     parent_path = fields.Char(index=True)
     child_ids = fields.One2many(
         "project.budget.item", "parent_id", string="รายการย่อย"
     )
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(default=True, tracking=True)
 
     @api.depends("name", "parent_id.complete_name")
     def _compute_complete_name(self):
@@ -90,6 +95,35 @@ class ProjectBudgetItem(models.Model):
     def _onchange_parent_id(self):
         if self.parent_id:
             self.budget_type = self.parent_id.budget_type
+
+    def unlink(self):
+        """Block deletion of an item that is still in use — as a parent category
+        (has children) or referenced by any Project Budget Plan line. The line
+        lookup runs sudo so the check is global, not limited to the deleter's
+        visible projects. In-use items should be archived instead."""
+        for item in self:
+            if item.child_ids:
+                raise UserError(
+                    _(
+                        "ไม่สามารถลบ '%s' ได้ เนื่องจากยังมีรายการย่อยอยู่ "
+                        "กรุณาลบรายการย่อยก่อน"
+                    )
+                    % item.complete_name
+                )
+        used = (
+            self.env["project.budget.line"]
+            .sudo()
+            .search([("budget_item_id", "in", self.ids)])
+        )
+        if used:
+            raise UserError(
+                _(
+                    "ไม่สามารถลบรายการที่ถูกใช้งานในแผนงบประมาณโครงการอยู่: %s\n"
+                    "หากไม่ต้องการใช้แล้ว ให้เก็บถาวร (archive) แทนการลบ"
+                )
+                % ", ".join(used.budget_item_id.mapped("complete_name"))
+            )
+        return super().unlink()
 
     def name_get(self):
         return [(item.id, item.complete_name) for item in self]

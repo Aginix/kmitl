@@ -35,6 +35,7 @@ class ProjectBudgetLine(models.Model):
         comodel_name="project.budget.item",
         string="รายการ",
         required=True,
+        ondelete="restrict",
         domain="[('budget_type', '=', budget_type), ('child_ids', '=', False)]",
     )
     # Reference only — the standard rate carried by the chosen item.
