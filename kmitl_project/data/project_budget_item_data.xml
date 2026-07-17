@@ -6,36 +6,36 @@
     <!-- ============================================================= -->
 
     <!-- Roots: ประเภทงบ -->
-    <record id="expense_root_personnel" model="project.expense.item">
+    <record id="expense_root_personnel" model="project.budget.item">
         <field name="name">งบบุคลากร</field>
         <field name="budget_type">expense</field>
         <field name="sequence">10</field>
     </record>
-    <record id="expense_root_operating" model="project.expense.item">
+    <record id="expense_root_operating" model="project.budget.item">
         <field name="name">งบดำเนินงาน</field>
         <field name="budget_type">expense</field>
         <field name="sequence">20</field>
     </record>
-    <record id="expense_root_subsidy" model="project.expense.item">
+    <record id="expense_root_subsidy" model="project.budget.item">
         <field name="name">งบอุดหนุน</field>
         <field name="budget_type">expense</field>
         <field name="sequence">30</field>
     </record>
 
     <!-- งบบุคลากร -->
-    <record id="expense_item_salary_wage" model="project.expense.item">
+    <record id="expense_item_salary_wage" model="project.budget.item">
         <field name="name">เงินเดือนและค่าจ้าง</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_personnel" />
         <field name="sequence">10</field>
     </record>
-    <record id="expense_item_permanent_wage" model="project.expense.item">
+    <record id="expense_item_permanent_wage" model="project.budget.item">
         <field name="name">ค่าจ้างประจำ</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_personnel" />
         <field name="sequence">20</field>
     </record>
-    <record id="expense_item_temporary_wage" model="project.expense.item">
+    <record id="expense_item_temporary_wage" model="project.budget.item">
         <field name="name">ค่าจ้างชั่วคราว</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_personnel" />
@@ -43,25 +43,25 @@
     </record>
 
     <!-- งบดำเนินงาน -->
-    <record id="expense_item_remuneration" model="project.expense.item">
+    <record id="expense_item_remuneration" model="project.budget.item">
         <field name="name">ค่าตอบแทน</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_operating" />
         <field name="sequence">10</field>
     </record>
-    <record id="expense_item_use_of_supplies" model="project.expense.item">
+    <record id="expense_item_use_of_supplies" model="project.budget.item">
         <field name="name">ค่าใช้สอย</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_operating" />
         <field name="sequence">20</field>
     </record>
-    <record id="expense_item_materials" model="project.expense.item">
+    <record id="expense_item_materials" model="project.budget.item">
         <field name="name">ค่าวัสดุ</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_operating" />
         <field name="sequence">30</field>
     </record>
-    <record id="expense_item_utilities" model="project.expense.item">
+    <record id="expense_item_utilities" model="project.budget.item">
         <field name="name">ค่าสาธารณูปโภค</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_operating" />
@@ -69,19 +69,19 @@
     </record>
 
     <!-- งบอุดหนุน -->
-    <record id="expense_item_subsidy_general" model="project.expense.item">
+    <record id="expense_item_subsidy_general" model="project.budget.item">
         <field name="name">ค่าใช้จ่ายงบเงินอุดหนุน</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_subsidy" />
         <field name="sequence">10</field>
     </record>
-    <record id="expense_item_equipment" model="project.expense.item">
+    <record id="expense_item_equipment" model="project.budget.item">
         <field name="name">ค่าครุภัณฑ์</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_subsidy" />
         <field name="sequence">20</field>
     </record>
-    <record id="expense_item_construction" model="project.expense.item">
+    <record id="expense_item_construction" model="project.budget.item">
         <field name="name">ค่าที่ดินและสิ่งก่อสร้าง</field>
         <field name="budget_type">expense</field>
         <field name="parent_id" ref="expense_root_subsidy" />
@@ -91,17 +91,17 @@
     <!-- ============================================================= -->
     <!-- รายรับ (income): flat items, no root                           -->
     <!-- ============================================================= -->
-    <record id="income_item_registration_donation" model="project.expense.item">
+    <record id="income_item_registration_donation" model="project.budget.item">
         <field name="name">ค่าลงทะเบียน/เงินบริจาค/เงินสนับสนุนจากภายนอก</field>
         <field name="budget_type">income</field>
         <field name="sequence">10</field>
     </record>
-    <record id="income_item_department_revenue" model="project.expense.item">
+    <record id="income_item_department_revenue" model="project.budget.item">
         <field name="name">เงินรายได้ของส่วนงาน</field>
         <field name="budget_type">income</field>
         <field name="sequence">20</field>
     </record>
-    <record id="income_item_institute_revenue" model="project.expense.item">
+    <record id="income_item_institute_revenue" model="project.budget.item">
         <field name="name">เงินรายได้สถาบัน (ขอรับการสนับสนุน)</field>
         <field name="budget_type">income</field>
         <field name="sequence">30</field>

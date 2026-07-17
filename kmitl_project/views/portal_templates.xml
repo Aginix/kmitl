@@ -382,7 +382,7 @@
                                     <t t-foreach="section['lines']" t-as="expense">
                                         <tr>
                                             <td>
-                                                <span t-field="expense.expense_item_id.complete_name" />
+                                                <span t-field="expense.budget_item_id.complete_name" />
                                             </td>
                                             <td style="white-space: pre-wrap">
                                                 <span t-field="expense.description" />

@@ -4,18 +4,19 @@ import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
-from .project_expense_item import BUDGET_TYPE_SELECTION
+from .project_budget_item import BUDGET_TYPE_SELECTION
 
 _logger = logging.getLogger(__name__)
 
 
-class ProjectExpense(models.Model):
-    """A planned project budget line — one income (รายรับ) or expense (รายจ่าย)
-    line pointing at a configured leaf item, with its แตกตัวคูณ breakdown and
-    amount."""
+class ProjectBudgetLine(models.Model):
+    """One line of a project's Project Budget Plan — an income (รายรับ) or expense
+    (รายจ่าย) entry pointing at a catalog Budget Item, with a free-text แตกตัวคูณ
+    breakdown and a manually entered amount. Unit and unit price are shown from
+    the item as reference only (see ADR-0002)."""
 
-    _name = "project.expense"
-    _description = "รายรับ/รายจ่ายโครงการ"
+    _name = "project.budget.line"
+    _description = "บรรทัดแผนงบประมาณโครงการ"
     _order = "budget_type, sequence, id"
 
     sequence = fields.Integer(default=10)
@@ -30,11 +31,21 @@ class ProjectExpense(models.Model):
         string="ประเภท",
         required=True,
     )
-    expense_item_id = fields.Many2one(
-        comodel_name="project.expense.item",
+    budget_item_id = fields.Many2one(
+        comodel_name="project.budget.item",
         string="รายการ",
         required=True,
         domain="[('budget_type', '=', budget_type), ('child_ids', '=', False)]",
+    )
+    # Reference only — the standard rate carried by the chosen item.
+    unit = fields.Char(
+        string="หน่วยนับ", related="budget_item_id.unit", readonly=True
+    )
+    unit_price = fields.Float(
+        string="ราคาต่อหน่วย",
+        related="budget_item_id.unit_price",
+        readonly=True,
+        digits="Product Price",
     )
     description = fields.Text(
         string="คำอธิบาย",

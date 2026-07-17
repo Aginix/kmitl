@@ -23,3 +23,11 @@ _Avoid_: Project Code (รหัสโครงการ) — a distinct approva
 **Project Budget Remaining (งบประมาณคงเหลือ)**:
 A project's reserved `budget_amount` minus what has actually been **consumed (เบิกจ่าย)** from its commitment — the project money still available to spend. It is the project's own reservation-vs-spend, **not** the budget account's disbursement *Remaining (f)*, and **not** the พ.1 planning headroom (`budget_amount − Σ estimated_cost`) that caps how many purchase requests a project may raise.
 _Avoid_: remaining (unqualified — clashes with [budget » Remaining (f)](../budget/CONTEXT.md))
+
+**Project Budget Plan (แผนงบประมาณโครงการ)**:
+The project's own itemised plan of expected income (รายรับ) and expenses (รายจ่าย), kept for internal management of the project. Realised as `project.budget.line` records on the project, each picking a catalog **Budget Item** (`project.budget.item`). Independent of the [budget](../budget/CONTEXT.md) engine and of the **Project Budget** (`budget_amount`) envelope — the two are never reconciled automatically.
+_Avoid_: Project Budget / งบประมาณ (that names the reserved `budget_amount` envelope, a different thing); budget (the appropriation engine); the monthly spending schedule (`project.plan`, แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ) — a separate concept on its own tab
+
+**Budget Item (รายการงบประมาณ)**:
+A reusable catalog entry (`project.budget.item`) a Project Budget Plan line points at, classified income or expense and arranged in a hierarchy whose expense roots are the ประเภทงบ categories (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน).
+_Avoid_: expense item (income items exist too), product (not an `product.product`)

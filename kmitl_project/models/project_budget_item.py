@@ -10,21 +10,22 @@ _logger = logging.getLogger(__name__)
 # (รายรับ) or expense (รายจ่าย). The former ประเภทงบ categories
 # (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน) are no longer selection values here — they are
 # now root records of the expense tree, seeded in
-# data/project_expense_item_data.xml. Imported by project_expense so both models
-# stay in sync.
+# data/project_budget_item_data.xml. Imported by project_budget_line so both
+# models stay in sync.
 BUDGET_TYPE_SELECTION = [
     ("income", "รายรับ"),
     ("expense", "รายจ่าย"),
 ]
 
 
-class ProjectExpenseItem(models.Model):
-    """Hierarchical master data for project budget items. Expense roots are the
-    ประเภทงบ categories and their children are the selectable expense items;
-    income items are flat (no root). Configured on its own settings page; project
-    budget lines pick the leaf items."""
+class ProjectBudgetItem(models.Model):
+    """Hierarchical catalog (master data) for the Project Budget Plan. Expense
+    roots are the ประเภทงบ categories and their children are the selectable expense
+    items; income items are flat (no root). Each item carries a standard
+    description, unit and unit price used only as reference when planning; project
+    budget lines pick the leaf items. Configured on its own settings page."""
 
-    _name = "project.expense.item"
+    _name = "project.budget.item"
     _description = "รายการงบประมาณโครงการ"
     _parent_store = True
     _parent_name = "parent_id"
@@ -43,15 +44,21 @@ class ProjectExpenseItem(models.Model):
         string="ประเภท",
         required=True,
     )
+    # Standard rate-card reference values — informational only (the plan line's
+    # amount is entered manually, not computed from these; see ADR-0002).
+    description = fields.Text(string="คำอธิบาย")
+    unit = fields.Char(string="หน่วยนับ", help="เช่น คน / ครั้ง / วัน")
+    unit_price = fields.Float(string="ราคาต่อหน่วย", digits="Product Price")
+    note = fields.Char(string="หมายเหตุ")
     parent_id = fields.Many2one(
-        "project.expense.item",
+        "project.budget.item",
         string="อยู่ภายใต้ประเภทงบ",
         ondelete="cascade",
         index=True,
     )
     parent_path = fields.Char(index=True)
     child_ids = fields.One2many(
-        "project.expense.item", "parent_id", string="รายการย่อย"
+        "project.budget.item", "parent_id", string="รายการย่อย"
     )
     active = fields.Boolean(default=True)
 

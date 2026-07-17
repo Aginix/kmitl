@@ -300,14 +300,16 @@
         </field>
     </record>
 
-    <record id="view_project_expense_tree" model="ir.ui.view">
-        <field name="name">view.project.expense.tree</field>
-        <field name="model">project.expense</field>
+    <record id="view_project_budget_line_tree" model="ir.ui.view">
+        <field name="name">view.project.budget.line.tree</field>
+        <field name="model">project.budget.line</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="budget_type" invisible="1" />
-                <field name="expense_item_id" options="{'no_create': True, 'no_open': True}" />
+                <field name="budget_item_id" options="{'no_create': True, 'no_open': True}" />
+                <field name="unit" />
+                <field name="unit_price" />
                 <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />
                 <field name="amount" sum="รวม" />
                 <field name="note" placeholder="หมายเหตุ" />

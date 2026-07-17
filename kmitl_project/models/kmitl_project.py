@@ -260,7 +260,7 @@ class KmitlProject(models.Model):
     )
 
     income_line_ids = fields.One2many(
-        "project.expense",
+        "project.budget.line",
         "project_id",
         string="รายรับ",
         domain=[("budget_type", "=", "income")],
@@ -269,7 +269,7 @@ class KmitlProject(models.Model):
     )
 
     expense_line_ids = fields.One2many(
-        "project.expense",
+        "project.budget.line",
         "project_id",
         string="รายจ่าย",
         domain=[("budget_type", "=", "expense")],

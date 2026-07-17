@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- View project.expense.item tree -->
-    <record id="view_project_expense_item_tree" model="ir.ui.view">
-        <field name="name">view.project.expense.item.tree</field>
-        <field name="model">project.expense.item</field>
+    <!-- View project.budget.item tree -->
+    <record id="view_project_budget_item_tree" model="ir.ui.view">
+        <field name="name">view.project.budget.item.tree</field>
+        <field name="model">project.budget.item</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="budget_type" />
                 <field name="parent_id" options="{'no_create': True}" domain="[('parent_id', '=', False)]" />
                 <field name="name" />
+                <field name="unit" />
+                <field name="unit_price" />
+                <field name="description" optional="hide" />
+                <field name="note" optional="hide" />
                 <field name="complete_name" optional="hide" />
             </tree>
         </field>
     </record>
 
-    <!-- View project.expense.item search -->
-    <record id="view_project_expense_item_search" model="ir.ui.view">
-        <field name="name">view.project.expense.item.search</field>
-        <field name="model">project.expense.item</field>
+    <!-- View project.budget.item search -->
+    <record id="view_project_budget_item_search" model="ir.ui.view">
+        <field name="name">view.project.budget.item.search</field>
+        <field name="model">project.budget.item</field>
         <field name="arch" type="xml">
             <search>
                 <field name="complete_name" string="รายการ" filter_domain="['|', ('name', 'ilike', self), ('complete_name', 'ilike', self)]" />
@@ -35,11 +39,11 @@
         </field>
     </record>
 
-    <!-- Action project.expense.item -->
-    <record id="action_project_expense_item" model="ir.actions.act_window">
+    <!-- Action project.budget.item -->
+    <record id="action_project_budget_item" model="ir.actions.act_window">
         <field name="name">รายการงบประมาณโครงการ</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">project.expense.item</field>
+        <field name="res_model">project.budget.item</field>
         <field name="view_mode">tree</field>
         <field name="context">{}</field>
         <field name="help" type="html">
@@ -49,5 +53,5 @@
         </field>
     </record>
 
-    <menuitem id="project_expense_item_config_menu" name="รายการงบประมาณ" action="action_project_expense_item" parent="menu_project_config" sequence="35" />
+    <menuitem id="project_budget_item_config_menu" name="รายการงบประมาณ" action="action_project_budget_item" parent="menu_project_config" sequence="35" />
 </odoo>
