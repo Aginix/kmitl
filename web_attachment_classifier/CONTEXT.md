@@ -76,14 +76,17 @@ consumers: `kris_project` and `purchase_request_kmitl`.
   `@api.constrains` or a check in the transition method that raises
   `UserError` when `attachment_ids.filtered(lambda a: not a.document_type_id)`
   is non-empty. Base does not enforce.
-- **Scope is data — configured per model.** To offer a doctype on a
-  new parent model, ship (or add via UI) two records: the doctype
-  master (`ir.attachment.document.type`, one per name) and a Mapping
-  (`ir.attachment.document.type.rel`) linking that doctype to the
-  model with a `sequence`. Settings → Technical → Attachments →
-  **Doctype per Model** is the primary entry: pick a model, edit an
-  inline table of doctypes with their sequences. **Document Types** is
-  the master list of doctype names.
+- **Scope is data — one Mapping per (model, doctype).** To offer a
+  doctype on a new parent model, ship (or add via UI) two records: the
+  doctype master (`ir.attachment.document.type`, one per name) and a
+  Mapping (`ir.attachment.document.type.rel`) linking that doctype to
+  the model with a `sequence`. Settings → Technical → Parameters →
+  **Attachment Doctypes** is the single entry point: a tree of the
+  Mapping table, grouped by model, with a sequence handle inside each
+  group. Only models that have at least one Mapping ever show up in
+  the list. **New** adds a Mapping (pick model + doctype + sequence);
+  a new doctype name can be created inline via the `document_type_id`
+  m2o's quick-create.
 - **Sequence lives on the Mapping, not on the Doctype.** The same
   doctype can appear in a different position under different models.
 - **UI is conditional.** A form whose `res_model` has zero doctypes
@@ -135,12 +138,13 @@ Test end-to-end after touching the patch or the taxonomy model:
    looks exactly like Odoo standard.
 6. Reload a form after tagging → badges still show. This confirms
    `document_type_id` is in `fieldsToFetch`.
-7. Settings > Technical > Attachments →
-   **Document Types**: add a new doctype (name only).
-   **Doctype per Model**: pick a model (e.g. `purchase.order`) →
-   inline table → add a row with the new doctype + sequence → save.
-   Open a PO form → dropdown + badge appear immediately (order matches
-   the sequence just set), no JS reload.
+7. Settings > Technical > Parameters > **Attachment Doctypes**:
+   click **New** → form opens → pick `Model` = `purchase.order`,
+   pick or quick-create a doctype in `Document Type`, set `Sequence`
+   → **Save**. Open a PO form → dropdown + badge appear immediately
+   (order matches the sequence just set), no JS reload. Repeat to add
+   more doctypes to the same model. The tree groups by model and only
+   lists models that have at least one Mapping.
 8. Historical attachments (created before the migration) still show
    their correct badges: the migration mapped their old
    `kris.project.document.type` id / `attachment_type` Selection value

@@ -21,13 +21,17 @@ msgstr ""
 # ---------------------------------------------------------------------------
 
 #. module: web_attachment_classifier
-#: model:ir.ui.menu,name:web_attachment_classifier.menu_attachment_classifier_root
-msgid "Attachments"
-msgstr "เอกสารแนบ"
+#: model:ir.actions.act_window,name:web_attachment_classifier.action_ir_attachment_document_type_rel
+#: model:ir.ui.menu,name:web_attachment_classifier.menu_ir_attachment_document_type_rel
+msgid "Attachment Doctypes"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 #. module: web_attachment_classifier
-#: model:ir.actions.act_window,name:web_attachment_classifier.action_ir_attachment_document_type
-#: model:ir.ui.menu,name:web_attachment_classifier.menu_ir_attachment_document_type
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_rel_form
+msgid "Attachment Doctype"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+
+#. module: web_attachment_classifier
 #: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_tree
 msgid "Document Types"
 msgstr "ประเภทเอกสาร"
@@ -36,18 +40,6 @@ msgstr "ประเภทเอกสาร"
 #: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_form
 msgid "Document Type"
 msgstr "ประเภทเอกสาร"
-
-#. module: web_attachment_classifier
-#: model:ir.actions.act_window,name:web_attachment_classifier.action_ir_model_classifier
-#: model:ir.ui.menu,name:web_attachment_classifier.menu_ir_model_classifier
-#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_model_classifier_tree
-msgid "Doctype per Model"
-msgstr "ประเภทเอกสารต่อโมเดล"
-
-#. module: web_attachment_classifier
-#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_model_classifier_form
-msgid "Attachment Document Types"
-msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 # ---------------------------------------------------------------------------
 # Model / field metadata
@@ -98,11 +90,6 @@ msgstr "โมเดล"
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type_rel__res_model_name
 msgid "Model Technical Name"
 msgstr "ชื่อทางเทคนิคของโมเดล"
-
-#. module: web_attachment_classifier
-#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_model__attachment_doctype_rel_ids
-msgid "Attachment Document Types"
-msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 # ---------------------------------------------------------------------------
 # OWL templates — XML text nodes (odoo-javascript)
