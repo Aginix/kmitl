@@ -13,6 +13,7 @@
                     type="object"
                     class="oe_highlight"
                     attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_document_count', '>', 0)]}"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
             </xpath>
 
