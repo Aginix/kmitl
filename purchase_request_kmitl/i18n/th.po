@@ -317,6 +317,7 @@ msgid "Can verify purchase request"
 msgstr ""
 
 #. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__cancel
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "Cancel"
 msgstr "ยกเลิก"
@@ -1418,7 +1419,7 @@ msgstr "ตีกลับ"
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Rejected"
-msgstr "ถูกตีกลับ"
+msgstr "ปฏิเสธ"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -1484,6 +1485,23 @@ msgstr "สถานะคำขอ"
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 msgid "Request status"
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_return_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
+msgid "Return Purchase Request"
+msgstr "ตีกลับคำขอซื้อ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_return_wizard__reason
+msgid "Return Reason"
+msgstr "เหตุผลในการตีกลับ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
+msgid "Return"
+msgstr "ตีกลับ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__requested_by

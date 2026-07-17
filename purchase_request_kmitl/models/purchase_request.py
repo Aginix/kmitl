@@ -5,8 +5,12 @@ class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     state = fields.Selection(
-        selection_add = [('to_submit', 'To Submit'), ('to_approve',)],
-        ondelete={'to_submit': 'set default'},
+        selection_add=[
+            ("to_submit", "To Submit"),
+            ("to_approve",),
+            ("cancel", "Cancel"),
+        ],
+        ondelete={"to_submit": "set default", "cancel": "set default"},
     )
 
     procurement_type_id = fields.Many2one(
@@ -136,3 +140,6 @@ class PurchaseRequest(models.Model):
 
     def button_to_submit(self):
         return self.write(({"state": "to_submit"}))
+
+    def button_cancel(self):
+        return self.write({"state": "cancel"})

@@ -27,6 +27,7 @@
         "views/procurement_method_views.xml",
         "views/procurement_type_views.xml",
         "views/procurement_committee_views.xml",
+        "wizards/purchase_request_return_wizard_views.xml",
         "views/purchase_request_views.xml",
         "views/purchase_order_line_views.xml",
         "views/purchase_order_views.xml",
