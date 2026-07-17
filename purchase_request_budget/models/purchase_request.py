@@ -259,7 +259,7 @@ class PurchaseRequest(models.Model):
     def _compute_to_approve_allowed(self):
         super()._compute_to_approve_allowed()
         for rec in self:
-            rec.to_approve_allowed = rec.state == "to_verify" and any(
+            rec.to_approve_allowed = rec.state == "to_submit" and any(
                 not line.cancelled and line.product_qty for line in rec.line_ids
             )
 
