@@ -5,7 +5,6 @@ from odoo.exceptions import UserError, ValidationError
 
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
-    _state_from = ["to_verify", "to_submit"]
 
     _STATES = [("to_verify", "To be verified"), ("to_submit",)]
 
