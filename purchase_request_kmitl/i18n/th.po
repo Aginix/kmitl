@@ -316,9 +316,10 @@ msgstr "ประเภทเอกสารแนบ"
 msgid "Can verify purchase request"
 msgstr ""
 
-#. module: purchase_request
+#. module: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__cancel
-#: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -962,7 +963,7 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model:ir.ui.menu,name:purchase_request_kmitl.purchase_request_kmitl_root_menu
 msgid "PR1"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "แบบขอให้จัดหา (พ.1)"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__pending_qty_to_receive
@@ -1154,7 +1155,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "แบบขอให้จัดหา (พ.1)"
 
 #. module: purchase_request
 #. odoo-python
@@ -1190,7 +1191,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__line_id
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_form
 msgid "Purchase Request Line"
-msgstr "คำขอซื้อขอจ้างไลน์"
+msgstr "แบบขอให้จัดหาไลน์"
 
 #. module: purchase_request_kmitl
 #: model:ir.model,name:purchase_request_kmitl.model_purchase_request_line_make_purchase_order
@@ -1217,7 +1218,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_form2_sub
 #, python-format
 msgid "Purchase Request Lines"
-msgstr "รายการคำขอซื้อขอจ้าง"
+msgstr "รายการแบบขอให้จัดหา"
 
 #. module: purchase_request
 #: model:res.groups,name:purchase_request.group_purchase_request_manager
@@ -1270,7 +1271,7 @@ msgstr ""
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_pro_mgt
 #: model:ir.ui.menu,name:purchase_request.parent_menu_purchase_request
 msgid "Purchase Requests"
-msgstr "คำขอซื้อขอจ้าง (พ.1)"
+msgstr "แบบขอให้จัดหา (พ.1)"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchase_state
@@ -1997,12 +1998,12 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_act
 msgid "purchase_request.menu_purchase_request_act"
-msgstr "คำขอซื้อขอจ้าง (พ.1)"
+msgstr "แบบขอให้จัดหา (พ.1)"
 
 #. module: purchase_request
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_line_act
 msgid "purchase_request.menu_purchase_request_line_act"
-msgstr "รายการคำขอซื้อขอจ้าง"
+msgstr "รายการแบบขอให้จัดหา"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
@@ -2042,7 +2043,7 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "แบบขอให้จัดหา"
 
 #. module: purchase_request_kmitl
 #: model:product.template,name:purchase_request_kmitl.product_type_002_product_template
@@ -2196,7 +2197,7 @@ msgstr "ราคาต่อหน่วยต้องมากกว่า 0"
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Purchase Request Details"
-msgstr "รายละเอียดคำขอซื้อขอจ้าง"
+msgstr "รายละเอียดแบบขอให้จัดหา"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__advance
@@ -2221,7 +2222,7 @@ msgstr "สำรองจ่าย"
 #. module: purchase_request_kmitl
 #: model:ir.model,name:purchase_request_kmitl.model_purchase_request
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "แบบขอให้จัดหา (พ.1)"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
@@ -2261,3 +2262,10 @@ msgstr "สำหรับงานก่อสร้าง"
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"
+
+#. module: purchase_request_kmitl
+#. odoo-python
+#: code:addons/purchase_request_kmitl/wizards/purchase_request_return_wizard.py:0
+#, python-format
+msgid "Purchase request returned. Reason: %s"
+msgstr "แบบขอให้จัดหา (พ.1) ถูกตีกลับ. เหตุผล: %s"
