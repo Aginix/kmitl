@@ -4,6 +4,11 @@ from odoo import api, fields, models
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    state = fields.Selection(
+        selection_add = [('to_submit', 'To Submit'), ('to_approve',)],
+        ondelete={'to_submit': 'set default'},
+    )
+
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
         string="Procurement Type",
@@ -128,3 +133,6 @@ class PurchaseRequest(models.Model):
             }
         )
         return super().button_approved()
+
+    def button_to_submit(self):
+        return self.write(({"state": "to_submit"}))

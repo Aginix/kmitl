@@ -243,7 +243,7 @@ class PurchaseRequest(models.Model):
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.button_to_approve()
+            self.button_to_submit()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
