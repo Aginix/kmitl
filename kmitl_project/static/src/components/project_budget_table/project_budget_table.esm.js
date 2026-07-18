@@ -22,6 +22,16 @@ export class ProjectBudgetTableRenderer extends ListRenderer {
         return this.categoryKey(records[index - 1]) !== this.categoryKey(record);
     }
 
+    /** True when this record is the last of its section (or the last row). */
+    endsSection(record) {
+        const records = this.props.list.records;
+        const index = records.indexOf(record);
+        if (index === records.length - 1) {
+            return true;
+        }
+        return this.categoryKey(records[index + 1]) !== this.categoryKey(record);
+    }
+
     categoryKey(record) {
         const cat = record.data.budget_category_id;
         return cat ? cat[0] : false;
@@ -30,6 +40,17 @@ export class ProjectBudgetTableRenderer extends ListRenderer {
     sectionName(record) {
         const cat = record.data.budget_category_id;
         return cat && cat[1] ? cat[1] : "ไม่ระบุประเภทงบ";
+    }
+
+    /** Add a line pre-scoped to this record's section (category), so the new
+     * line lands in the section and its item picker is filtered to it. */
+    addInSection(record) {
+        const context = {default_budget_type: "expense"};
+        const categoryId = this.categoryKey(record);
+        if (categoryId) {
+            context.default_budget_category_id = categoryId;
+        }
+        this.add({context});
     }
 }
 ProjectBudgetTableRenderer.rowsTemplate = "kmitl_project.ProjectBudgetTableRows";

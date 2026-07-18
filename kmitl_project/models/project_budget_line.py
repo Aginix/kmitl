@@ -37,16 +37,19 @@ class ProjectBudgetLine(models.Model):
         string="รายการ",
         required=True,
         ondelete="restrict",
-        domain="[('budget_type', '=', budget_type), ('child_ids', '=', False)]",
+        # Scope the picker to the section's category when one is set (a line added
+        # from a section header), otherwise offer every item of the type.
+        domain="[('budget_type', '=', budget_type), ('child_ids', '=', False),"
+        " ('parent_id', '=', budget_category_id)] if budget_category_id"
+        " else [('budget_type', '=', budget_type), ('child_ids', '=', False)]",
     )
     # The expense root (ประเภทงบ) of the chosen item — drives the section grouping
-    # in the expense table. Stored so the list can order/cluster by it.
+    # in the expense table. Stored so the list can order/cluster by it; defaulted
+    # per section on add and kept in step with the chosen item via onchange.
     budget_category_id = fields.Many2one(
         comodel_name="project.budget.item",
         string="ประเภทงบ",
-        related="budget_item_id.parent_id",
-        store=True,
-        readonly=True,
+        ondelete="restrict",
     )
     # Reference only — the standard rate carried by the chosen item.
     unit = fields.Char(
@@ -64,6 +67,12 @@ class ProjectBudgetLine(models.Model):
     )
     amount = fields.Float(string="จำนวนเงิน", digits="Product Price", required=True)
     note = fields.Char(string="หมายเหตุ")
+
+    @api.onchange("budget_item_id")
+    def _onchange_budget_item_id(self):
+        """Keep the category in step with the chosen item's root."""
+        if self.budget_item_id:
+            self.budget_category_id = self.budget_item_id.parent_id
 
     @api.constrains("amount")
     def _check_amount(self):
