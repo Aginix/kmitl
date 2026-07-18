@@ -1,0 +1,25 @@
+# Recall split: ดึงกลับ (pull-back, keep number) vs ยกเลิกการส่ง (cancel-send, void)
+
+**Supersedes the recall decision in [ADR-0002](./0002-document-lifecycle-negative-paths.md).** ADR-0002 modelled a single **Recall (เรียกคืน)** = withdraw a circulating Document into `cancelled` and **void its number** (a permanent register gap), on the records-regulation principle that a released number is never reused. In real use this is too blunt: a sender who spots a typo or a mis-route **before any signature** must be able to pull the หนังสือ back, fix it, and re-send **on the same number** — voiding a number on every correction floods the register with permanent gaps that a clerk has to account for.
+
+We therefore **split the single recall into two distinct sender actions**, landing the recoverable one on the existing `returned` path:
+
+- **ดึงกลับ (Recall)** — the sender pulls a circulating Document **back to `returned`**, **keeping its registered number**; the prior chain is archived as history and the chain restarts on re-send. It behaves as a self-initiated ตีกลับ-to-sender. The old `action_recall` does **not** implement this — it is new.
+- **ยกเลิกการส่ง (Cancel-send)** — the sender withdraws **terminally** into `cancelled` and **voids the number** (permanent gap; see *Voided number*). This **is** the old `action_recall` behaviour (void + `cancelled` + `_on_sarabun_cancelled`), retained and relabelled — the `cancelled` state stays in the lifecycle.
+
+Both are permitted **only while no ลงนาม-อนุมัติ step has occurred** (the ADR-0002 signature guard is unchanged); after a signature the Document is part of the record and withdrawal requires issuing a **cancellation หนังสือ**, not a state transition.
+
+The same session fixed the shared **backward-move** rules — applying to **ดึงกลับ · ยกเลิกการส่ง · ตีกลับ · ปฏิเสธ**:
+
+- **Reason is mandatory** on every backward move — recorded on the routing step `note` + chatter (today only ปฏิเสธ enforces it).
+- **Archive, never overwrite** — each backward move freezes the current attempt's steps as an immutable historical attempt (`active=False`, bump `attempt_seq`). This **fixes a bug**: the ตีกลับ→resume path in `_do_return` currently overwrites `acted_by`/`disposition` on steps ≥ the resume order, contradicting the glossary's "the prior chain is kept as history".
+- **History location** — backward-move history lives in the routing history + chatter **only**, never rendered on the official **เกษียน trail** (that trail is scoped to positive เห็นชอบ / ลงนาม-อนุมัติ).
+- **ตีกลับ / ปฏิเสธ authority** — only the active actor of a **gating** step (เห็นชอบ / ลงนาม-อนุมัติ); a รับทราบ / สำเนาเรียน (CC) actor may only acknowledge, and the sender/manager cannot ตีกลับ/ปฏิเสธ on an actor's behalf (contrast ดึงกลับ/ยกเลิกการส่ง, which *are* the sender's).
+- **ตีกลับ destination** — chosen by the returner every time: the previous stage (default), the original sender (restart), or any earlier step to resume from.
+
+## Consequences
+
+- The `cancelled` state and number-voiding are **retained** (the *Voided number* term stays valid) but are now reached via **ยกเลิกการส่ง** (and **ปฏิเสธ**), no longer via recall.
+- **Engine work (not yet done — docs-only decision):** relabel `action_recall` → ยกเลิกการส่ง; add a new **ดึงกลับ** action reusing the ตีกลับ-to-sender machinery (→ `returned`, keep number, archive, restart); extend the mandatory-reason gate to all four backward moves; make ตีกลับ→resume **archive** instead of overwrite; restrict ตีกลับ/ปฏิเสธ to gating-step actors in both the engine and the act wizard.
+- **Origin callback:** ดึงกลับ lands the Document in `returned`, so it should fire `_on_sarabun_returned` (or a new dedicated `_on_sarabun_recalled`) rather than `_on_sarabun_cancelled`. Decide at implementation; review **all** origin consumers — including the `kmitl_demo` post-init driver that calls the engine API directly, not only the mixin overrides.
+- **Coordination:** another agent is concurrently editing `sarabun_document_mixin.py` (callback ordering) in the same worktree; implementing this will touch `sarabun_document.py` + the mixin. Serialize, or use a fresh worktree. See `.context/agx_sarabun-recall-return-redesign.md`.

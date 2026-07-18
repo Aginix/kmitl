@@ -56,8 +56,8 @@ _Avoid_: "approve" on its own (it carries the signature)
 
 ### Dispositions (how the active actor responds)
 
-The set of moves available at an active step, subject to authority: **complete** (perform the required verb) · **เกษียนสั่งการ (Direct)** (I acted, now insert the next step) · **มอบหมาย (Delegate)** (I will not act — X performs *this* step instead) · **ตีกลับ (Return)** (send back for revision) · **ปฏิเสธ (Reject)** (terminal negative).
-_Avoid_: treating มอบหมาย and เกษียนสั่งการ as the same move — Delegate reassigns *this* step, Direct inserts the *next*.
+The set of moves available at an active step, subject to authority: **complete** (perform the required verb) · **เกษียนสั่งการ (Direct)** (I acted, now insert the next step) · **มอบหมาย (Delegate)** (I will not act — X performs *this* step instead) · **ตีกลับ (Return)** (send back for revision) · **ปฏิเสธ (Reject)** (terminal negative). **ตีกลับ and ปฏิเสธ are available only on a *gating* step (เห็นชอบ / ลงนาม-อนุมัติ) and only to that step's own active actor** — a รับทราบ / สำเนาเรียน (CC) recipient may only complete (acknowledge), and the sender/manager cannot ตีกลับ/ปฏิเสธ on an actor's behalf (contrast ดึงกลับ / ยกเลิกการส่ง, which *are* the sender's).
+_Avoid_: treating มอบหมาย and เกษียนสั่งการ as the same move — Delegate reassigns *this* step, Direct inserts the *next*; letting a CC/รับทราบ actor ตีกลับ.
 
 ### Lifecycle
 
@@ -65,13 +65,17 @@ _Avoid_: treating มอบหมาย and เกษียนสั่งกา
 A Document in flight along its Route. Renamed from the old `sent` to capture "moving through the chain", not "delivered once".
 _Avoid_: sent, in transit
 
-**Return (ตีกลับ)**:
-Send a circulating Document back for revision. The returner picks the destination — default is back to the sender with the chain **restarted**, but an earlier step may be chosen to **resume** from. Lands the Document in state `returned` (revisable like a draft, but the prior chain is kept as history).
-_Avoid_: reject (Return is recoverable; Reject is terminal)
+**ตีกลับ (Return)**:
+Send a circulating Document back for revision — available **only to the active actor of a gating step** (see Dispositions). The returner **picks the destination every time**: the **previous stage** (resume — the default), the **original sender** (restart the chain), or **any earlier step** to resume from. Lands the Document in state `returned` (revisable like a draft; the prior chain is **archived as history, never overwritten**). A **reason is required** and kept in the routing history.
+_Avoid_: reject (Return is recoverable; Reject is terminal); a fixed sender-restart default (the returner chooses each time)
 
-**Recall (เรียกคืน)**:
-The sender withdraws a circulating Document — permitted **only while no ลงนาม-อนุมัติ step has occurred**. Once a signature exists the Document is part of the record; withdrawal then requires issuing a cancellation หนังสือ, not a recall.
-_Avoid_: cancel (cancel is the resulting state; recall is the act)
+**ดึงกลับ (Recall)**:
+The **sender** pulls a circulating Document **back to an editable state, keeping its registered number**, to revise and re-send (แบบ pull-back-to-edit). The prior routing chain is archived as history and the chain restarts on re-send; the Document lands in state `returned` — behaving as a self-initiated ตีกลับ-to-sender. Permitted **only while no ลงนาม-อนุมัติ step has occurred**. Contrast ยกเลิกการส่ง: ดึงกลับ *keeps* the number and expects a re-send.
+_Avoid_: เรียกคืน (one term now — ดึงกลับ); cancel / void-the-number (that is ยกเลิกการส่ง, a different act)
+
+**ยกเลิกการส่ง (Cancel-send)**:
+The **sender** withdraws a circulating Document **terminally** — it lands in state `cancelled` and its registered number is **voided** (a permanent gap; see Voided number). For "this send should never have happened", not "let me fix it" (that is ดึงกลับ). Permitted **only while no ลงนาม-อนุมัติ step has occurred**; once a signature exists the Document is part of the record and withdrawal instead requires issuing a cancellation หนังสือ.
+_Avoid_: ดึงกลับ (ดึงกลับ keeps the number and re-sends; ยกเลิกการส่ง voids it and ends the Document); recall / เรียกคืน (the old name conflated these two acts)
 
 **Voided number (เลขยกเลิก)**:
 A registered document number whose Document was rejected or cancelled — kept as a **permanent gap, never reissued**, so the register stays auditable.
@@ -108,8 +112,8 @@ The rendered authority line on the Document — the signer's name, the Position 
 _Avoid_: signature (reserve for the act/data, not the rendered block)
 
 **เกษียน trail**:
-The accumulated endorsement/signing history (who, when, in what capacity, with what comment) **rendered onto the official document** — not hidden in chatter.
-_Avoid_: history, log
+The accumulated endorsement/signing history (who, when, in what capacity, with what comment) **rendered onto the official document** — not hidden in chatter. Scoped to positive endorsement/signing (เห็นชอบ / ลงนาม-อนุมัติ) only.
+_Avoid_: history, log; rendering **backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) onto the official document — those are internal routing history kept in the audit/chatter with their required reason, never printed on the หนังสือ
 
 ### Access
 
