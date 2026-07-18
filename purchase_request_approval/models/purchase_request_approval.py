@@ -46,10 +46,9 @@ class PurchaseRequestApproval(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("validate", "Validate"),
             ("to_approve", "To be approved"),
             ("approved", "Approved"),
-            ("rejected", "Rejected"),
+            ("cancelled", "Cancelled"),
         ],
         string="Status",
         default="draft",
@@ -183,7 +182,7 @@ class PurchaseRequestApproval(models.Model):
             rec._activity_awaiting_create_purchase_order()
             rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
             if rec.request_id and rec.request_id.state == "in_approval":
-                rec.request_id.write({"state": "in_purchase"})
+                rec.request_id.write({"state": "in_progress"})
 
     def _activity_awaiting_create_purchase_order(self):
         self.request_id.activity_schedule(
@@ -191,15 +190,15 @@ class PurchaseRequestApproval(models.Model):
             user_id=self.request_id.user_id.id,
         )
 
-    def button_rejected(self):
+    def button_cancel(self):
         for rec in self:
-            message = rec.request_id._purchase_request_approval_rejected_message_content(
+            message = rec.request_id._purchase_request_approval_cancelled_message_content(
                 rec
             )
             rec.request_id.message_post(body=message, message_type="comment")
-            rec.write({"state": "rejected"})
+            rec.write({"state": "cancelled"})
             if rec.request_id:
-                rec.request_id.button_rejected()
+                rec.request_id.button_cancel()
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -266,19 +265,13 @@ class PurchaseRequestApproval(models.Model):
 
     @api.depends("state")
     def _compute_is_editable(self):
-        """Override to make validate state non-editable."""
+        """Non-editable once past draft."""
         super()._compute_is_editable()
         for record in self:
-            if record.state in ("validate", "to_approve", "approved", "rejected"):
+            if record.state in ("to_approve", "approved", "cancelled"):
                 record.is_editable = False
 
     # === Sarabun Document Integration ===
-
-    def button_validate(self):
-        """Move to validate state for data confirmation before routing."""
-        self.ensure_one()
-        self.write({"state": "validate"})
-        self.message_post(body=_("Document validated and ready for routing."))
 
     def _prepare_sarabun_document_vals(self):
         """Prepare values for creating a sarabun document."""
@@ -345,16 +338,16 @@ class PurchaseRequestApproval(models.Model):
     def _on_sarabun_rejected(self, document, recipient):
         """
         Called when sarabun document is rejected.
-        Changes PA state to rejected.
+        Cancels the PA and cascades cancel to the parent PR.
         """
         _logger.info(
             "Sarabun rejected callback for PA %s (id=%s) from document %s",
             self.name, self.id, document.name
         )
-        self.button_rejected()
+        self.button_cancel()
         reason = recipient.comment if recipient else _("No reason provided")
         self.message_post(
-            body=_("Rejected via Sarabun. Reason: %s") % reason,
+            body=_("Cancelled via Sarabun. Reason: %s") % reason,
         )
 
     def _get_sarabun_report_action(self):

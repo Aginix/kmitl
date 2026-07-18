@@ -11,7 +11,7 @@ class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     state = fields.Selection(
-        selection_add=[("in_approval", "อยู่ระหว่างจัดทำ พจ.1")],
+        selection_add=[("in_approval", "In Approval"), ("approved",)],
         ondelete={"in_approval": "set default"},
     )
 
@@ -111,9 +111,9 @@ class PurchaseRequest(models.Model):
         }
         return message
 
-    def _purchase_request_approval_rejected_message_content(self, approval):
+    def _purchase_request_approval_cancelled_message_content(self, approval):
         title = _(
-            "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected 👎."
+            "Purchase approval %(pa_name)s for your Request %(pr_name)s has been cancelled."
         ) % {
             "pr_name": self.name,
             "pa_name": approval.name,
@@ -164,7 +164,7 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.hide_create_po_button = True
             if (
-                rec.state in ('approved', 'in_progress', 'in_purchase')
+                rec.state in ('approved', 'in_progress')
                 and rec.purchase_count == 0
             ):
                 rec.hide_create_po_button = False
@@ -205,7 +205,7 @@ class PurchaseRequest(models.Model):
     def _compute_need_make_purchase_order(self):
         for rec in self:
             if (
-                rec.state == "in_purchase"
+                rec.state == "in_progress"
                 and not rec.is_egp
                 and rec.purchase_count == 0
                 and rec.request_approval_ids

@@ -64,29 +64,33 @@ def migrate(cr, version):
             [(rid, name) for rid, name in residual],
         )
 
-    # Case 4: in_progress + has PA in approved -> in_purchase
-    cr.execute(
-        """
-        UPDATE purchase_request pr
-           SET state = 'in_purchase'
-         WHERE pr.state = 'in_progress'
-           AND EXISTS (
-               SELECT 1 FROM purchase_request_approval pa
-                WHERE pa.request_id = pr.id
-                  AND pa.state = 'approved'
-           )
-        """
-    )
-    _logger.info("post-migration: case 4 (in_progress+PA approved) updated %s rows", cr.rowcount)
-
-    # Case 5: in_progress + is_egp + egp_status = 'in_progress' -> in_purchase
+    # Case 4 (safety net): any records that ran an intermediate ADR-0005 build
+    # were parked at 'in_purchase'; drawio v2 reuses OCA base 'in_progress' instead.
     cr.execute(
         """
         UPDATE purchase_request
-           SET state = 'in_purchase'
-         WHERE state = 'in_progress'
-           AND is_egp IS TRUE
-           AND egp_status = 'in_progress'
+           SET state = 'in_progress'
+         WHERE state = 'in_purchase'
         """
     )
-    _logger.info("post-migration: case 5 (in_progress+egp_status=in_progress) updated %s rows", cr.rowcount)
+    _logger.info("post-migration: case 4 (in_purchase safety-net) updated %s rows", cr.rowcount)
+
+    # Case 5: PA state reduction (5 -> 4 states).
+    # Merge legacy 'validate' into 'to_approve'; rename 'rejected' to 'cancelled'.
+    cr.execute(
+        """
+        UPDATE purchase_request_approval
+           SET state = 'to_approve'
+         WHERE state = 'validate'
+        """
+    )
+    _logger.info("post-migration: case 5a (PA validate -> to_approve) updated %s rows", cr.rowcount)
+
+    cr.execute(
+        """
+        UPDATE purchase_request_approval
+           SET state = 'cancelled'
+         WHERE state = 'rejected'
+        """
+    )
+    _logger.info("post-migration: case 5b (PA rejected -> cancelled) updated %s rows", cr.rowcount)

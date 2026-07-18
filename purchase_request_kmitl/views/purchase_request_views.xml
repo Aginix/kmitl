@@ -136,6 +136,15 @@
                 />
             </xpath>
 
+            <xpath expr="//button[@name='button_draft']" position="before">
+                <button
+                    name="button_cancel"
+                    string="Cancel"
+                    type="object"
+                    states="draft,to_verify"
+                />
+            </xpath>
+
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
@@ -149,7 +158,7 @@
             <xpath expr="//field[@name='assigned_to']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_purchase'])]}</attribute>
+                >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}</attribute>
             </xpath>
 
 

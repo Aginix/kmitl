@@ -9,7 +9,7 @@
                 decoration-success="state in ('approved')"
                 decoration-muted="state == 'draft'"
                 decoration-warning="state == 'to_approve'"
-                decoration-danger="state == 'rejected'"
+                decoration-danger="state == 'cancelled'"
                 create="0"
                 edit="0"
                 delete="0"
@@ -30,7 +30,7 @@
                 decoration-success="state in ('approved')"
                 decoration-muted="state == 'draft'"
                 decoration-warning="state == 'to_approve'"
-                decoration-danger="state == 'rejected'"
+                decoration-danger="state == 'cancelled'"
                 optional="show"
             />
             <field name="account_fiscal_year_id" optional="show"/>
@@ -53,7 +53,7 @@
                 <header>
                     <button
                         name="button_draft"
-                        states="to_approve,rejected"
+                        states="to_approve,cancelled"
                         string="Reset"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
@@ -65,20 +65,13 @@
                         type="object"
                         groups="base.group_erp_manager"
                     />
-                    <button
-                        name="button_validate"
-                        states="draft"
-                        string="Validate"
-                        type="object"
-                        class="oe_highlight"
-                    />
                     <field name="sarabun_document_count" invisible="1" />
                     <button
                         name="action_submit_to_sarabun"
                         string="Create Sarabun"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'validate'), ('sarabun_document_count', '>', 0)]}"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('sarabun_document_count', '>', 0)]}"
                     />
                     <button
                         name="button_to_approve"
@@ -87,18 +80,17 @@
                         class="oe_highlight"
                         attrs="{'invisible': [('id', '>', 0)]}"
                     />
-                    <!-- Add rejected state draft, validate -->
                     <button
-                        name="button_rejected"
-                        states="draft,validate,to_approve"
-                        string="Reject"
+                        name="button_cancel"
+                        states="draft,to_approve"
+                        string="Cancel"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
                     />
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,validate,to_approve,approved"
+                        statusbar_visible="draft,to_approve,approved"
                         statusbar_colors='{"approved":"blue"}'
                     />
                 </header>
@@ -135,9 +127,9 @@
                     />
                     <widget
                         name="web_ribbon"
-                        title="Rejected"
+                        title="Cancelled"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('state', '!=', 'rejected')]}"
+                        attrs="{'invisible': [('state', '!=', 'cancelled')]}"
                     />
                     <group>
                         <group name="main_info" string="Main Information">

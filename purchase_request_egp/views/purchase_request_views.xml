@@ -25,7 +25,7 @@
                 <page
                     string="e-GP"
                     name="egp_page"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'in_egp', 'in_purchase', 'done'))]}"
+                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'in_egp', 'done'))]}"
                 >
                     <group>
                         <!-- remove required in attrs -->

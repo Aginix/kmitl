@@ -1500,3 +1500,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "ใบเสนอราคาพัสดุ"
 msgstr ""
+
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request__state__in_approval
+msgid "In Approval"
+msgstr "อยู่ระหว่างจัดทำ พจ.1"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__cancelled
+msgid "Cancelled"
+msgstr "ยกเลิก"

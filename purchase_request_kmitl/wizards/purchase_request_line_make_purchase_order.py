@@ -8,7 +8,6 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _VALID_PR_STATES = [
         "approved",
         "in_progress",
-        "in_purchase",
         "in_approval",
         "in_egp",
     ]

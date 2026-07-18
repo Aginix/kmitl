@@ -14,7 +14,7 @@ class PurchaseRequest(models.Model):
     ]
 
     state = fields.Selection(
-        selection_add=[("in_egp", "รอดำเนินการ e-GP")],
+        selection_add=[("in_egp", "Waiting for e-GP"), ("approved",)],
         ondelete={"in_egp": "set default"},
     )
 
@@ -64,7 +64,7 @@ class PurchaseRequest(models.Model):
             rec.show_egp_create_purchase_order_button = False
             if (
                 rec.is_egp
-                and rec.state in ('approved', 'in_progress', 'in_purchase')
+                and rec.state in ('approved', 'in_progress')
                 and rec.purchase_count == 0
             ):
                 rec.show_egp_create_purchase_order_button = True
@@ -110,7 +110,8 @@ class PurchaseRequest(models.Model):
             if record.is_egp:
                 if not record.egp_project_id:
                     raise UserError(_("กรุณากรอกเลขที่โครงการ e-GP ก่อนดำเนินการ"))
-                record.write({"state": "in_purchase", "egp_status": "in_progress"})
+                record.write({"egp_status": "in_progress"})
+                record.button_in_progress()
 
     def button_draft(self):
         res = super().button_draft()

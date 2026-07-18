@@ -393,9 +393,6 @@ def _run_non_egp_flow(env, pr, admin_user, department):
     pa = pr.request_approval_ids[0]
     _logger.info("PA %s auto-created, state=%s", pa.name, pa.state)
 
-    pa.button_validate()
-    _logger.info("PA %s validated, state=%s", pa.name, pa.state)
-
     _process_sarabun_approve(env, pa, admin_user, department)
     _logger.info("PA %s sarabun approved, state=%s", pa.name, pa.state)
 

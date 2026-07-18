@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram id="purchase-workflow-v2" name="Purchase Workflow v2 (Round-2 Grill)">
-    <mxGraphModel dx="514" dy="447" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1500" math="0" shadow="0">
+    <mxGraphModel dx="661" dy="575" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1500" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -13,16 +13,16 @@
         <mxCell id="start" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="เริ่ม&lt;br&gt;(ผู้ขอสร้าง พ.1)" vertex="1">
           <mxGeometry height="50" width="160" x="420" y="75" as="geometry" />
         </mxCell>
-        <mxCell id="s_draft" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="ร่าง (draft)" vertex="1">
+        <mxCell id="s_draft" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="1. ร่าง (draft)" vertex="1">
           <mxGeometry height="45" width="200" x="400" y="155" as="geometry" />
         </mxCell>
-        <mxCell id="s_to_reserve" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="รอจองงบประมาณ (to_verify)" vertex="1">
+        <mxCell id="s_to_reserve" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="2 .รอจองงบประมาณ (to_verify)" vertex="1">
           <mxGeometry height="45" width="200" x="400" y="235" as="geometry" />
         </mxCell>
-        <mxCell id="s_to_submit" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="รอส่งขอความเห็นชอบให้จัดหา&amp;nbsp;(to_submit)" vertex="1">
+        <mxCell id="s_to_submit" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="3 .รอส่งขอความเห็นชอบให้จัดหา (to_submit)" vertex="1">
           <mxGeometry height="45" width="200" x="400" y="315" as="geometry" />
         </mxCell>
-        <mxCell id="s_to_approve" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="รอพิจารณาให้จัดหา&amp;nbsp;(to_approve)&lt;br&gt;&lt;i&gt;Sarabun running&lt;/i&gt;" vertex="1">
+        <mxCell id="s_to_approve" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="4. รอพิจารณาให้จัดหา&amp;nbsp;(to_approve)&lt;br&gt;&lt;i&gt;Sarabun running&lt;/i&gt;" vertex="1">
           <mxGeometry height="55" width="200" x="400" y="395" as="geometry" />
         </mxCell>
         <mxCell id="d_egp" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="e-GP ?&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;is_egp?&lt;/span&gt;" vertex="1">
@@ -34,7 +34,7 @@
         <mxCell id="s_in_procurement" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="อยู่ระหว่างจัดทำพจ.1&amp;nbsp;(in_approval)&lt;br&gt;&lt;i&gt;พจ.1 กำลังดำเนินการ&lt;/i&gt;" vertex="1">
           <mxGeometry height="55" width="200" x="400" y="595" as="geometry" />
         </mxCell>
-        <mxCell id="s_in_purchase" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="อยู่ระหว่างจัดซื้อจัดจ้าง (in_purchase)" vertex="1">
+        <mxCell id="s_in_purchase" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="อยู่ระหว่างจัดซื้อจัดจ้าง (in_progress)" vertex="1">
           <mxGeometry height="45" width="240" x="380" y="770" as="geometry" />
         </mxCell>
         <mxCell id="s_done" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="จัดซื้อจัดจ้างเสร็จสิ้น (done)&lt;br&gt;&lt;i&gt;สร้างสัญญา/PO เสร็จ — จบเฟส 1&lt;/i&gt;" vertex="1">

@@ -8,7 +8,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         res = super().make_purchase_order()
         requests = self.item_ids.mapped("line_id.request_id")
         egp_requests = requests.filtered(
-            lambda r: r.is_egp and r.state == "in_purchase"
+            lambda r: r.is_egp and r.state == "in_progress"
         )
         if egp_requests:
             egp_requests.write({"state": "done"})

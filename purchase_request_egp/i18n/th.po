@@ -104,3 +104,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_egp.view_purchase_request_form
 msgid "Reject"
 msgstr "ตีกลับ"
+
+#. module: purchase_request_egp
+#: model:ir.model.fields.selection,name:purchase_request_egp.selection__purchase_request__state__in_egp
+msgid "Waiting for e-GP"
+msgstr "รอดำเนินการ e-GP"
