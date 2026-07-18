@@ -9,7 +9,7 @@
                 decoration-success="state in ('approved')"
                 decoration-muted="state == 'draft'"
                 decoration-warning="state == 'to_approve'"
-                decoration-danger="state == 'cancelled'"
+                decoration-danger="state == 'cancel'"
                 create="0"
                 edit="0"
                 delete="0"
@@ -30,7 +30,7 @@
                 decoration-success="state in ('approved')"
                 decoration-muted="state == 'draft'"
                 decoration-warning="state == 'to_approve'"
-                decoration-danger="state == 'cancelled'"
+                decoration-danger="state == 'cancel'"
                 optional="show"
             />
             <field name="account_fiscal_year_id" optional="show"/>
@@ -53,7 +53,7 @@
                 <header>
                     <button
                         name="button_draft"
-                        states="to_approve,cancelled"
+                        states="to_approve,cancel"
                         string="Reset"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
@@ -129,7 +129,7 @@
                         name="web_ribbon"
                         title="Cancelled"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('state', '!=', 'cancelled')]}"
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"
                     />
                     <group>
                         <group name="main_info" string="Main Information">

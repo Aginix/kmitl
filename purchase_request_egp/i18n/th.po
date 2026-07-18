@@ -67,7 +67,7 @@ msgstr ""
 #. module: purchase_request_egp
 #: model:ir.model.fields.selection,name:purchase_request_egp.selection__purchase_request__egp_status__waiting
 msgid "Waiting for e-GP"
-msgstr "กำลังรอ e-GP"
+msgstr "รอดำเนินการ e-GP"
 
 #. module: purchase_request_egp
 #: model:ir.model.fields.selection,name:purchase_request_egp.selection__purchase_request__egp_status__done

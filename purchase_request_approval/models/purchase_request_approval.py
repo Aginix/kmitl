@@ -48,7 +48,7 @@ class PurchaseRequestApproval(models.Model):
             ("draft", "Draft"),
             ("to_approve", "To be approved"),
             ("approved", "Approved"),
-            ("cancelled", "Cancelled"),
+            ("cancel", "Cancel"),
         ],
         string="Status",
         default="draft",
@@ -196,7 +196,7 @@ class PurchaseRequestApproval(models.Model):
                 rec
             )
             rec.request_id.message_post(body=message, message_type="comment")
-            rec.write({"state": "cancelled"})
+            rec.write({"state": "cancel"})
             if rec.request_id:
                 rec.request_id.button_cancel()
 
@@ -268,7 +268,7 @@ class PurchaseRequestApproval(models.Model):
         """Non-editable once past draft."""
         super()._compute_is_editable()
         for record in self:
-            if record.state in ("to_approve", "approved", "cancelled"):
+            if record.state in ("to_approve", "approved", "cancel"):
                 record.is_editable = False
 
     # === Sarabun Document Integration ===

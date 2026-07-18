@@ -810,9 +810,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request.py:0
 #, python-format
-msgid "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected 👎."
+msgid ""
+"Purchase approval %(pa_name)s for your Request %(pr_name)s has been "
+"cancelled."
 msgstr ""
-"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ถูกตีกลับ 👎."
+"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ถูกยกเลิก."
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -860,8 +862,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format
-msgid "Rejected via Sarabun. Reason: %s"
-msgstr ""
+msgid "Cancelled via Sarabun. Reason: %s"
+msgstr "ถูกยกเลิกผ่านสารบรรณ. เหตุผล: %s"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__budget_commitment_id
@@ -1508,6 +1510,11 @@ msgid "In Approval"
 msgstr "อยู่ระหว่างจัดทำ พจ.1"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__cancelled
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__cancel
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Cancelled"
 msgstr "ยกเลิก"

@@ -130,25 +130,28 @@
                 />
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve"
+                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"
                     string="Cancel"
                     type="object"
-                />
-            </xpath>
-
-            <xpath expr="//button[@name='button_draft']" position="before">
-                <button
-                    name="button_cancel"
-                    string="Cancel"
-                    type="object"
-                    states="draft,to_verify"
                 />
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,done</attribute>
+                >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible': [('is_egp', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//form/header/field[@name='state']" position="after">
+                <field
+                    name="state"
+                    widget="statusbar"
+                    statusbar_visible="draft,to_verify,to_submit,to_approve,in_egp,in_progress,done"
+                    attrs="{'invisible': [('is_egp', '=', False)]}"
+                />
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">

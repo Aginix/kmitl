@@ -76,7 +76,7 @@ def migrate(cr, version):
     _logger.info("post-migration: case 4 (in_purchase safety-net) updated %s rows", cr.rowcount)
 
     # Case 5: PA state reduction (5 -> 4 states).
-    # Merge legacy 'validate' into 'to_approve'; rename 'rejected' to 'cancelled'.
+    # Merge legacy 'validate' into 'to_approve'; rename 'rejected' to 'cancel'.
     cr.execute(
         """
         UPDATE purchase_request_approval
@@ -89,8 +89,28 @@ def migrate(cr, version):
     cr.execute(
         """
         UPDATE purchase_request_approval
-           SET state = 'cancelled'
+           SET state = 'cancel'
          WHERE state = 'rejected'
         """
     )
-    _logger.info("post-migration: case 5b (PA rejected -> cancelled) updated %s rows", cr.rowcount)
+    _logger.info("post-migration: case 5b (PA rejected -> cancel) updated %s rows", cr.rowcount)
+
+    # Case 6 (safety net): any records that ran round-3 build parked at 'cancelled';
+    # round-4 aligns with upstream and uses 'cancel'.
+    cr.execute(
+        """
+        UPDATE purchase_request
+           SET state = 'cancel'
+         WHERE state = 'cancelled'
+        """
+    )
+    _logger.info("post-migration: case 6a (PR cancelled safety-net) updated %s rows", cr.rowcount)
+
+    cr.execute(
+        """
+        UPDATE purchase_request_approval
+           SET state = 'cancel'
+         WHERE state = 'cancelled'
+        """
+    )
+    _logger.info("post-migration: case 6b (PA cancelled safety-net) updated %s rows", cr.rowcount)

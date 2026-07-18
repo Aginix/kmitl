@@ -8,9 +8,9 @@ class PurchaseRequest(models.Model):
         selection_add=[
             ("to_submit", "To Submit"),
             ("to_approve",),
-            ("cancelled", "Cancelled"),
+            ("cancel", "Cancel"),
         ],
-        ondelete={"to_submit": "set default", "cancelled": "set default"},
+        ondelete={"to_submit": "set default", "cancel": "set default"},
     )
 
     procurement_type_id = fields.Many2one(
@@ -156,4 +156,4 @@ class PurchaseRequest(models.Model):
         return self.write({"state": "to_submit"})
 
     def button_cancel(self):
-        return self.write({"state": "cancelled"})
+        return self.write({"state": "cancel"})
