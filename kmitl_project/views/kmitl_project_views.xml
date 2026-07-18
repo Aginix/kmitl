@@ -181,7 +181,6 @@
                             <group class="oe_subtotal_footer" colspan="2">
                                 <field name="budget_income_total" />
                                 <field name="budget_expense_total" />
-                                <field name="budget_net_total" class="oe_subtotal_footer_separator" />
                             </group>
                         </page>
                         <page string="การดำเนินโครงการ">

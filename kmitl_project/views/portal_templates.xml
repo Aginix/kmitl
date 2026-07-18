@@ -411,7 +411,6 @@
                     <div class="text-end mt-2">
                         <div>รวมรายรับ: <span class="fw-bold" t-out="'{:,.2f}'.format(income_total)" /> บาท</div>
                         <div>รวมรายจ่าย: <span class="fw-bold" t-out="'{:,.2f}'.format(expense_total)" /> บาท</div>
-                        <div>คงเหลือ (รายรับ − รายจ่าย): <span class="fw-bold" t-out="'{:,.2f}'.format(income_total - expense_total)" /> บาท</div>
                     </div>
                 </t>
                 <t t-else="">

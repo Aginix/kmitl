@@ -287,18 +287,12 @@ class KmitlProject(models.Model):
         compute="_compute_budget_plan_totals",
         digits="Product Price",
     )
-    budget_net_total = fields.Float(
-        string="คงเหลือ (รายรับ − รายจ่าย)",
-        compute="_compute_budget_plan_totals",
-        digits="Product Price",
-    )
 
     @api.depends("income_line_ids.amount", "expense_line_ids.amount")
     def _compute_budget_plan_totals(self):
         for rec in self:
             rec.budget_income_total = sum(rec.income_line_ids.mapped("amount"))
             rec.budget_expense_total = sum(rec.expense_line_ids.mapped("amount"))
-            rec.budget_net_total = rec.budget_income_total - rec.budget_expense_total
 
     expected_outcome_ids = fields.One2many(
         "project.expected.outcome",
