@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Placeholder approving position. Holder is base.user_admin as a seed only —
-         assign the real head-of-department holder in Configuration ▸ Positions
-         before go-live. noupdate="1" so it survives module upgrades. -->
+    <!-- Placeholder approving position, seeded with no holder — assign the real
+         head-of-department holder in Configuration ▸ Positions before go-live.
+         noupdate="1" so the holder assignment survives module upgrades. -->
     <data noupdate="1">
         <record id="position_dr_approver" model="sarabun.position">
             <field name="name">ผู้อนุมัติเบิกจ่าย (Disbursement Approver)</field>
             <field name="code">DR_APPROVER</field>
-            <field name="holder_ids" eval="[(6, 0, [ref('base.user_admin')])]"/>
         </record>
     </data>
 
