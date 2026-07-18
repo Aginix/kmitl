@@ -4,7 +4,7 @@
     <record id="mail_activity_pr_status_fyi" model="mail.activity.type">
         <field name="name">Purchase request status update</field>
         <field name="summary">The purchase request changed status</field>
-        <field name="todo_category">fyi</field>
+        <field name="todo_category">acknowledgement</field>
         <field name="res_model">purchase.request.approval</field>
         <field name="icon">fa-info-circle</field>
         <field name="delay_count">0</field>

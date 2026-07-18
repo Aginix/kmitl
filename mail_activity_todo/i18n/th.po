@@ -48,21 +48,6 @@ msgid "App"
 msgstr "แอป"
 
 #. module: mail_activity_todo
-#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity__todo_category__approval
-#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__approval
-#: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__approval
-msgid "Approval"
-msgstr "การอนุมัติ"
-
-#. module: mail_activity_todo
-#: model:ir.model.fields,help:mail_activity_todo.field_mail_activity_type__todo_category
-msgid ""
-"Behavioural category of Todos created from this activity type. "
-"Approval/Execution clear by acting on the source; Acknowledgement/FYI can be"
-" dismissed with 'Mark as Read'."
-msgstr ""
-
-#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__todo_category
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_todo_log_search
@@ -123,13 +108,6 @@ msgid "Deadline"
 msgstr "วันครบกำหนด"
 
 #. module: mail_activity_todo
-#: model:ir.model.fields,help:mail_activity_todo.field_mail_activity__todo_category
-msgid ""
-"Defaults from the activity type. Set it on a manually scheduled activity to "
-"turn it into a Todo that lands in your inbox."
-msgstr ""
-
-#. module: mail_activity_todo
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_log__display_name
 #: model:ir.model.fields,field_description:mail_activity_todo.field_todo_read__display_name
 msgid "Display Name"
@@ -141,13 +119,6 @@ msgstr "แสดงชื่อ"
 #: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__execution
 msgid "Execution"
 msgstr "การดำเนินการ"
-
-#. module: mail_activity_todo
-#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity__todo_category__fyi
-#: model:ir.model.fields.selection,name:mail_activity_todo.selection__mail_activity_type__todo_category__fyi
-#: model:ir.model.fields.selection,name:mail_activity_todo.selection__todo_log__todo_category__fyi
-msgid "FYI"
-msgstr "เพื่อทราบ"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
@@ -373,12 +344,12 @@ msgid "Todos you finish are archived here for reference."
 msgstr "งานที่คุณทำเสร็จจะถูกเก็บไว้ที่นี่เพื่อเป็นการอ้างอิง"
 
 #. module: mail_activity_todo
-#: model:ir.actions.server,name:mail_activity_todo.ir_cron_gc_read_fyi_todos_ir_actions_server
-#: model:ir.cron,cron_name:mail_activity_todo.ir_cron_gc_read_fyi_todos
-msgid "Todos: garbage-collect read FYI activities past retention"
+#: model:ir.actions.server,name:mail_activity_todo.ir_cron_gc_read_dismissed_todos_ir_actions_server
+#: model:ir.cron,cron_name:mail_activity_todo.ir_cron_gc_read_dismissed_todos
+msgid "Todos: garbage-collect read dismissed activities past retention"
 msgstr ""
-"งานที่ต้องทำ: เคลียร์ข้อมูลหมวดหมู่ 'เพื่อทราบ' "
-"ที่อ่านแล้วเกินระยะเวลาที่กำหนดไว้"
+"งานที่ต้องทำ: เคลียร์งานที่ปัดทิ้งได้ที่อ่านแล้ว "
+"เกินระยะเวลาที่กำหนดไว้"
 
 #. module: mail_activity_todo
 #: model_terms:ir.ui.view,arch_db:mail_activity_todo.view_my_todo_search
