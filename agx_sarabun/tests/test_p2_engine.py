@@ -18,7 +18,7 @@ class TestP2Engine(SarabunCommon):
         doc.action_send()
         self.assertTrue(doc.is_circulating)
         self.assertEqual(self.env["sarabun.routing.step"].browse(ack.id).state, "active")
-        endorse = doc.routing_step_ids.filtered(lambda s: s.verb.code == "endorse")
+        endorse = doc.routing_step_ids.filtered(lambda s: s.verb == self._verb("endorse"))
         with self.mute_pdf():
             self._act(endorse, "complete", self.user_a)
         self.assertTrue(doc.is_completed)  # acknowledge still pending, did not block
@@ -70,7 +70,7 @@ class TestP2Engine(SarabunCommon):
         doc.action_send()
         before = len(doc.routing_step_ids)
         self._act(step, "direct", self.user_a, note="มอบ ผอ. ดำเนินการ",
-                  verb="sign_approve", target_mode="person", employee_id=self.emp_b.id)
+                  verb=self._verb("sign_approve").id, target_mode="person", employee_id=self.emp_b.id)
         self.assertEqual(step.state, "done")
         self.assertEqual(step.disposition, "direct")
         self.assertEqual(len(doc.routing_step_ids), before + 1)

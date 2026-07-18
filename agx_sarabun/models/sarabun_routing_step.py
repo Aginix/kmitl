@@ -155,18 +155,6 @@ class SarabunRoutingStep(models.Model):
     def _default_verb(self):
         return self.env.ref("agx_sarabun.verb_endorse", raise_if_not_found=False)
 
-    @api.model
-    def _coerce_verb(self, value):
-        """Accept a verb id, record, or ``code`` string → verb id (programmable
-        seam so external callers may insert steps by stable code)."""
-        if not value:
-            return False
-        if isinstance(value, models.BaseModel):
-            return value.id
-        if isinstance(value, str):
-            return self.env["sarabun.verb"]._by_code(value).id
-        return int(value)
-
     # ------------------------------------------------------------------ computes
     @api.depends("verb.gating", "for_info")
     def _compute_gating(self):
@@ -244,7 +232,7 @@ class SarabunRoutingStep(models.Model):
 
     def _activity_summary(self):
         self.ensure_one()
-        return self.verb.name or self.verb.code
+        return self.verb.name
 
     def _schedule_activities(self):
         """One 'action required' mail.activity per snapshot holder of each active
@@ -376,7 +364,7 @@ class SarabunRoutingStep(models.Model):
             "created_by_disposition": "direct",
             "attempt_seq": self.document_id.attempt_seq,
             "state": "waiting",
-            "verb": self._coerce_verb(vals.get("verb")) or self._default_verb().id,
+            "verb": vals.get("verb") or self._default_verb().id,
             "for_info": vals.get("for_info", False),
             "target_mode": vals.get("target_mode", "position"),
             "position_id": vals.get("position_id", False),

@@ -55,7 +55,7 @@ Scope of code reviewed: `models/`, `wizard/`, `controllers/`, `security/`, `repo
 ### M9. Recipient "soup" — `recipient` / `recipient_ids` / `sarabun.document.recipient` are three different things
 - **Evidence:** (a) free-text header field `recipient` "To" (`models/sarabun_document.py:154-159`); (b) tracking O2m `recipient_ids` → `sarabun.document.recipient` (`:217-223`); (c) the tracker model itself. Plus `recipient_type` on lines/recipients with values `user/department/role` (`routing_line.py:44-53`).
 - **Why it's wrong:** One word means the printed addressee, the delivery-tracker collection, and the per-actor row — confusing in code and UI, and the addressee floats free of who actually acts.
-- **How the new design resolves it:** CONTEXT splits these cleanly: เรียน *Addressee* is its own header field (optionally with ผ่าน), routing actors live on `sarabun.routing.step`, and *Targeting mode* replaces the `user/department/role` vocabulary with Position/Person/Unit.
+- **How the new design resolves it:** CONTEXT splits these cleanly: เรียน *Addressee* is its own header field (a Text field with a `addressee_prefix_id` คำขึ้นต้น; ผ่าน is phase-2), routing actors live on `sarabun.routing.step`, and *Targeting mode* replaces the `user/department/role` vocabulary with Position/Person/Unit.
 
 ### M10. Two-table line/recipient model that must be kept in sync
 - **Evidence:** `sarabun.routing.line` is the plan (docstring `routing_line.py:11-15`: "no state tracking"); `sarabun.document.recipient` is the tracker; fields are hand-copied at activation (`sarabun_document.py:729-740`) and the line back-computes status from its recipient (`routing_line.py:112-119`).
@@ -80,7 +80,7 @@ Scope of code reviewed: `models/`, `wizard/`, `controllers/`, `security/`, `repo
 ### M14. Secrecy / ชั้นความลับ is captured but never enforced
 - **Evidence:** `secrecy` Selection field (`models/sarabun_document.py:108-119`) but no ir.rule, domain or access check references it anywhere (`security/security.xml` rules are sender/recipient/manager only).
 - **Why it's wrong:** "Secret / Top Secret" is a label with zero need-to-know effect — a misleading promise of confidentiality.
-- **How the new design resolves it:** CONTEXT *Route visibility* — v1 treats secrecy as a display label explicitly (manager-see-all stays), with ชั้นความลับ need-to-know enforcement scoped as phase-2, so the gap is an acknowledged seam rather than a silent false promise.
+- **How the new design resolves it:** CONTEXT *Route visibility* — v1 drops the `secrecy` field entirely (manager-see-all stays), with the ชั้นความลับ field and its need-to-know enforcement scoped as phase-2, so the gap is an acknowledged seam rather than a silent false promise.
 
 ### M15. Hardcoded `document_type.code` Selection conflates behaviour-key and identifier
 - **Evidence:** `models/sarabun_document_type.py:15-23` — `code` is a `Selection(memo/circular/from_record)`; `sarabun_document.py:72-75` mirrors it as a stored related `document_type_code`. The integration docs even search `[("code", "=", "internal")]` (documentation.md:47) — a value not in the selection, so that example is already broken.
@@ -98,9 +98,9 @@ Scope of code reviewed: `models/`, `wizard/`, `controllers/`, `security/`, `repo
 - **How the new design resolves it:** ADR-0003 — a Position resolves to its current holder(s) **at the moment the step becomes active** and that person-set is **snapshotted** onto the step, so later org changes never rewrite history.
 
 ### M18. No incoming / external side — system is outgoing-only
-- **Evidence:** `sender_*` fields and a `recipient` "To" string exist (`sarabun_document.py:121-159`) but there is no inbound register, no Unit (สารบรรณกลาง) targeting that receives external letters; `recipient_type` "department" routes to `sarabun_officer_ids` for *internal* notification only (`recipient.py:362-369`).
-- **Why it's wrong:** e-Saraban must handle incoming correspondence (หนังสือรับ) routed through a department's central registry; the old module only models documents *originating* from a sender.
-- **How the new design resolves it:** CONTEXT *Targeting mode* — **Unit** (a department's สารบรรณกลาง / central registry, "used mainly for incoming หนังสือ") is a first-class targeting mode resolving to holders and snapshotting onto the step.
+- **Evidence:** `sender_*` fields and a `recipient` "To" string exist (`sarabun_document.py:121-159`) but there is no inbound register, no Unit (ธุรการหน่วยงาน) targeting that receives external letters; `recipient_type` "department" routes to `sarabun_officer_ids` for *internal* notification only (`recipient.py:362-369`).
+- **Why it's wrong:** e-Saraban must handle incoming correspondence (หนังสือรับ) routed through a หน่วยงาน's ธุรการหน่วยงาน (document clerk(s)); the old module only models documents *originating* from a sender.
+- **How the new design resolves it:** CONTEXT *Targeting mode* — **Unit / ธุรการหน่วยงาน** (a หน่วยงาน's document clerk(s), `hr.department.sarabun_officer_ids`) is a first-class routing target resolving to holders and snapshotting onto the step. (สารบรรณกลาง / a single institute-wide registry is dropped for v1.)
 
 ### M19. No tests at all
 - **Evidence:** No `tests/` directory in the module (file inventory confirms); `__manifest__.py` lists no test deps and the project CLAUDE.md test conventions are unused here.

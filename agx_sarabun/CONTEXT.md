@@ -9,7 +9,7 @@ The protagonist — one official correspondence item that is registered, numbere
 _Avoid_: ticket, request, approval (those describe the routing, not the หนังสือ)
 
 **Origin record**:
-A business object in another module (e.g. `purchase.request`) that spawns a Document and is notified of its outcome via callbacks. It is the *adapter* side, never the protagonist — the engine must not bend toward approval semantics to serve it. One origin may own **several** Documents over time (a rejected one is superseded by a duplicated new draft — see ADR-0002), so the relation is 1:N; the mixin exposes all of them plus an `active_sarabun_document_id` pointer to the current live one.
+A business object in another module (e.g. `purchase.request`) that spawns a Document and is notified of its outcome via callbacks. It is the *adapter* side, never the protagonist — the engine must not bend toward approval semantics to serve it. One origin may own **several** Documents over time (a rejected one is superseded by a duplicated new draft — see ADR-0002), so the relation is 1:N; the mixin exposes all of them plus an `active_sarabun_document_id` pointer to the current live one. The mixin also **reflects the active Document's status back onto the origin** (draft-not-sent / routing progress / state) so the source form shows where its หนังสือ stands.
 _Avoid_: source document, parent (reserve "document" for the หนังสือ itself); a 1:1 origin↔document assumption
 
 **Route**:
@@ -29,18 +29,20 @@ A first-class action by the actor at a step: annotate, then insert/redirect the 
 _Avoid_: forward (forward implies handing off without annotation/authority)
 
 **Position (ตำแหน่งบริหาร, `sarabun.position`)**:
-An administrative/authority position — the **primary routing target** and the capacity a document is signed in (คณบดี, ผอ.กอง, อธิการบดี). Purpose-built for e-Saraban, distinct from `hr.job` (employment position) and from academic rank. Resolves to its current **holder(s)** when a step becomes *active*, and that resolved person-set is **snapshotted** onto the step so later org changes never rewrite history. (รักษาการ/มอบอำนาจ — acting & delegated authority — is a planned phase-2 seam; interim, add the acting user as a temporary holder.)
-_Avoid_: role, hr.job, job position
+An administrative/authority position — the **primary routing target** and the capacity a document is signed in (คณบดี, ผอ.กอง, อธิการบดี). Purpose-built for e-Saraban, distinct from `hr.job` (employment position) and from academic rank. Its **holder(s) are personnel (`hr.employee`)**; when a step becomes *active* the engine resolves each holder to their **linked user account** and **snapshots** that user-set onto the step, so later org changes never rewrite history. A holder without a linked user may be listed but can never act (see ADR-0005). (รักษาการ/มอบอำนาจ — acting & delegated authority — is a planned phase-2 seam; interim, add the acting person as a temporary holder.)
+_Avoid_: role, hr.job, job position; res.users as the holder (holders are personnel, resolved to a user only to act)
 
 **Academic rank (วุฒิ/คำนำหน้าทางวิชาการ)**:
 A person's scholarly title (ศ., รศ., ผศ., ดร.) shown in the signature block **for display only** — never a routing target or signing authority. The old `role_category` wrongly merged this with Position.
 _Avoid_: position, role
 
 **Targeting mode**:
-What a Routing Step points at — exactly one of **Position** (canonical), **Person** (a specific user), or **Unit** (a department's สารบรรณกลาง / central registry, used mainly for incoming หนังสือ).
-_Avoid_: the old `recipient_type` vocabulary "user / department / role"
+What a Routing Step points at — exactly one of **ตำแหน่ง (Position)** (canonical), **บุคลากร (Person)** (a specific `hr.employee`), or **ธุรการหน่วยงาน (Unit clerk)** (the document clerk(s) configured on a หน่วยงาน, `hr.department`). All three are configured as personnel (`hr.employee`) and resolved to a user account to act (see Position / ADR-0005).
+_Avoid_: the old `recipient_type` vocabulary "user / department / role"; framing the unit target as a "central registry" or single institute-wide office (it is the per-หน่วยงาน clerk)
 
 ### Step verbs (what a step requires)
+
+Step verbs are **admin-configurable master data** (`sarabun.verb`); the three built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. The internal behaviour model (how a verb drives gating / completion / signing) is **provisional, pending review after real use**.
 
 **รับทราบ (Acknowledge)**:
 For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel.
@@ -86,13 +88,13 @@ A non-gating รับทราบ step — often parallel and at the final stag
 _Avoid_: a separate copy/recipient list
 
 **First-to-act (quorum)**:
-When a step targets a Position or Unit held by several people, the **first holder to act completes it** on the group's behalf. "Everyone must act" is expressed as several parallel steps instead, never as a quorum rule on one step. A single ปฏิเสธ within a co-approval Stage rejects the whole Document immediately.
+When a step targets a Position or ธุรการหน่วยงาน held by several people, the **first holder to act completes it** on the group's behalf. "Everyone must act" is expressed as several parallel steps instead, never as a quorum rule on one step. A single ปฏิเสธ within a co-approval Stage rejects the whole Document immediately.
 _Avoid_: all-must-approve quorum on a single step
 
 ### Numbering
 
 **ลงทะเบียน (Register)**:
-The act of assigning a Document its official running number from a sequence. In v1 it fires **automatically at send** (draft → circulating), but is kept a *distinct event* so a สารบรรณกลาง clerk-gate can be inserted in phase 2. The sequence is resolved automatically from the **sender ส่วนงาน** — each ส่วนงาน issues from **one register shared across all its document types** (a หน่วยงาน keeps a single running number series; the earlier per-`(ส่วนงาน × type)` split was dropped on feedback), not one institute-wide pool; if no sequence is configured for that unit the send is **blocked with a clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ (fiscal year, Oct–Sep)** by default and render in พ.ศ. A number is allocated atomically (row-locked) and never recycled (see Voided number).
+The act of assigning a Document its official running number from a sequence. In v1 it fires **automatically at send** (draft → circulating), but is kept a *distinct event* so a ธุรการหน่วยงาน clerk-gate can be inserted in phase 2. The sequence is resolved automatically from the **sender ส่วนงาน** — each ส่วนงาน issues from **one register shared across all its document types** (a หน่วยงาน keeps a single running number series; the earlier per-`(ส่วนงาน × type)` split was dropped on feedback), not one institute-wide pool; if no sequence is configured for that unit the send is **blocked with a clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ (fiscal year, Oct–Sep)** by default and render in พ.ศ. A number is allocated atomically (row-locked) and never recycled (see Voided number).
 _Avoid_: numbering (reserve "register" for the official, audited act)
 
 ### Signing & record
@@ -112,14 +114,18 @@ _Avoid_: history, log
 ### Access
 
 **Route visibility**:
-Who may read a Document — the **sender**, plus the snapshot actors of any step that is **active or completed**. Steps not yet reached (waiting/future) grant **no** visibility, even if pre-seeded with a named person — you don't see a หนังสือ before it routes to you. Acting is permitted only to the actor of an *active* step. ชั้นความลับ need-to-know restriction is **phase-2**; v1 treats secrecy as a display label and keeps manager-see-all. Acting is backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add passwordless **magic-link** approval from email.
-_Avoid_: recipient-only access (the old `recipient_ids.user_id` rule that hid documents from Position/Unit actors)
+Who may read a Document — the **sender**, plus the snapshot actors of any step that is **active or completed**. Steps not yet reached (waiting/future) grant **no** visibility, even if pre-seeded with a named person — you don't see a หนังสือ before it routes to you. Acting is permitted only to the actor of an *active* step. ชั้นความลับ (secrecy) and its need-to-know restriction are **phase-2** — not modeled in v1 (the interim display-label field was removed); v1 keeps manager-see-all. Acting is backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add passwordless **magic-link** approval from email.
+_Avoid_: recipient-only access (the old `recipient_ids.user_id` rule that hid documents from Position/ธุรการหน่วยงาน actors)
 
 ### Notifications
 
 **Inbox (กล่องหนังสือเข้า)**:
-The set of หนังสือ **awaiting the current user's action** — documents with an *active* step whose snapshot holders include them. Surfaced as a top-bar **systray tray** (live count + list, pushed realtime over the bus when a step activates/clears) plus a matching menu, alongside a native `mail.activity` raised per active *gating* step. It always reflects Route visibility, so it shows only หนังสือ the user is entitled to see and act on.
-_Avoid_: read/unread mailbox semantics — the inbox means "awaiting my action", not "unread mail"
+The set of หนังสือ **awaiting the current user's action** — documents with an *active* step whose snapshot holders include them. Surfaced as a top-bar **systray tray** (live count + list, pushed realtime over the bus when a step activates/clears) plus a matching menu, alongside a native `mail.activity` raised per active *gating* step. It always reflects Route visibility, so it shows only หนังสือ the user is entitled to see and act on. **Read status is a per-item attribute shown in the inbox, not a membership rule** — an opened-but-not-acted หนังสือ stays in the inbox until it is acted on.
+_Avoid_: defining inbox membership by read/unread — membership is "awaiting my action"; read/unread is tracked separately (see สถานะการอ่าน)
+
+**สถานะการอ่าน (Read status, `sarabun.step.recipient`)**:
+Per-person, per-step tracking of whether a holder has **opened** the หนังสือ — รอการเปิดอ่าน (unread) / เปิดอ่านแล้ว (read). Tracked **individually even when one target has several holders** (each ธุรการหน่วยงาน clerk / co-holder carries their own row). Opening is informational and distinct from acting: **เปิดอ่านแล้ว ≠ รับทราบ** (opening the document is not performing the รับทราบ verb). รอการส่งต่อ (pending-forward) is a reserved state, unused in v1.
+_Avoid_: conflating read status with the รับทราบ step verb, or with inbox membership
 
 ### Classification
 
@@ -128,8 +134,12 @@ The behaviour/format axis of a Document — `memo` (บันทึกข้อ�
 _Avoid_: the old hardcoded `code` selection that doubled as both behaviour key and identifier
 
 **Document type (`sarabun.document.type`)**:
-An **admin-configurable** record naming a concrete type ("บันทึกข้อความกองคลัง") and binding its default route / template, pointing at one Document kind. The configurable layer above the fixed kind axis. (The register/number sequence is resolved per **ส่วนงาน**, not per type — see Register.)
+An **admin-configurable** record naming a concrete type ("บันทึกข้อความกองคลัง") and binding its default route / template, pointing at one Document kind. The configurable layer above the fixed kind axis. (The register/number sequence is resolved per **ส่วนงาน**, not per type — see Register.) The kind axis still exists on the model but is hidden from the หนังสือ form (only `from_record` is exercised in v1).
 _Avoid_: treating type and kind as one field; expecting the type to carry its own number series
+
+**ชั้นความเร็ว / ชั้นความลับ (Speed / Secrecy levels)**:
+Records-regulation handling labels — ชั้นความเร็ว (ปกติ / ด่วน / ด่วนมาก / ด่วนที่สุด) and ชั้นความลับ (ปกติ / ลับ / ลับมาก / ลับที่สุด). **Phase-2** — not modeled in v1 (the interim fields were removed); v1 has no urgency flag and keeps manager-see-all (see Access).
+_Avoid_: modeling these as routing behaviour (they are header/handling labels, not gating)
 
 ### Attachments & links
 
@@ -143,14 +153,18 @@ _Avoid_: bare attachment with no order or caption
 
 ### Header
 
-**เรียน (Addressee)**:
-The ceremonial recipient printed on the หนังสือ header — its **own field**, set manually or by the origin (with an optional suggest from the final ลงนาม-อนุมัติ step's Position). Deliberately separate from the routing actors (you address "เรียน คณบดี" while the หนังสือ still routes clerk → หัวหน้างาน → คณบดี). An optional **ผ่าน (Through)** free-text captures "เรียน X ผ่าน Y".
-_Avoid_: the old free-text `recipient` / "To" that floated free of routing; conflating the addressee with the people who actually act
+**เรียน (Addressee) + คำขึ้นต้น (Prefix)**:
+The ceremonial recipient printed on the หนังสือ header — its **own field** (free multi-line text), set manually or by the origin, and opened by a configurable **คำขึ้นต้น (salutation, `sarabun.addressee.prefix`)** — เรียน today, with กราบทูล / เสนอ / ยื่นต่อ … as configurable alternatives. Deliberately separate from the routing actors (you address "เรียน คณบดี" while the หนังสือ still routes clerk → หัวหน้างาน → คณบดี). (**ผ่าน** "เรียน X ผ่าน Y", and auto-suggesting the addressee from the final ลงนาม-อนุมัติ step's Position, are **phase-2** — not modeled in v1.)
+_Avoid_: the old free-text `recipient` / "To" that floated free of routing; conflating the addressee with the people who actually act; a hardcoded "เรียน" label (the salutation is configurable)
 
 **เนื้อหา (Content / body, `content`)**:
 The หนังสือ's own body — free **rich text** typed on the form. For a composed memo/circular it **is** the letter body; for a `from_record` Document it is an **optional covering note** rendered on the cover **above** the appended origin report. v1 is plain rich text — the full regulation บันทึกข้อความ layout (ครุฑ, formatted body per ระเบียบ) is still phase-2.
 _Avoid_: assuming the body always comes from the origin report (from_record); treating this rich-text box as the regulation memo template
 
+**หมายเหตุ (Remark, `remark`)**:
+An **optional internal note** (rich text) on the หนังสือ, captured after the body — **not part of the letter body** and not rendered as the official content. For working notes.
+_Avoid_: conflating หมายเหตุ with เนื้อหา (content) — remark is internal, content is the letter itself
+
 **ใบปะหน้าสารบรรณ (Cover sheet)**:
-The system-rendered front page — official header (number / date / เรื่อง / เรียน / ผ่าน), the **เนื้อหา (content) body**, the signature block, and the เกษียน trail. For a `from_record` Document the origin's report is appended after it as further body; the frozen ฉบับลงนาม is the merge. A full reformat of origin content into a บันทึกข้อความ body is deferred.
+The system-rendered front page — official header (number / date / เรื่อง / เรียน), the **เนื้อหา (content) body**, the signature block, and the เกษียน trail. For a `from_record` Document the origin's report is appended after it as further body; the frozen ฉบับลงนาม is the merge. A full reformat of origin content into a บันทึกข้อความ body is deferred.
 _Avoid_: re-keying origin content into a memo template

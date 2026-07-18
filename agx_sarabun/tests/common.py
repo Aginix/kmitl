@@ -168,15 +168,19 @@ class SarabunCommon(TransactionCase):
         v.update(vals)
         return self.Doc.create(v)
 
+    def _verb(self, key):
+        """Resolve a built-in verb by its short key (xmlid suffix), e.g. 'endorse'."""
+        return self.env.ref("agx_sarabun.verb_%s" % key)
+
     def _add_step(self, doc, order=10, verb="sign_approve", target_mode="person",
                   user=None, position=None, department=None, for_info=False):
         """Create a waiting routing step on ``doc``. Defaults: a person-target
-        sign_approve step on ``user_a``."""
+        sign_approve step on ``user_a``. ``verb`` accepts a short key or a record."""
+        verb_rec = verb if getattr(verb, "_name", None) == "sarabun.verb" else self._verb(verb)
         v = {
             "document_id": doc.id,
             "order": order,
-            # accept a verb code string (e.g. "sign_approve"), a record, or an id
-            "verb": self.Step._coerce_verb(verb),
+            "verb": verb_rec.id,
             "target_mode": target_mode,
             "for_info": for_info,
             "state": "waiting",

@@ -5,7 +5,6 @@
     <data noupdate="1">
         <record id="verb_acknowledge" model="sarabun.verb">
             <field name="name">รับทราบ (Acknowledge)</field>
-            <field name="code">acknowledge</field>
             <field name="sequence">10</field>
             <field name="rank">1</field>
             <field name="gating" eval="False"/>
@@ -14,7 +13,6 @@
 
         <record id="verb_endorse" model="sarabun.verb">
             <field name="name">เห็นชอบ (Endorse)</field>
-            <field name="code">endorse</field>
             <field name="sequence">20</field>
             <field name="rank">2</field>
             <field name="gating" eval="True"/>
@@ -23,7 +21,6 @@
 
         <record id="verb_sign_approve" model="sarabun.verb">
             <field name="name">ลงนาม-อนุมัติ (Sign/Approve)</field>
-            <field name="code">sign_approve</field>
             <field name="sequence">30</field>
             <field name="rank">3</field>
             <field name="gating" eval="True"/>

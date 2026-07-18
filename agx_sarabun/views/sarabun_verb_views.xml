@@ -7,7 +7,6 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="code"/>
                 <field name="rank"/>
                 <field name="gating" widget="boolean_toggle"/>
                 <field name="is_signature" widget="boolean_toggle"/>
@@ -27,7 +26,6 @@
                     </div>
                     <group>
                         <group>
-                            <field name="code" placeholder="endorse"/>
                             <field name="sequence"/>
                             <field name="active" widget="boolean_toggle"/>
                         </group>
@@ -38,10 +36,10 @@
                         </group>
                     </group>
                     <div class="text-muted">
-                        <strong>Code</strong> is the stable key the engine branches on —
-                        keep it unchanged on the built-in verbs. <strong>Gating</strong>
-                        steps must be completed for a stage to pass; <strong>Signing</strong>
-                        drives the signature block and blocks Recall.
+                        <strong>Gating</strong> steps must be completed for a stage to
+                        pass; <strong>Signing</strong> drives the signature block and
+                        blocks Recall. The built-in verbs are referenced by the engine
+                        via their XML id — relabel freely, but don't delete them.
                     </div>
                 </sheet>
             </form>

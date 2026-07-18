@@ -22,6 +22,7 @@ conflicts with them, they win.
 - [ADR-0002 — Document lifecycle and negative paths](./docs/adr/0002-document-lifecycle-negative-paths.md)
 - [ADR-0003 — Position is a purpose-built catalog, not hr.job](./docs/adr/0003-position-catalog-not-hr-job.md)
 - [ADR-0004 — Integration adapter: hardened callback-push, atomic, 1:N](./docs/adr/0004-integration-adapter-contract.md)
+- [ADR-0005 — Routing targets are hr.employee, resolved to employee.user_id to act (refines ADR-0003)](./docs/adr/0005-routing-targets-are-personnel.md)
 
 ## Canonical names (resolved across all sections)
 
@@ -40,9 +41,8 @@ tables, and prose below conform to them.
 | เกษียน note on a step | `note` | Text |
 | Step lifecycle | `state` | Selection `waiting`/`active`/`done`/`skipped` |
 | How the actor responded | `disposition` | Selection `complete`/`direct`/`delegate`/`return`/`reject` |
-| Step target (canonical) | `position_id` / `user_id` / `department_id` | per `target_mode` |
+| Step target (canonical) | `position_id` / `employee_id` / `department_id` | per `target_mode` (person target is `hr.employee`, resolved to `employee.user_id` to act — ADR-0005) |
 | Document concrete type | `type_id` | M2o → `sarabun.document.type` |
-| Secrecy label | `secrecy` | Selection (display-only in v1) |
 | Frozen signed PDF | `signed_pdf` | Binary (`attachment=True`) |
 | Official number | `name` | Char (related from `register_number_id`) |
 | Register ledger row | `register_number_id` | M2o → `sarabun.document.number` |
@@ -96,18 +96,19 @@ erDiagram
     SARABUN_DOCUMENT }o--|| SARABUN_DOCUMENT_TYPE : "type_id"
     SARABUN_DOCUMENT }o--o| SARABUN_DOCUMENT_NUMBER : "register_number_id"
     SARABUN_DOCUMENT }o--o| HR_DEPARTMENT : "sender_department_id"
-    SARABUN_DOCUMENT }o--o| SARABUN_POSITION : "addressee_position_id (suggest)"
-    SARABUN_DOCUMENT ||--o{ SARABUN_INBOX : "tray entries"
+    SARABUN_ROUTING_STEP ||--o{ SARABUN_STEP_RECIPIENT : "per-person read tracking (recipient_ids)"
 
     SARABUN_ROUTING_STEP }o--o| SARABUN_POSITION : "position_id (Position mode)"
-    SARABUN_ROUTING_STEP }o--o| RES_USERS : "user_id (Person mode)"
-    SARABUN_ROUTING_STEP }o--o| HR_DEPARTMENT : "department_id (Unit mode)"
+    SARABUN_ROUTING_STEP }o--o| HR_EMPLOYEE : "employee_id (Person mode)"
+    SARABUN_ROUTING_STEP }o--o| HR_DEPARTMENT : "department_id (ธุรการหน่วยงาน mode)"
     SARABUN_ROUTING_STEP }o--o{ RES_USERS : "actor_user_ids (snapshot)"
     SARABUN_ROUTING_STEP }o--o| RES_USERS : "acted_by_id"
     SARABUN_ROUTING_STEP }o--o| SARABUN_POSITION : "signed_as_position_id"
     SARABUN_ROUTING_STEP ||--o{ SARABUN_ROUTING_STEP_ACTIVITY : "activity links"
 
-    SARABUN_POSITION }o--o{ RES_USERS : "holder_ids"
+    SARABUN_POSITION }o--o{ HR_EMPLOYEE : "holder_ids (resolved to employee.user_id to act)"
+    HR_DEPARTMENT }o--o{ HR_EMPLOYEE : "sarabun_officer_ids (ธุรการหน่วยงาน)"
+    HR_EMPLOYEE }o--o| RES_USERS : "user_id (must exist to act — ADR-0005)"
 
     SARABUN_DOCUMENT_TYPE }o--|| SARABUN_DOCUMENT_SEQUENCE : "sequence_id"
     SARABUN_DOCUMENT_TYPE }o--o| SARABUN_ROUTE_TEMPLATE : "default_route_id"
@@ -131,9 +132,11 @@ ASCII summary of the core triangle (the part ADR-0001 most reshapes):
             │      sarabun.routing.step             │   ← ONE unified entity
             │  (target + verb + state + disposition)│     (was routing.line + recipient)
             └──────────────────────────────────────┘
-              target mode = position | person | unit
-                position_id → sarabun.position ──holder_ids──> res.users
-                                  (resolved & SNAPSHOTTED into actor_user_ids on activation)
+              target mode = position | person | unit (ธุรการหน่วยงาน)
+                position_id → sarabun.position ──holder_ids──> hr.employee ──user_id──> res.users
+                                  (each holder resolved to employee.user_id, then SNAPSHOTTED
+                                   into actor_user_ids on activation — ADR-0005; a holder with
+                                   no linked user can be configured but can never act)
 ```
 
 ### 1.2 `sarabun.document` — the หนังสือ (protagonist)
@@ -146,18 +149,16 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `name` | Char (readonly, default `/`) | Official registered number, rendered in พ.ศ. Related/stored from `register_number_id.register_number`; assigned **at send**, stays `/` while draft. |
 | `kind` | Selection (related, stored) | Dev-extensible behaviour axis: `memo`/`circular`/`from_record`. Mirrored from `type_id.kind`. v1 emphasis = `from_record`. |
 | `type_id` | M2o → `sarabun.document.type` (required) | Admin-configurable concrete type; binds sequence/default-route/template. |
-| `subject` | Char (required) | **เรื่อง** — the document's title. |
-| `addressee` | Char | **เรียน (Addressee)** — own header field, manual or origin-set; optional suggest from final ลงนาม-อนุมัติ step's Position. Replaces old free-text `recipient`/"To". |
-| `addressee_position_id` | M2o → `sarabun.position` | Optional structured suggest source for `addressee` (the final-approve Position). |
-| `through` | Char | **ผ่าน (Through)** free-text ("เรียน X ผ่าน Y"). |
+| `subject` | Text (required) | **เรื่อง** — the document's title. Multi-line free text. |
+| `addressee_prefix_id` | M2o → `sarabun.addressee.prefix` | **คำขึ้นต้น (salutation)** — configurable master data opening the `addressee` line; seeded "เรียน" (กราบทูล / เสนอ / ยื่นต่อ … configurable). No hardcoded "เรียน" label. |
+| `addressee` | Text (multiline) | **เรียน (Addressee)** — own header field, manual or origin-set, opened by `addressee_prefix_id`. Replaces old free-text `recipient`/"To". |
 | `content` | Html (sanitized) | **เนื้อหา (body)** — free rich text. The letter body for composed memo/circular; an optional covering note above the origin report for `from_record`. Editable while `draft`/`returned`; rendered on the cover sheet. Full regulation memo layout is phase-2. |
+| `remark` | Html (sanitized) | **หมายเหตุ (Remark)** — an optional **internal** note captured after `content`. Working notes only — **not** part of the letter body and not rendered as official content. |
 | `sender_user_id` | M2o → `res.users` (readonly) | The composer. |
 | `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — drives register resolution (one register per ส่วนงาน). |
 | `sender_suffix` | Char | Sub-unit / extension display. |
-| `urgency` | Selection | `normal`/`urgent`/`very_urgent`/`immediate`. |
-| `secrecy` | Selection | `normal`/`confidential`/`secret`/`top_secret`. **v1 = display label only**; need-to-know enforcement is phase-2. |
 | `state` | Selection (readonly, tracked) | `draft → circulating → completed`; negative `returned`/`rejected`/`cancelled` (see §3). Replaces old `sent`. |
-| `strongest_verb_done` | Selection (computed/stored) | Highest verb positively completed so far (`none`/`acknowledge`/`endorse`/`sign_approve`). Drives Recall eligibility (ADR-0002: Recall only if no `sign_approve` yet). |
+| `strongest_verb_id` | M2o → `sarabun.verb` (computed/stored) | Highest-`rank` verb positively completed so far (`False` = none). Drives Recall eligibility (ADR-0002: Recall only if no signature verb — `verb.is_signature` — has completed yet). |
 | `origin_model` | Char (indexed) | Origin link — owned by the document (ADR-0004). |
 | `origin_res_id` | Integer (indexed) | Origin record id. The `(model,res_id)` pair is the **1:N** link origin → documents. |
 | `route_template_id` | M2o → `sarabun.route.template` | The template that **seeded** the steps. Not authoritative once seeded (ADR-0001). |
@@ -179,10 +180,21 @@ Key derived/UI fields: `is_frozen` (computed `bool(signed_pdf)`), `current_step_
 `pending_ack_count` ("ค้างรับทราบ N"), `routing_progress`, `access_url`,
 `report_preview_url`, `has_cover_sheet` (true for `from_record`).
 
+**Per-current-user inbox fields** (all `compute="_compute_my_inbox"`, non-stored,
+read off the current user's active step and its `recipient_ids` — §1.8): `my_received_date`
+(**วันที่ได้รับ** — the active step's `activated_date`), `my_action_verb_id`
+(M2o → `sarabun.verb`, **เพื่อดำเนินการ** — what this user is asked to do),
+`my_read_state` (Selection `unread`/`read`/`forwarded`, **สถานะการอ่าน** — whether
+this user has opened the หนังสือ, tracked per person). `action_mark_read()` stamps
+`read_date` on the current user's active-step `sarabun.step.recipient` rows; it is
+called by the `sarabun_document_form` js_class controller when the form is genuinely
+opened (not from `read()` — §7.1). Opening ("seen") is deliberately **separate** from
+รับทราบ (a disposition completing a step).
+
 Semantic helper fields (computed booleans, accessed as attributes — these
 **replace** any method-call form, fixing the field-vs-method drift): `is_circulating`,
 `is_completed`, `is_returned`, `is_rejected`, `is_cancelled`, `is_terminal`
-(rejected or cancelled), `has_signed` (`strongest_verb_done == 'sign_approve'`).
+(rejected or cancelled), `has_signed` (any positively-completed step whose `verb.is_signature`).
 
 Key methods (design intent): `action_send()` (validate → `_register()` →
 `state=circulating` → `_advance_stage()` activate first Stage),
@@ -201,14 +213,14 @@ see §4), `_stage_complete(order)` / `_advance_stage()` (Stage gating logic),
 |---|---|---|
 | `document_id` | M2o → `sarabun.document` (required, cascade, indexed) | Owner. |
 | `order` | Integer | **Stage** grouping: steps sharing one `order` run in parallel. Sequential = stages of one step each. |
-| `verb` | Selection (required) | `acknowledge` (รับทราบ, non-gating) · `endorse` (เห็นชอบ, gating) · `sign_approve` (ลงนาม-อนุมัติ, gating; sign+approve are one verb in v1). |
-| `gating` | Boolean (computed, stored) | `verb in ('endorse','sign_approve') and not for_info`. The advancement gate. |
+| `verb_id` | M2o → `sarabun.verb` (required) | Configurable verb **record** (master data), not a hardcoded Selection. Built-ins: `รับทราบ` (non-gating), `เห็นชอบ` (gating), `ลงนาม-อนุมัติ` (gating + signature). Referenced in code by xmlid (`agx_sarabun.verb_acknowledge` / `verb_endorse` / `verb_sign_approve`), never by a string code (there is no code field). |
+| `gating` | Boolean (computed, stored) | `verb_id.gating and not for_info`. The advancement gate — reads the verb's `gating` flag, no string branch. |
 | `for_info` | Boolean | **สำเนาเรียน (CC)** flag on an `acknowledge` step. Never blocks advancement/completion. No separate entity. |
 | `target_mode` | Selection (required) | `position` (canonical) / `person` / `unit`. Replaces old `recipient_type` `user/department/role`. |
 | `position_id` | M2o → `sarabun.position` | Target when `target_mode=position`. |
-| `user_id` | M2o → `res.users` | Target when `target_mode=person`. |
-| `department_id` | M2o → `hr.department` | Target when `target_mode=unit` (department สารบรรณกลาง). |
-| `actor_user_ids` | M2m → `res.users` (readonly) | **Resolved holder-set snapshotted when the step becomes ACTIVE** (ADR-0003). Multi-holder = first-to-act-wins. Org changes after activation never rewrite this. The field the security read-rule keys on. |
+| `employee_id` | M2o → `hr.employee` | Target when `target_mode=person` — the personnel record (renamed from the old `user_id`). Resolved to `employee.user_id` at activation to act (ADR-0005); an employee with no linked user can be configured but can never act. |
+| `department_id` | M2o → `hr.department` | Target when `target_mode=unit` (the หน่วยงาน whose ธุรการหน่วยงาน clerks act — `hr.department.sarabun_officer_ids`, `hr.employee`). |
+| `actor_user_ids` | M2m → `res.users` (readonly) | **Resolved holder-set snapshotted when the step becomes ACTIVE** (ADR-0003). Targets are personnel (`hr.employee`); each holder is resolved to `employee.user_id` and the resulting *user* set is snapshotted here — the engine still acts by user (ADR-0005). Multi-holder = first-to-act-wins. Org changes after activation never rewrite this. The field the security read-rule keys on. |
 | `state` | Selection (tracked) | `waiting` (future/not reached) → `active` → `done` / `skipped`. |
 | `disposition` | Selection | The move taken once done: `complete`/`direct`/`delegate`/`return`/`reject` (the 5 dispositions). |
 | `acted_by_id` | M2o → `res.users` (readonly) | Who acted (one of the snapshot holders, or a delegatee). |
@@ -222,6 +234,8 @@ see §4), `_stage_complete(order)` / `_advance_stage()` (Stage gating logic),
 | `active` | Boolean (default True) | Set `False` when a re-send freezes the attempt; archived steps survive as history. |
 | `attempt_seq` | Integer | Generation marker (matches the document's `attempt_seq` at the time the step belonged to the live Route). |
 | `act_token` | Char (indexed, nullable, groups-restricted) | Phase-2 magic-link seam; **never generated in v1**. |
+| `activated_date` | Datetime (readonly) | **วันที่ได้รับ** — when the step became `active` (the moment its recipients received it). Stamped in `_activate()`. |
+| `recipient_ids` | O2m → `sarabun.step.recipient` | Per-person read tracking — one row per snapshot holder, materialised on activation (§1.8). |
 
 Key methods (token-ready API per CONTEXT Access): the single act-on-step entry
 point `act_on_step(disposition, *, actor=None, token=None, payload=None)`;
@@ -260,7 +274,7 @@ target** and the **signing capacity**. NOT `hr.job`, NOT academic rank.
 | `active` | Boolean | |
 | `sequence` | Integer | Display ordering. |
 | `department_id` | M2o → `hr.department` | Optional scope (the unit this post belongs to). |
-| `holder_ids` | M2m → `res.users` | **Current holder(s)** of the post. Resolved & snapshotted onto a step at activation. Multi-holder → first-to-act-wins. รักษาการ/มอบอำนาจ interim = add acting user as a temporary holder. |
+| `holder_ids` | M2m → `hr.employee` | **Current holder(s)** of the post — personnel, not users (ADR-0005). At activation each holder is resolved to `employee.user_id` and that *user* set is snapshotted onto the step; a holder with no linked user can be configured but can never act. Multi-holder → first-to-act-wins. รักษาการ/มอบอำนาจ interim = add the acting person as a temporary holder. |
 | `parent_id` | M2o → `sarabun.position` | Optional hierarchy (org display / future acting chains). |
 
 Phase-2 acting seam (designed, not built in v1): an `acting_assignment` relation
@@ -268,7 +282,10 @@ Phase-2 acting seam (designed, not built in v1): an `acting_assignment` relation
 rank stays on the person (`hr.employee.academic_standing_title`) for the
 **signature block display only** — never modelled here.
 
-Key method: `_current_holder_users(at_datetime=None)` → recordset of `res.users`.
+Key method: `_current_holder_users(at_datetime=None)` → recordset of `res.users`
+(resolves `holder_ids` (`hr.employee`) to their linked `user_id`, dropping any
+holder with no linked user — ADR-0005). A companion `_current_holder_employees()`
+returns the raw `hr.employee` holders.
 
 ### 1.6 `sarabun.document.type` + the `kind` axis (Classification)
 
@@ -301,21 +318,34 @@ tables are given in §4.8 to avoid duplication. Key shape:
   `voided` (replacing the old `cancelled`) keeps the permanent **เลขยกเลิก** gap;
   the old `action_release` is **dropped** — numbers are never recycled.
 
-### 1.8 `sarabun.inbox` — the tray
+### 1.8 `sarabun.step.recipient` — per-person read tracking
 
-Lightweight per-user inbox entry backing the systray tray + bus realtime. The old
-**`read()`-override anti-pattern** is **removed** (§7); "action required" is driven
-by native `mail.activity` on the active step's snapshot holders.
+There is **no separate `sarabun.inbox` model**. The inbox is a *filtered view* of
+`sarabun.document` (the "awaiting my action" domain, §7.3) and per-person read state
+lives on **`sarabun.step.recipient`** — one row per (routing step × resolved holder).
+Even a ธุรการหน่วยงาน / ตำแหน่ง with several holders keeps a **separate row per
+person**, so read status is individual. Rows are materialised (snapshot) when a step
+activates. The old **`read()`-override anti-pattern** is **removed** (§7); "action
+required" is driven by native `mail.activity` on the active step's snapshot holders.
 
 | Field | Type | Notes |
 |---|---|---|
-| `user_id` | M2o → `res.users` (required, indexed, cascade) | |
-| `document_id` | M2o → `sarabun.document` (required, indexed, cascade) | |
-| `is_read` | Boolean (indexed) | `unique(user_id, document_id)`. |
+| `step_id` | M2o → `sarabun.routing.step` (required, cascade, indexed) | Owner step. |
+| `document_id` | M2o → `sarabun.document` (related `step_id.document_id`, stored, indexed) | |
+| `user_id` | M2o → `res.users` (required, indexed) | The resolved holder. `unique(step_id, user_id)`. |
+| `employee_id` | M2o → `hr.employee` (computed `user_id.employee_id`, stored) | **บุคลากร** — the person behind the user (ADR-0005). |
+| `received_date` | Datetime (readonly) | **วันที่ได้รับ** — set when the row is created (step activation). |
+| `read_date` | Datetime (readonly) | **วันที่เปิดอ่าน** — stamped by `document.action_mark_read()` when this user first opens the form. |
+| `forwarded` | Boolean | **รอการส่งต่อ** — phase-2 seam, never set in v1. |
+| `read_state` | Selection (computed, stored) | **สถานะการอ่าน** — `unread` (`รอการเปิดอ่าน`) / `read` (`เปิดอ่านแล้ว`) / `forwarded`, derived from `read_date`/`forwarded`. |
 
-Population happens explicitly in `sarabun.routing.step._activate()` (notify all
-holders) and on first-to-act clearing, via `bus.bus._sendone(... 'sarabun_inbox/updated')`
-— not inside `read()`.
+Population happens explicitly in `sarabun.routing.step._activate()` →
+`_sync_recipients(users)`: idempotently create one row per snapshot holder (via
+`sudo()`, since recipients are engine-owned and users have read-only access). Realtime
+tray refresh is pushed by the step's `_notify_inbox()` over
+`bus.bus._sendmany(... 'sarabun_inbox/updated')` — not inside `read()`. Note: **opened
+≠ รับทราบ** — read/unread is a per-item attribute, independent of the "awaiting my
+action" inbox membership.
 
 ### 1.9 References & enclosures
 
@@ -348,10 +378,10 @@ scope fields `department_id` / `document_type_id` / `origin_model`,
 |---|---|
 | `template_id` (required, cascade) | — |
 | `order` (Integer) | `order` (Stage) |
-| `verb` (`acknowledge`/`endorse`/`sign_approve`) | `verb` |
+| `verb_id` (M2o → `sarabun.verb`) | `verb_id` |
 | `for_info` (Boolean) | `for_info` |
 | `target_mode` (`position`/`person`/`unit`) | `target_mode` |
-| `position_id` / `user_id` / `department_id` | corresponding target field |
+| `position_id` / `employee_id` (`hr.employee`) / `department_id` | corresponding target field |
 
 Seeded steps are inert until activation — pre-seeded named persons grant **no
 visibility** until the step reaches them (CONTEXT Route visibility).
@@ -363,6 +393,16 @@ computed search-based pseudo-O2m) + `active_sarabun_document_id` (current live).
 Callbacks `_on_sarabun_circulating` / `_on_sarabun_completed` / `_rejected` /
 `_returned` / `_cancelled` + generic `_on_sarabun_step(step, disposition)` receive
 a **`sarabun.routing.step`** and run in the actor's transaction. Full contract in §8.
+
+**Status reflection onto the origin.** The mixin also mirrors the current live
+หนังสือ's status back onto the origin record so users on the source form can see
+where the document is (all computed by `_compute_sarabun_documents`):
+`sarabun_state` (Selection mirroring the document `state`), `sarabun_is_draft`
+(Boolean — a หนังสือ exists but is still `draft`, not yet sent), and
+`sarabun_state_label` (Char — human-readable `state` + routing progress, from
+`sarabun.document._status_label()`). Consumer forms surface these as a **draft
+warning** banner (`sarabun_is_draft`) and a **routing-progress** banner
+(`sarabun_has_live_document and not sarabun_is_draft`, showing `sarabun_state_label`).
 
 ---
 
@@ -396,13 +436,22 @@ subsequent edits to the template never touch a live Route.
 
 ### 2.3 Verbs
 
-Three verbs, a **fixed closed set** (only the `kind` axis is dev-extensible):
+Verbs are **configurable master data** — model `sarabun.verb` with fields
+`name` / `sequence` / `active` / `rank` / `gating` / `is_signature` (there is
+**no `code` field**). Admins can add verbs; the engine never branches on a verb
+string, only on the **flags** (`gating`, `is_signature`, `rank`). The three
+built-ins below are seeded `noupdate` and referenced in code by **xmlid**
+(`agx_sarabun.verb_acknowledge` / `verb_endorse` / `verb_sign_approve`):
 
-| Verb | Thai | Gating? | Effect on completion |
+| Built-in (xmlid) | Thai | Flags | Effect on completion |
 |---|---|---|---|
-| `acknowledge` | รับทราบ | **No** (non-gating) | Receipt confirmation only. Parallel-capable. Never blocks stage advancement or completion; tracked as "ค้างรับทราบ N". CC/สำเนาเรียน is this verb + `for_info`. |
-| `endorse` | เห็นชอบ | **Yes** (gating) | Mid-chain gatekeeping; passes upward with an opinion. May also ตีกลับ / ปฏิเสธ. |
-| `sign_approve` | ลงนาม-อนุมัติ | **Yes** (gating) | The authority's decision **and** signature, in the capacity of the step's `position_id`. Sign and approve are one verb for now. Completing one gates the Recall window (ADR-0002). |
+| `verb_acknowledge` | รับทราบ | `gating=False` | Receipt confirmation only. Parallel-capable. Never blocks stage advancement or completion; tracked as "ค้างรับทราบ N". CC/สำเนาเรียน is this verb + `for_info`. |
+| `verb_endorse` | เห็นชอบ | `gating=True` | Mid-chain gatekeeping; passes upward with an opinion. May also ตีกลับ / ปฏิเสธ. |
+| `verb_sign_approve` | ลงนาม-อนุมัติ | `gating=True`, `is_signature=True`, highest `rank` | The authority's decision **and** signature, in the capacity of the step's `position_id`. Sign and approve are one verb for now. Completing one (`is_signature`) gates the Recall window (ADR-0002). |
+
+> The verb **behaviour model is provisional** — the flags (`gating` /
+> `is_signature` / `rank`) are the current contract; a candidate future is to
+> derive completion/ranking from route order instead.
 
 ### 2.4 Dispositions
 
@@ -491,20 +540,26 @@ Resolution happens **at activation**, not at seed time (ADR-0003):
 
 ```python
 def _snapshot_holders(self):
+    # All three modes resolve to hr.employee holders, then to their linked
+    # users; a holder with no user_id is dropped and can never act (ADR-0005).
     if self.target_mode == "position":
-        holders = self.position_id._current_holder_users()    # sarabun.position
+        employees = self.position_id.holder_ids                 # sarabun.position (hr.employee)
     elif self.target_mode == "unit":
-        holders = self.department_id._saraban_central_users()  # central registry clerks
-    else:                                                      # person
-        holders = self.user_id
+        employees = self.department_id.sarabun_officer_ids      # ธุรการหน่วยงาน clerks (hr.employee)
+    else:                                                       # person
+        employees = self.employee_id                           # hr.employee
+    holders = employees.mapped("user_id")                       # resolve to res.users
     self.actor_user_ids = [(6, 0, holders.ids)]
 ```
 
-The resolved person-set is **snapshotted** into `actor_user_ids` so later org
-changes never rewrite history. รักษาการ/มอบอำนาจ (acting) is a phase-2 seam.
+Targets are personnel (`hr.employee`); each holder is resolved to its
+`employee.user_id` and the resulting *user*-set is **snapshotted** into
+`actor_user_ids` so later org changes never rewrite history (ADR-0005 — the engine
+still acts by user). A holder with no linked user is dropped at resolution and can
+never act. รักษาการ/มอบอำนาจ (acting) is a phase-2 seam.
 **Route visibility** derives from snapshots: a Document is readable by the sender
 + the snapshot actors of any `active`/`done` step. `waiting`/future steps grant
-**no** visibility even if pre-seeded — fixing the old bug where Position/Unit
+**no** visibility even if pre-seeded — fixing the old bug where Position/ธุรการหน่วยงาน
 recipients with no `user_id` could not see the document.
 
 ### 2.8 Methods / flow
@@ -589,7 +644,7 @@ documents in `sent` and blocked cancellation after send.
 The lifecycle lives in a single `state` field (`tracking=True`). The Route — the
 living chain of `sarabun.routing.step` rows — runs *underneath* `circulating`;
 document state and step state are distinct concerns, and the engine additionally
-tracks `strongest_verb_done` because Recall depends on it (ADR-0002).
+tracks `strongest_verb_id` because Recall depends on it (ADR-0002).
 
 | `state` value | Thai term | Meaning | Terminal? | Revisable? |
 |---|---|---|---|---|
@@ -601,7 +656,7 @@ tracks `strongest_verb_done` because Recall depends on it (ADR-0002).
 | `cancelled` | ยกเลิก/เรียกคืน | Withdrawn via เรียกคืน before any signature; number **voided**. | yes (negative) | no |
 
 Supporting fields the machine reads/writes (all defined in §1.2): `state`,
-`register_number_id`/`name`, `strongest_verb_done`, `routing_step_ids`,
+`register_number_id`/`name`, `strongest_verb_id`, `routing_step_ids`,
 `archived_step_ids` + `attempt_seq` (frozen prior chains), `signed_pdf` (the
 frozen ฉบับลงนาม, set only at `completed`), `origin_model` + `origin_res_id`.
 Number voiding is recorded on the ledger row (`register_number_id.state = 'voided'`
@@ -646,13 +701,13 @@ raise `UserError`/`ValidationError` with a clear message — **never** silently 
 | # | Event (method) | From | Guard | To | Side effects |
 |---|---|---|---|---|---|
 | 1 | **Send** `action_send()` | `draft`, `returned` | (a) Route has ≥1 gating step; (b) a register sequence resolves for *(sender ส่วนงาน)* — else block with clear error; (c) for `returned`-restart, chain already re-seeded (#4a). | `circulating` | `_register()`: allocate `name` atomically (row-lock + `unique(sequence,counter,fiscal_year)` backstop + retry; render พ.ศ., reset per ปีงบประมาณ); `_advance_stage()` activates stage 1 (`active`, **snapshot** holders into `actor_user_ids`, fire `mail.activity`). **Fire `_on_sarabun_circulating(document)`** in the same transaction. Document becomes read-locked. |
-| 2 | **Complete** (auto) `_advance_stage()` → `_complete_document()` | `circulating` | Every *gating* step in the **current Stage** positively completed; รับทราบ/`for_info` never blocks; no further gating step remains downstream. | `completed` | Freeze **ฉบับลงนาม** (`_freeze_signed_copy()`): render cover sheet + signature block + เกษียน trail, merge with origin report → immutable `signed_pdf`; portal/print now serve the frozen file. Recompute `strongest_verb_done`. Call `_on_sarabun_completed(document)` in the same transaction (failure rolls back — ADR-0004). Clear residual `mail.activity`. |
+| 2 | **Complete** (auto) `_advance_stage()` → `_complete_document()` | `circulating` | Every *gating* step in the **current Stage** positively completed; รับทราบ/`for_info` never blocks; no further gating step remains downstream. | `completed` | Freeze **ฉบับลงนาม** (`_freeze_signed_copy()`): render cover sheet + signature block + เกษียน trail, merge with origin report → immutable `signed_pdf`; portal/print now serve the frozen file. Recompute `strongest_verb_id`. Call `_on_sarabun_completed(document)` in the same transaction (failure rolls back — ADR-0004). Clear residual `mail.activity`. |
 | 3 | **Direct / Delegate** `act_on_step(...)` | `circulating` (step-level) | Actor is a snapshot holder of an *active* step with authority. | `circulating` (no state change) | Direct inserts the NEXT step(s); Delegate reassigns THIS step. `note` recorded. Re-evaluate `_advance_stage()`. Generic `_on_sarabun_step(step, disposition)` in-transaction. Intra-`circulating` moves, not lifecycle transitions. |
 | 4 | **Return** `action_return(destination)` | `circulating` | Actor is a snapshot holder of an *active* gating step with authority. `destination` ∈ {`sender_restart` (default), `resume_step`}. | `returned` | **Freeze the prior chain** (archive `routing_step_ids` into the attempt's frozen เกษียน trail — §3.4). Record returner, capacity, comment, destination. **Number RETAINED** (Return is recoverable). Re-seed/resume per destination (#4a/#4b). `_on_sarabun_returned(document, step)` in-transaction. Notify sender via `mail.activity`. |
 | 4a | — *destination `sender_restart`* | — | — | `returned` | Re-seed a fresh Route from the template / `type_id.default_route_id` (steps `waiting`); sender revises then re-sends (#1) which re-activates Stage 1 from scratch. |
 | 4b | — *destination `resume_step`* | — | — | `returned` | Keep steps up to the picked step as completed-history; picked step (and later) → `waiting`; on re-send the Route resumes at the picked step. |
 | 5 | **Reject** `action_reject()` | `circulating` | Actor is a snapshot holder of an *active* gating step with authority. A single ปฏิเสธ in a co-approval Stage rejects the whole Document. | `rejected` (terminal) | **VOID the number** (`register_number_id.state='voided'`, `void_reason='rejected'`). Other active/waiting steps → `skipped`. Freeze the chain. Record rejecter/capacity/comment. `_on_sarabun_rejected(document, step)` in-transaction. Proceed via `action_duplicate_to_draft()` → new `draft` linked to the SAME origin (1:N). |
-| 6 | **Recall** `action_recall()` | `circulating` | (a) Caller is the sender; (b) **`not has_signed`** (`strongest_verb_done != 'sign_approve'`). If a signature exists → block, directing to a cancellation หนังสือ (#7). | `cancelled` (terminal) | **VOID the number** (`void_reason='cancelled'`). Deactivate active steps; clear `mail.activity`. Freeze chain. `_on_sarabun_cancelled(document)` in-transaction. |
+| 6 | **Recall** `action_recall()` | `circulating` | (a) Caller is the sender; (b) **`not has_signed`** (no positively-completed `verb.is_signature` step yet). If a signature exists → block, directing to a cancellation หนังสือ (#7). | `cancelled` (terminal) | **VOID the number** (`void_reason='cancelled'`). Deactivate active steps; clear `mail.activity`. Freeze chain. `_on_sarabun_cancelled(document)` in-transaction. |
 | 7 | **Post-signature cancellation** (no in-place transition) | `completed` (or `circulating` after a signature) | A ลงนาม-อนุมัติ step has occurred. | unchanged | NOT a transition. Compose a **new cancellation หนังสือ** (referencing the original via อ้างถึง). Original keeps its number and `completed` state for audit. |
 | 8 | **Duplicate-to-new-draft** `action_duplicate_to_draft()` | `rejected` | — | new `draft` (NEW record) | Copies content into a fresh `draft`; links to the same origin (`origin_model`/`origin_res_id`), making it the new `active_sarabun_document_id`. The rejected original is untouched. |
 
@@ -711,7 +766,7 @@ A `draft` or never-registered Document has no number to void.
 ### 4.1 The Register event — a distinct seam, auto-fired at send
 
 ลงทะเบียน fires **automatically at send** (`draft → circulating`) but is kept a
-**distinct, named operation** so a phase-2 สารบรรณกลาง clerk-gate can be slotted
+**distinct, named operation** so a phase-2 ธุรการหน่วยงาน clerk-gate can be slotted
 in front of it without touching the lifecycle transition.
 
 ```
@@ -1142,7 +1197,7 @@ Route's completed steps (no separate model):
 trail = document.routing_step_ids.filtered(
     lambda s: s.state == 'done'
     and s.disposition in ('complete', 'direct')        # the positive dispositions
-    and s.verb in ('endorse', 'sign_approve')          # endorsing/signing lines only
+    and s.gating                                       # endorsing/signing (gating) lines only
 ).sorted(key=lambda s: (s.order, s.acted_date))
 ```
 
@@ -1156,9 +1211,9 @@ inline, since Direct is the *common* path of Thai routing.
 
 > Note: the filter keys on the **step state `done`** and the **positive
 > dispositions `complete`/`direct`** (not the non-existent `completed` state, and
-> not the verb values `endorse`/`sign`, which are verbs not dispositions). The verb
-> filter (`endorse`/`sign_approve`) is what restricts the trail to endorsing/signing
-> lines.
+> not a verb string, since verbs are `sarabun.verb` records with no code). The
+> `gating` flag (set on the เห็นชอบ / ลงนาม-อนุมัติ verbs) is what restricts the
+> trail to endorsing/signing lines.
 
 ### 5.4 FREEZE at `completed` — the immutable ฉบับลงนาม
 
@@ -1217,11 +1272,11 @@ of re-rendering QWeb live. Freezing is idempotent and one-way.
 For a `from_record` Document the official PDF is **two parts merged into one**:
 
 1. **ใบปะหน้าสารบรรณ (Cover sheet)** — the system-rendered front page: official
-   header **(number / date / เรื่อง / เรียน / ผ่าน)** + the **Signature block**
+   header **(number / date / เรื่อง / เรียน)** + the **Signature block**
    (§5.2) + the **เกษียน trail** (§5.3). A QWeb report owned by the module
    (`agx_sarabun.action_report_sarabun_cover`). Header fields come from the
    document: `name` (register number), send date, `subject` (เรื่อง), `addressee`
-   (เรียน), `through` (ผ่าน).
+   (เรียน). ผ่าน (Through) is phase-2, not on the v1 cover sheet.
 2. **The body** — the origin's delegated report. The old report-delegation contract
    stays unchanged for the body: the mixin's `_get_sarabun_report_action()`
    (`sarabun_document_mixin.py:149`) and the document's
@@ -1255,8 +1310,8 @@ def _render_official_pdf(self):
 ```
 ┌──────────────────────────────┐
 │  ใบปะหน้าสารบรรณ (Cover sheet) │  page 1  ← agx_sarabun.action_report_sarabun_cover
-│  • number / date              │            (header เรื่อง/เรียน/ผ่าน +
-│  • เรื่อง / เรียน / ผ่าน        │             Signature block + เกษียน trail)
+│  • number / date              │            (header เรื่อง/เรียน +
+│  • เรื่อง / เรียน              │             Signature block + เกษียน trail)
 │  • Signature block            │
 │  • เกษียน trail               │
 ├──────────────────────────────┤
@@ -1280,7 +1335,7 @@ engine without the rich compose UI.
 | Full memo/circular **compose template** | engine carries the kinds; cover-sheet-wraps-origin only | rich บันทึกข้อความ / หนังสือเวียน body composer |
 | **PKI** digital signature | digitized signature *image* only (§5.2) | cryptographic signing of the frozen ฉบับลงนาม |
 | Magic-link signing | backend-only, but `act_on_step` is token-ready (§6) | passwordless act-on-step from email |
-| ชั้นความลับ need-to-know | display label only (`secrecy`); manager-see-all | enforced visibility (§6) |
+| ชั้นความลับ need-to-know | no field; manager-see-all | `secrecy` field + enforced visibility (§6) |
 
 ---
 
@@ -1306,8 +1361,8 @@ This section specifies the v1 security model. Guiding rule, from the glossary:
    Person grants no early read.
 4. **Acting authority is narrower than read.** Read is granted to active **and**
    completed actors; acting is granted **only** to the actor of an *active* step.
-5. **Secrecy is a label in v1.** ชั้นความลับ enforcement is a phase-2 seam; v1 keeps
-   manager-see-all and treats `secrecy` as a display field only.
+5. **No secrecy in v1.** ชั้นความลับ is a phase-2 seam — v1 carries no `secrecy`
+   field or label and keeps manager-see-all.
 
 ### 6.2 What the old model got wrong (and what we fix)
 
@@ -1323,11 +1378,15 @@ This section specifies the v1 security model. Guiding rule, from the glossary:
 | Group | XML id | Implies | Purpose |
 |---|---|---|---|
 | **User** | `group_sarabun_user` | `base.group_user` | Everyday actor: create/send documents they originate, read documents they are sender or active/completed actor of, act on their active steps. |
-| **Manager** | `group_sarabun_manager` | `group_sarabun_user` | สารบรรณกลาง / records administrator: manager-see-all, configures `sarabun.document.type`, `sarabun.position`, route templates, sequences. |
+| **Manager** | `group_sarabun_manager` | `group_sarabun_user` | Records administrator: manager-see-all, configures `sarabun.document.type`, `sarabun.position`, route templates, sequences. |
 
 `group_sarabun_user` implies `base.group_user` so actors get native `mail.activity`
 access. Configuration models are **read** for User, **read/write/create/unlink** for
-Manager.
+Manager. `group_sarabun_user` is also granted **read on `hr.employee`** so Users can
+pick and display routing targets (holders / person targets / ธุรการหน่วยงาน clerks are
+`hr.employee`, ADR-0005; non-HR users cannot otherwise read `hr.employee`). `group_sarabun_user` is also granted **read on `hr.employee`** so Users can
+pick and display routing targets (holders / person targets / ธุรการหน่วยงาน clerks are
+`hr.employee`, ADR-0005; non-HR users cannot otherwise read `hr.employee`).
 
 ### 6.4 Model access matrix (`ir.model.access.csv`)
 
@@ -1343,6 +1402,8 @@ ACL is the coarse gate; record rules are the fine gate.
 | `sarabun.position` | user / manager | 1 / 1 | 0 / 1 | 0 / 1 | 0 / 1 |
 | `sarabun.route.template` (+ line) | user / manager | 1 / 1 | 0 / 1 | 0 / 1 | 0 / 1 |
 | `sarabun.document.sequence` / number | user / manager | 1 / 1 | 0 / 1 | 0 / 1 | 0 / 1 |
+| `hr.employee` | user | 1 | 0 | 0 | 0 |
+| `hr.employee` | user | 1 | 0 | 0 | 0 |
 
 > ACL grants `write=1` on `sarabun.document` / `sarabun.routing.step` to User
 > because the action methods (`act_on_step`, send, return, recall) legitimately
@@ -1357,15 +1418,16 @@ ACL is the coarse gate; record rules are the fine gate.
 The record-rule domains read the canonical names (§1):
 
 **`sarabun.routing.step`**: `document_id` (m2o, cascade, indexed), `target_mode`,
-`position_id` / `user_id` / `department_id`, `actor_user_ids` (m2m `res.users` — the
-snapshot written `waiting → active`; the field that fixes the no-`user_id` bug),
+`position_id` / `employee_id` (m2o `hr.employee` — person target) / `department_id`,
+`actor_user_ids` (m2m `res.users` — the resolved-holder snapshot written
+`waiting → active`; targets are personnel resolved to `employee.user_id`, ADR-0005;
+the field that fixes the no-`user_id` bug),
 `acted_by_id` (m2o `res.users`), `state` (`waiting`/`active`/`done`/`skipped`),
 `verb`, `for_info`, `act_token` (char, indexed, nullable).
 
 **`sarabun.document`**: `sender_user_id` (m2o `res.users`, indexed), `state`
 (`draft`/`circulating`/`completed`/`returned`/`rejected`/`cancelled`),
-`routing_step_ids` (o2m → `sarabun.routing.step`), `secrecy` (selection,
-**display-only in v1**), `company_id`.
+`routing_step_ids` (o2m → `sarabun.routing.step`), `company_id`.
 
 ### 6.6 Record rules — `sarabun.document`
 
@@ -1420,7 +1482,7 @@ steps stay invisible.
 > boolean `is_visible_to` or a `_search` override. Do **not** revert to a per-step
 > `user_id` equality (that reintroduces the old bug).
 
-**Rule 3 — Manager (see all).** Also the v1 placeholder for the ชั้นความลับ seam.
+**Rule 3 — Manager (see all).** Also the v1 stand-in for the ชั้นความลับ seam (no `secrecy` field ships in v1).
 
 ```python
 # id="sarabun_document_manager_rule", group=group_sarabun_manager
@@ -1522,10 +1584,10 @@ phase-2 changes only *how `actor` is obtained*, never *what is allowed*.
 
 ### 6.10 ชั้นความลับ (secrecy) need-to-know — phase-2 seam
 
-v1 carries `secrecy` on `sarabun.document` as a **display label only**, no
-enforcement; manager-see-all stands. Phase-2 adds a **global** `ir.rule` that
-AND-composes with the actor rules, restricting high-secrecy documents to the
-active/done actor snapshot only:
+v1 ships **no** `secrecy` field on `sarabun.document` and no enforcement;
+manager-see-all stands. Phase-2 introduces the `secrecy` field plus a **global**
+`ir.rule` that AND-composes with the actor rules, restricting high-secrecy
+documents to the active/done actor snapshot only:
 
 ```python
 # PHASE-2 ONLY — not shipped in v1
@@ -1567,7 +1629,7 @@ Two mechanisms, two jobs:
 | Mechanism | Question it answers | Backed by | Per-actor? |
 |---|---|---|---|
 | `mail.activity` ("action required") | *"What must I act on?"* — only the actor of an **active** step | native `mail.activity` on `sarabun.document` | one activity per snapshot holder |
-| Sarabun inbox + systray tray ("หนังสือเข้า unread") | *"What arrived for me?"* — informational, incl. รับทราบ / สำเนาเรียน | `sarabun.inbox` + systray Owl component + `bus.bus` | one inbox row per holder per Document |
+| Sarabun inbox + systray tray ("หนังสือเข้า unread") | *"What arrived for me?"* — informational, incl. รับทราบ / สำเนาเรียน | filtered `sarabun.document` view + systray Owl component + `bus.bus`; per-person read state on `sarabun.step.recipient` | one recipient row per holder per active step |
 
 An active **gating** step produces both an activity *and* an inbox row. A
 non-gating **รับทราบ** step (including `for_info` สำเนาเรียน) produces an inbox row
@@ -1598,27 +1660,36 @@ silently mutates the DB and fights the read cache); **brittle field heuristic**
 **`sudo()` laundering** (a read silently escalates to a privileged write); **couples
 to dropped models** (`sarabun.document.recipient`, `state == "sent"`).
 
-**Replacement — an explicit action on real form open.**
+**Replacement — an explicit action on real form open.** Read state lives on
+`sarabun.step.recipient` (§1.8), not on a `sarabun.inbox` row. The `sarabun_document_form`
+js_class controller calls `action_mark_read` when the form is genuinely opened:
 
 ```python
-# controllers/main.py
-class SarabunPortal(http.Controller):
-    @http.route("/sarabun/document/<int:doc_id>/seen", type="json", auth="user")
-    def mark_seen(self, doc_id, **kw):
-        doc = request.env["sarabun.document"].browse(doc_id)
-        doc.check_access_rights("read"); doc.check_access_rule("read")  # honour Route visibility
-        return doc.action_mark_seen()
-
 # models/sarabun_document.py
-def action_mark_seen(self):
-    """Called explicitly when the form is genuinely opened (not from read())."""
-    self.env["sarabun.inbox"]._mark_read(self, self.env.user)   # clears the unread tray entry
+def action_mark_read(self):
+    """Stamp read_date on the current user's active-step recipients (called
+    when they open the หนังสือ form). Idempotent; only touches own rows."""
+    recipients = self.env["sarabun.step.recipient"].sudo().search([
+        ("document_id", "in", self.ids),
+        ("user_id", "=", self.env.user.id),
+        ("read_date", "=", False),
+        ("step_id.state", "=", "active"),
+    ])
+    if recipients:
+        recipients.write({"read_date": fields.Datetime.now()})
     return True
 ```
 
-The form view triggers it on mount (`onMounted` hook / `js_class`). "Seen"
-(informational) stays **separate** from "acted" (a disposition completing a step);
-only the latter advances the Route.
+```javascript
+// static/src/js/sarabun_document_form.esm.js — js_class="sarabun_document_form"
+// on record load, mark the current user's active-step recipient rows read:
+//   this.orm.call("sarabun.document", "action_mark_read", [[resId]])
+```
+
+The form view triggers it via its `js_class` controller on open. "Seen"
+(informational; sets `read_state='read'`) stays **separate** from "acted" (a
+disposition completing a step); only the latter advances the Route — **opened ≠
+รับทราบ**.
 
 ### 7.2 `mail.activity` — "action required" on the active step's actor(s)
 
@@ -1629,9 +1700,8 @@ a `mail.activity` on the parent `sarabun.document`.
 ```python
 # models/sarabun_routing_step.py
 def _activity_summary(self):
-    verbs = {"acknowledge": _("รับทราบ"), "endorse": _("เห็นชอบ"),
-             "sign_approve": _("ลงนาม-อนุมัติ")}
-    return verbs[self.verb]
+    # verb is a sarabun.verb record — read its translatable name directly
+    return self.verb_id.name
 
 def _schedule_activities(self):
     """One activity per snapshot holder of this active step (gating verbs only)."""
@@ -1668,30 +1738,33 @@ old `sarabun.document.recipient._send_notification()` (routed by the dropped
 ### 7.3 Sarabun inbox + systray tray + bus realtime ("หนังสือเข้า")
 
 The inbox is the informational unread tray — it includes รับทราบ / สำเนาเรียน that
-have **no** activity. Retained but pointed at the new model:
+have **no** activity. As-built there is **no `sarabun.inbox` model**: the tray is a
+filtered view of `sarabun.document` and read state lives on `sarabun.step.recipient`:
 
-- Created from the active **step's snapshot holders**, not from
-  `sarabun.document.recipient`.
-- The systray query (`res.users.get_sarabun_inbox_count`) drops
-  `document_id.state == "sent"` and uses the semantic helper field
-  `document_id.is_circulating` (ADR-0004 — semantic helpers replace hardcoded
-  `state == "sent"`).
-- `is_read` is flipped by the explicit `action_mark_seen` / `_mark_read` from §7.1,
-  never by `read()`.
+- **Inbox membership** = the "awaiting my action" domain
+  `[('routing_step_ids.state','=','active'), ('routing_step_ids.actor_user_ids','in',[uid])]`
+  — the same snapshot-holder predicate as Route visibility, never a hardcoded
+  `state == "sent"`.
+- **Per-person read state** is on `sarabun.step.recipient` (created from the active
+  step's snapshot holders in `_sync_recipients`, §1.8), surfaced on the document as
+  the computed `my_read_state` (§1.2). Read/unread is a **separate attribute** from
+  inbox membership — an item can be read yet still awaiting action.
+- `read_date` is stamped by the explicit `action_mark_read` from §7.1, never by
+  `read()`.
+- The systray RPC is `sarabun.document.get_my_sarabun_inbox` (returns the awaiting-
+  action documents), fed the same domain.
 
 ```python
-# models/sarabun_inbox.py
-def _add(self, document, users):
-    """Create one unread inbox row per holder; idempotent on (user, document)."""
-    for usr in users:
-        self.sudo()._upsert(usr, document, is_read=False)
-    self._notify_inbox_updated(users)        # bus -> systray refresh
-
-def _mark_read(self, document, user):
-    rows = self.sudo().search([("user_id", "=", user.id),
-                               ("document_id", "=", document.id), ("is_read", "=", False)])
-    rows.write({"is_read": True})
-    self._notify_inbox_updated(user)
+# models/sarabun_routing_step.py
+def _sync_recipients(self, users):
+    """Materialise one sarabun.step.recipient per snapshot holder. Idempotent:
+    only adds rows for new users. Engine-owned, so create via sudo."""
+    Recipient = self.env["sarabun.step.recipient"].sudo()
+    existing = self.recipient_ids.mapped("user_id")
+    now = fields.Datetime.now()
+    for user in users - existing:
+        Recipient.create({"step_id": self.id, "user_id": user.id,
+                          "received_date": now})
 ```
 
 **Realtime** (transport unchanged): `bus.bus._sendone(partner, "sarabun_inbox/updated",
@@ -2010,10 +2083,10 @@ themselves are identity-agnostic: they receive the `step` (which carries
 | `sarabun.document.recipient` (model) | **merged into `sarabun.routing.step`** | The "tracker" half. line+recipient → one entity. |
 | `sarabun.role` (model) | **`sarabun.position`** | ADR-0003. `role_category=executive` → position; `academic` → **dropped** (display-only on the person). `role_type`/`dynamic_method` → **dropped** in v1 (resolution via `position.holder_ids`; dynamic resolution is phase-2). |
 | `sarabun.reference` (model) | **dropped** | Hardcoded PR/PO/budget = related ERP records, redundant with origin link. อ้างถึง now = `reference_document_ids` (m2m) + `sarabun.reference.line` (free-text). |
-| free-text `recipient` / "To" | **`sarabun.document.addressee`** + optional `through` | Structured เรียน header, separated from routing actors. |
-| `routing_type` (`acknowledge`/`approve`) | `routing.step.verb` (`acknowledge`/`endorse`/`sign_approve`) | 2-value type → 3 verbs; `approve` carries the signature as `sign_approve`. |
+| free-text `recipient` / "To" | **`addressee`** (Text) + `addressee_prefix_id` (คำขึ้นต้น) | Structured เรียน header, separated from routing actors. `through` (ผ่าน) is phase-2. |
+| `routing_type` (`acknowledge`/`approve`) | `routing.step.verb_id` (M2o → `sarabun.verb`) | 2-value Selection → configurable verb records (built-ins รับทราบ / เห็นชอบ / ลงนาม-อนุมัติ, no code field); `approve` carries the signature as the `is_signature` verb. |
 | `recipient_type` (`user`/`department`/`role`) | `routing.step.target_mode` (`person`/`unit`/`position`) | Vocabulary replaced; `role` → `position` (canonical). |
-| `recipient.user_id` / `department_id` / `role_id` | `routing.step.user_id` / `department_id` / `position_id` | |
+| `recipient.user_id` / `department_id` / `role_id` | `routing.step.employee_id` / `department_id` / `position_id` | Person target is now `hr.employee`, resolved to `employee.user_id` to act (ADR-0005). |
 | `recipient.department_text` Char | **dropped** | Unit target is a real `department_id`; free-text addressee lives in `addressee`. |
 | `recipient.state` (`new`/`acknowledged`/`approved`/`rejected`) | `routing.step.state` (`waiting`/`active`/`done`/`skipped`) + `disposition` | Snapshot-on-activation gives the `waiting`/`active` states; reject/return are dispositions on a `done` step, not states. |
 | `recipient.signed_as_role_id` / `signed_as_text` | `routing.step.signed_as_position_id` | Capacity validated vs target Position (ADR-0003). |
@@ -2037,7 +2110,7 @@ themselves are identity-agnostic: they receive the `step` (which carries
 | `mixin._on_sarabun_action(document, recipient, action)` | `_on_sarabun_step(step, disposition)` + lifecycle callbacks | Passes `routing.step`, in-transaction, no silent swallow. |
 | `mixin._on_sarabun_rejected(document, recipient)` | `_on_sarabun_rejected(document, step)` (+ `_on_sarabun_returned`/`_cancelled`) | recipient → step. |
 | `mixin._on_sarabun_sent(document)` (patch) | `_on_sarabun_circulating(document)` | Promoted to first-class, fired at send. |
-| `hr.department.sarabun_officer_ids` | retained | Backs Unit-mode (สารบรรณกลาง) holder resolution. |
+| `hr.department.sarabun_officer_ids` | retained (`hr.employee`) | Backs Unit-mode (**ธุรการหน่วยงาน**) holder resolution — the หน่วยงาน's document clerks, resolved to their `user_id` to act (ADR-0005). |
 | `res.users.get_sarabun_inbox_count` (filters `state == "sent"`) | retained, filter → `is_circulating` helper | No hardcoded `"sent"`. |
 | `sarabun.inbox` (model) | retained | Populated explicitly from step activation, not via `read()` override. |
 | `controllers/portal.py` live PDF re-render (no freeze) | `_get_official_pdf()` → frozen `signed_pdf` at `completed` | §5.4. |
@@ -2062,13 +2135,17 @@ confirmed (or corrected) before or during implementation.
    `hr.employee.signature` (`fields.Binary`, Ecosoft module in the full source tree, not
    this workspace). Add the module to `depends` and add a `related` mirror on
    `hr.employee.public` (the module ships none) for portal/frozen rendering.
-3. **`sarabun.position` holder model.** We assume a Position resolves to one or more
-   `res.users` holders via `holder_ids` (m2m). If holders are better modelled via
-   `hr.employee` (then mapped to users for the snapshot), the snapshot stays
-   `res.users` (security keys on `user.id`), but the resolution helper changes.
-4. **Unit (สารบรรณกลาง) holder resolution.** We assume `hr.department` exposes the
-   central-registry clerks (carried over `sarabun_officer_ids`). Confirm the source of
-   Unit-mode holders.
+3. **`sarabun.position` holder model (resolved — ADR-0005).** `holder_ids` is an
+   m2m to **`hr.employee`** (personnel), not `res.users`. At activation each holder is
+   resolved to its `employee.user_id` and that *user*-set is snapshotted into
+   `actor_user_ids` — the snapshot stays `res.users` (security keys on `user.id`) and
+   the engine still acts by user, but the resolution helper maps employee → user and
+   drops any holder with no linked user (a holder without a user can be configured but
+   can never act). `group_sarabun_user` was granted read on `hr.employee`.
+4. **Unit (ธุรการหน่วยงาน) holder resolution (resolved — ADR-0005).** The Unit target is
+   the หน่วยงาน's document clerk(s) on `hr.department.sarabun_officer_ids` (**`hr.employee`**),
+   resolved to `user_id` like any other holder. The former "สารบรรณกลาง / central registry"
+   framing is dropped for now — v1 uses only ธุรการหน่วยงาน.
 5. **Same-step correlation in the actor read rule (§6.6 Rule 2).** Accepted as
    "widens only to real actors" for v1; validate that this is acceptable, or commit
    to the `_search`/stored-boolean alternative.
@@ -2085,11 +2162,13 @@ Position/Unit; and the five consumers' callback signatures.
 - Full **memo / circular compose UX** (rich บันทึกข้อความ / หนังสือเวียน body
   composer); v1 carries those kinds on the same engine but only cover-sheet-wraps-
   origin for `from_record`.
-- **Incoming register** (Unit/สารบรรณกลาง intake of external หนังสือ).
+- **Incoming register** (ธุรการหน่วยงาน intake of external หนังสือ).
 - **Acting / รักษาการ / มอบอำนาจ** as first-class capacity (v1: add the acting user
   as a temporary Position holder; `signed_as_position_id` field already present).
-- **ชั้นความลับ need-to-know enforcement** (v1: `secrecy` is a display label;
-  manager-see-all stands; the global tightening rule is sketched in §6.10).
+- **ชั้นความลับ need-to-know enforcement** (v1: no `secrecy` field;
+  manager-see-all stands; the field + global tightening rule are sketched in §6.10).
+- **ชั้นความเร็ว (urgency)** and **ผ่าน (Through)** header fields (dropped from v1;
+  no `urgency`/`through` fields ship).
 - **Portal magic-link approval** (v1: backend-first; `act_on_step` + `act_token` are
   token-ready but no token is generated and no controller ships).
 - **PKI / cryptographic signing** of the frozen ฉบับลงนาม (v1: digitized signature
