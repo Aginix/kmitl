@@ -78,7 +78,7 @@ msgstr "ส่งคำขออนุมัติ"
 #. module: purchase_request_approval_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_kmitl.view_purchase_request_form
 msgid "Request approval"
-msgstr "ขอการอนุมัติ"
+msgstr "ส่งข้อมูล"
 
 #. module: purchase_request_approval_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_kmitl.view_purchase_request_form
