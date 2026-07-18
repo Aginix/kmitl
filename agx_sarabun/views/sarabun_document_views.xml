@@ -288,10 +288,18 @@
         </field>
     </record>
 
-    <!-- My Inbox (กล่องหนังสือเข้า) — documents awaiting the current user's action.
-         Backs the systray tray's "View All" (P4). -->
+    <!-- กล่องหนังสือเข้า (Incoming box) — the persistent mailbox of every หนังสือ that
+         has reached the user via the route (a step of theirs activated), kept even
+         after they act and after the whole route finishes. Distinct from the systray
+         Action tray, which lists only หนังสือ still awaiting the user's action.
+         Membership: the user has a sarabun.step.recipient row on any of the document's
+         steps (the permanent per-person ledger, created when a step reaches them and
+         never removed — so it also spans prior re-send attempts they were reached in).
+         Waiting/future steps carry no recipient yet, so a document
+         only enters once it actually reaches the user; it survives delegate / recall /
+         reject because the recipient row persists (unlike the actor_user_ids snapshot). -->
     <record id="action_sarabun_document_inbox" model="ir.actions.act_window">
-        <field name="name">กล่องหนังสือเข้า (My Inbox)</field>
+        <field name="name">กล่องหนังสือเข้า (Incoming)</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_sarabun_document_search"/>
@@ -299,10 +307,10 @@
                eval="[(5, 0, 0),
                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_inbox_tree')}),
                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"/>
-        <field name="domain">[('routing_step_ids.state', '=', 'active'), ('routing_step_ids.actor_user_ids', 'in', [uid])]</field>
+        <field name="domain">[('routing_step_ids.recipient_ids.user_id', '=', uid)]</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">No หนังสือ awaiting your action</p>
-            <p>Documents routed to you appear here while a step assigned to you is active.</p>
+            <p class="o_view_nocontent_smiling_face">No หนังสือ has reached you yet</p>
+            <p>Every หนังสือ routed to you appears here once its step reaches you, and stays after you act.</p>
         </field>
     </record>
 </odoo>

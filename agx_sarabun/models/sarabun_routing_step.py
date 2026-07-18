@@ -305,22 +305,29 @@ class SarabunRoutingStep(models.Model):
             raise UserError(_("The document is not circulating."))
         self._check_act_authority(actor)
 
+        # Authority is verified above. The lifecycle transition itself — stamping the
+        # step and driving the document's state / register / freeze — is a SYSTEM
+        # operation, so it runs privileged: a non-sender approver may complete / return
+        # / reject without holding document-write rights (the write ACL is sender +
+        # manager only). The acting user is recorded via ``actor`` (acted_by_id), not
+        # env.user, so the audit trail is unchanged.
+        step = self.sudo()
         note = vals.get("note")
         if disposition == "complete":
-            self._do_complete(actor, note, vals.get("signed_as_position_id"))
+            step._do_complete(actor, note, vals.get("signed_as_position_id"))
         elif disposition == "direct":
-            self._do_direct(actor, note, vals)
+            step._do_direct(actor, note, vals)
         elif disposition == "delegate":
-            self._do_delegate(actor, note, vals)
+            step._do_delegate(actor, note, vals)
         elif disposition == "return":
-            self._do_return(actor, note, vals)
+            step._do_return(actor, note, vals)
         elif disposition == "reject":
-            self._do_reject(actor, note)
+            step._do_reject(actor, note)
         else:
             raise UserError(_("Unknown disposition: %s") % disposition)
 
         # Generic per-step origin callback (same transaction — ADR-0004).
-        self.document_id._call_origin("_on_sarabun_step", self, disposition)
+        step.document_id._call_origin("_on_sarabun_step", self, disposition)
         return True
 
     # --------------------------------------------------------- disposition core

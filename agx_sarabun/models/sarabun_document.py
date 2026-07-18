@@ -208,6 +208,17 @@ class SarabunDocument(models.Model):
         comodel_name="sarabun.routing.step",
         compute="_compute_my_active_step",
         string="My Pending Step",
+        help="The current user's *active* step (drives the 'Act on My Step' button). "
+        "Empty once they have acted.",
+    )
+    my_reaching_step_id = fields.Many2one(
+        comodel_name="sarabun.routing.step",
+        compute="_compute_my_active_step",
+        string="Step That Reached Me",
+        help="The step by which this หนังสือ reached the current user — their active "
+        "step, or (once they have acted) their most recent completed step. Backs the "
+        "incoming-box columns (read status / received / verb) so they stay populated "
+        "after the user has acted.",
     )
     pending_ack_count = fields.Integer(
         compute="_compute_routing_progress", string="ค้างรับทราบ",
@@ -219,11 +230,13 @@ class SarabunDocument(models.Model):
     # === Inbox (per current user — from the step that reached them) ===
     my_received_date = fields.Datetime(
         compute="_compute_my_inbox", string="วันที่ได้รับ",
-        help="When the current user's active step activated.",
+        help="When the step that reached the current user was received by them "
+        "(per-person; may differ from the step's activation under delegation).",
     )
     my_action_verb_id = fields.Many2one(
         "sarabun.verb", compute="_compute_my_inbox", string="เพื่อดำเนินการ",
-        help="What the current user is asked to do on their active step.",
+        help="What the current user was asked to do on the step that reached them "
+        "(may already be a completed step).",
     )
     my_read_state = fields.Selection(
         selection=[
@@ -348,28 +361,48 @@ class SarabunDocument(models.Model):
             record.strongest_verb_id = strongest
             record.has_signed = any(s.verb.is_signature for s in done)
 
-    @api.depends("routing_step_ids.state", "routing_step_ids.actor_user_ids")
+    @api.depends(
+        "routing_step_ids.state",
+        "routing_step_ids.actor_user_ids",
+        "routing_step_ids.recipient_ids.user_id",
+    )
     def _compute_my_active_step(self):
         uid = self.env.user
         for record in self:
-            step = record.routing_step_ids.filtered(
+            # Act button: I'm a *current actor* on an active step (drops once I act
+            # or delegate the step away).
+            record.my_active_step_id = record.routing_step_ids.filtered(
                 lambda s: s.state == "active" and uid in s.actor_user_ids
             )[:1]
-            record.my_active_step_id = step
+            # "reaching" step drives the persistent incoming box + its columns. It is
+            # keyed on my sarabun.step.recipient rows (the permanent per-person ledger,
+            # never removed) — not the mutable actor_user_ids snapshot — so it survives
+            # delegate / recall / reject. Active step preferred, else my latest.
+            my_recips = record.routing_step_ids.recipient_ids.filtered(
+                lambda r: r.user_id == uid
+            )
+            active = my_recips.filtered(lambda r: r.step_id.state == "active")[:1]
+            # latest-reached: higher stage order, then later-created row (id monotonic)
+            reaching = active or my_recips.sorted(
+                key=lambda r: (r.step_id.order, r.id)
+            )[-1:]
+            record.my_reaching_step_id = reaching.step_id
 
     @api.depends(
-        "my_active_step_id",
-        "my_active_step_id.activated_date",
-        "my_active_step_id.verb",
-        "my_active_step_id.recipient_ids.read_state",
+        "my_reaching_step_id",
+        "my_reaching_step_id.recipient_ids.received_date",
+        "my_reaching_step_id.verb",
+        "my_reaching_step_id.recipient_ids.read_state",
     )
     def _compute_my_inbox(self):
         uid = self.env.user
         for record in self:
-            step = record.my_active_step_id
-            record.my_received_date = step.activated_date
-            record.my_action_verb_id = step.verb
+            step = record.my_reaching_step_id
             recipient = step.recipient_ids.filtered(lambda r: r.user_id == uid)[:1]
+            # per-person "วันที่ได้รับ" — correct even when the step was delegated after
+            # activation (the delegate received later than the step's activated_date).
+            record.my_received_date = recipient.received_date
+            record.my_action_verb_id = step.verb
             record.my_read_state = recipient.read_state or ("unread" if step else False)
 
     def action_mark_read(self):

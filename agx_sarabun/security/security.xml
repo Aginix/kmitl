@@ -43,18 +43,19 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Active/completed actor (READ ONLY) — the visibility fix.
-             actor_user_ids is the holder-set snapshotted at activation, so Position/
-             Unit actors (no user_id of their own) can now read; the state filter
-             keeps waiting/future steps invisible. (DESIGN §6.6 Rule 2) -->
+        <!-- Reached actor (READ ONLY) — the visibility fix. A user may read a หนังสือ
+             once it has REACHED them, i.e. they have a sarabun.step.recipient row on
+             any of its steps (created when a step activates, never removed — so read
+             access also spans prior re-send attempts they were reached in).
+             This keys visibility on the same permanent per-person ledger as the
+             Incoming box, so the two never diverge — the หนังสือ stays readable after
+             the user acts and after delegate / recall / reject (skipped steps), while
+             waiting/future steps (no recipient yet) grant nothing. (DESIGN §6.6 Rule 2) -->
         <record id="sarabun_document_actor_rule" model="ir.rule">
-            <field name="name">Sarabun Document: Active/Completed Actor (read)</field>
+            <field name="name">Sarabun Document: Reached Actor (read)</field>
             <field name="model_id" ref="model_sarabun_document"/>
             <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
-            <field name="domain_force">[
-                ('routing_step_ids.state', 'in', ('active', 'done')),
-                ('routing_step_ids.actor_user_ids', 'in', [user.id])
-            ]</field>
+            <field name="domain_force">[('routing_step_ids.recipient_ids.user_id', '=', user.id)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
@@ -97,9 +98,7 @@
             <field name="domain_force">[
                 '|',
                     ('document_id.sender_user_id', '=', user.id),
-                    '&amp;',
-                        ('document_id.routing_step_ids.state', 'in', ('active', 'done')),
-                        ('document_id.routing_step_ids.actor_user_ids', 'in', [user.id])
+                    ('document_id.routing_step_ids.recipient_ids.user_id', '=', user.id)
             ]</field>
         </record>
         <record id="sarabun_routing_step_manager_rule" model="ir.rule">

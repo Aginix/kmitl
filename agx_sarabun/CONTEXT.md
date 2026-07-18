@@ -117,15 +117,21 @@ _Avoid_: history, log
 Who may read a Document — the **sender**, plus the snapshot actors of any step that is **active or completed**. Steps not yet reached (waiting/future) grant **no** visibility, even if pre-seeded with a named person — you don't see a หนังสือ before it routes to you. Acting is permitted only to the actor of an *active* step. ชั้นความลับ (secrecy) and its need-to-know restriction are **phase-2** — not modeled in v1 (the interim display-label field was removed); v1 keeps manager-see-all. Acting is backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add passwordless **magic-link** approval from email.
 _Avoid_: recipient-only access (the old `recipient_ids.user_id` rule that hid documents from Position/ธุรการหน่วยงาน actors)
 
-### Notifications
+### Notifications & inbox
 
-**Inbox (กล่องหนังสือเข้า)**:
-The set of หนังสือ **awaiting the current user's action** — documents with an *active* step whose snapshot holders include them. Surfaced as a top-bar **systray tray** (live count + list, pushed realtime over the bus when a step activates/clears) plus a matching menu, alongside a native `mail.activity` raised per active *gating* step. It always reflects Route visibility, so it shows only หนังสือ the user is entitled to see and act on. **Read status is a per-item attribute shown in the inbox, not a membership rule** — an opened-but-not-acted หนังสือ stays in the inbox until it is acted on.
-_Avoid_: defining inbox membership by read/unread — membership is "awaiting my action"; read/unread is tracked separately (see สถานะการอ่าน)
+The inbox is **two distinct surfaces**, deliberately not the same set:
+
+**กล่องหนังสือเข้า (Incoming box)**:
+The user's **persistent mailbox** — every หนังสือ that has **reached them via the route**, i.e. a step whose snapshot holders include them has activated. A หนังสือ only *enters* once its step actually reaches the user (waiting/future steps grant nothing — "ต้องรอถึง step ก่อนถึงจะเข้า"), and it **stays after they act and after the whole route finishes** (completed / rejected / cancelled). The backend menu. Each row shows the per-person read status / วันที่ได้รับ / เพื่อดำเนินการ, keyed on the step that reached the user (see สถานะการอ่าน). Membership is by *reach*, never by read/unread or by pending action.
+_Avoid_: equating it with the Action tray (that is only the awaiting-action subset); read/unread as a membership rule
+
+**Action tray (systray)**:
+The top-bar systray notification of หนังสือ **awaiting the current user's action** — the transient subset with an *active* step assigned to them; it **clears as soon as they act**. Pushed realtime over the bus when a step activates/clears, alongside a native `mail.activity` per active *gating* step. Always reflects Route visibility.
+_Avoid_: treating it as an archive — it is a live "to-do", not the incoming history (that is the Incoming box)
 
 **สถานะการอ่าน (Read status, `sarabun.step.recipient`)**:
-Per-person, per-step tracking of whether a holder has **opened** the หนังสือ — รอการเปิดอ่าน (unread) / เปิดอ่านแล้ว (read). Tracked **individually even when one target has several holders** (each ธุรการหน่วยงาน clerk / co-holder carries their own row). Opening is informational and distinct from acting: **เปิดอ่านแล้ว ≠ รับทราบ** (opening the document is not performing the รับทราบ verb). รอการส่งต่อ (pending-forward) is a reserved state, unused in v1.
-_Avoid_: conflating read status with the รับทราบ step verb, or with inbox membership
+Per-person tracking of whether a holder has **opened** the หนังสือ — รอการเปิดอ่าน (unread) / เปิดอ่านแล้ว (read) — shown per row in the Incoming box, keyed on **the step that reached the user** (their active step, or once they have acted, their most recent completed step). **วันที่ได้รับ** is the per-person timestamp when the step reached that holder (their own recipient row — may be later than the step's activation under delegation). Tracked **individually even when one target has several holders** (each ธุรการหน่วยงาน clerk / co-holder carries their own row). Opening is informational and distinct from acting: **เปิดอ่านแล้ว ≠ รับทราบ** (opening the document is not performing the รับทราบ verb). รอการส่งต่อ (pending-forward) is a reserved state, unused in v1.
+_Avoid_: conflating read status with the รับทราบ step verb, or with incoming-box membership
 
 ### Classification
 

@@ -37,8 +37,8 @@ class TestP4Access(SarabunCommon):
     def test_position_actor_no_personal_target_can_read(self):
         """Position-targeted actor (holder) can read once active — the old hide bug fix.
 
-        Visibility keys off actor_user_ids (snapshot), not a recipient.user_id, so a
-        Position/Unit target resolves to readable users.
+        Visibility keys off the per-person sarabun.step.recipient rows created at
+        activation, so a Position/Unit target resolves to readable users.
         """
         doc = self._make_doc(sender=self.user_a)
         self._add_step(doc, order=10, verb="sign_approve", target_mode="position",
@@ -96,3 +96,50 @@ class TestP4Access(SarabunCommon):
         # a user with no active step has an empty inbox
         inbox_b = self.Doc.with_user(self.user_b).get_my_sarabun_inbox()
         self.assertEqual(inbox_b["total_count"], 0)
+
+    # -------------------------------------------- acting as a non-sender actor (ACL)
+    def test_non_sender_actor_can_complete(self):
+        """A non-sender approver completes their step with NO document-write rights —
+        the lifecycle transition runs privileged, gated by the authority check. Acts
+        as user_b via with_user (the doc's sender is the setUpClass admin)."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        step = self._active_step(doc)
+        with self.mute_pdf():
+            step.with_user(self.user_b).act_on_step("complete", actor=self.user_b)
+        self.assertTrue(doc.is_completed)
+        # stays readable in the actor's incoming box after the route finishes
+        self.assertTrue(self._can_read(doc, self.user_b))
+
+    def test_non_sender_actor_can_reject(self):
+        """A non-sender approver can reject (writes state='rejected') without doc-write."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        step = self._active_step(doc)
+        step.with_user(self.user_b).act_on_step(
+            "reject", {"note": "ไม่อนุมัติ"}, actor=self.user_b
+        )
+        self.assertEqual(doc.state, "rejected")
+        self.assertTrue(self._can_read(doc, self.user_b))  # reached → still readable
+
+    def test_reached_unacted_holder_keeps_read_after_reject(self):
+        """A holder reached (recipient row) but not yet acted keeps read access after
+        another actor rejects — their step becomes 'skipped', but the recipient row
+        (which visibility now keys on) persists."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
+        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
+                       user=self.user_b)  # non-gating; reached, will not act
+        doc.action_send()
+        self.assertTrue(self._can_read(doc, self.user_b))  # reached
+        step_a = doc.routing_step_ids.filtered(
+            lambda s: s.verb == self._verb("sign_approve")
+        )
+        step_a.with_user(self.user_a).act_on_step(
+            "reject", {"note": "no"}, actor=self.user_a
+        )
+        self.assertEqual(doc.state, "rejected")
+        # user_b's ack step is now skipped, but their recipient row persists → readable
+        self.assertTrue(self._can_read(doc, self.user_b))

@@ -181,11 +181,15 @@ Key derived/UI fields: `is_frozen` (computed `bool(signed_pdf)`), `current_step_
 `report_preview_url`, `has_cover_sheet` (true for `from_record`).
 
 **Per-current-user inbox fields** (all `compute="_compute_my_inbox"`, non-stored,
-read off the current user's active step and its `recipient_ids` — §1.8): `my_received_date`
-(**วันที่ได้รับ** — the active step's `activated_date`), `my_action_verb_id`
-(M2o → `sarabun.verb`, **เพื่อดำเนินการ** — what this user is asked to do),
+read off `my_reaching_step_id` — the step that reached the user: their active step,
+or once they have acted, their most recent completed step, so the columns stay
+populated in the persistent Incoming box — §1.8): `my_received_date`
+(**วันที่ได้รับ** — the current user's own `sarabun.step.recipient.received_date`,
+per-person; may be later than the step's activation under delegation), `my_action_verb_id`
+(M2o → `sarabun.verb`, **เพื่อดำเนินการ** — what this user was asked to do),
 `my_read_state` (Selection `unread`/`read`/`forwarded`, **สถานะการอ่าน** — whether
-this user has opened the หนังสือ, tracked per person). `action_mark_read()` stamps
+this user has opened the หนังสือ, tracked per person). (`my_active_step_id` stays
+active-only — it drives the "Act on My Step" button.) `action_mark_read()` stamps
 `read_date` on the current user's active-step `sarabun.step.recipient` rows; it is
 called by the `sarabun_document_form` js_class controller when the form is genuinely
 opened (not from `read()` — §7.1). Opening ("seen") is deliberately **separate** from
@@ -320,9 +324,11 @@ tables are given in §4.8 to avoid duplication. Key shape:
 
 ### 1.8 `sarabun.step.recipient` — per-person read tracking
 
-There is **no separate `sarabun.inbox` model**. The inbox is a *filtered view* of
-`sarabun.document` (the "awaiting my action" domain, §7.3) and per-person read state
-lives on **`sarabun.step.recipient`** — one row per (routing step × resolved holder).
+There is **no separate `sarabun.inbox` model**. The inbox is **two filtered views** of
+`sarabun.document` (§7.3): the backend **Incoming box** (every หนังสือ that reached the
+user — persistent, kept after they act and after the route finishes) and the systray
+**Action tray** (only those still awaiting their action — transient). Per-person read
+state lives on **`sarabun.step.recipient`** — one row per (routing step × resolved holder).
 Even a ธุรการหน่วยงาน / ตำแหน่ง with several holders keeps a **separate row per
 person**, so read status is individual. Rows are materialised (snapshot) when a step
 activates. The old **`read()`-override anti-pattern** is **removed** (§7); "action
@@ -1605,7 +1611,7 @@ additive: it tightens, never restructures.
 | Model | Rule id | Group | Domain (read unless noted) |
 |---|---|---|---|
 | `sarabun.document` | `sarabun_document_sender_rule` | user | `[('sender_user_id','=',user.id)]` (R/W/C, no unlink) |
-| `sarabun.document` | `sarabun_document_actor_rule` | user | `[('routing_step_ids.state','in',('active','done')),('routing_step_ids.actor_user_ids','in',[user.id])]` (read-only) |
+| `sarabun.document` | `sarabun_document_actor_rule` | user | `[('routing_step_ids.recipient_ids.user_id','=',user.id)]` (read-only — reached via a per-person recipient row; same predicate as the Incoming box) |
 | `sarabun.document` | `sarabun_document_manager_rule` | manager | `[(1,'=',1)]` |
 | `sarabun.document` | `sarabun_document_company_rule` | (global) | `['|',('company_id','=',False),('company_id','in',company_ids)]` |
 | `sarabun.routing.step` | `sarabun_routing_step_user_rule` | user | walks `document_id` (sender OR active/done-actor) |
@@ -1741,18 +1747,24 @@ The inbox is the informational unread tray — it includes รับทราบ
 have **no** activity. As-built there is **no `sarabun.inbox` model**: the tray is a
 filtered view of `sarabun.document` and read state lives on `sarabun.step.recipient`:
 
-- **Inbox membership** = the "awaiting my action" domain
-  `[('routing_step_ids.state','=','active'), ('routing_step_ids.actor_user_ids','in',[uid])]`
-  — the same snapshot-holder predicate as Route visibility, never a hardcoded
-  `state == "sent"`.
+- **Incoming box** (backend menu) = every หนังสือ that has **reached** the user:
+  `[('routing_step_ids.recipient_ids.user_id','=',uid)]` — the user has a
+  `sarabun.step.recipient` row on a current-attempt step (the permanent per-person
+  ledger, created when the step reaches them, never removed). A หนังสือ enters only
+  once its step reaches the user (waiting/future steps carry no recipient) and **stays
+  after they act and after the route finishes** (completed/rejected/cancelled) — it
+  survives delegate / recall / reject because the recipient row persists (unlike the
+  mutable `actor_user_ids` snapshot). The document read rule uses the **same** recipient
+  predicate, so membership and read access never diverge. Never a hardcoded `state == "sent"`.
+- **Action tray** (systray) = only those **awaiting the user's action**: the
+  `get_my_sarabun_inbox` RPC searches steps `state='active' AND actor in uid` (same
+  step) and maps to circulating documents — the transient subset that clears on act.
 - **Per-person read state** is on `sarabun.step.recipient` (created from the active
   step's snapshot holders in `_sync_recipients`, §1.8), surfaced on the document as
-  the computed `my_read_state` (§1.2). Read/unread is a **separate attribute** from
-  inbox membership — an item can be read yet still awaiting action.
+  `my_read_state` keyed on `my_reaching_step_id` (§1.2). Read/unread is a **separate
+  attribute** from membership — an item can be read yet still awaiting action.
 - `read_date` is stamped by the explicit `action_mark_read` from §7.1, never by
   `read()`.
-- The systray RPC is `sarabun.document.get_my_sarabun_inbox` (returns the awaiting-
-  action documents), fed the same domain.
 
 ```python
 # models/sarabun_routing_step.py
