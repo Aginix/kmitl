@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+    <t t-name="kmitl_project.ProjectBudgetTableRows" t-inherit="web.ListRenderer.Rows" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='list.records']" position="replace">
+            <t t-foreach="list.records" t-as="record" t-key="record.id">
+                <tr t-if="startsSection(record)" class="o_budget_section_header">
+                    <td colspan="99">
+                        <i class="fa fa-folder-open-o me-2" role="img" aria-label="Section" />
+                        <t t-esc="sectionName(record)" />
+                    </td>
+                </tr>
+                <t t-call="{{ constructor.recordRowTemplate }}" />
+            </t>
+        </xpath>
+    </t>
+</templates>

@@ -277,39 +277,28 @@ class KmitlProject(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    # Per-root views of the expense lines so the form can present one section per
-    # ประเภทงบ. Each domain pins budget_category_id to its seeded root, which also
-    # pre-fills it on lines added in that section (drives the section's picker).
-    expense_personnel_line_ids = fields.One2many(
-        "project.budget.line",
-        "project_id",
-        string="งบบุคลากร",
-        domain=lambda self: self._budget_root_domain(
-            "kmitl_project.expense_root_personnel"
-        ),
-        readonly=True,
-        states={"draft": [("readonly", False)]},
+    budget_income_total = fields.Float(
+        string="รวมรายรับ",
+        compute="_compute_budget_plan_totals",
+        digits="Product Price",
     )
-    expense_operating_line_ids = fields.One2many(
-        "project.budget.line",
-        "project_id",
-        string="งบดำเนินงาน",
-        domain=lambda self: self._budget_root_domain(
-            "kmitl_project.expense_root_operating"
-        ),
-        readonly=True,
-        states={"draft": [("readonly", False)]},
+    budget_expense_total = fields.Float(
+        string="รวมรายจ่าย",
+        compute="_compute_budget_plan_totals",
+        digits="Product Price",
     )
-    expense_subsidy_line_ids = fields.One2many(
-        "project.budget.line",
-        "project_id",
-        string="งบอุดหนุน",
-        domain=lambda self: self._budget_root_domain(
-            "kmitl_project.expense_root_subsidy"
-        ),
-        readonly=True,
-        states={"draft": [("readonly", False)]},
+    budget_net_total = fields.Float(
+        string="คงเหลือ (รายรับ − รายจ่าย)",
+        compute="_compute_budget_plan_totals",
+        digits="Product Price",
     )
+
+    @api.depends("income_line_ids.amount", "expense_line_ids.amount")
+    def _compute_budget_plan_totals(self):
+        for rec in self:
+            rec.budget_income_total = sum(rec.income_line_ids.mapped("amount"))
+            rec.budget_expense_total = sum(rec.expense_line_ids.mapped("amount"))
+            rec.budget_net_total = rec.budget_income_total - rec.budget_expense_total
 
     expected_outcome_ids = fields.One2many(
         "project.expected.outcome",
@@ -501,13 +490,6 @@ class KmitlProject(models.Model):
             else:
                 rec.is_editable = False
 
-    @api.model
-    def _budget_root_domain(self, xmlid):
-        """Domain selecting expense budget lines under a given seeded root
-        (ประเภทงบ), used by the per-section One2many fields. Falls back to a
-        never-match domain if the root is missing."""
-        root = self.env.ref(xmlid, raise_if_not_found=False)
-        return [("budget_category_id", "=", root.id)] if root else [("id", "=", 0)]
 
     def unlink(self):
         for rec in self:

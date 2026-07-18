@@ -1,0 +1,16 @@
+.o_field_widget[name="expense_line_ids"] {
+    .o_budget_section_header {
+        > td {
+            padding: 0.4rem 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            background-color: #eef2f6;
+            border-top: 1px solid #d7dde3;
+            letter-spacing: 0.01em;
+
+            .fa {
+                color: #6b7785;
+            }
+        }
+    }
+}
