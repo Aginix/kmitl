@@ -12,6 +12,14 @@ class ResUsers(models.Model):
             ("is_read_by_me", "=", False),
         ]
 
+    def _my_read_todo_domain(self):
+        # History (ADR-0003): the inbox's read complement — my Todos that I have
+        # dismissed with Mark as Read. Same recipient base, flipped read flag.
+        return [
+            ("is_my_todo", "=", True),
+            ("is_read_by_me", "=", True),
+        ]
+
     @api.model
     def get_my_todo_count(self):
         """Systray payload: open Todos grouped by source model with per-model

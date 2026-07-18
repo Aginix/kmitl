@@ -6,7 +6,7 @@ class ResUsers(models.Model):
     _inherit = "res.users"
 
     @api.model
-    def get_my_todos(self, res_model=False, limit=100):
+    def get_my_todos(self, res_model=False, limit=100, read=False):
         """List payload for the Discuss Todo page: the current user's open Todos
         as records (capped at ``limit``), earliest deadline first, each carrying
         its source-app icon and the detail fields the list renders.
@@ -16,15 +16,20 @@ class ResUsers(models.Model):
         ``res_model`` to drill into a single source app (matching a sidebar
         group); ``total_count`` then reflects that app, staying consistent with
         the sidebar group badge.
+
+        Pass ``read=True`` for the History view: the same payload for the Todos I
+        have dismissed with Mark as Read (the inbox's read complement), newest
+        first.
         """
         Activity = self.env["mail.activity"]
-        domain = self._my_todo_count_domain()
+        domain = (
+            self._my_read_todo_domain() if read else self._my_todo_count_domain()
+        )
         if res_model:
             domain = domain + [("res_model", "=", res_model)]
         total = Activity.search_count(domain)
-        activities = Activity.search(
-            domain, limit=limit, order="date_deadline asc, id desc"
-        )
+        order = "id desc" if read else "date_deadline asc, id desc"
+        activities = Activity.search(domain, limit=limit, order=order)
 
         # Resolve each source model's app icon once, not per record.
         icons = {}

@@ -31,14 +31,15 @@ export class DiscussTodoView extends LegacyComponent {
         this.action = useService("action");
         this.state = useState({ todos: [], totalCount: 0, loaded: false });
 
-        // Fetch on mount and whenever the source-app filter changes (the deps
-        // read discuss.todoResModel, which the template also reads, so useModels
-        // re-renders and this effect re-runs on a sidebar group click).
+        // Fetch on mount and whenever the source-app filter or the inbox/history
+        // mode changes (the deps read discuss.todoResModel / isTodoHistory, which
+        // the template also reads, so useModels re-renders and this effect
+        // re-runs on a sidebar group / History click).
         useEffect(
             () => {
                 this.fetchData();
             },
-            () => [this.discuss.todoResModel]
+            () => [this.discuss.todoResModel, this.discuss.isTodoHistory]
         );
         useBus(this.env.bus, "mail_activity_todo_updated", () => this.fetchData());
     }
@@ -120,9 +121,12 @@ export class DiscussTodoView extends LegacyComponent {
     async fetchData() {
         try {
             const resModel = this.discuss.todoResModel || false;
-            const result = await this.orm.call("res.users", "get_my_todos", [
-                resModel,
-            ]);
+            const result = await this.orm.call(
+                "res.users",
+                "get_my_todos",
+                [resModel],
+                { read: this.discuss.isTodoHistory }
+            );
             this.state.todos = result.todos || [];
             this.state.totalCount = result.total_count || 0;
         } catch (error) {
