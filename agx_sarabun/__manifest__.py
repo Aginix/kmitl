@@ -47,6 +47,7 @@
             "agx_sarabun/static/src/scss/sarabun_form.scss",
             "agx_sarabun/static/src/js/sarabun_notification_handler.esm.js",
             "agx_sarabun/static/src/js/sarabun_systray.esm.js",
+            "agx_sarabun/static/src/js/sarabun_document_form.esm.js",
             "agx_sarabun/static/src/xml/sarabun_systray.xml",
         ],
     },

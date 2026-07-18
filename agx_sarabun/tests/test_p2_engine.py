@@ -70,7 +70,7 @@ class TestP2Engine(SarabunCommon):
         doc.action_send()
         before = len(doc.routing_step_ids)
         self._act(step, "direct", self.user_a, note="มอบ ผอ. ดำเนินการ",
-                  verb="sign_approve", target_mode="person", user_id=self.user_b.id)
+                  verb="sign_approve", target_mode="person", employee_id=self.emp_b.id)
         self.assertEqual(step.state, "done")
         self.assertEqual(step.disposition, "direct")
         self.assertEqual(len(doc.routing_step_ids), before + 1)
@@ -89,7 +89,7 @@ class TestP2Engine(SarabunCommon):
         doc.action_send()
         before = len(doc.routing_step_ids)
         self._act(step, "delegate", self.user_a, note="มอบ ก ดำเนินการแทน",
-                  target_mode="person", user_id=self.user_b.id)
+                  target_mode="person", employee_id=self.emp_b.id)
         self.assertEqual(len(doc.routing_step_ids), before)  # no new step (unlike direct)
         self.assertEqual(step.state, "active")               # still active (unlike direct)
         self.assertIn(self.user_b, step.actor_user_ids)
@@ -101,7 +101,7 @@ class TestP2Engine(SarabunCommon):
         s_d = self._add_step(doc_d, order=10, verb="endorse", user=self.user_a)
         doc_d.action_send()
         n0 = len(doc_d.routing_step_ids)
-        self._act(s_d, "delegate", self.user_a, target_mode="person", user_id=self.user_b.id)
+        self._act(s_d, "delegate", self.user_a, target_mode="person", employee_id=self.emp_b.id)
         self.assertEqual(len(doc_d.routing_step_ids), n0)
         self.assertEqual(s_d.state, "active")
 
@@ -109,7 +109,7 @@ class TestP2Engine(SarabunCommon):
         s_i = self._add_step(doc_i, order=10, verb="endorse", user=self.user_a)
         doc_i.action_send()
         m0 = len(doc_i.routing_step_ids)
-        self._act(s_i, "direct", self.user_a, target_mode="person", user_id=self.user_b.id)
+        self._act(s_i, "direct", self.user_a, target_mode="person", employee_id=self.emp_b.id)
         self.assertEqual(len(doc_i.routing_step_ids), m0 + 1)
         self.assertEqual(s_i.state, "done")
 
@@ -179,7 +179,7 @@ class TestP2Engine(SarabunCommon):
                               target_mode="position", position=self.pos)
         doc.action_send()
         self.assertEqual(step.actor_user_ids, self.user_a)
-        self.pos.holder_ids = [(4, self.user_b.id)]  # org change after activation
+        self.pos.holder_ids = [(4, self.emp_b.id)]  # org change after activation
         self.assertEqual(step.actor_user_ids, self.user_a)  # unchanged
 
     def test_send_requires_a_gating_step(self):

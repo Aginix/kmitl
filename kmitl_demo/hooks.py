@@ -274,13 +274,19 @@ def _process_sarabun_approve(env, origin_record, admin_user, department):
     doc.addressee = "ผู้บริหาร"
 
     # Seed one ลงนาม-อนุมัติ step targeting the admin (was sarabun.routing.line).
+    # Sarabun person targets are hr.employee now — resolve (or create) admin's.
+    admin_employee = env["hr.employee"].search(
+        [("user_id", "=", admin_user.id)], limit=1
+    ) or env["hr.employee"].create(
+        {"name": admin_user.name, "user_id": admin_user.id}
+    )
     env["sarabun.routing.step"].create(
         {
             "document_id": doc.id,
             "order": 10,
             "verb": env.ref("agx_sarabun.verb_sign_approve").id,
             "target_mode": "person",
-            "user_id": admin_user.id,
+            "employee_id": admin_employee.id,
             "state": "waiting",
         }
     )

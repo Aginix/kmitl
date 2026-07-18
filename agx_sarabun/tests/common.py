@@ -130,20 +130,27 @@ class SarabunCommon(TransactionCase):
             groups="base.group_user,agx_sarabun.group_sarabun_manager",
         )
 
-        # Positions: single-holder and multi-holder.
+        # Personnel (HR) for the test users — sarabun targets are hr.employee now;
+        # the engine acts by the employee's linked user.
+        Employee = cls.env["hr.employee"]
+        cls.emp_a = Employee.create({"name": "ผู้ใช้ ก", "user_id": cls.user_a.id})
+        cls.emp_b = Employee.create({"name": "ผู้ใช้ ข", "user_id": cls.user_b.id})
+        cls.emp_manager = Employee.create({"name": "ผู้จัดการ", "user_id": cls.manager.id})
+
+        # Positions: single-holder and multi-holder (employees).
         cls.pos = cls.Position.create(
-            {"name": "คณบดีทดสอบ", "code": "DEAN-T", "holder_ids": [(6, 0, cls.user_a.ids)]}
+            {"name": "คณบดีทดสอบ", "code": "DEAN-T", "holder_ids": [(6, 0, cls.emp_a.ids)]}
         )
         cls.pos_multi = cls.Position.create(
             {
                 "name": "คณะกรรมการทดสอบ",
                 "code": "COMM-T",
-                "holder_ids": [(6, 0, (cls.user_a + cls.user_b).ids)],
+                "holder_ids": [(6, 0, (cls.emp_a + cls.emp_b).ids)],
             }
         )
 
-        # Central officers for unit-mode targeting.
-        cls.dept.sarabun_officer_ids = [(6, 0, cls.user_a.ids)]
+        # ธุรการหน่วยงาน for unit-mode targeting (employees).
+        cls.dept.sarabun_officer_ids = [(6, 0, cls.emp_a.ids)]
 
     # ------------------------------------------------------------------ helpers
     def _make_doc(self, subject="หนังสือทดสอบ", sender=None, origin=None, doc_type=None, **vals):
@@ -175,7 +182,11 @@ class SarabunCommon(TransactionCase):
             "state": "waiting",
         }
         if target_mode == "person":
-            v["user_id"] = (user or self.user_a).id
+            # accept a res.users (map to its employee) or an hr.employee directly
+            person = user or self.user_a
+            v["employee_id"] = (
+                person if person._name == "hr.employee" else person.employee_id
+            ).id
         elif target_mode == "position":
             v["position_id"] = (position or self.pos).id
         elif target_mode == "unit":

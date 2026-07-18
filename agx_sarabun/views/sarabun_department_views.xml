@@ -31,7 +31,8 @@
                         <field name="sarabun_officer_ids" nolabel="1">
                             <tree>
                                 <field name="name"/>
-                                <field name="login"/>
+                                <field name="work_email"/>
+                                <field name="job_title"/>
                             </tree>
                         </field>
                     </group>

@@ -40,7 +40,8 @@
                         <field name="holder_ids" nolabel="1">
                             <tree>
                                 <field name="name"/>
-                                <field name="login"/>
+                                <field name="work_email"/>
+                                <field name="department_id"/>
                             </tree>
                         </field>
                     </group>

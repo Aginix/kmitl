@@ -6,13 +6,14 @@
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
             <tree decoration-muted="state in ('cancelled','rejected')" decoration-success="state == 'completed'">
-                <field name="name"/>
-                <field name="date"/>
-                <field name="type_id"/>
-                <field name="subject"/>
-                <field name="addressee"/>
-                <field name="sender_department_id" optional="show"/>
-                <field name="state" widget="badge"
+                <field name="name" string="เลขที่เอกสาร"/>
+                <field name="subject" string="เรื่อง"/>
+                <field name="addressee" string="เรียน/ส่งถึง"/>
+                <field name="create_date" string="วันที่สร้างเอกสาร"/>
+                <field name="date" string="วันที่เอกสาร"/>
+                <field name="type_id" optional="hide"/>
+                <field name="sender_department_id" optional="hide"/>
+                <field name="state" string="สถานะ" widget="badge"
                        decoration-info="state == 'circulating'"
                        decoration-success="state == 'completed'"
                        decoration-danger="state in ('rejected','cancelled')"/>
@@ -25,7 +26,7 @@
         <field name="name">sarabun.document.form</field>
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
-            <form>
+            <form js_class="sarabun_document_form">
                 <header>
                     <button name="action_send" type="object" string="Send"
                             class="oe_highlight"
@@ -136,24 +137,24 @@
                                         <group name="step_what">
                                             <field name="order" string="ลำดับ"/>
                                             <field name="verb"/>
+                                        </group>
+                                        <group>
                                             <field name="for_info" string="สำเนาเรียน (CC)"/>
                                         </group>
-                                        <group name="step_who">
-                                            <field name="target_mode"/>
-                                            <field name="position_id"
-                                                   attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')]}"/>
-                                            <field name="user_id"
-                                                   attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')]}"/>
-                                            <field name="department_id"
-                                                   attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')]}"/>
-                                        </group>
                                     </group>
-                                    <group string="ผู้ดำเนินการปัจจุบัน (Current Holders)"
-                                           attrs="{'invisible': [('target_mode', '=', 'person')]}">
-                                        <field name="preview_holder_ids" nolabel="1" readonly="1">
+                                    <group name="step_who" col="2">
+                                        <field name="target_mode" colspan="1" widget="radio"/>
+                                        <field name="position_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                        <field name="employee_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                        <field name="department_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                    </group>
+
+                                    <group string="ผู้ดำเนินการปัจจุบัน (Current Holders)" attrs="{'invisible': [('target_mode', '=', 'person')]}" col="4">
+                                        <field name="preview_holder_ids" nolabel="1" readonly="1" colspan="4">
                                             <tree>
                                                 <field name="name"/>
-                                                <field name="login"/>
+                                                <field name="work_email"/>
+                                                <field name="department_id"/>
                                             </tree>
                                         </field>
                                     </group>
@@ -263,6 +264,30 @@
         </field>
     </record>
 
+    <!-- Inbox tree — columns are per current user (read status / received / verb). -->
+    <record id="view_sarabun_document_inbox_tree" model="ir.ui.view">
+        <field name="name">sarabun.document.inbox.tree</field>
+        <field name="model">sarabun.document</field>
+        <field name="arch" type="xml">
+            <tree create="false" decoration-bf="my_read_state == 'unread'"
+                  decoration-muted="state in ('cancelled','rejected')">
+                <field name="my_read_state" string="สถานะการอ่าน" widget="badge"
+                       decoration-danger="my_read_state == 'unread'"
+                       decoration-success="my_read_state == 'read'"
+                       decoration-warning="my_read_state == 'forwarded'"/>
+                <field name="sender_user_id" string="ผู้ส่งเอกสาร"/>
+                <field name="name" string="เลขที่เอกสาร"/>
+                <field name="subject" string="เรื่อง"/>
+                <field name="my_received_date" string="วันที่ได้รับ"/>
+                <field name="my_action_verb_id" string="เพื่อดำเนินการ"/>
+                <field name="state" string="สถานะ" widget="badge"
+                       decoration-info="state == 'circulating'"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state in ('rejected','cancelled')"/>
+            </tree>
+        </field>
+    </record>
+
     <!-- My Inbox (กล่องหนังสือเข้า) — documents awaiting the current user's action.
          Backs the systray tray's "View All" (P4). -->
     <record id="action_sarabun_document_inbox" model="ir.actions.act_window">
@@ -270,6 +295,10 @@
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_sarabun_document_search"/>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_inbox_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"/>
         <field name="domain">[('routing_step_ids.state', '=', 'active'), ('routing_step_ids.actor_user_ids', 'in', [uid])]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">No หนังสือ awaiting your action</p>

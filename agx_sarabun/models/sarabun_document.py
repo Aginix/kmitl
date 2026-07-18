@@ -216,6 +216,25 @@ class SarabunDocument(models.Model):
         compute="_compute_routing_progress", string="Routing Progress",
     )
 
+    # === Inbox (per current user — from the step that reached them) ===
+    my_received_date = fields.Datetime(
+        compute="_compute_my_inbox", string="วันที่ได้รับ",
+        help="When the current user's active step activated.",
+    )
+    my_action_verb_id = fields.Many2one(
+        "sarabun.verb", compute="_compute_my_inbox", string="เพื่อดำเนินการ",
+        help="What the current user is asked to do on their active step.",
+    )
+    my_read_state = fields.Selection(
+        selection=[
+            ("unread", "รอการเปิดอ่าน"),
+            ("read", "เปิดอ่านแล้ว"),
+            ("forwarded", "รอการส่งต่อ"),
+        ],
+        compute="_compute_my_inbox", string="สถานะการอ่าน",
+        help="Whether the current user has opened this หนังสือ — tracked per person.",
+    )
+
     # === Numbering / Register (P3 — ADR-0002 §4) ===
     register_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
@@ -338,6 +357,34 @@ class SarabunDocument(models.Model):
             )[:1]
             record.my_active_step_id = step
 
+    @api.depends(
+        "my_active_step_id",
+        "my_active_step_id.activated_date",
+        "my_active_step_id.verb",
+        "my_active_step_id.recipient_ids.read_state",
+    )
+    def _compute_my_inbox(self):
+        uid = self.env.user
+        for record in self:
+            step = record.my_active_step_id
+            record.my_received_date = step.activated_date
+            record.my_action_verb_id = step.verb
+            recipient = step.recipient_ids.filtered(lambda r: r.user_id == uid)[:1]
+            record.my_read_state = recipient.read_state or ("unread" if step else False)
+
+    def action_mark_read(self):
+        """Stamp read_date on the current user's active-step recipients (called
+        when they open the หนังสือ form). Idempotent; only touches own rows."""
+        recipients = self.env["sarabun.step.recipient"].sudo().search([
+            ("document_id", "in", self.ids),
+            ("user_id", "=", self.env.user.id),
+            ("read_date", "=", False),
+            ("step_id.state", "=", "active"),
+        ])
+        if recipients:
+            recipients.write({"read_date": fields.Datetime.now()})
+        return True
+
     @api.depends("routing_step_ids.state", "routing_step_ids.gating")
     def _compute_routing_progress(self):
         for record in self:
@@ -368,6 +415,25 @@ class SarabunDocument(models.Model):
                 name = f"{name} — {record.subject}"
             result.append((record.id, name))
         return result
+
+    def _status_label(self):
+        """Short human status for the origin record: state + routing progress.
+        Consumed by sarabun.document.mixin.sarabun_state_label."""
+        self.ensure_one()
+        label = dict(self._fields["state"].selection).get(self.state, self.state)
+        if self.state == "circulating":
+            gating = self.routing_step_ids.filtered("gating")
+            if gating:
+                done = gating.filtered(
+                    lambda s: s.state == "done"
+                    and s.disposition in POSITIVE_DISPOSITIONS
+                )
+                label = _("%(state)s • ผ่านแล้ว %(done)s/%(total)s") % {
+                    "state": label,
+                    "done": len(done),
+                    "total": len(gating),
+                }
+        return label
 
     def action_view_origin(self):
         """Open the linked origin record (kept from the old API; harmless in P1)."""
@@ -552,7 +618,11 @@ class SarabunDocument(models.Model):
                 "acted_date": False,
                 "signed_as_position_id": False,
                 "actor_user_ids": [(5, 0, 0)],
+                "activated_date": False,
             })
+            # Drop the prior attempt's per-person read receipts so the resumed
+            # steps start unread again (re-materialised on re-activation).
+            later.recipient_ids.sudo().unlink()
         else:
             self._bump_attempt_and_archive()
             self._seed_route_from_template()

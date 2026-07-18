@@ -45,7 +45,7 @@
                             <field name="target_mode"/>
                             <field name="position_id"
                                    attrs="{'column_invisible': [('parent.id', '=', False)], 'required': [('target_mode', '=', 'position')], 'readonly': [('target_mode', '!=', 'position')]}"/>
-                            <field name="user_id"
+                            <field name="employee_id"
                                    attrs="{'required': [('target_mode', '=', 'person')], 'readonly': [('target_mode', '!=', 'person')]}"/>
                             <field name="department_id"
                                    attrs="{'required': [('target_mode', '=', 'unit')], 'readonly': [('target_mode', '!=', 'unit')]}"/>

@@ -59,19 +59,31 @@ class SarabunRoutingStep(models.Model):
     )
     gating = fields.Boolean(compute="_compute_gating", store=True)
 
-    # === Target (exactly one mode) ===
+    # === Target (exactly one mode) — configured against HR personnel ===
     target_mode = fields.Selection(TARGET_MODE, required=True, default="position")
     position_id = fields.Many2one("sarabun.position", string="Position")
-    user_id = fields.Many2one("res.users", string="User")
+    employee_id = fields.Many2one("hr.employee", string="บุคลากร (Person)")
     department_id = fields.Many2one("hr.department", string="Unit")
     target_name = fields.Char(compute="_compute_target_name", store=True, string="Target")
     preview_holder_ids = fields.Many2many(
-        "res.users",
+        "hr.employee",
         compute="_compute_preview_holders",
         string="ผู้ดำเนินการปัจจุบัน (Current Holders)",
         help="Who would act on this step right now — the position's holder(s) or the "
         "unit's ธุรการหน่วยงาน. May be more than one (first-to-act). This is a live "
         "preview; the actual actors are snapshotted when the step activates.",
+    )
+    activated_date = fields.Datetime(
+        string="วันที่ได้รับ (Activated)",
+        readonly=True,
+        copy=False,
+        help="When this step became active — the moment its recipients received it.",
+    )
+    recipient_ids = fields.One2many(
+        "sarabun.step.recipient",
+        "step_id",
+        string="Recipients (per-person read tracking)",
+        copy=False,
     )
 
     # === Resolved holders (snapshot at activation — ADR-0003) ===
@@ -118,7 +130,7 @@ class SarabunRoutingStep(models.Model):
         help="Capacity signed in — validated against the step's target Position (ADR-0003).",
     )
     note = fields.Text(string="เกษียน (Note)")
-    delegated_to_id = fields.Many2one("res.users", string="Delegated To", readonly=True)
+    delegated_to_id = fields.Many2one("hr.employee", string="Delegated To", readonly=True)
 
     # === Provenance ===
     created_by_disposition = fields.Selection(
@@ -161,48 +173,67 @@ class SarabunRoutingStep(models.Model):
         for step in self:
             step.gating = step.verb.gating and not step.for_info
 
-    @api.depends("target_mode", "position_id", "user_id", "department_id")
+    @api.depends("target_mode", "position_id", "employee_id", "department_id")
     def _compute_target_name(self):
         for step in self:
             if step.target_mode == "position":
                 step.target_name = step.position_id.display_name
             elif step.target_mode == "person":
-                step.target_name = step.user_id.display_name
+                step.target_name = step.employee_id.display_name
             elif step.target_mode == "unit":
                 step.target_name = step.department_id.display_name
             else:
                 step.target_name = False
 
-    @api.depends("target_mode", "position_id", "department_id", "user_id")
+    @api.depends("target_mode", "position_id", "department_id", "employee_id")
     def _compute_preview_holders(self):
         for step in self:
             if step.target_mode == "position" and step.position_id:
-                step.preview_holder_ids = step.position_id._current_holder_users()
+                step.preview_holder_ids = step.position_id._current_holder_employees()
             elif step.target_mode == "unit" and step.department_id:
-                step.preview_holder_ids = step.department_id._saraban_central_users()
-            elif step.target_mode == "person" and step.user_id:
-                step.preview_holder_ids = step.user_id
+                step.preview_holder_ids = step.department_id._saraban_central_employees()
+            elif step.target_mode == "person" and step.employee_id:
+                step.preview_holder_ids = step.employee_id
             else:
                 step.preview_holder_ids = False
 
     # ------------------------------------------------------------- activation
     def _snapshot_holders(self):
-        """Resolve the target to its current person-set and snapshot it."""
+        """Resolve the target to its current person-set (res.users) and snapshot it.
+        Targets are configured as hr.employee; the engine acts by logged-in user, so
+        we snapshot the employees' linked users (personnel with no user cannot act)."""
         self.ensure_one()
         if self.target_mode == "position" and self.position_id:
             users = self.position_id._current_holder_users()
         elif self.target_mode == "unit" and self.department_id:
             users = self.department_id._saraban_central_users()
-        elif self.target_mode == "person" and self.user_id:
-            users = self.user_id
+        elif self.target_mode == "person" and self.employee_id:
+            users = self.employee_id.user_id
         else:
             users = self.env["res.users"]
         self.actor_user_ids = [(6, 0, users.ids)]
+        self._sync_recipients(users)
+
+    def _sync_recipients(self, users):
+        """Materialise one sarabun.step.recipient per snapshot holder (per-person
+        route + read tracking). Idempotent: only adds rows for new users. Recipients
+        are engine-owned (users have read-only access), so create via sudo."""
+        self.ensure_one()
+        Recipient = self.env["sarabun.step.recipient"].sudo()
+        existing = self.recipient_ids.mapped("user_id")
+        now = fields.Datetime.now()
+        for user in users - existing:
+            Recipient.create({
+                "step_id": self.id,
+                "user_id": user.id,
+                "received_date": now,
+            })
 
     def _activate(self):
         """Make a waiting step active: snapshot holders + schedule activities."""
         for step in self:
             step.state = "active"
+            step.activated_date = fields.Datetime.now()
             step._snapshot_holders()
         self._schedule_activities()
         for step in self:
@@ -349,7 +380,7 @@ class SarabunRoutingStep(models.Model):
             "for_info": vals.get("for_info", False),
             "target_mode": vals.get("target_mode", "position"),
             "position_id": vals.get("position_id", False),
-            "user_id": vals.get("user_id", False),
+            "employee_id": vals.get("employee_id", False),
             "department_id": vals.get("department_id", False),
         })
         self.document_id._advance_stage()
@@ -359,11 +390,11 @@ class SarabunRoutingStep(models.Model):
         self._clear_activities()  # drop the original holders' to-dos (§7.4)
         self.write({
             "disposition": "delegate",
-            "delegated_to_id": vals.get("user_id") or False,
+            "delegated_to_id": vals.get("employee_id") or False,
             "note": (self.note or "") + (("\n" + note) if note else ""),
             "target_mode": vals.get("target_mode", self.target_mode),
             "position_id": vals.get("position_id", self.position_id.id),
-            "user_id": vals.get("user_id", self.user_id.id),
+            "employee_id": vals.get("employee_id", self.employee_id.id),
             "department_id": vals.get("department_id", self.department_id.id),
         })
         self._snapshot_holders()

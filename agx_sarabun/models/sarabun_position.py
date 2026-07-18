@@ -35,14 +35,15 @@ class SarabunPosition(models.Model):
         help="Optional hierarchy (org display / future acting chains).",
     )
     holder_ids = fields.Many2many(
-        comodel_name="res.users",
+        comodel_name="hr.employee",
         relation="sarabun_position_holder_rel",
         column1="position_id",
-        column2="user_id",
-        string="Current Holders",
-        help="Current holder(s) of this post. Multi-holder is resolved "
-        "first-to-act. Interim รักษาการ/มอบอำนาจ: add the acting user here "
-        "temporarily (the acting-assignment model is phase-2).",
+        column2="employee_id",
+        string="ผู้ดำรงตำแหน่ง (Current Holders)",
+        help="Current holder(s) of this post (HR personnel). Multi-holder is "
+        "resolved first-to-act. Interim รักษาการ/มอบอำนาจ: add the acting person "
+        "here temporarily (the acting-assignment model is phase-2). Only personnel "
+        "with a linked user account can actually act.",
     )
     holder_count = fields.Integer(
         string="ผู้ดำรงตำแหน่ง",
@@ -62,14 +63,20 @@ class SarabunPosition(models.Model):
         ("code_uniq", "unique(code)", "Position code must be unique!"),
     ]
 
-    def _current_holder_users(self, at_datetime=None):
-        """Return the recordset of res.users that currently hold this Position.
+    def _current_holder_employees(self, at_datetime=None):
+        """The hr.employee holders of this Position (for display/preview).
 
         v1 returns ``holder_ids`` directly. The ``at_datetime`` parameter is the
         phase-2 seam for time-bounded acting assignments (รักษาการ).
         """
         self.ensure_one()
         return self.holder_ids
+
+    def _current_holder_users(self, at_datetime=None):
+        """res.users of the current holders (employees → their linked user).
+        The engine acts by logged-in user, so holders without a user cannot act."""
+        self.ensure_one()
+        return self._current_holder_employees(at_datetime).mapped("user_id")
 
     def name_get(self):
         result = []

@@ -40,7 +40,7 @@ class SarabunStepActWizard(models.TransientModel):
     needs_target = fields.Boolean(compute="_compute_flags")
     target_mode = fields.Selection(TARGET_MODE, default="position")
     target_position_id = fields.Many2one("sarabun.position", string="Target Position")
-    target_user_id = fields.Many2one("res.users", string="Target User")
+    target_employee_id = fields.Many2one("hr.employee", string="Target Person (บุคลากร)")
     target_department_id = fields.Many2one("hr.department", string="Target Unit")
     new_verb = fields.Many2one(
         "sarabun.verb",
@@ -81,14 +81,14 @@ class SarabunStepActWizard(models.TransientModel):
         elif self.disposition in ("direct", "delegate"):
             if self.target_mode == "position" and not self.target_position_id:
                 raise UserError(_("Select a target Position."))
-            if self.target_mode == "person" and not self.target_user_id:
-                raise UserError(_("Select a target User."))
+            if self.target_mode == "person" and not self.target_employee_id:
+                raise UserError(_("Select a target Person (บุคลากร)."))
             if self.target_mode == "unit" and not self.target_department_id:
                 raise UserError(_("Select a target Unit."))
             vals.update({
                 "target_mode": self.target_mode,
                 "position_id": self.target_position_id.id,
-                "user_id": self.target_user_id.id,
+                "employee_id": self.target_employee_id.id,
                 "department_id": self.target_department_id.id,
             })
             if self.disposition == "direct":

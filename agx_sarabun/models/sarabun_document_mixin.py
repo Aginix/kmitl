@@ -53,6 +53,31 @@ class SarabunDocumentMixin(models.AbstractModel):
         "sarabun_document_count — so a fresh one can be issued after a terminal "
         "outcome (rejected/cancelled), while a returned doc is revised in place.",
     )
+    # Status reflected back onto the origin so users on the source form can see
+    # where the หนังสือ is (draft-not-sent, how far the route has progressed).
+    sarabun_state = fields.Selection(
+        selection=[
+            ("draft", "ร่าง (Draft)"),
+            ("circulating", "กำลังดำเนินการ (Circulating)"),
+            ("completed", "เสร็จสิ้น (Completed)"),
+            ("returned", "ตีกลับ (Returned)"),
+            ("rejected", "ปฏิเสธ (Rejected)"),
+            ("cancelled", "ยกเลิก (Cancelled)"),
+        ],
+        string="สถานะหนังสือ (Sarabun Status)",
+        compute="_compute_sarabun_documents",
+        help="State of the current live หนังสือ, mirrored onto the origin record.",
+    )
+    sarabun_is_draft = fields.Boolean(
+        string="หนังสือยังเป็นร่าง (Sarabun Draft)",
+        compute="_compute_sarabun_documents",
+        help="A หนังสือ was created from this record but not yet sent (still draft).",
+    )
+    sarabun_state_label = fields.Char(
+        string="สถานะการเดินหนังสือ",
+        compute="_compute_sarabun_documents",
+        help="Human-readable status of the current หนังสือ (state + routing progress).",
+    )
 
     def _compute_sarabun_documents(self):
         SarabunDocument = self.env["sarabun.document"]
@@ -67,8 +92,12 @@ class SarabunDocumentMixin(models.AbstractModel):
             record.sarabun_document_ids = documents
             record.sarabun_document_count = len(documents)
             live = documents.filtered(lambda d: d.state not in ("rejected", "cancelled"))
-            record.active_sarabun_document_id = live[:1] or documents[:1]
+            active = live[:1] or documents[:1]
+            record.active_sarabun_document_id = active
             record.sarabun_has_live_document = bool(live)
+            record.sarabun_state = active.state or False
+            record.sarabun_is_draft = active.state == "draft"
+            record.sarabun_state_label = active._status_label() if active else False
 
     def _prepare_sarabun_document_vals(self):
         """

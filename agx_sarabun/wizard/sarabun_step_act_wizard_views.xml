@@ -25,7 +25,7 @@
                     <field name="target_mode"/>
                     <field name="target_position_id"
                            attrs="{'invisible': [('target_mode', '!=', 'position')]}"/>
-                    <field name="target_user_id"
+                    <field name="target_employee_id"
                            attrs="{'invisible': [('target_mode', '!=', 'person')]}"/>
                     <field name="target_department_id"
                            attrs="{'invisible': [('target_mode', '!=', 'unit')]}"/>

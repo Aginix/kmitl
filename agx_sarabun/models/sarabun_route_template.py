@@ -84,7 +84,7 @@ class SarabunRouteTemplateLine(models.Model):
     for_info = fields.Boolean(string="สำเนาเรียน (CC)", help="Non-gating acknowledge (CC).")
     target_mode = fields.Selection(TARGET_MODE, required=True, default="position")
     position_id = fields.Many2one("sarabun.position", string="Position")
-    user_id = fields.Many2one("res.users", string="User")
+    employee_id = fields.Many2one("hr.employee", string="บุคลากร (Person)")
     department_id = fields.Many2one("hr.department", string="Unit")
 
     def _seed_vals(self):
@@ -96,7 +96,7 @@ class SarabunRouteTemplateLine(models.Model):
             "for_info": self.for_info,
             "target_mode": self.target_mode,
             "position_id": self.position_id.id,
-            "user_id": self.user_id.id,
+            "employee_id": self.employee_id.id,
             "department_id": self.department_id.id,
             "state": "waiting",
             "created_by_disposition": "seed",

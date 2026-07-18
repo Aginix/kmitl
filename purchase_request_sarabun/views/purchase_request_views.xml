@@ -29,6 +29,21 @@
                     string="Sarabun Document"
                 />
             </xpath>
+
+            <!-- Sarabun status notification on the origin record -->
+            <xpath expr="//div[@name='button_box']" position="after">
+                <field name="sarabun_is_draft" invisible="1"/>
+                <div class="alert alert-warning mb-2" role="alert"
+                     attrs="{'invisible': [('sarabun_is_draft', '=', False)]}">
+                    <i class="fa fa-pencil-square-o me-1"/>
+                    หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง)
+                </div>
+                <div class="alert alert-info mb-2" role="alert"
+                     attrs="{'invisible': ['|', ('sarabun_has_live_document', '=', False), ('sarabun_is_draft', '=', True)]}">
+                    <i class="fa fa-paper-plane me-1"/>
+                    สถานะการเดินหนังสือสารบรรณ: <field name="sarabun_state_label" nolabel="1" readonly="1" class="d-inline fw-bold"/>
+                </div>
+            </xpath>
         </field>
     </record>
 
