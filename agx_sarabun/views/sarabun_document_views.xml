@@ -56,8 +56,9 @@
                     </div>
                     <!-- Document Type — topmost classification (drives register + route). -->
                     <group>
-                        <field name="type_id"
-                               attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                      <group>
+                        <field name="type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
+                      </group>
                     </group>
                     <!-- Header laid out to mirror the หนังสือ (cf. report_cover_sheet):
                          ส่วนราชการ (หน่วยงาน)  |  ที่ · วันที่  →  เรื่อง  →  เรียน.
@@ -66,7 +67,7 @@
                     <group>
                         <group name="unit" string="หน่วยงาน"
                                attrs="{'readonly': [('is_editable', '=', False)]}">
-                            <field name="sender_department_id" string="หน่วยงาน"/>
+                            <field name="sender_department_id" string="หน่วยงาน" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                             <field name="sender_suffix" string="ต่อท้ายส่วนราชการ"
                                    placeholder="พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"/>
                         </group>
@@ -93,10 +94,9 @@
                     <field name="content" nolabel="1" class="o_sarabun_content"
                            placeholder="พิมพ์เนื้อหาหนังสือ... (สำหรับหนังสือจากระบบงาน ใช้เป็นข้อความปะหน้าเหนือเอกสารต้นเรื่อง)"
                            attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                    <separator string="หมายเหตุ (Remark)"/>
-                    <field name="remark" nolabel="1" class="o_sarabun_remark"
-                           placeholder="หมายเหตุภายใน (ไม่บังคับ)..."
-                           attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                    <group>
+                      <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                    </group>
                     <!-- helper flags used by attrs -->
                     <field name="kind" invisible="1"/>
                     <field name="is_editable" invisible="1"/>
@@ -114,27 +114,50 @@
                                     <field name="pending_ack_count"/>
                                 </group>
                             </group>
+                            <!-- Add เส้นทางเอกสาร via a modal form (non-editable tree). -->
                             <field name="routing_step_ids"
                                    attrs="{'readonly': [('is_editable', '=', False)]}">
-                                <tree editable="bottom" decoration-muted="state == 'skipped'"
+                                <tree decoration-muted="state == 'skipped'"
                                       decoration-success="state == 'done' and disposition in ('complete','direct')"
                                       decoration-info="state == 'active'">
-                                    <field name="order"/>
+                                    <field name="order" string="ลำดับ"/>
                                     <field name="verb"/>
                                     <field name="for_info" string="CC"/>
                                     <field name="target_mode"/>
-                                    <field name="position_id"
-                                           attrs="{'required': [('target_mode', '=', 'position')], 'readonly': [('target_mode', '!=', 'position')]}"/>
-                                    <field name="user_id"
-                                           attrs="{'required': [('target_mode', '=', 'person')], 'readonly': [('target_mode', '!=', 'person')]}"/>
-                                    <field name="department_id"
-                                           attrs="{'required': [('target_mode', '=', 'unit')], 'readonly': [('target_mode', '!=', 'unit')]}"/>
+                                    <field name="target_name" string="เป้าหมาย"/>
                                     <field name="state" readonly="1" widget="badge"/>
                                     <field name="acted_by_id" readonly="1" optional="show"/>
                                     <field name="disposition" readonly="1" optional="show"/>
                                     <field name="signed_as_position_id" readonly="1" optional="hide"/>
                                     <field name="note" readonly="1" optional="hide"/>
                                 </tree>
+                                <form string="เส้นทางเอกสาร (Routing Step)">
+                                    <group>
+                                        <group name="step_what">
+                                            <field name="order" string="ลำดับ"/>
+                                            <field name="verb"/>
+                                            <field name="for_info" string="สำเนาเรียน (CC)"/>
+                                        </group>
+                                        <group name="step_who">
+                                            <field name="target_mode"/>
+                                            <field name="position_id"
+                                                   attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')]}"/>
+                                            <field name="user_id"
+                                                   attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')]}"/>
+                                            <field name="department_id"
+                                                   attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')]}"/>
+                                        </group>
+                                    </group>
+                                    <group string="ผู้ดำเนินการปัจจุบัน (Current Holders)"
+                                           attrs="{'invisible': [('target_mode', '=', 'person')]}">
+                                        <field name="preview_holder_ids" nolabel="1" readonly="1">
+                                            <tree>
+                                                <field name="name"/>
+                                                <field name="login"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </form>
                             </field>
                             <separator string="ประวัติการเดินเรื่อง (History)"
                                        attrs="{'invisible': [('archived_step_ids', '=', [])]}"/>

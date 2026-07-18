@@ -33,6 +33,7 @@
         # Views
         "views/sarabun_document_type_views.xml",
         "views/sarabun_position_views.xml",
+        "views/sarabun_department_views.xml",
         "views/sarabun_verb_views.xml",
         "views/sarabun_addressee_prefix_views.xml",
         "views/sarabun_route_template_views.xml",

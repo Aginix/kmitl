@@ -18,10 +18,11 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+# Keep in sync with sarabun_route_template.py
 TARGET_MODE = [
-    ("position", "Position (ตำแหน่ง)"),
-    ("person", "Person (บุคคล)"),
-    ("unit", "Unit (สารบรรณกลาง)"),
+    ("unit", "ธุรการหน่วยงาน (Unit Clerk)"),
+    ("person", "บุคลากร (Personnel)"),
+    ("position", "ตำแหน่ง (Position)"),
 ]
 # Verb strength/gating/signature now live on sarabun.verb records (master data);
 # the engine reads verb.rank / verb.gating / verb.is_signature. Only the
@@ -39,7 +40,7 @@ class SarabunRoutingStep(models.Model):
         "sarabun.document", required=True, ondelete="cascade", index=True
     )
     order = fields.Integer(
-        string="Stage", default=10,
+        string="Stage", default=1,
         help="Steps sharing one order form a Stage and run in parallel.",
     )
 
@@ -64,6 +65,14 @@ class SarabunRoutingStep(models.Model):
     user_id = fields.Many2one("res.users", string="User")
     department_id = fields.Many2one("hr.department", string="Unit")
     target_name = fields.Char(compute="_compute_target_name", store=True, string="Target")
+    preview_holder_ids = fields.Many2many(
+        "res.users",
+        compute="_compute_preview_holders",
+        string="ผู้ดำเนินการปัจจุบัน (Current Holders)",
+        help="Who would act on this step right now — the position's holder(s) or the "
+        "unit's ธุรการหน่วยงาน. May be more than one (first-to-act). This is a live "
+        "preview; the actual actors are snapshotted when the step activates.",
+    )
 
     # === Resolved holders (snapshot at activation — ADR-0003) ===
     actor_user_ids = fields.Many2many(
@@ -163,6 +172,18 @@ class SarabunRoutingStep(models.Model):
                 step.target_name = step.department_id.display_name
             else:
                 step.target_name = False
+
+    @api.depends("target_mode", "position_id", "department_id", "user_id")
+    def _compute_preview_holders(self):
+        for step in self:
+            if step.target_mode == "position" and step.position_id:
+                step.preview_holder_ids = step.position_id._current_holder_users()
+            elif step.target_mode == "unit" and step.department_id:
+                step.preview_holder_ids = step.department_id._saraban_central_users()
+            elif step.target_mode == "person" and step.user_id:
+                step.preview_holder_ids = step.user_id
+            else:
+                step.preview_holder_ids = False
 
     # ------------------------------------------------------------- activation
     def _snapshot_holders(self):

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ธุรการหน่วยงาน config — assign the document clerks that act for a unit when a
+         routing step targets it in ธุรการหน่วยงาน mode. High priority so these
+         standalone hr.department views are never picked as the default elsewhere;
+         they are bound explicitly to the action below. -->
+    <record id="view_sarabun_department_officer_tree" model="ir.ui.view">
+        <field name="name">sarabun.department.officer.tree</field>
+        <field name="model">hr.department</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="complete_name" string="หน่วยงาน"/>
+                <field name="sarabun_officer_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sarabun_department_officer_form" model="ir.ui.view">
+        <field name="name">sarabun.department.officer.form</field>
+        <field name="model">hr.department</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form string="ธุรการหน่วยงาน">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="complete_name" readonly="1"/></h1>
+                    </div>
+                    <group string="ธุรการหน่วยงาน (Unit Clerks)"
+                           help="ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น 'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)">
+                        <field name="sarabun_officer_ids" nolabel="1">
+                            <tree>
+                                <field name="name"/>
+                                <field name="login"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sarabun_department_officer" model="ir.actions.act_window">
+        <field name="name">ธุรการหน่วยงาน (Unit Clerks)</field>
+        <field name="res_model">hr.department</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_department_officer_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_department_officer_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">กำหนดธุรการหน่วยงาน</p>
+            <p>เลือกหน่วยงานแล้วระบุผู้ที่ทำหน้าที่ธุรการ เพื่อให้เส้นทางเอกสารแบบ "ธุรการหน่วยงาน" ส่งถึงบุคคลเหล่านี้</p>
+        </field>
+    </record>
+</odoo>

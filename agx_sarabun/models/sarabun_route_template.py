@@ -8,10 +8,11 @@ the flow once seeded. Each template line materialises into one
 from odoo import api, fields, models
 from odoo.tools.safe_eval import safe_eval
 
+# Keep in sync with sarabun_routing_step.py
 TARGET_MODE = [
-    ("position", "Position (ตำแหน่ง)"),
-    ("person", "Person (บุคคล)"),
-    ("unit", "Unit (สารบรรณกลาง)"),
+    ("unit", "ธุรการหน่วยงาน (Unit Clerk)"),
+    ("person", "บุคลากร (Personnel)"),
+    ("position", "ตำแหน่ง (Position)"),
 ]
 
 
@@ -72,7 +73,7 @@ class SarabunRouteTemplateLine(models.Model):
     template_id = fields.Many2one(
         "sarabun.route.template", required=True, ondelete="cascade"
     )
-    order = fields.Integer(string="Stage", default=10, help="Steps sharing one order run in parallel.")
+    order = fields.Integer(string="Stage", default=1, help="Steps sharing one order run in parallel.")
     verb = fields.Many2one(
         "sarabun.verb",
         string="Verb",

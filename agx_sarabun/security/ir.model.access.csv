@@ -9,6 +9,7 @@ access_sarabun_verb_user,sarabun.verb.user,model_sarabun_verb,group_sarabun_user
 access_sarabun_verb_manager,sarabun.verb.manager,model_sarabun_verb,group_sarabun_manager,1,1,1,1
 access_sarabun_addressee_prefix_user,sarabun.addressee.prefix.user,model_sarabun_addressee_prefix,group_sarabun_user,1,0,0,0
 access_sarabun_addressee_prefix_manager,sarabun.addressee.prefix.manager,model_sarabun_addressee_prefix,group_sarabun_manager,1,1,1,1
+access_sarabun_hr_department_manager,hr.department.sarabun.manager,hr.model_hr_department,group_sarabun_manager,1,1,0,0
 access_sarabun_reference_line_user,sarabun.reference.line.user,model_sarabun_reference_line,group_sarabun_user,1,1,1,1
 access_sarabun_reference_line_manager,sarabun.reference.line.manager,model_sarabun_reference_line,group_sarabun_manager,1,1,1,1
 access_sarabun_enclosure_user,sarabun.enclosure.user,model_sarabun_enclosure,group_sarabun_user,1,1,1,1

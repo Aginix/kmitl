@@ -44,6 +44,15 @@ class SarabunPosition(models.Model):
         "first-to-act. Interim รักษาการ/มอบอำนาจ: add the acting user here "
         "temporarily (the acting-assignment model is phase-2).",
     )
+    holder_count = fields.Integer(
+        string="ผู้ดำรงตำแหน่ง",
+        compute="_compute_holder_count",
+    )
+
+    @api.depends("holder_ids")
+    def _compute_holder_count(self):
+        for record in self:
+            record.holder_count = len(record.holder_ids)
 
     # === Phase-2 seam (designed, not built in v1) ===
     # acting_assignment_ids = fields.One2many("sarabun.position.acting", "position_id")

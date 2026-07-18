@@ -39,6 +39,12 @@
               action="action_sarabun_position"
               sequence="20"/>
 
+    <menuitem id="menu_sarabun_department_officer"
+              name="ธุรการหน่วยงาน (Unit Clerks)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_department_officer"
+              sequence="22"/>
+
     <menuitem id="menu_sarabun_verb"
               name="Verbs (การดำเนินการ)"
               parent="menu_sarabun_config"
