@@ -304,6 +304,13 @@ class SarabunRoutingStep(models.Model):
         if self.document_id.state != "circulating":
             raise UserError(_("The document is not circulating."))
         self._check_act_authority(actor)
+        # ตีกลับ / ปฏิเสธ are gating-actor moves only (ADR-0006): a รับทราบ / CC
+        # recipient may only acknowledge (complete), never return or reject.
+        if disposition in ("return", "reject") and not self.gating:
+            raise UserError(_(
+                "Only the actor of a gating step (เห็นชอบ / ลงนาม-อนุมัติ) may "
+                "ตีกลับ (return) or ปฏิเสธ (reject)."
+            ))
 
         # Authority is verified above. The lifecycle transition itself — stamping the
         # step and driving the document's state / register / freeze — is a SYSTEM
@@ -406,3 +413,19 @@ class SarabunRoutingStep(models.Model):
     def _do_reject(self, actor, note):
         self._stamp(actor, note, "reject")
         self.document_id._do_reject(self)
+
+    def _resume_seed_vals(self):
+        """Seed vals to re-create this step fresh (``waiting``) in a new attempt
+        after a ตีกลับ→resume — the original step stays archived as history so the
+        prior chain is never overwritten (ADR-0006)."""
+        self.ensure_one()
+        return {
+            "order": self.order,
+            "verb": self.verb.id,
+            "for_info": self.for_info,
+            "target_mode": self.target_mode,
+            "position_id": self.position_id.id,
+            "employee_id": self.employee_id.id,
+            "department_id": self.department_id.id,
+            "state": "waiting",
+        }

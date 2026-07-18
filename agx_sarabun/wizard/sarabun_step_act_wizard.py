@@ -75,6 +75,12 @@ class SarabunStepActWizard(models.TransientModel):
 
     def action_confirm(self):
         self.ensure_one()
+        # ตีกลับ / ปฏิเสธ are gating-actor moves only (ADR-0006).
+        if self.disposition in ("return", "reject") and not self.step_id.gating:
+            raise UserError(_(
+                "Only a gating step (เห็นชอบ / ลงนาม-อนุมัติ) can be "
+                "ตีกลับ (returned) or ปฏิเสธ (rejected)."
+            ))
         vals = {"note": self.note}
         if self.disposition == "complete":
             vals["signed_as_position_id"] = self.signed_as_position_id.id
@@ -94,6 +100,8 @@ class SarabunStepActWizard(models.TransientModel):
             if self.disposition == "direct":
                 vals.update({"verb": self.new_verb.id, "for_info": self.new_for_info})
         elif self.disposition == "return":
+            if not self.note:
+                raise UserError(_("Please provide a reason for returning (ตีกลับ)."))
             if self.destination == "resume_step" and not self.resume_step_id:
                 raise UserError(_("Pick the step to resume from."))
             vals.update({

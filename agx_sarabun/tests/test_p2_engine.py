@@ -126,17 +126,26 @@ class TestP2Engine(SarabunCommon):
         self.assertEqual(doc.attempt_seq, 2)
 
     def test_return_resume_step(self):
-        """ตีกลับ (resume_step) resets steps from the chosen order back to waiting."""
+        """ตีกลับ (resume_step): archive-not-overwrite (ADR-0006) — the original chain
+        is frozen as history and a fresh waiting chain is recreated from the resume
+        step onward."""
         doc = self._make_doc()
         s10 = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
         s20 = self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
         doc.action_send()
         self._act(s10, "complete", self.user_a)  # s20 now active
-        self._act(s20, "return", self.user_b, destination="resume_step",
-                  resume_step_id=s10.id)
+        self._act(s20, "return", self.user_b, note="กลับไปแก้ที่ขั้นแรก",
+                  destination="resume_step", resume_step_id=s10.id)
         self.assertTrue(doc.is_returned)
-        self.assertEqual(s10.state, "waiting")
-        self.assertFalse(s10.disposition)
+        self.assertEqual(doc.attempt_seq, 2)
+        # original step kept as history, never overwritten
+        self.assertFalse(s10.active)
+        self.assertEqual(s10.state, "done")
+        self.assertIn(s10, doc.archived_step_ids)
+        # a fresh waiting chain is recreated from the resume order onward
+        self.assertTrue(
+            doc.routing_step_ids.filtered(lambda s: s.order == 10 and s.state == "waiting")
+        )
 
     def test_rejected_then_duplicate_to_draft(self):
         """rejected is terminal; retry is a NEW linked draft (1:N)."""
@@ -153,15 +162,15 @@ class TestP2Engine(SarabunCommon):
         self.assertTrue(doc.is_rejected)  # original preserved for audit
 
     def test_recall_before_signature_ok(self):
-        """เรียกคืน is allowed while circulating and before any signature."""
+        """ยกเลิกการส่ง is allowed while circulating and before any signature."""
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         doc.action_send()
-        doc.action_recall()
+        doc.action_recall(reason="ส่งผิดหน่วยงาน")
         self.assertTrue(doc.is_cancelled)
 
     def test_recall_blocked_after_signature(self):
-        """Once a ลงนาม-อนุมัติ step is done, recall is blocked."""
+        """Once a ลงนาม-อนุมัติ step is done, withdrawal is blocked."""
         doc = self._make_doc()
         s10 = self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
@@ -170,7 +179,30 @@ class TestP2Engine(SarabunCommon):
         self.assertTrue(doc.has_signed)
         self.assertTrue(doc.is_circulating)
         with self.assertRaises(UserError):
-            doc.action_recall()
+            doc.action_recall(reason="x")
+
+    def test_pull_back_keeps_number_and_returns(self):
+        """ดึงกลับ → returned, KEEP the number, archive + bump the attempt (ADR-0006)."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        number = doc.register_number_id
+        attempt = doc.attempt_seq
+        doc.action_pull_back(reason="แก้ไขเนื้อหาก่อนส่งใหม่")
+        self.assertTrue(doc.is_returned)
+        self.assertEqual(doc.register_number_id, number)            # number kept
+        self.assertNotEqual(doc.register_number_id.state, "voided")
+        self.assertEqual(doc.attempt_seq, attempt + 1)              # prior chain archived
+        # a fresh waiting chain exists to re-send on the same number
+        self.assertTrue(doc.routing_step_ids.filtered(lambda s: s.state == "waiting"))
+
+    def test_recall_requires_reason(self):
+        """Every backward move needs a reason (ADR-0006)."""
+        doc = self._make_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        with self.assertRaises(UserError):
+            doc.action_pull_back()
 
     def test_snapshot_holders_are_immutable(self):
         """Holders snapshotted at activation are not rewritten by later org changes."""

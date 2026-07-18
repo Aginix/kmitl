@@ -505,29 +505,68 @@ class SarabunDocument(models.Model):
             doc._advance_stage()
         return True
 
-    def action_recall(self):
-        """circulating → cancelled (เรียกคืน) — only before any ลงนาม-อนุมัติ step."""
+    def _check_sender_withdraw_allowed(self):
+        """Shared guard for the sender's ดึงกลับ / ยกเลิกการส่ง (ADR-0006): only
+        while circulating, by the sender (or a manager), and before any
+        ลงนาม-อนุมัติ step has occurred."""
         self.ensure_one()
         if self.state != "circulating":
-            raise UserError(_("Only a circulating document can be recalled."))
+            raise UserError(_("Only a circulating document can be withdrawn."))
         if self.sender_user_id != self.env.user and not self.env.user.has_group(
             "agx_sarabun.group_sarabun_manager"
         ):
-            raise UserError(_("Only the sender may recall this document."))
+            raise UserError(_("Only the sender may withdraw this document."))
         if self.has_signed:
             raise UserError(_(
-                "This document has been signed and cannot be recalled. "
-                "Issue a cancellation หนังสือ instead."
+                "This document has been signed; withdrawal now requires issuing a "
+                "cancellation หนังสือ, not ดึงกลับ / ยกเลิกการส่ง."
             ))
+
+    def action_pull_back(self, reason=None):
+        """ดึงกลับ (recall) — circulating → returned, KEEPING the register number
+        (ADR-0006). Archives the current chain and restarts on re-send: a
+        self-initiated ตีกลับ-to-sender, so the หนังสือ becomes editable and can be
+        revised and re-sent on the same number. Fires ``_on_sarabun_recalled``."""
+        self.ensure_one()
+        self._check_sender_withdraw_allowed()
+        if not reason:
+            raise UserError(_("A reason is required to ดึงกลับ (pull back)."))
+        self.routing_step_ids._clear_activities()
+        self._restart_chain()
+        self.state = "returned"
+        self.message_post(body=_("Document pulled back (ดึงกลับ). Reason: %s") % reason)
+        self._call_origin("_on_sarabun_recalled", self)
+        return True
+
+    def action_recall(self, reason=None):
+        """ยกเลิกการส่ง (cancel-send) — circulating → cancelled (terminal); the
+        register number is VOIDED as a permanent gap (ADR-0006). Sender-only,
+        before any ลงนาม-อนุมัติ step."""
+        self.ensure_one()
+        self._check_sender_withdraw_allowed()
+        if not reason:
+            raise UserError(_("A reason is required to ยกเลิกการส่ง (cancel the send)."))
         self.routing_step_ids._clear_activities()
         self.routing_step_ids.filtered(lambda s: s.state in ("waiting", "active")).write(
             {"state": "skipped"}
         )
         self.state = "cancelled"
         self._void_register("cancelled")
-        self.message_post(body=_("Document recalled (เรียกคืน)."))
+        self.message_post(body=_("Send cancelled (ยกเลิกการส่ง). Reason: %s") % reason)
         self._call_origin("_on_sarabun_cancelled", self)
         return True
+
+    def action_open_recall_wizard(self):
+        """Open the ดึงกลับ / ยกเลิกการส่ง wizard (collects the mandatory reason)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ดึงกลับ / ยกเลิกการส่ง"),
+            "res_model": "sarabun.recall.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_document_id": self.id},
+        }
 
     def action_act_on_my_step(self):
         """Open the act wizard for the current user's active step."""
@@ -638,27 +677,29 @@ class SarabunDocument(models.Model):
 
     # === Negative paths (driven from step dispositions) ===
     def _do_return(self, step, destination="sender_restart", resume_step_id=None):
-        """ตีกลับ — send back for revision; destination chosen by the returner."""
+        """ตีกลับ — send back for revision; destination chosen by the returner.
+
+        Archive-not-overwrite (ADR-0006): the current attempt is ALWAYS frozen as
+        history (``active=False``, ``attempt_seq`` bumped) — never reset in place.
+        The new attempt re-seeds either the full template (restart) or just the
+        chosen resume step onward (resume), leaving the prior chain intact."""
         self.ensure_one()
-        self.routing_step_ids._clear_activities()  # drop to-dos before archive/resume
+        self.routing_step_ids._clear_activities()  # drop to-dos before archive
         if destination == "resume_step" and resume_step_id:
             resume = self.env["sarabun.routing.step"].browse(int(resume_step_id))
-            later = self.routing_step_ids.filtered(lambda s: s.order >= resume.order)
-            later.write({
-                "state": "waiting",
-                "disposition": False,
-                "acted_by_id": False,
-                "acted_date": False,
-                "signed_as_position_id": False,
-                "actor_user_ids": [(5, 0, 0)],
-                "activated_date": False,
-            })
-            # Drop the prior attempt's per-person read receipts so the resumed
-            # steps start unread again (re-materialised on re-activation).
-            later.recipient_ids.sudo().unlink()
-        else:
+            # Snapshot the tail's seed vals BEFORE archiving, then recreate them
+            # fresh in the new attempt (the originals stay archived as history).
+            tail = self.routing_step_ids.filtered(
+                lambda s: s.order >= resume.order
+            ).sorted("order")
+            seeds = [s._resume_seed_vals() for s in tail]
             self._bump_attempt_and_archive()
-            self._seed_route_from_template()
+            new_seq = self.attempt_seq or 1
+            self.routing_step_ids = [
+                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
+            ]
+        else:
+            self._restart_chain()
         self.state = "returned"
         self.message_post(body=_("Document returned for revision (ตีกลับ)."))
         self._call_origin("_on_sarabun_returned", self, step)
@@ -680,6 +721,22 @@ class SarabunDocument(models.Model):
         self.ensure_one()
         self.routing_step_ids.write({"active": False})
         self.attempt_seq = (self.attempt_seq or 1) + 1
+
+    def _restart_chain(self):
+        """Archive the current chain and re-seed a fresh waiting one for a restart
+        (ตีกลับ→sender_restart or ดึงกลับ). Prefer the route template; if the
+        document has no template — the common from_record / ad-hoc case — recreate
+        the just-archived chain's steps so the Route is never left empty (which
+        would strand the หนังสือ in ``returned``, unable to re-send)."""
+        self.ensure_one()
+        seeds = [s._resume_seed_vals() for s in self.routing_step_ids.sorted("order")]
+        self._bump_attempt_and_archive()
+        self._seed_route_from_template()
+        if not self.routing_step_ids:
+            new_seq = self.attempt_seq or 1
+            self.routing_step_ids = [
+                (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
+            ]
 
     # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===
     def _call_origin(self, method, *args):

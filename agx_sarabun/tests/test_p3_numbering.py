@@ -53,11 +53,11 @@ class TestP3Numbering(SarabunCommon):
         self.assertEqual(doc2.register_number_id.counter, n1 + 1)  # gap, n1 not reused
 
     def test_recall_voids_number_as_cancelled(self):
-        """A recalled document's number is voided with reason 'cancelled'."""
+        """ยกเลิกการส่ง voids the number with reason 'cancelled'."""
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         doc.action_send()
-        doc.action_recall()
+        doc.action_recall(reason="ยกเลิกการส่ง")
         self.assertEqual(doc.register_number_id.state, "voided")
         self.assertEqual(doc.register_number_id.void_reason, "cancelled")
 

@@ -34,8 +34,8 @@
                     <button name="action_act_on_my_step" type="object"
                             string="Act on My Step" class="oe_highlight"
                             attrs="{'invisible': [('my_active_step_id', '=', False)]}"/>
-                    <button name="action_recall" type="object" string="Recall"
-                            confirm="Recall this document? Its number will be voided."
+                    <button name="action_open_recall_wizard" type="object"
+                            string="ดึงกลับ / ยกเลิกการส่ง"
                             attrs="{'invisible': ['|', ('state', '!=', 'circulating'), ('has_signed', '=', True)]}"/>
                     <button name="action_duplicate_to_draft" type="object"
                             string="Duplicate to New Draft"

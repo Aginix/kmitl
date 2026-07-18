@@ -56,12 +56,21 @@ class TestP6Adapter(SarabunCommon):
         self.assertEqual(origin.returned_count, 1)
 
     def test_cancelled_callback(self):
-        """เรียกคืน invokes _on_sarabun_cancelled(doc)."""
+        """ยกเลิกการส่ง invokes _on_sarabun_cancelled(doc)."""
         origin, doc = self._origin_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         doc.action_send()
-        doc.action_recall()
+        doc.action_recall(reason="ยกเลิก")
         self.assertEqual(origin.cancelled_count, 1)
+
+    def test_recalled_callback(self):
+        """ดึงกลับ invokes _on_sarabun_recalled(doc) and lands in returned (ADR-0006)."""
+        origin, doc = self._origin_doc()
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        doc.action_pull_back(reason="ขอแก้ไข")
+        self.assertEqual(origin.recalled_count, 1)
+        self.assertTrue(doc.is_returned)
 
     def test_one_to_many_after_duplicate(self):
         """reject → duplicate-to-draft gives the origin a second linked document (1:N)."""

@@ -275,12 +275,9 @@ class SarabunDocumentMixin(models.AbstractModel):
     def _on_sarabun_recalled(self, document):
         """Called when the sender pulls a circulating Document back to edit
         (ดึงกลับ, ADR-0006): the number is KEPT and the Document lands in
-        ``returned``, re-sendable. Defaults to the ตีกลับ handler with an empty
-        step so an origin's returned-handling applies unchanged; override for
-        distinct behaviour/wording.
-
-        NOTE: inert until the engine's ดึงกลับ action calls
-        ``_call_origin('_on_sarabun_recalled', self)`` (pending ADR-0006 engine work).
+        ``returned``, re-sendable. Fired by the engine's ``action_pull_back``.
+        Defaults to the ตีกลับ handler with an empty step so an origin's
+        returned-handling applies unchanged; override for distinct behaviour/wording.
         """
         self._on_sarabun_returned(document, step=self.env["sarabun.routing.step"])
 

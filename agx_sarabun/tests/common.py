@@ -49,6 +49,7 @@ class SarabunOriginSpy(models.TransientModel):
     returned_count = fields.Integer(default=0)
     rejected_count = fields.Integer(default=0)
     cancelled_count = fields.Integer(default=0)
+    recalled_count = fields.Integer(default=0)
     step_count = fields.Integer(default=0)
     last_disposition = fields.Char()
     last_reject_note = fields.Char()
@@ -76,6 +77,10 @@ class SarabunOriginSpy(models.TransientModel):
 
     def _on_sarabun_cancelled(self, document):
         self.cancelled_count += 1
+
+    def _on_sarabun_recalled(self, document):
+        # ดึงกลับ (ADR-0006): record distinctly instead of delegating to returned.
+        self.recalled_count += 1
 
     def _on_sarabun_step(self, step, disposition):
         self.step_count += 1
