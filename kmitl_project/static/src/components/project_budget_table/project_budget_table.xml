@@ -13,7 +13,7 @@
                 <tr t-if="endsSection(record)" class="o_budget_section_subtotal">
                     <td t-if="hasSelectors" />
                     <td t-att-colspan="colsBeforeAmount(record)" class="text-end">
-                        รวม<t t-esc="sectionName(record)" />
+                        รวม
                     </td>
                     <td class="o_list_number fw-bold">
                         <t t-esc="formatAmount(sectionTotal(record))" />
