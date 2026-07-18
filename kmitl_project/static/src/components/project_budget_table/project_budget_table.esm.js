@@ -3,6 +3,7 @@
 import {ListRenderer} from "@web/views/list/list_renderer";
 import {X2ManyField} from "@web/views/fields/x2many/x2many_field";
 import {registry} from "@web/core/registry";
+import {formatFloat} from "@web/views/fields/formatters";
 
 /**
  * Editable one2many list that renders a bold ประเภทงบ section header row each
@@ -40,6 +41,22 @@ export class ProjectBudgetTableRenderer extends ListRenderer {
     sectionName(record) {
         const cat = record.data.budget_category_id;
         return cat && cat[1] ? cat[1] : "ไม่ระบุประเภทงบ";
+    }
+
+    /** Sum of the amount of every line in this record's section. */
+    sectionTotal(record) {
+        const key = this.categoryKey(record);
+        let total = 0;
+        for (const rec of this.props.list.records) {
+            if (this.categoryKey(rec) === key) {
+                total += rec.data.amount || 0;
+            }
+        }
+        return total;
+    }
+
+    formatAmount(value) {
+        return formatFloat(value, {digits: [16, 2]});
     }
 
     /** Add a line pre-scoped to this record's section (category), so the new

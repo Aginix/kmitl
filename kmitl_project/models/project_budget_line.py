@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api
 
 from .project_budget_item import BUDGET_TYPE_SELECTION
 
@@ -65,7 +64,9 @@ class ProjectBudgetLine(models.Model):
         string="คำอธิบาย",
         help="สำหรับอธิบายการแตกตัวคูณ เช่น 50 คน x 200 บาท x 3 วัน",
     )
-    amount = fields.Float(string="จำนวนเงิน", digits="Product Price", required=True)
+    # Free to leave blank/zero while drafting; validated at confirmation on the
+    # project (kmitl.project.button_new).
+    amount = fields.Float(string="จำนวนเงิน", digits="Product Price")
     note = fields.Char(string="หมายเหตุ")
 
     @api.onchange("budget_item_id")
@@ -73,9 +74,3 @@ class ProjectBudgetLine(models.Model):
         """Keep the category in step with the chosen item's root."""
         if self.budget_item_id:
             self.budget_category_id = self.budget_item_id.parent_id
-
-    @api.constrains("amount")
-    def _check_amount(self):
-        for rec in self:
-            if rec.amount <= 0:
-                raise ValidationError(_("จำนวนเงินต้องมากกว่าศูนย์"))

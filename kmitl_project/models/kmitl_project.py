@@ -470,8 +470,29 @@ class KmitlProject(models.Model):
 
     def button_new(self):
         for project in self:
+            project._check_budget_plan_lines()
             project._reserve_project_commitment()
         self.write({"state": "new"})
+
+    def _check_budget_plan_lines(self):
+        """Validate the Project Budget Plan at confirmation. Amounts may be left
+        blank/zero while drafting, but every line must carry a positive amount
+        before the project is confirmed."""
+        self.ensure_one()
+        bad = (self.income_line_ids | self.expense_line_ids).filtered(
+            lambda line: line.amount <= 0
+        )
+        if bad:
+            raise UserError(
+                _(
+                    "ไม่สามารถยืนยันโครงการได้ "
+                    "เนื่องจากมีรายการงบประมาณที่ยังไม่ได้ระบุจำนวนเงิน (ต้องมากกว่า 0):\n%s"
+                )
+                % "\n".join(
+                    "- %s" % (line.budget_item_id.complete_name or _("(ไม่ระบุรายการ)"))
+                    for line in bad
+                )
+            )
 
     def button_in_progress(self):
         self.write({"state": "in_progress"})

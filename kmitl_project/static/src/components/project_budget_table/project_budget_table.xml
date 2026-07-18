@@ -10,6 +10,12 @@
                     </td>
                 </tr>
                 <t t-call="{{ constructor.recordRowTemplate }}" />
+                <tr t-if="endsSection(record)" class="o_budget_section_subtotal">
+                    <td colspan="99" class="text-end">
+                        <span class="me-2">รวม<t t-esc="sectionName(record)" /></span>
+                        <span class="fw-bold"><t t-esc="formatAmount(sectionTotal(record))" /></span>
+                    </td>
+                </tr>
                 <tr t-if="endsSection(record) and displayRowCreates" class="o_budget_section_add">
                     <td colspan="99">
                         <a href="#" role="button" class="o_budget_section_add_link"

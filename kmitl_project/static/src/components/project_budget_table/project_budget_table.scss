@@ -14,6 +14,15 @@
         }
     }
 
+    .o_budget_section_subtotal {
+        > td {
+            padding: 0.3rem 0.75rem;
+            color: #374151;
+            background-color: #f7f9fb;
+            border-top: 1px solid #e5e9ee;
+        }
+    }
+
     .o_budget_section_add {
         > td {
             padding: 0.2rem 0.75rem 0.5rem 1.75rem;
