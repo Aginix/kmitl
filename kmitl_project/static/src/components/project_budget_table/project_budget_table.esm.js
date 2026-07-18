@@ -59,6 +59,14 @@ export class ProjectBudgetTableRenderer extends ListRenderer {
         return formatFloat(value, {digits: [16, 2]});
     }
 
+    /** Column count before the amount column, so the subtotal cell lines up
+     * under จำนวนเงิน (same columns the record rows render). */
+    colsBeforeAmount(record) {
+        const columns = this.getColumns(record);
+        const index = columns.findIndex((col) => col.name === "amount");
+        return index < 0 ? columns.length : index;
+    }
+
     /** Add a line pre-scoped to this record's section (category), so the new
      * line lands in the section and its item picker is filtered to it. */
     addInSection(record) {
