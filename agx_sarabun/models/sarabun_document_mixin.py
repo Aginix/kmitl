@@ -100,9 +100,13 @@ class SarabunDocumentMixin(models.AbstractModel):
             record.sarabun_state_label = active._status_label() if active else False
 
     def _prepare_sarabun_document_vals(self):
-        """
-        Prepare values for creating a sarabun document.
-        Override this method in inheriting models.
+        """Build the ``sarabun.document`` create vals.
+
+        **Owned by the mixin — do not override.** Customise via the hooks instead:
+        ``_get_sarabun_subject`` (เรื่อง), ``_get_sarabun_document_type`` (type →
+        sequence/route/template) and ``_get_sarabun_sender_department`` (issuing
+        ส่วนงาน). This keeps the origin link (origin_model/origin_res_id) and the
+        number-assigned-at-send invariant impossible to break by accident.
 
         Returns:
             dict: Values for sarabun.document create()
@@ -156,6 +160,29 @@ class SarabunDocumentMixin(models.AbstractModel):
             "target": "current",
         }
 
+    def action_submit_to_sarabun(self):
+        """Spawn the หนังสือ (draft) from this record and open it.
+
+        The single sanctioned submit entry point for consumers: it creates the
+        Document, posts a standard chatter note, and returns the open-form action.
+        Override :meth:`_sarabun_submit_guard` to gate submission, and the
+        ``_get_sarabun_*`` hooks to customise the Document — a consumer should not
+        need to reimplement this method.
+        """
+        self.ensure_one()
+        if not self._sarabun_submit_guard():
+            return False
+        action = self.action_create_sarabun_document()
+        document = self.env["sarabun.document"].browse(action["res_id"])
+        self._sarabun_post("submitted", document)
+        return action
+
+    def _sarabun_submit_guard(self):
+        """Return True to allow :meth:`action_submit_to_sarabun` (default).
+        Override to gate, e.g. ``return self.state == "submitted"``."""
+        self.ensure_one()
+        return True
+
     def action_view_sarabun_documents(self):
         """View related sarabun documents"""
         self.ensure_one()
@@ -180,35 +207,85 @@ class SarabunDocumentMixin(models.AbstractModel):
 
         return action
 
+    # === Standard chatter for lifecycle events (centralised, translatable) ===
+    def _sarabun_note(self, kind, document, step=None):
+        """The chatter body posted for a lifecycle event.
+
+        ``kind`` ∈ submitted / circulating / completed / returned / rejected /
+        cancelled. Override to reword, or return a falsy value to suppress the
+        note for a kind while still running the origin's state transition.
+        ``step`` (when present) carries the acting user and the mandatory reason.
+        """
+        self.ensure_one()
+        reason = (step and step.note) or _("No reason provided")
+        actor = (step and step.acted_by_id.name) or _("Unknown")
+        return {
+            "submitted": _("Submitted to Sarabun for approval: %s") % document.name,
+            "circulating": _("Sent for approval via Sarabun: %s") % document.name,
+            "completed": _("Approved via Sarabun: %s") % document.name,
+            "returned": _(
+                "Returned via Sarabun for revision by %(actor)s. Reason: %(reason)s"
+            ) % {"actor": actor, "reason": reason},
+            "rejected": _(
+                "Rejected via Sarabun by %(actor)s. Reason: %(reason)s"
+            ) % {"actor": actor, "reason": reason},
+            "cancelled": _("Cancelled via Sarabun (ยกเลิกการส่ง): %s") % document.name,
+        }.get(kind)
+
+    def _sarabun_post(self, kind, document, step=None):
+        """Post the standard :meth:`_sarabun_note` for ``kind`` (skipped if empty)."""
+        body = self._sarabun_note(kind, document, step)
+        if body:
+            self.message_post(body=body, subtype_xmlid="mail.mt_note")
+
     # === Lifecycle callbacks (ADR-0004 / DESIGN §8.6 contract) ===
     # All run in the actor's transaction; a raising callback rolls the action back
-    # (no swallow). Override in the origin model. The engine fires the generic
-    # _on_sarabun_step first, then the matching specific callback below.
+    # (no swallow). The engine fires the matching specific callback below first,
+    # then the generic _on_sarabun_step last.
+    #
+    # Each default body posts the standard chatter note, so an origin override does
+    # ONLY its genuine state transition and calls super() to keep the note — or
+    # omits the override entirely to get an audit-only note for free.
 
     def _on_sarabun_circulating(self, document):
         """Called when the Document is sent (draft/returned → circulating)."""
-        pass
+        self._sarabun_post("circulating", document)
 
     def _on_sarabun_completed(self, document):
         """Called when every gating step is positively completed."""
-        pass
+        self._sarabun_post("completed", document)
 
     def _on_sarabun_returned(self, document, step):
-        """Called when the Document is returned for revision (ตีกลับ). ``step`` is
-        the routing step that returned it."""
-        pass
+        """Called when the Document is returned for revision — an approver's ตีกลับ,
+        or (via :meth:`_on_sarabun_recalled`) the sender's ดึงกลับ. ``step`` is the
+        returning routing step, or an empty recordset for ดึงกลับ."""
+        self._sarabun_post("returned", document, step)
 
     def _on_sarabun_rejected(self, document, step):
         """Called when the Document is rejected (ปฏิเสธ, terminal). ``step`` is the
-        routing step that rejected it."""
-        pass
+        rejecting routing step."""
+        self._sarabun_post("rejected", document, step)
 
     def _on_sarabun_cancelled(self, document):
-        """Called when the Document is recalled/cancelled (เรียกคืน, terminal)."""
-        pass
+        """Called when the sender withdraws the Document terminally (ยกเลิกการส่ง,
+        ADR-0006): the registered number is voided and the Document lands in
+        ``cancelled``."""
+        self._sarabun_post("cancelled", document)
+
+    def _on_sarabun_recalled(self, document):
+        """Called when the sender pulls a circulating Document back to edit
+        (ดึงกลับ, ADR-0006): the number is KEPT and the Document lands in
+        ``returned``, re-sendable. Defaults to the ตีกลับ handler with an empty
+        step so an origin's returned-handling applies unchanged; override for
+        distinct behaviour/wording.
+
+        NOTE: inert until the engine's ดึงกลับ action calls
+        ``_call_origin('_on_sarabun_recalled', self)`` (pending ADR-0006 engine work).
+        """
+        self._on_sarabun_returned(document, step=self.env["sarabun.routing.step"])
 
     def _on_sarabun_step(self, step, disposition):
-        """Generic per-step callback for every disposition.
+        """Generic per-step callback for every disposition (fired last).
 
         Args:
             step: the ``sarabun.routing.step`` acted on (never the old recipient)

@@ -57,7 +57,7 @@ class ConstructionProject(models.Model):
             docs = record.purchase_request_ids.mapped(
                 "active_sarabun_document_id"
             )
-            live = docs.filtered(lambda d: d.state not in ("rejected", "cancelled"))
+            live = docs.filtered(lambda d: not d.is_terminal)
             record.active_sarabun_document_id = live[:1] or docs[:1]
 
     def _compute_purchase_order_ids(self):

@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import base64
-import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequestApproval(models.Model):
@@ -273,112 +270,37 @@ class PurchaseRequestApproval(models.Model):
         self.write({"state": "validate"})
         self.message_post(body=_("Document validated and ready for routing."))
 
-    def _prepare_sarabun_document_vals(self):
-        """Prepare values for creating a sarabun document."""
-        self.ensure_one()
-        vals = super()._prepare_sarabun_document_vals()
-        vals["subject"] = self.title or self.name
-        if self.requesting_department_id:
-            vals["sender_department_id"] = self.requesting_department_id.id
-        return vals
+    def _get_sarabun_subject(self):
+        return self.title or self.name
 
-    def action_submit_to_sarabun(self):
-        """Submit PA to Sarabun for approval routing."""
-        self.ensure_one()
-
-        # Create sarabun document
-        result = self.action_create_sarabun_document()
-        document = self.env["sarabun.document"].browse(result.get("res_id"))
-
-        # The mixin owns the origin↔document relation (origin_model/origin_res_id);
-        # do not write a per-consumer link here.
-
-        # Log to chatter
-        self.message_post(
-            body=_("Submitted to Sarabun for approval: %s") % document.name,
-        )
-
-        # Open sarabun document form for routing selection
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.document",
-            "res_id": document.id,
-            "view_mode": "form",
-            "target": "current",
-        }
+    def _get_sarabun_sender_department(self):
+        return self.requesting_department_id or super()._get_sarabun_sender_department()
 
     def _on_sarabun_circulating(self, document):
-        """
-        Called when the หนังสือ starts circulating (draft → circulating, number
-        now assigned). Changes PA state to 'to_approve'.
-        """
-        _logger.info(
-            "Sarabun circulating callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
+        # Explicit override: flip the PA to 'to_approve' on send. Do NOT call
+        # button_to_approve here — that also renders the PDF and assigns the name.
         self.write({"state": "to_approve"})
-        self.message_post(
-            body=_("Sent for approval via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
-        """
-        Called when sarabun document routing is completed.
-        Auto-approves the PA.
-        """
-        _logger.info(
-            "Sarabun completed callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
+        # Routing completed → auto-approve the PA.
         self.button_approved()
-        self.message_post(
-            body=_("Approved via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_completed(document)
 
     def _on_sarabun_rejected(self, document, step):
-        """
-        Called when the หนังสือ is rejected (ปฏิเสธ, terminal).
-        Changes PA state to rejected. ``step`` is the rejecting routing step.
-        """
-        _logger.info(
-            "Sarabun rejected callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
+        # ปฏิเสธ (terminal) → PA rejected.
         self.button_rejected()
-        reason = (step and step.note) or _("No reason provided")
-        self.message_post(
-            body=_("Rejected via Sarabun. Reason: %s") % reason,
-        )
+        return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        """
-        Called when the หนังสือ is returned for revision (ตีกลับ, revisable).
-        Revert the PA to 'validate' so the requester can amend and re-submit.
-        ``step`` is the returning routing step.
-        """
-        _logger.info(
-            "Sarabun returned callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
+        # ตีกลับ / ดึงกลับ (revisable) → back to 'validate' to amend & re-submit.
         self.write({"state": "validate"})
-        reason = (step and step.note) or _("No reason provided")
-        self.message_post(
-            body=_("Returned for revision via Sarabun. Reason: %s") % reason,
-        )
+        return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_cancelled(self, document):
-        """
-        Called when the หนังสือ is recalled/cancelled (เรียกคืน, terminal).
-        Revert the PA to 'draft' so it can be re-opened.
-        """
-        _logger.info(
-            "Sarabun cancelled callback for PA %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
+        # ยกเลิกการส่ง (terminal) → back to 'draft' so it can be re-opened.
         self.write({"state": "draft"})
-        self.message_post(
-            body=_("Recalled via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Purchase Request Approval report."""

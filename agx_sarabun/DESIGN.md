@@ -1980,13 +1980,14 @@ official number is **not** assigned at create — it is assigned atomically at *
 | `_on_sarabun_circulating(document)` | draft → **circulating** (Register has happened, number exists) | `document` | `circulating` |
 | `_on_sarabun_step(step, disposition)` | **every** Disposition at any active step (generic) | `step`, `disposition` | unchanged |
 | `_on_sarabun_completed(document)` | all gating steps positive → **completed** (ฉบับลงนาม frozen) | `document` | `completed` |
-| `_on_sarabun_returned(document, step)` | ตีกลับ → **returned** | `document`, `step` | `returned` |
+| `_on_sarabun_returned(document, step)` | ตีกลับ → **returned** (`step` = the returner) | `document`, `step` | `returned` |
+| `_on_sarabun_recalled(document)` | ดึงกลับ → **returned** (number **kept**; sender pull-back, ADR-0006). Default delegates to `_on_sarabun_returned` with an empty step. Inert until the engine's ดึงกลับ action wires it. | `document` | `returned` |
 | `_on_sarabun_rejected(document, step)` | ปฏิเสธ → **rejected** (number voided) | `document`, `step` | `rejected` |
-| `_on_sarabun_cancelled(document)` | เรียกคืน → **cancelled** (number voided) | `document` | `cancelled` |
+| `_on_sarabun_cancelled(document)` | ยกเลิกการส่ง → **cancelled** (number voided, ADR-0006) | `document` | `cancelled` |
 
 `_on_sarabun_step(step, disposition)` is the **generic, always-called** hook
 (replacing `_on_sarabun_action`); the state-transition callbacks are the **specific**
-hooks. The engine fires the generic one first, then the matching specific one.
+hooks. The engine fires the matching specific one first, then the generic one last.
 `disposition` is one of the five canonical **Dispositions**: `complete` · `direct`
 (เกษียนสั่งการ) · `delegate` (มอบหมาย) · `return` (ตีกลับ) · `reject` (ปฏิเสธ) —
 never conflate `direct` and `delegate`. The **`step`** argument exposes
@@ -2009,8 +2010,8 @@ sequenceDiagram
     participant Mixin as origin (mixin)
     Actor->>Step: act_on_step(disposition)  (one DB transaction)
     Step->>Doc: advance / freeze / set state
-    Doc->>Mixin: _on_sarabun_step(step, disposition)
     Doc->>Mixin: _on_sarabun_completed / _returned / _rejected / _cancelled
+    Doc->>Mixin: _on_sarabun_step(step, disposition)
     Mixin-->>Doc: (raises?) ── yes ──> ROLLBACK whole transaction → error to Actor
     Mixin-->>Doc: ok ──> COMMIT
 ```
