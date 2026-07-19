@@ -14,19 +14,23 @@
     }
 }
 
-// In-form PDF preview (ADR-0007): while previewing, hide the form sheet/chatter and
-// let the <iframe> fill the content area. The control panel (with the toggle button)
-// stays visible.
+// In-form PDF preview (ADR-0007): while previewing, the <iframe> REPLACES the form
+// by covering the whole content area (`.o_content`, which sits below the control
+// panel). Absolute-overlay so it works regardless of the compiled form root's
+// classes; the control panel — and its toggle button — stay visible above.
 .o_sarabun_previewing {
-    .o_form_renderer {
-        display: none !important;
+    .o_content {
+        position: relative;
+        overflow: hidden;
     }
 }
 
 .o_sarabun_pdf_preview {
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: calc(100vh - 190px);
-    min-height: 480px;
+    height: 100%;
     border: 0;
+    background: #fff;
+    z-index: 10;
 }
