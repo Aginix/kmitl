@@ -86,29 +86,28 @@
         </field>
     </record>
 
-    <record id="action_iam_employee_no_user" model="ir.actions.act_window">
-        <field name="name">Employees without User</field>
+    <record id="action_iam_employee" model="ir.actions.act_window">
+        <field name="name">Employees</field>
         <field name="res_model">hr.employee.public</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="iam_hr_view_employee_search" />
-        <field name="context">{'search_default_iam_no_user': 1}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Every employee is linked to a user</p>
-            <p>Employees not yet linked to a backend user appear here, so you can
-                create the missing users.</p>
+            <p class="o_view_nocontent_smiling_face">No employees found</p>
+            <p>Use the <b>Without User</b> / <b>With User</b> filters to review
+                which employees are linked to a backend user.</p>
         </field>
     </record>
-    <record id="action_iam_employee_no_user_tree" model="ir.actions.act_window.view">
+    <record id="action_iam_employee_tree" model="ir.actions.act_window.view">
         <field name="sequence" eval="1" />
         <field name="view_mode">tree</field>
         <field name="view_id" ref="iam_hr_view_employee_tree" />
-        <field name="act_window_id" ref="action_iam_employee_no_user" />
+        <field name="act_window_id" ref="action_iam_employee" />
     </record>
-    <record id="action_iam_employee_no_user_form" model="ir.actions.act_window.view">
+    <record id="action_iam_employee_form" model="ir.actions.act_window.view">
         <field name="sequence" eval="2" />
         <field name="view_mode">form</field>
         <field name="view_id" ref="iam_hr_view_employee_form" />
-        <field name="act_window_id" ref="action_iam_employee_no_user" />
+        <field name="act_window_id" ref="action_iam_employee" />
     </record>
 
 </odoo>

@@ -25,9 +25,9 @@
 
     <menuitem
         id="menu_iam_employees"
-        name="Employees without User"
+        name="Employees"
         parent="menu_iam_hr"
-        action="action_iam_employee_no_user"
+        action="action_iam_employee"
         sequence="20"
     />
 

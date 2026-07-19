@@ -11,11 +11,10 @@ questions without leaving the IAM app and without being an HR officer:
   users.
 * **Which users are / aren't linked to an employee?** — the *Users* list gains
   a *Linked to Employee* column and two filters.
-* **Which employees don't have a user yet?** — *IAM ▸ HR Directory ▸ Employees
-  without User* lists the employees not linked to any ``res.users`` (default
-  filter),
-  so the manager can find and create the missing users. Toggle the filter to
-  cross-check the employees that already have one.
+* **Which employees don't have a user yet?** — *IAM ▸ HR Directory ▸ Employees*
+  lists all employees with **Without User** / **With User** filters, so the
+  manager can spot the ones not linked to any ``res.users`` and create the
+  missing users.
 
 Access design (the non-obvious bit)
 ====================================
@@ -32,7 +31,7 @@ So this module never reads ``hr.employee`` in the manager's own right, and it is
 * The department user count, the department→users drill-down, and the *Linked to
   Employee* search derive their data through ``sudo()`` and surface only an
   integer count and ``res.users`` records (which the manager can already read).
-* The *Employees without User* list reads ``hr.employee.public`` — the SQL-view
+* The *Employees* list reads ``hr.employee.public`` — the SQL-view
   projection Odoo already exposes to every internal user — and shows only its
   public fields (name, department, job title, work email, linked user). No
   private employee field is ever touched.

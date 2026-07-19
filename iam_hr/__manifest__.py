@@ -4,7 +4,7 @@
     "name": "IAM - HR Departments",
     "version": "16.0.1.1.0",
     "summary": "Browse backend users by HR department and by employee link, "
-    "and spot employees without a user, from the Identity & Access app",
+    "and list employees with/without a linked user, from the Identity & Access app",
     "author": "Aginix Technologies",
     "website": "https://github.com/Aginix/kmitl",
     "category": "Administration",
