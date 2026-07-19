@@ -36,7 +36,7 @@
                             attrs="{'invisible': [('my_active_step_id', '=', False)]}"/>
                     <button name="action_open_recall_wizard" type="object"
                             string="ดึงกลับ / ยกเลิกการส่ง"
-                            attrs="{'invisible': ['|', ('state', '!=', 'circulating'), ('has_signed', '=', True)]}"/>
+                            attrs="{'invisible': [('can_withdraw', '=', False)]}"/>
                     <button name="action_duplicate_to_draft" type="object"
                             string="Duplicate to New Draft"
                             attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
@@ -66,10 +66,15 @@
                          No banner headline: ที่ (name) is '/' until numbered at send,
                          so it lives as a small register field like on the real document. -->
                     <group>
-                        <group name="unit" string="หน่วยงาน"
-                               attrs="{'readonly': [('is_editable', '=', False)]}">
-                            <field name="sender_department_id" string="หน่วยงาน" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                        <!-- readonly is set per-field: a `readonly` attrs on the <group>
+                             is NOT propagated to child fields by Odoo 16 (each node's
+                             modifiers are computed from its own attrs only). -->
+                        <group name="unit" string="หน่วยงาน">
+                            <field name="sender_department_id" string="หน่วยงาน"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"
+                                   options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                             <field name="sender_suffix" string="ต่อท้ายส่วนราชการ"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"
                                    placeholder="พิมพ์ชื่อหน่วยงานหรือเบอร์ต่อ (ถ้ามี) แล้วระบบจะแสดงข้อความต่อท้ายส่วนราชการ"/>
                         </group>
                         <group name="doc_meta" string="ทะเบียนหนังสือ">
@@ -84,11 +89,14 @@
                                    attrs="{'invisible': ['|', '|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned')), ('numbering_mode', 'not in', ('manual', 'gap'))]}"/>
                         </group>
                     </group>
-                    <group name="header" attrs="{'readonly': [('is_editable', '=', False)]}">
-                        <field name="subject" placeholder="เรื่อง..."/>
-                        <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"/>
+                    <group name="header">
+                        <field name="subject" placeholder="เรื่อง..."
+                               attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                        <field name="addressee_prefix_id" nolabel="1" widget="selection" required="1"
+                               attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         <div class="o_row">
-                            <field name="addressee" nolabel="1" placeholder="ผู้รับ / ตำแหน่ง..."/>
+                            <field name="addressee" nolabel="1" placeholder="ผู้รับ / ตำแหน่ง..."
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         </div>
                     </group>
                     <separator string="เนื้อหา (Content)"/>
@@ -102,6 +110,7 @@
                     <field name="kind" invisible="1"/>
                     <field name="is_editable" invisible="1"/>
                     <field name="has_signed" invisible="1"/>
+                    <field name="can_withdraw" invisible="1"/>
                     <field name="my_active_step_id" invisible="1"/>
                     <notebook>
                         <page string="การเดินเรื่อง (Routing)" name="routing">
@@ -212,7 +221,8 @@
                         <page string="ข้อมูลอื่นๆ (Other)" name="other">
                             <group>
                                 <field name="sender_user_id"/>
-                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="company_id" groups="base.group_multi_company"
+                                       attrs="{'readonly': [('is_editable', '=', False)]}"/>
                             </group>
                         </page>
                     </notebook>
@@ -257,6 +267,14 @@
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_sarabun_document_search"/>
+        <!-- Pin the standard tree explicitly. Without this, default_view() orders by
+             priority,name,id and 'sarabun.document.inbox.tree' sorts before
+             'sarabun.document.tree' — so the create-less inbox tree was picked here
+             and the Documents list showed no Create button. -->
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_document_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_document_form')})]"/>
         <field name="context">{'search_default_my_documents': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Create your first หนังสือ</p>

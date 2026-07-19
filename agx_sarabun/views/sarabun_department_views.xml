@@ -12,6 +12,7 @@
             <tree>
                 <field name="complete_name" string="หน่วยงาน"/>
                 <field name="sarabun_officer_count"/>
+                <field name="sarabun_officer_department_id" optional="show"/>
             </tree>
         </field>
     </record>
@@ -26,6 +27,7 @@
                     <div class="oe_title">
                         <h1><field name="complete_name" readonly="1"/></h1>
                     </div>
+                    <field name="sarabun_officer_count" invisible="1"/>
                     <group string="ธุรการหน่วยงาน (Unit Clerks)"
                            help="ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น 'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)">
                         <field name="sarabun_officer_ids" nolabel="1">
@@ -35,6 +37,12 @@
                                 <field name="job_title"/>
                             </tree>
                         </field>
+                    </group>
+                    <group string="กรณีไม่มีธุรการของหน่วยงานเอง"
+                           help="หากหน่วยงานนี้ไม่มีธุรการของตนเอง ให้ระบุหน่วยงานที่ทำหน้าที่ธุรการแทน เมื่อเส้นทางเอกสารส่งถึง 'ธุรการหน่วยงาน' ของหน่วยงานนี้ ระบบจะส่งต่อให้ธุรการของหน่วยงานที่ระบุ (ถ้าเว้นว่างจะใช้หัวหน้าหน่วยงานนี้เป็นค่าเริ่มต้น)">
+                        <field name="sarabun_officer_department_id"
+                               attrs="{'invisible': [('sarabun_officer_count', '&gt;', 0)]}"
+                               options="{'no_create': True, 'no_open': True}"/>
                     </group>
                 </sheet>
             </form>

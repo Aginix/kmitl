@@ -98,7 +98,10 @@ class SarabunDocument(models.Model):
         default=lambda self: self.env.user,
         required=True,
         readonly=True,
+        copy=False,
         tracking=True,
+        help="Owner of the เรื่อง. Never copied — a duplicate belongs to whoever "
+        "made it (falls back to the default = current user).",
     )
     sender_department_id = fields.Many2one(
         comodel_name="hr.department",
@@ -202,6 +205,13 @@ class SarabunDocument(models.Model):
         "window (Recall blocked once a signing step has occurred — ADR-0002).",
     )
     has_signed = fields.Boolean(compute="_compute_strongest_verb_done", store=True)
+    can_withdraw = fields.Boolean(
+        compute="_compute_can_withdraw",
+        string="Can Withdraw",
+        help="True only for the sender (or a manager) while the หนังสือ may still be "
+        "ดึงกลับ / ยกเลิกการส่ง — mirrors _check_sender_withdraw_allowed so a mere "
+        "recipient never sees the withdraw button.",
+    )
 
     # current user's actionable step(s) + routing progress (UI)
     my_active_step_id = fields.Many2one(
@@ -361,6 +371,16 @@ class SarabunDocument(models.Model):
             record.strongest_verb_id = strongest
             record.has_signed = any(s.verb.is_signature for s in done)
 
+    @api.depends("state", "has_signed", "sender_user_id")
+    def _compute_can_withdraw(self):
+        is_manager = self.env.user.has_group("agx_sarabun.group_sarabun_manager")
+        for record in self:
+            record.can_withdraw = (
+                record.state == "circulating"
+                and not record.has_signed
+                and (record.sender_user_id == self.env.user or is_manager)
+            )
+
     @api.depends(
         "routing_step_ids.state",
         "routing_step_ids.actor_user_ids",
@@ -406,13 +426,16 @@ class SarabunDocument(models.Model):
             record.my_read_state = recipient.read_state or ("unread" if step else False)
 
     def action_mark_read(self):
-        """Stamp read_date on the current user's active-step recipients (called
-        when they open the หนังสือ form). Idempotent; only touches own rows."""
+        """Stamp read_date on the current user's recipient rows (called when they
+        open the หนังสือ form). Opening IS reading — so every unread row of theirs on
+        this หนังสือ is marked, not only the one on a still-active step (a รับทราบ / CC
+        or already-acted recipient must flip to อ่านแล้ว too). Idempotent; only
+        touches own rows. Waiting/future steps carry no recipient row yet, so nothing
+        is marked before the หนังสือ actually reaches the user."""
         recipients = self.env["sarabun.step.recipient"].sudo().search([
             ("document_id", "in", self.ids),
             ("user_id", "=", self.env.user.id),
             ("read_date", "=", False),
-            ("step_id.state", "=", "active"),
         ])
         if recipients:
             recipients.write({"read_date": fields.Datetime.now()})
