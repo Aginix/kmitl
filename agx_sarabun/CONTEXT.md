@@ -108,8 +108,8 @@ The **immutable PDF snapshot** frozen when a Document reaches `completed`. From 
 _Avoid_: attachment, printout
 
 **Signature block**:
-The rendered authority line on the Document — the signer's name, the Position signed in, the digitized signature image (from `hr_employee_digitized_signature`), and datetime. The academic prefix (`hr.employee.academic_standing_title`) and รักษาการแทน capacity are phase-2.
-_Avoid_: signature (reserve for the act/data, not the rendered block)
+The rendered authority line on the Document — the digitized signature image (`hr.employee.signature`, from `hr_employee_digitized_signature`), the signer's name, the Position signed in (`signed_as_position_id`, may wrap to several lines), and the **signing date in พ.ศ. — date only, no time**. Composed once per completed ลงนาม-อนุมัติ step from the snapshot actor. The academic prefix (`hr.employee.academic_standing_title`), the รักษาการแทน capacity, and the **e-sign metadata line** (time-of-day, the "Non-PKI Server Sign-LN" method label, the Signature Code) are all **phase-2** — the metadata line lands with PKI.
+_Avoid_: signature (reserve for the act/data, not the rendered block); printing the sign-method label / Signature Code / time-of-day before PKI exists
 
 **เกษียน trail**:
 The accumulated endorsement/signing history (who, when, in what capacity, with what comment) **rendered onto the official document** — not hidden in chatter. Scoped to positive endorsement/signing (เห็นชอบ / ลงนาม-อนุมัติ) only.
@@ -168,13 +168,17 @@ The ceremonial recipient printed on the หนังสือ header — its **o
 _Avoid_: the old free-text `recipient` / "To" that floated free of routing; conflating the addressee with the people who actually act; a hardcoded "เรียน" label (the salutation is configurable)
 
 **เนื้อหา (Content / body, `content`)**:
-The หนังสือ's own body — free **rich text** typed on the form. For a composed memo/circular it **is** the letter body; for a `from_record` Document it is an **optional covering note** rendered on the cover **above** the appended origin report. v1 is plain rich text — the full regulation บันทึกข้อความ layout (ครุฑ, formatted body per ระเบียบ) is still phase-2.
-_Avoid_: assuming the body always comes from the origin report (from_record); treating this rich-text box as the regulation memo template
+The หนังสือ's own body — free **rich text** typed on the form — the letter body **only for a no-source Document** (composed memo/circular). For a `from_record` / has-source Document it is **not rendered on the official PDF at all**: the source report is the self-contained body (the removed cover sheet used to render `content` as a covering note above the origin report — that covering note is gone). v1 is plain rich text; the full regulation บันทึกข้อความ layout is phase-2.
+_Avoid_: rendering `content` on a has-source PDF (covering note removed with the cover sheet); assuming the body always comes from the origin report; treating this rich-text box as the regulation memo template
 
 **หมายเหตุ (Remark, `remark`)**:
 An **optional internal note** (rich text) on the หนังสือ, captured after the body — **not part of the letter body** and not rendered as the official content. For working notes.
 _Avoid_: conflating หมายเหตุ with เนื้อหา (content) — remark is internal, content is the letter itself
 
-**ใบปะหน้าสารบรรณ (Cover sheet)**:
-The system-rendered front page — official header (number / date / เรื่อง / เรียน), the **เนื้อหา (content) body**, the signature block, and the เกษียน trail. For a `from_record` Document the origin's report is appended after it as further body; the frozen ฉบับลงนาม is the merge. A full reformat of origin content into a บันทึกข้อความ body is deferred.
-_Avoid_: re-keying origin content into a memo template
+**Endorsement block (บล็อกลายเซ็น + เกษียน)**:
+The reusable rendered **tail** of an official document — the **เกษียน trail** + the **Signature block(s)**. Owned by agx_sarabun as a single QWeb layout that the **source report `t-call`s at its own end**: the origin *embeds* sarabun's block; sarabun no longer wraps the origin. The Document to render is resolved from the origin via `active_sarabun_document_id`. The old prepended **ใบปะหน้าสารบรรณ (cover sheet)** and the front-merge of a separate sarabun page are **removed**.
+_Avoid_: cover sheet / ใบปะหน้า prepended to the origin; PDF-merging a separate sarabun page in front of the body; re-keying origin content into a memo template
+
+**Standalone document report (no-source)**:
+For a Document with **no source report** (a composed บันทึกข้อความ / หนังสือเวียน), agx_sarabun renders its **own** whole document — official header (หน่วยงาน / ที่ / วันที่ / เรื่อง / เรียน) + **เนื้อหา (content)** body + the same Endorsement block — as the official PDF. Today every real Document has a source report, so this is a **planned seam**; the full regulation บันทึกข้อความ layout (ครุฑ, ด่วน label, หมายเหตุ footer, in-body hyperlinks — per the KMITL example) is **still to be designed**.
+_Avoid_: assuming every Document has a source body; reusing the removed cover-sheet-merge for this path

@@ -61,7 +61,7 @@
                         <field name="type_id" attrs="{'readonly': [('is_editable', '=', False)]}" widget="selection" />
                       </group>
                     </group>
-                    <!-- Header laid out to mirror the หนังสือ (cf. report_cover_sheet):
+                    <!-- Header laid out to mirror the หนังสือ (cf. report/sarabun_reports):
                          ส่วนราชการ (หน่วยงาน)  |  ที่ · วันที่  →  เรื่อง  →  เรียน.
                          No banner headline: ที่ (name) is '/' until numbered at send,
                          so it lives as a small register field like on the real document. -->

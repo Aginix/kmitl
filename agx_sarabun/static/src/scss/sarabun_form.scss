@@ -13,3 +13,20 @@
         min-height: 6rem;
     }
 }
+
+// In-form PDF preview (ADR-0007): while previewing, hide the form sheet/chatter and
+// let the <iframe> fill the content area. The control panel (with the toggle button)
+// stays visible.
+.o_sarabun_previewing {
+    .o_form_renderer {
+        display: none !important;
+    }
+}
+
+.o_sarabun_pdf_preview {
+    display: block;
+    width: 100%;
+    height: calc(100vh - 190px);
+    min-height: 480px;
+    border: 0;
+}

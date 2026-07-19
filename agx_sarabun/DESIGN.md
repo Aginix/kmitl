@@ -1101,6 +1101,14 @@ Relevant old-code anchors: `models/sarabun_document_sequence.py` (lines 119,
 
 ## 5. Signing, Freeze & Cover Sheet
 
+> **Superseded in part by [ADR-0007](./docs/adr/0007-official-pdf-source-embeds-endorsement-block.md).**
+> The **cover-sheet-merge** model in §5.5 is removed: there is no ใบปะหน้าสารบรรณ and no
+> PDF merge. agx_sarabun now ships a reusable **endorsement block** (`sarabun_endorsement_block`)
+> that the **source report `t-call`s at its own tail**; a no-source Document renders agx_sarabun's
+> own standalone report. The signature block also drops the datetime *time-of-day* — signing date
+> is **พ.ศ., date only** (§5.2's "datetime" is now date-only; time/method-label/sign-code are
+> phase-2 with PKI). §5.1 (sign-as-capacity), §5.3 (เกษียน trail content) and §5.4 (freeze) stand.
+
 This section specifies how a **ลงนาม-อนุมัติ (Sign-Approve)** disposition produces
 the official record: validating that the actor signs *in the capacity the step
 targeted*, rendering the **Signature block** and **เกษียน trail** onto the หนังสือ,

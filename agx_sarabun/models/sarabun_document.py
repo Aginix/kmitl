@@ -12,7 +12,6 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.pdf import merge_pdf
 
 from .sarabun_routing_step import POSITIVE_DISPOSITIONS
 
@@ -880,8 +879,19 @@ class SarabunDocument(models.Model):
             and s.verb.gating
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
+    def _has_endorsement_trail(self):
+        """True if any positive-done เห็นชอบ (endorse, non-signature gating) step
+        exists — gates the เกษียน trail table in the endorsement block. A single-signer
+        document (only ลงนาม-อนุมัติ, no endorsers) shows just the signature block, no
+        table (ADR-0007)."""
+        self.ensure_one()
+        return any(not s.verb.is_signature for s in self._kasian_trail_steps())
+
     def _get_delegated_report_action(self):
-        """The origin's report used as the cover-sheet body (delegation contract)."""
+        """The origin's report — the official PDF body for a has-source Document
+        (delegation contract, ADR-0004). The source report embeds the endorsement
+        block at its own tail (ADR-0007); False → this Document has no source report
+        and renders our own standalone report instead."""
         self.ensure_one()
         if self.origin_model and self.origin_res_id:
             model = self.env.get(self.origin_model)
@@ -897,20 +907,24 @@ class SarabunDocument(models.Model):
         return f"{name} - {self.subject or ''}".strip()
 
     def _render_official_pdf(self):
-        """Cover sheet (this module) + origin body (delegated), merged into one PDF.
-        Rendered with sudo — the frozen copy is the system's official record."""
+        """The official PDF — a SINGLE report, no cover sheet, no merge (ADR-0007).
+        Rendered with sudo — the frozen copy is the system's official record.
+
+        has-source: the origin's delegated report, which `t-call`s the endorsement
+        block (เกษียน trail + signature) at its own tail. no-source: our own
+        standalone document report (header + เนื้อหา + the same block)."""
         self.ensure_one()
         Report = self.env["ir.actions.report"].sudo()
-        cover_pdf, _dummy = Report._render_qweb_pdf(
-            "agx_sarabun.action_report_sarabun_cover", [self.id]
-        )
-        body_pdf = b""
         delegated = self._get_delegated_report_action()
         if delegated and self.origin_res_id:
-            body_pdf, _dummy = Report._render_qweb_pdf(
+            pdf, _dummy = Report._render_qweb_pdf(
                 delegated.report_name, [self.origin_res_id]
             )
-        return merge_pdf([p for p in (cover_pdf, body_pdf) if p])
+        else:
+            pdf, _dummy = Report._render_qweb_pdf(
+                "agx_sarabun.action_report_sarabun_document", [self.id]
+            )
+        return pdf
 
     def _get_official_pdf(self):
         """Frozen bytes once completed; a live render before that (§5.4)."""

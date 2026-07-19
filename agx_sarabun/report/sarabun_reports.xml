@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================
+         Endorsement block (บล็อกลายเซ็น + เกษียน) — ADR-0007.
+         A reusable layout the SOURCE report t-calls at its own tail
+         (the origin embeds sarabun's block; sarabun no longer wraps
+         the origin). Also used by the no-source own report below.
+         Expects `doc` (a sarabun.document) in context — self-limiting:
+         renders only positive-done steps, so an unsent/early document
+         shows nothing.
+         ============================================================ -->
+    <template id="sarabun_endorsement_block">
+        <t t-if="doc">
+            <!-- เกษียน trail — shown only when there is a real เห็นชอบ step
+                 (a single-signer document shows just the signature block). -->
+            <div t-if="doc._has_endorsement_trail()" style="margin-top:12px;">
+                <strong>การเดินเรื่อง / เกษียน</strong>
+                <table style="width:100%; border-collapse:collapse;" class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">ลำดับ</th>
+                            <th style="text-align:left;">ตำแหน่ง / ผู้พิจารณา</th>
+                            <th style="text-align:left;">การดำเนินการ</th>
+                            <th style="text-align:left;">วันที่</th>
+                            <th style="text-align:left;">ความเห็น (เกษียน)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="doc._kasian_trail_steps()" t-as="step">
+                            <td t-out="step.order"/>
+                            <td>
+                                <span t-out="step.signed_as_position_id.name or step.target_name"/><br/>
+                                <!-- academic prefix (academic_standing_title) is phase-2 -->
+                                <small t-out="step.acted_by_id.employee_id.name or step.acted_by_id.name"/>
+                            </td>
+                            <td t-out="step.verb.name"/>
+                            <td><span t-field="step.acted_date"/></td>
+                            <td t-out="step.note"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Signature block(s) — one per completed ลงนาม-อนุมัติ step. Signing
+                 date in พ.ศ. (date only). No academic prefix / time / sign method /
+                 sign code — all phase-2 (ADR-0007). -->
+            <div style="margin-top:24px; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:24px;">
+                <div t-foreach="doc._signature_steps()" t-as="sig"
+                     style="text-align:center; min-width:240px;">
+                    <div t-if="sig.acted_by_id.employee_id.signature">
+                        <img t-att-src="image_data_uri(sig.acted_by_id.employee_id.signature)"
+                             style="max-height:60px;"/>
+                    </div>
+                    <div t-else="" style="height:60px;"/>
+                    <div>(<span t-out="sig.acted_by_id.employee_id.name or sig.acted_by_id.name"/>)</div>
+                    <div t-out="sig.signed_as_position_id.name"/>
+                    <div t-if="sig.acted_date">
+                        <span t-out="sig.acted_date.day"/>/<span t-out="sig.acted_date.month"/>/<span
+                            t-out="sig.acted_date.year + 543"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================
+         Standalone document report (no-source) — ADR-0007.
+         For a composed หนังสือ with no source report (บันทึกข้อความ /
+         หนังสือเวียน — a planned seam; every real Document today has a
+         source report). Renders the official header + เนื้อหา (content)
+         body + the same endorsement block. The full regulation
+         บันทึกข้อความ layout (ครุฑ / ด่วน / หมายเหตุ) is still to be
+         designed.
+         ============================================================ -->
+    <record id="action_report_sarabun_document" model="ir.actions.report">
+        <field name="name">หนังสือสารบรรณ</field>
+        <field name="model">sarabun.document</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">agx_sarabun.report_sarabun_document</field>
+        <field name="report_file">agx_sarabun.report_sarabun_document</field>
+        <field name="paperformat_id" ref="paperformat_sarabun_a4"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <template id="report_sarabun_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: 'Sarabun','THSarabunNew',sans-serif;">
+                        <h3 class="text-center" style="margin-bottom:4px;">บันทึกข้อความ</h3>
+                        <table style="width:100%; margin-bottom:8px;">
+                            <tr>
+                                <td style="width:75%;">
+                                    <strong>ส่วนราชการ</strong>
+                                    <span t-out="doc.sender_department_id.complete_name or doc.sender_department_id.name"/>
+                                    <span t-if="doc.sender_suffix" t-out="' ' + doc.sender_suffix"/>
+                                </td>
+                                <td style="width:25%;">
+                                    <strong>ที่</strong> <span t-field="doc.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>วันที่</strong> <span t-field="doc.date"/>
+                                </td>
+                            </tr>
+                            <tr><td colspan="2"><strong>เรื่อง</strong> <span t-field="doc.subject"/></td></tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong t-out="doc.addressee_prefix_id.name or 'เรียน'"/>
+                                    <span t-out="doc.addressee"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- อ้างถึง / สิ่งที่ส่งมาด้วย -->
+                        <div t-if="doc.reference_document_ids or doc.reference_line_ids" style="margin-bottom:6px;">
+                            <strong>อ้างถึง</strong>
+                            <ul style="margin:0;">
+                                <li t-foreach="doc.reference_document_ids" t-as="r"><span t-out="r.display_name"/></li>
+                                <li t-foreach="doc.reference_line_ids" t-as="rl"><span t-out="rl.text"/></li>
+                            </ul>
+                        </div>
+                        <div t-if="doc.enclosure_ids" style="margin-bottom:6px;">
+                            <strong>สิ่งที่ส่งมาด้วย</strong>
+                            <ol style="margin:0;">
+                                <li t-foreach="doc.enclosure_ids" t-as="e"><span t-out="e.description"/></li>
+                            </ol>
+                        </div>
+
+                        <!-- เนื้อหา (body) — the composed content (no-source only). -->
+                        <div t-if="doc.content" style="margin:8px 0;">
+                            <div t-field="doc.content"/>
+                        </div>
+
+                        <!-- เกษียน trail + signature block(s) -->
+                        <t t-call="agx_sarabun.sarabun_endorsement_block"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

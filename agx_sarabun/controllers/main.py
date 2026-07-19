@@ -15,18 +15,26 @@ class SarabunDocumentController(http.Controller):
         ["/sarabun/document/<int:doc_id>/pdf"],
         type="http", auth="user", website=False,
     )
-    def sarabun_document_pdf(self, doc_id, **kw):
+    def sarabun_document_pdf(self, doc_id, inline=None, **kw):
         doc = request.env["sarabun.document"].browse(doc_id)
         # Honour Route visibility (record rules); raises if not allowed.
         doc.check_access_rights("read")
         doc.check_access_rule("read")
         pdf = doc._get_official_pdf()
         filename = (doc._get_report_base_filename() or "sarabun") + ".pdf"
+        # `inline` (used by the in-form <iframe> preview) renders in the browser;
+        # the default forces a download. content_disposition() hard-codes
+        # "attachment", so build the inline header by hand.
+        disposition = (
+            'inline; filename="%s"' % filename.replace('"', "")
+            if inline
+            else content_disposition(filename)
+        )
         return request.make_response(
             pdf,
             headers=[
                 ("Content-Type", "application/pdf"),
                 ("Content-Length", len(pdf)),
-                ("Content-Disposition", content_disposition(filename)),
+                ("Content-Disposition", disposition),
             ],
         )

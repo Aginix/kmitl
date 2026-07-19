@@ -14,7 +14,7 @@
         "l10n_th_fonts",  # Thai font rendering for the cover-sheet PDF (P5)
         "hr_employee_digitized_signature",  # hr.employee.signature image (signature block)
         # academic prefix (hr_employee_academic_standing_thailand / academic_standing_title)
-        # is deferred to a later phase — see report_cover_sheet.xml.
+        # is deferred to a later phase — see report/sarabun_reports.xml.
     ],
     "data": [
         # Security
@@ -27,7 +27,7 @@
         "data/sarabun_document_type.xml",
         # Reports
         "report/paperformat.xml",
-        "report/report_cover_sheet.xml",
+        "report/sarabun_reports.xml",
         # Wizards
         "wizard/sarabun_step_act_wizard_views.xml",
         "wizard/sarabun_recall_wizard_views.xml",
@@ -50,6 +50,7 @@
             "agx_sarabun/static/src/js/sarabun_systray.esm.js",
             "agx_sarabun/static/src/js/sarabun_document_form.esm.js",
             "agx_sarabun/static/src/xml/sarabun_systray.xml",
+            "agx_sarabun/static/src/xml/sarabun_document_form.xml",
         ],
     },
     "application": True,

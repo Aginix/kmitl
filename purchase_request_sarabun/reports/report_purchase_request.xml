@@ -369,4 +369,16 @@
         </div>
         <div class="my-5" />
     </template>
+    <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
+         source report (the origin embeds sarabun's block). Resolved from the origin
+         via active_sarabun_document_id; renders nothing until steps complete.
+         priority 99 so it applies after this module's layout replace. -->
+    <template id="report_purchase_request_sarabun_endorsement"
+              inherit_id="purchase_request.report_purchase_request" priority="99">
+        <xpath expr="//div[@class='page']" position="inside">
+            <t t-call="agx_sarabun.sarabun_endorsement_block">
+                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
+            </t>
+        </xpath>
+    </template>
 </odoo>
