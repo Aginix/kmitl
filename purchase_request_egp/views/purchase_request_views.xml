@@ -175,6 +175,25 @@
                     attrs="{'readonly': ['|', ('estimated_cost', '&gt;', 100000), ('is_editable', '=', False)]}"
                 />
             </xpath>
+
+            <!-- Dual statusbar: KMITL view already sets the non-e-GP list;
+                 here we make it invisible when is_egp=True and add an e-GP
+                 statusbar after it. is_egp is present in this view via the
+                 xpath above. -->
+            <xpath expr="//form/header/field[@name='state']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('is_egp', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//form/header/field[@name='state']" position="after">
+                <field
+                    name="state"
+                    widget="statusbar"
+                    statusbar_visible="draft,to_verify,to_submit,to_approve,in_egp,in_progress,done"
+                    attrs="{'invisible': [('is_egp', '=', False)]}"
+                />
+            </xpath>
         </field>
     </record>
 </odoo>

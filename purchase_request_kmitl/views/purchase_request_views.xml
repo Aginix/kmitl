@@ -140,18 +140,6 @@
                 <attribute
                     name="statusbar_visible"
                 >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
-                <attribute
-                    name="attrs"
-                >{'invisible': [('is_egp', '=', True)]}</attribute>
-            </xpath>
-
-            <xpath expr="//form/header/field[@name='state']" position="after">
-                <field
-                    name="state"
-                    widget="statusbar"
-                    statusbar_visible="draft,to_verify,to_submit,to_approve,in_egp,in_progress,done"
-                    attrs="{'invisible': [('is_egp', '=', False)]}"
-                />
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
