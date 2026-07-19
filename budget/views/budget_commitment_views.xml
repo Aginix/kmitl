@@ -14,9 +14,10 @@
                 <field name="department_analytic_id" optional="hide" />
                 <field name="account_id" optional="show" />
                 <field name="amount" string="วงเงิน"/>
-                <field name="total_reserved" optional="show" />
-                <field name="total_obligated" optional="show" />
-                <field name="total_consumed" optional="show" />
+                <field name="total_reserved" string="จองเงิน" optional="show" />
+                <field name="available_to_consume" string="ผูกพัน" optional="show" />
+                <field name="total_consumed" string="เบิกจ่าย" optional="show" />
+                <field name="available_to_obligate" string="คงเหลือ" optional="show" />
                 <field name="state" widget="badge"
                     decoration-warning="state == 'draft'"
                     decoration-info="state == 'reserved'"
@@ -38,12 +39,12 @@
                     <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
                         type="object" class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_reserve" string="Reserve Budget" type="object"
+                    <button name="action_reserve" string="จองงบ" type="object"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_obligate" string="ผูกพัน" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
-                    <button name="action_consume" string="ตัดงบ" type="object"
+                    <button name="action_consume" string="เบิกจ่าย" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
                     <button name="action_return_leftover" string="ส่งคืนเงินเหลือจ่าย"
@@ -99,17 +100,16 @@
 
                     <group string="Budget Summary" name="budget_summary">
                         <group>
-                            <field name="total_reserved" widget="monetary"/>
-                            <field name="total_obligated" widget="monetary"/>
-                            <field name="total_consumed" widget="monetary"/>
-                        </group>
-                        <group>
-                            <field name="available_to_obligate" widget="monetary"
-                                decoration-danger="available_to_obligate &lt; 0"
-                                decoration-success="available_to_obligate &gt; 0"/>
-                            <field name="available_to_consume" widget="monetary"
+                            <field name="total_reserved" string="จองเงิน" widget="monetary"/>
+                            <field name="available_to_consume" string="ผูกพัน"
+                                widget="monetary"
                                 decoration-danger="available_to_consume &lt; 0"
                                 decoration-success="available_to_consume &gt; 0"/>
+                            <field name="total_consumed" string="เบิกจ่าย" widget="monetary"/>
+                            <field name="available_to_obligate" string="คงเหลือ"
+                                widget="monetary"
+                                decoration-danger="available_to_obligate &lt; 0"
+                                decoration-success="available_to_obligate &gt; 0"/>
                         </group>
                     </group>
 
