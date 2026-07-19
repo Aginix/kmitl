@@ -81,6 +81,22 @@ export class DiscussTodoView extends LegacyComponent {
         return formatDateTime(deserializeDateTime(todo.create_date));
     }
 
+    /** Locale-aware "completed X ago" for completed (done) history rows. */
+    completedAgo(todo) {
+        if (!todo.completed_date) {
+            return "";
+        }
+        return deserializeDateTime(todo.completed_date).toRelative() || "";
+    }
+
+    /** Exact completed datetime for the meta-line tooltip. */
+    completedTooltip(todo) {
+        if (!todo.completed_date) {
+            return "";
+        }
+        return formatDateTime(deserializeDateTime(todo.completed_date));
+    }
+
     /**
      * Deadline as a human countdown plus its urgency styling. Uses
      * toRelativeCalendar ("today"/"tomorrow"/"in 3 days"/"yesterday") — the

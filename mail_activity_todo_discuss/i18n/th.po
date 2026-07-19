@@ -24,6 +24,13 @@ msgstr "(แสดงทั้งหมด)"
 
 #. module: mail_activity_todo_discuss
 #. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
 #: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_sidebar.xml:0
 #: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
 #, python-format
@@ -55,8 +62,8 @@ msgstr "ไม่มีงานที่รอดำเนินการ 🎉"
 #. odoo-javascript
 #: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
 #, python-format
-msgid "No read todos yet"
-msgstr "ยังไม่มีงานที่อ่านแล้ว"
+msgid "No history yet"
+msgstr "ยังไม่มีประวัติ"
 
 #. module: mail_activity_todo_discuss
 #. odoo-javascript
@@ -69,8 +76,8 @@ msgstr "เปิดแอป Todo"
 #. odoo-javascript
 #: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_sidebar.xml:0
 #, python-format
-msgid "Read todos"
-msgstr "งานที่อ่านแล้ว"
+msgid "Read & completed todos"
+msgstr "งานที่อ่านแล้ว / เสร็จสิ้นแล้ว"
 
 #. module: mail_activity_todo_discuss
 #. odoo-javascript
@@ -120,6 +127,13 @@ msgstr "ผู้ใช้"
 #, python-format
 msgid "by"
 msgstr "โดย"
+
+#. module: mail_activity_todo_discuss
+#. odoo-javascript
+#: code:addons/mail_activity_todo_discuss/static/src/xml/discuss_todo_view.xml:0
+#, python-format
+msgid "completed"
+msgstr "เสร็จเมื่อ"
 
 #. module: mail_activity_todo_discuss
 #. odoo-javascript

@@ -27,7 +27,7 @@
                 <div class="o_DiscussTodoView_empty d-flex flex-column flex-grow-1 align-items-center justify-content-center text-muted">
                     <t t-if="discuss.isTodoHistory">
                         <i class="fa fa-history fa-3x mb-2"/>
-                        <h4>No read todos yet</h4>
+                        <h4>No history yet</h4>
                     </t>
                     <t t-else="">
                         <i class="fa fa-check-circle fa-3x mb-2"/>
@@ -37,7 +37,7 @@
             </t>
             <t t-else="">
                 <div class="o_DiscussTodoView_list flex-grow-1 overflow-auto">
-                    <t t-foreach="state.todos" t-as="todo" t-key="todo.id">
+                    <t t-foreach="state.todos" t-as="todo" t-key="todo.key or todo.id">
                         <t t-set="deadline" t-value="deadlineInfo(todo)"/>
                         <button class="o_DiscussTodoView_item btn d-flex align-items-start w-100 text-start px-4 py-2 border-0 border-bottom rounded-0"
                             t-on-click="() => this.onTodoClick(todo)"
@@ -48,6 +48,8 @@
                             <div class="o_DiscussTodoView_text flex-grow-1">
                                 <div class="d-flex align-items-center">
                                     <small class="text-muted text-truncate flex-grow-1" t-if="todo.activity_type" t-esc="todo.activity_type"/>
+                                    <span class="flex-grow-1" t-if="!todo.activity_type"/>
+                                    <small t-if="todo.kind === 'done'" class="badge text-bg-success ms-2">Done</small>
                                     <small t-if="deadline"
                                         class="o_DiscussTodoView_deadline ms-2 text-nowrap"
                                         t-att-class="deadline.className"
@@ -69,6 +71,10 @@
                                     <span t-if="todo.create_date" class="text-truncate" t-att-title="createdTooltip(todo)">
                                         <i class="fa fa-clock-o me-1"/>created <t t-esc="createdAgo(todo)"/>
                                         <t t-if="todo.create_uid"> by <t t-esc="todo.create_uid"/></t>
+                                    </span>
+                                    <span t-if="todo.completed_date" class="text-truncate" t-att-title="completedTooltip(todo)">
+                                        <i class="fa fa-check me-1"/>completed <t t-esc="completedAgo(todo)"/>
+                                        <t t-if="todo.completed_by"> by <t t-esc="todo.completed_by"/></t>
                                     </span>
                                 </small>
                             </div>
