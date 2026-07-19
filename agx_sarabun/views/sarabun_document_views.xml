@@ -40,6 +40,10 @@
                     <button name="action_duplicate_to_draft" type="object"
                             string="Duplicate to New Draft"
                             attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
+                    <!-- Preview available in every state (incl. a saved draft — ดูก่อนส่ง);
+                         Print opens the raw PDF in a new tab, only once sent. -->
+                    <button name="action_open_pdf_preview" type="object"
+                            string="ดูเอกสาร (PDF)"/>
                     <button name="action_print_report" type="object" string="พิมพ์ (Print)"
                             attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <field name="state" widget="statusbar"

@@ -953,3 +953,15 @@ class SarabunDocument(models.Model):
             "url": "/sarabun/document/%s/pdf" % self.id,
             "target": "new",
         }
+
+    def action_open_pdf_preview(self):
+        """Open the official PDF full-page inside the web client (a client action
+        with a back button to the form) — ADR-0007. Distinct from action_print_report,
+        which opens the raw PDF in a new browser tab."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.client",
+            "tag": "sarabun_pdf_preview",
+            "name": _("เอกสาร (PDF)"),
+            "params": {"doc_id": self.id, "doc_name": self.display_name},
+        }

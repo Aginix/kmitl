@@ -14,23 +14,13 @@
     }
 }
 
-// In-form PDF preview (ADR-0007): while previewing, the <iframe> REPLACES the form
-// by covering the whole content area (`.o_content`, which sits below the control
-// panel). Absolute-overlay so it works regardless of the compiled form root's
-// classes; the control panel — and its toggle button — stay visible above.
-.o_sarabun_previewing {
-    .o_content {
-        position: relative;
-        overflow: hidden;
-    }
+// Full-page PDF preview (ADR-0007) — the sarabun_pdf_preview client action. Fills
+// the content area; the iframe grows to take everything below the back-button bar.
+.o_sarabun_pdf_page {
+    height: 100%;
 }
 
-.o_sarabun_pdf_preview {
-    position: absolute;
-    inset: 0;
+.o_sarabun_pdf_frame {
     width: 100%;
-    height: 100%;
     border: 0;
-    background: #fff;
-    z-index: 10;
 }

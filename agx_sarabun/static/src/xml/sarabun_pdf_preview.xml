@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Full-page PDF preview client action (ADR-0007): a back button + the official
+         PDF in an <iframe>. Opened from the document form's "ดูเอกสาร (PDF)" button. -->
+    <t t-name="agx_sarabun.SarabunPdfPreview" owl="1">
+        <div class="o_sarabun_pdf_page d-flex flex-column">
+            <div class="o_sarabun_pdf_toolbar d-flex align-items-center gap-2 p-2 border-bottom">
+                <button type="button" class="btn btn-secondary" t-on-click="() => this.goBack()">
+                    <i class="fa fa-arrow-left me-1"/> กลับไปฟอร์ม
+                </button>
+                <span class="fw-bold text-truncate" t-esc="docName"/>
+            </div>
+            <iframe class="o_sarabun_pdf_frame flex-grow-1" t-att-src="pdfUrl"
+                    title="Sarabun PDF Preview"/>
+        </div>
+    </t>
+
+</templates>
