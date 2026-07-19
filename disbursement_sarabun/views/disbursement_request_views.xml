@@ -40,6 +40,8 @@
                      attrs="{'invisible': [('sarabun_is_draft', '=', False)]}">
                     <i class="fa fa-pencil-square-o me-1"/>
                     หนังสือสารบรรณถูกสร้างแล้วแต่ยังไม่ได้ส่งออก (สถานะ: ร่าง)
+                    <button name="action_view_sarabun_documents" type="object"
+                            class="btn btn-sm btn-warning ms-2" string="เปิดหนังสือเพื่อส่ง"/>
                 </div>
                 <div class="alert alert-info mb-2" role="alert"
                      attrs="{'invisible': ['|', ('sarabun_has_live_document', '=', False), ('sarabun_is_draft', '=', True)]}">

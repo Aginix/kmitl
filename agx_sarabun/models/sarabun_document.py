@@ -473,8 +473,11 @@ class SarabunDocument(models.Model):
         return result
 
     def _status_label(self):
-        """Short human status for the origin record: state + routing progress.
-        Consumed by sarabun.document.mixin.sarabun_state_label."""
+        """Short human status for the origin record: state + routing progress +
+        who the หนังสือ is waiting on right now. Consumed by
+        sarabun.document.mixin.sarabun_state_label, so the source form can track the
+        route — how far it has progressed AND who currently holds it — without
+        opening the หนังสือ."""
         self.ensure_one()
         label = dict(self._fields["state"].selection).get(self.state, self.state)
         if self.state == "circulating":
@@ -488,6 +491,18 @@ class SarabunDocument(models.Model):
                     "state": label,
                     "done": len(done),
                     "total": len(gating),
+                }
+            # Who the หนังสือ awaits now — its active step(s). Prefer the gating
+            # (blocking) ones; fall back to any active รับทราบ / CC step.
+            active = self.routing_step_ids.filtered(lambda s: s.state == "active")
+            active = active.filtered("gating") or active
+            waiting = ", ".join(
+                "%s: %s" % (s.verb.name, s.target_name) if s.target_name else s.verb.name
+                for s in active
+            )
+            if waiting:
+                label = _("%(label)s • กำลังรอ %(who)s") % {
+                    "label": label, "who": waiting,
                 }
         return label
 
