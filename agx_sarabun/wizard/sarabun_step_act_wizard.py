@@ -41,7 +41,10 @@ class SarabunStepActWizard(models.TransientModel):
     target_mode = fields.Selection(TARGET_MODE, default="position")
     target_position_id = fields.Many2one("sarabun.position", string="Target Position")
     target_employee_id = fields.Many2one("hr.employee", string="Target Person (บุคลากร)")
-    target_department_id = fields.Many2one("hr.department", string="Target Unit")
+    target_department_id = fields.Many2one(
+        "hr.department", string="Target Unit",
+        domain=[("is_sarabun_office", "=", True)],
+    )
     new_verb = fields.Many2one(
         "sarabun.verb",
         string="Next Step Verb",

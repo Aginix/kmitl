@@ -85,7 +85,11 @@ class SarabunRouteTemplateLine(models.Model):
     target_mode = fields.Selection(TARGET_MODE, required=True, default="position")
     position_id = fields.Many2one("sarabun.position", string="Position")
     employee_id = fields.Many2one("hr.employee", string="บุคลากร (Person)")
-    department_id = fields.Many2one("hr.department", string="Unit")
+    department_id = fields.Many2one(
+        "hr.department", string="Unit",
+        domain=[("is_sarabun_office", "=", True)],
+        help="เป้าหมายแบบ ธุรการหน่วยงาน — เลือกได้เฉพาะหน่วยงานที่ตั้งเป็นหน่วยงานธุรการ.",
+    )
 
     def _seed_vals(self):
         """Return the dict to create a sarabun.routing.step (state waiting)."""

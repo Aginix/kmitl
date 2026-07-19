@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ธุรการหน่วยงาน config — assign the document clerks that act for a unit when a
-         routing step targets it in ธุรการหน่วยงาน mode. High priority so these
-         standalone hr.department views are never picked as the default elsewhere;
-         they are bound explicitly to the action below. -->
+    <!-- ธุรการหน่วยงาน config — mark which units are document offices (หน่วยงานธุรการ)
+         and assign the clerks that act for them when a routing step targets them in
+         ธุรการหน่วยงาน mode. Only flagged units are selectable as a routing target.
+         High priority so these standalone hr.department views are never picked as the
+         default elsewhere; they are bound explicitly to the action below. -->
     <record id="view_sarabun_department_officer_tree" model="ir.ui.view">
         <field name="name">sarabun.department.officer.tree</field>
         <field name="model">hr.department</field>
@@ -11,8 +12,8 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="complete_name" string="หน่วยงาน"/>
+                <field name="is_sarabun_office"/>
                 <field name="sarabun_officer_count"/>
-                <field name="sarabun_officer_department_id" optional="show"/>
             </tree>
         </field>
     </record>
@@ -27,8 +28,12 @@
                     <div class="oe_title">
                         <h1><field name="complete_name" readonly="1"/></h1>
                     </div>
-                    <field name="sarabun_officer_count" invisible="1"/>
+                    <group>
+                        <field name="is_sarabun_office"
+                               help="ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). เฉพาะหน่วยงานที่ติ๊กเท่านั้นจึงจะเลือกเป็นเป้าหมาย 'ธุรการหน่วยงาน' ในเส้นทางเอกสารได้"/>
+                    </group>
                     <group string="ธุรการหน่วยงาน (Unit Clerks)"
+                           attrs="{'invisible': [('is_sarabun_office', '=', False)]}"
                            help="ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น 'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)">
                         <field name="sarabun_officer_ids" nolabel="1">
                             <tree>
@@ -37,12 +42,6 @@
                                 <field name="job_title"/>
                             </tree>
                         </field>
-                    </group>
-                    <group string="กรณีไม่มีธุรการของหน่วยงานเอง"
-                           help="หากหน่วยงานนี้ไม่มีธุรการของตนเอง ให้ระบุหน่วยงานที่ทำหน้าที่ธุรการแทน เมื่อเส้นทางเอกสารส่งถึง 'ธุรการหน่วยงาน' ของหน่วยงานนี้ ระบบจะส่งต่อให้ธุรการของหน่วยงานที่ระบุ (ถ้าเว้นว่างจะใช้หัวหน้าหน่วยงานนี้เป็นค่าเริ่มต้น)">
-                        <field name="sarabun_officer_department_id"
-                               attrs="{'invisible': [('sarabun_officer_count', '&gt;', 0)]}"
-                               options="{'no_create': True, 'no_open': True}"/>
                     </group>
                 </sheet>
             </form>
@@ -58,8 +57,8 @@
                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_department_officer_tree')}),
                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_department_officer_form')})]"/>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">กำหนดธุรการหน่วยงาน</p>
-            <p>เลือกหน่วยงานแล้วระบุผู้ที่ทำหน้าที่ธุรการ เพื่อให้เส้นทางเอกสารแบบ "ธุรการหน่วยงาน" ส่งถึงบุคคลเหล่านี้</p>
+            <p class="o_view_nocontent_smiling_face">กำหนดหน่วยงานธุรการ</p>
+            <p>ติ๊ก "หน่วยงานธุรการ" ให้หน่วยงานที่รับ-ส่งสารบรรณ แล้วระบุผู้ที่ทำหน้าที่ธุรการ เพื่อให้เส้นทางเอกสารแบบ "ธุรการหน่วยงาน" ส่งถึงบุคคลเหล่านี้</p>
         </field>
     </record>
 </odoo>
