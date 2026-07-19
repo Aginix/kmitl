@@ -32,10 +32,11 @@
                         <field name="is_sarabun_office"
                                help="ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). เฉพาะหน่วยงานที่ติ๊กเท่านั้นจึงจะเลือกเป็นเป้าหมาย 'ธุรการหน่วยงาน' ในเส้นทางเอกสารได้"/>
                     </group>
-                    <group string="ธุรการหน่วยงาน (Unit Clerks)"
+                    <group string="ธุรการหน่วยงาน"
                            attrs="{'invisible': [('is_sarabun_office', '=', False)]}"
-                           help="ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น 'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)">
-                        <field name="sarabun_officer_ids" nolabel="1">
+                           help="ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น 'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)"
+                           col="2">
+                        <field name="sarabun_officer_ids" nolabel="1" colspan="2">
                             <tree>
                                 <field name="name"/>
                                 <field name="work_email"/>
@@ -48,10 +49,26 @@
         </field>
     </record>
 
+    <record id="view_sarabun_department_officer_search" model="ir.ui.view">
+        <field name="name">sarabun.department.officer.search</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="complete_name" string="หน่วยงาน"/>
+                <filter name="is_sarabun_office" string="หน่วยงานธุรการ"
+                        domain="[('is_sarabun_office', '=', True)]"/>
+                <searchpanel>
+                    <field name="parent_id" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
     <record id="action_sarabun_department_officer" model="ir.actions.act_window">
-        <field name="name">ธุรการหน่วยงาน (Unit Clerks)</field>
+        <field name="name">ธุรการหน่วยงาน</field>
         <field name="res_model">hr.department</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="agx_sarabun.view_sarabun_department_officer_search"/>
         <field name="view_ids"
                eval="[(5, 0, 0),
                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_department_officer_tree')}),
