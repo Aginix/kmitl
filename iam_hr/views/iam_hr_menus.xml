@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix Technologies
+     License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+     HR-sourced menus grouped under one "HR Directory" section, kept apart from
+     the iam app's identity primitives (Users / Roles / Groups / Access
+     Control). Loaded after the view files because these menuitems reference
+     the actions those files define. -->
+<odoo>
+
+    <menuitem
+        id="menu_iam_hr"
+        name="HR Directory"
+        parent="iam.menu_iam_root"
+        sequence="45"
+    />
+
+    <menuitem
+        id="menu_iam_departments"
+        name="Departments"
+        parent="menu_iam_hr"
+        action="action_iam_department"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_iam_employees"
+        name="Employees without User"
+        parent="menu_iam_hr"
+        action="action_iam_employee_no_user"
+        sequence="20"
+    />
+
+</odoo>
