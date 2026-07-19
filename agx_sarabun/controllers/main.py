@@ -22,13 +22,12 @@ class SarabunDocumentController(http.Controller):
         doc.check_access_rule("read")
         pdf = doc._get_official_pdf()
         filename = (doc._get_report_base_filename() or "sarabun") + ".pdf"
-        # `inline` (used by the in-form <iframe> preview) renders in the browser;
-        # the default forces a download. content_disposition() hard-codes
-        # "attachment", so build the inline header by hand.
-        disposition = (
-            'inline; filename="%s"' % filename.replace('"', "")
-            if inline
-            else content_disposition(filename)
+        # `inline` (the in-form / dialog <iframe> preview) renders in the browser;
+        # the default forces a download. content_disposition() RFC-6266-encodes the
+        # filename (filename*=UTF-8''…) so a Thai เรื่อง is header-safe — never hand-
+        # build 'filename="<thai>"', which crashes on the latin-1 header (502).
+        disposition = content_disposition(
+            filename, "inline" if inline else "attachment"
         )
         return request.make_response(
             pdf,

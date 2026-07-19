@@ -407,11 +407,16 @@ class SarabunDocument(models.Model):
             )[-1:]
             record.my_reaching_step_id = reaching.step_id
 
+    # Depend on the real routing_step_ids O2m (searchable), not the non-stored
+    # my_reaching_step_id — Odoo can't resolve reverse triggers (e.g. when a verb
+    # changes) through a non-stored computed M2o (UserWarning). my_reaching_step_id
+    # is itself derived from these same routing_step_ids fields, so this is equivalent.
     @api.depends(
-        "my_reaching_step_id",
-        "my_reaching_step_id.recipient_ids.received_date",
-        "my_reaching_step_id.verb",
-        "my_reaching_step_id.recipient_ids.read_state",
+        "routing_step_ids.state",
+        "routing_step_ids.verb",
+        "routing_step_ids.recipient_ids.user_id",
+        "routing_step_ids.recipient_ids.received_date",
+        "routing_step_ids.recipient_ids.read_state",
     )
     def _compute_my_inbox(self):
         uid = self.env.user
