@@ -955,13 +955,14 @@ class SarabunDocument(models.Model):
         }
 
     def action_open_pdf_preview(self):
-        """Open the official PDF full-page inside the web client (a client action
-        with a back button to the form) — ADR-0007. Distinct from action_print_report,
-        which opens the raw PDF in a new browser tab."""
+        """Open the official PDF in a preview dialog (ADR-0007) — the draft
+        'ดูตัวอย่างเอกสาร' button, since a draft has no inline preview yet. Sent
+        documents preview inline in the form via the sarabun_pdf_inline widget."""
         self.ensure_one()
         return {
             "type": "ir.actions.client",
             "tag": "sarabun_pdf_preview",
-            "name": _("เอกสาร (PDF)"),
+            "name": _("ตัวอย่างเอกสาร (Preview)"),
+            "target": "new",
             "params": {"doc_id": self.id, "doc_name": self.display_name},
         }

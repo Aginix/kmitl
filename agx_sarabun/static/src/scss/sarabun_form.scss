@@ -14,13 +14,15 @@
     }
 }
 
-// Full-page PDF preview (ADR-0007) — the sarabun_pdf_preview client action. Fills
-// the content area; the iframe grows to take everything below the back-button bar.
-.o_sarabun_pdf_page {
-    height: 100%;
-}
-
+// PDF preview iframes (ADR-0007): embedded in the form (inline) and in the draft
+// modal. A tall viewport-relative height so the document reads like a page.
 .o_sarabun_pdf_frame {
     width: 100%;
     border: 0;
+}
+
+.o_sarabun_pdf_inline_frame,
+.o_sarabun_pdf_modal_frame {
+    height: 75vh;
+    min-height: 480px;
 }

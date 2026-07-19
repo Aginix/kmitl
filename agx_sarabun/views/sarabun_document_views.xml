@@ -40,10 +40,12 @@
                     <button name="action_duplicate_to_draft" type="object"
                             string="Duplicate to New Draft"
                             attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
-                    <!-- Preview available in every state (incl. a saved draft — ดูก่อนส่ง);
-                         Print opens the raw PDF in a new tab, only once sent. -->
+                    <!-- A draft has no inline preview → this button opens the preview
+                         dialog. Once sent, the preview is embedded inline (below the
+                         header) and Print opens the raw PDF in a new tab. -->
                     <button name="action_open_pdf_preview" type="object"
-                            string="ดูเอกสาร (PDF)"/>
+                            string="ดูตัวอย่างเอกสาร"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_print_report" type="object" string="พิมพ์ (Print)"
                             attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <field name="state" widget="statusbar"
@@ -103,10 +105,20 @@
                                    attrs="{'readonly': [('is_editable', '=', False)]}"/>
                         </div>
                     </group>
-                    <separator string="เนื้อหา (Content)"/>
+                    <!-- ตัวอย่างเอกสาร — the official PDF embedded inline, shown once
+                         the หนังสือ has been sent (a draft previews via the header
+                         button instead). Placed before the เนื้อหา section. -->
+                    <separator string="ตัวอย่างเอกสาร (Preview)"
+                               attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <widget name="sarabun_pdf_inline"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <!-- เนื้อหา — the composed body, used ONLY for a no-source Document.
+                         Hidden when the หนังสือ has a source (its report is the body). -->
+                    <separator string="เนื้อหา (Content)"
+                               attrs="{'invisible': [('origin_model', '!=', False)]}"/>
                     <field name="content" nolabel="1" class="o_sarabun_content"
-                           placeholder="พิมพ์เนื้อหาหนังสือ... (สำหรับหนังสือจากระบบงาน ใช้เป็นข้อความปะหน้าเหนือเอกสารต้นเรื่อง)"
-                           attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                           placeholder="พิมพ์เนื้อหาหนังสือ..."
+                           attrs="{'invisible': [('origin_model', '!=', False)], 'readonly': [('is_editable', '=', False)]}"/>
                     <group>
                       <field name="remark" placeholder="หมายเหตุภายใน (ไม่บังคับ)..." attrs="{'readonly': [('is_editable', '=', False)]}"/>
                     </group>

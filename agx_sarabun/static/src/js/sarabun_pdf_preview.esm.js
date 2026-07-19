@@ -1,33 +1,44 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { browser } from "@web/core/browser/browser";
+import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 
 const { Component } = owl;
 
 /**
- * Full-page PDF preview of a sarabun.document — a client action opened from the
- * document form's "ดูเอกสาร (PDF)" button (ADR-0007). Shows the official PDF (served
- * live before completion, frozen after) in an <iframe>, with a back button to the
- * form. The document id/name arrive via the action's `params`.
+ * PDF preview of a sarabun.document's official PDF (served live before completion,
+ * frozen after) — ADR-0007. Two surfaces:
+ *
+ * - SarabunPdfInline: a view widget (<widget name="sarabun_pdf_inline"/>) embedded
+ *   in the form, before the เนื้อหา section, shown once the หนังสือ has been sent.
+ * - SarabunPdfPreview: a client action opened as a dialog from the draft
+ *   "ดูตัวอย่างเอกสาร" button (draft has no inline preview yet).
+ *
+ * Both render the same controller URL (?inline=1 so the browser displays it).
  */
+export class SarabunPdfInline extends Component {
+    get docId() {
+        return this.props.record.resId;
+    }
+    get pdfUrl() {
+        return `/sarabun/document/${this.docId}/pdf?inline=1`;
+    }
+}
+SarabunPdfInline.template = "agx_sarabun.SarabunPdfInline";
+SarabunPdfInline.props = { ...standardWidgetProps };
+
+registry.category("view_widgets").add("sarabun_pdf_inline", SarabunPdfInline);
+
 export class SarabunPdfPreview extends Component {
     setup() {
         const params = (this.props.action && this.props.action.params) || {};
         this.docId = params.doc_id;
-        this.docName = params.doc_name || "";
     }
-
     get pdfUrl() {
         return `/sarabun/document/${this.docId}/pdf?inline=1`;
     }
-
-    goBack() {
-        // Odoo mirrors the action stack in browser history, so going back restores
-        // the document form we came from (clean breadcrumb, no duplicate controller).
-        browser.history.back();
-    }
 }
 SarabunPdfPreview.template = "agx_sarabun.SarabunPdfPreview";
+SarabunPdfPreview.props = ["*"];
 
 registry.category("actions").add("sarabun_pdf_preview", SarabunPdfPreview);
