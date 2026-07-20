@@ -108,8 +108,6 @@
                     <!-- ตัวอย่างเอกสาร — the official PDF embedded inline, shown once
                          the หนังสือ has been sent (a draft previews via the header
                          button instead). Placed before the เนื้อหา section. -->
-                    <separator string="ตัวอย่างเอกสาร (Preview)"
-                               attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <widget name="sarabun_pdf_inline"
                             attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <!-- เนื้อหา — the composed body, used ONLY for a no-source Document.
