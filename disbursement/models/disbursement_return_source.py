@@ -187,7 +187,7 @@ class DisbursementRequest(models.Model):
 
     def _return_source_officer(self):
         self.ensure_one()
-        return self.assigned_to or self.user_id
+        return self._verification_officer()
 
     # -- return-for-correction dispatch ----------------------------------
     def _action_return_for_edit(self, reason):

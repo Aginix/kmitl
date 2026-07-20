@@ -29,41 +29,10 @@
                     groups="disbursement.group_disbursement_manager"
                     attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('assigned_to', '=', False)]}"
                 />
-                <button
-                    name="action_return_open_wizard"
-                    type="object"
-                    string="Return"
-                    class="btn-warning"
-                    groups="disbursement.group_disbursement_officer"
-                    attrs="{'invisible': ['|', ('state', '!=', 'signed'), ('returned_to_source', '=', True)]}"
-                />
-                <button
-                    name="action_resubmit_verification"
-                    type="object"
-                    string="Resubmit to Verification"
-                    class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('returned_for_edit', '=', False)]}"
-                />
-                <button
-                    name="action_return_verification_open_wizard"
-                    type="object"
-                    string="Return to Verification"
-                    class="btn-warning"
-                    groups="disbursement.group_disbursement_manager"
-                    attrs="{'invisible': [('state', '!=', 'verified')]}"
-                />
             </xpath>
             <xpath expr="//group[@id='other_information']" position="inside">
                 <field name="assignment_can_assign_me" invisible="1" />
                 <field name="assigned_to" readonly="1" />
-            </xpath>
-            <xpath expr="//header/field[@name='state']" position="after">
-                <field name="returned_for_edit" invisible="1" />
-            </xpath>
-            <!-- Hide the normal Submit for a returned draft; the creator uses
-                 "Resubmit to Verification" instead (which skips the head sign). -->
-            <xpath expr="//header/button[@name='action_submit']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'draft'), ('returned_for_edit', '=', True)]}</attribute>
             </xpath>
         </field>
     </record>
@@ -97,17 +66,6 @@
                     name="unassigned"
                     string="Unassigned"
                     domain="[('assigned_to', '=', False)]"
-                />
-                <separator />
-                <filter
-                    name="returned_to_source"
-                    string="Returned to Source"
-                    domain="[('returned_to_source', '=', True)]"
-                />
-                <filter
-                    name="returned_to_verification"
-                    string="Returned to Verification"
-                    domain="[('returned_to_verification', '=', True)]"
                 />
             </xpath>
             <xpath expr="//filter[@name='state']" position="after">
