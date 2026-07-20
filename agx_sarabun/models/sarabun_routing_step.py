@@ -136,6 +136,21 @@ class SarabunRoutingStep(models.Model):
     note = fields.Text(string="เกษียน (Note)")
     delegated_to_id = fields.Many2one("hr.employee", string="Delegated To", readonly=True)
 
+    # === Signature snapshot (frozen at signing — ADR-0009) ===
+    # ชื่อ / ตำแหน่ง / ลายเซ็น captured the instant this step is signed, so later edits
+    # to the HR name, the sarabun.position name, or the employee's signature image
+    # never rewrite an already-signed หนังสือ (extends ADR-0003's holder snapshot from
+    # routing resolution to the rendered block). Written only for show_signature verbs;
+    # the endorsement block reads these first and falls back to live master data for
+    # legacy / in-flight rows.
+    signed_name = fields.Char(string="ชื่อผู้ลงนาม (snapshot)", readonly=True, copy=False)
+    signed_position_name = fields.Char(
+        string="ตำแหน่งที่ลงนาม (snapshot)", readonly=True, copy=False
+    )
+    signed_signature = fields.Binary(
+        string="ลายเซ็น (snapshot)", attachment=True, readonly=True, copy=False
+    )
+
     # === Timeline (per-step routing timing) ===
     # วันที่ได้รับ = activated_date (above). วันที่ลงนาม = acted_date (above).
     read_date = fields.Datetime(
@@ -428,8 +443,29 @@ class SarabunRoutingStep(models.Model):
         # (a future sign-then-manual-send would stamp sent_date separately).
         if disposition in POSITIVE_DISPOSITIONS:
             vals["sent_date"] = now
+            # Freeze the signer's rendered identity at the instant of signing (ADR-0009)
+            # — exactly the rows the endorsement block renders (positive-done ∧
+            # show_signature); a ตีกลับ / ปฏิเสธ signs nothing.
+            if self.verb.show_signature:
+                vals.update(self._signature_snapshot_vals(actor, signed_as_position))
         self.write(vals)
         self._clear_activities()
+
+    def _signature_snapshot_vals(self, actor, capacity=False):
+        """Snapshot the signer's rendered identity — ชื่อ / ตำแหน่ง / ลายเซ็น — at the
+        instant of signing (ADR-0009). Extends ADR-0003's holder snapshot from routing
+        *resolution* to the *rendered block*: once captured, later edits to the HR name,
+        the sarabun.position name, or the employee's signature image never rewrite an
+        already-signed หนังสือ. Position prefers the signed capacity, else the step's
+        target Position — mirroring the block's live fallback order."""
+        self.ensure_one()
+        employee = actor.employee_id
+        position = capacity or self.position_id
+        return {
+            "signed_name": employee.name or actor.name,
+            "signed_position_name": position.name or "",
+            "signed_signature": employee.signature or False,
+        }
 
     def _resolve_capacity(self, signed_as_position_id):
         """Validate/derive the capacity for a sign_approve step (ADR-0003)."""

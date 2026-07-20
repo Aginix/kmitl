@@ -602,13 +602,19 @@ class SarabunDocument(models.Model):
         )[:1]
         if step:
             now = fields.Datetime.now()
-            step.sudo().write({
+            step = step.sudo()  # passes the originator write-guard
+            vals = {
                 "state": "done",
                 "disposition": "complete",
                 "acted_by_id": self.sender_user_id.id,
                 "acted_date": now,
                 "sent_date": now,  # ส่ง = ลงนามผู้จัดทำ (auto at send)
-            })
+            }
+            # Freeze the drafter's signature identity when the originator verb signs
+            # (ลงนามผู้จัดทำ); a non-signing จัดทำ/ร่าง verb snapshots nothing (ADR-0009).
+            if step.verb.show_signature:
+                vals.update(step._signature_snapshot_vals(self.sender_user_id))
+            step.write(vals)
 
     def action_open_send_wizard(self):
         """Open the send confirmation wizard (the header Send button). The actual

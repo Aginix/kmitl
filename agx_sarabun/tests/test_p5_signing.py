@@ -62,6 +62,9 @@ class TestP5Signing(SarabunCommon):
         # Drafter auto-completed at send, but is not a signature; recall still open.
         self.assertEqual(originator.state, "done")
         self.assertNotIn(originator, doc._signature_block_steps())
+        # A non-signing originator snapshots no signature identity (ADR-0009).
+        self.assertFalse(originator.signed_name)
+        self.assertFalse(originator.signed_signature)
         self.assertFalse(doc.has_signed)
         # Head signs → the only signature on the document; the หนังสือ completes.
         with self.mute_pdf():
@@ -98,3 +101,35 @@ class TestP5Signing(SarabunCommon):
             self._act(step, "complete", self.user_a, signed_as_position_id=self.pos.id)
         self.assertEqual(step.signed_as_position_id, self.pos)
         self.assertTrue(doc.is_completed)
+
+    def test_signature_snapshot_frozen_against_source_edits(self):
+        """ADR-0009: ชื่อ / ตำแหน่ง / ลายเซ็น are snapshotted at signing, so later edits to
+        the HR name, the Position name, or the employee's signature image never rewrite
+        an already-signed step (on any render path — PDF, preview, direct-origin print)."""
+        self.emp_a.signature = base64.b64encode(b"signature-v1")
+        doc = self._make_doc(sender=self.user_a)
+        originator = doc.routing_step_ids.filtered("is_originator")
+        step = self._add_step(doc, order=10, verb="sign_approve",
+                              target_mode="position", position=self.pos)
+        doc.action_send()  # auto-signs the originator (ลงนามผู้จัดทำ, show_signature)
+        with self.mute_pdf():
+            self._act(step, "complete", self.user_a, signed_as_position_id=self.pos.id)
+
+        # Captured at signing: name + capacity + the signature image bytes.
+        self.assertEqual(step.signed_name, "ผู้ใช้ ก")
+        self.assertEqual(step.signed_position_name, "คณบดีทดสอบ")
+        frozen_sig = step.signed_signature
+        self.assertTrue(frozen_sig)
+        # The signing ผู้จัดทำ (originator) is snapshotted too, at send.
+        self.assertEqual(originator.signed_name, "ผู้ใช้ ก")
+
+        # Source master data drifts AFTER signing …
+        self.emp_a.name = "ผู้ใช้ ก (แก้ชื่อ)"
+        self.pos.name = "ตำแหน่งใหม่หลังลงนาม"
+        self.emp_a.signature = base64.b64encode(b"signature-v2")
+
+        # … the frozen snapshot on the signed step is unchanged.
+        self.assertEqual(step.signed_name, "ผู้ใช้ ก")
+        self.assertEqual(step.signed_position_name, "คณบดีทดสอบ")
+        self.assertEqual(step.signed_signature, frozen_sig)
+        self.assertNotEqual(step.signed_signature, self.emp_a.signature)
