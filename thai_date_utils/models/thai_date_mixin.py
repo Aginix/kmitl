@@ -1,7 +1,27 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
+import pytz
+
 from odoo import fields as odoo_fields, models
+
+BANGKOK_TZ = pytz.timezone("Asia/Bangkok")
+
+
+def to_bangkok(dt):
+    """Coerce ``dt`` (a naive-UTC datetime, an ISO string, or a tz-aware datetime) to
+    a **fixed Asia/Bangkok** datetime — independent of the user's timezone. Returns
+    None if ``dt`` can't be interpreted as a datetime."""
+    if isinstance(dt, str):
+        try:
+            dt = datetime.fromisoformat(dt)
+        except Exception:
+            return None
+    if not isinstance(dt, datetime):
+        return None
+    if not dt.tzinfo:
+        dt = pytz.utc.localize(dt)  # ORM datetimes are naive UTC
+    return dt.astimezone(BANGKOK_TZ)
 
 MONTHS_TH = [
     "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
@@ -57,13 +77,14 @@ class ThaiDateMixin(models.AbstractModel):
 
     def format_datetime_thai_sign(self, dt):
         """Signature date-time in Thai — e.g. ``วันที่ ๒๐ ก.ค. ๖๙  เวลา ๑๓:๓๐:๓๑``:
-        Thai numerals, abbreviated month, 2-digit พ.ศ. year, and the local-tz time as
-        HH:MM:SS. Used for the signing date on the official document."""
+        Thai numerals, abbreviated month, 2-digit พ.ศ. year, and the time HH:MM:SS in
+        a **fixed Asia/Bangkok** timezone (never the user's tz). For the signing date
+        on the official document."""
         if not dt:
             return ""
-        dt = self._coerce_to_datetime(dt) or dt
-        if not hasattr(dt, "day"):
-            return dt
+        dt = to_bangkok(dt)
+        if not dt:
+            return ""
         be_year_2 = (dt.year + 543) % 100
         date_part = "%d %s %02d" % (dt.day, MONTHS_TH_SHORT[dt.month], be_year_2)
         time_part = "%02d:%02d:%02d" % (dt.hour, dt.minute, dt.second)
