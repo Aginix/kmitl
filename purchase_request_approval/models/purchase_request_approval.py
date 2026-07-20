@@ -230,7 +230,7 @@ class PurchaseRequestApproval(models.Model):
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self.write({"state": "reject"})
         if self.request_id:
-            self.request_id.button_cancel()
+            self.request_id.button_rejected()
 
     def copy(self, default=None):
         default = dict(default or {})
