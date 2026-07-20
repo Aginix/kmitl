@@ -282,6 +282,12 @@ class CashFlowReportKmitl(models.AbstractModel):
             options, "accounting_kmitl_reports.action_report_cash_flow_kmitl_xlsx"
         )
 
+    @api.model
+    def action_export_csv(self, options):
+        return self._kmitl_report_action(
+            options, "accounting_kmitl_reports.action_report_cash_flow_kmitl_csv"
+        )
+
     # ------------------------------------------------------------------
     # QWeb PDF rendering — reuse the shared compute.
     # ------------------------------------------------------------------
@@ -372,3 +378,45 @@ class CashFlowXlsxKmitl(models.AbstractModel):
 
         sheet.set_column(0, 0, 52)
         sheet.set_column(1, 1, 18)
+
+
+class CashFlowCsvKmitl(models.AbstractModel):
+    """CSV export of the cash flow statement — a flat table keeping every
+    statement row (details plus the subtotals/summary that are the point of
+    the statement), with a ``Section`` and ``Type`` column so it can be
+    filtered/pivoted. Shares the compute with the screen / PDF / XLSX."""
+
+    _name = "report.accounting_kmitl_reports.cash_flow_csv"
+    _inherit = "accounting_kmitl_reports.csv.report"
+    _description = "KMITL Cash Flow Statement CSV"
+
+    def _kmitl_csv_rows(self, options):
+        report = self.env["report.accounting_kmitl_reports.cash_flow_kmitl"]
+        result = report.get_cash_flow_data(options)
+        type_labels = {
+            "section": _("Section"),
+            "group": _("Group"),
+            "detail": _("Detail"),
+            "total": _("Subtotal"),
+            "grand_total": _("Total"),
+            "summary": _("Summary"),
+        }
+        rows = [[_("Section"), _("Type"), _("Item"), _("Amount")]]
+        section = ""
+        for row in result["rows"]:
+            level = row["level"]
+            if level == "section":
+                section = row["label"]
+            item = row["label"] or (
+                "%s - %s" % (row["code"], row["name"]) if row["code"] else ""
+            )
+            amount = row["amount"]
+            rows.append(
+                [
+                    section,
+                    type_labels.get(level, level),
+                    item,
+                    "" if amount is None else self._csv_num(amount),
+                ]
+            )
+        return rows

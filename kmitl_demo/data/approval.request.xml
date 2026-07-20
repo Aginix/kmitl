@@ -9,8 +9,7 @@
         <!-- 1) International travel - 3 expense lines for one traveler -->
         <record id="approval_request_demo_01" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_02" />
-            <field name="department_id" ref="kmitl_demo.01" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_005" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_005" />
             <field name="user_id" ref="kmitl_demo.user_demo_005" />
             <field name="date" eval="'2025-03-15'" />
             <field name="date_start" eval="'2025-04-10'" />
@@ -44,8 +43,7 @@
         <!-- 2) Local field work - 3 expense lines for one staff member -->
         <record id="approval_request_demo_02" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_01" />
-            <field name="department_id" ref="kmitl_demo.01" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_006" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_006" />
             <field name="user_id" ref="kmitl_demo.user_demo_006" />
             <field name="date" eval="'2025-03-20'" />
             <field name="date_start" eval="'2025-04-02'" />
@@ -79,8 +77,7 @@
         <!-- 3) Operational support - single line for one payee -->
         <record id="approval_request_demo_03" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_04" />
-            <field name="department_id" ref="kmitl_demo.02" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_008" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_008" />
             <field name="user_id" ref="kmitl_demo.user_demo_008" />
             <field name="date" eval="'2025-03-22'" />
             <field name="payment_type">direct</field>
@@ -101,8 +98,7 @@
         <!-- 4) MC / ceremony fee - 2 lines for one host -->
         <record id="approval_request_demo_04" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_05" />
-            <field name="department_id" ref="kmitl_demo.01" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_010" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_010" />
             <field name="user_id" ref="kmitl_demo.user_demo_010" />
             <field name="date" eval="'2025-04-01'" />
             <field name="payment_type">direct</field>
@@ -128,8 +124,7 @@
         <!-- 5) International travel - 4 expense lines for one traveler -->
         <record id="approval_request_demo_05" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_02" />
-            <field name="department_id" ref="kmitl_demo.02" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_012" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_012" />
             <field name="user_id" ref="kmitl_demo.user_demo_012" />
             <field name="date" eval="'2025-04-05'" />
             <field name="date_start" eval="'2025-05-12'" />
@@ -172,8 +167,7 @@
         <!-- 6) Meeting expenses - 3 attendees -->
         <record id="approval_request_demo_06" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_03" />
-            <field name="department_id" ref="kmitl_demo.01" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_005" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_005" />
             <field name="user_id" ref="kmitl_demo.user_demo_005" />
             <field name="date" eval="'2025-04-08'" />
             <field name="date_start" eval="'2025-04-15'" />
@@ -206,8 +200,7 @@
         <!-- 7) Field work - team of 4 -->
         <record id="approval_request_demo_07" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_01" />
-            <field name="department_id" ref="kmitl_demo.01" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_006" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_006" />
             <field name="user_id" ref="kmitl_demo.user_demo_006" />
             <field name="date" eval="'2025-04-10'" />
             <field name="date_start" eval="'2025-05-05'" />
@@ -246,8 +239,7 @@
         <!-- 8) Large meeting - 5 attendees x 2 expense types each -->
         <record id="approval_request_demo_08" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_03" />
-            <field name="department_id" ref="kmitl_demo.02" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_008" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_008" />
             <field name="user_id" ref="kmitl_demo.user_demo_008" />
             <field name="date" eval="'2025-04-12'" />
             <field name="date_start" eval="'2025-04-25'" />
@@ -315,8 +307,7 @@
         <!-- 9) Two MCs sharing one ceremony -->
         <record id="approval_request_demo_09" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_05" />
-            <field name="department_id" ref="kmitl_demo.01" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_010" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_010" />
             <field name="user_id" ref="kmitl_demo.user_demo_010" />
             <field name="date" eval="'2025-04-18'" />
             <field name="payment_type">direct</field>
@@ -342,8 +333,7 @@
         <!-- 10) Training session - 3 trainers, different expense types -->
         <record id="approval_request_demo_10" model="approval.request">
             <field name="category_id" ref="agx_approval.approval_category_03" />
-            <field name="department_id" ref="kmitl_demo.02" />
-            <field name="owner_id" ref="kmitl_demo.user_demo_012" />
+            <field name="owner_id" ref="kmitl_demo.employee_demo_012" />
             <field name="user_id" ref="kmitl_demo.user_demo_012" />
             <field name="date" eval="'2025-04-22'" />
             <field name="date_start" eval="'2025-05-10'" />

@@ -69,12 +69,4 @@
         <field name="act_window_id" ref="action_iam_department" />
     </record>
 
-    <menuitem
-        id="menu_iam_departments"
-        name="Departments"
-        parent="iam.menu_iam_root"
-        action="action_iam_department"
-        sequence="35"
-    />
-
 </odoo>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+
+    <record id="field_kris_project__extra_analytic_ids" model="ir.model.fields">
+        <field name="custom_tracking" eval="True"/>
+    </record>
+
+</odoo>

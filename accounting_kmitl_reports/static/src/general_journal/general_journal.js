@@ -55,7 +55,6 @@ export class GeneralJournal extends Component {
             // (default) a selected node also matches its descendants.
             dimOnlySelf: {
                 departments: false,
-                sources: false,
                 funds: false,
                 activities: false,
             },
@@ -64,6 +63,7 @@ export class GeneralJournal extends Component {
             title: _t("General Journal"),
             printPdf: _t("Print PDF"),
             exportExcel: _t("Export Excel"),
+            exportCsv: _t("Export CSV"),
             empty: _t("No entries for the selected criteria."),
             datetime: _t("Date-Time"),
             number: _t("Number"),
@@ -337,6 +337,13 @@ export class GeneralJournal extends Component {
 
     async exportXlsx() {
         const action = await this.orm.call(REPORT_MODEL, "action_export_xlsx", [
+            this.options,
+        ]);
+        await this.action.doAction(action);
+    }
+
+    async exportCsv() {
+        const action = await this.orm.call(REPORT_MODEL, "action_export_csv", [
             this.options,
         ]);
         await this.action.doAction(action);

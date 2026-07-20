@@ -80,6 +80,7 @@
                         <th class="text-end">เบิกจ่าย</th>
                         <th class="text-end">รวมใช้</th>
                         <th class="text-end">คงเหลือ</th>
+                        <th class="text-end">ส่งคืนเงินเหลือจ่าย</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,9 +107,10 @@
                         <td class="text-end o_bd_num" t-att-class="row.remaining &lt; 0 ? 'o_bd_neg' : ''">
                             <b t-esc="format(row.remaining)"/>
                         </td>
+                        <td class="text-end o_bd_num o_bd_click" t-on-click="() => this.drillReturned(row)" t-esc="format(row.returned)"/>
                     </tr>
                     <tr t-if="!visibleRows.length">
-                        <td colspan="10" class="text-center text-muted">ไม่มีข้อมูล</td>
+                        <td colspan="11" class="text-center text-muted">ไม่มีข้อมูล</td>
                     </tr>
                 </tbody>
             </table>

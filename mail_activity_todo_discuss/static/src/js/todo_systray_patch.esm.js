@@ -10,22 +10,21 @@ import { TodoSystray } from "@mail_activity_todo/js/todo_systray.esm";
  * Todo app (correct fallback).
  */
 patch(TodoSystray.prototype, "mail_activity_todo_discuss.TodoSystray", {
-    _openTodosInDiscuss() {
+    _openTodosInDiscuss(resModel = "") {
         // get() awaits messaging create + init, so discuss is safe to use.
         // Fire-and-forget; swallow a rare init/doAction rejection so it does
         // not surface as an unhandled promise rejection.
         this.env.services.messaging
             .get()
-            .then((messaging) => messaging.discuss.openTodos())
+            .then((messaging) => messaging.discuss.openTodos(resModel))
             .catch((error) =>
                 console.error("Failed to open Todos in Discuss:", error)
             );
     },
-    // Route every systray click to the single Todos page in Discuss. The base
-    // per-source-app drill-down (the `group` arg) is intentionally collapsed
-    // into the unified pane; the signature is kept for clarity.
+    // Clicking a source-app group opens the Todos page filtered to that app,
+    // mirroring the sidebar drill-down (openTodos highlights the group too).
     onGroupClick(group) {
-        this._openTodosInDiscuss();
+        this._openTodosInDiscuss(group.model);
     },
     onViewAllClick() {
         this._openTodosInDiscuss();

@@ -3,15 +3,15 @@
 import { registerMessagingComponent } from "@mail/utils/messaging_component";
 import { LegacyComponent } from "@web/legacy/legacy_component";
 import { useService, useBus } from "@web/core/utils/hooks";
+import {
+    deserializeDate,
+    deserializeDateTime,
+    formatDate,
+    formatDateTime,
+} from "@web/core/l10n/dates";
 
 const { useState, useEffect } = owl;
-
-const CATEGORY_LABELS = {
-    approval: "Approval",
-    execution: "Execution",
-    acknowledgement: "Acknowledgement",
-    fyi: "FYI",
-};
+const { DateTime } = luxon;
 
 /**
  * The Todo inbox rendered in the Discuss MAIN content pane (when
@@ -31,14 +31,15 @@ export class DiscussTodoView extends LegacyComponent {
         this.action = useService("action");
         this.state = useState({ todos: [], totalCount: 0, loaded: false });
 
-        // Fetch on mount and whenever the source-app filter changes (the deps
-        // read discuss.todoResModel, which the template also reads, so useModels
-        // re-renders and this effect re-runs on a sidebar group click).
+        // Fetch on mount and whenever the source-app filter or the inbox/history
+        // mode changes (the deps read discuss.todoResModel / isTodoHistory, which
+        // the template also reads, so useModels re-renders and this effect
+        // re-runs on a sidebar group / History click).
         useEffect(
             () => {
                 this.fetchData();
             },
-            () => [this.discuss.todoResModel]
+            () => [this.discuss.todoResModel, this.discuss.isTodoHistory]
         );
         useBus(this.env.bus, "mail_activity_todo_updated", () => this.fetchData());
     }
@@ -60,16 +61,88 @@ export class DiscussTodoView extends LegacyComponent {
             : this.discuss.todoResModel;
     }
 
-    categoryLabel(code) {
-        return CATEGORY_LABELS[code] || "";
+    /**
+     * Locale-aware "created X ago" for the meta line, e.g. "3 hours ago".
+     * create_date is a UTC datetime string; deserializeDateTime lands it in the
+     * user's timezone. Returns "" when absent/unparseable so the line hides.
+     */
+    createdAgo(todo) {
+        if (!todo.create_date) {
+            return "";
+        }
+        return deserializeDateTime(todo.create_date).toRelative() || "";
+    }
+
+    /** Exact created datetime for the meta-line tooltip. */
+    createdTooltip(todo) {
+        if (!todo.create_date) {
+            return "";
+        }
+        return formatDateTime(deserializeDateTime(todo.create_date));
+    }
+
+    /** Locale-aware "completed X ago" for completed (done) history rows. */
+    completedAgo(todo) {
+        if (!todo.completed_date) {
+            return "";
+        }
+        return deserializeDateTime(todo.completed_date).toRelative() || "";
+    }
+
+    /** Exact completed datetime for the meta-line tooltip. */
+    completedTooltip(todo) {
+        if (!todo.completed_date) {
+            return "";
+        }
+        return formatDateTime(deserializeDateTime(todo.completed_date));
+    }
+
+    /**
+     * Deadline as a human countdown plus its urgency styling. Uses
+     * toRelativeCalendar ("today"/"tomorrow"/"in 3 days"/"yesterday") — the
+     * calendar form is correct for date-only deadlines, unlike toRelative which
+     * would measure from midnight. Colour/icon follow the server-computed state
+     * (overdue/today/planned), with planned deadlines within two days flagged
+     * as imminent. Returns null when there is no deadline.
+     */
+    deadlineInfo(todo) {
+        if (!todo.date_deadline) {
+            return null;
+        }
+        const dt = deserializeDate(todo.date_deadline);
+        const info = {
+            label: dt.toRelativeCalendar() || "",
+            exact: formatDate(dt),
+            className: "text-muted",
+            icon: "fa-clock-o",
+        };
+        if (todo.state === "overdue") {
+            info.className = "text-danger fw-bold";
+            info.icon = "fa-exclamation-circle";
+        } else if (todo.state === "today") {
+            info.className = "text-warning fw-bold";
+            info.icon = "fa-hourglass-half";
+        } else {
+            const days = dt
+                .startOf("day")
+                .diff(DateTime.now().startOf("day"), "days").days;
+            if (days <= 2) {
+                info.className = "text-warning";
+                info.icon = "fa-hourglass-start";
+            }
+        }
+        return info;
     }
 
     async fetchData() {
         try {
             const resModel = this.discuss.todoResModel || false;
-            const result = await this.orm.call("res.users", "get_my_todos", [
-                resModel,
-            ]);
+            const result = await this.orm.call(
+                "res.users",
+                "get_my_todos",
+                [resModel],
+                { read: this.discuss.isTodoHistory }
+            );
             this.state.todos = result.todos || [];
             this.state.totalCount = result.total_count || 0;
         } catch (error) {

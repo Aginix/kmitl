@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- Let users categorise a manually-scheduled activity from the native
-         "Schedule Activity" dialog, so it lands in their Todo inbox (the inbox
-         shows only categorised activities). -->
-    <record id="mail_activity_view_form_popup_todo" model="ir.ui.view">
-        <field name="name">mail.activity.view.form.popup.todo</field>
-        <field name="model">mail.activity</field>
-        <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
+    <!-- Expose the Todo category on the activity type: an admin sets it once
+         per type, and it auto-fills onto every activity of that type
+         (mail_activity.py::_compute_todo_category). This is the single place
+         the category is configured now that the per-activity picker is gone. -->
+    <record id="mail_activity_type_view_form_todo" model="ir.ui.view">
+        <field name="name">mail.activity.type.form.todo</field>
+        <field name="model">mail.activity.type</field>
+        <field name="inherit_id" ref="mail.mail_activity_type_view_form" />
         <field name="arch" type="xml">
-            <field name="activity_type_id" position="after">
+            <field name="category" position="after">
                 <field name="todo_category" />
             </field>
         </field>
@@ -26,8 +27,8 @@
                 edit="false"
                 decoration-bf="is_read_by_me == False"
                 decoration-muted="is_read_by_me == True"
-                decoration-danger="state == 'overdue' and todo_category in ['approval', 'execution']"
-                decoration-warning="state == 'today' and todo_category in ['approval', 'execution']"
+                decoration-danger="state == 'overdue' and todo_category == 'execution'"
+                decoration-warning="state == 'today' and todo_category == 'execution'"
             >
                 <field
                     name="state"
@@ -56,14 +57,14 @@
                     type="object"
                     string="Mark as Read"
                     icon="fa-check"
-                    attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', True)]}"
+                    attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', True)]}"
                 />
                 <button
                     name="action_mark_unread"
                     type="object"
                     string="Mark as Unread"
                     icon="fa-undo"
-                    attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', False)]}"
+                    attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', False)]}"
                 />
             </tree>
         </field>
@@ -88,14 +89,14 @@
                         type="object"
                         string="Mark as Read"
                         icon="fa-check"
-                        attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', True)]}"
+                        attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', True)]}"
                     />
                     <button
                         name="action_mark_unread"
                         type="object"
                         string="Mark as Unread"
                         icon="fa-undo"
-                        attrs="{'invisible': ['|', ('todo_category', 'not in', ['fyi', 'acknowledgement']), ('is_read_by_me', '=', False)]}"
+                        attrs="{'invisible': ['|', ('todo_category', '=', 'execution'), ('is_read_by_me', '=', False)]}"
                     />
                 </header>
                 <sheet>
@@ -118,7 +119,9 @@
                             <field name="is_read_by_me" invisible="1" />
                         </group>
                     </group>
-                    <field name="note" readonly="1" />
+                    <group string="Note">
+                        <field name="note" nolabel="1" colspan="2"/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -159,7 +162,7 @@
                     string="Planned"
                     domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"
                 />
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter
                         name="group_category"
                         string="Category"
@@ -195,7 +198,7 @@
         <field name="view_mode">tree,form</field>
         <field
             name="domain"
-        >[('is_my_todo', '=', True), ('todo_category', '!=', False)]</field>
+        >[('is_my_todo', '=', True)]</field>
         <field name="context">{'search_default_unread': 1}</field>
         <field name="search_view_id" ref="view_my_todo_search" />
         <field
@@ -210,8 +213,9 @@
         </field>
     </record>
 
-    <!-- Bulk actions in the list "Action" menu (FYI/Acknowledgement only,
-         enforced server-side in action_mark_read/unread). -->
+    <!-- Bulk actions in the list "Action" menu (dismissable Todos only —
+         everything except Execution — enforced server-side in
+         action_mark_read/unread). -->
     <record id="action_server_mark_read" model="ir.actions.server">
         <field name="name">Mark as Read</field>
         <field name="model_id" ref="mail.model_mail_activity" />

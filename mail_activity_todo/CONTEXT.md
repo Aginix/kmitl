@@ -16,26 +16,22 @@ _Avoid_: using "activity" and "Todo" interchangeably in user-facing text
 The originating business document a Todo points back to (a procurement plan, a พ.1, a budget transfer …). Every Todo carries a button that opens its source record — the load-bearing feature of the whole context.
 _Avoid_: parent, origin
 
-**Approval Todo**:
-A Todo cleared only by a real decision on the source record (approve / reject). Reading it does not clear it.
-_Avoid_: marking an Approval Todo as "read"
+There are exactly **two** behavioural categories (`todo_category`), splitting Todos by how they clear:
 
 **Execution Todo**:
-A Todo asking its owner to do the next step of work on the source record (e.g. a เจ้าหน้าที่แผน filling the operating plan before a พ.1 can be created). Cleared when the step is done.
+A Todo that clears **only by acting on the source record** — doing the next step of work, approving, or rejecting (e.g. a เจ้าหน้าที่แผน filling the operating plan before a พ.1 can be created; an approver approving/rejecting an entry). Reading it never clears it. Absorbs what was previously split into "Approval" and "Execution".
+_Avoid_: marking an Execution Todo as "read"; treating approval as its own category
 
 **Acknowledgement Todo**:
-A Todo asking the user to read / sign / acknowledge a document. Cleared by the user marking it done ("Mark as Read").
-
-**FYI Todo**:
-A Todo that only informs (e.g. "your พ.1 changed state"); no required action. Cleared by the user marking it read.
-_Avoid_: putting FYI and Approval Todos on the same footing
+A Todo cleared by the user **marking it read** ("Mark as Read" — per-person and reversible), whether it asks the user to read/sign a document or only informs them (e.g. "your พ.1 changed state"). Absorbs what was previously split into "Acknowledgement" and "FYI".
+_Avoid_: FYI (folded into Acknowledgement); treating Mark as Read as completing the work
 
 **Inbox (กล่องขาเข้า)**:
-The unified page — every open Todo addressed to the current user (personal + role-in-unit), the one place to find incoming work. Modelled as an incoming queue, not an email client.
+The unified page — every open activity assigned to the current user (and, with the role-in-unit layer, to their role-in-unit groups), gathered from every module into one place. Membership is "assigned to me and still open", **not** "carries a category": built-in, OCA, and hand-scheduled activities all belong here too. The category only refines how a Todo is flagged and cleared, it does not decide whether it is in the inbox. The one place to find incoming work, modelled as an incoming queue, not an email client.
 _Avoid_: dashboard (the inbox lists actionable items, not analytics)
 
 **Mark as Read (อ่านแล้ว)**:
-A *per-user* dismissal of an FYI or Acknowledgement Todo — removes it from *your* inbox only, leaving it for everyone else in the group. Recorded in `todo.read`; never deletes the shared activity. Not offered on Approval/Execution Todos, which clear by acting on the source.
+A *per-user* dismissal of any Todo that is **not** an Execution Todo — an Acknowledgement Todo *or* an uncategorised built-in / hand-scheduled activity — removes it from *your* inbox only, leaving it for everyone else in the group. Recorded in `todo.read`; never deletes the shared activity. It is the single user-driven clear gesture (there is no "Mark Done" button); only Execution Todos are excluded, because they clear by acting on the source.
 _Avoid_: treating Mark as Read as completing the work
 
 **Claim (รับเรื่อง)**:
@@ -48,7 +44,7 @@ _Avoid_: archived activity (the activity is gone, not archived)
 
 **Next actor**:
 Who a Todo is for at a given state. Either a single `res.users` (personal Todo), or a *role-in-unit* group — everyone holding a Responsible Role who belongs to the source record's Operating Unit, resolved live (never a stored list). The whole inbox depends on this being determinable from the source record's data.
-_Avoid_: approver (the next actor is not always an approver — see the four Todo types)
+_Avoid_: approver (the next actor is not always an approver — see the two Todo types)
 
 **Responsible Role (เจ้าหน้าที่…)**:
 A `base_user_role` role naming *who does a job* (deliberately assigned, date-bounded) — e.g. เจ้าหน้าที่แผน. Distinct from a `res.groups`, which says only who *may* do it. Group Todos route on the Responsible Role so they reach the people accountable, not everyone with the rights.

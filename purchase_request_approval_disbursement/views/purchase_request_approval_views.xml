@@ -82,6 +82,26 @@
                     </group>
                 </group>
             </xpath>
+            <!-- Return-to-source correction: Confirm button + statusbar + fields -->
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="before">
+                <button name="action_confirm_correction" type="object" string="Confirm Correction" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'returned')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+                <attribute name="statusbar_visible">draft,validate,to_approve,approved,returned</attribute>
+            </xpath>
+            <xpath expr="//header" position="after">
+                <div class="alert alert-warning" role="alert" attrs="{'invisible': [('state', '!=', 'returned')]}">
+                    <p><strong>Returned for correction.</strong> The disbursement officer returned the linked disbursement request. Correct the payee bank account and note and/or attach evidence below, then click <b>Confirm Correction</b>.</p>
+                </div>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <group name="disbursement_correction" string="Disbursement Correction" attrs="{'invisible': [('state', '!=', 'returned')]}">
+                    <field name="partner_id" invisible="1"/>
+                    <field name="disbursement_return_bank_id" domain="[('partner_id', '=', partner_id)]" options="{'no_create': True}"/>
+                    <field name="disbursement_return_note"/>
+                    <field name="disbursement_return_attachment_ids" widget="many2many_binary"/>
+                </group>
+            </xpath>
         </field>
     </record>
 

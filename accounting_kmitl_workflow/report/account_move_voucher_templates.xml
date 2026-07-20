@@ -50,7 +50,7 @@
                             <!-- Meta -->
                             <table class="meta">
                                 <tr>
-                                    <td class="lbl">เลขที่</td>
+                                    <td class="lbl">ที่เอกสาร</td>
                                     <td>: <span t-field="o.name"/></td>
                                     <td class="lbl">วันที่</td>
                                     <td>: <span t-field="o.date"/></td>
@@ -61,21 +61,29 @@
                                     <td class="lbl">อ้างอิง</td>
                                     <td>: <span t-out="o.ref or '-'"/></td>
                                 </tr>
+                                <tr>
+                                    <td class="lbl">ส่วนงาน</td>
+                                    <td>: <span t-out="o.department_analytic_id.display_name or '-'"/></td>
+                                    <td class="lbl">แหล่งเงิน</td>
+                                    <td>: <span t-out="o.source_analytic_id.display_name or '-'"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="lbl">กองทุน</td>
+                                    <td>: <span t-out="o.fund_analytic_id.display_name or '-'"/></td>
+                                    <td class="lbl">กิจกรรม</td>
+                                    <td>: <span t-out="o.activity_analytic_id.display_name or '-'"/></td>
+                                </tr>
                             </table>
 
                             <!-- Accounting lines -->
                             <table class="items">
                                 <thead style="display: table-header-group;">
                                     <tr>
-                                        <th style="width: 4%;">ลำดับ</th>
-                                        <th style="width: 22%;">บัญชี</th>
-                                        <th style="width: 18%;">คำอธิบาย</th>
-                                        <th style="width: 11%;">ส่วนงาน</th>
-                                        <th style="width: 11%;">แหล่งเงิน</th>
-                                        <th style="width: 10%;">กองทุน</th>
-                                        <th style="width: 10%;">กิจกรรม</th>
-                                        <th class="num" style="width: 7%;">เดบิต</th>
-                                        <th class="num" style="width: 7%;">เครดิต</th>
+                                        <th style="width: 6%;">ลำดับ</th>
+                                        <th style="width: 34%;">บัญชี</th>
+                                        <th style="width: 34%;">คำอธิบาย</th>
+                                        <th class="num" style="width: 13%;">เดบิต</th>
+                                        <th class="num" style="width: 13%;">เครดิต</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -86,28 +94,34 @@
                                         <t t-set="seq" t-value="seq + 1"/>
                                         <t t-set="total_debit" t-value="total_debit + line.debit"/>
                                         <t t-set="total_credit" t-value="total_credit + line.credit"/>
-                                        <t t-set="dims" t-value="line._kmitl_resolve_dimensions()"/>
                                         <tr>
                                             <td class="ctr" t-out="seq"/>
                                             <td>
                                                 <span t-field="line.account_id.code"/> - <span t-field="line.account_id.name"/>
                                             </td>
                                             <td t-out="line.name or ''"/>
-                                            <td t-out="dims['departments']"/>
-                                            <td t-out="dims['sources']"/>
-                                            <td t-out="dims['funds']"/>
-                                            <td t-out="dims['activities']"/>
                                             <td class="num" t-out="'{:,.2f}'.format(line.debit) if line.debit else ''"/>
                                             <td class="num" t-out="'{:,.2f}'.format(line.credit) if line.credit else ''"/>
                                         </tr>
                                     </t>
                                     <tr class="total">
-                                        <td class="ctr" colspan="7">รวมทั้งสิ้น</td>
+                                        <td class="ctr" colspan="3">รวมทั้งสิ้น</td>
                                         <td class="num" t-out="'{:,.2f}'.format(total_debit)"/>
                                         <td class="num" t-out="'{:,.2f}'.format(total_credit)"/>
                                     </tr>
+                                    <tr>
+                                        <td colspan="5">จำนวนเงิน (ตัวอักษร): (<span t-out="o.currency_id.with_context(lang='th_TH').amount_to_text(total_debit)"/>)</td>
+                                    </tr>
                                 </tbody>
                             </table>
+
+                            <!-- Narration -->
+                            <t t-if="not is_html_empty(o.narration)">
+                                <div class="mt-3">
+                                    <strong>หมายเหตุ</strong>
+                                    <div t-field="o.narration"/>
+                                </div>
+                            </t>
 
                             <!-- Workflow signatures -->
                             <table class="sign">

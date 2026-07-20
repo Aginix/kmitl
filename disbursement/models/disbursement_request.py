@@ -74,7 +74,7 @@ class DisbursementRequest(models.Model):
             ("multi", "Multiple Partners"),
         ],
         string="Partner Type",
-        default="single",
+        default="multi",
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -120,6 +120,23 @@ class DisbursementRequest(models.Model):
     ref = fields.Char(
         string="Reference",
         tracking=True,
+        states=READONLY_STATES,
+    )
+
+    payment_type = fields.Selection(
+        selection=[
+            ("direct", "Direct paid"),
+            ("advance", "Advance"),
+            ("prepaid", "Prepaid"),
+        ],
+        string="Payment Type",
+        default="direct",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    note = fields.Text(
+        string="Note",
         states=READONLY_STATES,
     )
 
@@ -293,6 +310,14 @@ class DisbursementRequest(models.Model):
         readonly=True,
     )
 
+    # Leftover reserved budget still on the linked commitment (reserved −
+    # obligated). Drives the "ส่งคืนเงินเหลือจ่าย" button visibility.
+    budget_available_to_obligate = fields.Monetary(
+        related="budget_commitment_id.available_to_obligate",
+        string="งบจองคงเหลือ",
+        currency_field="currency_id",
+    )
+
     # Analytic dimension fields
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -311,7 +336,7 @@ class DisbursementRequest(models.Model):
         compute="_compute_analytic_id",
         inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -437,6 +462,18 @@ class DisbursementRequest(models.Model):
         for line in self:
             line._update_analytic_distribution("sources")
 
+    @api.depends("analytic_distribution")
+    def _compute_analytic_id(self):
+        # Reset every convenience field first so a stored one (here
+        # department_analytic_id, used for the "Group By Department" filter)
+        # does not keep a stale value when its dimension is removed from the
+        # distribution. The shared mixin only assigns dimensions that are
+        # present, so without this reset a stored field would never clear.
+        for rec in self:
+            for field_name in self._analytic_keys.values():
+                rec[field_name] = False
+        return super()._compute_analytic_id()
+
     def _log_budget_commitment_linked(self):
         self.ensure_one()
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
@@ -547,36 +584,7 @@ class DisbursementRequest(models.Model):
         for rec in self:
             if rec.reference and hasattr(rec.reference, "partner_id"):
                 rec.partner_id = rec.reference.partner_id
-                rec.partner_type = "single"
         self._compute_analytic()
-
-    @api.constrains("partner_type", "partner_id")
-    def _check_partner_required(self):
-        for rec in self:
-            if rec.partner_type == "single" and not rec.partner_id:
-                raise ValidationError(
-                    _("Partner is required in single-partner mode.")
-                )
-
-    @api.onchange("partner_type")
-    def _onchange_partner_type(self):
-        if self.partner_type == "single":
-            line_partners = self.line_ids.mapped("partner_id")
-            if len(line_partners) > 1:
-                self.line_ids.update(
-                    {"partner_id": False, "partner_bank_id": False}
-                )
-                return {
-                    "warning": {
-                        "title": _("Warning"),
-                        "message": _(
-                            "Partner fields on lines have been cleared."
-                        ),
-                    }
-                }
-        elif self.partner_type == "multi":
-            self.partner_id = False
-            self.partner_bank_id = False
 
     def _compute_analytic(self):
         """Hook for extension modules to merge analytics from reference document."""
@@ -805,6 +813,10 @@ class DisbursementRequest(models.Model):
         consume line for the DR amount, leaving the BC open for other DRs.
         """
         self.ensure_one()
+        # Idempotent: a request returned to verification (approved -> signed)
+        # keeps its obligation, so re-approving must not double-cut the budget.
+        if self._has_own_budget_obligation():
+            return
         commitment = self._check_commitment_obligable()
         first_reserve = self._get_commitment_reserve_line(commitment)
         self.env["budget.commitment.line"].create(
@@ -816,6 +828,23 @@ class DisbursementRequest(models.Model):
             body=_("Budget obligated and consumed: %(amount)s on commitment %(name)s")
             % {"amount": self.amount_total, "name": commitment.name},
             subtype_xmlid="mail.mt_note",
+        )
+
+    def action_return_leftover_budget(self):
+        """Shortcut from the DR to the leftover-return (คืนจอง) confirmation.
+
+        Opens the same ``budget.commitment.return.wizard`` the commitment uses,
+        scoped to this DR's linked commitment, and stamps this DR as the source
+        document on the posted return line. The wizard works on the whole
+        commitment (which may be shared across งวด), returning its full
+        unconsumed remainder — consistent with the manual, no-guard policy.
+        """
+        self.ensure_one()
+        commitment = self.budget_commitment_id
+        if not commitment:
+            raise UserError(_("No budget commitment linked to this request."))
+        return commitment._action_return_leftover_wizard(
+            res_model="disbursement.request", res_id=self.id
         )
 
     def _check_commitment_obligable(self):
@@ -886,6 +915,21 @@ class DisbursementRequest(models.Model):
         )
         own.action_cancel()
         return True
+
+    def _has_own_budget_obligation(self):
+        """Whether this request already has a posted obligate line on its
+        commitment (used to keep _action_approve_budget idempotent across a
+        return-to-verification round trip)."""
+        self.ensure_one()
+        commitment = self.budget_commitment_id
+        return bool(commitment) and bool(
+            commitment.line_ids.filtered(
+                lambda l: l.state == "posted"
+                and l.move_type == "obligate"
+                and l.res_model == "disbursement.request"
+                and l.res_id == self.id
+            )
+        )
 
     def action_cancel(self):
         """Cancel the request.

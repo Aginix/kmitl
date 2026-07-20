@@ -13,7 +13,7 @@ const MOVE_FIELDS = [
     "journal_id",
     "submitted_by",
     "submitted_date",
-    "amount_total_signed",
+    "amount_total",
     "narration",
     "activity_analytic_id",
     "department_analytic_id",

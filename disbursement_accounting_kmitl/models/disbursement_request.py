@@ -130,10 +130,7 @@ class DisbursementRequest(models.Model):
                 _("Only approved requests can be used to create bills.")
             )
 
-        if self.partner_type == "single":
-            bills = self._create_single_bill()
-        else:
-            bills = self._create_multi_bills()
+        bills = self._create_bills()
 
         for bill in bills:
             bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
@@ -148,25 +145,12 @@ class DisbursementRequest(models.Model):
 
         return bills
 
-    def _create_single_bill(self):
-        """Create one bill for all lines (single-partner mode)."""
-        self.ensure_one()
-        invoice_lines = [
-            Command.create(self._prepare_bill_line_vals(line))
-            for line in self.line_ids
-        ]
-        bill = self.env["account.move"].with_context(
-            auto_submit_on_create=True
-        ).create(
-            self._prepare_bill_vals(
-                self.partner_id, self.partner_bank_id, invoice_lines
-            )
-        )
-        self._apply_wht_to_bill(bill, self.line_ids)
-        return bill
+    def _create_bills(self):
+        """Group lines by partner, create one bill per partner.
 
-    def _create_multi_bills(self):
-        """Group lines by partner, create one bill per partner."""
+        Every disbursement request pays a name list (multi-partner), so bills
+        are always split per recipient partner.
+        """
         self.ensure_one()
         partner_lines = {}
         for line in self.line_ids:
@@ -183,9 +167,7 @@ class DisbursementRequest(models.Model):
                 for line in lines
             ]
             partner_bank = lines[0].partner_bank_id
-            bill = self.env["account.move"].with_context(
-            auto_submit_on_create=True
-        ).create(
+            bill = self.env["account.move"].create(
                 self._prepare_bill_vals(partner, partner_bank, invoice_lines)
             )
             self._apply_wht_to_bill(bill, lines)
@@ -344,3 +326,20 @@ class DisbursementRequest(models.Model):
             if draft_bills:
                 draft_bills.button_cancel()
         return super().action_cancel()
+
+    def _action_return_to_verification(self, reason):
+        """Accounting may return a request to verification only before a bill
+        exists; once billed the accountant must cancel the bill(s) first."""
+        for record in self:
+            active_bills = record.bill_ids.filtered(
+                lambda b: b.state != "cancel"
+            )
+            if active_bills:
+                raise UserError(
+                    _(
+                        "Cannot return to verification: bill(s) %s exist. "
+                        "Cancel the bill(s) first."
+                    )
+                    % ", ".join(active_bills.mapped("name"))
+                )
+        return super()._action_return_to_verification(reason)

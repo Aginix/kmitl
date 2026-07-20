@@ -1,8 +1,101 @@
 from odoo import Command, _, api, fields, models
+from odoo.exceptions import UserError
+
+
+RETURNED_READONLY_STATES = {
+    "to_verify": [("readonly", True)],
+    "submitted": [("readonly", True)],
+    "approved": [("readonly", True)],
+    "ready_to_bill": [("readonly", True)],
+    "billed": [("readonly", True)],
+    "rejected": [("readonly", True)],
+    "returned": [("readonly", True)],
+}
 
 
 class ApprovalRequest(models.Model):
-    _inherit = "approval.request"
+    _name = "approval.request"
+    _inherit = ["approval.request", "disbursement.return.source.mixin"]
+    _disbursement_return_state = "billed"
+
+    state = fields.Selection(
+        selection_add=[("returned", "Returned")],
+        ondelete={"returned": "set default"},
+    )
+
+    # A returned request may correct ONLY the payee bank, description and
+    # disbursement evidence. Lock every other normally-editable field by adding
+    # 'returned' to their readonly states (only states= is overridden; the rest
+    # of each field definition is inherited). description is intentionally left
+    # editable in 'returned'.
+    payment_type = fields.Selection(states=RETURNED_READONLY_STATES)
+    category_id = fields.Many2one(states=RETURNED_READONLY_STATES)
+    date = fields.Date(states=RETURNED_READONLY_STATES)
+    owner_id = fields.Many2one(states=RETURNED_READONLY_STATES)
+    date_start = fields.Date(states=RETURNED_READONLY_STATES)
+    date_end = fields.Date(states=RETURNED_READONLY_STATES)
+    city = fields.Char(states=RETURNED_READONLY_STATES)
+    country_id = fields.Many2one(states=RETURNED_READONLY_STATES)
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        """Keep a returned request non-editable at large; the correction fields
+        are opened individually in the view instead."""
+        super()._compute_is_editable()
+        for rec in self:
+            if rec.state == "returned":
+                rec.is_editable = False
+
+    # -- return-to-source contract (disbursement.return.source.mixin) -----
+    def _disbursement_get_request(self):
+        self.ensure_one()
+        return self._disbursement_pick_request(self.disbursement_request_ids)
+
+    def _disbursement_apply_correction(self, dr):
+        """Push the corrected payee bank, description and disbursement evidence
+        onto the still-signed DR. The banner/To-Do/state bookkeeping is handled
+        generically by disbursement.request._apply_source_correction."""
+        self.ensure_one()
+        dr.note = self.description
+        payee_bank = {
+            payee.partner_id.id: payee.partner_bank_id.id
+            for payee in self.payee_ids
+            if payee.partner_bank_id
+        }
+        for line in dr.line_ids:
+            bank = payee_bank.get(line.partner_id.id)
+            if bank:
+                line.partner_bank_id = bank
+        self._disbursement_copy_evidence(dr)
+
+    def _disbursement_evidence_attachments(self):
+        return self.disbursement_attachment_ids
+
+    def _disbursement_correction_user(self):
+        self.ensure_one()
+        return self.user_id or self.create_uid
+
+    def action_ready_to_bill(self):
+        """Clerical staff marks a direct/prepaid request ready for the finance
+        officer to bill. Requires at least one disbursement document."""
+        self.ensure_one()
+        if self.state != "approved":
+            raise UserError(
+                _("Only approved requests can be marked ready to bill.")
+            )
+        if self.payment_type not in ("direct", "prepaid"):
+            raise UserError(
+                _("Only direct or prepaid requests use the ready-to-bill step.")
+            )
+        if not self.disbursement_attachment_ids:
+            raise UserError(
+                _(
+                    "Please attach at least one disbursement document before "
+                    "marking this request ready to bill."
+                )
+            )
+        self.state = "ready_to_bill"
+        return True
 
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
@@ -84,6 +177,7 @@ class ApprovalRequest(models.Model):
             "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
             "partner_type": "multi",
+            "payment_type": self.payment_type,
             "line_ids": [
                 Command.create(
                     {
@@ -94,6 +188,7 @@ class ApprovalRequest(models.Model):
                 for line in self.line_ids
             ],
             "ref": self.name,
+            "note": self.description,
             "budget_commitment_id": self.budget_commitment_id.id,
             "budget_account_id": self.budget_account_id.id,
             "analytic_distribution": self.analytic_distribution,

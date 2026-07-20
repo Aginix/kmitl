@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Dedicated activity types so the return/correction To-Dos can be
+         auto-resolved by activity_type_id (language-independent) rather than by
+         their translated summary text. -->
+    <record id="mail_activity_ar_correct" model="mail.activity.type">
+        <field name="name">Correct and confirm the returned approval request</field>
+        <field name="res_model">approval.request</field>
+    </record>
+    <record id="mail_activity_ar_done" model="mail.activity.type">
+        <field name="name">Correction submitted to the disbursement officer</field>
+        <field name="res_model">approval.request</field>
+    </record>
+    <record id="mail_activity_dr_await" model="mail.activity.type">
+        <field name="name">Disbursement returned - awaiting approval correction</field>
+        <field name="res_model">disbursement.request</field>
+    </record>
+    <record id="mail_activity_dr_continue" model="mail.activity.type">
+        <field name="name">Approval corrected - continue verification</field>
+        <field name="res_model">disbursement.request</field>
+    </record>
+</odoo>

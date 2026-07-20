@@ -562,6 +562,11 @@ msgid "Next Activity Type"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
@@ -890,7 +895,60 @@ msgid "Update Actual Amount Wizard"
 msgstr "แก้ไขยอดเบิกจริง"
 
 #. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__ready_to_bill
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Ready to Bill"
+msgstr "พร้อมส่งเบิกจริง"
+
+#. module: agx_approval
 #: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard_line
 msgid "Update Actual Amount Wizard Line"
 msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_internal_partner
+msgid "Allow Internal Personnel"
+msgstr "อนุญาตบุคลากรภายใน"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_external_partner
+msgid "Allow External Person"
+msgstr "อนุญาตบุคคลภายนอก"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_student_partner
+msgid "Allow Student"
+msgstr "อนุญาตนักศึกษา"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__allowed_partner_type_ids
+msgid "Allowed Partner Types"
+msgstr "ประเภทผู้รับเงินที่อนุญาต"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_internal_partner
+msgid ""
+"Allow selecting internal personnel (บุคลากรภายใน) as the payee on request "
+"lines of this category."
+msgstr "อนุญาตให้เลือกบุคลากรภายในเป็นผู้รับเงินในรายการของหมวดนี้"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_external_partner
+msgid ""
+"Allow selecting external persons (บุคคลภายนอก) — companies and others — as "
+"the payee on request lines of this category."
+msgstr "อนุญาตให้เลือกบุคคลภายนอก (บริษัทและอื่น ๆ) เป็นผู้รับเงินในรายการของหมวดนี้"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_student_partner
+msgid ""
+"Allow selecting students (นักศึกษา) as the payee on request lines of this "
+"category."
+msgstr "อนุญาตให้เลือกนักศึกษาเป็นผู้รับเงินในรายการของหมวดนี้"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__payee_ids
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Payees"
+msgstr "ข้อมูลการจ่ายเงิน"
 
