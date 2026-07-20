@@ -15,24 +15,17 @@
         <field name="name">Etc</field>
     </record>
 
-    <!-- Mapping: which doctypes apply to purchase.request -->
+    <!-- Model configuration for purchase.request -->
 
-    <record id="rel_tor_pr" model="ir.attachment.document.type.rel">
+    <record id="config_purchase_request" model="attachment.classifier.model.config">
         <field name="res_model_id" ref="purchase_request.model_purchase_request"/>
-        <field name="document_type_id" ref="doctype_tor"/>
-        <field name="sequence">10</field>
-    </record>
-
-    <record id="rel_rfq_pr" model="ir.attachment.document.type.rel">
-        <field name="res_model_id" ref="purchase_request.model_purchase_request"/>
-        <field name="document_type_id" ref="doctype_rfq"/>
-        <field name="sequence">20</field>
-    </record>
-
-    <record id="rel_etc_pr" model="ir.attachment.document.type.rel">
-        <field name="res_model_id" ref="purchase_request.model_purchase_request"/>
-        <field name="document_type_id" ref="doctype_etc"/>
-        <field name="sequence">30</field>
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_tor'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_rfq'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_etc'), 'sequence': 30})]"
+        />
     </record>
 
 </odoo>

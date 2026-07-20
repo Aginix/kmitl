@@ -15,42 +15,29 @@
         <field name="name">จัดซื้อจัดจ้าง</field>
     </record>
 
-    <!-- Mapping: which doctypes apply to which parent model, in what order -->
+    <!-- Model configurations — one per parent model, each with its
+         ordered list of doctypes as inline lines. -->
 
-    <record id="rel_contract_project" model="ir.attachment.document.type.rel">
+    <record id="config_kris_project" model="attachment.classifier.model.config">
         <field name="res_model_id" ref="kris_project.model_kris_project"/>
-        <field name="document_type_id" ref="doctype_contract"/>
-        <field name="sequence">10</field>
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_contract'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_receipt'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_purchase'), 'sequence': 30})]"
+        />
     </record>
 
-    <record id="rel_receipt_project" model="ir.attachment.document.type.rel">
-        <field name="res_model_id" ref="kris_project.model_kris_project"/>
-        <field name="document_type_id" ref="doctype_receipt"/>
-        <field name="sequence">20</field>
-    </record>
-
-    <record id="rel_purchase_project" model="ir.attachment.document.type.rel">
-        <field name="res_model_id" ref="kris_project.model_kris_project"/>
-        <field name="document_type_id" ref="doctype_purchase"/>
-        <field name="sequence">30</field>
-    </record>
-
-    <record id="rel_contract_receipt" model="ir.attachment.document.type.rel">
+    <record id="config_kris_project_receipt" model="attachment.classifier.model.config">
         <field name="res_model_id" ref="kris_project.model_kris_project_receipt"/>
-        <field name="document_type_id" ref="doctype_contract"/>
-        <field name="sequence">10</field>
-    </record>
-
-    <record id="rel_receipt_receipt" model="ir.attachment.document.type.rel">
-        <field name="res_model_id" ref="kris_project.model_kris_project_receipt"/>
-        <field name="document_type_id" ref="doctype_receipt"/>
-        <field name="sequence">20</field>
-    </record>
-
-    <record id="rel_purchase_receipt" model="ir.attachment.document.type.rel">
-        <field name="res_model_id" ref="kris_project.model_kris_project_receipt"/>
-        <field name="document_type_id" ref="doctype_purchase"/>
-        <field name="sequence">30</field>
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_contract'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_receipt'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_purchase'), 'sequence': 30})]"
+        />
     </record>
 
 </odoo>

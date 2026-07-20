@@ -30,15 +30,23 @@ _Avoid_: classifier (implementation-level jargon), metadata (too broad),
 category (overloaded in Odoo), attachment type (was the old Selection
 field name — now migrated away).
 
+**Model Config**:
+A row in `attachment.classifier.model.config` — one per parent model
+that participates in doctype classification. Holds `res_model_id` and
+the ordered `line_ids` (see Mapping). Uniqueness is enforced so a
+model has at most one Config. This is what users create/edit from
+Settings — "New" makes a Config, not a new `ir.model`, so the tree
+can safely use `create="true"` without Studio-style side effects.
+
 **Mapping**:
-A row in `ir.attachment.document.type.rel` — the association between a
-`Model` (via `res_model_id`) and a `Document Type`, plus a `sequence`
-that controls the display order in the widget dropdown for that model.
-There is at most one Mapping per (model, doctype) pair (SQL unique).
-A doctype may have zero or more Mappings; a Model may have zero or
-more Mappings.
+A line inside a Config (row in `ir.attachment.document.type.rel`) —
+the pairing of a `Document Type` with a `sequence`, scoped to the
+Config's model via `config_id`. There is at most one Mapping per
+(config, doctype) pair (SQL unique). A doctype may appear in zero or
+more Configs; a Config may hold zero or more Mappings.
 _Avoid_: link (too generic), assignment (implies workflow), scope
-(now derived from Mappings rather than a field on the doctype).
+(now derived from Configs + Mappings rather than a field on the
+doctype).
 
 **Scope (of a Document Type)**:
 The set of Models a doctype is offered on, derived from its inbound
@@ -76,17 +84,15 @@ consumers: `kris_project` and `purchase_request_kmitl`.
   `@api.constrains` or a check in the transition method that raises
   `UserError` when `attachment_ids.filtered(lambda a: not a.document_type_id)`
   is non-empty. Base does not enforce.
-- **Scope is data — one Mapping per (model, doctype).** To offer a
-  doctype on a new parent model, ship (or add via UI) two records: the
-  doctype master (`ir.attachment.document.type`, one per name) and a
-  Mapping (`ir.attachment.document.type.rel`) linking that doctype to
-  the model with a `sequence`. Settings → Technical → Parameters →
-  **Attachment Doctypes** is the single entry point: a tree of the
-  Mapping table, grouped by model, with a sequence handle inside each
-  group. Only models that have at least one Mapping ever show up in
-  the list. **New** adds a Mapping (pick model + doctype + sequence);
-  a new doctype name can be created inline via the `document_type_id`
-  m2o's quick-create.
+- **Scope is data — one Config per model, one Mapping per doctype.**
+  To offer doctypes on a new parent model, ship (or add via UI) a
+  Config (`attachment.classifier.model.config`) with inline Mappings
+  and the doctype master records they reference. Settings →
+  Technical → Parameters → **Attachment Doctypes** is the single
+  entry point: a tree of Configs (one row per model), with an
+  inline editable Mapping table on the Config form, sequence handle,
+  and quick-create on the doctype m2o. **New** creates a Config — no
+  ir.model rows are ever created from the UI.
 - **Sequence lives on the Mapping, not on the Doctype.** The same
   doctype can appear in a different position under different models.
 - **UI is conditional.** A form whose `res_model` has zero doctypes
