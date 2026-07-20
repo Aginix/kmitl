@@ -191,14 +191,30 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def button_cancel(self):
-        for rec in self:
-            message = rec.request_id._purchase_request_approval_cancelled_message_content(
-                rec
-            )
-            rec.request_id.message_post(body=message, message_type="comment")
-            rec.write({"state": "cancel"})
-            if rec.request_id:
-                rec.request_id.button_cancel()
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยกเลิกใบขออนุมัติ (พจ.1)"),
+            "res_model": "purchase.request.approval.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def _action_do_cancel(self, reason):
+        self.ensure_one()
+        pa_body = _(
+            "ยกเลิกใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = self.request_id._purchase_request_approval_cancelled_message_content(
+            self
+        )
+        pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "cancel"})
+        if self.request_id:
+            self.request_id.button_cancel()
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -262,14 +278,6 @@ class PurchaseRequestApproval(models.Model):
         action["views"] = [(form.id, "form")]
         action["res_id"] = self.request_id.id
         return action
-
-    @api.depends("state")
-    def _compute_is_editable(self):
-        """Non-editable once past draft."""
-        super()._compute_is_editable()
-        for record in self:
-            if record.state in ("to_approve", "approved", "cancel"):
-                record.is_editable = False
 
     # === Sarabun Document Integration ===
 
@@ -344,11 +352,8 @@ class PurchaseRequestApproval(models.Model):
             "Sarabun rejected callback for PA %s (id=%s) from document %s",
             self.name, self.id, document.name
         )
-        self.button_cancel()
         reason = recipient.comment if recipient else _("No reason provided")
-        self.message_post(
-            body=_("Cancelled via Sarabun. Reason: %s") % reason,
-        )
+        self._action_do_cancel(reason)
 
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Purchase Request Approval report."""

@@ -6,10 +6,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _inherit = "purchase.request.line.make.purchase.order"
 
     _VALID_PR_STATES = [
-        "approved",
         "in_progress",
-        "in_approval",
-        "in_egp",
     ]
 
     @api.model

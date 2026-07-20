@@ -83,7 +83,7 @@
                     <button
                         name="button_cancel"
                         states="draft,to_approve"
-                        string="Cancel"
+                        string="ยกเลิก"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
                     />
