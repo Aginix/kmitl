@@ -275,15 +275,4 @@
         </div>
         <div class="my-5" />
     </template>
-    <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
-         approval report (the origin embeds sarabun's block). Resolved from the origin
-         via active_sarabun_document_id; renders nothing until steps complete. -->
-    <template id="report_approval_request_sarabun_endorsement"
-              inherit_id="agx_approval.report_approval_request_document" priority="99">
-        <xpath expr="//div[@class='page']" position="inside">
-            <t t-call="agx_sarabun.sarabun_endorsement_block">
-                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
-            </t>
-        </xpath>
-    </template>
 </odoo>
