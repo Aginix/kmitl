@@ -116,6 +116,22 @@ class PurchaseRequest(models.Model):
         copy=True,
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
+    can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
+
+    @api.depends("state", "requested_by")
+    def _compute_can_reset_to_draft(self):
+        is_manager = self.env.user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        )
+        for rec in self:
+            if rec.state == "to_approve":
+                rec.can_reset_to_draft = is_manager
+            elif rec.state in ("to_verify", "to_submit"):
+                rec.can_reset_to_draft = (
+                    is_manager or rec.requested_by == self.env.user
+                )
+            else:
+                rec.can_reset_to_draft = False
 
     @api.depends("state")
     def _hide_create_po_button(self):

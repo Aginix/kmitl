@@ -21,7 +21,6 @@ class PurchaseRequest(models.Model):
         },
     )
     can_request = fields.Boolean(compute="_compute_can_request")
-    can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
 
     def _compute_is_purchase_request(self):
         for rec in self:
@@ -50,21 +49,6 @@ class PurchaseRequest(models.Model):
         for rec in self:
             own_by_me = rec.requested_by.id == current_user.id
             rec.can_request = own_by_me or is_manager or is_admin
-
-    @api.depends("state", "requested_by")
-    def _compute_can_reset_to_draft(self):
-        is_manager = self.env.user.has_group(
-            "purchase_request.group_purchase_request_manager"
-        )
-        for rec in self:
-            if rec.state == "to_approve":
-                rec.can_reset_to_draft = is_manager
-            elif rec.state in ("to_verify", "to_submit"):
-                rec.can_reset_to_draft = (
-                    is_manager or rec.requested_by == self.env.user
-                )
-            else:
-                rec.can_reset_to_draft = False
 
     def _compute_hide_reserve_budget_button(self):
         super()._compute_hide_reserve_budget_button()
