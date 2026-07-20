@@ -128,13 +128,36 @@ class SarabunRoutingStep(models.Model):
         readonly=True,
     )
     acted_by_id = fields.Many2one("res.users", string="Acted By", readonly=True)
-    acted_date = fields.Datetime(readonly=True)
+    acted_date = fields.Datetime(string="วันที่ลงนาม/ดำเนินการ", readonly=True)
     signed_as_position_id = fields.Many2one(
         "sarabun.position", string="Signed As (Capacity)", readonly=True,
         help="Capacity signed in — validated against the step's target Position (ADR-0003).",
     )
     note = fields.Text(string="เกษียน (Note)")
     delegated_to_id = fields.Many2one("hr.employee", string="Delegated To", readonly=True)
+
+    # === Timeline (per-step routing timing) ===
+    # วันที่ได้รับ = activated_date (above). วันที่ลงนาม = acted_date (above).
+    read_date = fields.Datetime(
+        string="วันที่อ่าน",
+        compute="_compute_read_date",
+        store=True,
+        help="When this step was first opened — the earliest recipient read.",
+    )
+    sent_date = fields.Datetime(
+        string="วันที่ส่ง",
+        readonly=True,
+        copy=False,
+        help="Stamped when the step is acted/forwarded (ส่งต่อ). In v1 acting "
+        "auto-sends, so it equals วันที่ลงนาม; a future sign-then-manual-send sets it "
+        "separately.",
+    )
+    processing_duration = fields.Float(
+        string="ระยะเวลาดำเนินการ",
+        compute="_compute_processing_duration",
+        store=True,
+        help="Hours from วันที่ได้รับ (activated) to max(วันที่ส่ง, วันที่ลงนาม).",
+    )
 
     # === Provenance ===
     created_by_disposition = fields.Selection(
@@ -220,6 +243,23 @@ class SarabunRoutingStep(models.Model):
                 step.preview_holder_ids = step.employee_id
             else:
                 step.preview_holder_ids = False
+
+    @api.depends("recipient_ids.read_date")
+    def _compute_read_date(self):
+        for step in self:
+            reads = [d for d in step.recipient_ids.mapped("read_date") if d]
+            step.read_date = min(reads) if reads else False
+
+    @api.depends("activated_date", "sent_date", "acted_date")
+    def _compute_processing_duration(self):
+        """Hours from received (activated_date) to max(sent_date, acted_date)."""
+        for step in self:
+            start = step.activated_date
+            ends = [d for d in (step.sent_date, step.acted_date) if d]
+            if start and ends:
+                step.processing_duration = (max(ends) - start).total_seconds() / 3600.0
+            else:
+                step.processing_duration = 0.0
 
     # ------------------------------------------------------------- activation
     def _snapshot_holders(self):
@@ -375,14 +415,20 @@ class SarabunRoutingStep(models.Model):
 
     # --------------------------------------------------------- disposition core
     def _stamp(self, actor, note, disposition, signed_as_position=False):
-        self.write({
+        now = fields.Datetime.now()
+        vals = {
             "state": "done",
             "disposition": disposition,
             "acted_by_id": actor.id,
-            "acted_date": fields.Datetime.now(),
+            "acted_date": now,
             "note": note or self.note,
             "signed_as_position_id": signed_as_position and signed_as_position.id or False,
-        })
+        }
+        # v1: a positive action auto-sends the หนังสือ onward, so วันที่ส่ง = วันที่ลงนาม
+        # (a future sign-then-manual-send would stamp sent_date separately).
+        if disposition in POSITIVE_DISPOSITIONS:
+            vals["sent_date"] = now
+        self.write(vals)
         self._clear_activities()
 
     def _resolve_capacity(self, signed_as_position_id):

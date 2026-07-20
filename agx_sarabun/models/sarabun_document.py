@@ -601,11 +601,13 @@ class SarabunDocument(models.Model):
             lambda s: s.is_originator and s.state != "done"
         )[:1]
         if step:
+            now = fields.Datetime.now()
             step.sudo().write({
                 "state": "done",
                 "disposition": "complete",
                 "acted_by_id": self.sender_user_id.id,
-                "acted_date": fields.Datetime.now(),
+                "acted_date": now,
+                "sent_date": now,  # ส่ง = ลงนามผู้จัดทำ (auto at send)
             })
 
     def action_open_send_wizard(self):

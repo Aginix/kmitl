@@ -153,6 +153,12 @@
                                     <field name="state" readonly="1" widget="badge"/>
                                     <field name="acted_by_id" readonly="1" optional="show"/>
                                     <field name="disposition" readonly="1" optional="show"/>
+                                    <!-- Timeline: received / read / sent / signed / duration -->
+                                    <field name="activated_date" readonly="1" optional="show"/>
+                                    <field name="read_date" readonly="1" optional="hide"/>
+                                    <field name="sent_date" readonly="1" optional="hide"/>
+                                    <field name="acted_date" readonly="1" optional="show"/>
+                                    <field name="processing_duration" widget="float_time" readonly="1" optional="show"/>
                                     <field name="signed_as_position_id" readonly="1" optional="hide"/>
                                     <field name="note" readonly="1" optional="hide"/>
                                 </tree>
@@ -187,6 +193,14 @@
                                                 <field name="department_id"/>
                                             </tree>
                                         </field>
+                                    </group>
+
+                                    <group string="ไทม์ไลน์ (Timeline)" col="2">
+                                        <field name="activated_date" readonly="1"/>
+                                        <field name="read_date" readonly="1"/>
+                                        <field name="sent_date" readonly="1"/>
+                                        <field name="acted_date" readonly="1"/>
+                                        <field name="processing_duration" widget="float_time" readonly="1"/>
                                     </group>
                                 </form>
                             </field>
