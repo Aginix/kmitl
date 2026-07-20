@@ -228,6 +228,21 @@ class PurchaseRequestApproval(models.Model):
         if self.request_id:
             self.request_id.button_cancel()
 
+    def _action_do_return(self, reason):
+        self.ensure_one()
+        pa_body = _(
+            "ตีกลับใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = _(
+            "ใบขออนุมัติ (พจ.1) %(pa)s ถูกตีกลับ เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.request_id.message_post(
+            body='<span class="text-warning">%s</span>' % pr_body,
+            subtype_xmlid="mail.mt_note",
+        )
+        self.button_draft()
+
     def _action_do_reject(self, reason):
         self.ensure_one()
         pa_body = _(

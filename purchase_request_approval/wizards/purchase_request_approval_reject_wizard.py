@@ -15,5 +15,5 @@ class PurchaseRequestApprovalRejectWizard(models.TransientModel):
 
     def action_confirm(self):
         self.ensure_one()
-        self.approval_id._action_do_reject(self.reason)
+        self.approval_id._action_do_return(self.reason)
         return {"type": "ir.actions.act_window_close"}
