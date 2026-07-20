@@ -146,7 +146,7 @@
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done,rejected</attribute>
+                >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
