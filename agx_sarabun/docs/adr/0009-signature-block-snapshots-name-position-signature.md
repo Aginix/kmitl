@@ -24,6 +24,7 @@ The signer's rendered identity is **snapshotted onto the step at the instant of 
 ## Consequences
 
 - **`_stamp` / `_sign_originator_step` write three more fields** on show_signature steps. `signed_signature` is `attachment=True`, so identical images dedupe by checksum — no meaningful storage cost.
+- **The snapshot source is read under `sudo`** — capturing the official-record identity is part of the system stamping (which already writes under `self.sudo()`), so it must not depend on the acting user's `hr.employee` read grants. This also means the admin-context engine tests cannot exercise a missing-grant path, so the sudo read is the safeguard, not the test.
 - **The block is now correct on every path** — frozen PDF, live preview, direct-origin print, and the Route display — and each signer is captured as-of-*their own* signing, not as-of-completion.
 - **The fallback keeps old rows working**; when the academic prefix lands (phase-2, ADR-0007) it snapshots here too, for the same reason.
 - **Pre-production** — the whole stack is on the feature branch, not in `origin/16.0`; no migration of existing frozen copies or signed steps.

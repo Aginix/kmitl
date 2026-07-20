@@ -457,8 +457,13 @@ class SarabunRoutingStep(models.Model):
         *resolution* to the *rendered block*: once captured, later edits to the HR name,
         the sarabun.position name, or the employee's signature image never rewrite an
         already-signed หนังสือ. Position prefers the signed capacity, else the step's
-        target Position — mirroring the block's live fallback order."""
+        target Position — mirroring the block's live fallback order.
+
+        The source is read under ``sudo`` (like the rest of the _stamp transition — a
+        SYSTEM stamping operation): capturing the official-record identity must not
+        depend on the acting user's hr.employee read grants."""
         self.ensure_one()
+        actor = actor.sudo()
         employee = actor.employee_id
         position = capacity or self.position_id
         return {
