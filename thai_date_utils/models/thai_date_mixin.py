@@ -13,6 +13,13 @@ MONTHS_TH_SHORT = [
     "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
 ]
 
+_THAI_DIGITS = str.maketrans("0123456789", "๐๑๒๓๔๕๖๗๘๙")
+
+
+def to_thai_digits(value):
+    """Convert the ASCII digits in ``value`` to Thai numerals (๐–๙)."""
+    return str(value).translate(_THAI_DIGITS)
+
 
 class ThaiDateMixin(models.AbstractModel):
     _name = 'thai.date.mixin'
@@ -47,3 +54,19 @@ class ThaiDateMixin(models.AbstractModel):
         if not hasattr(dt, "day"):
             return dt
         return f"{dt.day} {MONTHS_TH_SHORT[dt.month]} {dt.year + 543}"
+
+    def format_datetime_thai_sign(self, dt):
+        """Signature date-time in Thai — e.g. ``วันที่ ๒๐ ก.ค. ๖๙  เวลา ๑๓:๓๐:๓๑``:
+        Thai numerals, abbreviated month, 2-digit พ.ศ. year, and the local-tz time as
+        HH:MM:SS. Used for the signing date on the official document."""
+        if not dt:
+            return ""
+        dt = self._coerce_to_datetime(dt) or dt
+        if not hasattr(dt, "day"):
+            return dt
+        be_year_2 = (dt.year + 543) % 100
+        date_part = "%d %s %02d" % (dt.day, MONTHS_TH_SHORT[dt.month], be_year_2)
+        time_part = "%02d:%02d:%02d" % (dt.hour, dt.minute, dt.second)
+        return "วันที่ %s  เวลา %s" % (
+            to_thai_digits(date_part), to_thai_digits(time_part)
+        )

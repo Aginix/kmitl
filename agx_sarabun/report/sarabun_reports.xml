@@ -30,10 +30,8 @@
                     <!-- capacity/position only (never the person name, already shown
                          above): signed capacity → targeted Position → blank. -->
                     <div t-out="sig.signed_as_position_id.name or sig.position_id.name"/>
-                    <div t-if="sig.acted_date">
-                        <span t-out="sig.acted_date.day"/>/<span t-out="sig.acted_date.month"/>/<span
-                            t-out="sig.acted_date.year + 543"/>
-                    </div>
+                    <div t-if="sig.acted_date"
+                         t-out="doc.format_datetime_thai_sign(sig.acted_date)"/>
                     <div t-if="sig.note" style="font-size:0.9em; color:#555;">
                         <span t-out="sig.note"/>
                     </div>
