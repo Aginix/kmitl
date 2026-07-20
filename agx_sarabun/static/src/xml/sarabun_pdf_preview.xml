@@ -4,13 +4,13 @@
     <!-- Inline PDF preview embedded in the document form (ADR-0007). -->
     <t t-name="agx_sarabun.SarabunPdfInline" owl="1">
         <iframe t-if="docId" class="o_sarabun_pdf_frame o_sarabun_pdf_inline_frame"
-                t-att-src="pdfUrl" title="Sarabun PDF Preview"/>
+                t-att-src="previewUrl" title="Sarabun Preview"/>
     </t>
 
     <!-- Modal PDF preview (client action, opened as a dialog from the draft button). -->
     <t t-name="agx_sarabun.SarabunPdfPreview" owl="1">
         <iframe class="o_sarabun_pdf_frame o_sarabun_pdf_modal_frame"
-                t-att-src="pdfUrl" title="Sarabun PDF Preview"/>
+                t-att-src="previewUrl" title="Sarabun Preview"/>
     </t>
 
 </templates>

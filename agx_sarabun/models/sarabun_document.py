@@ -938,6 +938,43 @@ class SarabunDocument(models.Model):
             return base64.b64decode(self.signed_pdf)
         return self._render_official_pdf()
 
+    def _render_preview_html(self):
+        """On-screen HTML preview — the SAME report as the PDF, rendered as HTML (fast,
+        no wkhtmltopdf) and framed to A4 (ADR-0007). This is a screen preview only; the
+        official record stays the PDF (freeze / print). Always a live render."""
+        self.ensure_one()
+        Report = self.env["ir.actions.report"].sudo()
+        delegated = self._get_delegated_report_action()
+        if delegated and self.origin_res_id:
+            html, _dummy = Report._render_qweb_html(
+                delegated.report_name, [self.origin_res_id]
+            )
+        else:
+            html, _dummy = Report._render_qweb_html(
+                "agx_sarabun.action_report_sarabun_document", [self.id]
+            )
+        return self._frame_preview_html(html)
+
+    def _frame_preview_html(self, html):
+        """Constrain the report's .page to A4 on a page-like backdrop so the HTML
+        preview reads like the printed sheet. Injected last, so it wins over the
+        report's own .page rules."""
+        if isinstance(html, bytes):
+            html = html.decode("utf-8")
+        style = (
+            "<style>"
+            "body{background:#d9d9d9 !important;margin:0;}"
+            ".page{position:relative;box-sizing:border-box;width:210mm;"
+            "min-height:296mm;margin:12px auto;padding:15mm;background:#fff;"
+            "box-shadow:0 1px 6px rgba(0,0,0,.35);}"
+            "</style>"
+        )
+        if "</body>" in html:
+            html = html.replace("</body>", style + "</body>", 1)
+        else:
+            html += style
+        return html.encode("utf-8")
+
     def _freeze_signed_copy(self):
         """Freeze the immutable ฉบับลงนาม at completion (idempotent, one-way)."""
         self.ensure_one()

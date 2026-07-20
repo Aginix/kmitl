@@ -20,8 +20,8 @@ export class SarabunPdfInline extends Component {
     get docId() {
         return this.props.record.resId;
     }
-    get pdfUrl() {
-        return `/sarabun/document/${this.docId}/pdf?inline=1`;
+    get previewUrl() {
+        return `/sarabun/document/${this.docId}/preview`;
     }
 }
 SarabunPdfInline.template = "agx_sarabun.SarabunPdfInline";
@@ -34,8 +34,8 @@ export class SarabunPdfPreview extends Component {
         const params = (this.props.action && this.props.action.params) || {};
         this.docId = params.doc_id;
     }
-    get pdfUrl() {
-        return `/sarabun/document/${this.docId}/pdf?inline=1`;
+    get previewUrl() {
+        return `/sarabun/document/${this.docId}/preview`;
     }
 }
 SarabunPdfPreview.template = "agx_sarabun.SarabunPdfPreview";

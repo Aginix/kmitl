@@ -37,3 +37,23 @@ class SarabunDocumentController(http.Controller):
                 ("Content-Disposition", disposition),
             ],
         )
+
+    @http.route(
+        ["/sarabun/document/<int:doc_id>/preview"],
+        type="http", auth="user", website=False,
+    )
+    def sarabun_document_preview(self, doc_id, **kw):
+        """A4-framed HTML preview of the official document — the on-screen preview
+        embedded in the form / dialog (ADR-0007). The PDF route above stays the
+        printable/downloadable official record."""
+        doc = request.env["sarabun.document"].browse(doc_id)
+        doc.check_access_rights("read")
+        doc.check_access_rule("read")
+        html = doc._render_preview_html()
+        return request.make_response(
+            html,
+            headers=[
+                ("Content-Type", "text/html; charset=utf-8"),
+                ("Content-Length", len(html)),
+            ],
+        )
