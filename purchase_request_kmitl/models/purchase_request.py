@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class PurchaseRequest(models.Model):
@@ -172,4 +172,20 @@ class PurchaseRequest(models.Model):
         return self.write({"state": "to_submit"})
 
     def button_cancel(self):
-        return self.write({"state": "cancel"})
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยกเลิกคำขอ (พ.1)"),
+            "res_model": "purchase.request.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_request_id": self.id},
+        }
+
+    def _action_do_cancel(self, reason):
+        self.ensure_one()
+        body = _(
+            "ยกเลิกคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s"
+        ) % {"pr": self.name, "reason": reason}
+        self.message_post(body=body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "cancel"})

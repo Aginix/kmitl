@@ -215,7 +215,7 @@ class PurchaseRequestApproval(models.Model):
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
         self.write({"state": "cancel"})
         if self.request_id:
-            self.request_id.button_cancel()
+            self.request_id.write({"state": "cancel"})
 
     def _action_do_reject(self, reason):
         self.ensure_one()
