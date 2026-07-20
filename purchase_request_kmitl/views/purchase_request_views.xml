@@ -100,6 +100,7 @@
 
             <xpath expr="//form" position="inside">
                 <field name="hide_create_po_button" invisible="1" />
+                <field name="can_reset_to_draft" invisible="1" />
             </xpath>
 
             <xpath expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']" position="attributes">
@@ -115,10 +116,9 @@
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify,to_submit,to_approve</attribute>
-                <attribute
-                    name="groups"
-                >purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="states"/>
+                <attribute name="groups"/>
+                <attribute name="attrs">{'invisible': [('can_reset_to_draft', '=', False)]}</attribute>
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="after">
@@ -127,6 +127,13 @@
                     states="to_submit"
                     string="Return"
                     type="action"
+                />
+                <button
+                    name="%(action_purchase_request_return_wizard)d"
+                    states="to_verify"
+                    string="ตีกลับ"
+                    type="action"
+                    groups="budget.group_budget_commitment"
                 />
                 <button
                     name="button_cancel"

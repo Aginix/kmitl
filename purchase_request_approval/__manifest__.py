@@ -24,6 +24,7 @@
         "views/purchase_order_views.xml",
         "views/purchase_request_approval_report.xml",
         "wizards/purchase_request_approval_cancel_wizard_views.xml",
+        "wizards/purchase_request_approval_reject_wizard_views.xml",
         "views/purchase_request_approval_views.xml",
         "views/purchase_request_views.xml",
         "report/report_purchase_request_approval.xml",
