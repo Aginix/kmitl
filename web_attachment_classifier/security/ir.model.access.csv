@@ -1,5 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_ir_attachment_document_type_user,ir.attachment.document.type user,model_ir_attachment_document_type,base.group_user,1,0,0,0
+access_ir_attachment_document_type_manager,ir.attachment.document.type manager,model_ir_attachment_document_type,base.group_erp_manager,1,1,1,1
 access_ir_attachment_document_type_system,ir.attachment.document.type system,model_ir_attachment_document_type,base.group_system,1,1,1,1
 access_ir_attachment_document_type_rel_user,ir.attachment.document.type.rel user,model_ir_attachment_document_type_rel,base.group_user,1,0,0,0
+access_ir_attachment_document_type_rel_manager,ir.attachment.document.type.rel manager,model_ir_attachment_document_type_rel,base.group_erp_manager,1,1,1,1
 access_ir_attachment_document_type_rel_system,ir.attachment.document.type.rel system,model_ir_attachment_document_type_rel,base.group_system,1,1,1,1
+access_attachment_classifier_add_model_wizard,attachment.classifier.add.model.wizard,model_attachment_classifier_add_model_wizard,base.group_erp_manager,1,1,1,1

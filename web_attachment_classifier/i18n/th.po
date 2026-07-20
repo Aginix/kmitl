@@ -27,18 +27,31 @@ msgid "Attachment Doctypes"
 msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
 
 #. module: web_attachment_classifier
-#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_rel_form
-msgid "Attachment Doctype"
+#: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_model__attachment_doctype_rel_ids
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_model_classifier_form
+msgid "Attachment Document Types"
 msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+
+#. module: web_attachment_classifier
+#: model:ir.actions.act_window,name:web_attachment_classifier.action_add_model_wizard
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_model_classifier_tree
+msgid "Add Model"
+msgstr "เพิ่มโมเดล"
+
+#. module: web_attachment_classifier
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_add_model_wizard_form
+msgid "Continue"
+msgstr "ต่อไป"
+
+#. module: web_attachment_classifier
+#: model:ir.model,name:web_attachment_classifier.model_attachment_classifier_add_model_wizard
+msgid "Add Attachment Doctype Model"
+msgstr "เพิ่มโมเดลสำหรับประเภทเอกสาร"
+
 
 #. module: web_attachment_classifier
 #: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_tree
 msgid "Document Types"
-msgstr "ประเภทเอกสาร"
-
-#. module: web_attachment_classifier
-#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_form
-msgid "Document Type"
 msgstr "ประเภทเอกสาร"
 
 # ---------------------------------------------------------------------------
@@ -62,6 +75,7 @@ msgstr "การผูกประเภทเอกสารกับโมเ
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment__document_type_id
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type__display_name
 #: model:ir.model.fields,field_description:web_attachment_classifier.field_ir_attachment_document_type_rel__document_type_id
+#: model_terms:ir.ui.view,arch_db:web_attachment_classifier.view_ir_attachment_document_type_form
 #, python-format
 msgid "Document Type"
 msgstr "ประเภทเอกสาร"
