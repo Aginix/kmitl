@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """P4 — access record-rules + mail.activity notifications."""
+from unittest.mock import patch
+
+from odoo.exceptions import AccessError
 from odoo.tests.common import tagged
 
 from odoo.addons.agx_sarabun.tests.common import SarabunCommon
@@ -143,3 +146,50 @@ class TestP4Access(SarabunCommon):
         self.assertEqual(doc.state, "rejected")
         # user_b's ack step is now skipped, but their recipient row persists → readable
         self.assertTrue(self._can_read(doc, self.user_b))
+
+    # === Origin-independent visibility: a หนังสือ recipient sees the letter and its
+    #     report/preview even with NO rights on the origin record (the หนังสือ's ACL
+    #     governs, not the origin's). ===
+    def test_recipient_reads_origin_reference_without_origin_rights(self):
+        """A Route recipient may open the หนังสือ — and see the origin's name shown on
+        it — even though they cannot read the origin record itself. The reference
+        resolves under sudo, so opening the form does not trip the origin's ACL."""
+        origin = self.Origin.create(
+            {"name": "PR-เฉพาะแอดมิน", "test_department_id": self.dept.id}
+        )
+        doc = self._make_doc(sender=self.user_a, origin=origin)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()  # user_b becomes a recipient → may read the หนังสือ
+        # user_b genuinely cannot read the origin model …
+        with self.assertRaises(AccessError):
+            self.Origin.with_user(self.user_b).browse(origin.id).read(["name"])
+        # … yet the origin reference on the หนังสือ still resolves for them.
+        self.assertEqual(
+            doc.with_user(self.user_b).origin_reference, origin.display_name
+        )
+
+    def test_recipient_resolves_delegated_report_under_sudo(self):
+        """The official document's delegated (origin) report resolves under sudo, so a
+        recipient without origin rights still gets it — and an origin override that
+        reads its own fields in _get_sarabun_report_action never trips their ACL."""
+        origin = self.Origin.create(
+            {"name": "PR-รายงาน", "test_department_id": self.dept.id}
+        )
+        doc = self._make_doc(sender=self.user_a, origin=origin)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        seen = {}
+        report = self.env.ref("agx_sarabun.action_report_sarabun_document")
+
+        def fake_report_action(origin_self):
+            seen["su"] = origin_self.env.su
+            return report
+
+        with patch.object(
+            type(self.Origin), "_get_sarabun_report_action", fake_report_action
+        ):
+            action = doc.with_user(self.user_b)._get_delegated_report_action()
+        self.assertEqual(action, report)
+        self.assertTrue(
+            seen.get("su"), "origin report must resolve under sudo, not the user's ACL"
+        )

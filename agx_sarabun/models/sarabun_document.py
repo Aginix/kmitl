@@ -360,7 +360,10 @@ class SarabunDocument(models.Model):
             if record.origin_model and record.origin_res_id:
                 model = self.env.get(record.origin_model)
                 if model is not None:
-                    origin = model.browse(record.origin_res_id)
+                    # sudo: whoever may read the หนังสือ (Route visibility) sees the
+                    # origin's name as a reference on it, even without rights on the
+                    # origin record itself — the หนังสือ's ACL governs, not the origin's.
+                    origin = model.sudo().browse(record.origin_res_id)
                     if origin.exists():
                         ref = origin.display_name
             record.origin_reference = ref
@@ -991,12 +994,17 @@ class SarabunDocument(models.Model):
         """The origin's report — the official PDF body for a has-source Document
         (delegation contract, ADR-0004). The source report embeds the endorsement
         block at its own tail (ADR-0007); False → this Document has no source report
-        and renders our own standalone report instead."""
+        and renders our own standalone report instead.
+
+        Resolved under sudo: rendering the official document is a SYSTEM operation
+        gated by the หนังสือ's own read access (the controller checks it), so a Route
+        recipient without rights on the origin still gets the correct report — and an
+        origin override that reads its own fields here never trips the recipient's ACL."""
         self.ensure_one()
         if self.origin_model and self.origin_res_id:
             model = self.env.get(self.origin_model)
             if model is not None:
-                origin = model.browse(self.origin_res_id)
+                origin = model.sudo().browse(self.origin_res_id)
                 if origin.exists() and hasattr(origin, "_get_sarabun_report_action"):
                     return origin._get_sarabun_report_action()
         return False

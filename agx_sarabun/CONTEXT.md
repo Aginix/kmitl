@@ -128,8 +128,8 @@ _Avoid_: history, log; printing the trail on the official document (superseded �
 ### Access
 
 **Route visibility**:
-Who may read a Document — the **sender**, plus the snapshot actors of any step that is **active or completed**. Steps not yet reached (waiting/future) grant **no** visibility, even if pre-seeded with a named person — you don't see a หนังสือ before it routes to you. Acting is permitted only to the actor of an *active* step. ชั้นความลับ (secrecy) and its need-to-know restriction are **phase-2** — not modeled in v1 (the interim display-label field was removed); v1 keeps manager-see-all. Acting is backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add passwordless **magic-link** approval from email.
-_Avoid_: recipient-only access (the old `recipient_ids.user_id` rule that hid documents from Position/ธุรการหน่วยงาน actors)
+Who may read a Document — the **sender**, plus the snapshot actors of any step that is **active or completed**. Steps not yet reached (waiting/future) grant **no** visibility, even if pre-seeded with a named person — you don't see a หนังสือ before it routes to you. Acting is permitted only to the actor of an *active* step. ชั้นความลับ (secrecy) and its need-to-know restriction are **phase-2** — not modeled in v1 (the interim display-label field was removed); v1 keeps manager-see-all. Acting is backend-first in v1, but the act-on-step API is designed token-ready so phase-2 can add passwordless **magic-link** approval from email. **This หนังสือ read access alone governs the official report/preview**: a recipient renders the letter (and sees the origin *reference* on it) **even without rights on the origin record** — the render resolves the origin under `sudo` (ADR-0007). Opening the origin *record itself* (`action_view_origin`) still needs origin rights.
+_Avoid_: recipient-only access (the old `recipient_ids.user_id` rule that hid documents from Position/ธุรการหน่วยงาน actors); gating the report/preview on origin-record access (the หนังสือ's own ACL governs — ADR-0007)
 
 ### Notifications & inbox
 
