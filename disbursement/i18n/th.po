@@ -238,7 +238,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_config
 msgid "Configuration"
-msgstr ""
+msgstr "ตั้งค่า"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
@@ -302,7 +302,7 @@ msgstr "การขอเบิก"
 #. module: disbursement
 #: model:ir.actions.act_window,name:disbursement.action_disbursement_exception_rule
 msgid "Disbursement Exception Rules"
-msgstr ""
+msgstr "กฎข้อยกเว้นการขอเบิก"
 
 #. module: disbursement
 #: model:ir.model,name:disbursement.model_disbursement_exception_confirm
@@ -395,7 +395,7 @@ msgstr ""
 #. module: disbursement
 #: model:ir.ui.menu,name:disbursement.menu_disbursement_exception_rules
 msgid "Exception Rules"
-msgstr ""
+msgstr "กฎข้อยกเว้น"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__exception_ids
@@ -1283,147 +1283,249 @@ msgid "Partner is required on each line."
 msgstr "ต้องระบุผู้รับเงินในทุกบรรทัด"
 
 #. module: disbursement
-msgid "Disbursement Assignment Rule"
-msgstr "กฎการมอบหมายใบขอเบิก"
-
-#. module: disbursement
-msgid "Assign Disbursement Verification Officer"
-msgstr "มอบหมายเจ้าหน้าที่หมวดตรวจใบขอเบิก"
-
-#. module: disbursement
-msgid "Assignment Rules"
-msgstr "กฎการมอบหมาย"
-
-#. module: disbursement
-msgid "Assigned Officer"
-msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
-
-#. module: disbursement
-msgid "Assign to me"
-msgstr "รับงานนี้"
-
-#. module: disbursement
-msgid "Assign…"
-msgstr "มอบหมาย…"
-
-#. module: disbursement
-msgid "Unassign"
-msgstr "ถอนผู้รับผิดชอบ"
-
-#. module: disbursement
-msgid "Assign"
-msgstr "มอบหมาย"
-
-#. module: disbursement
-msgid "Assign Officer"
-msgstr "มอบหมายเจ้าหน้าที่"
-
-#. module: disbursement
-msgid "My Verifications"
-msgstr "งานตรวจของฉัน"
-
-#. module: disbursement
-msgid "Unassigned"
-msgstr "ยังไม่มีผู้รับผิดชอบ"
-
-#. module: disbursement
-msgid "Assigned as responsible verification officer"
-msgstr "ได้รับมอบหมายเป็นเจ้าหน้าที่หมวดตรวจผู้รับผิดชอบ"
-
-#. module: disbursement
-msgid "Apply Rules to Pending Requests"
-msgstr "นำกฎไปใช้กับใบขอเบิกที่รอตรวจ"
-
-#. module: disbursement
-msgid "Assignment Rules Applied"
-msgstr "นำกฎการมอบหมายไปใช้แล้ว"
-
-#. module: disbursement
-#, python-format
-msgid "%(assigned)s of %(total)s pending request(s) were assigned."
-msgstr "มอบหมายแล้ว %(assigned)s จาก %(total)s ใบที่รอตรวจ"
-
-#. module: disbursement
-#, python-format
-msgid "This document is already assigned to %s."
-msgstr "เอกสารนี้มีผู้รับผิดชอบแล้วคือ %s"
-
-#. module: disbursement
-msgid "Only a manager can unassign the officer."
-msgstr "เฉพาะผู้จัดการเท่านั้นที่ถอนผู้รับผิดชอบได้"
-
-#. module: disbursement
-msgid "Only a manager can assign another officer."
-msgstr "เฉพาะผู้จัดการเท่านั้นที่มอบหมายผู้รับผิดชอบคนอื่นได้"
-
-#. module: disbursement
-msgid "Disbursement Verification"
-msgstr "หมวดตรวจ"
-
-#. module: disbursement
-msgid "Verification"
-msgstr "หมวดตรวจ"
-
-#. module: disbursement
-msgid "My Work"
-msgstr "งานของฉัน"
-
-#. module: disbursement
-msgid "All Disbursement Requests"
-msgstr "ใบขอเบิกทั้งหมด"
-
-#. module: disbursement
-msgid "No disbursement request is assigned to you."
-msgstr "ยังไม่มีใบขอเบิกที่มอบหมายให้คุณ"
-
-#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
 msgid "Return"
 msgstr "ตีกลับ"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_return_request_wizard_form
 msgid "Return for Correction"
 msgstr "ตีกลับเพื่อแก้ไข"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_for_edit
 msgid "Returned for Correction"
 msgstr "ถูกตีกลับเพื่อแก้ไข"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_request_wizard__reason
 msgid "Reason"
 msgstr "เหตุผล"
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_return_request_wizard_form
 msgid "Reason for returning this request…"
 msgstr "ระบุเหตุผลที่ตีกลับใบขอเบิกนี้…"
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
 msgid "Resubmit to Verification"
 msgstr "ส่งกลับหมวดตรวจ"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
 #, python-format
 msgid "Returned for correction: %s"
 msgstr "ตีกลับเพื่อแก้ไข: %s"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
 msgid "Returned for correction"
 msgstr "ตีกลับเพื่อแก้ไข"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
 msgid "Corrected and returned to verification."
 msgstr "แก้ไขแล้ว ส่งกลับหมวดตรวจ"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
 #, python-format
 msgid "Only a request under verification (signed) can be returned."
 msgstr "ตีกลับได้เฉพาะใบที่อยู่ระหว่างหมวดตรวจ (สถานะ signed) เท่านั้น"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
 #, python-format
 msgid "Only a returned request in draft can be resubmitted."
 msgstr "ส่งกลับได้เฉพาะใบที่ถูกตีกลับและอยู่สถานะ draft เท่านั้น"
 
 #. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
 #, python-format
 msgid "Cannot resubmit a disbursement request with no lines."
 msgstr "ส่งกลับไม่ได้ เพราะใบขอเบิกไม่มีรายการ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form_return
+msgid "Return to Verification"
+msgstr "ตีกลับให้หมวดตรวจ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_verification
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_return
+msgid "Returned to Verification"
+msgstr "ถูกตีกลับให้หมวดตรวจ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__return_verification_reason
+msgid "Return to Verification Reason"
+msgstr "เหตุผลการตีกลับให้หมวดตรวจ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Returned to verification:"
+msgstr "ตีกลับให้หมวดตรวจ:"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+msgid "Only a verified or approved request can be returned to verification."
+msgstr "ตีกลับให้หมวดตรวจได้เฉพาะใบที่ตรวจสอบแล้ว (verified) หรืออนุมัติแล้ว (approved) เท่านั้น"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__returned_to_source
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search_return
+msgid "Returned to Source"
+msgstr "ถูกตีกลับไปต้นเรื่อง"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__return_source_reason
+msgid "Return to Source Reason"
+msgstr "เหตุผลการตีกลับไปต้นเรื่อง"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Returned to source for correction:"
+msgstr "ถูกตีกลับไปแก้ไขที่ต้นเรื่อง:"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_source_mixin__disbursement_return_note
+msgid "Correction Note"
+msgstr "หมายเหตุการแก้ไข"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_return_source_mixin__disbursement_return_bank_id
+msgid "Correction Bank Account"
+msgstr "บัญชีธนาคารที่แก้ไข"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid "This document cannot be returned in its current state."
+msgstr "ไม่สามารถตีกลับเอกสารนี้ในสถานะปัจจุบันได้"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid "Only returned documents can confirm a correction."
+msgstr "ยืนยันการแก้ไขได้เฉพาะเอกสารที่ถูกตีกลับเท่านั้น"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid "Correction confirmed; disbursement %s updated."
+msgstr "ยืนยันการแก้ไขแล้ว อัปเดตใบขอเบิก %s เรียบร้อย"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid ""
+"Source correction applied: payee bank, description and evidence updated. "
+"Please continue verification."
+msgstr "นำการแก้ไขจากต้นเรื่องมาใช้แล้ว: อัปเดตบัญชีธนาคารผู้รับเงิน คำอธิบาย และเอกสารหลักฐาน กรุณาดำเนินการตรวจสอบต่อ"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+msgid ""
+"This request was returned to its source document. Please wait for the "
+"correction to be confirmed before validating."
+msgstr "ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่องแล้ว กรุณารอการยืนยันการแก้ไขก่อนตรวจสอบ"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_source_correct
+msgid "Correct and confirm the returned document"
+msgstr "แก้ไขและยืนยันเอกสารที่ถูกตีกลับ"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_source_done
+msgid "Correction submitted to the disbursement officer"
+msgstr "ส่งการแก้ไขให้เจ้าหน้าที่เบิกจ่ายแล้ว"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_dr_await
+msgid "Disbursement returned - awaiting source correction"
+msgstr "ใบขอเบิกถูกตีกลับ - รอการแก้ไขจากต้นเรื่อง"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_dr_continue
+msgid "Source corrected - continue verification"
+msgstr "ต้นเรื่องแก้ไขแล้ว - ดำเนินการตรวจสอบต่อ"
+
+#. module: disbursement
+#: model:mail.activity.type,name:disbursement.mail_activity_dr_reverify
+msgid "Disbursement returned - please re-verify"
+msgstr "ใบขอเบิกถูกตีกลับ - กรุณาตรวจสอบใหม่"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid ""
+"<p><b>Returned to source for correction</b></p>"
+"<p>This request was returned to its source document "
+"<b>%(source)s</b> by the verification officer. It stays under "
+"verification until the correction is confirmed.<br/>"
+"Reason: <b>%(reason)s</b></p>"
+msgstr ""
+"<p><b>ตีกลับไปแก้ไขที่ต้นเรื่อง</b></p>"
+"<p>ใบขอเบิกนี้ถูกตีกลับไปยังต้นเรื่อง <b>%(source)s</b> "
+"โดยเจ้าหน้าที่ตรวจสอบ และยังคงอยู่ระหว่างการตรวจสอบ "
+"จนกว่าจะมีการยืนยันการแก้ไข<br/>"
+"เหตุผล: <b>%(reason)s</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid ""
+"<p><b>Returned for correction</b></p>"
+"<p>Returned to the requester and reset to draft so it can be "
+"corrected and resubmitted.<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ตีกลับเพื่อแก้ไข</b></p>"
+"<p>ตีกลับให้ผู้ขอเบิกและเปลี่ยนสถานะกลับเป็นร่าง เพื่อแก้ไขและส่งใหม่"
+"<br/>เหตุผล: <b>%s</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_request_assignment.py:0
+#, python-format
+msgid ""
+"<p><b>Returned to verification</b></p>"
+"<p>Returned to the verification officer for re-checking."
+"<br/>Reason: <b>%s</b></p>"
+msgstr ""
+"<p><b>ตีกลับให้หมวดตรวจ</b></p>"
+"<p>ตีกลับให้เจ้าหน้าที่ตรวจสอบเพื่อตรวจสอบใหม่"
+"<br/>เหตุผล: <b>%s</b></p>"
+
+#. module: disbursement
+#. odoo-python
+#: code:addons/disbursement/models/disbursement_return_source.py:0
+#, python-format
+msgid ""
+"<p><b>Returned for correction</b></p>"
+"<p>Disbursement <b>%(dr)s</b> was returned by the "
+"verification officer.<br/>Reason: <b>%(reason)s</b><br/>"
+"Please correct the payee bank, description or evidence, then "
+"click <b>Confirm Correction</b>.</p>"
+msgstr ""
+"<p><b>ถูกตีกลับเพื่อแก้ไข</b></p>"
+"<p>ใบขอเบิก <b>%(dr)s</b> ถูกตีกลับโดยเจ้าหน้าที่ตรวจสอบ"
+"<br/>เหตุผล: <b>%(reason)s</b><br/>"
+"กรุณาแก้ไขเลขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐาน แล้วกด "
+"<b>ยืนยันการแก้ไข</b></p>"
+

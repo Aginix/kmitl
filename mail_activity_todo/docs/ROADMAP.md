@@ -88,12 +88,21 @@ PoC + review hardening + quick wins are merged on
   `res.users`, fed into `_my_todo_domain`. M. Pairs with Claim.
 - **Auditor group for the Completed log** — a dedicated group with a broader
   `ir.rule` so compliance can read all history (today everyone, incl. admins,
-  sees only their own scope). S.
+  sees only their own scope, via `todo_log_own_rule`). **This is the real
+  enabler of accountability review** — without it a supervisor cannot read
+  another user's completion record. S.
+- **Log every completed activity, not only categorised Todos** — drop the
+  `filtered("todo_category")` gate on `_log_completed` so built-in / personal
+  activity completions are captured too. Deferred: adds write amplification and
+  is only useful once the auditor group above exists. S.
 
 ## Remaining — Tech debt / polish
 
-- **Backfill `todo_category`** on already-shipped activity types and any future
-  ones (the inbox now *hides* uncategorised, but tagging them surfaces them). S.
+- **Tag `todo_category` = `execution`** on activity types that must clear at the
+  source. Since [ADR-0006](./adr/0006-inbox-shows-all-assigned-activities.md) the
+  inbox shows uncategorised activities too (cleared via Mark as Read, like
+  Acknowledgement), so tagging is now about *clear-behaviour + grouping*, not
+  visibility. S.
 - **i18n** — export `i18n/kmitl_todo.pot` + `th.po` (Thai source via the agreed
   i18n route; ensure JS systray strings use `_t`). S.
 - **Document the security model** in CONTEXT.md/ADR-0001: Todo visibility ==

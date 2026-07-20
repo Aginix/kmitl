@@ -4,7 +4,22 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseRequestApproval(models.Model):
-    _inherit = 'purchase.request.approval'
+    _name = 'purchase.request.approval'
+    _inherit = ['purchase.request.approval', 'disbursement.return.source.mixin']
+    _disbursement_return_state = "approved"
+
+    state = fields.Selection(
+        selection_add=[("returned", "Returned")],
+        ondelete={"returned": "set default"},
+    )
+    disbursement_return_attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        relation="purchase_request_approval_dr_return_attachment_rel",
+        column1="approval_id",
+        column2="attachment_id",
+        string="Correction Evidence",
+        copy=False,
+    )
 
     use_purchase_order = fields.Boolean(
         string='Use Purchase Order',
@@ -112,6 +127,14 @@ class PurchaseRequestApproval(models.Model):
                 approval.billing_status = "cancel"
             else:
                 approval.billing_status = state_map.get(active[0].state, "draft")
+
+    # -- return-to-source contract (disbursement.return.source.mixin) -----
+    def _disbursement_get_request(self):
+        self.ensure_one()
+        return self._disbursement_pick_request(self.disbursement_request_ids)
+
+    def _disbursement_evidence_attachments(self):
+        return self.disbursement_return_attachment_ids
 
     def _prepare_disbursement_request_vals(self):
         return {

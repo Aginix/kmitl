@@ -1,5 +1,7 @@
 # Per-user read state lives in a side table, not on the activity
 
+> Note (since [ADR-0006](./0006-inbox-shows-all-assigned-activities.md)): the two readable categories collapsed to one, and uncategorised activities are cleared the same way. Read "FYI / Acknowledgement" below as **Acknowledgement**, and "the readable categories" as **everything that is not an Execution Todo**.
+
 "Mark as Read" must dismiss a Todo **for the reader only**. A group Todo (a `role ∩ OU` activity with no `user_id`) is seen by many people on one shared `mail.activity`; marking it read on the activity itself would clear it for the whole group and confuse everyone else. So read/dismissal is tracked in a thin side model `todo.read` (`activity_id × user_id × read_date`), and the inbox hides the activities the current user has read. The `mail.activity` stays the single source of truth for content, routing and deadline; the side table only records who has dismissed it.
 
 ## Why
@@ -12,6 +14,7 @@
 
 - **`is_read` boolean on `mail.activity`**: global — one reader clears it for the whole group. **Rejected** (the exact confusion this ADR exists to prevent).
 - **Route FYI through `mail.message` / `mail.notification`** (native per-user read + Discuss Inbox): splits the inbox across two object types and two surfaces. **Rejected** for the single-page goal.
+- **Drop per-user read entirely; clear readable Todos with the native "Mark Done"** (`_action_done`, which unlinks the activity + snapshots it to history): considered because it collapses the inbox to a single clear gesture. **Rejected** — native done is *global* (one member clears the shared group activity for everyone) and *irreversible* (the activity is gone, only a history row remains), whereas Mark-as-Read is *per-user* and *reversible* (Mark as Unread). A mis-click on an informational Todo must not destroy it for the whole group, so the gentler dismissal is kept and there is **no Mark-Done button in the inbox at all** ([ADR-0006](./0006-inbox-shows-all-assigned-activities.md)).
 
 ## Consequences
 

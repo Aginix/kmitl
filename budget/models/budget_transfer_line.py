@@ -12,6 +12,7 @@ class BudgetTransferLine(models.Model):
 
     _name = "budget.transfer.line"
     _description = "Budget Transfer Line"
+    _inherit = ["analytic.mixin"]
     _order = "transfer_id, sequence, id"
 
     # Basic Fields
@@ -55,18 +56,16 @@ class BudgetTransferLine(models.Model):
         help="Transfer amount for this line"
     )
 
-    # Analytics Distribution
-    analytic_distribution = fields.Json(
-        string="Analytic Distribution",
-        help="JSON containing the analytic distribution for this line"
-    )
+    # Analytic Distribution (JSON source of truth) is provided by analytic.mixin,
+    # which also adds search support and a GIN index. The convenience fields below
+    # sync with it via _compute_analytic_fields / _inverse_analytic_fields.
 
     # Analytic Display Fields (for easier UI handling)
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
         compute="_compute_analytic_fields",
-        inverse="_inverse_activity_analytic",
+        inverse="_inverse_analytic_fields",
         domain=[("root_plan_id.code", "=", "activities")],
         help="Activity analytic account"
     )
@@ -75,7 +74,7 @@ class BudgetTransferLine(models.Model):
         "account.analytic.account",
         string="ส่วนงาน",
         compute="_compute_analytic_fields",
-        inverse="_inverse_department_analytic",
+        inverse="_inverse_analytic_fields",
         domain=[("root_plan_id.code", "=", "departments")],
         help="Department analytic account"
     )
@@ -84,7 +83,7 @@ class BudgetTransferLine(models.Model):
         "account.analytic.account",
         string="กองทุน",
         compute="_compute_analytic_fields",
-        inverse="_inverse_fund_analytic",
+        inverse="_inverse_analytic_fields",
         domain=[("root_plan_id.code", "=", "funds")],
         help="Fund analytic account"
     )
@@ -93,7 +92,7 @@ class BudgetTransferLine(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         compute="_compute_analytic_fields",
-        inverse="_inverse_source_analytic",
+        inverse="_inverse_analytic_fields",
         domain=[("root_plan_id.code", "=", "sources")],
         help="Source analytic account"
     )
@@ -189,44 +188,18 @@ class BudgetTransferLine(models.Model):
                 if source:
                     line.source_analytic_id = source
 
-    def _update_analytic_distribution(self):
-        """Update analytic distribution JSON from individual fields"""
-        self.ensure_one()
-
-        distribution = {}
-        analytic_accounts = [
-            self.activity_analytic_id,
-            self.department_analytic_id,
-            self.fund_analytic_id,
-            self.source_analytic_id
-        ]
-
-        # Add each analytic account with 100% distribution
-        for account in analytic_accounts:
-            if account:
-                distribution[str(account.id)] = 100.0
-
-        self.analytic_distribution = distribution if distribution else False
-
-    def _inverse_activity_analytic(self):
-        """Update distribution when activity changes"""
+    def _inverse_analytic_fields(self):
+        """Sync the individual analytic fields back into analytic_distribution."""
         for line in self:
-            line._update_analytic_distribution()
-
-    def _inverse_department_analytic(self):
-        """Update distribution when department changes"""
-        for line in self:
-            line._update_analytic_distribution()
-
-    def _inverse_fund_analytic(self):
-        """Update distribution when fund changes"""
-        for line in self:
-            line._update_analytic_distribution()
-
-    def _inverse_source_analytic(self):
-        """Update distribution when source changes"""
-        for line in self:
-            line._update_analytic_distribution()
+            accounts = (
+                line.activity_analytic_id
+                | line.department_analytic_id
+                | line.fund_analytic_id
+                | line.source_analytic_id
+            )
+            line.analytic_distribution = (
+                {str(account.id): 100.0 for account in accounts} or False
+            )
 
     @api.depends(
         "budget_account_id",

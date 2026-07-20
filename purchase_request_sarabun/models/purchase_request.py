@@ -76,6 +76,7 @@ class PurchaseRequest(models.Model):
         self.message_post(
             body=_("Submitted to Sarabun for approval: %s") % document.name,
         )
+        self.button_to_approve()
         # return document.action_select_route()
         return {
             "type": "ir.actions.act_window",

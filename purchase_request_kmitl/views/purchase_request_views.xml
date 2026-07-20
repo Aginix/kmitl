@@ -14,7 +14,6 @@
             </xpath>
             <field name="origin" position="after">
                 <field name="assigned_to" optional="hide" />
-                <field name="purchase_type_id" invisible="1" />
                 <field name="procurement_method_id" optional="hide" />
             </field>
             <xpath expr="//field[@name='requested_by']" position="after">
@@ -49,7 +48,6 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
             <field name="requested_by" position="before">
-                <field name="purchase_type_id" />
                 <field name="procurement_method_id" />
                 <searchpanel>
                     <field
@@ -67,12 +65,6 @@
                 />
             </xpath>
             <group position="inside">
-                <filter
-                    string="Purchase Type"
-                    name="purchase_type"
-                    domain="[]"
-                    context="{'group_by': 'purchase_type_id'}"
-                />
                 <filter
                     string="Procurement Method"
                     name="procurement_method"
@@ -123,14 +115,31 @@
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify,rejected</attribute>
-                <attribute name="groups"></attribute>
+                <attribute name="states">to_verify,to_submit,to_approve</attribute>
+                <attribute
+                    name="groups"
+                >purchase_request.group_purchase_request_manager</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_draft']" position="after">
+                <button
+                    name="%(action_purchase_request_return_wizard)d"
+                    states="to_submit"
+                    string="Return"
+                    type="action"
+                />
+                <button
+                    name="button_cancel"
+                    states="draft,to_verify,to_submit,to_approve"
+                    string="Cancel"
+                    type="object"
+                />
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_approve,approved,in_progress,done</attribute>
+                >draft,to_verify,to_submit,to_approve,approved,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
@@ -143,14 +152,6 @@
                 >{'readonly': [('state','not in', ['to_approve', 'approved'])]}</attribute>
             </xpath>
 
-            <field name="requested_by" position="before">
-                <field name="to_create" invisible="True" />
-                <field name="procurement_method_ids" invisible="True" />
-                <field
-                    name="expense_reason"
-                    attrs="{'invisible': [('to_create', '!=', 'expense')], 'required': [('to_create', '=', 'expense')], 'readonly': [('is_editable','=', False)]}"
-                />
-            </field>
 
             <xpath
                 expr="//field[@name='line_ids']//tree/field[@name='name']"
@@ -177,7 +178,7 @@
                         />
                         <field
                             name="requested_by"
-                            widget="employee_detail_many2one" 
+                            widget="employee_detail_many2one"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field

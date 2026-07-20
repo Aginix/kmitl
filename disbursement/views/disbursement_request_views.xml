@@ -56,6 +56,18 @@
                     <span> เมื่อ </span>
                     <field name="budget_consumed_date" class="oe_inline" nolabel="1"/>
                 </div>
+                <!-- Returned to source for correction -->
+                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('returned_to_source', '=', False)]}">
+                    <field name="returned_to_source" invisible="1"/>
+                    <strong>Returned to source for correction:</strong>
+                    <field name="return_source_reason" class="oe_inline" nolabel="1" readonly="1"/>
+                </div>
+                <!-- Returned to the verification officer for a re-check -->
+                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('returned_to_verification', '=', False)]}">
+                    <field name="returned_to_verification" invisible="1"/>
+                    <strong>Returned to verification:</strong>
+                    <field name="return_verification_reason" class="oe_inline" nolabel="1" readonly="1"/>
+                </div>
                 <!-- Exception Alert -->
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
                     <p>
@@ -133,7 +145,7 @@
                                     <field name="partner_id" required="1" />
                                     <field name="partner_bank_id" optional="hide" />
                                     <field name="product_id" />
-                                    <field name="name" optional="hide" />
+                                    <field name="name" optional="show" />
                                     <field name="quantity" />
                                     <field name="price_unit" />
                                     <field name="tax_ids" widget="many2many_tags" optional="hide" />
@@ -160,7 +172,6 @@
                             <field name="wht_line_ids" nolabel="1">
                                 <tree create="0" delete="0" edit="0">
                                     <field name="partner_id" string="Disburser"/>
-                                    <field name="name" string="Name"/>
                                     <field name="wht_tax_id" string="WHT Item"/>
                                     <field name="price_subtotal" string="Amount Before WHT"/>
                                     <field name="amount_wht" string="WHT Deduction"/>

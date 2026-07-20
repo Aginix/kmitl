@@ -1,32 +1,6 @@
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
-# Dedicated activity types (see data/mail_activity_type_data.xml) so the
-# return/correction To-Dos can be routed and auto-resolved by activity_type_id
-# -- language-independent, unlike matching on the translated summary text.
-_ACT_AR_CORRECT = "agx_approval_disbursement.mail_activity_ar_correct"
-_ACT_AR_DONE = "agx_approval_disbursement.mail_activity_ar_done"
-_ACT_DR_AWAIT = "agx_approval_disbursement.mail_activity_dr_await"
-_ACT_DR_CONTINUE = "agx_approval_disbursement.mail_activity_dr_continue"
-
-
-def _schedule_todo(record, user, act_xmlid, note=False):
-    """Raise a To-Do of the given activity type on ``record`` for ``user``
-    (no-op without a user). The activity type's translated name is the title."""
-    if user:
-        record.activity_schedule(act_xmlid, user_id=user.id, note=note or "")
-
-
-def _resolve_todos(record, act_xmlid):
-    """Auto-resolve (remove) the open activities of ``act_xmlid`` on ``record``.
-
-    Matches on activity_type_id, so resolution works regardless of the language
-    the activity was scheduled in."""
-    act_type = record.env.ref(act_xmlid)
-    record.activity_ids.filtered(
-        lambda a: a.activity_type_id == act_type
-    ).unlink()
-
 
 class DisbursementRequest(models.Model):
     _inherit = "disbursement.request"
@@ -45,142 +19,11 @@ class DisbursementRequest(models.Model):
         ondelete={'approval.request': 'set null'},
     )
 
-    returned_to_approval = fields.Boolean(
-        string="Returned to Approval Request",
-        copy=False,
-        help="Set when this request was returned: it is kept as-is at 'signed' "
-             "and its approval request is bounced to 'returned' for correction. "
-             "Cleared once the correction is confirmed.",
-    )
-
-    def action_validate(self):
-        """Block validation while a correction is pending on the approval side.
-
-        The request is kept at 'signed' when returned, so without this guard the
-        officer could validate/approve (and obligate budget) against the stale
-        data before the requester confirms the correction."""
-        for record in self:
-            if record.returned_to_approval:
-                raise UserError(
-                    _(
-                        "This request was returned to its approval request. "
-                        "Please wait for the corrected approval to be confirmed "
-                        "before validating."
-                    )
-                )
-        res = super().action_validate()
-        # The officer acted on the correction: auto-resolve the "continue
-        # verification" / "submitted" To-Dos on both sides.
-        for record in self:
-            _resolve_todos(record, _ACT_DR_CONTINUE)
-            if record.approval_request_id:
-                _resolve_todos(record.approval_request_id.sudo(), _ACT_AR_DONE)
-        return res
-
-    def _action_return_for_edit(self, reason):
-        """Return an approval-linked request to its approval request instead of
-        to draft.
-
-        For a request created from an approval request, returning it keeps the
-        DR as-is at 'signed' (no cancel, no budget change) and bounces the
-        approval request to 'returned' so the requester can correct a limited
-        set of fields in place. Requests with no approval request keep the
-        standard signed -> draft return-for-correction behaviour."""
-        ar_linked = self.filtered("approval_request_id")
-        for record in ar_linked:
-            record._return_to_approval_request(reason)
-        remaining = self - ar_linked
-        if remaining:
-            return super(
-                DisbursementRequest, remaining
-            )._action_return_for_edit(reason)
-        return True
-
-    def _return_to_approval_request(self, reason):
-        """Bounce the linked approval request without touching this DR.
-
-        The DR is kept as-is at 'signed' (no cancel, no budget change); only the
-        approval request moves to 'returned' for correction. A banner is shown
-        on the DR and a To-Do is raised for the approval request's owner."""
-        self.ensure_one()
-        if self.state != "signed":
-            raise UserError(
-                _("Only a request under verification (signed) can be returned.")
-            )
-        self.returned_to_approval = True
-        # The officer may not have write access to approval.request; sudo the
-        # approval-side state change, chatter and To-Do.
-        approval = self.approval_request_id.sudo()
-        approval.action_return()
-        self.message_post(body=_("Returned to approval request: %s") % reason)
-        # Emphatic, hard-to-miss notice on the approval request chatter.
-        approval.message_post(
-            body=_(
-                "<p><b>Returned for correction</b></p>"
-                "<p>Disbursement <b>%(dr)s</b> was returned by the "
-                "verification officer.<br/>"
-                "Reason: <b>%(reason)s</b><br/>"
-                "Please correct the payee bank, description or disbursement "
-                "evidence, then click <b>Confirm Correction</b>.</p>",
-                dr=self.name,
-                reason=reason,
-            ),
-            subtype_xmlid="mail.mt_comment",
-        )
-        # Raise To-Dos on both sides: the requester must correct, the officer
-        # is notified their return is pending.
-        _schedule_todo(
-            approval,
-            approval.user_id or approval.create_uid,
-            _ACT_AR_CORRECT,
-            reason,
-        )
-        _schedule_todo(
-            self, self.assigned_to or self.user_id, _ACT_DR_AWAIT, reason
-        )
-        return True
-
-    def _apply_approval_correction(self, approval):
-        """Push a returned approval request's corrected payee bank, description
-        and disbursement evidence onto this request, then clear the returned
-        banner. The DR is kept at 'signed' for the officer to continue
-        verification."""
-        self.ensure_one()
-        self.note = approval.description
-        payee_bank = {
-            payee.partner_id.id: payee.partner_bank_id.id
-            for payee in approval.payee_ids
-            if payee.partner_bank_id
-        }
-        for line in self.line_ids:
-            bank = payee_bank.get(line.partner_id.id)
-            if bank:
-                line.partner_bank_id = bank
-        approval._copy_new_evidence_to_disbursement(self)
-        self.returned_to_approval = False
-        approval_sudo = approval.sudo()
-        # Auto-resolve the return To-Dos on both sides now the correction is in.
-        _resolve_todos(self, _ACT_DR_AWAIT)
-        _resolve_todos(approval_sudo, _ACT_AR_CORRECT)
-        # Notify both sides that the correction has been submitted.
-        _schedule_todo(
-            self,
-            self.assigned_to or self.user_id,
-            _ACT_DR_CONTINUE,
-            approval.description,
-        )
-        _schedule_todo(
-            approval_sudo,
-            approval.user_id or approval.create_uid,
-            _ACT_AR_DONE,
-        )
-        self.message_post(
-            body=_(
-                "Approval correction applied: payee bank, description and "
-                "evidence updated. Please continue verification."
-            )
-        )
-        return True
+    def _get_return_source(self):
+        """An approval-request-linked DR returns to its approval request for
+        correction (see disbursement.return.source.mixin / the generic
+        _action_return_for_edit dispatcher)."""
+        return self.approval_request_id or super()._get_return_source()
 
     def action_view_approval_request(self):
         self.ensure_one()

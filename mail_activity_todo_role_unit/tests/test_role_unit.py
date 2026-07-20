@@ -29,10 +29,10 @@ class TestRoleUnit(TransactionCase):
         cls.Activity = cls.env["mail.activity"]
         cls.Log = cls.env["todo.log"]
 
-        cls.type_fyi = cls.env["mail.activity.type"].create(
+        cls.type_ack = cls.env["mail.activity.type"].create(
             {
-                "name": "Test FYI",
-                "todo_category": "fyi",
+                "name": "Test Acknowledgement",
+                "todo_category": "acknowledgement",
                 "res_model": "test.todo.host.role.unit",
             }
         )
@@ -66,7 +66,7 @@ class TestRoleUnit(TransactionCase):
 
     def _schedule_group(self):
         return self.rec.activity_schedule(
-            activity_type_id=self.type_fyi.id,
+            activity_type_id=self.type_ack.id,
             responsible_role_id=self.role.id,
             operating_unit_id=self.ou.id,
         )
@@ -133,13 +133,13 @@ class TestRoleUnit(TransactionCase):
         """Retention GC must never delete a shared group Todo on one member's
         read (ADR-0003)."""
         self.env["ir.config_parameter"].sudo().set_param(
-            "mail_activity_todo.fyi_retention_days", "-1"
+            "mail_activity_todo.dismissed_retention_days", "-1"
         )
         group = self._schedule_group()
         self.env["todo.read"].create(
             {"activity_id": group.id, "user_id": self.officer.id}
         )
-        self.Activity._gc_read_fyi_todos()
+        self.Activity._gc_read_dismissed_todos()
         self.assertTrue(
             group.exists(), "shared group Todo must survive one member's read"
         )

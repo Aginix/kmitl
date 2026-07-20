@@ -164,3 +164,16 @@ msgstr "ไม่สามารถยกเลิกได้: ใบตั้�
 #, python-format
 msgid "Disbursement requests awaiting billing"
 msgstr "ใบขอเบิกอนุมัติแล้ว รอตั้งหนี้"
+
+#. module: disbursement_accounting_kmitl
+#: model_terms:ir.ui.view,arch_db:disbursement_accounting_kmitl.view_disbursement_request_form_inherit_accounting
+msgid "Return to Verification"
+msgstr "ตีกลับให้หมวดตรวจ"
+
+#. module: disbursement_accounting_kmitl
+#. odoo-python
+#: code:addons/disbursement_accounting_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Cannot return to verification: bill(s) %s exist. Cancel the bill(s) first."
+msgstr "ตีกลับให้หมวดตรวจไม่ได้: มีใบตั้งหนี้ %s อยู่ กรุณายกเลิกใบตั้งหนี้ก่อน"

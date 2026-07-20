@@ -243,7 +243,7 @@ class PurchaseRequest(models.Model):
             self.message_post(
                 body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
             )
-            self.button_to_approve()
+            self.button_to_submit()
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -259,7 +259,7 @@ class PurchaseRequest(models.Model):
     def _compute_to_approve_allowed(self):
         super()._compute_to_approve_allowed()
         for rec in self:
-            rec.to_approve_allowed = rec.state == "to_verify" and any(
+            rec.to_approve_allowed = rec.state == "to_submit" and any(
                 not line.cancelled and line.product_qty for line in rec.line_ids
             )
 
