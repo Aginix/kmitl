@@ -109,10 +109,8 @@
             </xpath>
 
             <button name="button_rejected" position="attributes">
-                <attribute name="states">to_approve</attribute>
-                <attribute
-                    name="groups"
-                >purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="states"/>
+                <attribute name="invisible">1</attribute>
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
@@ -122,19 +120,6 @@
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="after">
-                <button
-                    name="%(action_purchase_request_return_wizard)d"
-                    states="to_submit"
-                    string="Return"
-                    type="action"
-                />
-                <button
-                    name="%(action_purchase_request_return_wizard)d"
-                    states="to_verify"
-                    string="ตีกลับ"
-                    type="action"
-                    groups="budget.group_budget_commitment"
-                />
                 <button
                     name="button_cancel"
                     states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"

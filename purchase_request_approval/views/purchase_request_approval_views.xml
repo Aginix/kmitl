@@ -87,13 +87,6 @@
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
                     />
-                    <button
-                        name="button_reject"
-                        states="to_approve, approved"
-                        string="ตีกลับ"
-                        type="object"
-                        groups="purchase_request.group_purchase_request_manager"
-                    />
                     <field
                         name="state"
                         widget="statusbar"

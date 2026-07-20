@@ -1,2 +1,1 @@
 from . import purchase_request_approval_cancel_wizard
-from . import purchase_request_approval_reject_wizard

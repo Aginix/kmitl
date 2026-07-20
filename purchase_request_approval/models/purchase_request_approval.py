@@ -202,17 +202,6 @@ class PurchaseRequestApproval(models.Model):
             "context": {"default_approval_id": self.id},
         }
 
-    def button_reject(self):
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("ตีกลับใบขออนุมัติ (พจ.1)"),
-            "res_model": "purchase.request.approval.reject.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"default_approval_id": self.id},
-        }
-
     def _action_do_cancel(self, reason):
         self.ensure_one()
         pa_body = _(
@@ -227,21 +216,6 @@ class PurchaseRequestApproval(models.Model):
         self.write({"state": "cancel"})
         if self.request_id:
             self.request_id.button_cancel()
-
-    def _action_do_return(self, reason):
-        self.ensure_one()
-        pa_body = _(
-            "ตีกลับใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
-        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
-        pr_body = _(
-            "ใบขออนุมัติ (พจ.1) %(pa)s ถูกตีกลับ เหตุผล: %(reason)s"
-        ) % {"pa": self.name, "reason": reason}
-        self.request_id.message_post(
-            body='<span class="text-warning">%s</span>' % pr_body,
-            subtype_xmlid="mail.mt_note",
-        )
-        self.button_draft()
 
     def _action_do_reject(self, reason):
         self.ensure_one()
