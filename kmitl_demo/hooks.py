@@ -26,6 +26,9 @@ def post_init(cr, registry):
     users = env["res.users"].search([])
     users.lang = "th_TH"
 
+    # Seed e-Saraban org demo data (positions / document offices / registers)
+    _setup_sarabun_org_demo(env)
+
     # Create end-to-end purchase request → purchase order demo data
     _create_e2e_purchase_demo(env)
 
@@ -259,6 +262,58 @@ def _ensure_sarabun_register(env, department):
             }
         )
     return seq
+
+
+def _ensure_sarabun_position(env, name, code, department=None, sequence=10):
+    """Create a สารบรรณ Position (idempotent by code). Seeded with NO holder — a
+    res.users id in holder_ids would break the hr.employee FK; assign the real
+    personnel (คณบดี / ผอ. / อธิการบดี) before go-live."""
+    Position = env["sarabun.position"]
+    position = Position.search([("code", "=", code)], limit=1)
+    if not position:
+        position = Position.create(
+            {
+                "name": name,
+                "code": code,
+                "sequence": sequence,
+                "department_id": department.id if department else False,
+            }
+        )
+    return position
+
+
+def _setup_sarabun_org_demo(env):
+    """Seed e-Saraban org demo data across the whole KMITL tree:
+
+    - one อธิการบดี Position, a คณบดี for each faculty/college (คณะ/วิทยาลัย) and a
+      ผู้อำนวยการ for each office (สำนัก);
+    - every root ส่วนงาน marked as a document office (ธุรการหน่วยงาน,
+      ``is_sarabun_office``);
+    - a register (ทะเบียนหนังสือ) per root ส่วนงาน.
+
+    Root = a ส่วนงาน with no parent; the unit kind is read from the name prefix.
+    Positions carry no holder (see :func:`_ensure_sarabun_position`).
+    """
+    _logger.info("Seeding e-Saraban org demo (positions / offices / registers)...")
+    _ensure_sarabun_position(env, "อธิการบดี", "RECTOR", sequence=1)
+
+    roots = env["hr.department"].search([("parent_id", "=", False)], order="id")
+    for dept in roots:
+        name = dept.name or ""
+        code = dept.code or str(dept.id)
+        if name.startswith(("คณะ", "วิทยาลัย")):
+            _ensure_sarabun_position(
+                env, "คณบดี%s" % name, "DEAN-%s" % code, dept, sequence=5
+            )
+        elif name.startswith("สำนัก"):
+            _ensure_sarabun_position(
+                env, "ผู้อำนวยการ%s" % name, "DIR-%s" % code, dept, sequence=5
+            )
+        # ธุรการหน่วยงาน — every root ส่วนงาน is a document office
+        dept.is_sarabun_office = True
+        # ทะเบียนหนังสือ — one register per root ส่วนงาน
+        _ensure_sarabun_register(env, dept)
+    _logger.info("e-Saraban org demo seeded (%d root ส่วนงาน)", len(roots))
 
 
 def _process_sarabun_approve(env, origin_record, admin_user, department):
