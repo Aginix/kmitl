@@ -26,6 +26,9 @@ def post_init(cr, registry):
     users = env["res.users"].search([])
     users.lang = "th_TH"
 
+    # Seed e-Saraban org demo data (positions / document offices / registers)
+    _setup_sarabun_org_demo(env)
+
     # Create end-to-end purchase request → purchase order demo data
     _create_e2e_purchase_demo(env)
 
@@ -239,33 +242,116 @@ def _create_budget_appropriation(
     return move
 
 
-def _process_sarabun_approve(env, origin_record, admin_user, department):
-    """Drive sarabun document from creation through approval."""
-    result = origin_record.action_submit_to_sarabun()
-    doc = env["sarabun.document"].browse(result.get("res_id"))
+def _ensure_sarabun_register(env, department):
+    """Seed a per-ส่วนงาน register so action_send can allocate a number.
 
-    # Add routing line: admin as approver
-    env["sarabun.routing.line"].create(
+    The rebuilt engine (P3) blocks send when no sarabun.document.sequence exists
+    for the issuing unit, so the demo must provide one. One register per unit,
+    shared across all document types. Idempotent (unique per department).
+    """
+    seq = env["sarabun.document.sequence"].search(
+        [("sender_department_id", "=", department.id)],
+        limit=1,
+    )
+    if not seq:
+        seq = env["sarabun.document.sequence"].create(
+            {
+                "name": "ทะเบียนหนังสือ %s" % department.display_name,
+                "code": "REG-%s" % department.id,
+                "sender_department_id": department.id,
+            }
+        )
+    return seq
+
+
+def _ensure_sarabun_position(env, name, code, department=None, sequence=10):
+    """Create a สารบรรณ Position (idempotent by code). Seeded with NO holder — a
+    res.users id in holder_ids would break the hr.employee FK; assign the real
+    personnel (คณบดี / ผอ. / อธิการบดี) before go-live."""
+    Position = env["sarabun.position"]
+    position = Position.search([("code", "=", code)], limit=1)
+    if not position:
+        position = Position.create(
+            {
+                "name": name,
+                "code": code,
+                "sequence": sequence,
+                "department_id": department.id if department else False,
+            }
+        )
+    return position
+
+
+def _setup_sarabun_org_demo(env):
+    """Seed e-Saraban org demo data across the whole KMITL tree:
+
+    - one อธิการบดี Position, a คณบดี for each faculty/college (คณะ/วิทยาลัย) and a
+      ผู้อำนวยการ for each office (สำนัก);
+    - every root ส่วนงาน marked as a document office (ธุรการหน่วยงาน,
+      ``is_sarabun_office``);
+    - a register (ทะเบียนหนังสือ) per root ส่วนงาน.
+
+    Root = a ส่วนงาน with no parent; the unit kind is read from the name prefix.
+    Positions carry no holder (see :func:`_ensure_sarabun_position`).
+    """
+    _logger.info("Seeding e-Saraban org demo (positions / offices / registers)...")
+    _ensure_sarabun_position(env, "อธิการบดี", "RECTOR", sequence=1)
+
+    roots = env["hr.department"].search([("parent_id", "=", False)], order="id")
+    for dept in roots:
+        name = dept.name or ""
+        code = dept.code or str(dept.id)
+        if name.startswith(("คณะ", "วิทยาลัย")):
+            _ensure_sarabun_position(
+                env, "คณบดี%s" % name, "DEAN-%s" % code, dept, sequence=5
+            )
+        elif name.startswith("สำนัก"):
+            _ensure_sarabun_position(
+                env, "ผู้อำนวยการ%s" % name, "DIR-%s" % code, dept, sequence=5
+            )
+        # ธุรการหน่วยงาน — every root ส่วนงาน is a document office
+        dept.is_sarabun_office = True
+        # ทะเบียนหนังสือ — one register per root ส่วนงาน
+        _ensure_sarabun_register(env, dept)
+    _logger.info("e-Saraban org demo seeded (%d root ส่วนงาน)", len(roots))
+
+
+def _process_sarabun_approve(env, origin_record, admin_user, department):
+    """Drive a sarabun document from creation through approval (new engine API)."""
+    _ensure_sarabun_register(env, department)
+
+    origin_record.action_submit_to_sarabun()
+    doc = origin_record.active_sarabun_document_id
+
+    # post_init runs as SUPERUSER (no employee department), so set the issuing
+    # unit explicitly; addressee (เรียน) replaces the old free-text recipient.
+    doc.sender_department_id = department.id
+    doc.addressee = "ผู้บริหาร"
+
+    # Seed one ลงนาม-อนุมัติ step targeting the admin (was sarabun.routing.line).
+    # Sarabun person targets are hr.employee now — resolve (or create) admin's.
+    admin_employee = env["hr.employee"].search(
+        [("user_id", "=", admin_user.id)], limit=1
+    ) or env["hr.employee"].create(
+        {"name": admin_user.name, "user_id": admin_user.id}
+    )
+    env["sarabun.routing.step"].create(
         {
             "document_id": doc.id,
-            "sequence": 100,
-            "routing_type": "approve",
-            "recipient_type": "user",
-            "user_id": admin_user.id,
+            "order": 10,
+            "verb": env.ref("agx_sarabun.verb_sign_approve").id,
+            "target_mode": "person",
+            "employee_id": admin_employee.id,
+            "state": "waiting",
         }
     )
 
-    # Set required fields
-    doc.recipient = "ผู้บริหาร"
-
-    # Send document
+    # Send: draft → circulating (registers a number, activates stage 1, snapshots).
     doc.action_send()
 
-    # Approve as admin (switch user since post_init runs as SUPERUSER_ID)
-    doc_as_admin = doc.with_user(admin_user)
-    recipient = doc_as_admin.recipient_ids.filtered(lambda r: r.state == "new")
-    role = env.ref("agx_sarabun.role_system_admin")
-    recipient.with_user(admin_user).action_do_approve(signed_as_role_id=role.id)
+    # Act on the now-active step as its snapshot holder (admin).
+    active_step = doc.routing_step_ids.filtered(lambda s: s.state == "active")[:1]
+    active_step.act_on_step("complete", actor=admin_user)
 
     _logger.info(
         "Sarabun %s completed for %s,%s",

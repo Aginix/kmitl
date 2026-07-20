@@ -105,11 +105,6 @@ msgid "Logo"
 msgstr ""
 
 #. module: purchase_request_sarabun
-#: model:ir.model.fields,field_description:purchase_request_sarabun.field_purchase_request__main_sarabun_document_id
-msgid "Main Sarabun Document"
-msgstr "เลขที่หนังสือ"
-
-#. module: purchase_request_sarabun
 #. odoo-python
 #: code:addons/purchase_request_sarabun/models/purchase_request.py:0
 #, python-format

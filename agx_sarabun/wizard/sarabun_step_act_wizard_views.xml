@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_step_act_wizard_form" model="ir.ui.view">
+        <field name="name">sarabun.step.act.wizard.form</field>
+        <field name="model">sarabun.step.act.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Act on Step">
+                <field name="step_id" invisible="1"/>
+                <field name="document_id" invisible="1"/>
+                <field name="step_verb" invisible="1"/>
+                <field name="is_sign" invisible="1"/>
+                <field name="needs_target" invisible="1"/>
+                <field name="is_return" invisible="1"/>
+                <group>
+                    <field name="target_name" string="Step" readonly="1"/>
+                    <field name="disposition"/>
+                    <field name="note"
+                           attrs="{'required': [('disposition', '=', 'reject')]}"
+                           placeholder="เกษียน / comment..."/>
+                </group>
+                <group attrs="{'invisible': [('is_sign', '=', False)]}">
+                    <field name="signed_as_position_id" string="Sign in capacity"/>
+                </group>
+                <group string="Target" attrs="{'invisible': [('needs_target', '=', False)]}">
+                    <field name="target_mode"/>
+                    <field name="target_position_id"
+                           attrs="{'invisible': [('target_mode', '!=', 'position')]}"/>
+                    <field name="target_employee_id"
+                           attrs="{'invisible': [('target_mode', '!=', 'person')]}"/>
+                    <field name="target_department_id"
+                           attrs="{'invisible': [('target_mode', '!=', 'unit')]}"/>
+                    <field name="new_verb" attrs="{'invisible': [('disposition', '!=', 'direct')]}"/>
+                    <field name="new_for_info" attrs="{'invisible': [('disposition', '!=', 'direct')]}"/>
+                </group>
+                <group string="Return to" attrs="{'invisible': [('is_return', '=', False)]}">
+                    <field name="destination"/>
+                    <field name="resume_step_id"
+                           attrs="{'invisible': [('destination', '!=', 'resume_step')], 'required': [('destination', '=', 'resume_step')]}"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

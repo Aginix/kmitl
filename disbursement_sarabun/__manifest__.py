@@ -15,6 +15,7 @@
     "data": [
         "data/sarabun_route_template_data.xml",
         "views/disbursement_request_views.xml",
+        "reports/report_disbursement_request.xml",
     ],
     "installable": True,
     "auto_install": False,
