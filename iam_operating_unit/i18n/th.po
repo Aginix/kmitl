@@ -1,0 +1,54 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* iam_operating_unit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 17:54+0000\n"
+"PO-Revision-Date: 2026-07-19 17:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: iam_operating_unit
+#: model:ir.model.fields,field_description:iam_operating_unit.field_operating_unit__iam_user_count
+#: model_terms:ir.ui.view,arch_db:iam_operating_unit.view_operating_unit_tree_iam
+msgid "# Users"
+msgstr "จำนวนผู้ใช้"
+
+#. module: iam_operating_unit
+#: model:ir.model.fields,help:iam_operating_unit.field_operating_unit__iam_user_count
+msgid "Number of users assigned to this operating unit."
+msgstr "จำนวนผู้ใช้ที่กำหนดให้กับ OU นี้"
+
+#. module: iam_operating_unit
+#: model:ir.model,name:iam_operating_unit.model_operating_unit
+msgid "Operating Unit"
+msgstr "OU"
+
+#. module: iam_operating_unit
+#: model:ir.ui.menu,name:iam_operating_unit.menu_iam_operating_units
+#: model_terms:ir.ui.view,arch_db:iam_operating_unit.view_users_tree_iam_ou
+msgid "Operating Units"
+msgstr "OU"
+
+#. module: iam_operating_unit
+#: model_terms:ir.ui.view,arch_db:iam_operating_unit.view_operating_unit_form_iam
+msgid "Users"
+msgstr "ผู้ใช้"
+
+#. module: iam_operating_unit
+#: model_terms:ir.ui.view,arch_db:iam_operating_unit.view_users_search_iam_ou
+msgid "With Operating Unit"
+msgstr "มี OU"
+
+#. module: iam_operating_unit
+#: model_terms:ir.ui.view,arch_db:iam_operating_unit.view_users_search_iam_ou
+msgid "Without Operating Unit"
+msgstr "ไม่มี OU"

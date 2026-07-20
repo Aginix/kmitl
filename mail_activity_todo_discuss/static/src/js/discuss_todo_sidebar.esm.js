@@ -50,6 +50,10 @@ export class DiscussTodoSidebar extends LegacyComponent {
     onClickGroup(group) {
         this.discuss.openTodos(group.model);
     }
+
+    onClickHistory() {
+        this.discuss.openTodoHistory();
+    }
 }
 
 Object.assign(DiscussTodoSidebar, {
