@@ -121,6 +121,16 @@ class PurchaseRequest(models.Model):
         message = '<span class="text-danger">%s</span>' % title
         return message
 
+    def _purchase_request_approval_rejected_message_content(self, approval):
+        title = _(
+            "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected."
+        ) % {
+            "pr_name": self.name,
+            "pa_name": approval.name,
+        }
+        message = '<span class="text-danger">%s</span>' % title
+        return message
+
     def _get_record_url(self):
         return "/web#id={}&model={}&view_type=form".format(self.id, self._name)
 

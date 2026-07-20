@@ -9,7 +9,7 @@
                 decoration-success="state in ('approved')"
                 decoration-muted="state == 'draft'"
                 decoration-warning="state == 'to_approve'"
-                decoration-danger="state == 'cancel'"
+                decoration-danger="state in ('cancel', 'reject')"
                 create="0"
                 edit="0"
                 delete="0"
@@ -30,7 +30,7 @@
                 decoration-success="state in ('approved')"
                 decoration-muted="state == 'draft'"
                 decoration-warning="state == 'to_approve'"
-                decoration-danger="state == 'cancel'"
+                decoration-danger="state in ('cancel', 'reject')"
                 optional="show"
             />
             <field name="account_fiscal_year_id" optional="show"/>
@@ -53,7 +53,7 @@
                 <header>
                     <button
                         name="button_draft"
-                        states="to_approve,cancel"
+                        states="to_approve,cancel,reject"
                         string="Reset"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
@@ -90,7 +90,7 @@
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,to_approve,approved"
+                        statusbar_visible="draft,to_approve,approved,reject"
                         statusbar_colors='{"approved":"blue"}'
                     />
                 </header>
@@ -130,6 +130,12 @@
                         title="Cancelled"
                         bg_color="bg-danger"
                         attrs="{'invisible': [('state', '!=', 'cancel')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Rejected"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('state', '!=', 'reject')]}"
                     />
                     <group>
                         <group name="main_info" string="Main Information">

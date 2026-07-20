@@ -847,11 +847,10 @@ msgid "Reject"
 msgstr "ตีกลับ"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__rejected
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__reject
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Rejected"
-msgstr "ถูกตีกลับ"
+msgstr "ปฎิเสธ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected_message

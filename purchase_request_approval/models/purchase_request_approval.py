@@ -48,6 +48,7 @@ class PurchaseRequestApproval(models.Model):
             ("draft", "Draft"),
             ("to_approve", "To be approved"),
             ("approved", "Approved"),
+            ("reject", "Rejected"),
             ("cancel", "Cancel"),
         ],
         string="Status",
@@ -216,6 +217,21 @@ class PurchaseRequestApproval(models.Model):
         if self.request_id:
             self.request_id.button_cancel()
 
+    def _action_do_reject(self, reason):
+        self.ensure_one()
+        pa_body = _(
+            "ปฎิเสธใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = self.request_id._purchase_request_approval_rejected_message_content(
+            self
+        )
+        pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "reject"})
+        if self.request_id:
+            self.request_id.button_cancel()
+
     def copy(self, default=None):
         default = dict(default or {})
         self.ensure_one()
@@ -353,7 +369,7 @@ class PurchaseRequestApproval(models.Model):
             self.name, self.id, document.name
         )
         reason = recipient.comment if recipient else _("No reason provided")
-        self._action_do_cancel(reason)
+        self._action_do_reject(reason)
 
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Purchase Request Approval report."""

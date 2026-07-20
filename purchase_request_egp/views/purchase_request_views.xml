@@ -56,14 +56,6 @@
                     attrs="{'invisible': ['|', ('state', '!=', 'in_egp'), ('egp_status', '!=', 'waiting')]}"
                     class="btn-primary"
                 />
-                <!-- Reject button while parked in e-GP -->
-                <button
-                    name="button_rejected_egp"
-                    attrs="{'invisible': ['|', ('is_egp', '=', False), ('state', '!=', 'in_egp')]}"
-                    string="Reject"
-                    type="object"
-                    groups="purchase_request.group_purchase_request_manager"
-                />
             </xpath>
             <xpath expr="//button[@type='action']" position="after">
                 <field name="show_egp_create_purchase_order_button" invisible="1" />
