@@ -42,17 +42,23 @@ _Avoid_: the old `recipient_type` vocabulary "user / department / role"; framing
 
 ### Step verbs (what a step requires)
 
-Step verbs are **admin-configurable master data** (`sarabun.verb`); the three built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. The internal behaviour model (how a verb drives gating / completion / signing) is **provisional, pending review after real use**.
+Step verbs are **admin-configurable master data** (`sarabun.verb`); the built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. A verb carries **three independent axes** (ADR-0008): **`gating`** (must be positively completed for its Stage to pass), **`show_signature`** (renders a signature block on the official document — the แสดง / ไม่แสดงลายเซ็น toggle), and **`is_signature`** (the authoritative approval-sign that closes the ดึงกลับ / ยกเลิก window and signs in the step's Position capacity; only ลงนาม-อนุมัติ). Invariant: `is_signature ⇒ show_signature`. The model is **provisional, pending review after real use**.
 
-**รับทราบ (Acknowledge)**:
-For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel.
+**รับทราบ (Acknowledge)** — gating ✗ · show_signature ✗:
+For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel; renders nothing on the document.
 
-**เห็นชอบ (Endorse)**:
-Mid-chain gatekeeping — the actor reviews and passes upward with an opinion. **Gating**; may also ตีกลับ or ปฏิเสธ.
+**ตรวจสอบ / พิจารณา (Verify / Consider)** — gating ✓ · show_signature ✗:
+An intermediate actor (often a เจ้าหน้าที่ธุรการ / หัวหน้างาน) must review before the หนังสือ moves on, but **carries no signature** — their name is in the Route, not on the letter.
 
-**ลงนาม-อนุมัติ (Sign-Approve)**:
-The authority's decision **and** signature, made in the capacity of the step's target Position. **Gating**. Signing and approving are one verb for now (split deferred until a real case appears).
-_Avoid_: "approve" on its own (it carries the signature)
+**ส่งต่อ (Forward)** — gating ✗ · show_signature ✗:
+A pass-along in the chain; name in the Route, no signature.
+
+**เห็นชอบ (Endorse)** — gating ✓ · show_signature ✓:
+Mid-chain gatekeeping — the actor reviews and passes upward with an opinion, **signing** their endorsement. **Gating**; may also ตีกลับ or ปฏิเสธ. Not the authoritative sign (does not close recall).
+
+**ลงนาม-อนุมัติ (Sign-Approve)** — gating ✓ · show_signature ✓ · is_signature ✓:
+The authority's decision **and** signature, made in the capacity of the step's target Position. **Gating**, and the authoritative sign = ส่งออก. Signing and approving are one verb for now (split deferred until a real case appears).
+_Avoid_: "approve" on its own (it carries the signature); coupling "shows a signature" with "gating" (they are independent axes — ADR-0008)
 
 ### Dispositions (how the active actor responds)
 
@@ -103,17 +109,21 @@ _Avoid_: numbering (reserve "register" for the official, audited act)
 
 ### Signing & record
 
+**ผู้จัดทำ/ผู้ส่ง step (originator, `is_originator`)**:
+The mandatory, locked **first Routing Step** — the หนังสือ's ผู้จัดทำ/ผู้ส่ง. Present from creation (row 1); it **cannot be removed** and only its **verb** is editable (a per-document default — signing by default). It is **auto-completed at send** (ส่ง); whether it **renders a signature depends on its verb's `show_signature`** (ADR-0008): a **signing drafter** (ลงนามผู้จัดทำ, show_signature ✓) puts the sender's signature on the document, while a **non-signing drafter** (จัดทำ/ร่าง, show_signature ✗ — e.g. a เจ้าหน้าที่ธุรการ who ร่าง but does not sign, leaving the หัวหน้าส่วนงาน to ตรวจสอบ + ลงนามส่งออก) has only their name in the Route, **no signature**. Either way the originator is **excluded from `has_signed` / strongest-verb** — an originator step is not an approval, so the sender may still **ดึงกลับ / ยกเลิกการส่ง** after sending (until a real approver signs). It is `copy=False` (a duplicate gets a fresh originator for its own sender). Sending is gated behind a **confirm wizard**.
+_Avoid_: assuming the drafter always signs (a non-signing ธุรการ drafter is a first-class case — ADR-0008); counting the originator step as an approval (would block recall); a route that starts with an approver (the ผู้จัดทำ is always first); letting a user delete or re-target it
+
 **ฉบับลงนาม (Signed copy)**:
 The **immutable PDF snapshot** frozen when a Document reaches `completed`. From then on portal/print serve this file, never a live render. Before completion, preview renders live (own report, or a delegated origin report).
 _Avoid_: attachment, printout
 
 **Signature block**:
-The rendered authority line on the Document — the digitized signature image (`hr.employee.signature`, from `hr_employee_digitized_signature`), the signer's name, the Position signed in (`signed_as_position_id`, may wrap to several lines), and the **signing date in พ.ศ. — date only, no time**. Composed once per completed ลงนาม-อนุมัติ step from the snapshot actor. The academic prefix (`hr.employee.academic_standing_title`), the รักษาการแทน capacity, and the **e-sign metadata line** (time-of-day, the "Non-PKI Server Sign-LN" method label, the Signature Code) are all **phase-2** — the metadata line lands with PKI.
-_Avoid_: signature (reserve for the act/data, not the rendered block); printing the sign-method label / Signature Code / time-of-day before PKI exists
+The rendered authority line on the Document — the การดำเนินการ (verb) label, the digitized signature image (`hr.employee.signature`, from `hr_employee_digitized_signature`), the signer's name, the Position/target signed in (`signed_as_position_id`, else `target_name`), the **signing date in พ.ศ. — date only, no time**, and any **เกษียน note (ความเห็น)**. Composed for **every positive-done `show_signature` step** (the signing ผู้จัดทำ + เห็นชอบ + ลงนาม-อนุมัติ) in **one uniform ลงนาม/อนุมัติ format** (ADR-0008) — endorsers are shown as signatures too, **not** split into a separate เกษียน table; a non-signing step (ตรวจสอบ / พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) renders **nothing** here. The academic prefix (`hr.employee.academic_standing_title`), the รักษาการแทน capacity, and the **e-sign metadata line** (time-of-day, the "Non-PKI Server Sign-LN" method label, the Signature Code) are all **phase-2** — the metadata line lands with PKI.
+_Avoid_: signature (reserve for the act/data, not the rendered block); splitting endorsers into a separate table; rendering a non-`show_signature` step as a signature; printing the sign-method label / Signature Code / time-of-day before PKI exists
 
 **เกษียน trail**:
-The accumulated endorsement/signing history (who, when, in what capacity, with what comment) **rendered onto the official document** — not hidden in chatter. Scoped to positive endorsement/signing (เห็นชอบ / ลงนาม-อนุมัติ) only.
-_Avoid_: history, log; rendering **backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) onto the official document — those are internal routing history kept in the audit/chatter with their required reason, never printed on the หนังสือ
+The accumulated endorsement/signing history (who, when, in what capacity, with what comment). As of **ADR-0008 it is audit-only** — kept on the Routing Steps + chatter and visible in the Route, **no longer rendered onto the official document** (the document shows **signatures only** — the `show_signature` steps). A signing step's own ความเห็น still shows **under its signature block**, but non-signing checks (ตรวจสอบ / พิจารณา / ส่งต่อ) leave no mark on the letter.
+_Avoid_: history, log; printing the trail on the official document (superseded — ADR-0008); rendering **backward-move** events (ดึงกลับ / ยกเลิกการส่ง / ตีกลับ / ปฏิเสธ) anywhere on the หนังสือ — those are internal routing history kept in the audit/chatter with their required reason
 
 ### Access
 
@@ -175,9 +185,9 @@ _Avoid_: rendering `content` on a has-source PDF (covering note removed with the
 An **optional internal note** (rich text) on the หนังสือ, captured after the body — **not part of the letter body** and not rendered as the official content. For working notes.
 _Avoid_: conflating หมายเหตุ with เนื้อหา (content) — remark is internal, content is the letter itself
 
-**Endorsement block (บล็อกลายเซ็น + เกษียน)**:
-The reusable rendered **tail** of an official document — the **เกษียน trail** + the **Signature block(s)**. Owned by agx_sarabun as a single QWeb layout that the **source report `t-call`s at its own end**: the origin *embeds* sarabun's block; sarabun no longer wraps the origin. The Document to render is resolved from the origin via `active_sarabun_document_id`. The old prepended **ใบปะหน้าสารบรรณ (cover sheet)** and the front-merge of a separate sarabun page are **removed**.
-_Avoid_: cover sheet / ใบปะหน้า prepended to the origin; PDF-merging a separate sarabun page in front of the body; re-keying origin content into a memo template
+**Endorsement block (บล็อกลายเซ็น)**:
+The reusable rendered **tail** of an official document — the **Signature block(s)** (as of ADR-0008, **signatures only**; the เกษียน trail is no longer printed). Owned by agx_sarabun as a single QWeb layout that the **source report `t-call`s at its own end**: the origin *embeds* sarabun's block; sarabun no longer wraps the origin. It is **self-limiting** — it renders only positive-done `show_signature` steps, so a draft shows nothing. The Document to render is resolved from the origin via `active_sarabun_document_id`. The old prepended **ใบปะหน้าสารบรรณ (cover sheet)** and the front-merge of a separate sarabun page are **removed**.
+_Avoid_: printing the เกษียน trail here (signatures only — ADR-0008); cover sheet / ใบปะหน้า prepended to the origin; PDF-merging a separate sarabun page in front of the body; re-keying origin content into a memo template
 
 **Standalone document report (no-source)**:
 For a Document with **no source report** (a composed บันทึกข้อความ / หนังสือเวียน), agx_sarabun renders its **own** whole document — official header (หน่วยงาน / ที่ / วันที่ / เรื่อง / เรียน) + **เนื้อหา (content)** body + the same Endorsement block — as the official PDF. Today every real Document has a source report, so this is a **planned seam**; the full regulation บันทึกข้อความ layout (ครุฑ, ด่วน label, หมายเหตุ footer, in-body hyperlinks — per the KMITL example) is **still to be designed**.

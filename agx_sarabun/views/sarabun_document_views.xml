@@ -28,7 +28,7 @@
         <field name="arch" type="xml">
             <form js_class="sarabun_document_form">
                 <header>
-                    <button name="action_send" type="object" string="Send"
+                    <button name="action_open_send_wizard" type="object" string="Send"
                             class="oe_highlight"
                             attrs="{'invisible': [('state', 'not in', ('draft', 'returned'))]}"/>
                     <button name="action_act_on_my_step" type="object"
@@ -144,6 +144,7 @@
                                 <tree decoration-muted="state == 'skipped'"
                                       decoration-success="state == 'done' and disposition in ('complete','direct')"
                                       decoration-info="state == 'active'">
+                                    <field name="is_originator" string="ผู้จัดทำ" optional="show"/>
                                     <field name="order" string="ลำดับ"/>
                                     <field name="verb"/>
                                     <field name="for_info" string="CC"/>
@@ -156,20 +157,26 @@
                                     <field name="note" readonly="1" optional="hide"/>
                                 </tree>
                                 <form string="เส้นทางเอกสาร (Routing Step)">
+                                    <!-- Originator (ผู้จัดทำ/ผู้ส่ง) row is locked: only the
+                                         verb (การดำเนินการ) may be changed; it cannot be
+                                         deleted (enforced in the model). -->
+                                    <field name="is_originator" invisible="1"/>
                                     <group>
                                         <group name="step_what">
-                                            <field name="order" string="ลำดับ"/>
+                                            <field name="order" string="ลำดับ"
+                                                   attrs="{'readonly': [('is_originator', '=', True)]}"/>
                                             <field name="verb"/>
                                         </group>
                                         <group>
-                                            <field name="for_info" string="สำเนาเรียน (CC)"/>
+                                            <field name="for_info" string="สำเนาเรียน (CC)"
+                                                   attrs="{'readonly': [('is_originator', '=', True)]}"/>
                                         </group>
                                     </group>
                                     <group name="step_who" col="2">
-                                        <field name="target_mode" colspan="1" widget="radio"/>
-                                        <field name="position_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                                        <field name="employee_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
-                                        <field name="department_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                        <field name="target_mode" colspan="1" widget="radio" attrs="{'readonly': [('is_originator', '=', True)]}"/>
+                                        <field name="position_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'position')], 'required': [('target_mode', '=', 'position')], 'readonly': [('is_originator', '=', True)]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                        <field name="employee_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'person')], 'required': [('target_mode', '=', 'person')], 'readonly': [('is_originator', '=', True)]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                        <field name="department_id" colspan="2" attrs="{'invisible': [('target_mode', '!=', 'unit')], 'required': [('target_mode', '=', 'unit')], 'readonly': [('is_originator', '=', True)]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
                                     </group>
 
                                     <group string="ผู้ดำเนินการปัจจุบัน (Current Holders)" attrs="{'invisible': [('target_mode', '=', 'person')]}" col="4">

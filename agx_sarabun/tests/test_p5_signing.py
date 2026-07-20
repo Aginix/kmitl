@@ -27,17 +27,48 @@ class TestP5Signing(SarabunCommon):
         self.assertTrue(doc.signed_at)
         self.assertTrue(doc.signed_pdf)
 
-    def test_signature_and_kasian_trail(self):
-        """_signature_steps = the sign step; the เกษียน trail = endorse + sign."""
+    def test_signature_block_and_trail_semantics(self):
+        """ADR-0008 three axes. _signature_steps = the authoritative sign only
+        (is_signature — the originator is no longer is_signature). _signature_block_steps
+        = every RENDERED signature (show_signature: the signing ผู้จัดทำ + เห็นชอบ +
+        ลงนาม-อนุมัติ). _kasian_trail_steps = the audit trail (gating), NOT rendered on
+        the document."""
         doc = self._make_doc()
+        originator = doc.routing_step_ids.filtered("is_originator")
         s_endorse = self._add_step(doc, order=10, verb="endorse", user=self.user_a)
         s_sign = self._add_step(doc, order=20, verb="sign_approve", user=self.user_b)
         doc.action_send()
         self._act(s_endorse, "complete", self.user_a)
         with self.mute_pdf():
             self._act(s_sign, "complete", self.user_b)
+        # Authoritative sign = the ลงนาม-อนุมัติ step only.
         self.assertEqual(doc._signature_steps(), s_sign)
+        # Rendered signatures = show_signature steps: signing ผู้จัดทำ + เห็นชอบ + ลงนาม.
+        self.assertEqual(doc._signature_block_steps(), originator | s_endorse | s_sign)
+        # Audit trail (gating) — endorse + sign; not printed on the document.
         self.assertEqual(doc._kasian_trail_steps(), s_endorse | s_sign)
+
+    def test_nonsigning_drafter_shows_no_signature(self):
+        """ADR-0008: a เจ้าหน้าที่ธุรการ may ร่าง without signing — the originator carries
+        the non-signing จัดทำ/ร่าง verb, so their name is in the Route but NO signature
+        renders; the หัวหน้าส่วนงาน's ลงนาม-อนุมัติ is the only signature, and the sender
+        may still ดึงกลับ (has_signed False) until it happens."""
+        doc = self._make_doc()
+        originator = doc.routing_step_ids.filtered("is_originator")
+        originator.verb = self._verb("prepare")  # ธุรการร่าง — ไม่ลงนาม
+        head = self._add_step(doc, order=10, verb="sign_approve",
+                              target_mode="position", position=self.pos)
+        doc.action_send()
+        # Drafter auto-completed at send, but is not a signature; recall still open.
+        self.assertEqual(originator.state, "done")
+        self.assertNotIn(originator, doc._signature_block_steps())
+        self.assertFalse(doc.has_signed)
+        # Head signs → the only signature on the document; the หนังสือ completes.
+        with self.mute_pdf():
+            self._act(head, "complete", self.user_a, signed_as_position_id=self.pos.id)
+        self.assertTrue(doc.is_completed)
+        self.assertTrue(doc.has_signed)
+        self.assertEqual(doc._signature_block_steps(), head)
 
     def test_get_official_pdf_serves_frozen_bytes(self):
         """Once frozen, _get_official_pdf returns the stored bytes (no live render)."""

@@ -1,29 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Built-in routing verbs. noupdate so admin relabels survive upgrades; the
-         engine references these by xmlid/code and by the behaviour flags below. -->
+    <!-- Built-in routing verbs (ADR-0008). noupdate so admin relabels survive
+         upgrades; the engine references these by xmlid and by the three behaviour
+         flags: gating (คุมคิว) / show_signature (แสดงลายเซ็น) / is_signature
+         (ลายเซ็นเชิงอำนาจ — closes the recall window). Invariant: is_signature ⇒
+         show_signature. -->
     <data noupdate="1">
+        <!-- ผู้จัดทำที่ลงนาม — the drafter signs at send. show_signature so it renders
+             in the signature block; NOT is_signature (an originator signature is not an
+             approval, so the engine excludes it from has_signed / strongest_verb —
+             recall stays open); NOT gating (auto-completed at send). -->
+        <record id="verb_originate" model="sarabun.verb">
+            <field name="name">ลงนามผู้จัดทำ (เจ้าของเรื่อง)</field>
+            <field name="sequence">5</field>
+            <field name="rank">1</field>
+            <field name="gating" eval="False"/>
+            <field name="show_signature" eval="True"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
+        <!-- ผู้จัดทำที่ไม่ลงนาม — a เจ้าหน้าที่ธุรการ/งานสารบรรณ who ร่าง but does not
+             sign (leaving the หัวหน้าส่วนงาน to ตรวจสอบ + ลงนามส่งออก). Name in the
+             Route, no signature on the letter. -->
+        <record id="verb_prepare" model="sarabun.verb">
+            <field name="name">จัดทำ/ร่าง (ไม่ลงนาม)</field>
+            <field name="sequence">6</field>
+            <field name="rank">1</field>
+            <field name="gating" eval="False"/>
+            <field name="show_signature" eval="False"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
         <record id="verb_acknowledge" model="sarabun.verb">
             <field name="name">รับทราบ (Acknowledge)</field>
             <field name="sequence">10</field>
             <field name="rank">1</field>
             <field name="gating" eval="False"/>
+            <field name="show_signature" eval="False"/>
             <field name="is_signature" eval="False"/>
         </record>
 
+        <!-- ตรวจสอบ / พิจารณา — an intermediate actor must review before the หนังสือ
+             moves on, but carries no signature (name in the Route only). Gating. -->
+        <record id="verb_verify" model="sarabun.verb">
+            <field name="name">ตรวจสอบ (Verify)</field>
+            <field name="sequence">15</field>
+            <field name="rank">2</field>
+            <field name="gating" eval="True"/>
+            <field name="show_signature" eval="False"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
+        <record id="verb_consider" model="sarabun.verb">
+            <field name="name">พิจารณา (Consider)</field>
+            <field name="sequence">16</field>
+            <field name="rank">2</field>
+            <field name="gating" eval="True"/>
+            <field name="show_signature" eval="False"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
+        <!-- ส่งต่อ — a pass-along in the chain; name in the Route, no signature,
+             non-gating. -->
+        <record id="verb_forward" model="sarabun.verb">
+            <field name="name">ส่งต่อ (Forward)</field>
+            <field name="sequence">17</field>
+            <field name="rank">1</field>
+            <field name="gating" eval="False"/>
+            <field name="show_signature" eval="False"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
+        <!-- เห็นชอบ — mid-chain gatekeeping; signs the endorsement (show_signature) but
+             is not the authoritative sign (does not close recall). Gating. -->
         <record id="verb_endorse" model="sarabun.verb">
             <field name="name">เห็นชอบ (Endorse)</field>
             <field name="sequence">20</field>
             <field name="rank">2</field>
             <field name="gating" eval="True"/>
+            <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
         </record>
 
+        <!-- ลงนาม-อนุมัติ — the authoritative sign = ส่งออก. Gating + show_signature +
+             is_signature (closes the recall window; signs in the step's Position). -->
         <record id="verb_sign_approve" model="sarabun.verb">
             <field name="name">ลงนาม-อนุมัติ (Sign/Approve)</field>
             <field name="sequence">30</field>
             <field name="rank">3</field>
             <field name="gating" eval="True"/>
+            <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="True"/>
         </record>
     </data>

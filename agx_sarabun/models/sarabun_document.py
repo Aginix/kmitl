@@ -331,6 +331,15 @@ class SarabunDocument(models.Model):
         employee = self.env.user.employee_id
         return employee.department_id.id if employee and employee.department_id else False
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Every หนังสือ starts with the mandatory ผู้จัดทำ/ผู้ส่ง step (row 1) so it is
+        always the first name in the Route (and locked from removal)."""
+        docs = super().create(vals_list)
+        for doc in docs:
+            doc._ensure_originator_step()
+        return docs
+
     # === Computes ===
     @api.depends("state")
     def _compute_state_flags(self):
@@ -360,11 +369,17 @@ class SarabunDocument(models.Model):
         "routing_step_ids.state",
         "routing_step_ids.disposition",
         "routing_step_ids.verb",
+        "routing_step_ids.is_originator",
     )
     def _compute_strongest_verb_done(self):
         for record in self:
+            # Exclude the originator (ผู้จัดทำ) — their auto-signature at send is not
+            # an approval, so it must not set has_signed (which would block the
+            # sender's own ดึงกลับ / ยกเลิกการส่ง right after sending).
             done = record.routing_step_ids.filtered(
-                lambda s: s.state == "done" and s.disposition in POSITIVE_DISPOSITIONS
+                lambda s: s.state == "done"
+                and s.disposition in POSITIVE_DISPOSITIONS
+                and not s.is_originator
             )
             strongest = done.mapped("verb").sorted(key=lambda v: v.rank)[-1:]
             record.strongest_verb_id = strongest
@@ -530,22 +545,83 @@ class SarabunDocument(models.Model):
 
     # === Send / Recall (lifecycle transitions) ===
     def action_send(self):
-        """draft|returned → circulating: seed (if needed), register (P3), activate stage 1."""
+        """draft|returned → circulating: ensure the ผู้จัดทำ step, seed the approver
+        chain (if needed), auto-sign the originator (ส่ง = ลงนามผู้จัดทำ), register (P3),
+        activate stage 1."""
         for doc in self:
             if doc.state not in ("draft", "returned"):
                 raise UserError(_("Only draft or returned documents can be sent."))
-            if doc.state == "draft" and not doc.routing_step_ids:
+            doc._ensure_originator_step()
+            # Seed the approver chain only when it is still empty (the originator
+            # step alone doesn't count).
+            if doc.state == "draft" and not doc.routing_step_ids.filtered(
+                lambda s: not s.is_originator
+            ):
                 doc._seed_route_from_template()
             if not doc.routing_step_ids.filtered("gating"):
                 raise UserError(_(
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
+            doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
             doc._assign_register_number()  # P3: atomic per-(ส่วนงาน × type) allocation
             doc.state = "circulating"
             doc.message_post(body=_("Document sent for routing."))
             doc._call_origin("_on_sarabun_circulating", doc)
             doc._advance_stage()
         return True
+
+    # === Originator (ผู้จัดทำ/ผู้ส่ง) — the mandatory, locked first step ===
+    def _ensure_originator_step(self):
+        """Guarantee the mandatory first step = the ผู้จัดทำ/ผู้ส่ง (is_originator),
+        waiting until auto-signed at send. Idempotent — one active originator per
+        attempt. Created at document create() and re-ensured after re-seed."""
+        self.ensure_one()
+        if self.routing_step_ids.filtered("is_originator"):
+            return
+        Step = self.env["sarabun.routing.step"]
+        verb = self.env.ref("agx_sarabun.verb_originate", raise_if_not_found=False)
+        orders = self.routing_step_ids.mapped("order")
+        first_order = (min(orders) - 1) if orders else 1
+        self.routing_step_ids = [(0, 0, {
+            "order": first_order,
+            "verb": (verb or Step._default_verb()).id,
+            "is_originator": True,
+            "target_mode": "person",
+            "employee_id": self.sender_user_id.employee_id.id,
+            "attempt_seq": self.attempt_seq or 1,
+            "created_by_disposition": "seed",
+            "state": "waiting",
+        })]
+
+    def _sign_originator_step(self):
+        """Auto-sign the originator at send (ส่ง = ลงนามผู้จัดทำ). Idempotent; the
+        write is sudo so it passes the originator write-guard."""
+        self.ensure_one()
+        step = self.routing_step_ids.filtered(
+            lambda s: s.is_originator and s.state != "done"
+        )[:1]
+        if step:
+            step.sudo().write({
+                "state": "done",
+                "disposition": "complete",
+                "acted_by_id": self.sender_user_id.id,
+                "acted_date": fields.Datetime.now(),
+            })
+
+    def action_open_send_wizard(self):
+        """Open the send confirmation wizard (the header Send button). The actual
+        transition stays in action_send, which the wizard calls on confirm."""
+        self.ensure_one()
+        if self.state not in ("draft", "returned"):
+            raise UserError(_("Only draft or returned documents can be sent."))
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยืนยันการส่งเอกสาร"),
+            "res_model": "sarabun.send.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_document_id": self.id},
+        }
 
     def _check_sender_withdraw_allowed(self):
         """Shared guard for the sender's ดึงกลับ / ยกเลิกการส่ง (ADR-0006): only
@@ -740,6 +816,7 @@ class SarabunDocument(models.Model):
             self.routing_step_ids = [
                 (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
             ]
+            self._ensure_originator_step()  # resume tail starts above row 1 — re-add it
         else:
             self._restart_chain()
         self.state = "returned"
@@ -779,6 +856,9 @@ class SarabunDocument(models.Model):
             self.routing_step_ids = [
                 (0, 0, dict(v, attempt_seq=new_seq)) for v in seeds
             ]
+        # The archived attempt's originator is now inactive — re-add it (unless the
+        # recreated seeds already carried one) so the new attempt keeps its row 1.
+        self._ensure_originator_step()
 
     # === Origin adapter dispatch (ADR-0004: same txn, no swallow) ===
     def _call_origin(self, method, *args):
@@ -876,7 +956,9 @@ class SarabunDocument(models.Model):
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _kasian_trail_steps(self):
-        """The เกษียน trail rendered onto the document: endorsing/signing lines."""
+        """The เกษียน/endorsement trail — AUDIT ONLY (ADR-0008). No longer rendered on
+        the official document (the document shows signatures only — see
+        _signature_block_steps); kept for UI / audit uses."""
         self.ensure_one()
         return self.routing_step_ids.filtered(
             lambda s: s.state == "done"
@@ -884,13 +966,18 @@ class SarabunDocument(models.Model):
             and s.verb.gating
         ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
-    def _has_endorsement_trail(self):
-        """True if any positive-done เห็นชอบ (endorse, non-signature gating) step
-        exists — gates the เกษียน trail table in the endorsement block. A single-signer
-        document (only ลงนาม-อนุมัติ, no endorsers) shows just the signature block, no
-        table (ADR-0007)."""
+    def _signature_block_steps(self):
+        """Signatures rendered on the official document (ADR-0008): every positive-done
+        step whose verb has show_signature — the signing ผู้จัดทำ + เห็นชอบ +
+        ลงนาม-อนุมัติ — in one uniform ลงนาม/อนุมัติ format, ordered by stage. Non-signing
+        verbs (ตรวจสอบ / พิจารณา / ส่งต่อ, a non-signing ผู้จัดทำ) render nothing; the
+        routing trail is audit-only."""
         self.ensure_one()
-        return any(not s.verb.is_signature for s in self._kasian_trail_steps())
+        return self.routing_step_ids.filtered(
+            lambda s: s.state == "done"
+            and s.disposition in POSITIVE_DISPOSITIONS
+            and s.verb.show_signature
+        ).sorted(key=lambda s: (s.order, s.acted_date or s.id))
 
     def _get_delegated_report_action(self):
         """The origin's report — the official PDF body for a has-source Document

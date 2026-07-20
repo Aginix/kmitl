@@ -9,6 +9,7 @@
                 <field name="name"/>
                 <field name="rank"/>
                 <field name="gating" widget="boolean_toggle"/>
+                <field name="show_signature" widget="boolean_toggle"/>
                 <field name="is_signature" widget="boolean_toggle"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
@@ -32,14 +33,18 @@
                         <group string="พฤติกรรม (Behaviour)">
                             <field name="rank"/>
                             <field name="gating"/>
+                            <field name="show_signature"/>
                             <field name="is_signature"/>
                         </group>
                     </group>
                     <div class="text-muted">
                         <strong>Gating</strong> steps must be completed for a stage to
-                        pass; <strong>Signing</strong> drives the signature block and
-                        blocks Recall. The built-in verbs are referenced by the engine
-                        via their XML id — relabel freely, but don't delete them.
+                        pass; <strong>แสดงลายเซ็น (Show signature)</strong> renders a
+                        signature block on the official document (leave it off for
+                        ตรวจสอบ / พิจารณา / ส่งต่อ — name in the Route only);
+                        <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also blocks
+                        Recall and always shows. The built-in verbs are referenced by the
+                        engine via their XML id — relabel freely, but don't delete them.
                     </div>
                 </sheet>
             </form>

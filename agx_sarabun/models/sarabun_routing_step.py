@@ -144,6 +144,16 @@ class SarabunRoutingStep(models.Model):
     inserted_by_step_id = fields.Many2one("sarabun.routing.step", readonly=True)
     seeded_from_template_line_id = fields.Many2one("sarabun.route.template.line", readonly=True)
 
+    # === Originator (ผู้จัดทำ/ผู้ส่ง) — the mandatory, locked first step ===
+    is_originator = fields.Boolean(
+        default=False,
+        copy=False,
+        readonly=True,
+        help="The mandatory first step = the ผู้จัดทำ/ผู้ส่ง, auto-signed at send. "
+        "Cannot be deleted, and only its verb may be changed; excluded from "
+        "has_signed / strongest_verb (an originator signature is not an approval).",
+    )
+
     # === Attempt / history (re-send freezes prior attempts; ADR-0002 §3.4) ===
     active = fields.Boolean(default=True)
     attempt_seq = fields.Integer(default=1, readonly=True)
@@ -158,6 +168,28 @@ class SarabunRoutingStep(models.Model):
     @api.model
     def _default_verb(self):
         return self.env.ref("agx_sarabun.verb_endorse", raise_if_not_found=False)
+
+    # ------------------------------------------------------------ ORM guards
+    def write(self, vals):
+        """The originator (ผู้จัดทำ/ผู้ส่ง) row is locked — a user may change only its
+        verb. Engine writes (sudo: activation, archive, stamping) pass through."""
+        if not self.env.su and vals and set(vals) - {"verb"}:
+            if self.filtered("is_originator"):
+                raise UserError(_(
+                    "The ผู้จัดทำ/ผู้ส่ง step is fixed — only its การดำเนินการ (verb) "
+                    "may be changed."
+                ))
+        return super().write(vals)
+
+    def unlink(self):
+        """A user cannot remove the originator row (it must always be the first step).
+        Document deletion cascades at the DB level (ondelete='cascade'), bypassing
+        the ORM unlink, so it is not blocked here."""
+        if not self.env.su and self.filtered("is_originator"):
+            raise UserError(_(
+                "The ผู้จัดทำ/ผู้ส่ง step cannot be removed from the Route."
+            ))
+        return super().unlink()
 
     # ------------------------------------------------------------------ computes
     @api.depends("verb.gating", "for_info")
@@ -431,5 +463,6 @@ class SarabunRoutingStep(models.Model):
             "position_id": self.position_id.id,
             "employee_id": self.employee_id.id,
             "department_id": self.department_id.id,
+            "is_originator": self.is_originator,
             "state": "waiting",
         }
