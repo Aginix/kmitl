@@ -35,6 +35,10 @@ class PurchaseRequest(models.Model):
     def _get_sarabun_sender_department(self):
         return self.department_id or super()._get_sarabun_sender_department()
 
+    def _on_sarabun_circulating(self, document):
+        self.write({"state": "to_approve"})
+        return super()._on_sarabun_circulating(document)
+
     def _on_sarabun_completed(self, document):
         self._transition_after_sarabun_approve()
         self.message_post(
