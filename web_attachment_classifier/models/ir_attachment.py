@@ -18,9 +18,7 @@ class IrAttachment(models.Model):
         # doctype gain the extra key.
         res_list = super()._attachment_format(legacy=legacy)
         doctype_by_id = {
-            att.id: att.document_type_id.name
-            for att in self
-            if att.document_type_id
+            att.id: att.document_type_id.name for att in self if att.document_type_id
         }
         for res in res_list:
             if res["id"] in doctype_by_id:
@@ -33,20 +31,17 @@ class IrAttachment(models.Model):
         # after the write commits.
         if "document_type_id" not in vals:
             return super().write(vals)
-        before = {
-            att.id: (att.res_model, att.res_id, att.name, att.document_type_id)
-            for att in self
-        }
+        before = {att.id: (att.name, att.document_type_id) for att in self}
         result = super().write(vals)
         for att in self:
-            _res_model, _res_id, old_name, old_doctype = before[att.id]
+            old_name, old_doctype = before[att.id]
             new_doctype = att.document_type_id
             if old_doctype == new_doctype:
                 continue
             if not (att.res_model and att.res_id):
                 continue
             parent_model = self.env.get(att.res_model)
-            if parent_model is None or "message_post" not in dir(parent_model):
+            if parent_model is None or not hasattr(parent_model, "message_post"):
                 # Parent doesn't inherit mail.thread (e.g. res.users,
                 # product.template attachments) — nowhere to post.
                 continue

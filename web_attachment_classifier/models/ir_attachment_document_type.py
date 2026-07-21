@@ -8,3 +8,11 @@ class IrAttachmentDocumentType(models.Model):
 
     name = fields.Char(required=True, translate=True)
     active = fields.Boolean(default=True)
+
+    _sql_constraints = [
+        (
+            "uniq_name",
+            "unique(name)",
+            "A document type with this name already exists.",
+        ),
+    ]
