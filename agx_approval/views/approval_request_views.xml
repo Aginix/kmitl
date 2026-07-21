@@ -17,6 +17,7 @@
                     <button name="action_approve" string="อนุมัติ" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['submitted', 'sent'])]}" groups="agx_approval.group_approval_manager"/>
                     <button name="action_record_actual" string="บันทึกค่าใช้จ่ายจริง" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" />
                     <button name="action_bill" string="ส่งเบิก" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'actual')]}" />
+                    <button name="%(agx_approval.action_report_disbursement_voucher)d" type="action" string="พิมพ์งบหน้าใบสำคัญคู่จ่าย" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['actual', 'billed'])]}" />
                     <button name="action_open_pull_back_wizard" string="ดึงกลับ" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'submitted'])]}"/>
                     <button name="action_cancel" string="ยกเลิก / ปฏิเสธ" type="object" attrs="{'invisible': [('state', 'not in', ['to_verify', 'submitted', 'approved'])]}" groups="agx_approval.group_approval_manager"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,submitted,sent,approved,actual,billed" />
@@ -114,6 +115,10 @@
                             </field>
                         </page>
                         <page name="allocation" string="ค่าใช้จ่ายจริง" attrs="{'invisible': [('state', 'not in', ['actual', 'billed', 'returned'])]}">
+                            <group>
+                                <field name="recipient_partner_ids" invisible="1"/>
+                                <field name="advancer_id" options="{'no_create': True}" attrs="{'readonly': [('is_actual_editable', '=', False)]}"/>
+                            </group>
                             <field name="allocation_ids" attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                                 <tree editable="bottom">
                                     <field name="allowed_recipient_ids" invisible="1"/>

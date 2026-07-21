@@ -21,4 +21,4 @@ An expense-approval request now models **two moments of one activity**: the *pla
 - This is a cross-module epic: `agx_approval`, `agx_approval_sarabun`, `agx_approval_disbursement`, `agx_approval_advance_payment`.
 - **Per-ส่วนงาน approval route:** each department differs, so there is no single hard-coded chain — the route is seeded from a `sarabun.route.template` scoped by `department_id` (+ optional `condition_domain`), resolved at send time from the requester's department via the engine's `find_matching_templates`.
 - **Pre-production (UAT):** the module is not yet live, so the `partner_id` / `payee_ids` removals and the restructure are applied in place — no data migration, no manifest version bump.
-- **Deferred:** the formal งบหน้าใบสำคัญคู่จ่าย PDF (withholding-tax columns, ผู้ทดรองจ่าย designation, dean signature).
+- The formal งบหน้าใบสำคัญคู่จ่าย PDF (`report_disbursement_voucher`) renders the allocation grouped per recipient × expense type with withholding-tax columns, an `advancer_id` (ผู้ทดรองจ่าย) designation and the dean's signature.

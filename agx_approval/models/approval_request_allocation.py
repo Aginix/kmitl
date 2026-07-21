@@ -102,6 +102,16 @@ class ApprovalRequestAllocation(models.Model):
             )
             rec.partner_bank_id = banks[:1].id if banks else False
 
+    def _wht_amount(self):
+        """Withholding tax on this row, derived from the recipient's partner
+        type (same source the disbursement uses). 0 when the recipient has no
+        WHT configured."""
+        self.ensure_one()
+        wht = self.partner_id.partner_type_id.wht_tax_id
+        if wht and self.amount:
+            return self.currency_id.round(self.amount * wht.amount / 100.0)
+        return 0.0
+
     def _get_masked_acc_number(self):
         self.ensure_one()
         acc = self.partner_bank_id.acc_number or ""

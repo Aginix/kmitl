@@ -161,6 +161,21 @@ class ApprovalRequest(models.Model):
         copy=False,
     )
 
+    recipient_partner_ids = fields.Many2many(
+        "res.partner",
+        string="Recipients",
+        compute="_compute_recipient_partner_ids",
+    )
+
+    advancer_id = fields.Many2one(
+        "res.partner",
+        string="ผู้ทดรองจ่าย",
+        domain="[('id', 'in', recipient_partner_ids)]",
+        tracking=True,
+        help="ผู้สำรองจ่ายเงินไปก่อน แล้วนำใบสำคัญมาเบิกคืน "
+        "(แสดงบนงบหน้าใบสำคัญคู่จ่าย)",
+    )
+
     has_period = fields.Boolean(
         related='category_id.has_period'
     )
@@ -662,6 +677,32 @@ class ApprovalRequest(models.Model):
     def _compute_total_actual_amount(self):
         for rec in self:
             rec.total_actual_amount = sum(rec.allocation_ids.mapped("amount"))
+
+    @api.depends("allocation_ids.partner_id")
+    def _compute_recipient_partner_ids(self):
+        for rec in self:
+            rec.recipient_partner_ids = rec.allocation_ids.partner_id
+
+    def _voucher_groups(self):
+        """งบหน้าใบสำคัญคู่จ่าย data: the actual allocation grouped per recipient,
+        with the per-recipient subtotal, withholding-tax total and voucher
+        (line) count. Recipient order follows the allocation."""
+        self.ensure_one()
+        groups = []
+        for recipient in self.allocation_ids.mapped("partner_id"):
+            allocs = self.allocation_ids.filtered(
+                lambda a: a.partner_id == recipient
+            )
+            wht_total = sum(a._wht_amount() for a in allocs)
+            groups.append({
+                "recipient": recipient,
+                "allocs": allocs,
+                "subtotal": sum(allocs.mapped("amount")),
+                "wht_total": wht_total,
+                "voucher_count": len(allocs),
+                "has_wht": bool(wht_total),
+            })
+        return groups
 
     @api.constrains("allocation_ids", "state")
     def _check_allocation_within_budget(self):

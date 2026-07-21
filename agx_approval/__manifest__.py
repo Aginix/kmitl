@@ -30,6 +30,7 @@
         "data/approval_category.xml",
         "reports/paperformat_approval_request.xml",
         "reports/report_approval_request.xml",
+        "reports/report_disbursement_voucher.xml",
     ],
     "license": "LGPL-3",
 }
