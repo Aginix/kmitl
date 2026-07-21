@@ -125,6 +125,7 @@
                     states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"
                     string="Cancel"
                     type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
             </xpath>
 
