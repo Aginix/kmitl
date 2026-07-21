@@ -31,6 +31,12 @@ class DisbursementRequest(models.Model):
         "verified": [("readonly", True)],
         "approved": [("readonly", True)],
         "bills_posted": [("readonly", True)],
+        # Post-bill payment-execution phase (disbursement_finance_kmitl):
+        # the request is fully locked once it enters this phase.
+        "payment_audited": [("readonly", True)],
+        "payment_authorized": [("readonly", True)],
+        "paid": [("readonly", True)],
+        "cleared": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
 
