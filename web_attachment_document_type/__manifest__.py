@@ -1,5 +1,5 @@
 {
-    "name": "Web Attachment Classifier",
+    "name": "Web Attachment Document Type",
     "summary": "Drag & drop + document-type classification for the standard "
     "many2many_binary attachment widget",
     "version": "16.0.2.0.2",
@@ -14,7 +14,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "web_attachment_classifier/static/src/**/*",
+            "web_attachment_document_type/static/src/**/*",
         ],
     },
     "installable": True,

@@ -5,6 +5,6 @@ access_ir_attachment_document_type_system,ir.attachment.document.type system,mod
 access_ir_attachment_document_type_rel_user,ir.attachment.document.type.rel user,model_ir_attachment_document_type_rel,base.group_user,1,0,0,0
 access_ir_attachment_document_type_rel_manager,ir.attachment.document.type.rel manager,model_ir_attachment_document_type_rel,base.group_erp_manager,1,1,1,1
 access_ir_attachment_document_type_rel_system,ir.attachment.document.type.rel system,model_ir_attachment_document_type_rel,base.group_system,1,1,1,1
-access_attachment_classifier_model_config_user,attachment.classifier.model.config user,model_attachment_classifier_model_config,base.group_user,1,0,0,0
-access_attachment_classifier_model_config_manager,attachment.classifier.model.config manager,model_attachment_classifier_model_config,base.group_erp_manager,1,1,1,1
-access_attachment_classifier_model_config_system,attachment.classifier.model.config system,model_attachment_classifier_model_config,base.group_system,1,1,1,1
+access_ir_attachment_document_type_config_user,ir.attachment.document.type.config user,model_ir_attachment_document_type_config,base.group_user,1,0,0,0
+access_ir_attachment_document_type_config_manager,ir.attachment.document.type.config manager,model_ir_attachment_document_type_config,base.group_erp_manager,1,1,1,1
+access_ir_attachment_document_type_config_system,ir.attachment.document.type.config system,model_ir_attachment_document_type_config,base.group_system,1,1,1,1

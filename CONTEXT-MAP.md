@@ -50,11 +50,11 @@ upfront.
   disbursement keeps it intact (at `signed`) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
-- [Attachment Classifier](./web_attachment_classifier/CONTEXT.md) — patches the stock
-  `many2many_binary` widget to add always-on drag-and-drop plus optional Document-Type
-  classification driven by a shared `ir.attachment.document_type_id` field; consumers
-  turn classification on for a model by shipping data XML
-  (`attachment.classifier.model.config` + `ir.attachment.document.type.rel`), no
+- [Attachment Document Type](./web_attachment_document_type/CONTEXT.md) — patches the
+  stock `many2many_binary` widget to add always-on drag-and-drop plus optional
+  Document-Type classification driven by a shared `ir.attachment.document_type_id`
+  field; consumers turn classification on for a model by shipping data XML
+  (`ir.attachment.document.type.config` + `ir.attachment.document.type.rel`), no
   Python/JS per consumer.
 
 ## Relationships

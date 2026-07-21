@@ -47,9 +47,9 @@
          (not a new ir.model), so `create="true"` is safe.
          ================================================================ -->
 
-    <record id="view_attachment_classifier_model_config_tree" model="ir.ui.view">
-        <field name="name">attachment.classifier.model.config.tree</field>
-        <field name="model">attachment.classifier.model.config</field>
+    <record id="view_ir_attachment_document_type_config_tree" model="ir.ui.view">
+        <field name="name">ir.attachment.document.type.config.tree</field>
+        <field name="model">ir.attachment.document.type.config</field>
         <field name="arch" type="xml">
             <tree string="Attachment Doctypes">
                 <field name="res_model_id" />
@@ -57,9 +57,9 @@
         </field>
     </record>
 
-    <record id="view_attachment_classifier_model_config_form" model="ir.ui.view">
-        <field name="name">attachment.classifier.model.config.form</field>
-        <field name="model">attachment.classifier.model.config</field>
+    <record id="view_ir_attachment_document_type_config_form" model="ir.ui.view">
+        <field name="name">ir.attachment.document.type.config.form</field>
+        <field name="model">ir.attachment.document.type.config</field>
         <field name="arch" type="xml">
             <form string="Attachment Doctypes">
                 <sheet>
@@ -85,11 +85,11 @@
     </record>
 
     <record
-        id="action_attachment_classifier_model_config"
+        id="action_ir_attachment_document_type_config"
         model="ir.actions.act_window"
     >
         <field name="name">Attachment Doctypes</field>
-        <field name="res_model">attachment.classifier.model.config</field>
+        <field name="res_model">ir.attachment.document.type.config</field>
         <field name="view_mode">tree,form</field>
     </record>
 
@@ -109,7 +109,7 @@
         id="menu_ir_attachment_document_type_rel"
         name="Attachment Doctypes"
         parent="base.menu_ir_property"
-        action="action_attachment_classifier_model_config"
+        action="action_ir_attachment_document_type_config"
         sequence="90"
     />
 

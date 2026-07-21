@@ -1,4 +1,4 @@
-# Web Attachment Classifier
+# Web Attachment Document Type
 
 Odoo web enhancement that adds two things to the standard `many2many_binary` attachment
 widget:
@@ -9,8 +9,8 @@ widget:
    from a shared taxonomy (`ir.attachment.document.type`). Which doctypes appear on
    which forms is configured per model in a Mapping table
    (`ir.attachment.document.type.rel`) that also holds the display `sequence`. The
-   classifier UI (dropdown + badge) shows up only on forms whose `res_model` has at
-   least one Mapping.
+   doctype UI (dropdown + badge) shows up only on forms whose `res_model` has at least
+   one Mapping.
 
 There is no custom widget name to remember and no per-consumer JS. A consumer module
 that wants classification ships two kinds of data XML records:
@@ -26,7 +26,7 @@ itself. _Avoid_: classifier (implementation-level jargon), metadata (too broad),
 category (overloaded in Odoo), attachment type (was the old Selection field name — now
 migrated away).
 
-**Model Config**: A row in `attachment.classifier.model.config` — one per parent model
+**Model Config**: A row in `ir.attachment.document.type.config` — one per parent model
 that participates in doctype classification. Holds `res_model_id` and the ordered
 `line_ids` (see Mapping). Uniqueness is enforced so a model has at most one Config. This
 is what users create/edit from Settings — "New" makes a Config, not a new `ir.model`, so
@@ -49,16 +49,16 @@ the model of the record the file is attached to (e.g., `kris.project`,
 
 **Base Widget** vs **Patched Widget**: Base = the stock `Many2ManyBinaryField` from
 `@web/views/fields/many2many_binary/`. Patched = the same class after
-`web_attachment_classifier` has applied its `patch()` — everywhere in Odoo that uses
+`web_attachment_document_type` has applied its `patch()` — everywhere in Odoo that uses
 `widget="many2many_binary"` sees the patched behaviour.
 
 **Consumer Module**: Any Odoo module that references doctypes from the shared
 `ir.attachment.document.type` taxonomy and ships `ir.attachment.document.type.rel`
 records (the Mappings that pin those doctypes to its own models) plus an
-`attachment.classifier.model.config` per model, via data XML. A consumer _may_ create
+`ir.attachment.document.type.config` per model, via data XML. A consumer _may_ create
 new doctype master records with `noupdate="1"` but should first check whether an
-existing xmlid (in `web_attachment_classifier` or another consumer) already covers the
-concept — the taxonomy is shared and duplicate names are blocked at the DB level
+existing xmlid (in `web_attachment_document_type` or another consumer) already covers
+the concept — the taxonomy is shared and duplicate names are blocked at the DB level
 (`unique(name)` on `ir.attachment.document.type`). Consumers hold no Python or JS
 related to the widget. First consumers: `kris_project` and `purchase_request_kmitl`.
 
@@ -76,7 +76,7 @@ related to the widget. First consumers: `kris_project` and `purchase_request_kmi
   non-empty. Base does not enforce.
 - **Scope is data — one Config per model, one Mapping per doctype.** To offer doctypes
   on a new parent model, ship (or add via UI) a Config
-  (`attachment.classifier.model.config`) with inline Mappings referencing the doctype
+  (`ir.attachment.document.type.config`) with inline Mappings referencing the doctype
   master records. **New** on the Config tree creates a Config — no ir.model rows are
   ever created from the UI.
 - **Two menus, two purposes.** Settings → Technical → Parameters exposes two menus:
@@ -104,14 +104,14 @@ related to the widget. First consumers: `kris_project` and `purchase_request_kmi
   (disbursement, advance_payment, agx_approval, …) get drag & drop for free — pure UX
   enhancement, no behavioural change.
 - **Attach button opens a dialog when doctypes exist.** On a `res_model` that has at
-  least one Mapping, clicking Attach opens `AttachmentClassifierDialog` with a file
+  least one Mapping, clicking Attach opens `AttachmentDocumentTypeDialog` with a file
   input (drag-drop capable) plus a Document Type dropdown — user picks the doctype at
   upload time and uploads via `/web/binary/upload_attachment`. On a `res_model` with
   zero Mappings, Attach falls through to Odoo's standard `FileInput` → OS picker.
 - **Filenames open in a new tab, not download.** `getUrl` returns `?download=false`, the
   anchor's `download` attribute is stripped, and `target="_blank"` is added. Applies to
-  every `many2many_binary` in the system, not only classifier-enabled ones. Right-click
-  → _Save link as…_ still triggers a download.
+  every `many2many_binary` in the system, not only models with doctype mappings.
+  Right-click → _Save link as…_ still triggers a download.
 - **`document_type_id` is fetched reactively.** Added to
   `Many2ManyBinaryField.fieldsToFetch` at patch time, so the badge updates immediately
   when a user edits it — no full-form reload needed.
@@ -127,7 +127,7 @@ related to the widget. First consumers: `kris_project` and `purchase_request_kmi
 
 Test end-to-end after touching the patch or the taxonomy model:
 
-1. Install `web_attachment_classifier`, upgrade `kris_project` and
+1. Install `web_attachment_document_type`, upgrade `kris_project` and
    `purchase_request_kmitl` so migrations run.
 2. Migration lands cleanly (log has "remapped N attachments" lines for old doctype rows;
    legacy `kris_project_document_type` table dropped; `ir_attachment.attachment_type`

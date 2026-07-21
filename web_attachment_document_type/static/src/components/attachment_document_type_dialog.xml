@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
 
-    <t t-name="web_attachment_classifier.AttachmentClassifierDialog" owl="1">
+    <t t-name="web_attachment_document_type.AttachmentDocumentTypeDialog" owl="1">
         <Dialog title="title" size="'md'">
             <div t-if="isAddMode" class="mb-3">
                 <label class="o_form_label">File</label>
                 <div
-                    t-attf-class="o_classifier_dialog_dropzone p-2 border rounded {{ state.isDraggingOver ? 'o_classifier_dragging_over' : '' }}"
+                    t-attf-class="o_attachment_doctype_dialog_dropzone p-2 border rounded {{ state.isDraggingOver ? 'o_attachment_doctype_dragging_over' : '' }}"
                     t-on-dragenter.prevent="onDragEnter"
                     t-on-dragover.prevent="onDragOver"
                     t-on-dragleave.prevent="onDragLeave"
@@ -30,10 +30,7 @@
                     t-att-value="state.value"
                     t-on-change="onValueChange"
                 >
-                    <option
-                        value=""
-                        t-att-selected="isSelected('')"
-                    >--</option>
+                    <option value="" t-att-selected="isSelected('')">--</option>
                     <t t-foreach="props.options" t-as="opt" t-key="opt.id">
                         <option
                             t-att-value="opt.id"
@@ -49,10 +46,7 @@
                     t-on-click="onSave"
                     t-att-disabled="state.saving"
                 >
-                    <i
-                        t-if="state.saving"
-                        class="fa fa-spin fa-spinner me-1"
-                    />Save
+                    <i t-if="state.saving" class="fa fa-spin fa-spinner me-1" />Save
                 </button>
                 <button
                     class="btn btn-secondary"

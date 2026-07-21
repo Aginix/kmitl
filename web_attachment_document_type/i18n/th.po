@@ -1,0 +1,222 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* web_attachment_document_type
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-14 00:00+0000\n"
+"PO-Revision-Date: 2026-07-14 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ---------------------------------------------------------------------------
+# Python strings (_())
+# ---------------------------------------------------------------------------
+#. module: web_attachment_document_type
+#. odoo-python
+#: code:addons/web_attachment_document_type/models/ir_attachment.py:0
+#, python-format
+msgid "(none)"
+msgstr "(ไม่ระบุ)"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
+msgid "- Set type -"
+msgstr "- ระบุประเภท -"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+# ---------------------------------------------------------------------------
+# JS strings (env._t)
+# ---------------------------------------------------------------------------
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.js:0
+#, python-format
+msgid "Add Attachment"
+msgstr "เพิ่มไฟล์แนบ"
+
+#. module: web_attachment_document_type
+#: model:ir.model,name:web_attachment_document_type.model_ir_attachment_document_type_config
+msgid "Attachment Doctype Config"
+msgstr "การตั้งค่าประเภทเอกสารต่อโมเดล"
+
+# ---------------------------------------------------------------------------
+# Menu / action / view titles
+# ---------------------------------------------------------------------------
+#. module: web_attachment_document_type
+#: model:ir.actions.act_window,name:web_attachment_document_type.action_ir_attachment_document_type_config
+#: model:ir.ui.menu,name:web_attachment_document_type.menu_ir_attachment_document_type_rel
+#: model_terms:ir.ui.view,arch_db:web_attachment_document_type.view_ir_attachment_document_type_config_tree
+#: model_terms:ir.ui.view,arch_db:web_attachment_document_type.view_ir_attachment_document_type_config_form
+msgid "Attachment Doctypes"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+
+# ---------------------------------------------------------------------------
+# Model / field metadata
+# ---------------------------------------------------------------------------
+#. module: web_attachment_document_type
+#: model:ir.model,name:web_attachment_document_type.model_ir_attachment_document_type
+msgid "Attachment Document Type"
+msgstr "ประเภทเอกสารสำหรับไฟล์แนบ"
+
+#. module: web_attachment_document_type
+#: model:ir.model,name:web_attachment_document_type.model_ir_attachment_document_type_rel
+msgid "Attachment Document Type Mapping"
+msgstr "การผูกประเภทเอกสารกับโมเดล"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/patches/many2many_binary_field_patch.js:0
+#, python-format
+msgid "Attachment(s) added"
+msgstr "แนบไฟล์เรียบร้อย"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.xml:0
+#, python-format
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_config__display_name
+msgid "Display Name"
+msgstr "ชื่อที่แสดง"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.js:0
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.xml:0
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment__document_type_id
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type__display_name
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_rel__document_type_id
+#: model_terms:ir.ui.view,arch_db:web_attachment_document_type.view_ir_attachment_document_type_form
+#, python-format
+msgid "Document Type"
+msgstr "ประเภทเอกสาร"
+
+#. module: web_attachment_document_type
+#. odoo-python
+#: code:addons/web_attachment_document_type/models/ir_attachment.py:0
+#, python-format
+msgid ""
+"Document Type of attachment <b>%(name)s</b>: <i>%(old)s</i> → <i>%(new)s</i>"
+msgstr ""
+"เปลี่ยนประเภทเอกสารของไฟล์แนบ <b>%(name)s</b>: <i>%(old)s</i> → "
+"<i>%(new)s</i>"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
+msgid "Document Type:"
+msgstr "ประเภทเอกสาร:"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_config__line_ids
+msgid "Document Types"
+msgstr "ประเภทเอกสาร"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
+msgid "Drop files to attach"
+msgstr "ลากไฟล์มาวางที่นี่เพื่อแนบ"
+
+# ---------------------------------------------------------------------------
+# OWL templates — XML text nodes (odoo-javascript)
+# ---------------------------------------------------------------------------
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.xml:0
+#, python-format
+msgid "File"
+msgstr "ไฟล์"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_config__res_model_id
+msgid "Model"
+msgstr "โมเดล"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_rel__config_id
+msgid "Model Config"
+msgstr "การตั้งค่าโมเดล"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_config__res_model_name
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_rel__res_model_name
+msgid "Model Technical Name"
+msgstr "ชื่อทางเทคนิคของโมเดล"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type__name
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.xml:0
+#, python-format
+msgid "Or drop files here"
+msgstr "หรือลากไฟล์มาวางที่นี่"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.js:0
+#, python-format
+msgid "Please select a file."
+msgstr "กรุณาเลือกไฟล์"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/components/attachment_document_type_dialog.xml:0
+#, python-format
+msgid "Save"
+msgstr "บันทึก"
+
+#. module: web_attachment_document_type
+#: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_rel__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+# ---------------------------------------------------------------------------
+# SQL constraint
+# ---------------------------------------------------------------------------
+#. module: web_attachment_document_type
+#: model:ir.model.constraint,message:web_attachment_document_type.constraint_ir_attachment_document_type_rel_uniq_model_doctype
+msgid "This document type is already linked to this model."
+msgstr "ประเภทเอกสารนี้ถูกผูกกับโมเดลนี้ไว้อยู่แล้ว"
+
+#. module: web_attachment_document_type
+#: model:ir.model.constraint,message:web_attachment_document_type.constraint_ir_attachment_document_type_config_uniq_res_model
+msgid "This model already has a Document Type configuration."
+msgstr "โมเดลนี้มีการตั้งค่าประเภทเอกสารอยู่แล้ว"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/patches/many2many_binary_field_patch.js:0
+#, python-format
+msgid "Uploading error"
+msgstr "อัปโหลดผิดพลาด"
+
+#. module: web_attachment_document_type
+#. odoo-javascript
+#: code:addons/web_attachment_document_type/static/src/patches/many2many_binary_field_patch.xml:0
+#, python-format
+msgid "Uploading..."
+msgstr "กำลังอัปโหลด..."

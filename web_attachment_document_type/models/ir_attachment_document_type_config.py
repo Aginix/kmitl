@@ -1,7 +1,7 @@
 from odoo import fields, models
 
 
-class AttachmentClassifierModelConfig(models.Model):
+class IrAttachmentDocumentTypeConfig(models.Model):
     """One row per parent model that offers Document Type classification.
 
     Wraps a target `ir.model` and its ordered list of doctype mappings.
@@ -10,7 +10,7 @@ class AttachmentClassifierModelConfig(models.Model):
     Python model + DB table creation) can happen.
     """
 
-    _name = "attachment.classifier.model.config"
+    _name = "ir.attachment.document.type.config"
     _description = "Attachment Doctype Config"
     _rec_name = "res_model_id"
     _order = "res_model_id"

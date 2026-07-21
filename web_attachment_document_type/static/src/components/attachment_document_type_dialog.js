@@ -4,7 +4,7 @@ import {Dialog} from "@web/core/dialog/dialog";
 import {Component, useRef, useState} from "@odoo/owl";
 
 /**
- * Unified dialog for the classifier flow.
+ * Unified dialog for the attach + doctype flow.
  *
  * mode="edit" (default): a single dropdown to set document_type_id on
  *   an existing attachment. onSave({value}).
@@ -14,7 +14,7 @@ import {Component, useRef, useState} from "@odoo/owl";
  *   the underlying <input type="file"> via the DataTransfer API so the
  *   save path is uniform.
  */
-export class AttachmentClassifierDialog extends Component {
+export class AttachmentDocumentTypeDialog extends Component {
     setup() {
         this.notification = this.env.services.notification;
         this.state = useState({
@@ -160,10 +160,10 @@ export class AttachmentClassifierDialog extends Component {
     }
 }
 
-AttachmentClassifierDialog.template =
-    "web_attachment_classifier.AttachmentClassifierDialog";
-AttachmentClassifierDialog.components = {Dialog};
-AttachmentClassifierDialog.props = {
+AttachmentDocumentTypeDialog.template =
+    "web_attachment_document_type.AttachmentDocumentTypeDialog";
+AttachmentDocumentTypeDialog.components = {Dialog};
+AttachmentDocumentTypeDialog.props = {
     mode: {type: String, optional: true},
     title: {type: String, optional: true},
     options: {type: Array},

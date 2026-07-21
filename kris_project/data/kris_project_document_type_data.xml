@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
 
     <!-- Document type master records -->
@@ -18,8 +18,8 @@
     <!-- Model configurations — one per parent model, each with its
          ordered list of doctypes as inline lines. -->
 
-    <record id="config_kris_project" model="attachment.classifier.model.config">
-        <field name="res_model_id" ref="kris_project.model_kris_project"/>
+    <record id="config_kris_project" model="ir.attachment.document.type.config">
+        <field name="res_model_id" ref="kris_project.model_kris_project" />
         <field
             name="line_ids"
             eval="[(5, 0, 0),
@@ -29,8 +29,8 @@
         />
     </record>
 
-    <record id="config_kris_project_receipt" model="attachment.classifier.model.config">
-        <field name="res_model_id" ref="kris_project.model_kris_project_receipt"/>
+    <record id="config_kris_project_receipt" model="ir.attachment.document.type.config">
+        <field name="res_model_id" ref="kris_project.model_kris_project_receipt" />
         <field
             name="line_ids"
             eval="[(5, 0, 0),

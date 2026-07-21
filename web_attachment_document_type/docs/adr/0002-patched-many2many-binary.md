@@ -26,5 +26,5 @@ ordering the dropdown, are data, not code.
   must not re-declare it. Enforcing "must have doctype" is left to each consumer.
 - `getUrl` and the `download` template attribute are patched globally to serve
   attachments inline (`?download=false` + `target="_blank"`). Every `many2many_binary`
-  widget in the system is affected, not only classifier-enabled ones. Right-click →
+  widget in the system is affected, not only models with doctype mappings. Right-click →
   _Save link as…_ still gives a download.
