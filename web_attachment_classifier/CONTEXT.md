@@ -76,11 +76,19 @@ related to the widget. First consumers: `kris_project` and `purchase_request_kmi
   non-empty. Base does not enforce.
 - **Scope is data — one Config per model, one Mapping per doctype.** To offer doctypes
   on a new parent model, ship (or add via UI) a Config
-  (`attachment.classifier.model.config`) with inline Mappings and the doctype master
-  records they reference. Settings → Technical → Parameters → **Attachment Doctypes** is
-  the single entry point: a tree of Configs (one row per model), with an inline editable
-  Mapping table on the Config form, sequence handle, and quick-create on the doctype
-  m2o. **New** creates a Config — no ir.model rows are ever created from the UI.
+  (`attachment.classifier.model.config`) with inline Mappings referencing the doctype
+  master records. **New** on the Config tree creates a Config — no ir.model rows are
+  ever created from the UI.
+- **Two menus, two purposes.** Settings → Technical → Parameters exposes two menus:
+  - **Document Types** — master taxonomy CRUD (create/rename/archive/delete). The action
+    opens with `active_test: False` so archived doctypes are visible for un-archiving.
+    Deletion is guarded by `ondelete="restrict"` on `ir.attachment.document_type_id` —
+    Postgres blocks unlink of a doctype in use by any attachment.
+  - **Attachment Doctypes** — model-Config: which doctypes are offered on which parent
+    model, in what order. The doctype m2o inside each Config's Mapping tree is locked to
+    select-only (`no_create`, `no_create_edit`, `no_open`) so admins can't accidentally
+    spawn typo'd master rows from this form; new doctypes must be created explicitly
+    from the **Document Types** menu first.
 - **Sequence lives on the Mapping, not on the Doctype.** The same doctype can appear in
   a different position under different models.
 - **UI is conditional.** A form whose `res_model` has zero doctypes mapped to it renders
