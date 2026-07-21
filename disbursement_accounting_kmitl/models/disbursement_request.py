@@ -111,7 +111,7 @@ class DisbursementRequest(models.Model):
             else:
                 rec.pipeline_status = "bill_draft"
 
-    @api.depends("state", "pipeline_status")
+    @api.depends("state", "pipeline_status", "approval_state")
     def _compute_display_status(self):
         super()._compute_display_status()
         for rec in self:

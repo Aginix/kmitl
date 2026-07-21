@@ -1005,6 +1005,7 @@ msgstr "อนุมัติ"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__approved
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__approved
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Approved"
 msgstr "อนุมัติแล้ว"
@@ -1300,6 +1301,7 @@ msgid "Returned for Correction"
 msgstr "ถูกตีกลับเพื่อแก้ไข"
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_reject_wizard__reason
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_return_request_wizard__reason
 msgid "Reason"
 msgstr "เหตุผล"
@@ -1528,4 +1530,147 @@ msgstr ""
 "<br/>เหตุผล: <b>%(reason)s</b><br/>"
 "กรุณาแก้ไขเลขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐาน แล้วกด "
 "<b>ยืนยันการแก้ไข</b></p>"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__approval_state
+msgid "Approval"
+msgstr "การอนุมัติ"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__none
+msgid "None"
+msgstr "ไม่มี"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_finance
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pending_finance
+msgid "Pending Finance Director"
+msgstr "รออนุมัติ ผอ.กองคลัง"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_rector
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pending_rector
+msgid "Pending Rector-delegated Approver"
+msgstr "รออนุมัติ ผู้ได้รับมอบอำนาจอธิการบดี"
+
+#. module: disbursement
+#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__rejected
+msgid "Rejected"
+msgstr "ถูกตีกลับ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__finance_approver_id
+msgid "Finance Director"
+msgstr "ผอ.กองคลัง"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__finance_approve_date
+msgid "Finance Approved On"
+msgstr "ผอ.กองคลังอนุมัติเมื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__rector_approver_id
+msgid "Rector-delegated Approver"
+msgstr "ผู้ได้รับมอบอำนาจอธิการบดี"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__rector_approve_date
+msgid "Rector Approved On"
+msgstr "ผู้รับมอบอำนาจอนุมัติเมื่อ"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__approval_reject_reason
+msgid "Approval Reject Reason"
+msgstr "เหตุผลการตีกลับการอนุมัติ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Approve (Finance Director)"
+msgstr "อนุมัติ (ผอ.กองคลัง)"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Approve (Rector Delegate)"
+msgstr "อนุมัติ (ผู้รับมอบอำนาจ)"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Request Approval Again"
+msgstr "ขออนุมัติอีกครั้ง"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
+msgid "Reject"
+msgstr "ตีกลับ"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "Approval rejected:"
+msgstr "การอนุมัติถูกตีกลับ:"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
+msgid "Reject Approval"
+msgstr "ตีกลับการอนุมัติ"
+
+#. module: disbursement
+#: model:ir.model,name:disbursement.model_disbursement_reject_wizard
+msgid "Reject Disbursement Approval"
+msgstr "ตีกลับการอนุมัติใบขอเบิก"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
+msgid "Reason for rejecting this approval…"
+msgstr "เหตุผลในการตีกลับการอนุมัตินี้…"
+
+#. module: disbursement
+#: model:res.groups,name:disbursement.group_disbursement_finance_director
+msgid "Disbursement Finance Director"
+msgstr "ผอ.กองคลัง (เบิกจ่าย)"
+
+#. module: disbursement
+#: model:res.groups,name:disbursement.group_disbursement_rector_delegate
+msgid "Disbursement Rector-delegated Approver"
+msgstr "ผู้ได้รับมอบอำนาจอธิการบดี (เบิกจ่าย)"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Only a verified request awaiting the Finance Director can be approved at this "
+"step."
+msgstr "อนุมัติได้เฉพาะใบขอเบิกที่ตรวจสอบแล้วและรอ ผอ.กองคลัง อนุมัติในขั้นนี้เท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Only a request awaiting the Rector-delegated approval can be approved."
+msgstr "อนุมัติได้เฉพาะใบขอเบิกที่รอผู้ได้รับมอบอำนาจอธิการบดีอนุมัติเท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only a request awaiting approval can be rejected."
+msgstr "ตีกลับได้เฉพาะใบขอเบิกที่กำลังรออนุมัติเท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Only a rejected request can be re-sent for approval."
+msgstr "ส่งขออนุมัติใหม่ได้เฉพาะใบขอเบิกที่ถูกตีกลับเท่านั้น"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "<p><b>Approval rejected</b></p><p>Reason: <b>%s</b></p>"
+msgstr "<p><b>การอนุมัติถูกตีกลับ</b></p><p>เหตุผล: <b>%s</b></p>"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "no reason given"
+msgstr "ไม่ระบุเหตุผล"
 

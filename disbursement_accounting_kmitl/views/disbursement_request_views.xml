@@ -33,9 +33,9 @@
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <!-- Statusbar: add bills_posted -->
+            <!-- Statusbar: add the two-approver sub-steps + bills_posted -->
             <xpath expr="//field[@name='display_status']" position="attributes">
-                <attribute name="statusbar_visible">draft,submitted,signed,verified,approved,bills_posted</attribute>
+                <attribute name="statusbar_visible">draft,submitted,signed,verified,pending_finance,pending_rector,approved,bills_posted</attribute>
             </xpath>
 
             <!-- Create Bill button placed after Approve. Bills are posted

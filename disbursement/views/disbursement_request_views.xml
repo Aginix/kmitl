@@ -16,7 +16,7 @@
                 <field name="amount_total" />
                 <field name="display_status" widget="badge"
                     decoration-info="display_status == 'draft'"
-                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
+                    decoration-warning="display_status in ('submitted', 'signed', 'pending_finance', 'pending_rector', 'bill_draft', 'payment_draft')"
                     decoration-primary="display_status in ('verified', 'bill_posted')"
                     decoration-success="display_status in ('approved', 'payment_posted', 'done')"
                     decoration-danger="display_status == 'cancel'" />
@@ -40,14 +40,19 @@
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_sign" string="Sign" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_head" />
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'signed')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
-                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'verified')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_manager" />
+                    <button name="action_approve_finance" string="Approve (Finance Director)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
+                    <button name="action_approve" string="Approve (Rector Delegate)" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'verified'), ('approval_state', '!=', 'pending_rector')]}" confirm="Are you sure you want to approve? This will obligate and consume the budget." groups="disbursement.group_disbursement_rector_delegate" />
+                    <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_finance')]}" groups="disbursement.group_disbursement_finance_director" />
+                    <button name="action_open_reject_wizard" string="Reject" type="object" attrs="{'invisible': [('approval_state', '!=', 'pending_rector')]}" groups="disbursement.group_disbursement_rector_delegate" />
+                    <button name="action_request_approval" string="Request Approval Again" type="object" class="oe_highlight" attrs="{'invisible': [('approval_state', '!=', 'rejected')]}" groups="disbursement.group_disbursement_officer" />
                     <button name="action_return_leftover_budget" string="ส่งคืนเงินเหลือจ่าย" type="object" attrs="{'invisible': ['|', ('budget_consumed_amount', '&lt;=', 0), ('budget_available_to_obligate', '&lt;=', 0)]}" groups="disbursement.group_disbursement_manager" />
                     <field name="budget_available_to_obligate" invisible="1"/>
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ('submitted', 'signed', 'cancel'))]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
                     <field name="state" invisible="1"/>
                     <field name="pipeline_status" invisible="1"/>
-                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
+                    <field name="approval_state" invisible="1"/>
+                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,pending_finance,pending_rector,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
                 </header>
                 <!-- Budget Consumed Banner -->
                 <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">
@@ -67,6 +72,11 @@
                     <field name="returned_to_verification" invisible="1"/>
                     <strong>Returned to verification:</strong>
                     <field name="return_verification_reason" class="oe_inline" nolabel="1" readonly="1"/>
+                </div>
+                <!-- Approval rejected by an approver -->
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('approval_state', '!=', 'rejected')]}">
+                    <strong>Approval rejected:</strong>
+                    <field name="approval_reject_reason" class="oe_inline" nolabel="1" readonly="1"/>
                 </div>
                 <!-- Exception Alert -->
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
@@ -126,6 +136,10 @@
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
+                            <field name="finance_approver_id" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
+                            <field name="finance_approve_date" attrs="{'invisible': [('finance_approver_id', '=', False)]}" />
+                            <field name="rector_approver_id" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
+                            <field name="rector_approve_date" attrs="{'invisible': [('rector_approver_id', '=', False)]}" />
                             <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
                             <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
                         </group>

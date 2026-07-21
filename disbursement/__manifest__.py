@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.5.0.0",
+    "version": "16.0.6.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -16,6 +16,7 @@
         "l10n_th_amount_to_text",
         "base_fontawesome",
         "partner_type_aginix",
+        "mail_activity_todo",
     ],
     "data": [
         "security/security.xml",
@@ -24,6 +25,7 @@
         "data/mail_activity_type_data.xml",
         "wizards/disbursement_exception_confirm.xml",
         "wizards/return_request_wizard_views.xml",
+        "wizards/disbursement_reject_wizard_views.xml",
         "views/disbursement_request_views.xml",
         "views/disbursement_return_views.xml",
         "views/budget_commitment_views.xml",
