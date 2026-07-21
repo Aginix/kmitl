@@ -289,12 +289,6 @@ class PurchaseRequestApproval(models.Model):
 
     # === Sarabun Document Integration ===
 
-    def button_validate(self):
-        """Move to validate state for data confirmation before routing."""
-        self.ensure_one()
-        self.write({"state": "validate"})
-        self.message_post(body=_("Document validated and ready for routing."))
-
     def _get_sarabun_subject(self):
         return self.title or self.name
 
