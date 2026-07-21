@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models
+from odoo import _, models
 
 
 class PurchaseRequest(models.Model):
@@ -36,11 +36,6 @@ class PurchaseRequest(models.Model):
         return self.department_id or super()._get_sarabun_sender_department()
 
     def _on_sarabun_completed(self, document):
-        """Called when sarabun document routing is completed."""
-        _logger.info(
-            "Sarabun completed callback for PR %s (id=%s) from document %s",
-            self.name, self.id, document.name
-        )
         self._transition_after_sarabun_approve()
         self.message_post(
             body=_("Approved via Sarabun document: %s") % document.name,
