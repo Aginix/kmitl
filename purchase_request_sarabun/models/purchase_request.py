@@ -40,7 +40,6 @@ class PurchaseRequest(models.Model):
         self.message_post(
             body=_("Approved via Sarabun document: %s") % document.name,
         )
-        self.button_approved()
         return super()._on_sarabun_completed(document)
 
     def _on_sarabun_rejected(self, document, step):
