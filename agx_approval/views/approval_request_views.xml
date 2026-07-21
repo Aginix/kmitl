@@ -91,53 +91,46 @@
                         <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}"/>
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
-                    <notebook>
-                        <page name="expense_lines" string="ค่าใช้จ่าย (แผน)">
-                            <field name="line_ids" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="allowed_product_ids" invisible="1"/>
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="product_id"/>
-                                    <field name="note"/>
-                                    <field name="total_amount" sum="รวม"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page name="participants" string="รายชื่อ">
-                            <field name="participant_ids" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="allowed_partner_type_ids" invisible="1"/>
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="partner_id"/>
-                                    <field name="note"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page name="allocation" string="ค่าใช้จ่ายจริง" attrs="{'invisible': [('state', 'not in', ['actual', 'billed', 'returned'])]}">
-                            <group>
-                                <field name="recipient_partner_ids" invisible="1"/>
-                                <field name="advancer_id" options="{'no_create': True}" attrs="{'readonly': [('is_actual_editable', '=', False)]}"/>
-                            </group>
-                            <field name="allocation_ids" attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
-                                <tree editable="bottom">
-                                    <field name="allowed_recipient_ids" invisible="1"/>
-                                    <field name="allowed_product_ids" invisible="1"/>
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="partner_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
-                                    <field name="product_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
-                                    <field name="note" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
-                                    <field name="amount" sum="รวม" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
-                                    <field name="partner_bank_id" options="{'no_create': True, 'no_create_edit': True}" attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}"/>
-                                    <field name="bank_id"/>
-                                </tree>
-                            </field>
-                            <group class="oe_subtotal_footer oe_right">
-                                <field name="total_actual_amount" widget="monetary"/>
-                            </group>
-                        </page>
-                    </notebook>
+                    <separator string="ค่าใช้จ่าย (แผน)"/>
+                    <field name="line_ids" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                        <tree editable="bottom">
+                            <field name="allowed_product_ids" invisible="1"/>
+                            <field name="sequence" widget="handle"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="product_id"/>
+                            <field name="note"/>
+                            <field name="total_amount" sum="รวม"/>
+                        </tree>
+                    </field>
+                    <separator string="รายชื่อ"/>
+                    <field name="participant_ids" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                        <tree editable="bottom">
+                            <field name="allowed_partner_type_ids" invisible="1"/>
+                            <field name="sequence" widget="handle"/>
+                            <field name="partner_id"/>
+                            <field name="note"/>
+                        </tree>
+                    </field>
+                    <div attrs="{'invisible': [('state', 'not in', ['actual', 'billed', 'returned'])]}">
+                        <separator string="ค่าใช้จ่ายจริง"/>
+                        <field name="allocation_ids" attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                            <tree editable="bottom" default_order="partner_id">
+                                <field name="allowed_recipient_ids" invisible="1"/>
+                                <field name="allowed_product_ids" invisible="1"/>
+                                <field name="sequence" widget="handle"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="partner_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="product_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="note" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="amount" sum="รวม" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="partner_bank_id" options="{'no_create': True, 'no_create_edit': True}" attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}"/>
+                                <field name="bank_id"/>
+                            </tree>
+                        </field>
+                        <group class="oe_subtotal_footer oe_right">
+                            <field name="total_actual_amount" widget="monetary"/>
+                        </group>
+                    </div>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" />

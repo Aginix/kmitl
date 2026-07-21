@@ -99,12 +99,6 @@
                                     <t t-set="grand" t-value="grand + g['subtotal']" />
                                     <t t-set="wht_grand" t-value="wht_grand + g['wht_total']" />
                                 </t>
-                                <tr t-if="o.advancer_id">
-                                    <td />
-                                    <td colspan="5" class="text-center">
-                                        (<span t-out="o.advancer_id.name" /> ทดรองจ่าย)
-                                    </td>
-                                </tr>
                                 <tr>
                                     <td colspan="3" class="text-center fw-bolder">
                                         รวมเป็นเงินทั้งสิ้น

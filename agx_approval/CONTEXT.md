@@ -35,9 +35,5 @@ The clerk returning a *not-yet-sent* request to `draft` (via a confirm wizard, r
 _Avoid_: recall (that is e-Saraban's, on a circulating document), reset
 
 **Disbursement Voucher Cover Sheet (งบหน้าใบสำคัญคู่จ่าย)**:
-The **PDF report** (`report_disbursement_voucher`) over the Actual Expense Allocation — grouped per recipient × expense type, with withholding-tax columns (from the recipient's partner-type WHT), the **ผู้ทดรองจ่าย** (`advancer_id`) designation and the dean's signature.
+The **PDF report** (`report_disbursement_voucher`) over the Actual Expense Allocation — grouped per recipient × expense type, with withholding-tax columns (from the recipient's partner-type WHT) and the dean's signature. Each recipient may have made their own loan or fronted their own money, so there is no single ผู้ทดรองจ่าย designation.
 _Avoid_: disbursement request (that is the payment document itself)
-
-**ผู้ทดรองจ่าย (advancer)**:
-The one person who fronted the money for the whole party and is reimbursed the total (`advancer_id`, chosen from the recipients). A print-only designation on the งบหน้า — it does not change who each allocation row pays.
-_Avoid_: recipient (each row has its own), payer

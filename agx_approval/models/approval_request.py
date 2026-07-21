@@ -161,21 +161,6 @@ class ApprovalRequest(models.Model):
         copy=False,
     )
 
-    recipient_partner_ids = fields.Many2many(
-        "res.partner",
-        string="Recipients",
-        compute="_compute_recipient_partner_ids",
-    )
-
-    advancer_id = fields.Many2one(
-        "res.partner",
-        string="ผู้ทดรองจ่าย",
-        domain="[('id', 'in', recipient_partner_ids)]",
-        tracking=True,
-        help="ผู้สำรองจ่ายเงินไปก่อน แล้วนำใบสำคัญมาเบิกคืน "
-        "(แสดงบนงบหน้าใบสำคัญคู่จ่าย)",
-    )
-
     has_period = fields.Boolean(
         related='category_id.has_period'
     )
@@ -677,11 +662,6 @@ class ApprovalRequest(models.Model):
     def _compute_total_actual_amount(self):
         for rec in self:
             rec.total_actual_amount = sum(rec.allocation_ids.mapped("amount"))
-
-    @api.depends("allocation_ids.partner_id")
-    def _compute_recipient_partner_ids(self):
-        for rec in self:
-            rec.recipient_partner_ids = rec.allocation_ids.partner_id
 
     def _voucher_groups(self):
         """งบหน้าใบสำคัญคู่จ่าย data: the actual allocation grouped per recipient,
