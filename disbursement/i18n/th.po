@@ -1795,3 +1795,18 @@ msgstr "ตัวกรองเพิ่มเติม"
 msgid "Hide filters"
 msgstr "ซ่อนตัวกรอง"
 
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
+msgid "Finance Director Approved"
+msgstr "ผอ.กองคลังอนุมัติแล้ว"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
+msgid "Rector-delegated Approved"
+msgstr "ผู้ได้รับมอบอำนาจอนุมัติแล้ว"
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_approved_search
+msgid "Fully Approved"
+msgstr "อนุมัติครบสองขั้น"
+

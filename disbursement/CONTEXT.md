@@ -57,7 +57,10 @@ _Avoid_: Tier validation (deliberately not used — see ADR 0001), dual sign-off
 The approver's work screen under the Approver (ผู้อนุมัติ) menu. Split by role
 into two queues — **Awaiting Finance Director** (รอ ผอ.กองคลัง, DRs at
 `pending_finance`) and **Awaiting Rector Delegate** (รอผู้รับมอบอำนาจ, DRs at
-`pending_rector`) — each showing only the requests at that approver's turn, plus
-an **Approved** history list. Separate from the requester's "Disbursement
-Requests" list and the officer's "Verification" (หมวดตรวจ) list.
+`pending_rector`) — each showing only the requests at that approver's turn. The
+**Approved** (อนุมัติแล้ว) list is a permanent history of every request the
+Finance Director and/or the Rector-delegated approver has approved (keyed off the
+approver stamps, so it stays visible through the bill/payment stages), with
+filters. Separate from the requester's "Disbursement Requests" list and the
+officer's "Verification" (หมวดตรวจ) list.
 _Avoid_: Inbox (that is the Todo notification center), a single merged queue.
