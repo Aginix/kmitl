@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="agx_approval.AllocationGrouped.Rows" t-inherit="web.ListRenderer.Rows" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='list.records']/t[@t-call]" position="before">
+            <tr t-if="getGroupHeader(record)" class="o_allocation_group_header fw-bold table-light">
+                <td t-att-colspan="nbCols">
+                    <i class="fa fa-user-o me-2" role="img" aria-label="Recipient" title="Recipient"/>
+                    <t t-esc="getGroupHeader(record)"/>
+                </td>
+            </tr>
+        </xpath>
+    </t>
+
+</templates>

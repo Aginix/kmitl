@@ -113,7 +113,7 @@
                     </field>
                     <div attrs="{'invisible': [('state', 'not in', ['actual', 'billed', 'returned'])]}">
                         <separator string="ค่าใช้จ่ายจริง"/>
-                        <field name="allocation_ids" attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                        <field name="allocation_ids" widget="allocation_grouped" attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                             <tree editable="bottom" default_order="partner_id">
                                 <field name="allowed_recipient_ids" invisible="1"/>
                                 <field name="allowed_product_ids" invisible="1"/>
