@@ -20,7 +20,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "wizard/approval_request_exception_confirm_view.xml",
-        "wizard/update_actual_amount_wizard_views.xml",
+        "wizard/pull_back_confirm_views.xml",
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",
         "views/approval_request_views.xml",

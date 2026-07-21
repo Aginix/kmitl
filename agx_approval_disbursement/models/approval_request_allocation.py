@@ -1,8 +1,8 @@
 from odoo import models
 
 
-class ApprovalRequestLine(models.Model):
-    _inherit = "approval.request.line"
+class ApprovalRequestAllocation(models.Model):
+    _inherit = "approval.request.allocation"
 
     def _prepare_disbursement_request_line_vals(self):
         account = (
@@ -13,8 +13,9 @@ class ApprovalRequestLine(models.Model):
             "product_id": self.product_id.id,
             "name": self.note or self.product_id.display_name,
             "quantity": 1,
-            "price_unit": self.actual_amount,
+            "price_unit": self.amount,
             "account_id": account.id if account else False,
             "analytic_distribution": self.request_id.analytic_distribution,
-            "partner_bank_id": self._get_payee_bank().id or False,
+            "partner_id": self.partner_id.id,
+            "partner_bank_id": self.partner_bank_id.id or False,
         }

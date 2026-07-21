@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_request_pull_back_confirm_view_form" model="ir.ui.view">
+        <field name="name">approval.request.pull.back.confirm.form</field>
+        <field name="model">approval.request.pull.back.confirm</field>
+        <field name="arch" type="xml">
+            <form string="ดึงกลับคำขอ">
+                <field name="request_id" invisible="1"/>
+                <div class="alert alert-warning" role="alert">
+                    ยืนยันการดึงกลับคำขอนี้กลับสู่สถานะ "ร่าง" ระบบจะปลดการจองงบประมาณที่จองไว้
+                </div>
+                <group>
+                    <field name="reason" placeholder="เหตุผลในการดึงกลับ (ถ้ามี)"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="ยืนยันดึงกลับ" type="object" class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
