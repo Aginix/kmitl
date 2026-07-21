@@ -323,8 +323,23 @@ class PurchaseRequestApproval(models.Model):
         return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_cancelled(self, document):
-        # ยกเลิกการส่ง (terminal) → back to 'draft' so it can be re-opened.
-        self.write({"state": "draft"})
+        # ยกเลิกการส่ง Sarabun (terminal) → same effect as manual cancel wizard:
+        # cascade cancel to PA + PR, and release the PR's budget commitment.
+        reason = _("ยกเลิกการส่งหนังสือ %s") % document.name
+        self._action_do_cancel(reason)
+        pr = self.request_id
+        if pr and pr.budget_commitment_id:
+            try:
+                pr._cancel_budget_commitment()
+                pr.message_post(
+                    body=_("Budget commitment %s has been cancelled")
+                    % pr.budget_commitment_id.name
+                )
+            except UserError as e:
+                pr.message_post(
+                    body=_("Warning: Could not cancel budget commitment: %s")
+                    % str(e)
+                )
         return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
