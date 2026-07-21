@@ -79,6 +79,15 @@ class BankPaymentExport(models.Model):
             previous_currency = payment.currency_id
 
     # -------------------------------------------------------------------------
+    # E-payment result confirmation (manual, whole batch)
+    # -------------------------------------------------------------------------
+    def action_mark_all_epayment_success(self):
+        self.mapped("export_line_ids")._apply_epayment_result("success")
+
+    def action_mark_all_epayment_failed(self):
+        self.mapped("export_line_ids")._apply_epayment_result("failed")
+
+    # -------------------------------------------------------------------------
     def _domain_payment_id(self):
         domain = super()._domain_payment_id()
         # Replace ("state", "=", "posted") with ("state", "=", "submitted")

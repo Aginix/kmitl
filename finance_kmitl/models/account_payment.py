@@ -36,6 +36,20 @@ class AccountPayment(models.Model):
         "withholding tax).",
     )
 
+    bank_result_status = fields.Selection(
+        selection=[
+            ("pending", "Pending"),
+            ("success", "Success"),
+            ("failed", "Failed"),
+        ],
+        string="Bank Result",
+        copy=False,
+        tracking=True,
+        help="Result reported by the bank for this outbound e-payment. Set "
+        "from the bank payment export line once the bank confirms the "
+        "transfer succeeded or failed.",
+    )
+
     cheque_register_ids = fields.One2many(
         comodel_name="cheque.register",
         inverse_name="payment_id",

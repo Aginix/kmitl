@@ -485,18 +485,25 @@ def _create_disbursement_flow_demo(
 # (ล้างหนี้/จ่าย) and a KTB bank payment export. Each DR is advanced to a
 # different stage so the accounting tail shows records in every state.
 
-# Target stage per DR (by position), giving a realistic mix:
-#   approve  -> approved, ready to bill
-#   bill     -> vendor bill posted, still unpaid
-#   payment  -> bill posted + draft payment awaiting processing
-#   pay      -> payment submitted, bank-exported and posted (bill paid)
+# Target stage per DR (by position), giving a realistic mix across the whole
+# post-bill payment-execution workflow:
+#   approve    -> approved, ready to bill
+#   bill       -> vendor bill posted (bills_posted)
+#   audit      -> audited by the payment auditor (payment_audited)
+#   authorize  -> authorized to pay (payment_authorized)
+#   payment    -> draft payment created, awaiting bank confirmation
+#   paid       -> bank result confirmed success (paid), awaiting accounting
+#   pay        -> accounting posted the payment (cleared / ล้างหนี้)
 DR_STAGE_TARGETS = [
-    "approve", "approve",
-    "bill", "bill",
-    "payment", "payment", "payment",
+    "approve",
+    "bill",
+    "audit",
+    "authorize",
+    "payment", "payment",
+    "paid",
     "pay", "pay", "pay",
 ]
-WHT_DR_INDEX = 7  # one "pay" case carries withholding tax
+WHT_DR_INDEX = 7  # one "pay" (cleared) case carries withholding tax
 
 
 def _create_bill_payment_demo(env, drs):
@@ -520,7 +527,6 @@ def _create_bill_payment_demo(env, drs):
     except KeyError:
         wht_tax = None
 
-    payments_to_pay = env["account.payment"]
     for index, dr in enumerate(drs):
         target = (
             DR_STAGE_TARGETS[index]
@@ -534,19 +540,16 @@ def _create_bill_payment_demo(env, drs):
             _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
             if target == "bill":
                 continue
+            dr.action_audit()
+            if target == "audit":
+                continue
+            dr.action_authorize()
+            if target == "authorize":
+                continue
             dr.action_create_payment()
             if target == "payment":
                 continue
-            # action_create_payment does not refresh the computed payment_ids
-            # (it only depends on bill state), so search the payments directly.
-            payments = env["account.payment"].search(
-                [
-                    ("to_reconcile_payment_line_ids.move_id", "in", dr.bill_ids.ids),
-                    ("state", "=", "draft"),
-                ]
-            )
-            payments.action_submit()
-            payments_to_pay |= payments
+            _finalize_payment(env, dr, do_clear=(target == "pay"))
         except Exception as error:  # noqa: BLE001 - demo must never abort install
             _logger.warning(
                 "finance_kmitl_demo: DR %s stopped before '%s' (%s)",
@@ -554,9 +557,6 @@ def _create_bill_payment_demo(env, drs):
                 target,
                 error,
             )
-
-    if payments_to_pay:
-        _export_and_post_payments(env, payments_to_pay)
     _logger.info("Bill/payment demo created.")
 
 
@@ -598,13 +598,42 @@ def _bill_dr(dr, wht_tax=None):
     dr.action_post_bills()
 
 
-def _export_and_post_payments(env, payments):
-    """Best-effort KTB bank export, then post the payments (bills -> paid).
+def _finalize_payment(env, dr, do_clear):
+    """Send the payment to the bank, confirm the result (-> paid) and, for a
+    "pay" target, let accounting post the payment move (-> cleared).
+
+    Best-effort: a missing bank configuration leaves the request at 'paid'
+    (bank confirmed) rather than aborting the module installation.
+    """
+    payments = dr.payment_ids.filtered(lambda p: p.state == "draft")
+    if not payments:
+        return
+    payments.action_submit()
+    exported = _export_payments(env, payments)
+    # Finance confirms the bank result (success) so the request can reach 'paid'.
+    lines = env["bank.payment.export.line"].search(
+        [("payment_id", "in", payments.ids)]
+    )
+    if lines:
+        lines._apply_epayment_result("success")
+    else:
+        payments.write({"bank_result_status": "success"})
+    dr.action_confirm_paid()
+    if do_clear and exported:
+        # Accounting posts the payment move (guard passes: paid + success),
+        # which reconciles against the bill and clears the request.
+        to_post = payments.filtered(
+            lambda p: p.state == "submitted" and p.export_status != "draft"
+        )
+        to_post.action_post()
+
+
+def _export_payments(env, payments):
+    """Best-effort KTB bank export of the given submitted payments.
 
     The full KTB export depends on company bank configuration (bank journal
-    BIC, export format) that may be absent on a given database. The whole
-    sequence is wrapped so a failure only leaves the payments in 'submitted'
-    state instead of aborting the module installation.
+    BIC, export format) that may be absent on a given database. Returns True
+    when the export was confirmed, False otherwise.
     """
     try:
         for payment in payments:
@@ -631,18 +660,14 @@ def _export_and_post_payments(env, payments):
             }
         )
         export.action_confirm()
-        ready = payments.filtered(lambda p: p.export_status != "draft")
-        ready.action_post()
-        _logger.info(
-            "Bank export %s confirmed; %s payment(s) posted.",
-            export.name,
-            len(ready),
-        )
+        _logger.info("Bank export %s confirmed.", export.name)
+        return True
     except Exception as error:  # noqa: BLE001 - best-effort, keep install green
         _logger.warning(
-            "finance_kmitl_demo: bank export/post skipped (best-effort): %s",
+            "finance_kmitl_demo: bank export skipped (best-effort): %s",
             error,
         )
+        return False
 
 
 # === Step C: fixed assets and depreciation ===
