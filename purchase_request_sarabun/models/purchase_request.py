@@ -55,7 +55,7 @@ class PurchaseRequest(models.Model):
         return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_cancelled(self, document):
-        self.button_draft()
+        self.button_cancel()
         return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
