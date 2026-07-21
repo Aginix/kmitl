@@ -541,11 +541,6 @@ msgid "Main Information"
 msgstr "ข้อมูลหลัก"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__main_sarabun_document_id
-msgid "Main Sarabun Document"
-msgstr "เลขที่บันทึกขอซื้อ/จ้าง"
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_has_error
 msgid "Message Delivery error"
 msgstr ""

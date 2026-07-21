@@ -449,6 +449,6 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: agx_construction
-#: model:ir.model.fields,field_description:agx_construction.field_construction_project__main_sarabun_document_id
-msgid "Main Sarabun Document"
+#: model:ir.model.fields,field_description:agx_construction.field_construction_project__active_sarabun_document_id
+msgid "Active Sarabun Document"
 msgstr "เลขที่หนังสือ"

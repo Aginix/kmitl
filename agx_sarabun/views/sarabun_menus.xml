@@ -1,82 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Main Menu -->
+    <!-- Root -->
     <menuitem id="menu_sarabun_root"
-        name="e-Sarabun"
-        sequence="2"
-        web_icon="agx_sarabun,static/description/icon.png"
-        groups="group_sarabun_user"/>
+              name="e-Sarabun"
+              web_icon="agx_sarabun,static/description/icon.png"
+              sequence="20"/>
 
-    <!-- Documents Menu -->
-    <menuitem id="menu_sarabun_documents"
-        name="Documents"
-        parent="menu_sarabun_root"
-        sequence="10"/>
+    <!-- My Inbox (กล่องหนังสือเข้า) -->
+    <menuitem id="menu_sarabun_inbox"
+              name="กล่องหนังสือเข้า (Inbox)"
+              parent="menu_sarabun_root"
+              action="action_sarabun_document_inbox"
+              sequence="5"/>
 
-    <menuitem id="menu_sarabun_document_incoming"
-        name="Incoming (ขาเข้า)"
-        parent="menu_sarabun_documents"
-        action="action_sarabun_document_incoming"
-        sequence="5"/>
+    <!-- Documents -->
+    <menuitem id="menu_sarabun_document"
+              name="Documents"
+              parent="menu_sarabun_root"
+              action="action_sarabun_document"
+              sequence="10"/>
 
-    <menuitem id="menu_sarabun_document_inbox"
-        name="Inbox (รอดำเนินการ)"
-        parent="menu_sarabun_documents"
-        action="action_sarabun_document_inbox"
-        sequence="10"/>
-
-    <menuitem id="menu_sarabun_document_outgoing"
-        name="Outgoing (ขาออก)"
-        parent="menu_sarabun_documents"
-        action="action_sarabun_document_outgoing"
-        sequence="15"/>
-
-    <menuitem id="menu_sarabun_routing_pending"
-        name="Pending Actions"
-        parent="menu_sarabun_documents"
-        action="action_sarabun_recipient_inbox"
-        sequence="20"/>
-
-    <menuitem id="menu_sarabun_document_all"
-        name="All Documents"
-        parent="menu_sarabun_documents"
-        action="action_sarabun_document"
-        sequence="99"/>
-
-    <!-- Configuration Menu -->
-    <menuitem id="menu_sarabun_configuration"
-        name="Configuration"
-        parent="menu_sarabun_root"
-        sequence="90"
-        groups="group_sarabun_manager"/>
+    <!-- Configuration -->
+    <menuitem id="menu_sarabun_config"
+              name="Configuration"
+              parent="menu_sarabun_root"
+              sequence="90"
+              groups="group_sarabun_manager"/>
 
     <menuitem id="menu_sarabun_document_type"
-        name="Document Types"
-        parent="menu_sarabun_configuration"
-        action="action_sarabun_document_type"
-        sequence="10"/>
+              name="Document Types"
+              parent="menu_sarabun_config"
+              action="action_sarabun_document_type"
+              sequence="10"/>
+
+    <menuitem id="menu_sarabun_position"
+              name="Positions"
+              parent="menu_sarabun_config"
+              action="action_sarabun_position"
+              sequence="20"/>
+
+    <menuitem id="menu_sarabun_department_officer"
+              name="ธุรการหน่วยงาน (Unit Clerks)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_department_officer"
+              sequence="22"/>
+
+    <menuitem id="menu_sarabun_verb"
+              name="Verbs (การดำเนินการ)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_verb"
+              sequence="25"/>
+
+    <menuitem id="menu_sarabun_addressee_prefix"
+              name="Addressee Prefixes (คำขึ้นต้น)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_addressee_prefix"
+              sequence="27"/>
 
     <menuitem id="menu_sarabun_route_template"
-        name="Route Templates"
-        parent="menu_sarabun_configuration"
-        action="action_sarabun_route_template"
-        sequence="20"/>
+              name="Route Templates"
+              parent="menu_sarabun_config"
+              action="action_sarabun_route_template"
+              sequence="30"/>
 
-    <menuitem id="menu_sarabun_document_sequence"
-        name="Document Sequences"
-        parent="menu_sarabun_configuration"
-        action="action_sarabun_document_sequence"
-        sequence="30"/>
-
-    <menuitem id="menu_sarabun_document_number"
-        name="Document Numbers"
-        parent="menu_sarabun_configuration"
-        action="action_sarabun_document_number"
-        sequence="40"/>
-
-    <menuitem id="menu_sarabun_role"
-        name="Roles/Positions"
-        parent="menu_sarabun_configuration"
-        action="action_sarabun_role"
-        sequence="50"/>
+    <menuitem id="menu_sarabun_sequence"
+              name="Registers (ทะเบียน)"
+              parent="menu_sarabun_config"
+              action="action_sarabun_sequence"
+              sequence="40"/>
 </odoo>
