@@ -91,7 +91,9 @@ class TestTwoApprover(TransactionCase):
     def test_validate_opens_finance_step_with_todo(self):
         dr = self._make_verified_dr()
         self.assertEqual(dr.approval_state, "pending_finance")
-        self.assertEqual(dr.display_status, "pending_finance")
+        # The main status bar stays at 'verified'; the two-approver step is a
+        # separate sub-status.
+        self.assertEqual(dr.display_status, "verified")
         # A Todo was pushed to the Finance Director group.
         finance_todos = self._todos(dr, self.act_finance)
         self.assertEqual(finance_todos.user_id, self.finance)

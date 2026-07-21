@@ -1543,13 +1543,11 @@ msgstr "ไม่มี"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_finance
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pending_finance
 msgid "Pending Finance Director"
 msgstr "รออนุมัติ ผอ.กองคลัง"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__pending_rector
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__display_status__pending_rector
 msgid "Pending Rector-delegated Approver"
 msgstr "รออนุมัติ ผู้ได้รับมอบอำนาจอธิการบดี"
 

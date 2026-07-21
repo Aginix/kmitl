@@ -16,7 +16,7 @@
                 <field name="amount_total" />
                 <field name="display_status" widget="badge"
                     decoration-info="display_status == 'draft'"
-                    decoration-warning="display_status in ('submitted', 'signed', 'pending_finance', 'pending_rector', 'bill_draft', 'payment_draft')"
+                    decoration-warning="display_status in ('submitted', 'signed', 'bill_draft', 'payment_draft')"
                     decoration-primary="display_status in ('verified', 'bill_posted')"
                     decoration-success="display_status in ('approved', 'payment_posted', 'done')"
                     decoration-danger="display_status == 'cancel'" />
@@ -51,8 +51,9 @@
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': ['|', ('state', 'in', ('draft', 'cancel')), ('pipeline_status', 'in', ('bill_posted', 'payment_draft', 'payment_posted', 'done'))]}" groups="disbursement.group_disbursement_officer" />
                     <field name="state" invisible="1"/>
                     <field name="pipeline_status" invisible="1"/>
-                    <field name="approval_state" invisible="1"/>
-                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,pending_finance,pending_rector,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
+                    <field name="display_status" widget="statusbar" statusbar_visible="draft,submitted,signed,verified,approved,bill_draft,bill_posted,payment_draft,payment_posted,done"/>
+                    <!-- Two-approver sub-status, shown only during the approval window -->
+                    <field name="approval_state" widget="statusbar" statusbar_visible="pending_finance,pending_rector" attrs="{'invisible': [('state', '!=', 'verified')]}"/>
                 </header>
                 <!-- Budget Consumed Banner -->
                 <div class="alert alert-success" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('budget_consumed_amount', '=', 0)]}">

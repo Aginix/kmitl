@@ -273,8 +273,6 @@ class DisbursementRequest(models.Model):
             ("submitted", "Submitted"),
             ("signed", "Signed"),
             ("verified", "Verified"),
-            ("pending_finance", "Pending Finance Director"),
-            ("pending_rector", "Pending Rector-delegated Approver"),
             ("approved", "Approved"),
             ("cancel", "Cancelled"),
         ],
@@ -654,25 +652,20 @@ class DisbursementRequest(models.Model):
                 "approved" if rec.state == "approved" else "pre_approval"
             )
 
-    @api.depends("state", "pipeline_status", "approval_state")
+    @api.depends("state", "pipeline_status")
     def _compute_display_status(self):
         """Unify state + pipeline_status into one user-visible value.
 
         Used by the form statusbar so the user sees a single progressive
-        bar from draft → ... → approved → bill_* → payment_* → done. While the
-        request sits at ``verified`` the two-approver sub-workflow
-        (``approval_state``) is surfaced as pending_finance / pending_rector so
-        the bar shows which approval is outstanding. The underlying state,
-        pipeline_status and approval_state fields still drive button
-        visibility, security, and search filters.
+        bar from draft → ... → approved → bill_* → payment_* → done. The
+        two-approver sub-workflow is shown separately by its own
+        ``approval_state`` status bar, not merged in here. The underlying
+        state and pipeline_status fields still drive button visibility,
+        security, and search filters.
         """
         for rec in self:
             if rec.state == "cancel":
                 rec.display_status = "cancel"
-            elif rec.state == "verified" and rec.approval_state == "pending_finance":
-                rec.display_status = "pending_finance"
-            elif rec.state == "verified" and rec.approval_state == "pending_rector":
-                rec.display_status = "pending_rector"
             elif rec.state != "approved":
                 rec.display_status = rec.state
             elif rec.pipeline_status in (False, "pre_approval", "approved"):

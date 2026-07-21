@@ -38,10 +38,11 @@ notes it "mirrors `disbursement.request.display_status`").
   `approval_state == 'pending_rector'` and is the single place the budget hook
   (`_action_approve_budget`) fires. Any code that called `action_approve()` on a
   merely-`verified` request must first go through `action_approve_finance()`.
-- `display_status` gains `pending_finance` / `pending_rector` so the status bar
-  shows the outstanding approval. The accounting bridge's `_compute_display_status`
-  override had its `@api.depends` widened to include `approval_state`, otherwise
-  the bar would not refresh between the two approvals when that bridge is installed.
+- The two-approver progress is shown as a **separate `approval_state` status bar**
+  on the form (visible only while the request is `verified`), deliberately kept
+  off the main `display_status` bar so the primary lifecycle bar (draft → … →
+  approved) is unchanged and the accounting/finance bridges' `display_status`
+  handling needs no change.
 - A post-migration moves in-flight `verified` requests to `pending_finance` so
   they are not stranded without an approve button after upgrade.
 - Rejection reuses neither `state` nor the existing return flows: it sets
