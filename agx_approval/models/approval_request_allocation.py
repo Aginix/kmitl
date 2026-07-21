@@ -23,7 +23,7 @@ class ApprovalRequestAllocation(models.Model):
 
     partner_id = fields.Many2one(
         "res.partner",
-        string="Recipient",
+        string="ผู้รับเงิน",
         required=True,
         domain="[('id', 'in', allowed_recipient_ids)]",
     )
@@ -36,20 +36,20 @@ class ApprovalRequestAllocation(models.Model):
 
     partner_bank_id = fields.Many2one(
         "res.partner.bank",
-        string="Recipient Bank",
+        string="บัญชีธนาคาร",
         domain="[('partner_id', '=', partner_id)]",
     )
 
     bank_id = fields.Many2one(
         "res.bank",
-        string="Bank",
+        string="ธนาคาร",
         related="partner_bank_id.bank_id",
         readonly=True,
     )
 
     product_id = fields.Many2one(
         "product.product",
-        string="Expense",
+        string="รายการ",
         domain="[('id', 'in', allowed_product_ids)]",
         required=True,
     )
@@ -60,7 +60,7 @@ class ApprovalRequestAllocation(models.Model):
         compute="_compute_allowed_product_ids",
     )
 
-    note = fields.Char(string="Description")
+    description = fields.Char(string="รายละเอียด")
 
     company_id = fields.Many2one(
         "res.company",
@@ -74,7 +74,7 @@ class ApprovalRequestAllocation(models.Model):
     )
 
     amount = fields.Monetary(
-        string="Actual Amount",
+        string="จำนวนเงิน",
         currency_field="currency_id",
         required=True,
     )

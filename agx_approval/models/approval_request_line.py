@@ -33,7 +33,7 @@ class ApprovalRequestLine(models.Model):
         required=True,
     )
 
-    note = fields.Text(
+    description = fields.Text(
         string="รายละเอียด",
     )
 

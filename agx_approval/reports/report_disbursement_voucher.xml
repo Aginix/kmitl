@@ -83,7 +83,7 @@
                                                 <t t-foreach="g['allocs']" t-as="a">
                                                     <tr>
                                                         <td>
-                                                            - <t t-out="a.product_id.name" /><t t-if="a.note"> (<t t-out="a.note" />)</t>
+                                                            - <t t-out="a.product_id.name" /><t t-if="a.description"> (<t t-out="a.description" />)</t>
                                                         </td>
                                                         <td style="text-align:right; width:30%" t-out="'{0:,.2f}'.format(a.amount)" />
                                                     </tr>

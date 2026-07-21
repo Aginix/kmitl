@@ -98,7 +98,7 @@
                             <field name="sequence" widget="handle"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="product_id"/>
-                            <field name="note"/>
+                            <field name="description"/>
                             <field name="total_amount" sum="รวม"/>
                         </tree>
                     </field>
@@ -108,7 +108,7 @@
                             <field name="allowed_partner_type_ids" invisible="1"/>
                             <field name="sequence" widget="handle"/>
                             <field name="partner_id"/>
-                            <field name="note"/>
+                            <field name="description"/>
                         </tree>
                     </field>
                     <div attrs="{'invisible': [('state', 'not in', ['actual', 'billed', 'returned'])]}">
@@ -121,7 +121,7 @@
                                 <field name="currency_id" invisible="1"/>
                                 <field name="partner_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="product_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
-                                <field name="note" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="description" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="amount" sum="รวม" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="partner_bank_id" options="{'no_create': True, 'no_create_edit': True}" attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}"/>
                                 <field name="bank_id"/>

@@ -22,7 +22,7 @@ class ApprovalRequestParticipant(models.Model):
 
     partner_id = fields.Many2one(
         "res.partner",
-        string="Name",
+        string="ชื่อ",
         required=True,
         domain="[('partner_type_id', 'in', allowed_partner_type_ids)]"
         " if allowed_partner_type_ids else []",
@@ -34,7 +34,7 @@ class ApprovalRequestParticipant(models.Model):
         compute="_compute_allowed_partner_type_ids",
     )
 
-    note = fields.Char(string="Role / Note")
+    description = fields.Char(string="รายละเอียด")
 
     @api.depends(
         "request_id.category_id.allow_internal_partner",

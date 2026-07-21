@@ -116,7 +116,7 @@
                                     <tr>
                                         <td class="text-center" t-out="row_no" />
                                         <td t-out="line.product_id.name" />
-                                        <td t-out="line.note" />
+                                        <td t-out="line.description" />
                                         <td class="text-end" t-out="'{0:,.2f}'.format(line.total_amount)" />
                                     </tr>
                                     <t t-set="row_no" t-value="row_no + 1" />
@@ -152,7 +152,7 @@
                                         <tr>
                                             <td class="text-center" t-out="p_no" />
                                             <td t-out="participant.partner_id.name" />
-                                            <td t-out="participant.note" />
+                                            <td t-out="participant.description" />
                                         </tr>
                                         <t t-set="p_no" t-value="p_no + 1" />
                                     </t>
@@ -191,7 +191,7 @@
                                             <tr>
                                                 <td class="text-center" t-out="global_no" />
                                                 <td t-out="alloc.product_id.name" />
-                                                <td t-out="alloc.note" />
+                                                <td t-out="alloc.description" />
                                                 <td class="text-end" t-out="'{0:,.2f}'.format(alloc.amount)" />
                                             </tr>
                                             <t t-set="global_no" t-value="global_no + 1" />
