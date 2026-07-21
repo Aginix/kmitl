@@ -27,6 +27,7 @@
         "wizards/return_request_wizard_views.xml",
         "wizards/disbursement_reject_wizard_views.xml",
         "views/disbursement_request_views.xml",
+        "views/disbursement_approval_queue_views.xml",
         "views/disbursement_return_views.xml",
         "views/budget_commitment_views.xml",
         "views/exception_rule_views.xml",
@@ -38,6 +39,12 @@
     "assets": {
         "web.assets_frontend": [
             "disbursement/static/src/js/disbursement_sidebar.js",
+        ],
+        "web.assets_backend": [
+            "disbursement/static/src/approval_queue/multi_record_select.js",
+            "disbursement/static/src/approval_queue/approval_queue.js",
+            "disbursement/static/src/approval_queue/approval_queue.xml",
+            "disbursement/static/src/approval_queue/approval_queue.scss",
         ],
     },
     "installable": True,

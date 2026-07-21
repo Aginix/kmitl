@@ -1000,12 +1000,15 @@ msgstr "ข้อมูลงบประมาณ"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
 msgid "Approve"
 msgstr "อนุมัติ"
 
 #. module: disbursement
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__state__approved
 #: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__approval_state__approved
+#: model:ir.actions.act_window,name:disbursement.action_disbursement_approved
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approved
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
 msgid "Approved"
 msgstr "อนุมัติแล้ว"
@@ -1599,6 +1602,7 @@ msgstr "ขออนุมัติอีกครั้ง"
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
 #: model_terms:ir.ui.view,arch_db:disbursement.disbursement_reject_wizard_form
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
 msgid "Reject"
 msgstr "ตีกลับ"
 
@@ -1671,4 +1675,123 @@ msgstr "<p><b>การอนุมัติถูกตีกลับ</b></p><
 #, python-format
 msgid "no reason given"
 msgstr "ไม่ระบุเหตุผล"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "%s request(s) approved."
+msgstr "อนุมัติแล้ว %s รายการ"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "Could not approve:"
+msgstr "อนุมัติไม่ได้:"
+
+#. module: disbursement
+#: code:addons/disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "error"
+msgstr "ข้อผิดพลาด"
+
+#. module: disbursement
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approver
+msgid "Approver"
+msgstr "ผู้อนุมัติ"
+
+#. module: disbursement
+#: model:ir.actions.client,name:disbursement.action_disbursement_approval_finance
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approve_finance
+msgid "Awaiting Finance Director"
+msgstr "รอ ผอ.กองคลัง"
+
+#. module: disbursement
+#: model:ir.actions.client,name:disbursement.action_disbursement_approval_rector
+#: model:ir.ui.menu,name:disbursement.menu_disbursement_approve_rector
+msgid "Awaiting Rector Delegate"
+msgstr "รอผู้รับมอบอำนาจ"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Awaiting Finance Director approval"
+msgstr "รออนุมัติ: ผอ.กองคลัง"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Awaiting Rector-delegated approval"
+msgstr "รออนุมัติ: ผู้ได้รับมอบอำนาจอธิการบดี"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Approve Selected"
+msgstr "อนุมัติรายการที่เลือก"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "No requests pending your approval."
+msgstr "ไม่มีใบขอเบิกที่รอคุณอนุมัติ"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Actions"
+msgstr "การดำเนินการ"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Open"
+msgstr "เปิด"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Payee"
+msgstr "ผู้รับเงิน"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Date From"
+msgstr "ตั้งแต่วันที่"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Date To"
+msgstr "ถึงวันที่"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Departments"
+msgstr "ส่วนงาน"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Sources"
+msgstr "แหล่งเงิน"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Partners"
+msgstr "คู่ค้า"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "More filters"
+msgstr "ตัวกรองเพิ่มเติม"
+
+#. module: disbursement
+#. odoo-javascript
+#: code:addons/disbursement/static/src/approval_queue/approval_queue.js:0
+msgid "Hide filters"
+msgstr "ซ่อนตัวกรอง"
 

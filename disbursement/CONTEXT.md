@@ -52,3 +52,12 @@ Finance Director then the Rector-delegated approver, in that order, before it
 reaches `approved`. Each pending approval is surfaced to its approver group as
 an execution Todo in the shared notification center.
 _Avoid_: Tier validation (deliberately not used — see ADR 0001), dual sign-off.
+
+**Approver queue** (เมนูผู้อนุมัติ):
+The approver's work screen under the Approver (ผู้อนุมัติ) menu. Split by role
+into two queues — **Awaiting Finance Director** (รอ ผอ.กองคลัง, DRs at
+`pending_finance`) and **Awaiting Rector Delegate** (รอผู้รับมอบอำนาจ, DRs at
+`pending_rector`) — each showing only the requests at that approver's turn, plus
+an **Approved** history list. Separate from the requester's "Disbursement
+Requests" list and the officer's "Verification" (หมวดตรวจ) list.
+_Avoid_: Inbox (that is the Todo notification center), a single merged queue.

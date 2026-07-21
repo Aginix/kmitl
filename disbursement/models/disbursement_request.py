@@ -895,6 +895,58 @@ class DisbursementRequest(models.Model):
             record.activity_feedback([DR_APPROVE_RECTOR_ACTIVITY])
         return True
 
+    def action_approve_batch(self):
+        """Approve many requests at once from the approver queue.
+
+        Each request is approved in its own savepoint so one that fails (e.g.
+        insufficient budget on the Rector step) does not roll back the rest.
+        Dispatches by ``approval_state`` so it serves both approver queues, and
+        returns a summary notification.
+        """
+        approved = self.env["disbursement.request"]
+        failures = []
+        for record in self:
+            try:
+                with self.env.cr.savepoint():
+                    if record.approval_state == "pending_finance":
+                        record.action_approve_finance()
+                    elif record.approval_state == "pending_rector":
+                        record.action_approve()
+                    else:
+                        continue
+                approved |= record
+            except (UserError, ValidationError) as error:
+                self.env.invalidate_all()
+                failures.append(
+                    (record.display_name, error.args and error.args[0] or _("error"))
+                )
+            except Exception as error:  # noqa: BLE001 - isolate per-record failures
+                self.env.invalidate_all()
+                failures.append((record.display_name, str(error)))
+
+        message = _("%s request(s) approved.") % len(approved)
+        if failures:
+            message += "\n" + _("Could not approve:") + "\n"
+            message += "\n".join(
+                "• %s — %s" % (name, reason) for name, reason in failures
+            )
+        if failures and not approved:
+            notification_type = "danger"
+        elif failures:
+            notification_type = "warning"
+        else:
+            notification_type = "success"
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Approval"),
+                "message": message,
+                "type": notification_type,
+                "sticky": bool(failures),
+            },
+        }
+
     def action_open_reject_wizard(self):
         """Open the wizard that captures the rejection reason (either approver)."""
         self.ensure_one()
