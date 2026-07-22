@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models
+from odoo import _, models
 
 
 class PurchaseRequest(models.Model):
@@ -35,8 +35,15 @@ class PurchaseRequest(models.Model):
     def _get_sarabun_sender_department(self):
         return self.department_id or super()._get_sarabun_sender_department()
 
+    def _on_sarabun_circulating(self, document):
+        self.write({"state": "to_approve"})
+        return super()._on_sarabun_circulating(document)
+
     def _on_sarabun_completed(self, document):
-        self.button_approved()
+        self._transition_after_sarabun_approve()
+        self.message_post(
+            body=_("Approved via Sarabun document: %s") % document.name,
+        )
         return super()._on_sarabun_completed(document)
 
     def _on_sarabun_rejected(self, document, step):

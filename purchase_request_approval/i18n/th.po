@@ -743,7 +743,7 @@ msgstr "คำสั่งซื้อ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__request_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "แบบขอซื้อ/จ้าง"
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -805,9 +805,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request.py:0
 #, python-format
-msgid "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected 👎."
+msgid ""
+"Purchase approval %(pa_name)s for your Request %(pr_name)s has been "
+"cancelled."
 msgstr ""
-"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ถูกตีกลับ 👎."
+"ตามใบขอซื้อขอจ้างเลขที่ %(pr_name)s ได้จัดทำรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ถูกยกเลิก."
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -840,11 +842,10 @@ msgid "Reject"
 msgstr "ตีกลับ"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__rejected
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Rejected"
-msgstr "ถูกตีกลับ"
+msgstr "ปฎิเสธ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected_message
@@ -855,8 +856,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format
-msgid "Rejected via Sarabun. Reason: %s"
-msgstr ""
+msgid "Cancelled via Sarabun. Reason: %s"
+msgstr "ถูกยกเลิกผ่านสารบรรณ. เหตุผล: %s"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__budget_commitment_id
@@ -1412,7 +1413,7 @@ msgstr ""
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Sarabun Document"
-msgstr "หนังสือ"
+msgstr "หนังสืออนุมัติ"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
@@ -1495,3 +1496,20 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "ใบเสนอราคาพัสดุ"
 msgstr ""
+
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request__state__in_approval
+msgid "In Approval"
+msgstr "อยู่ระหว่างจัดทำ พจ.1"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__cancelled
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Cancelled"
+msgstr "ยกเลิก"

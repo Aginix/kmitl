@@ -43,10 +43,10 @@ class PurchaseRequestApproval(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("validate", "Validate"),
             ("to_approve", "To be approved"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
+            ("cancelled", "Cancelled"),
         ],
         string="Status",
         default="draft",
@@ -174,6 +174,8 @@ class PurchaseRequestApproval(models.Model):
             rec.request_id.message_post(body=message, message_type="comment")
             rec._activity_awaiting_create_purchase_order()
             rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
+            if rec.request_id and rec.request_id.state == "in_approval":
+                rec.request_id.write({"state": "in_progress"})
 
     def _activity_awaiting_create_purchase_order(self):
         self.request_id.activity_schedule(
@@ -181,15 +183,46 @@ class PurchaseRequestApproval(models.Model):
             user_id=self.request_id.user_id.id,
         )
 
-    def button_rejected(self):
-        for rec in self:
-            message = rec.request_id._purchase_request_approval_rejected_message_content(
-                rec
-            )
-            rec.request_id.message_post(body=message, message_type="comment")
-            rec.write({"state": "rejected"})
-            if rec.request_id:
-                rec.request_id.button_rejected()
+    def button_cancel(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยกเลิกใบขออนุมัติ (พจ.1)"),
+            "res_model": "purchase.request.approval.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def _action_do_cancel(self, reason):
+        self.ensure_one()
+        pa_body = _(
+            "ยกเลิกใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = self.request_id._purchase_request_approval_cancelled_message_content(
+            self
+        )
+        pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "cancelled"})
+        if self.request_id:
+            self.request_id.write({"state": "cancelled"})
+
+    def _action_do_reject(self, reason):
+        self.ensure_one()
+        pa_body = _(
+            "ปฎิเสธใบขออนุมัติ (พจ.1) %(pa)s เหตุผล: %(reason)s"
+        ) % {"pa": self.name, "reason": reason}
+        self.message_post(body=pa_body, subtype_xmlid="mail.mt_note")
+        pr_body = self.request_id._purchase_request_approval_rejected_message_content(
+            self
+        )
+        pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
+        self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "rejected"})
+        if self.request_id:
+            self.request_id.button_rejected()
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -254,21 +287,7 @@ class PurchaseRequestApproval(models.Model):
         action["res_id"] = self.request_id.id
         return action
 
-    @api.depends("state")
-    def _compute_is_editable(self):
-        """Override to make validate state non-editable."""
-        super()._compute_is_editable()
-        for record in self:
-            if record.state in ("validate", "to_approve", "approved", "rejected"):
-                record.is_editable = False
-
     # === Sarabun Document Integration ===
-
-    def button_validate(self):
-        """Move to validate state for data confirmation before routing."""
-        self.ensure_one()
-        self.write({"state": "validate"})
-        self.message_post(body=_("Document validated and ready for routing."))
 
     def _get_sarabun_subject(self):
         return self.title or self.name
@@ -288,18 +307,32 @@ class PurchaseRequestApproval(models.Model):
         return super()._on_sarabun_completed(document)
 
     def _on_sarabun_rejected(self, document, step):
-        # ปฏิเสธ (terminal) → PA rejected.
-        self.button_rejected()
+        reason = _("ปฏิเสธผ่านสารบรรณ: %s") % (step.note or document.name)
+        self._action_do_reject(reason)
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        # ตีกลับ / ดึงกลับ (revisable) → back to 'validate' to amend & re-submit.
-        self.write({"state": "validate"})
+        self.write({"state": "draft"})
         return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_cancelled(self, document):
-        # ยกเลิกการส่ง (terminal) → back to 'draft' so it can be re-opened.
-        self.write({"state": "draft"})
+        # ยกเลิกการส่ง Sarabun (terminal) → same effect as manual cancel wizard:
+        # cascade cancel to PA + PR, and release the PR's budget commitment.
+        reason = _("ยกเลิกการส่งหนังสือ %s") % document.name
+        self._action_do_cancel(reason)
+        pr = self.request_id
+        if pr and pr.budget_commitment_id:
+            try:
+                pr._cancel_budget_commitment()
+                pr.message_post(
+                    body=_("Budget commitment %s has been cancelled")
+                    % pr.budget_commitment_id.name
+                )
+            except UserError as e:
+                pr.message_post(
+                    body=_("Warning: Could not cancel budget commitment: %s")
+                    % str(e)
+                )
         return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
