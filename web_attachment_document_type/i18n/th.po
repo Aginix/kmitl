@@ -126,7 +126,10 @@ msgid "Document Type:"
 msgstr "ประเภทเอกสาร:"
 
 #. module: web_attachment_document_type
+#: model:ir.actions.act_window,name:web_attachment_document_type.action_ir_attachment_document_type
 #: model:ir.model.fields,field_description:web_attachment_document_type.field_ir_attachment_document_type_config__line_ids
+#: model:ir.ui.menu,name:web_attachment_document_type.menu_ir_attachment_document_type
+#: model_terms:ir.ui.view,arch_db:web_attachment_document_type.view_ir_attachment_document_type_tree
 msgid "Document Types"
 msgstr "ประเภทเอกสาร"
 
