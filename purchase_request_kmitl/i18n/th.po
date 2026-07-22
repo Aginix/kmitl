@@ -2257,7 +2257,6 @@ msgstr "สำหรับ พ.1 ทั้วไป"
 msgid "Is Construction"
 msgstr "สำหรับงานก่อสร้าง"
 
-
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
 msgid "To Submit"
