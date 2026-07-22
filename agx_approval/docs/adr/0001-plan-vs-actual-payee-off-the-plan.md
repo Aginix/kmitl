@@ -10,7 +10,7 @@ An expense-approval request now models **two moments of one activity**: the *pla
 
 ## Consequences
 
-- **New state machine** (see `.context/approval-state-machine.drawio`): `draft` → `to_verify` (รอตรวจสอบ/จองงบ) → `submitted` (รอส่งขออนุมัติ) → `sent` (สารบรรณเวียน) → `approved` → `actual` (บันทึกจริง) → `billed`; plus `rejected` / `returned`. `ready_to_bill` and the `payment_type` branch are dropped.
+- **New state machine** (see [`docs/approval-state-machine.drawio`](../approval-state-machine.drawio)): `draft` → `to_verify` (รอตรวจสอบ/จองงบ) → `submitted` (รอส่งขออนุมัติ) → `sent` (สารบรรณเวียน) → `approved` → `actual` (บันทึกจริง) → `billed`; plus `rejected` / `returned`. `ready_to_bill` and the `payment_type` branch are dropped.
 - Approval / reject / return arrive from e-Saraban callbacks (`_on_sarabun_circulating` → sent, `_on_sarabun_completed` → approved, `_on_sarabun_rejected` → rejected, `_on_sarabun_returned` → returned, `_on_sarabun_cancelled` → submitted). `agx_approval_sarabun` is rewired to the rebuilt engine's contract (override `_get_sarabun_subject`, not `_prepare_*`) and gets a new route template for the sign-off chain.
 - **D1** pull-back (ดึงกลับ) in `to_verify`/`submitted` → `draft` via a confirm wizard, releasing the reservation; distinct from e-Saraban's own ดึงกลับ on a circulating หนังสือ.
 - **D2** a Sarabun-returned request is editable everywhere **except budget**, then re-sent.

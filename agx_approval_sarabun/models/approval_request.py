@@ -38,8 +38,9 @@ class ApprovalRequest(models.Model):
 
     # -- Sarabun outcome → request state ----------------------------------
     def _on_sarabun_circulating(self, document):
-        # หนังสือเริ่มเวียน → คำขออยู่ระหว่างขออนุมัติ
-        if self.state == "submitted":
+        # หนังสือเริ่มเวียน → คำขออยู่ระหว่างขออนุมัติ. Also covers re-sending a
+        # หนังสือ that was returned (ตีกลับ/ดึงกลับ) for revision.
+        if self.state in ("submitted", "returned"):
             self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
