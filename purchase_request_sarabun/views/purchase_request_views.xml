@@ -6,13 +6,13 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
             <!-- Add Submit to Sarabun button after Request approval button -->
-            <xpath expr="//button[@name='button_to_approve']" position="after">
+            <xpath expr="//button[@name='button_draft']" position="after">
                 <button
                     name="action_submit_to_sarabun"
                     string="Create Sarabun"
                     type="object"
                     class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_has_live_document', '=', True)]}"
+                    attrs="{'invisible': ['|', ('state', '!=', 'to_submit'), ('sarabun_has_live_document', '=', True)]}"
                 />
             </xpath>
 

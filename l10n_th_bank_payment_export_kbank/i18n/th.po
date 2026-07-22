@@ -1,0 +1,52 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_th_bank_payment_export_kbank
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: code:addons/l10n_th_bank_payment_export_kbank/models/bank_payment_export.py:0
+#, python-format
+msgid "Account Number must only be 10 digits."
+msgstr "เลขที่บัญชีต้องมี 10 หลักเท่านั้น"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_company_id
+msgid "KBANK Company ID"
+msgstr "รหัสบริษัท KBANK"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_is_editable
+msgid "KBANK Editable"
+msgstr "แก้ไข KBANK ได้"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_sender_name
+msgid "Kbank Sender Name"
+msgstr "ชื่อผู้ส่ง KBANK"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model:ir.model.fields,field_description:l10n_th_bank_payment_export_kbank.field_bank_payment_export__kbank_service_type
+msgid "Kbank Service Type"
+msgstr "ประเภทบริการ KBANK"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: code:addons/l10n_th_bank_payment_export_kbank/models/bank_payment_export.py:0
+#, python-format
+msgid "Recipient Bank with %(payment)s is not selected."
+msgstr "ยังไม่ได้เลือกธนาคารผู้รับสำหรับ %(payment)s"
+
+#. module: l10n_th_bank_payment_export_kbank
+#: model_terms:ir.ui.view,arch_db:l10n_th_bank_payment_export_kbank.bank_payment_export_view_form
+msgid "Service Type"
+msgstr "ประเภทบริการ"
