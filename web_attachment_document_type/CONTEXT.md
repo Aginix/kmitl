@@ -13,9 +13,10 @@ widget:
    one Mapping.
 
 There is no custom widget name to remember and no per-consumer JS. A consumer module
-that wants classification ships two kinds of data XML records:
-`ir.attachment.document.type` (the doctype names) and `ir.attachment.document.type.rel`
-(the (model, doctype, sequence) mappings).
+that wants classification ships a `ir.attachment.document.type.config` per parent model
+with its Mapping lines inline (`ir.attachment.document.type.rel` via `line_ids`), plus
+any doctype masters (`ir.attachment.document.type`) it needs that aren't already in the
+shared taxonomy.
 
 ## Language
 
@@ -67,8 +68,8 @@ related to the widget. First consumers: `kris_project` and `purchase_request_kmi
 - **Doctype is always optional.** `ir.attachment.document_type_id` is declared
   `required=False` at base. Files coming in through any path (widget Attach button, drag
   & drop, mail chatter, API, import) are accepted with `document_type_id = NULL`. The
-  badge displays "-" for those, and the user can set the value later via the pencil
-  button.
+  badge displays "- Set type -" for those, and the user can set the value later by
+  clicking the badge.
 - **Business rule "must have doctype" is a consumer concern.** If a workflow needs every
   attachment classified before a state transition (e.g. `kris.project.action_confirm`),
   the consumer writes an `@api.constrains` or a check in the transition method that
@@ -92,8 +93,8 @@ related to the widget. First consumers: `kris_project` and `purchase_request_kmi
 - **Sequence lives on the Mapping, not on the Doctype.** The same doctype can appear in
   a different position under different models.
 - **UI is conditional.** A form whose `res_model` has zero doctypes mapped to it renders
-  the widget unchanged from Odoo standard — no badge, no pencil, no dropdown. It does
-  still get drag & drop (unconditional).
+  the widget unchanged from Odoo standard — no badge, no dropdown, no dialog on Attach.
+  It does still get drag & drop (unconditional).
 - **Post-hoc edit via clickable badge.** The Document Type badge next to each
   attachment's caption is itself the affordance — blue badge with the doctype name if
   set, yellow "- Set type -" badge if not. Clicking opens a dialog with the doctype
@@ -128,38 +129,34 @@ related to the widget. First consumers: `kris_project` and `purchase_request_kmi
 Test end-to-end after touching the patch or the taxonomy model:
 
 1. Install `web_attachment_document_type`, upgrade `kris_project` and
-   `purchase_request_kmitl` so migrations run.
-2. Migration lands cleanly (log has "remapped N attachments" lines for old doctype rows;
-   legacy `kris_project_document_type` table dropped; `ir_attachment.attachment_type`
-   column dropped).
-3. Open a `kris.project` form → attachment tab uses the standard `many2many_binary`:
+   `purchase_request_kmitl`.
+2. Open a `kris.project` form → attachment tab uses the standard `many2many_binary`:
    - Drag a file over the card list → dashed outline overlay "Drop files to attach"
-     appears → release → file uploads → row appears with a pencil icon and a "-" badge.
-   - Click pencil → dialog with a Document Type dropdown showing kris_project's doctypes
-     (Contract / Purchase / Receipt) → pick a value → Save → badge updates.
-4. Open a `purchase.request` form → same behaviour but the dropdown lists TOR /
+     appears → release → file uploads → row appears with a yellow "- Set type -" badge.
+   - Click the badge → dialog with a Document Type dropdown showing kris_project's
+     doctypes (สัญญา / จัดซื้อจัดจ้าง / เอกสารเบิกจ่ายและใบเสร็จ) → pick a value → Save
+     → badge turns blue with the doctype name.
+3. Open a `purchase.request` form → same behaviour but the dropdown lists TOR /
    Quotation / Etc.
-5. Open a vendor bill (`account.move`) or any other form with `many2many_binary` and no
-   doctypes mapped → drag & drop still works, but there is **no** badge, **no** pencil,
-   **no** dropdown — widget looks exactly like Odoo standard.
-6. Reload a form after tagging → badges still show. This confirms `document_type_id` is
+4. Open a vendor bill (`account.move`) or any other form with `many2many_binary` and no
+   doctypes mapped → drag & drop still works, but there is **no** badge, **no**
+   dropdown, **no** dialog on Attach — widget looks exactly like Odoo standard.
+5. Reload a form after tagging → badges still show. This confirms `document_type_id` is
    in `fieldsToFetch`.
-7. Settings > Technical > Parameters > **Attachment Doctypes**: click **New** → form
-   opens → pick `Model` = `purchase.order`, pick or quick-create a doctype in
-   `Document Type`, set `Sequence` → **Save**. Open a PO form → dropdown + badge appear
-   immediately (order matches the sequence just set), no JS reload. Repeat to add more
-   doctypes to the same model. The tree groups by model and only lists models that have
-   at least one Mapping.
-8. Historical attachments (created before the migration) still show their correct
-   badges: the migration mapped their old `kris.project.document.type` id /
-   `attachment_type` Selection value to the new `ir.attachment.document.type` records by
-   NAME/value respectively.
-9. Chatter D&D bug (see commit `97af33e`) still works: dragging over a form with a
+6. Settings > Technical > Parameters:
+   - **Document Types** → New → ตั้งชื่อ doctype ใหม่ (e.g. `Warranty`) → Save. Doctype
+     master ปรากฏในลิสต์.
+   - **Attachment Doctypes** → New → pick `Model` = `purchase.order`, add a Mapping line
+     → เลือก doctype จาก dropdown (quick-create ถูกบล็อค — ต้องมาสร้างที่ Document Types
+     ก่อน), set `Sequence` → **Save**. เปิด PO form → dropdown + badge ปรากฏทันที (order
+     ตาม sequence), ไม่ต้อง JS reload. Tree รายชื่อ Config (1 row = 1 model)
+     และแสดงเฉพาะ model ที่มี Config เท่านั้น.
+7. Chatter D&D bug (see commit `97af33e`) still works: dragging over a form with a
    chatter and dropping on the attachment widget does not leave the chatter drop overlay
    stuck.
-10. Upload via mail chatter → attachment appears in the widget list with a "-" badge →
-    pencil to set doctype.
-11. Consumer constraint enforcement: if `kris.project.action_confirm` is wired to check
-    `attachment_ids` doctypes, confirming a project that has an unclassified attachment
-    raises `UserError` — implement this only where the workflow actually needs it, not
-    by default.
+8. Upload via mail chatter → attachment appears in the widget list with a yellow "- Set
+   type -" badge → click the badge to set doctype.
+9. Consumer constraint enforcement: if `kris.project.action_confirm` is wired to check
+   `attachment_ids` doctypes, confirming a project that has an unclassified attachment
+   raises `UserError` — implement this only where the workflow actually needs it, not by
+   default.
