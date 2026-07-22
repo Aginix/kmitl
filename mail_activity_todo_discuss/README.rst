@@ -17,6 +17,10 @@ Features
 * Clicking the header opens the Todo inbox in the Discuss **main content pane**
   (not a cramped sidebar list); clicking an app group opens it **filtered to
   that app**.
+* A **History** entry below the app groups opens everything that has left the
+  inbox (all apps, newest handled first) in the same pane: the Todos I dismissed
+  with **Mark as Read** merged with the ones that were **completed** (a green
+  *Done* tag distinguishes them).
 * The page lists the user's open Todos (up to 100, earliest deadline first),
   each with its source-app icon, subject, **app, source record, activity type,
   category, assignee, note** and a colour-coded deadline (overdue / today /
@@ -36,11 +40,15 @@ How it works
 * ``res.users.get_my_todos`` (added here) provides the list payload (optionally
   filtered to one ``res_model``), reusing ``mail_activity_todo``'s
   ``_my_todo_count_domain`` so the page, the sidebar group counts and the Todo
-  app all select the same Todos.
+  app all select the same Todos. Pass ``read=True`` for the History view, which
+  merges the read complement (``_my_read_todo_domain``) with the completed
+  ``todo.log`` snapshots (scoped to the user by record rules), newest handled
+  first, each row tagged ``kind`` ("read"/"done").
 * A ``registerPatch`` on the legacy mail ``Discuss`` model adds ``isTodoActive``
-  / ``todoResModel`` flags and an ``openTodos(resModel)`` method (mirroring
-  ``openThread``); the Discuss content/sidebar templates are extended via
-  ``t-inherit`` to render the Todo view and the grouped sidebar panel.
+  / ``isTodoHistory`` / ``todoResModel`` flags and ``openTodos(resModel)`` /
+  ``openTodoHistory()`` methods (mirroring ``openThread``); the Discuss
+  content/sidebar templates are extended via ``t-inherit`` to render the Todo
+  view and the grouped sidebar panel.
 
 Configuration
 =============

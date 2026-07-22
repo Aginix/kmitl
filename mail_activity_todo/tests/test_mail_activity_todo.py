@@ -28,10 +28,10 @@ class TestMailActivityTodo(TransactionCase):
         cls.Read = cls.env["todo.read"]
         cls.Log = cls.env["todo.log"]
 
-        cls.type_fyi = cls.env["mail.activity.type"].create(
+        cls.type_ack = cls.env["mail.activity.type"].create(
             {
-                "name": "Test FYI",
-                "todo_category": "fyi",
+                "name": "Test Acknowledgement",
+                "todo_category": "acknowledgement",
                 "res_model": "test.todo.host",
             }
         )
@@ -72,18 +72,18 @@ class TestMailActivityTodo(TransactionCase):
 
     def test_action_done_logs_one_history_row(self):
         act = self.rec.activity_schedule(
-            summary="p", activity_type_id=self.type_fyi.id, user_id=self.user.id
+            summary="p", activity_type_id=self.type_ack.id, user_id=self.user.id
         )
         before = self.Log.search_count([])
         act.action_feedback()
         self.assertEqual(self.Log.search_count([]) - before, 1)
         log = self.Log.search([], order="id desc", limit=1)
-        self.assertEqual(log.todo_category, "fyi")
+        self.assertEqual(log.todo_category, "acknowledgement")
         self.assertEqual(log.user_id, self.user)
 
     def test_mark_read_idempotent_and_per_user(self):
         act = self.rec.activity_schedule(
-            summary="fyi", activity_type_id=self.type_fyi.id, user_id=self.user.id
+            summary="ack", activity_type_id=self.type_ack.id, user_id=self.user.id
         )
         act.with_user(self.user).action_mark_read()
         act.with_user(self.user).action_mark_read()
@@ -100,8 +100,8 @@ class TestMailActivityTodo(TransactionCase):
             "read state is per-user",
         )
 
-    def test_mark_read_ignores_non_readable_category(self):
-        """Execution/Approval Todos cannot be dismissed (ADR-0003)."""
+    def test_mark_read_ignores_execution_category(self):
+        """Execution Todos cannot be dismissed with Mark as Read (ADR-0003)."""
         act = self.rec.activity_schedule(
             summary="exec", activity_type_id=self.type_exec.id, user_id=self.user.id
         )
@@ -112,23 +112,50 @@ class TestMailActivityTodo(TransactionCase):
             "execution Todos must not get a read receipt",
         )
 
+    def test_uncategorised_activity_readable_but_not_logged(self):
+        """Fork A + ADR-0006: an activity whose type carries no category still
+        shows in the inbox and clears via Mark as Read like an Acknowledgement,
+        yet completing it is NOT snapshotted to history (logging stays scoped to
+        categorised workflow Todos)."""
+        type_plain = self.env["mail.activity.type"].create(
+            {"name": "Plain", "res_model": "test.todo.host"}
+        )
+        act = self.rec.activity_schedule(
+            summary="plain", activity_type_id=type_plain.id, user_id=self.user.id
+        )
+        self.assertFalse(act.todo_category, "uncategorised stays False")
+        self.assertTrue(act.with_user(self.user).is_my_todo)
+        # Readable: Mark as Read records a receipt (not gated out like execution).
+        act.with_user(self.user).action_mark_read()
+        self.assertTrue(act.with_user(self.user).is_read_by_me)
+        # But completion must not write a history row (6A).
+        before = self.Log.search_count([])
+        act.action_feedback()
+        self.assertEqual(
+            self.Log.search_count([]) - before,
+            0,
+            "uncategorised completion must not be logged",
+        )
+
     def test_recipient_partners_personal(self):
         """Bus recipients for a personal Todo = its assignee."""
         personal = self.rec.activity_schedule(
-            summary="p", activity_type_id=self.type_fyi.id, user_id=self.user.id
+            summary="p", activity_type_id=self.type_ack.id, user_id=self.user.id
         )
         self.assertEqual(
             personal._todo_recipient_partners(), self.user.partner_id
         )
 
-    def test_gc_personal_read_fyi(self):
-        """Retention GC removes read personal FYI past the threshold."""
+    def test_gc_personal_read_dismissed(self):
+        """Retention GC removes read personal dismissable Todos past the threshold."""
         self.env["ir.config_parameter"].sudo().set_param(
-            "mail_activity_todo.fyi_retention_days", "-1"
+            "mail_activity_todo.dismissed_retention_days", "-1"
         )
         personal = self.rec.activity_schedule(
-            summary="p", activity_type_id=self.type_fyi.id, user_id=self.user.id
+            summary="p", activity_type_id=self.type_ack.id, user_id=self.user.id
         )
         self.Read.create({"activity_id": personal.id, "user_id": self.user.id})
-        self.Activity._gc_read_fyi_todos()
-        self.assertFalse(personal.exists(), "read personal FYI should be GC'd")
+        self.Activity._gc_read_dismissed_todos()
+        self.assertFalse(
+            personal.exists(), "read personal dismissable Todo should be GC'd"
+        )

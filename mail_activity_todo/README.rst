@@ -36,20 +36,24 @@ Module layout
     plan's operating unit.
 
 ``purchase_request_todo`` (bridge, depends **core only**)
-    UC2/UC3: tags the PR approval/creation activities as Execution, and FYIs the
-    requester on approve/reject. Personal (``user_id``) — proof the core stands
-    alone without the role-in-unit layer.
+    UC2/UC3: tags the PR approval/creation activities as Execution, and sends
+    the requester an Acknowledgement on approve/reject. Personal (``user_id``) —
+    proof the core stands alone without the role-in-unit layer.
 
 Concepts
 ========
 
-A **Todo** is a ``mail.activity``. Four behavioural categories
-(``todo_category`` on the activity type):
+A **Todo** is a ``mail.activity``. The inbox shows **every open activity
+assigned to you** — built-in, OCA, hand-scheduled, or workflow-emitted; the
+category is not a gate (ADR-0006). ``todo_category`` (set on the activity type)
+only refines how a Todo clears, in **two** behavioural values:
 
-* **Approval / Execution** — cleared by acting on the source record
-  (``activity_feedback`` on a state transition). No "Mark as Read".
-* **Acknowledgement / FYI** — dismissed per-user with **Mark as Read**
-  (recorded in ``todo.read``); never removed for other recipients.
+* **Execution** — cleared by acting on the source record (``activity_feedback``
+  on a state transition). No "Mark as Read".
+* **Acknowledgement** — dismissed per-user with **Mark as Read** (recorded in
+  ``todo.read``); never removed for other recipients. **Uncategorised**
+  activities (a plain Call, etc.) behave the same way — Mark as Read is the one
+  user-driven clear gesture; there is no "Mark Done" button.
 
 Assignment has two modes (ADR-0002, provided by the role-in-unit layer):
 
@@ -68,9 +72,9 @@ KMITL use cases (bridges)
   (``procurement_plan_todo``)
 * **UC2 Execution** — the existing purchase-request "create PA/PO" activities
   are tagged ``execution`` so they show in the inbox. (``purchase_request_todo``)
-* **UC3 FYI** — when a พ.1 (``purchase.request.approval``) is approved or
-  rejected (manual *or* Sarabun-auto path), the requester gets an FYI.
-  (``purchase_request_todo``)
+* **UC3 Acknowledgement** — when a พ.1 (``purchase.request.approval``) is
+  approved or rejected (manual *or* Sarabun-auto path), the requester gets an
+  Acknowledgement Todo. (``purchase_request_todo``)
 
 The core app has two menus: **Inbox** (open Todos) and **Completed** (history).
 A done activity is unlinked by core, so completed Todos are snapshotted into
@@ -82,7 +86,8 @@ The systray bell groups open Todos by source model (native Activities-menu
 style) with per-model icons and counts. It **replaces** Odoo's native
 Activities menu (removed via a small service), because that menu is
 ``user_id``-only and cannot surface role-in-unit group Todos — the unified bell
-covers personal *and* group Todos in one place.
+lists **every** activity assigned to you (personal, group, and plain built-in
+ones alike) in one place, so nothing the native menu showed is lost.
 
 Configuration
 =============
@@ -93,9 +98,9 @@ Configuration
    (``res.users.role``) to the staff actually responsible for plan work.
 #. Make sure those users belong to the right **Operating Unit(s)**
    (``operating.unit.user_ids``) — group routing = role ∩ OU.
-#. Retention window for read FYI/Acknowledgement Todos is the system parameter
-   ``mail_activity_todo.fyi_retention_days`` (default **180**); a daily cron
-   deletes read FYI/Ack Todos older than that.
+#. Retention window for read dismissable Todos (Acknowledgement + uncategorised)
+   is the system parameter ``mail_activity_todo.dismissed_retention_days``
+   (default **180**); a daily cron deletes read dismissable Todos older than that.
 
 Known limitations (v1)
 ======================

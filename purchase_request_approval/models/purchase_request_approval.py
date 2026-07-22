@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import base64
-import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequestApproval(models.Model):
@@ -220,15 +217,11 @@ class PurchaseRequestApproval(models.Model):
 
     def button_approved(self):
         for rec in self:
-            if (
-                rec.main_sarabun_document_id
-                and rec.main_sarabun_document_id.state == "sent"
-            ):
+            document = rec.active_sarabun_document_id
+            if document and document.is_circulating:
                 raise UserError(
-                    _(
-                        "Cannot manually approve while Sarabun routing is pending. "
-                        "Please wait for the routing to complete or cancel the Sarabun document."
-                    )
+                    _("Cannot manually approve while the หนังสือ is still circulating. "
+                      "Please wait for the routing to complete or recall the Sarabun document.")
                 )
         for rec in self:
             message = (
@@ -327,70 +320,37 @@ class PurchaseRequestApproval(models.Model):
         self.write({"state": "validate"})
         self.message_post(body=_("Document validated and ready for routing."))
 
-    def _prepare_sarabun_document_vals(self):
-        self.ensure_one()
-        vals = super()._prepare_sarabun_document_vals()
-        vals["subject"] = self.title or self.name
-        if self.requesting_department_id:
-            vals["sender_department_id"] = self.requesting_department_id.id
-        return vals
+    def _get_sarabun_subject(self):
+        return self.title or self.name
 
-    def action_submit_to_sarabun(self):
-        self.ensure_one()
+    def _get_sarabun_sender_department(self):
+        return self.requesting_department_id or super()._get_sarabun_sender_department()
 
-        result = self.action_create_sarabun_document()
-        document = self.env["sarabun.document"].browse(result.get("res_id"))
-
-        self.main_sarabun_document_id = document
-
-        self.message_post(
-            body=_("Submitted to Sarabun for approval: %s") % document.name,
-        )
-
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.document",
-            "res_id": document.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
-    def _on_sarabun_sent(self, document):
-        _logger.info(
-            "Sarabun sent callback for PA %s (id=%s) from document %s",
-            self.name,
-            self.id,
-            document.name,
-        )
+    def _on_sarabun_circulating(self, document):
+        # Explicit override: flip the PA to 'to_approve' on send. Do NOT call
+        # button_to_approve here — that also renders the PDF and assigns the name.
         self.write({"state": "to_approve"})
-        self.message_post(
-            body=_("Sent for approval via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_circulating(document)
 
     def _on_sarabun_completed(self, document):
-        _logger.info(
-            "Sarabun completed callback for PA %s (id=%s) from document %s",
-            self.name,
-            self.id,
-            document.name,
-        )
+        # Routing completed → auto-approve the PA.
         self.button_approved()
-        self.message_post(
-            body=_("Approved via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_completed(document)
 
-    def _on_sarabun_rejected(self, document, recipient):
-        _logger.info(
-            "Sarabun rejected callback for PA %s (id=%s) from document %s",
-            self.name,
-            self.id,
-            document.name,
-        )
+    def _on_sarabun_rejected(self, document, step):
+        # ปฏิเสธ (terminal) → PA rejected.
         self.button_rejected()
-        reason = recipient.comment if recipient else _("No reason provided")
-        self.message_post(
-            body=_("Rejected via Sarabun. Reason: %s") % reason,
-        )
+        return super()._on_sarabun_rejected(document, step)
+
+    def _on_sarabun_returned(self, document, step):
+        # ตีกลับ / ดึงกลับ (revisable) → back to 'validate' to amend & re-submit.
+        self.write({"state": "validate"})
+        return super()._on_sarabun_returned(document, step)
+
+    def _on_sarabun_cancelled(self, document):
+        # ยกเลิกการส่ง (terminal) → back to 'draft' so it can be re-opened.
+        self.write({"state": "draft"})
+        return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
         return self.env.ref(

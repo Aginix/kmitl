@@ -167,9 +167,7 @@ class DisbursementRequest(models.Model):
                 for line in lines
             ]
             partner_bank = lines[0].partner_bank_id
-            bill = self.env["account.move"].with_context(
-                auto_submit_on_create=True
-            ).create(
+            bill = self.env["account.move"].create(
                 self._prepare_bill_vals(partner, partner_bank, invoice_lines)
             )
             self._apply_wht_to_bill(bill, lines)

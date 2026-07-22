@@ -1,144 +1,108 @@
 # -*- coding: utf-8 -*-
+"""Route templates — seed-only (ADR-0001).
+
+A template *seeds* a Document's Route at send time; it never owns or constrains
+the flow once seeded. Each template line materialises into one
+``sarabun.routing.step`` (state ``waiting``).
+"""
 from odoo import api, fields, models
 from odoo.tools.safe_eval import safe_eval
+
+# Keep in sync with sarabun_routing_step.py
+TARGET_MODE = [
+    ("unit", "ธุรการหน่วยงาน (Unit Clerk)"),
+    ("person", "บุคลากร (Personnel)"),
+    ("position", "ตำแหน่ง (Position)"),
+]
 
 
 class SarabunRouteTemplate(models.Model):
     _name = "sarabun.route.template"
-    _description = "Sarabun Route Template"
+    _description = "Sarabun Route Template (seed)"
     _order = "sequence, name"
 
-    name = fields.Char(
-        string="Template Name",
-        required=True,
-    )
+    name = fields.Char(required=True)
     active = fields.Boolean(default=True)
-    description = fields.Text(string="Description")
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
-        help="Priority for matching (lower = higher priority)",
-    )
+    sequence = fields.Integer(default=10, help="Match priority (lower = higher).")
+    description = fields.Text()
 
-    # === Scope Fields ===
-    department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Department",
-        help="If set, this template is specific to this department",
-    )
-    document_type_id = fields.Many2one(
-        comodel_name="sarabun.document.type",
-        string="Document Type",
-        help="If set, this template is specific to this document type",
-    )
-    origin_model = fields.Char(
-        string="Origin Model",
-        help="Technical model name (e.g., purchase.request). If set, this template only applies to documents created from this model.",
-    )
-
-    # === Condition ===
+    # Scope (for from_record auto-matching)
+    department_id = fields.Many2one("hr.department", string="Department")
+    document_type_id = fields.Many2one("sarabun.document.type", string="Document Type")
+    origin_model = fields.Char(string="Origin Model")
     condition_domain = fields.Text(
         string="Condition Domain",
-        help="Domain to evaluate against origin record. E.g., [('amount_total', '>=', 100000)]. Leave empty to match all.",
+        help="Python domain evaluated against the origin record, e.g. "
+        "[('amount_total', '>=', 100000)]. Empty = match all.",
     )
 
-    # === Route Steps ===
     line_ids = fields.One2many(
-        comodel_name="sarabun.route.template.line",
-        inverse_name="template_id",
-        string="Route Steps",
-        copy=True,
+        "sarabun.route.template.line", "template_id", string="Steps", copy=True
     )
 
     def match_origin_record(self, origin_record):
-        """Check if this template matches the origin record based on condition_domain"""
         self.ensure_one()
         if not self.condition_domain:
-            return True  # No condition = always match
-
+            return True
         try:
             domain = safe_eval(self.condition_domain, {"uid": self.env.uid})
             return bool(origin_record.filtered_domain(domain))
         except Exception:
-            return False  # Invalid domain = no match
+            return False
 
     @api.model
     def find_matching_templates(self, origin_record=False, department_id=False, document_type_id=False):
-        """Find all templates that match the given criteria"""
         domain = [("active", "=", True)]
-
-        # Build domain with OR conditions for optional scope fields
         if origin_record:
-            domain += [
-                "|",
-                ("origin_model", "=", False),
-                ("origin_model", "=", origin_record._name),
-            ]
-
+            domain += ["|", ("origin_model", "=", False), ("origin_model", "=", origin_record._name)]
         if department_id:
-            domain += [
-                "|",
-                ("department_id", "=", False),
-                ("department_id", "=", department_id),
-            ]
-
+            domain += ["|", ("department_id", "=", False), ("department_id", "=", department_id)]
         if document_type_id:
-            domain += [
-                "|",
-                ("document_type_id", "=", False),
-                ("document_type_id", "=", document_type_id),
-            ]
-
+            domain += ["|", ("document_type_id", "=", False), ("document_type_id", "=", document_type_id)]
         templates = self.search(domain, order="sequence, name")
-
-        # Filter by condition_domain if origin_record is provided
         if origin_record:
             templates = templates.filtered(lambda t: t.match_origin_record(origin_record))
-
         return templates
 
 
 class SarabunRouteTemplateLine(models.Model):
     _name = "sarabun.route.template.line"
-    _description = "Sarabun Route Template Line"
-    _order = "sequence, id"
+    _description = "Sarabun Route Template Line (seed)"
+    _order = "order, id"
 
     template_id = fields.Many2one(
-        comodel_name="sarabun.route.template",
-        string="Template",
+        "sarabun.route.template", required=True, ondelete="cascade"
+    )
+    order = fields.Integer(string="Stage", default=1, help="Steps sharing one order run in parallel.")
+    verb = fields.Many2one(
+        "sarabun.verb",
+        string="Verb",
         required=True,
-        ondelete="cascade",
+        default=lambda self: self.env.ref("agx_sarabun.verb_endorse", raise_if_not_found=False),
+        ondelete="restrict",
     )
-    sequence = fields.Integer(default=10)
-    routing_type = fields.Selection(
-        selection=[
-            ("acknowledge", "For Acknowledgement"),
-            ("approve", "For Approval"),
-        ],
-        string="Routing Type",
-        required=True,
-        default="acknowledge",
-    )
-    recipient_type = fields.Selection(
-        selection=[
-            ("user", "User"),
-            ("department", "Department"),
-            ("role", "Role/Position"),
-        ],
-        string="Recipient Type",
-        required=True,
-        default="user",
-    )
-    user_id = fields.Many2one(
-        comodel_name="res.users",
-        string="User",
-    )
+    for_info = fields.Boolean(string="สำเนาเรียน (CC)", help="Non-gating acknowledge (CC).")
+    target_mode = fields.Selection(TARGET_MODE, required=True, default="position")
+    position_id = fields.Many2one("sarabun.position", string="Position")
+    employee_id = fields.Many2one("hr.employee", string="บุคลากร (Person)")
     department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Department",
+        "hr.department", string="Unit",
+        domain=[("is_sarabun_office", "=", True)],
+        help="เป้าหมายแบบ ธุรการหน่วยงาน — เลือกได้เฉพาะหน่วยงานที่ตั้งเป็นหน่วยงานธุรการ.",
     )
-    role_id = fields.Many2one(
-        comodel_name="sarabun.role",
-        string="Role/Position",
-        help="Select a role/position for routing",
-    )
+
+    def _seed_vals(self):
+        """Return the dict to create a sarabun.routing.step (state waiting)."""
+        self.ensure_one()
+        return {
+            "order": self.order,
+            "verb": self.verb.id,
+            "for_info": self.for_info,
+            "target_mode": self.target_mode,
+            "position_id": self.position_id.id,
+            "employee_id": self.employee_id.id,
+            "department_id": self.department_id.id,
+            "state": "waiting",
+            "created_by_disposition": "seed",
+            "seeded_from_template_line_id": self.id,
+        }

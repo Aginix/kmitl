@@ -5,8 +5,19 @@
     padding: 0 0.5rem;
     cursor: pointer;
 
-    .fa-file-text-o {
+    .fa-inbox {
         font-size: 1.2rem;
+    }
+
+    .badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: #d9534f;
+        color: #fff;
+        font-size: 0.65rem;
+        padding: 0.1rem 0.35rem;
+        border-radius: 0.6rem;
     }
 }
 
@@ -20,7 +31,7 @@
             background-color: #f8f9fa;
         }
 
-        .fa-folder-o {
+        .fa-file-text-o {
             font-size: 1rem;
         }
     }
