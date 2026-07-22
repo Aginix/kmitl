@@ -24,8 +24,7 @@ shared taxonomy.
 "kind" of attachment (Contract, Receipt, TOR, etc.). Holds only its `name` and `active`
 flag; scope and ordering are on the Mappings that point to it, not on the doctype
 itself. _Avoid_: classifier (implementation-level jargon), metadata (too broad),
-category (overloaded in Odoo), attachment type (was the old Selection field name — now
-migrated away).
+category (overloaded in Odoo), attachment type (ambiguous with MIME type).
 
 **Model Config**: A row in `ir.attachment.document.type.config` — one per parent model
 that participates in doctype classification. Holds `res_model_id` and the ordered
@@ -37,8 +36,8 @@ the tree can safely use `create="true"` without Studio-style side effects.
 pairing of a `Document Type` with a `sequence`, scoped to the Config's model via
 `config_id`. There is at most one Mapping per (config, doctype) pair (SQL unique). A
 doctype may appear in zero or more Configs; a Config may hold zero or more Mappings.
-_Avoid_: link (too generic), assignment (implies workflow), scope (now derived from
-Configs + Mappings rather than a field on the doctype).
+_Avoid_: link (too generic), assignment (implies workflow), scope (derived from
+Configs + Mappings, not stored on the doctype).
 
 **Scope (of a Document Type)**: The set of Models a doctype is offered on, derived from
 its inbound Mappings. Not a stored field — read via the widget's query on the Mapping

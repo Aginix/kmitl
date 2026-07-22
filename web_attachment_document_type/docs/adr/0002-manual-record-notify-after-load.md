@@ -10,11 +10,6 @@ re-renders until a full page reload.
 We call `this.props.record.model.notify()` manually after the two loads to kick the
 reactivity system.
 
-Alternatives rejected: (i) `location.reload()` — awful UX and drops any unsaved sibling
-state; (ii) mirror the doctype into an OWL `useState` inside the widget — doubles the
-source of truth and complicates the drag-drop / attach flows that write straight through
-the record.
-
 ## Consequences
 
 - Direct dependency on Odoo 16's reactivity internals; on upgrade to 17+ this line must
