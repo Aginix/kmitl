@@ -307,13 +307,12 @@ class PurchaseRequestApproval(models.Model):
         return super()._on_sarabun_completed(document)
 
     def _on_sarabun_rejected(self, document, step):
-        # ปฏิเสธ (terminal) → PA rejected.
-        self.button_rejected()
+        reason = _("ปฏิเสธผ่านสารบรรณ: %s") % (step.note or document.name)
+        self._action_do_reject(reason)
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        # ตีกลับ / ดึงกลับ (revisable) → back to 'validate' to amend & re-submit.
-        self.write({"state": "validate"})
+        self.write({"state": "draft"})
         return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_cancelled(self, document):
