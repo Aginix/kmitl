@@ -45,8 +45,8 @@ class PurchaseRequestApproval(models.Model):
             ("draft", "Draft"),
             ("to_approve", "To be approved"),
             ("approved", "Approved"),
-            ("reject", "Rejected"),
-            ("cancel", "Cancel"),
+            ("rejected", "Rejected"),
+            ("cancelled", "Cancelled"),
         ],
         string="Status",
         default="draft",
@@ -205,9 +205,9 @@ class PurchaseRequestApproval(models.Model):
         )
         pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
-        self.write({"state": "cancel"})
+        self.write({"state": "cancelled"})
         if self.request_id:
-            self.request_id.write({"state": "cancel"})
+            self.request_id.write({"state": "cancelled"})
 
     def _action_do_reject(self, reason):
         self.ensure_one()
@@ -220,7 +220,7 @@ class PurchaseRequestApproval(models.Model):
         )
         pr_body += "<br/>%s" % (_("เหตุผล: %s") % reason)
         self.request_id.message_post(body=pr_body, subtype_xmlid="mail.mt_note")
-        self.write({"state": "reject"})
+        self.write({"state": "rejected"})
         if self.request_id:
             self.request_id.button_rejected()
 

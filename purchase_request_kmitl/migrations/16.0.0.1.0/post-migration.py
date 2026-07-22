@@ -65,7 +65,8 @@ def migrate(cr, version):
         )
 
     # Case 4: PA state reduction (5 -> 4 states).
-    # Merge legacy 'validate' into 'to_approve'; rename 'rejected' to 'cancel'.
+    # Merge legacy 'validate' into 'to_approve'; remap legacy 'rejected'
+    # (cancel-like semantic per ADR-0005) to the new past-tense 'cancelled'.
     cr.execute(
         """
         UPDATE purchase_request_approval
@@ -78,8 +79,19 @@ def migrate(cr, version):
     cr.execute(
         """
         UPDATE purchase_request_approval
-           SET state = 'cancel'
+           SET state = 'cancelled'
          WHERE state = 'rejected'
         """
     )
-    _logger.info("post-migration: case 4b (PA rejected -> cancel) updated %s rows", cr.rowcount)
+    _logger.info("post-migration: case 4b (PA rejected -> cancelled) updated %s rows", cr.rowcount)
+
+    # Case 5: PR terminal state rename to past-tense — 'cancel' -> 'cancelled'.
+    # 'cancel' has existed on PR since 16.0 via purchase_request_kmitl.selection_add.
+    cr.execute(
+        """
+        UPDATE purchase_request
+           SET state = 'cancelled'
+         WHERE state = 'cancel'
+        """
+    )
+    _logger.info("post-migration: case 5 (PR cancel -> cancelled) updated %s rows", cr.rowcount)

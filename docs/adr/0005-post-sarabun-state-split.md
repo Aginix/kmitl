@@ -11,15 +11,16 @@ waiting for the e-GP project number) and `in_approval` (non-e-GP branch, พจ.
 — and reuse the OCA base `in_progress` for the "PO not yet cut" phase. The Sarabun completion
 callback dispatches into a new hook `_transition_after_sarabun_approve()` chained by `super()`
 across `purchase_request_egp` (owns `in_egp`) and `purchase_request_approval` (owns `in_approval`);
-`purchase_request_kmitl` owns the base fallback and the new terminal state `cancel`. On the
+`purchase_request_kmitl` owns the base fallback and the new terminal state `cancelled`. On the
 non-e-GP branch the dispatcher **auto-creates the PA** — the manual "Create PA" button is deleted.
 `approval_make_purchase_order` (non-e-GP) and the OCA
 `purchase.request.line.make.purchase.order.make_purchase_order()` (e-GP) each cascade PR → `done`
 after the PO is actually created. PA approved cascades PR `in_approval` → `in_progress`. PA
-cancelled (Sarabun reject or manager cancel) cascades PR → `cancel`, which cancels the budget
+cancelled (Sarabun reject or manager cancel) cascades PR → `cancelled`, which cancels the budget
 commitment via a new `button_cancel` override in `purchase_request_budget`. The PA state machine
-is also reduced from 5 states to 4 (merge `validate` into `to_approve`, rename `rejected` →
-`cancel`) to align with the drawio v2 model.
+is also reduced from 5 states to 4 (merge `validate` into `to_approve`, remap `rejected` →
+`cancelled`) to align with the drawio v2 model. Terminal states across PR/PA are named in
+past-tense form (`approved`, `rejected`, `cancelled`, `done`) to match the OCA convention.
 
 State labels for the new selections (`in_egp`, `in_approval`, `cancel`) are declared in
 English at the model layer; Thai user-facing strings live in each module's `i18n/th.po` so
@@ -41,7 +42,7 @@ translations can be revised without editing the code.
   wizard `_VALID_PR_STATES` extension.
 - **Cascade PA rejected → PR `rejected` (initial ADR-0005 draft)** — rejected in round-3.
   Reusing `rejected` was cheap but semantically off — `rejected` in drawio v2 is reserved for
-  "Sarabun rejected the พ.1 directly". A dedicated `cancel` state gives us a clean split.
+  "Sarabun rejected the พ.1 directly". A dedicated `cancelled` state gives us a clean split.
 
 ## Consequences
 
@@ -49,9 +50,9 @@ translations can be revised without editing the code.
   `approved` (the fallback in `_transition_after_sarabun_approve`'s base is a safety net for
   installs without `_egp` / `_approval`, which we do not ship). The post-migration script at
   `purchase_request_kmitl/migrations/16.0.0.1.0/post-migration.py` moves existing rows:
-  `approved+is_egp` → `in_egp`; `approved+non-egp+has PA` → `in_approval`; any stray
-  `in_purchase` from intermediate builds → `in_progress`; PA `validate` → `to_approve`;
-  PA `rejected` → `cancel`.
+  `approved+is_egp` → `in_egp`; `approved+non-egp+has PA` → `in_approval`;
+  PA `validate` → `to_approve`; PA `rejected` → `cancelled` (semantic remap);
+  PR `cancel` → `cancelled` (past-tense rename).
 - **Case 3 (approved + non-egp + no PA) is left in `approved`** and the row IDs are logged as a
   warning. Auto-creating a `purchase.request.approval` in SQL migration bypasses sequences, mail
   activities, and Sarabun template setup; ops manually advances these residual records or a
@@ -61,7 +62,7 @@ translations can be revised without editing the code.
   where relevant. Downstream reports/dashboards that filter on state must be independently
   audited — the migration cannot know which of them expected the old broad state and which
   expected the new narrower phase.
-- **PA cascade goes to `cancel`**, with commitment-cancel wired via `purchase_request_budget.button_cancel`.
+- **PA cascade goes to `cancelled`**, with commitment-cancel wired via `purchase_request_budget.button_cancel`.
 - **PA state machine is 4-state.** `button_validate` is removed; `button_rejected` is renamed
   to `button_cancel`. Any RPC/tests calling `button_validate` will break — the demo hook was
   updated accordingly.

@@ -8,9 +8,9 @@ class PurchaseRequest(models.Model):
         selection_add=[
             ("to_submit", "To Submit"),
             ("to_approve",),
-            ("cancel", "Cancel"),
+            ("cancelled", "Cancelled"),
         ],
-        ondelete={"to_submit": "set default", "cancel": "set default"},
+        ondelete={"to_submit": "set default", "cancelled": "set default"},
     )
 
     procurement_type_id = fields.Many2one(
@@ -188,4 +188,4 @@ class PurchaseRequest(models.Model):
             "ยกเลิกคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s"
         ) % {"pr": self.name, "reason": reason}
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
-        self.write({"state": "cancel"})
+        self.write({"state": "cancelled"})

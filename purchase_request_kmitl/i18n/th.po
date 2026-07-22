@@ -317,10 +317,9 @@ msgid "Can verify purchase request"
 msgstr ""
 
 #. module: purchase_request, purchase_request_kmitl
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__cancel
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__cancelled
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
-msgid "Cancel"
+msgid "Cancelled"
 msgstr "ยกเลิก"
 
 #. module: purchase_request
