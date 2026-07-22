@@ -5,9 +5,17 @@ We apply the drag-and-drop and Document-Type behaviour by `patch()`-ing the stan
 usages of `widget="many2many_binary"` and all 17 in this repo pick up the enhancement
 automatically — no widget rename, no per-consumer JS, no view edits.
 
-Chosen over the earlier "custom widget name + JS factory per consumer" route (ADR-0001)
-because consumers really want _"turn on document classification for this model"_ to be a
-couple of XML data records, not a JS `register()` call plus a view attribute change.
+Chosen after rejecting two alternatives:
+
+1. **A per-consumer JS factory** (each module calls
+   `registerAttachmentClassifierWidget({widgetName, classifierField, ...})` and
+   references its own `widgetName` in XML) — rejected because consumers really want
+   _"turn on document classification for this model"_ to be a couple of XML data
+   records, not a JS `register()` call plus a view attribute change.
+2. **A single generic widget configured via XML `options`** — rejected because
+   `Many2ManyBinaryField.fieldsToFetch` is a static per-class contract; per-instance
+   `options` can't feed into it without breaking reactive badge display.
+
 Scope lives in a dedicated Mapping table (`ir.attachment.document.type.rel` — one row
 per (model, doctype), with a `sequence`) so turning classification on/off per model, and
 ordering the dropdown, are data, not code.
