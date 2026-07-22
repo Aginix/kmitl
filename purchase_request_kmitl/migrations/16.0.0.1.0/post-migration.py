@@ -64,18 +64,7 @@ def migrate(cr, version):
             [(rid, name) for rid, name in residual],
         )
 
-    # Case 4 (safety net): any records that ran an intermediate ADR-0005 build
-    # were parked at 'in_purchase'; drawio v2 reuses OCA base 'in_progress' instead.
-    cr.execute(
-        """
-        UPDATE purchase_request
-           SET state = 'in_progress'
-         WHERE state = 'in_purchase'
-        """
-    )
-    _logger.info("post-migration: case 4 (in_purchase safety-net) updated %s rows", cr.rowcount)
-
-    # Case 5: PA state reduction (5 -> 4 states).
+    # Case 4: PA state reduction (5 -> 4 states).
     # Merge legacy 'validate' into 'to_approve'; rename 'rejected' to 'cancel'.
     cr.execute(
         """
@@ -84,7 +73,7 @@ def migrate(cr, version):
          WHERE state = 'validate'
         """
     )
-    _logger.info("post-migration: case 5a (PA validate -> to_approve) updated %s rows", cr.rowcount)
+    _logger.info("post-migration: case 4a (PA validate -> to_approve) updated %s rows", cr.rowcount)
 
     cr.execute(
         """
@@ -93,24 +82,4 @@ def migrate(cr, version):
          WHERE state = 'rejected'
         """
     )
-    _logger.info("post-migration: case 5b (PA rejected -> cancel) updated %s rows", cr.rowcount)
-
-    # Case 6 (safety net): any records that ran round-3 build parked at 'cancelled';
-    # round-4 aligns with upstream and uses 'cancel'.
-    cr.execute(
-        """
-        UPDATE purchase_request
-           SET state = 'cancel'
-         WHERE state = 'cancelled'
-        """
-    )
-    _logger.info("post-migration: case 6a (PR cancelled safety-net) updated %s rows", cr.rowcount)
-
-    cr.execute(
-        """
-        UPDATE purchase_request_approval
-           SET state = 'cancel'
-         WHERE state = 'cancelled'
-        """
-    )
-    _logger.info("post-migration: case 6b (PA cancelled safety-net) updated %s rows", cr.rowcount)
+    _logger.info("post-migration: case 4b (PA rejected -> cancel) updated %s rows", cr.rowcount)
