@@ -25,4 +25,33 @@
         <field name="name">Disbursement returned - please re-verify</field>
         <field name="res_model">disbursement.request</field>
     </record>
+
+    <!-- Two-approver step Todos. 'execution' = clears only by acting on the DR
+         (approve / reject), not by "Mark as Read". Pushed to the Finance
+         Director group, then the Rector-delegated group. -->
+    <record id="mail_activity_dr_approve_finance" model="mail.activity.type">
+        <field name="name">Disbursement awaiting Finance Director approval</field>
+        <field name="summary">A disbursement request is awaiting your approval (Finance Director)</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+    <record id="mail_activity_dr_approve_rector" model="mail.activity.type">
+        <field name="name">Disbursement awaiting Rector-delegated approval</field>
+        <field name="summary">A disbursement request is awaiting your approval (Rector-delegated)</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+    <!-- Pushed to the requester when an approver rejects the request. -->
+    <record id="mail_activity_dr_rejected" model="mail.activity.type">
+        <field name="name">Disbursement approval rejected</field>
+        <field name="summary">Your disbursement request was rejected — please revise and re-send</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">disbursement.request</field>
+        <field name="icon">fa-times-circle</field>
+        <field name="delay_count">0</field>
+    </record>
 </odoo>
