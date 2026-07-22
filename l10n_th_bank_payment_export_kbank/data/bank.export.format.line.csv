@@ -1,0 +1,31 @@
+id,bank_id/id,sequence,name,display_type,lenght,match_group,need_loop,end_line,condition_line,value_type,value_alignment,value_blank_space,value
+kbank_format_01,l10n_th_bank_payment_export_kbank.kbank_ccp,10,HEADER,line_section,,,,,,fixed,ljust,,
+kbank_format_02,l10n_th_bank_payment_export_kbank.kbank_ccp,11,Record Type,,4,,,,,fixed,ljust,,HDCT
+kbank_format_03,l10n_th_bank_payment_export_kbank.kbank_ccp,12,Filler,,16,,,,,fixed,ljust,,
+kbank_format_04,l10n_th_bank_payment_export_kbank.kbank_ccp,13,Company ID,,6,,,,,dynamic,ljust,,rec.kbank_company_id
+kbank_format_05,l10n_th_bank_payment_export_kbank.kbank_ccp,14,Filler,,14,,,,,fixed,ljust,,
+kbank_format_06,l10n_th_bank_payment_export_kbank.kbank_ccp,15,Originator Account,,10,,,,,dynamic,rjust,0,line[0].sanitize_account_number(line[0].payment_journal_id.bank_account_id.acc_number)
+kbank_format_07,l10n_th_bank_payment_export_kbank.kbank_ccp,16,Separator,,1,,,,,fixed,ljust,,
+kbank_format_08,l10n_th_bank_payment_export_kbank.kbank_ccp,17,Total Amount,,15,,,,,dynamic,rjust,0,"str(int(round(rec.total_amount * 100, 2)))"
+kbank_format_09,l10n_th_bank_payment_export_kbank.kbank_ccp,18,Separator,,1,,,,,fixed,ljust,,
+kbank_format_10,l10n_th_bank_payment_export_kbank.kbank_ccp,19,Effective Date,,6,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%y%m%d"")"
+kbank_format_11,l10n_th_bank_payment_export_kbank.kbank_ccp,20,Filler,,25,,,,,fixed,ljust,,
+kbank_format_12,l10n_th_bank_payment_export_kbank.kbank_ccp,21,Company Name,,50,,,,,dynamic,ljust,,rec.kbank_sender_name or rec.company_id.name
+kbank_format_13,l10n_th_bank_payment_export_kbank.kbank_ccp,22,Effective Date,,6,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%y%m%d"")"
+kbank_format_14,l10n_th_bank_payment_export_kbank.kbank_ccp,23,Transaction Count,,18,,,,,dynamic,rjust,0,str(len(line.ids))
+kbank_format_15,l10n_th_bank_payment_export_kbank.kbank_ccp,24,Flag,,1,,,,,fixed,ljust,,N
+kbank_format_16,l10n_th_bank_payment_export_kbank.kbank_ccp,25,Filler,,5,,,TRUE,,fixed,ljust,,
+kbank_format_17,l10n_th_bank_payment_export_kbank.kbank_ccp,30,DETAILS,line_section,,,,,,fixed,ljust,,
+kbank_format_18,l10n_th_bank_payment_export_kbank.kbank_ccp,31,Record Type,,1,line,TRUE,,,fixed,ljust,,D
+kbank_format_19,l10n_th_bank_payment_export_kbank.kbank_ccp,32,Running Number,,6,line,TRUE,,,dynamic,rjust,0,str(idx_line+1)
+kbank_format_20,l10n_th_bank_payment_export_kbank.kbank_ccp,33,Filler,,14,line,TRUE,,,fixed,ljust,,
+kbank_format_21,l10n_th_bank_payment_export_kbank.kbank_ccp,34,Receiving Account,,10,line,TRUE,,,dynamic,rjust,0,line.sanitize_account_number(line.payment_partner_bank_id.acc_number)
+kbank_format_22,l10n_th_bank_payment_export_kbank.kbank_ccp,35,Separator,,1,line,TRUE,,,fixed,ljust,,
+kbank_format_23,l10n_th_bank_payment_export_kbank.kbank_ccp,36,Amount,,15,line,TRUE,,,dynamic,rjust,0,"str(int(round(line.payment_amount * 100, 2)))"
+kbank_format_24,l10n_th_bank_payment_export_kbank.kbank_ccp,37,Separator,,1,line,TRUE,,,fixed,ljust,,
+kbank_format_25,l10n_th_bank_payment_export_kbank.kbank_ccp,38,Effective Date,,6,line,TRUE,,,dynamic,ljust,,"rec.effective_date.strftime(""%y%m%d"")"
+kbank_format_26,l10n_th_bank_payment_export_kbank.kbank_ccp,39,Filler,,25,line,TRUE,,,fixed,ljust,,
+kbank_format_27,l10n_th_bank_payment_export_kbank.kbank_ccp,40,Receiver Name,,50,line,TRUE,,,dynamic,ljust,,line.payment_partner_bank_id.acc_holder_name or line.payment_partner_bank_id.partner_id.display_name
+kbank_format_28,l10n_th_bank_payment_export_kbank.kbank_ccp,41,Effective Date,,6,line,TRUE,,,dynamic,ljust,,"rec.effective_date.strftime(""%y%m%d"")"
+kbank_format_29,l10n_th_bank_payment_export_kbank.kbank_ccp,42,Service Code,,6,line,TRUE,,,fixed,ljust,,000000
+kbank_format_30,l10n_th_bank_payment_export_kbank.kbank_ccp,43,Filler,,346,line,TRUE,TRUE,,fixed,ljust,,
