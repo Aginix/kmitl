@@ -1504,6 +1504,11 @@ msgid "In Approval"
 msgstr "อยู่ระหว่างจัดทำ พจ.1"
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__cancelled
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Cancelled"
