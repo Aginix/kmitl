@@ -120,16 +120,27 @@ class ApprovalRequest(models.Model):
             ).write({"is_disbursement_evidence": True})
         return result
 
+    def _billable_allocations(self):
+        """Allocation rows that become disbursement lines — everything except
+        `advance` (เงินยืม), which is money already lent and clears against the
+        borrower's สัญญายืม instead of being disbursed again (ADR-0002)."""
+        return self.allocation_ids.filtered(lambda a: a.payment_type != "advance")
+
     def _prepare_disbursement_request_vals(self):
-        """Build a single multi-partner DR from the actual expense allocation —
-        one DR line per allocation row (recipient × product × actual × bank)."""
+        """Build a single multi-partner DR from the billable actual-expense
+        allocation — one DR line per direct/prepaid row (recipient × product ×
+        actual × bank); `advance` rows are excluded. The header carries
+        `payment_type='direct'` as an interim: the DR module does not yet support
+        mixed/per-line payment types, so direct and prepaid share one DR
+        (ADR-0002)."""
         return {
             "reference": "approval.request,%d" % self.id,
             "approval_request_id": self.id,
             "partner_type": "multi",
+            "payment_type": "direct",
             "line_ids": [
                 Command.create(alloc._prepare_disbursement_request_line_vals())
-                for alloc in self.allocation_ids
+                for alloc in self._billable_allocations()
             ],
             "ref": self.name,
             "note": self.description,
@@ -145,6 +156,19 @@ class ApprovalRequest(models.Model):
                 _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งเบิก")
             )
         self.action_bill()
+
+        if not self._billable_allocations():
+            # Every row is เงินยืม → nothing to disburse; those rows clear against
+            # the สัญญายืม (deferred to the advance overhaul, ADR-0002). Bill the
+            # request without creating an empty disbursement.
+            self.message_post(
+                body=_(
+                    "ทุกรายการเป็นเงินยืม — ไม่ได้สร้างใบเบิก (รอเคลียร์กับสัญญายืม)"
+                ),
+                message_type="comment",
+            )
+            return True
+
         vals = self._prepare_disbursement_request_vals()
         disbursement = self.env["disbursement.request"].create(vals)
         self._copy_attachments_to_disbursement(disbursement)
