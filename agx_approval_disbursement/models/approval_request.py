@@ -28,15 +28,22 @@ class ApprovalRequest(models.Model):
         is handled generically by disbursement.request._apply_source_correction."""
         self.ensure_one()
         dr.note = self.description
-        payee_bank = {
-            alloc.partner_id.id: alloc.partner_bank_id.id
-            for alloc in self.allocation_ids
-            if alloc.partner_bank_id
-        }
+        allocs = self.allocation_ids.filtered("partner_bank_id")
         for line in dr.line_ids:
-            bank = payee_bank.get(line.partner_id.id)
-            if bank:
-                line.partner_bank_id = bank
+            candidates = allocs.filtered(lambda a: a.partner_id == line.partner_id)
+            banks = candidates.mapped("partner_bank_id")
+            if len(banks) > 1:
+                # The recipient has rows with differing banks (one DR line per
+                # allocation row) — narrow to this line's own row so the other
+                # rows' banks are not clobbered.
+                exact = candidates.filtered(
+                    lambda a: a.product_id == line.product_id
+                    and a.currency_id.compare_amounts(a.amount, line.price_unit)
+                    == 0
+                )
+                banks = exact.mapped("partner_bank_id")
+            if len(banks) == 1 and line.partner_bank_id != banks:
+                line.partner_bank_id = banks
         self._disbursement_copy_evidence(dr)
 
     def _disbursement_evidence_attachments(self):
@@ -154,6 +161,14 @@ class ApprovalRequest(models.Model):
         if not self.allocation_ids:
             raise UserError(
                 _("กรุณาบันทึกค่าใช้จ่ายจริงอย่างน้อย 1 รายการก่อนส่งเบิก")
+            )
+        missing = self._billable_allocations().filtered(
+            lambda a: not a.partner_bank_id
+        )
+        if missing:
+            raise UserError(
+                _("กรุณาเลือกบัญชีธนาคารของผู้รับเงินให้ครบทุกรายการก่อนส่งเบิก: %s")
+                % ", ".join(missing.mapped("partner_id.name"))
             )
         self.action_bill()
 
