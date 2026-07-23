@@ -155,8 +155,8 @@
                     <group>
                         <group name="main_info" string="Main Information">
                             <field name="name" placeholder="Approval Reference..." readonly="1"/>
-                            <field name="title" readonly="1" />
-                            <field name="description" readonly="1"/>
+                            <field name="title" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="description" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="date_start" readonly="1" />
                             <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
                             <field name="department_id" readonly="1" />
@@ -164,7 +164,7 @@
                         <group name="procurement_info" string="Procurement Information">
                             <field name="procurement_type_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
-                            <field name="account_fiscal_year_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="account_fiscal_year_id" readonly="1" />
                             <field name="estimated_cost" readonly="1"/>
                             <field name="payment_type" readonly="1" />
                         </group>

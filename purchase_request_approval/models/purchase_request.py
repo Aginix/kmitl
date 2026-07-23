@@ -46,6 +46,8 @@ class PurchaseRequest(models.Model):
             "assigned_to": False,
             "state": "draft",
             "validation_status": "no",
+            "title": self.title,
+            "description": self.description,
             "procurement_type_id": self.procurement_type_id.id,
             "procurement_method_id": self.procurement_method_id.id,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
