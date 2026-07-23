@@ -10,14 +10,14 @@
                     name="statusbar_visible"
                 >draft,budget_validate,to_approve,approved,done,in_progress</attribute>
             </xpath>
-            <xpath expr="//button[@name='button_draft']" position="before">
+            <xpath expr="//button[@name='button_done']" position="after">
                 <field name="hide_reserve_budget_button" invisible="1" />
                 <button
                     name="action_reserve_budget"
                     type="object"
                     attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}"
                     string="Reserve Budget"
-                    class="oe_highlight btn-success"
+                    class="btn-success"
                     groups="budget.group_budget_commitment"
                 />
             </xpath>

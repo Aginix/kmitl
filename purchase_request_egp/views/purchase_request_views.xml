@@ -54,7 +54,6 @@
                     type="object"
                     string="อยู่ในกระบวนการ e-GP"
                     attrs="{'invisible': ['|', ('state', '!=', 'in_egp'), ('egp_status', '!=', 'waiting')]}"
-                    class="btn-primary"
                 />
             </xpath>
             <xpath expr="//button[@type='action']" position="after">
