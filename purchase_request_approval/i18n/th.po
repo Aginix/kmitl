@@ -923,6 +923,11 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Resend to Sarabun"
+msgstr "ส่งข้อมูล"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Reset"
 msgstr "รีเซ็ต"
 
@@ -930,6 +935,11 @@ msgstr "รีเซ็ต"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__user_id
 msgid "Responsible"
 msgstr "ผู้รับผิดชอบ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__returned
+msgid "Returned"
+msgstr "รอการแก้ไข"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_user_id

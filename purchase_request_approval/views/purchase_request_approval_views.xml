@@ -82,8 +82,15 @@
                         attrs="{'invisible': [('id', '>', 0)]}"
                     />
                     <button
+                        name="action_resend_to_sarabun"
+                        states="returned"
+                        string="Resend to Sarabun"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
                         name="button_cancel"
-                        states="draft,to_approve"
+                        states="draft,to_approve,returned"
                         string="Cancel"
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"

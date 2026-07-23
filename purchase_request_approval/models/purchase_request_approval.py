@@ -53,6 +53,7 @@ class PurchaseRequestApproval(models.Model):
             ("approved", "Approved"),
             ("rejected", "Rejected"),
             ("cancelled", "Cancelled"),
+            ("returned", "Returned"),
         ],
         string="Status",
         default="draft",
@@ -491,8 +492,15 @@ class PurchaseRequestApproval(models.Model):
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        self.write({"state": "draft"})
+        self.write({"state": "returned"})
         return super()._on_sarabun_returned(document, step)
+
+    def action_resend_to_sarabun(self):
+        self.ensure_one()
+        document = self.active_sarabun_document_id
+        if not document:
+            raise UserError(_("No active Sarabun document to resend."))
+        return document.action_send()
 
     def _on_sarabun_cancelled(self, document):
         # ยกเลิกการส่ง Sarabun (terminal) → same effect as manual cancel wizard:
