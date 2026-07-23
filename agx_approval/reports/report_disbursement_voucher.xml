@@ -58,7 +58,6 @@
                                     <th style="width:7%">ลำดับที่</th>
                                     <th>รายการ</th>
                                     <th style="width:16%">ชื่อผู้ถูกหักภาษี</th>
-                                    <th style="width:9%">จำนวนใบสำคัญ</th>
                                     <th style="width:12%">จำนวนที่ถูกหักภาษี</th>
                                     <th style="width:14%">จำนวนเงินที่ขอเบิก</th>
                                 </tr>
@@ -83,7 +82,7 @@
                                                 <t t-foreach="g['allocs']" t-as="a">
                                                     <tr>
                                                         <td>
-                                                            - <t t-out="a.product_id.name" /><t t-if="a.description"> (<t t-out="a.description" />)</t>
+                                                            - <t t-out="a.product_id.name" />
                                                             <span class="text-muted"> · <t t-out="a.payment_type_label()" /></span>
                                                         </td>
                                                         <td style="text-align:right; width:30%" t-out="'{0:,.2f}'.format(a.amount)" />
@@ -92,7 +91,6 @@
                                             </table>
                                         </td>
                                         <td t-out="g['recipient'].name if g['has_wht'] else ''" />
-                                        <td class="text-center" t-out="g['voucher_count']" />
                                         <td class="text-end" t-out="('{0:,.2f}'.format(g['wht_total'])) if g['has_wht'] else ''" />
                                         <td class="text-end" t-out="'{0:,.2f}'.format(g['subtotal'])" />
                                     </tr>
@@ -107,7 +105,6 @@
                                             (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(grand)" />)
                                         </span>
                                     </td>
-                                    <td />
                                     <td class="text-end fw-bolder" t-out="('{0:,.2f}'.format(wht_grand)) if wht_grand else ''" />
                                     <td class="text-end fw-bolder" t-out="'{0:,.2f}'.format(grand)" />
                                 </tr>
