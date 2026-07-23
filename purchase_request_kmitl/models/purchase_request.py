@@ -1,16 +1,17 @@
-# Copyright 2021 Ecosoft Co., Ltd. (http://ecosoft.co.th)
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-
-import logging
-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
-
-_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
+
+    state = fields.Selection(
+        selection_add=[
+            ("to_submit", "To Submit"),
+            ("to_approve",),
+            ("cancelled", "Cancelled"),
+        ],
+        ondelete={"to_submit": "set default", "cancelled": "set default"},
+    )
 
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
@@ -18,30 +19,11 @@ class PurchaseRequest(models.Model):
         ondelete="restrict",
         index=True,
     )
-    purchase_type_id = fields.Many2one(
-        comodel_name="purchase.type",
-        string="Purchase Type",
-        ondelete="restrict",
-        index=True,
-        domain=lambda self: self._get_domain_purchase_type(),
-        default=lambda self: self.env["purchase.type"].search(
-            [("is_default", "=", True)], limit=1
-        ),
-    )
     procurement_method_id = fields.Many2one(
         comodel_name="procurement.method",
         string="Procurement Method",
         ondelete="restrict",
         index=True,
-    )
-    to_create = fields.Selection(
-        related="purchase_type_id.to_create",
-    )
-    procurement_method_ids = fields.Many2many(
-        related="purchase_type_id.procurement_method_ids",
-    )
-    expense_reason = fields.Text(
-        string="Reason",
     )
     procurement_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
@@ -85,20 +67,13 @@ class PurchaseRequest(models.Model):
         string="Approved Date",
         copy=False,
     )
-
-    # construction
     is_construction = fields.Boolean(string="Construction", readonly=True)
-
-    # -- purchase_request_kmitl fields --
-    title = fields.Char(string="title", tracking=True)
-
+    title = fields.Char(string="Title", tracking=True)
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         tracking=True,
-        readonly=False,
     )
-
     attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
         inverse_name="res_id",
@@ -106,7 +81,6 @@ class PurchaseRequest(models.Model):
         string="Document Attachments",
         tracking=True,
     )
-
     user_id = fields.Many2one(
         comodel_name="res.users",
         string="Responsible",
@@ -114,7 +88,6 @@ class PurchaseRequest(models.Model):
         default=lambda self: self.env.user,
         index=True,
     )
-
     tor_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
@@ -122,7 +95,6 @@ class PurchaseRequest(models.Model):
         domain=[("committee_type", "=", "tor_committee")],
         copy=True,
     )
-
     price_determine_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
@@ -130,7 +102,6 @@ class PurchaseRequest(models.Model):
         domain=[("committee_type", "=", "price_determine")],
         copy=True,
     )
-
     evaluation_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
@@ -138,7 +109,6 @@ class PurchaseRequest(models.Model):
         domain=[("committee_type", "=", "evaluation")],
         copy=True,
     )
-
     work_supervisor_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
@@ -147,55 +117,74 @@ class PurchaseRequest(models.Model):
         copy=True,
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
+    can_reset_to_draft = fields.Boolean(compute="_compute_can_reset_to_draft")
 
-    @api.depends('state')
+    @api.depends("state", "requested_by")
+    def _compute_can_reset_to_draft(self):
+        is_manager = self.env.user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        )
+        for rec in self:
+            if rec.state == "to_approve":
+                rec.can_reset_to_draft = is_manager
+            elif rec.state in ("to_verify", "to_submit"):
+                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
+            else:
+                rec.can_reset_to_draft = False
+
+    @api.depends("state")
     def _hide_create_po_button(self):
         for rec in self:
-            rec.hide_create_po_button = True
-            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
-                rec.hide_create_po_button = False
-
-    # -- l10n_th_gov_purchase_request methods --
-    def _get_domain_purchase_type(self):
-        return [("visible_on_purchase_request", "=", True)]
+            rec.hide_create_po_button = not (
+                rec.state in ("approved", "in_progress") and rec.purchase_count == 0
+            )
 
     def get_estimated_cost_currency(self, date=False):
-        """Get estimated cost with currency"""
+        """Return the total estimated cost across all lines."""
         self.ensure_one()
-        date = date or fields.Date.context_today(self)
-        estimated_cost = sum(self.line_ids.mapped("estimated_cost"))
-        if self.currency_id != self.company_id.currency_id:
-            # check installing module `purchase_request_manual_currency`
-            # it should convert following custom rate
-            if hasattr(self, "manual_currency") and self.manual_currency:
-                rate = (
-                    self.custom_rate
-                    if self.type_currency == "inverse_company_rate"
-                    else (1.0 / self.custom_rate)
-                )
-                estimated_cost = estimated_cost * rate
-            else:
-                estimated_cost = self.currency_id._convert(
-                    estimated_cost, self.company_id.currency_id, self.company_id, date
-                )
-        return estimated_cost
+        return sum(self.line_ids.mapped("estimated_cost"))
 
-    @api.onchange("purchase_type_id")
-    def _onchange_purchase_type_id(self):
-        procurement_methods = self.purchase_type_id.procurement_method_ids
-        self.update(
-            {
-                "procurement_method_id": len(procurement_methods) == 1
-                and procurement_methods.id
-                or False,
-            }
-        )
-
-    def button_approved(self):
+    def _apply_sarabun_approve_metadata(self):
         self.write(
             {
                 "approved_by": self.env.user.id,
                 "date_approved": fields.Date.context_today(self),
             }
         )
+
+    def _transition_after_sarabun_approve(self):
+        """Dispatch state transition after Sarabun completes routing.
+
+        Overridden in purchase_request_egp (is_egp=True → in_egp) and
+        purchase_request_approval (is_egp=False → in_approval + auto-PA).
+        The base fallback writes 'approved' if neither branch is installed.
+        """
+        self._apply_sarabun_approve_metadata()
+        self.write({"state": "approved"})
+
+    def button_approved(self):
+        self._apply_sarabun_approve_metadata()
         return super().button_approved()
+
+    def button_to_submit(self):
+        return self.write({"state": "to_submit"})
+
+    def button_cancel(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ยกเลิกคำขอ (พ.1)"),
+            "res_model": "purchase.request.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_request_id": self.id},
+        }
+
+    def _action_do_cancel(self, reason):
+        self.ensure_one()
+        body = _("ยกเลิกคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s") % {
+            "pr": self.name,
+            "reason": reason,
+        }
+        self.message_post(body=body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "cancelled"})

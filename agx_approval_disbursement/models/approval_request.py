@@ -14,7 +14,9 @@ RETURNED_READONLY_STATES = {
 
 
 class ApprovalRequest(models.Model):
-    _inherit = "approval.request"
+    _name = "approval.request"
+    _inherit = ["approval.request", "disbursement.return.source.mixin"]
+    _disbursement_return_state = "billed"
 
     state = fields.Selection(
         selection_add=[("returned", "Returned")],
@@ -44,65 +46,34 @@ class ApprovalRequest(models.Model):
             if rec.state == "returned":
                 rec.is_editable = False
 
-    def action_return(self):
-        """Bounce a billed request back to the requester for correction.
-
-        Triggered when its disbursement request is returned by the verification
-        officer (see disbursement_request._action_return_for_edit). The
-        disbursement request is kept as-is at 'signed'; only the approval
-        request moves to 'returned', where a limited set of fields can be
-        corrected before confirming."""
-        for record in self:
-            if record.state != "billed":
-                raise UserError(_("Only billed requests can be returned."))
-            record.state = "returned"
-        return True
-
-    def action_confirm_correction(self):
-        """Confirm a returned request's correction: push the corrected payee
-        bank, description and disbursement evidence onto the existing (signed)
-        disbursement request, clear its returned banner, and move the approval
-        request back to 'billed'. The disbursement request stays at 'signed'
-        for the officer to continue verification."""
+    # -- return-to-source contract (disbursement.return.source.mixin) -----
+    def _disbursement_get_request(self):
         self.ensure_one()
-        if self.state != "returned":
-            raise UserError(
-                _("Only returned requests can confirm a correction.")
-            )
-        disbursement = self.disbursement_request_ids.filtered(
-            lambda d: d.returned_to_approval and d.state != "cancel"
-        )[:1] or self.disbursement_request_ids.filtered(
-            lambda d: d.state != "cancel"
-        )[:1]
-        self.state = "billed"
-        if disbursement:
-            disbursement.sudo()._apply_approval_correction(self)
-            self.message_post(
-                body=_(
-                    "Correction confirmed; disbursement %(dr)s updated.",
-                    dr=disbursement.name,
-                )
-            )
-        return True
+        return self._disbursement_pick_request(self.disbursement_request_ids)
 
-    def _copy_new_evidence_to_disbursement(self, disbursement):
-        """Copy disbursement-evidence attachments added during the correction
-        onto the disbursement request, skipping any already present (matched by
-        checksum) so re-confirming never duplicates files."""
+    def _disbursement_apply_correction(self, dr):
+        """Push the corrected payee bank, description and disbursement evidence
+        onto the still-signed DR. The banner/To-Do/state bookkeeping is handled
+        generically by disbursement.request._apply_source_correction."""
         self.ensure_one()
-        existing = set(
-            self.env["ir.attachment"].sudo().search([
-                ("res_model", "=", "disbursement.request"),
-                ("res_id", "=", disbursement.id),
-            ]).mapped("checksum")
-        )
-        for attachment in self.disbursement_attachment_ids:
-            if attachment.checksum in existing:
-                continue
-            attachment.sudo().copy({
-                "res_model": "disbursement.request",
-                "res_id": disbursement.id,
-            })
+        dr.note = self.description
+        payee_bank = {
+            payee.partner_id.id: payee.partner_bank_id.id
+            for payee in self.payee_ids
+            if payee.partner_bank_id
+        }
+        for line in dr.line_ids:
+            bank = payee_bank.get(line.partner_id.id)
+            if bank:
+                line.partner_bank_id = bank
+        self._disbursement_copy_evidence(dr)
+
+    def _disbursement_evidence_attachments(self):
+        return self.disbursement_attachment_ids
+
+    def _disbursement_correction_user(self):
+        self.ensure_one()
+        return self.user_id or self.create_uid
 
     def action_ready_to_bill(self):
         """Clerical staff marks a direct/prepaid request ready for the finance

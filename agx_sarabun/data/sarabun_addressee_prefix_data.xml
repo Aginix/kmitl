@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- v1 ships only เรียน; add กราบทูล / เสนอ / ยื่นต่อ ฯลฯ via Configuration. -->
+    <data noupdate="1">
+        <record id="addressee_prefix_rian" model="sarabun.addressee.prefix">
+            <field name="name">เรียน</field>
+            <field name="sequence">10</field>
+        </record>
+    </data>
+</odoo>

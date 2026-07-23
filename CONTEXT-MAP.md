@@ -45,17 +45,20 @@ upfront.
   of everything a user must act on; each Todo is a native `mail.activity` on its source
   record, surfaced in one consolidated page with a jump-to-source button. Owns no
   business state.
-- [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
-  Approval Request to the Disbursement Request it is billed into; returning a
-  disbursement keeps it intact (at `signed`) and bounces the approval request to
-  `returned`, where the requester corrects a limited set of fields and confirms to push
-  them back onto the disbursement.
 - [Attachment Document Type](./web_attachment_document_type/CONTEXT.md) — patches the
   stock `many2many_binary` widget to add always-on drag-and-drop plus optional
   Document-Type classification driven by a shared `ir.attachment.document_type_id`
   field; consumers turn classification on for a model by shipping data XML
   (`ir.attachment.document.type.config` + `ir.attachment.document.type.rel`), no
   Python/JS per consumer.
+- [e-Saraban](./agx_sarabun/CONTEXT.md) — electronic official-correspondence
+  (งานสารบรรณ); a registered, numbered หนังสือ routed through an approval/endorsement
+  chain. Other modules attach as origin records that spawn a Document.
+- [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
+  Approval Request to the Disbursement Request it is billed into; returning a
+  disbursement keeps it intact (at `signed`) and bounces the approval request to
+  `returned`, where the requester corrects a limited set of fields and confirms to push
+  them back onto the disbursement.
 
 ## Relationships
 

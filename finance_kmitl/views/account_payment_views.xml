@@ -107,7 +107,7 @@
                        attrs="{'invisible': [('amount_wht', '=', 0)]}">
                     <field name="amount_before_wht"/>
                     <field name="amount_wht"/>
-                    <field name="amount" string="Net Amount Paid" readonly="1"/>
+                    <field name="amount" string="Net Amount Paid" readonly="1" force_save="1"/>
                 </group>
             </xpath>
 

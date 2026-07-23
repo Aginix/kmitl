@@ -78,7 +78,7 @@ msgstr "ส่งคำขออนุมัติ"
 #. module: purchase_request_approval_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_kmitl.view_purchase_request_form
 msgid "Request approval"
-msgstr "ขอการอนุมัติ"
+msgstr "ส่งข้อมูล"
 
 #. module: purchase_request_approval_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_kmitl.view_purchase_request_form
@@ -94,7 +94,7 @@ msgstr "สถานะ"
 #: model:ir.model.fields.selection,name:purchase_request_approval_kmitl.selection__purchase_request__state__to_verify
 #: model:target.state.value,name:purchase_request_approval_kmitl.target_state_value_approved
 msgid "To be verified"
-msgstr "จองงบประมาณ"
+msgstr "รอจองงบประมาณ"
 
 #. module: purchase_request_approval_kmitl
 #: model:tier.definition,name:purchase_request_approval_kmitl.tier_definition_purchase_request_kmitl_manager

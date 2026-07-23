@@ -1,0 +1,16 @@
+<odoo>
+    <data noupdate="0">
+        <!-- Verification group (หมวดตรวจ): gates the verification menus and
+             grants everything a verification officer needs. It implies the
+             Disbursement Officer group so members can read/write and validate
+             the disbursement requests assigned to them. Admin/root are added
+             as members so the menus are visible to administrators too, mirroring
+             the Disbursement Manager group. -->
+        <record id="group_disbursement_verification" model="res.groups">
+            <field name="name">Disbursement Verification</field>
+            <field name="category_id" ref="disbursement.module_category_disbursement"/>
+            <field name="implied_ids" eval="[(4, ref('disbursement.group_disbursement_officer'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

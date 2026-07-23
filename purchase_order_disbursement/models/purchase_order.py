@@ -4,7 +4,22 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
+    _name = 'purchase.order'
+    _inherit = ['purchase.order', 'disbursement.return.source.mixin']
+    _disbursement_return_state = "purchase"
+
+    state = fields.Selection(
+        selection_add=[("returned", "Returned")],
+        ondelete={"returned": "set default"},
+    )
+    disbursement_return_attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        relation="purchase_order_dr_return_attachment_rel",
+        column1="order_id",
+        column2="attachment_id",
+        string="Correction Evidence",
+        copy=False,
+    )
 
     disbursement_request_ids = fields.One2many(
         comodel_name='disbursement.request',
@@ -46,6 +61,14 @@ class PurchaseOrder(models.Model):
             order.hide_create_disbursement_request_button = (
                 order.state != "purchase" or not order.is_disbursement_request_allowed
             )
+
+    # -- return-to-source contract (disbursement.return.source.mixin) -----
+    def _disbursement_get_request(self):
+        self.ensure_one()
+        return self._disbursement_pick_request(self.disbursement_request_ids)
+
+    def _disbursement_evidence_attachments(self):
+        return self.disbursement_return_attachment_ids
 
     def _prepare_disbursement_request_vals(self):
         return {
