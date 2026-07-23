@@ -15,5 +15,5 @@ class PurchaseRequestReturnWizard(models.TransientModel):
 
     def action_confirm(self):
         self.ensure_one()
-        self.request_id._action_do_return(self.reason)
+        self.request_id._action_do_return_to_draft(self.reason)
         return {"type": "ir.actions.act_window_close"}

@@ -222,3 +222,11 @@ class PurchaseRequest(models.Model):
             ) % {"pr": self.name, "reason": reason or ""}
             self.message_post(body=body, subtype_xmlid="mail.mt_note")
         self.write({"state": "returned"})
+
+    def _action_do_return_to_draft(self, reason):
+        self.ensure_one()
+        body = _(
+            "ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s"
+        ) % {"pr": self.name, "reason": reason}
+        self.message_post(body=body, subtype_xmlid="mail.mt_note")
+        return self.button_draft()
