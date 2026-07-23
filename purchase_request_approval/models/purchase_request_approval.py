@@ -53,7 +53,7 @@ class PurchaseRequestApproval(models.Model):
             ("approved", "Approved"),
             ("rejected", "Rejected"),
             ("cancelled", "Cancelled"),
-            ("returned", "Returned"),
+            ("sarabun_returned", "Sarabun Returned"),
         ],
         string="Status",
         default="draft",
@@ -492,7 +492,7 @@ class PurchaseRequestApproval(models.Model):
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        self.write({"state": "returned"})
+        self.write({"state": "sarabun_returned"})
         return super()._on_sarabun_returned(document, step)
 
     def action_resend_to_sarabun(self):

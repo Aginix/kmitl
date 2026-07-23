@@ -937,8 +937,8 @@ msgid "Responsible"
 msgstr "ผู้รับผิดชอบ"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__returned
-msgid "Returned"
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__sarabun_returned
+msgid "Sarabun Returned"
 msgstr "รอการแก้ไข"
 
 #. module: purchase_request_approval
