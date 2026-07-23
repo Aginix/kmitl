@@ -142,6 +142,9 @@ class BudgetExpensePlan(models.Model):
             for ta in plan.template_id.activity_ids.sorted(lambda a: (a.sequence, a.id))
             if ta not in chosen
         ]
+        chosen_activities = [
+            {"id": ta.id, "name": ta.activity_analytic_id.display_name} for ta in chosen
+        ]
         return {
             "plan_id": plan.id,
             "name": plan.display_name,
@@ -150,6 +153,7 @@ class BudgetExpensePlan(models.Model):
             "currency_id": plan.currency_id.id,
             "months": months,
             "rows": rows,
+            "chosen_activities": chosen_activities,
             "available_activities": available,
         }
 
