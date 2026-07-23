@@ -43,7 +43,6 @@ export class BudgetLedger extends Component {
             dims: {}, // field -> [{id, display_name, code}]
             accounts: [],
             fiscalYearId: false,
-            budgetType: "expense",
             kinds: { appropriation: true, transfer: true, consume: true },
             dimSelections: {}, // field -> [ids]
             accountId: false,
@@ -83,27 +82,9 @@ export class BudgetLedger extends Component {
         }
         this.state.loading = true;
         try {
-            const filters = {};
-            for (const dim of DIM_FILTERS) {
-                const ids = this.state.dimSelections[dim.field] || [];
-                if (ids.length) {
-                    filters[dim.field] = ids.slice();
-                }
-            }
-            if (this.state.accountId) {
-                filters.account_id = this.state.accountId;
-            }
-            const kinds = Object.keys(this.state.kinds).filter(
-                (k) => this.state.kinds[k]
-            );
             const data = await this.orm.call("budget.ledger", "get_ledger_data", [
                 this.state.fiscalYearId,
-                {
-                    budget_type: this.state.budgetType,
-                    filters,
-                    kinds,
-                    include_draft: this.state.includeDraft,
-                },
+                this.currentOptions(),
             ]);
             this.state.summary = data.summary || {};
             this.state.months = data.months || [];
@@ -113,16 +94,40 @@ export class BudgetLedger extends Component {
         }
     }
 
+    // Filter options shared by the screen load and the xlsx export (WYSIWYG).
+    currentOptions() {
+        const filters = {};
+        for (const dim of DIM_FILTERS) {
+            const ids = this.state.dimSelections[dim.field] || [];
+            if (ids.length) {
+                filters[dim.field] = ids.slice();
+            }
+        }
+        if (this.state.accountId) {
+            filters.account_id = this.state.accountId;
+        }
+        const kinds = Object.keys(this.state.kinds).filter(
+            (k) => this.state.kinds[k]
+        );
+        return { filters, kinds, include_draft: this.state.includeDraft };
+    }
+
+    async exportXlsx() {
+        if (!this.state.fiscalYearId) {
+            return;
+        }
+        const action = await this.orm.call(
+            "budget.ledger",
+            "action_export_xlsx",
+            [this.state.fiscalYearId, this.currentOptions()]
+        );
+        await this.action.doAction(action);
+    }
+
     // --- filter handlers -------------------------------------------------
     onFiscalYearChange(ev) {
         this.state.fiscalYearId = parseInt(ev.target.value) || false;
         this.load();
-    }
-    setBudgetType(bt) {
-        if (this.state.budgetType !== bt) {
-            this.state.budgetType = bt;
-            this.load();
-        }
     }
     toggleKind(k) {
         this.state.kinds[k] = !this.state.kinds[k];

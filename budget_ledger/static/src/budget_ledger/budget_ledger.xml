@@ -22,15 +22,6 @@
                         </select>
                     </div>
                     <div class="o_bl_filter">
-                        <label>ประเภทงบ</label>
-                        <div class="o_bl_toggle">
-                            <button t-att-class="state.budgetType === 'expense' ? 'active' : ''"
-                                    t-on-click="() => this.setBudgetType('expense')">รายจ่าย</button>
-                            <button t-att-class="state.budgetType === 'revenue' ? 'active' : ''"
-                                    t-on-click="() => this.setBudgetType('revenue')">รายได้</button>
-                        </div>
-                    </div>
-                    <div class="o_bl_filter">
                         <label>รหัสงบประมาณ</label>
                         <select t-on-change="onAccountChange">
                             <option value="">ทั้งหมด</option>
@@ -94,6 +85,11 @@
                             รวมรายการที่ยังไม่ผ่านรายการ
                         </label>
                     </div>
+                    <div class="o_bl_filter o_bl_export">
+                        <button class="o_bl_export_btn" t-on-click="exportXlsx">
+                            <i class="fa fa-file-excel-o"/> Export Excel
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -139,7 +135,10 @@
                                 <t t-foreach="month.rows" t-as="row" t-key="row.id">
                                     <div class="o_bl_row" t-att-class="!row.posted ? 'o_bl_row_draft' : ''">
                                         <div class="o_bl_row_main" t-on-click="() => this.toggleRow(row.id)">
-                                            <span class="o_bl_date" t-esc="row.date"/>
+                                            <span class="o_bl_date">
+                                                <t t-esc="row.date"/>
+                                                <span class="o_bl_time" t-if="row.time" t-esc="row.time"/>
+                                            </span>
                                             <span class="o_bl_badge" t-att-class="kindClass(row.kind)" t-esc="row.kind_label"/>
                                             <span class="o_bl_acc">
                                                 <b t-esc="row.account_code"/> <t t-esc="row.account_name"/>

@@ -91,6 +91,24 @@
         color: var(--bl-muted);
         cursor: pointer;
     }
+    .o_bl_export {
+        margin-left: auto;
+    }
+    .o_bl_export_btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border: 1px solid #15803d;
+        background: #15803d;
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        &:hover {
+            background: #166534;
+        }
+    }
 
     // dimension multi-select dropdown
     .o_bl_dim_wrap {
@@ -240,9 +258,14 @@
         gap: 10px;
         cursor: pointer;
         .o_bl_date {
-            width: 92px;
+            width: 108px;
             color: var(--bl-muted);
             flex: none;
+            .o_bl_time {
+                margin-left: 5px;
+                font-size: 11px;
+                opacity: 0.7;
+            }
         }
         .o_bl_acc {
             flex: 1;

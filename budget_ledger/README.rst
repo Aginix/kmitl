@@ -13,19 +13,22 @@ Each row is one ``budget.move.line`` normalised to a single "kind":
 * **รับโอน / โอนออก** (transfer in / out) — การโอนงบ, แยกทิศตามเครื่องหมาย
 * **เบิกจ่าย** (consume) — การใช้จ่ายจริง
 
-Rows carry all six financial dimensions inline (chips), a signed amount, and a
-running **งบคงเหลือ (ทางบัญชี)** = งบปัจจุบัน − เบิกจ่ายสะสม.
+Rows carry all six financial dimensions inline as full-hierarchy
+(``complete_name``) chips, a signed amount, a record time, and a running
+**งบคงเหลือ (ทางบัญชี)** = งบปัจจุบัน − เบิกจ่ายสะสม. The report covers the
+**expense budget only**.
 
 Features
 ========
 
-* **ControlPanel** — ปีงบประมาณ, งบรายจ่าย/รายได้, รหัสงบประมาณ, ทั้งหก
-  มิติทางบัญชี (multi-select, hierarchy-aware), และ checkbox เลือกประเภทรายการ.
+* **ControlPanel** — ปีงบประมาณ, รหัสงบประมาณ, ทั้งหกมิติทางบัญชี
+  (multi-select, hierarchy-aware), และ checkbox เลือกประเภทรายการ.
 * **Summary bar** — งบปัจจุบัน (a) / จอง (b) / เบิกจ่าย (d) / **คงเหลือ (f)**
   reused verbatim from the monitoring dashboard (รายงานตรวจสอบงบประมาณ) so the
   ยอดคงเหลือ that also nets เงินจอง is always exact.
-* **Timeline** — grouped by month (collapsible, with subtotals); each row
-  expands to show เลขที่ใบ, อ้างอิง, หมายเหตุ and the source document.
+* **Timeline** — grouped by month (collapsible, with subtotals); each row shows
+  วันที่/เวลา and expands to เลขที่ใบ, อ้างอิง, หมายเหตุ and the source document.
+* **Export Excel** — ส่งออกตามข้อมูลที่เห็นบนหน้าจอ (WYSIWYG) ผ่าน ``report_xlsx``.
 
 Scope & design
 ==============

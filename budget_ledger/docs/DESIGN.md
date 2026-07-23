@@ -85,6 +85,18 @@ audit detail (เลขที่ใบ / เอกสารต้นทาง / 
   order, so it's computed server-side (one `search` + Python loop) rather than
   paginated. A fiscal-year + filters scope keeps this bounded in practice.
 
+## Post-review refinements
+
+After the first UAT:
+- **Expense-only** — revenue budget is out of scope; the budget-type toggle was
+  removed and the backend forces `expense`.
+- **Dimension chips** show the full hierarchy (`complete_name`), not just the leaf.
+- **Record time** — `date` is a `fields.Date` (no time), so each row also surfaces
+  the `create_date` clock time (user tz): when the entry was recorded.
+- **Excel export** (`report_xlsx`) — `budget.ledger.action_export_xlsx(fy, options)`
+  renders the on-screen scope to XLSX through a throwaway carrier wizard
+  (`budget.ledger.export.wizard`); filters travel in the report `data` (WYSIWYG).
+
 ## Not done (future phases)
 
 - The encumbrance-register book (จอง / ผูกพัน over `budget.commitment`).

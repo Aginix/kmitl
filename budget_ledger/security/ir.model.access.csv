@@ -1,2 +1,3 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_budget_ledger_user,budget.ledger,model_budget_ledger,,1,0,0,0
+access_budget_ledger_export_wizard,budget.ledger.export.wizard,model_budget_ledger_export_wizard,base.group_user,1,1,1,1

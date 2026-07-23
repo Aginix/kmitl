@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 
-from odoo import api, models
+from odoo import _, api, fields, models
 from odoo.tools import format_date
 
 _logger = logging.getLogger(__name__)
@@ -123,7 +123,8 @@ class BudgetLedger(models.AbstractModel):
         if not fiscal_year_id:
             return {"currency_id": currency_id, "summary": {}, "months": []}
 
-        budget_type = options.get("budget_type") or "expense"
+        # Expense-only report — the revenue budget is out of scope.
+        budget_type = "expense"
         filters = options.get("filters") or {}
         kinds = set(
             options.get("kinds") or ["appropriation", "transfer", "consume"]
@@ -225,6 +226,7 @@ class BudgetLedger(models.AbstractModel):
                 {
                     "id": line.id,
                     "date": format_date(self.env, line.date) if line.date else "",
+                    "time": self._record_time(line),
                     "month_key": (line.date and line.date.strftime("%Y-%m"))
                     or "unknown",
                     "kind": kind,
@@ -292,13 +294,26 @@ class BudgetLedger(models.AbstractModel):
             out[(move_id, "transfer_out")] = " / ".join(sorted(sides["in"]))
         return out
 
+    def _record_time(self, line):
+        """Clock time (HH:MM) the line was recorded.
+
+        ``date`` is a plain ``fields.Date`` (no time), so the ledger surfaces the
+        record's ``create_date`` — converted to the user's timezone — as the
+        เวลา a row was entered into the system.
+        """
+        if not line.create_date:
+            return ""
+        return fields.Datetime.context_timestamp(
+            line, line.create_date
+        ).strftime("%H:%M")
+
     def _row_dims(self, line):
-        """The six dimensions as compact 'code name' labels for the row chips."""
+        """The six dimensions as full-hierarchy ``complete_name`` labels."""
 
         def label(rec):
             if not rec:
                 return ""
-            return ("%s %s" % (rec.code or "", rec.name or "")).strip()
+            return rec.complete_name or rec.display_name or rec.name or ""
 
         return {
             "department": label(line.department_analytic_id),
@@ -382,3 +397,111 @@ class BudgetLedger(models.AbstractModel):
             "used": totals["used"],          # (e) รวมล็อก = Σ reserve
             "remaining": totals["remaining"],  # (f) คงเหลือ (หักจอง)
         }
+
+    # ------------------------------------------------------------------
+    # xlsx export ("ตามข้อมูลที่มองเห็น")
+    # ------------------------------------------------------------------
+    @api.model
+    def action_export_xlsx(self, fiscal_year_id, options=None):
+        """Export the ledger exactly as filtered on screen (WYSIWYG).
+
+        Filters travel in the report ``data`` dict; a throwaway carrier record
+        is created only because ``report_action`` needs one to render against.
+        """
+        options = dict(options or {})
+        carrier = self.env["budget.ledger.export.wizard"].create(
+            {"fiscal_year_id": fiscal_year_id or False}
+        )
+        report = self.env.ref("budget_ledger.action_report_budget_ledger_xlsx")
+        return report.report_action(
+            carrier, data={"fiscal_year_id": fiscal_year_id, "options": options}
+        )
+
+
+class BudgetLedgerXlsx(models.AbstractModel):
+    """XLSX export — reuses ``get_ledger_data`` so the sheet mirrors the screen."""
+
+    _name = "report.budget_ledger.report_ledger_xlsx"
+    _description = "Budget Ledger XLSX"
+    _inherit = "report.report_xlsx.abstract"
+
+    def generate_xlsx_report(self, workbook, data, objs):
+        data = data or {}
+        result = self.env["budget.ledger"].get_ledger_data(
+            data.get("fiscal_year_id"), data.get("options") or {}
+        )
+        months = result.get("months", [])
+        summary = result.get("summary", {})
+
+        sheet = workbook.add_worksheet(_("สมุดรายการเคลื่อนไหวงบประมาณ"))
+        title_fmt = workbook.add_format({"bold": True, "font_size": 14})
+        money = workbook.add_format({"num_format": "#,##0.00"})
+        month_fmt = workbook.add_format(
+            {"bold": True, "bg_color": "#e9ecef", "top": 1}
+        )
+        head_fmt = workbook.add_format(
+            {"bold": True, "bg_color": "#f1f5f9", "border": 1, "align": "center"}
+        )
+
+        sheet.write(0, 0, _("สมุดรายการเคลื่อนไหวงบประมาณ"), title_fmt)
+        if summary:
+            sheet.write(
+                1,
+                0,
+                _("งบปัจจุบัน %(a)s · จอง %(b)s · เบิกจ่าย %(d)s · คงเหลือ (f) %(f)s")
+                % {
+                    "a": "{:,.2f}".format(summary.get("current", 0.0)),
+                    "b": "{:,.2f}".format(summary.get("reserved", 0.0)),
+                    "d": "{:,.2f}".format(summary.get("consumed", 0.0)),
+                    "f": "{:,.2f}".format(summary.get("remaining", 0.0)),
+                },
+            )
+
+        headers = [
+            _("วันที่"), _("เวลา"), _("ประเภท"), _("รหัสงบ"), _("ชื่อรหัสงบ"),
+            _("ส่วนงาน"), _("แหล่งเงิน"), _("กองทุน"), _("กิจกรรม"),
+            _("โครงการ/กิจกรรม"), _("แผนจัดซื้อจัดจ้าง"), _("โอนจาก/ไป"),
+            _("จำนวนเงิน"), _("คงเหลือสะสม"), _("เลขที่ใบ"), _("เอกสารต้นทาง"),
+        ]
+        header_row = 3
+        for col, title in enumerate(headers):
+            sheet.write(header_row, col, title, head_fmt)
+
+        r = header_row + 1
+        for month in months:
+            sheet.merge_range(
+                r, 0, r, len(headers) - 1,
+                "%s   (+%s / -%s)"
+                % (
+                    month["label"],
+                    "{:,.2f}".format(month.get("debit", 0.0)),
+                    "{:,.2f}".format(month.get("credit", 0.0)),
+                ),
+                month_fmt,
+            )
+            r += 1
+            for row in month["rows"]:
+                dims = row.get("dims", {})
+                sheet.write(r, 0, row.get("date", ""))
+                sheet.write(r, 1, row.get("time", ""))
+                sheet.write(r, 2, row.get("kind_label", ""))
+                sheet.write(r, 3, row.get("account_code", ""))
+                sheet.write(r, 4, row.get("account_name", ""))
+                sheet.write(r, 5, dims.get("department", ""))
+                sheet.write(r, 6, dims.get("source", ""))
+                sheet.write(r, 7, dims.get("fund", ""))
+                sheet.write(r, 8, dims.get("activity", ""))
+                sheet.write(r, 9, dims.get("kmitl_project", ""))
+                sheet.write(r, 10, dims.get("procurement_plan", ""))
+                sheet.write(r, 11, row.get("counterparty", ""))
+                sheet.write_number(r, 12, row.get("amount", 0.0) or 0.0, money)
+                running = row.get("running")
+                if running is not None:
+                    sheet.write_number(r, 13, running, money)
+                sheet.write(r, 14, row.get("move_name", ""))
+                sheet.write(r, 15, row.get("source_name", ""))
+                r += 1
+
+        widths = [12, 7, 10, 12, 26, 24, 16, 20, 24, 22, 22, 24, 16, 16, 16, 22]
+        for col, width in enumerate(widths):
+            sheet.set_column(col, col, width)
