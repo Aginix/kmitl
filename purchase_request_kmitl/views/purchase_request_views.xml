@@ -286,37 +286,15 @@
                     </field>
                 </page>
                 <page name="document" string="Attachment">
-                    <field
-                        name="attachment_ids"
-                        attrs="{'readonly': [('is_editable','=', False)]}"
-                        context="{'default_res_model': 'purchase.request'}"
-                    >
-                        <tree default_order="attachment_type, sequence">
-                            <field name="sequence" widget="handle" />
-                            <field name="attachment_type" required="1" />
-                            <field name="name" string="File Name" required="1" />
-                            <field name="description" />
-                        </tree>
-                        <form>
-                            <sheet>
-                                <group>
-                                    <field
-                                        name="res_model"
-                                        invisible="1"
-                                        readonly="0"
-                                    />
-                                    <field name="res_id" invisible="1" readonly="0" />
-                                    <field name="attachment_type" required="1" />
-                                    <field name="name" required="1" invisible="1" />
-                                    <field name="datas" filename="name" required="1" />
-                                    <field
-                                        name="description"
-                                        placeholder="Description"
-                                    />
-                                </group>
-                            </sheet>
-                        </form>
-                    </field>
+                    <group name="attachment" string="Attachment">
+                        <field
+                            name="attachment_ids"
+                            widget="many2many_binary"
+                            nolabel="1"
+                            colspan="2"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                    </group>
                 </page>
             </xpath>
 

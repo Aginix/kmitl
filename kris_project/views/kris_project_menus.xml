@@ -75,13 +75,5 @@
         groups="kris_project.group_kris_project_manager"
     />
 
-    <menuitem
-        id="menu_kris_project_document_type"
-        name="Document Types"
-        parent="menu_kris_project_config"
-        action="action_kris_project_document_type"
-        sequence="50"
-        groups="kris_project.group_kris_project_manager"
-    />
 
 </odoo>

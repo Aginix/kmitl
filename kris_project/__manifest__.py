@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "KRIS Project",
     "version": "16.0.1.7.0",
@@ -14,6 +13,7 @@
         "tracking_manager",
         "account_analytic_kmitl",
         "hr_employee_name_detail_kmitl",
+        "web_attachment_document_type",
     ],
     "demo": [
         "data/kris_project_demo.xml",
@@ -28,7 +28,6 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "wizard/kris_project_exception_confirm_view.xml",
-        "views/kris_project_document_type_views.xml",
         "wizard/kris_project_state_wizard_view.xml",
         "views/kris_project_type_views.xml",
         "views/kris_project_allocation_views.xml",

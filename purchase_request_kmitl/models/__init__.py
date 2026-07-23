@@ -1,5 +1,4 @@
 from . import (
-    ir_attachment,
     procurement_committee,
     procurement_method,
     procurement_type,
