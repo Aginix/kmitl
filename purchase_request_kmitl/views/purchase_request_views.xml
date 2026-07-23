@@ -149,7 +149,7 @@
                 />
                 <button
                     name="button_return"
-                    states="to_submit"
+                    states="to_verify,to_submit"
                     string="Return"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
