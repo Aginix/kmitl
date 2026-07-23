@@ -1,0 +1,47 @@
+=============
+Budget Ledger
+=============
+
+สมุดรายการเคลื่อนไหวงบประมาณ — a chronological, line-level report over the
+**main budget ledger** (``budget.move``) so budget activity can be read at a
+glance instead of opening ``budget.move`` / ``budget.commitment`` records one
+at a time.
+
+Each row is one ``budget.move.line`` normalised to a single "kind":
+
+* **จัดสรร** (appropriation) — งบที่ได้รับจัดสรร (ต้นปี / เพิ่มเติม)
+* **รับโอน / โอนออก** (transfer in / out) — การโอนงบ, แยกทิศตามเครื่องหมาย
+* **เบิกจ่าย** (consume) — การใช้จ่ายจริง
+
+Rows carry all six financial dimensions inline (chips), a signed amount, and a
+running **งบคงเหลือ (ทางบัญชี)** = งบปัจจุบัน − เบิกจ่ายสะสม.
+
+Features
+========
+
+* **ControlPanel** — ปีงบประมาณ, งบรายจ่าย/รายได้, รหัสงบประมาณ, ทั้งหก
+  มิติทางบัญชี (multi-select, hierarchy-aware), และ checkbox เลือกประเภทรายการ.
+* **Summary bar** — งบปัจจุบัน (a) / จอง (b) / เบิกจ่าย (d) / **คงเหลือ (f)**
+  reused verbatim from the monitoring dashboard (รายงานตรวจสอบงบประมาณ) so the
+  ยอดคงเหลือ that also nets เงินจอง is always exact.
+* **Timeline** — grouped by month (collapsible, with subtotals); each row
+  expands to show เลขที่ใบ, อ้างอิง, หมายเหตุ and the source document.
+
+Scope & design
+==============
+
+This report reads the **main ledger only**. Reservation / obligation
+(จอง / ผูกพัน) live in a separate book — the encumbrance register
+(``budget.commitment``) — and are **not** shown here; see
+``budget/docs/adr/0010-budget-ledger-separate-books.md`` and the *Budget Ledger*
+entry in ``budget/CONTEXT.md``. Full design notes: ``docs/DESIGN.md``.
+
+Technical notes
+===============
+
+* Read-only ``AbstractModel`` service ``budget.ledger`` (no stored data).
+* All aggregation goes through the ORM (never raw SQL), so
+  ``budget_operating_unit`` record rules scope rows to the user's operating
+  units automatically.
+* The running balance is computed server-side over the whole filtered scope,
+  ordered by date; draft/review rows (optional) are shown but excluded from it.
