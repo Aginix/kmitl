@@ -63,6 +63,10 @@ upfront.
   disbursement keeps it intact (at `signed`) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
+- [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
+  (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
+  through clearing to closure. A borrower may hold only one active agreement at a time,
+  so multi-activity needs are met by serial borrowing.
 
 ## Relationships
 

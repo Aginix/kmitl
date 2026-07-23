@@ -7,8 +7,14 @@ class AdvancePayment(models.Model):
     """
     Advance Payment (สัญญายืมเงิน).
 
-    Tracks the full lifecycle of employee advance payment loans:
-    draft → submitted → approved → in_progress → done
+    A single-disbursement employee loan. Lifecycle (see docs/adr/0001-0005 and
+    docs/advance-payment-lifecycle.drawio):
+
+        draft → to_verify → to_approve → waiting_transfer → in_progress
+              → to_verify_report → to_reconcile → done
+        (+ negative: rejected [tier module], cancel)
+
+    A borrower may hold only one active agreement at a time (serial borrowing).
     """
 
     _name = "advance.payment"
@@ -21,22 +27,49 @@ class AdvancePayment(models.Model):
     ]
     _order = "main_exception_id asc, name desc, id desc"
 
+    # States in which a borrower is considered to "hold" an agreement, for the
+    # one-active-agreement-per-borrower rule (ADR-0001).
+    ACTIVE_STATES = ("to_verify", "to_approve", "waiting_transfer", "in_progress")
+
+    # Material ("สาระสำคัญ") fields — locked once the request leaves draft.
+    # A finance officer may still correct them while in to_verify (and bank_id
+    # up to the transfer); an admin may always correct them. (ADR-0001/0005)
     _PROTECTED_FIELDS = {
         "loan_amount",
         "loan_type_id",
-        "loan_reason",
         "bank_id",
         "reference",
         "requested_by",
         "department_id",
     }
 
+    # Material fields are read-only in the UI in every non-draft state.
     READONLY_STATES = {
-        "submitted": [("readonly", True)],
-        "approved": [("readonly", True)],
-        "in_progress": [("readonly", True)],
-        "done": [("readonly", True)],
-        "cancel": [("readonly", True)],
+        state: [("readonly", True)]
+        for state in (
+            "to_verify",
+            "to_approve",
+            "waiting_transfer",
+            "in_progress",
+            "to_verify_report",
+            "to_reconcile",
+            "done",
+            "cancel",
+        )
+    }
+
+    # loan_reason stays editable by the creator through to_verify (ADR-0001).
+    REASON_READONLY_STATES = {
+        state: [("readonly", True)]
+        for state in (
+            "to_approve",
+            "waiting_transfer",
+            "in_progress",
+            "to_verify_report",
+            "to_reconcile",
+            "done",
+            "cancel",
+        )
     }
 
     name = fields.Char(
@@ -46,14 +79,26 @@ class AdvancePayment(models.Model):
         default=lambda self: _("New"),
     )
 
+    contract_number = fields.Char(
+        string="เลขที่สัญญา",
+        copy=False,
+        readonly=True,
+        tracking=True,
+        help="Formal loan-contract number, assigned when the transfer completes "
+        "(Effective Date). Distinct from the ADV running number.",
+    )
+
     state = fields.Selection(
         selection=[
-            ("draft", "Draft"),
-            ("submitted", "Submitted"),
-            ("approved", "Approved"),
-            ("in_progress", "In Progress"),
-            ("done", "Done"),
-            ("cancel", "Cancelled"),
+            ("draft", "แบบร่าง"),
+            ("to_verify", "รอตรวจสอบคำขอ"),
+            ("to_approve", "รออนุมัติ"),
+            ("waiting_transfer", "รอการโอนเงิน"),
+            ("in_progress", "อยู่ในระยะเวลาสัญญา"),
+            ("to_verify_report", "รอตรวจรับรายงาน"),
+            ("to_reconcile", "รอตรวจสอบเงินคืน"),
+            ("done", "ปิดสัญญา"),
+            ("cancel", "ยกเลิก"),
         ],
         string="Status",
         required=True,
@@ -95,10 +140,19 @@ class AdvancePayment(models.Model):
 
     is_requester = fields.Boolean(compute="_compute_is_requester")
 
+    is_officer = fields.Boolean(compute="_compute_is_officer")
+
     @api.depends("requested_by")
     def _compute_is_requester(self):
         for rec in self:
             rec.is_requester = rec.requested_by == self.env.user
+
+    def _compute_is_officer(self):
+        is_officer = self.env.user.has_group(
+            "advance_payment.group_advance_payment_officer"
+        )
+        for rec in self:
+            rec.is_officer = is_officer
 
     reference = fields.Reference(
         selection=[("purchase.request", "Purchase Request")],
@@ -138,7 +192,7 @@ class AdvancePayment(models.Model):
     loan_reason = fields.Text(
         string="Loan Reason",
         required=True,
-        states=READONLY_STATES,
+        states=REASON_READONLY_STATES,
     )
 
     loan_type_id = fields.Many2one(
@@ -181,6 +235,23 @@ class AdvancePayment(models.Model):
     )
     book_bank_filename = fields.Char()
 
+    return_due_date = fields.Date(
+        string="วันครบกำหนดคืน",
+        copy=False,
+        tracking=True,
+        help="Set by the loan officer after approval; drives the weekly "
+        "overdue reminders.",
+    )
+
+    effective_date = fields.Date(
+        string="Effective Date",
+        readonly=True,
+        copy=False,
+        tracking=True,
+        help="Date the disbursement transfer completed; the agreement becomes "
+        "a formal debt (ลูกหนี้โดยสมบูรณ์) at this moment.",
+    )
+
     usage_line_ids = fields.One2many(
         comodel_name="advance.payment.usage.line",
         inverse_name="agreement_id",
@@ -199,6 +270,20 @@ class AdvancePayment(models.Model):
         string="Amount Remaining",
         compute="_compute_amounts",
         store=True,
+    )
+
+    leftover_amount = fields.Monetary(
+        string="ยอดคงเหลือ (ต้องคืน)",
+        compute="_compute_amounts",
+        store=True,
+        help="Loan amount minus accepted actual expenses — the cash to return.",
+    )
+
+    excess_amount = fields.Monetary(
+        string="เงินคืนส่วนเกิน",
+        compute="_compute_amounts",
+        store=True,
+        help="Amount returned beyond the leftover; requires donation consent.",
     )
 
     payment_ids = fields.One2many(
@@ -229,6 +314,24 @@ class AdvancePayment(models.Model):
     date_closed = fields.Datetime(string="Date Closed", readonly=True, copy=False)
 
     cancel_reason = fields.Text(string="Reason", readonly=True, copy=False)
+
+    # Over-return donation consent (ADR-0003). The excess is never refunded —
+    # the borrower must consent to donate it to the institute before closing.
+    donate_excess = fields.Boolean(
+        string="ยินยอมบริจาคเงินส่วนเกินให้สถาบัน",
+        copy=False,
+    )
+    donate_consent_uid = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้ยืนยันการบริจาค",
+        readonly=True,
+        copy=False,
+    )
+    donate_consent_date = fields.Datetime(
+        string="เวลายืนยันการบริจาค",
+        readonly=True,
+        copy=False,
+    )
 
     return_line_ids = fields.One2many(
         comodel_name="advance.payment.return.line",
@@ -343,6 +446,9 @@ class AdvancePayment(models.Model):
             rec.amount_used = used
             rec.amount_returned = returned
             rec.amount_remaining = rec.loan_amount - used - returned
+            leftover = rec.loan_amount - used
+            rec.leftover_amount = leftover
+            rec.excess_amount = max(0.0, returned - leftover)
 
     @api.depends("payment_ids")
     def _compute_payment_count(self):
@@ -368,6 +474,21 @@ class AdvancePayment(models.Model):
             if self.search([("name", "=", rec.name), ("id", "!=", rec.id)], limit=1):
                 raise ValidationError(
                     _("Agreement number '%(name)s' must be unique!", name=rec.name)
+                )
+
+    @api.constrains("requested_by")
+    def _check_creator_only(self):
+        """No borrowing on behalf: requested_by must be the record creator
+        (ADR-0005). A base.group_system admin is exempt (data / exceptional)."""
+        if self.env.user.has_group("base.group_system"):
+            return
+        for rec in self:
+            if rec.create_uid and rec.requested_by != rec.create_uid:
+                raise ValidationError(
+                    _(
+                        "A loan must be created by the borrower — you cannot"
+                        " borrow on behalf of someone else."
+                    )
                 )
 
     def _prepare_account_payment_vals(self, payment_type):
@@ -396,15 +517,41 @@ class AdvancePayment(models.Model):
 
     @api.constrains("ignore_exception", "loan_amount", "state")
     def advance_payment_check_exception(self):
-        records = self.filtered(lambda s: s.state == "submitted")
+        records = self.filtered(lambda s: s.state == "to_verify")
         if records:
             records._check_exception()
 
     def write(self, vals):
-        if self._PROTECTED_FIELDS & set(vals):
-            non_draft = self.filtered(lambda r: r.state != "draft")
-            if non_draft:
-                raise UserError(_("Cannot modify a non-draft agreement."))
+        protected = self._PROTECTED_FIELDS & set(vals)
+        if protected:
+            is_admin = self.env.user.has_group("base.group_system")
+            is_officer = self.env.user.has_group(
+                "advance_payment.group_advance_payment_officer"
+            )
+            for rec in self:
+                if rec.state == "draft" or is_admin:
+                    continue
+                # Finance officer may still correct fields (ADR-0005):
+                #  - all material fields while in to_verify
+                #  - bank_id up to the transfer
+                editable = set()
+                if is_officer and rec.state == "to_verify":
+                    editable |= self._PROTECTED_FIELDS
+                if is_officer and rec.state in (
+                    "to_verify",
+                    "to_approve",
+                    "waiting_transfer",
+                ):
+                    editable.add("bank_id")
+                blocked = protected - editable
+                if blocked:
+                    raise UserError(
+                        _(
+                            "Cannot modify key field(s) of a submitted"
+                            " agreement: %(fields)s",
+                            fields=", ".join(sorted(blocked)),
+                        )
+                    )
         return super().write(vals)
 
     def button_draft(self):
@@ -413,81 +560,84 @@ class AdvancePayment(models.Model):
     def button_cancel(self):
         self.write({"state": "cancel"})
 
-    def action_start(self, payment=None):
-        """Transition approved agreements to in_progress (triggered by payment posting)."""
-        self.write({"state": "in_progress"})
-        for rec in self:
-            if payment:
-                body = _(
-                    "Payment <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a>"
-                    " has been confirmed. Funds of <b>%(amount)s %(currency)s</b> have been disbursed"
-                    " to <b>%(partner)s</b>."
-                    " ขั้นตอนถัดไป: ผู้ยืมสามารถบันทึกการใช้เงินและแจ้งคืนเงินได้",
-                    id=payment.id,
-                    name=payment.name,
-                    amount=payment.amount,
-                    currency=payment.currency_id.name,
-                    partner=payment.partner_id.name,
-                )
-            else:
-                body = _("Payment confirmed. Funds have been disbursed.")
-            rec.message_post(body=body, subtype_xmlid="mail.mt_note")
+    # ------------------------------------------------------------------ #
+    # Front half: submit → verify → approve → transfer → in_progress       #
+    # ------------------------------------------------------------------ #
 
     def _check_submit_permission(self):
-        """Check if the current user is allowed to submit."""
-        strict = (
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("advance_payment.strict_submit", default=False)
-        )
+        """Creator-only: only the borrower (or an admin) may submit (ADR-0005)."""
         is_admin = self.env.user.has_group("base.group_system")
-        is_manager = self.env.user.has_group(
-            "advance_payment.group_advance_payment_manager"
-        )
         for rec in self:
             if rec.requested_by == self.env.user or is_admin:
                 continue
-            if not strict and is_manager:
-                continue
             raise UserError(
-                _("Only the requestor or a manager can submit this agreement.")
-                if not strict
-                else _("Only the requestor or an admin can submit this agreement.")
+                _("Only the borrower can submit this agreement (no borrowing on"
+                  " behalf).")
             )
 
+    def _check_one_active_agreement(self):
+        """A borrower may hold only one active agreement at a time (ADR-0001)."""
+        for rec in self:
+            other = rec.sudo().search(
+                [
+                    ("requested_by", "=", rec.requested_by.id),
+                    ("state", "in", self.ACTIVE_STATES),
+                    ("id", "!=", rec.id),
+                ],
+                limit=1,
+            )
+            if other:
+                raise UserError(
+                    _(
+                        "%(user)s already has an active loan agreement"
+                        " (%(name)s). Clear it before starting a new one.",
+                        user=rec.requested_by.name,
+                        name=other.name,
+                    )
+                )
+
     def action_submit(self):
-        """Submit the agreement for approval (ส่งเพื่อขออนุมัติ)."""
+        """Submit the request for verification (draft → to_verify)."""
         self._check_submit_permission()
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft agreements can be submitted."))
+            rec._check_one_active_agreement()
             if rec.detect_exceptions() and not rec.ignore_exception:
                 return rec._popup_exceptions()
             if rec.name == _("New"):
                 rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
             rec.date_submitted = fields.Datetime.now()
-            rec.state = "submitted"
+            rec.state = "to_verify"
             rec.message_post(
                 body=_(
-                    "Agreement submitted for approval by <b>%(user)s</b>."
-                    " Loan amount: <b>%(amount)s %(currency)s</b>.%(reason)s",
+                    "Agreement submitted for verification by <b>%(user)s</b>."
+                    " Loan amount: <b>%(amount)s %(currency)s</b>.",
                     user=rec.requested_by.name,
                     amount=rec.loan_amount,
                     currency=rec.currency_id.name,
-                    reason=(
-                        _(" Reason: %(r)s", r=rec.loan_reason)
-                        if rec.loan_reason
-                        else ""
-                    ),
                 ),
                 subtype_xmlid="mail.mt_note",
             )
 
-    def action_approve(self):
-        """Approve and auto-create outbound account.payment (อนุมัติ)."""
+    def action_verify(self):
+        """Finance officer confirms the document check (to_verify → to_approve)."""
         for rec in self:
-            if rec.state != "submitted":
-                raise UserError(_("Only submitted agreements can be approved."))
+            if rec.state != "to_verify":
+                raise UserError(_("Only agreements under verification can be verified."))
+            rec.state = "to_approve"
+            rec.message_post(
+                body=_("ตรวจสอบคำขอเรียบร้อย ส่งเข้าขั้นอนุมัติ โดย <b>%(user)s</b>.",
+                       user=self.env.user.name),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def action_approve(self):
+        """Approve and create the outbound disbursement payment
+        (to_approve → waiting_transfer). Called manually or by the tier engine."""
+        for rec in self:
+            if rec.state != "to_approve":
+                raise UserError(_("Only agreements awaiting approval can be approved."))
         payment_type = self.env.ref(
             "advance_payment.payment_type_advance_payment_outbound"
         )
@@ -495,7 +645,7 @@ class AdvancePayment(models.Model):
         payments = self.env["account.payment"].create(vals_list)
         self.write(
             {
-                "state": "approved",
+                "state": "waiting_transfer",
                 "disbursement_state": "pending",
                 "date_approved": fields.Datetime.now(),
             }
@@ -506,70 +656,203 @@ class AdvancePayment(models.Model):
                 body=_(
                     "Agreement approved. Payment"
                     " <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a>"
-                    " created for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b>"
-                    " via journal <b>%(journal)s</b>."
-                    " ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการเบิกจ่าย",
+                    " created for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b>."
+                    " ขั้นตอนถัดไป: รอฝ่ายการเงินดำเนินการโอนเงิน",
                     id=payment.id,
                     name=payment.name,
                     amount=payment.amount,
                     currency=payment.currency_id.name,
                     partner=payment.partner_id.name,
-                    journal=payment.journal_id.name,
                 ),
                 subtype_xmlid="mail.mt_note",
             )
 
-    def action_close(self):
-        """Close the agreement, or show confirmation wizard if money remains."""
-        self.ensure_one()
-        if self.state != "in_progress":
-            raise UserError(_("Only in-progress agreements can be closed."))
-        if self.amount_remaining > 0:
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("ยืนยันการปิดสัญญา"),
-                "res_model": "advance.payment.close.confirm",
-                "view_mode": "form",
-                "target": "new",
-                "context": {"default_agreement_id": self.id},
-            }
-        self._do_close()
+    def action_start(self, payment=None):
+        """Transfer completed → the loan becomes a formal debt.
+        (waiting_transfer → in_progress). Triggered by payment posting."""
+        for rec in self:
+            vals = {"state": "in_progress"}
+            if not rec.effective_date:
+                vals["effective_date"] = (
+                    payment.date if payment else fields.Date.context_today(rec)
+                )
+            if not rec.contract_number:
+                vals["contract_number"] = self.env["ir.sequence"].next_by_code(
+                    "advance.payment.contract"
+                )
+            rec.write(vals)
+            body = _(
+                "โอนเงินยืมสำเร็จ — เป็นลูกหนี้โดยสมบูรณ์ เลขที่สัญญา"
+                " <b>%(contract)s</b> วันที่มีผล <b>%(date)s</b>."
+                " ขั้นตอนถัดไป: ใช้เงินตามวัตถุประสงค์ แล้วนำส่งรายงานค่าใช้จ่าย",
+                contract=rec.contract_number or "-",
+                date=rec.effective_date or "-",
+            )
+            rec.message_post(body=body, subtype_xmlid="mail.mt_note")
 
-    def _do_close(self):
-        """Actually close the agreement (ปิดสัญญา)."""
+    # ------------------------------------------------------------------ #
+    # Recall / reset (before approval)                                     #
+    # ------------------------------------------------------------------ #
+
+    def action_recall(self):
+        """Borrower pulls a not-yet-approved request back to draft (ADR-0001)."""
+        self.ensure_one()
+        if self.requested_by != self.env.user and not self.env.user.has_group(
+            "base.group_system"
+        ):
+            raise UserError(_("Only the borrower can recall this request."))
+        if self.state not in ("to_verify", "to_approve"):
+            raise UserError(_("Only a not-yet-approved request can be recalled."))
+        self.state = "draft"
+        self.message_post(
+            body=_("ดึงคำขอกลับเพื่อแก้ไข โดย <b>%(user)s</b>.", user=self.env.user.name),
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def action_reset_to_draft(self):
+        """Finance officer resets a request under verification to draft (ADR-0001)."""
+        for rec in self:
+            if rec.state != "to_verify":
+                raise UserError(
+                    _("Only agreements under verification can be reset to draft.")
+                )
+            rec.state = "draft"
+            rec.message_post(
+                body=_("ส่งกลับแก้ไข โดยเจ้าหน้าที่ <b>%(user)s</b>.",
+                       user=self.env.user.name),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    # ------------------------------------------------------------------ #
+    # Settle: report → reconcile → close                                   #
+    # ------------------------------------------------------------------ #
+
+    def action_submit_report(self):
+        """Borrower submits the expense report (in_progress → to_verify_report)."""
         for rec in self:
             if rec.state != "in_progress":
-                raise UserError(_("Only in-progress agreements can be closed."))
+                raise UserError(
+                    _("Only in-progress agreements can submit an expense report.")
+                )
+            if not rec.usage_line_ids:
+                raise UserError(
+                    _("Record the actual expenses before submitting the report.")
+                )
+            rec.state = "to_verify_report"
+            rec.message_post(
+                body=_(
+                    "นำส่งรายงานค่าใช้จ่าย: ใช้จริง <b>%(used)s</b>,"
+                    " คงเหลือ <b>%(left)s</b> %(currency)s",
+                    used=rec.amount_used,
+                    left=rec.leftover_amount,
+                    currency=rec.currency_id.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def action_accept_report(self):
+        """Finance officer accepts the expense report (to_verify_report → ...).
+        No leftover → close; leftover > 0 → to_reconcile."""
+        for rec in self:
+            if rec.state != "to_verify_report":
+                raise UserError(_("Only submitted reports can be accepted."))
+            if rec.leftover_amount <= 0:
+                rec.message_post(
+                    body=_("ตรวจรับรายงานค่าใช้จ่าย ไม่มีเงินคงเหลือ ปิดสัญญา"),
+                    subtype_xmlid="mail.mt_note",
+                )
+                rec._do_close()
+            else:
+                rec.state = "to_reconcile"
+                rec.message_post(
+                    body=_(
+                        "ตรวจรับรายงานค่าใช้จ่าย มีเงินคงเหลือ <b>%(left)s %(currency)s</b>"
+                        " รอผู้ยืมโอนคืน",
+                        left=rec.leftover_amount,
+                        currency=rec.currency_id.name,
+                    ),
+                    subtype_xmlid="mail.mt_note",
+                )
+
+    def action_confirm_donation(self):
+        """Borrower consents to donate the over-returned excess (ADR-0003)."""
+        self.ensure_one()
+        if self.excess_amount <= 0:
+            raise UserError(_("There is no excess to donate."))
+        self.write(
+            {
+                "donate_excess": True,
+                "donate_consent_uid": self.env.user.id,
+                "donate_consent_date": fields.Datetime.now(),
+            }
+        )
+        self.message_post(
+            body=_(
+                "ยินยอมบริจาคเงินส่วนเกิน <b>%(amount)s %(currency)s</b>"
+                " ให้สถาบัน โดย <b>%(user)s</b>",
+                amount=self.excess_amount,
+                currency=self.currency_id.name,
+                user=self.env.user.name,
+            ),
+            subtype_xmlid="mail.mt_note",
+        )
+        self._try_auto_close()
+
+    def _try_auto_close(self):
+        """Auto-close when the debt is settled (ADR-0003)."""
+        for rec in self:
+            if rec.state != "to_reconcile":
+                continue
+            if rec.amount_remaining > 0:
+                continue  # still owes money
+            if rec.excess_amount > 0 and not rec.donate_excess:
+                continue  # over-return needs donation consent first
+            rec._do_close()
+
+    def action_close(self):
+        """Officer closes from to_verify_report when there is no leftover."""
+        self.ensure_one()
+        if self.state == "to_verify_report" and self.leftover_amount <= 0:
+            return self._do_close()
+        raise UserError(
+            _("An agreement closes automatically once the debt is fully settled.")
+        )
+
+    def _do_close(self):
+        """Close the agreement (ปิดสัญญา)."""
+        for rec in self:
+            if rec.state not in ("to_verify_report", "to_reconcile"):
+                raise UserError(_("This agreement cannot be closed from its state."))
             rec.date_closed = fields.Datetime.now()
             rec.state = "done"
             rec.message_post(
                 body=_(
-                    "Agreement closed."
-                    " Amount used: <b>%(used)s %(currency)s</b>."
-                    " Amount remaining: <b>%(remaining)s %(currency)s</b>.",
+                    "ปิดสัญญา ใช้จริง <b>%(used)s</b> คืน <b>%(returned)s</b>"
+                    " %(currency)s",
                     used=rec.amount_used,
+                    returned=rec.amount_returned,
                     currency=rec.currency_id.name,
-                    remaining=rec.amount_remaining,
                 ),
                 subtype_xmlid="mail.mt_note",
             )
 
     def action_reopen(self):
-        """Reopen a closed agreement back to in_progress (ERP admin only)."""
+        """Reopen a closed agreement (ERP admin only)."""
         for rec in self:
             if rec.state != "done":
                 raise UserError(_("Only closed agreements can be reopened."))
             rec.date_closed = False
-            rec.state = "in_progress"
+            rec.state = "to_reconcile" if rec.leftover_amount > 0 else "in_progress"
             rec.message_post(
-                body=_(
-                    "Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name
-                ),
+                body=_("Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
             )
 
+    # ------------------------------------------------------------------ #
+    # Cancel / reject                                                      #
+    # ------------------------------------------------------------------ #
+
     def action_open_cancel_wizard(self):
-        """Open wizard to cancel the agreement (manager only)."""
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
@@ -584,7 +867,6 @@ class AdvancePayment(models.Model):
         }
 
     def action_open_reject_wizard(self):
-        """Open wizard to reject (return to draft) the agreement (manager only)."""
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
@@ -599,7 +881,6 @@ class AdvancePayment(models.Model):
         }
 
     def _cancel_payments(self):
-        """Reset or cancel linked outbound payments."""
         for payment in self.payment_ids.filtered(lambda p: p.state != "cancel"):
             if payment.state == "posted":
                 payment.button_draft()
@@ -608,21 +889,19 @@ class AdvancePayment(models.Model):
             payment.action_cancel()
 
     def _action_do_cancel(self, reason):
-        """Cancel the agreement (manager only). Voids linked payments if needed."""
         self.ensure_one()
-        if self.state not in ("submitted", "approved", "in_progress"):
-            raise UserError(
-                _(
-                    "Only submitted, approved, or in-progress agreements can be cancelled."
-                )
-            )
+        if self.state not in (
+            "to_verify",
+            "to_approve",
+            "waiting_transfer",
+            "in_progress",
+            "to_verify_report",
+            "to_reconcile",
+        ):
+            raise UserError(_("This agreement cannot be cancelled from its state."))
         self._cancel_payments()
         self.write(
-            {
-                "state": "cancel",
-                "cancel_reason": reason,
-                "disbursement_state": False,
-            }
+            {"state": "cancel", "cancel_reason": reason, "disbursement_state": False}
         )
         self.message_post(
             body=_("Agreement cancelled. Reason: %(reason)s", reason=reason),
@@ -630,25 +909,30 @@ class AdvancePayment(models.Model):
         )
 
     def _action_do_reject(self, reason=False):
+        """Finance officer sends the request back to draft (to_verify → draft)."""
         self.ensure_one()
-        if self.state != "submitted":
-            raise UserError(_("Only submitted agreements can be rejected."))
+        if self.state != "to_verify":
+            raise UserError(_("Only agreements under verification can be sent back."))
         vals = {"state": "draft"}
         if reason:
             vals["cancel_reason"] = reason
         self.write(vals)
-        if reason:
-            body = _("Agreement returned to draft. Reason: %(reason)s", reason=reason)
-        else:
-            body = _("ส่งกลับแก้ไข")
+        body = (
+            _("Agreement returned to draft. Reason: %(reason)s", reason=reason)
+            if reason
+            else _("ส่งกลับแก้ไข")
+        )
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
 
     def action_reject(self):
         self.ensure_one()
         self._action_do_reject()
 
+    # ------------------------------------------------------------------ #
+    # Smart buttons / wizards                                              #
+    # ------------------------------------------------------------------ #
+
     def action_view_payments(self):
-        """Open linked account.payments."""
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "account.action_account_payments"
@@ -661,7 +945,6 @@ class AdvancePayment(models.Model):
         return action
 
     def action_open_usage_wizard(self):
-        """Open wizard to record usage of advance payment."""
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
@@ -673,7 +956,6 @@ class AdvancePayment(models.Model):
         }
 
     def action_open_return_wizard(self):
-        """Open wizard to confirm money return."""
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
@@ -685,7 +967,6 @@ class AdvancePayment(models.Model):
         }
 
     def action_view_return_lines(self):
-        """Open linked return lines."""
         self.ensure_one()
         action = {
             "type": "ir.actions.act_window",
