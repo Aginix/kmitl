@@ -485,23 +485,6 @@ class PurchaseRequest(models.Model):
 
         return super().button_cancel()
 
-    def _action_do_return(self, reason=None, post_message=True):
-        for record in self:
-            if record.budget_commitment_id:
-                try:
-                    record._cancel_budget_commitment()
-                    record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
-                        % record.budget_commitment_id.name
-                    )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: Could not cancel budget commitment: %s")
-                        % str(e)
-                    )
-
-        return super()._action_do_return(reason=reason, post_message=post_message)
-
     @api.onchange("analytic_distribution")
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all order lines"""

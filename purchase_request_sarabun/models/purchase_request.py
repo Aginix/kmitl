@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, models
+from odoo.exceptions import UserError
 
 
 class PurchaseRequest(models.Model):
@@ -53,6 +54,13 @@ class PurchaseRequest(models.Model):
     def _on_sarabun_returned(self, document, step):
         self._action_do_return(post_message=False)
         return super()._on_sarabun_returned(document, step)
+
+    def action_resend_to_sarabun(self):
+        self.ensure_one()
+        document = self.active_sarabun_document_id
+        if not document:
+            raise UserError(_("No active Sarabun document to resend."))
+        return document.action_send()
 
     def _on_sarabun_cancelled(self, document):
         self.button_draft()

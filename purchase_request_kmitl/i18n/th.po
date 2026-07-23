@@ -1507,12 +1507,12 @@ msgstr "Wizard ตีกลับคำขอ (พ.1)"
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Return"
-msgstr "ตีกลับ"
+msgstr "ตีกลับแก้ไข"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__returned
 msgid "Returned"
-msgstr "ตีกลับ"
+msgstr "รอการแก้ไข"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__requested_by
