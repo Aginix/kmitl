@@ -143,7 +143,7 @@ class PurchaseRequestApproval(models.Model):
     title = fields.Char(related="request_id.title")
     description = fields.Text(related="request_id.description")
     requested_by = fields.Many2one(related="request_id.requested_by")
-    department_id = fields.Many2one(related="request_id.department_id")
+    department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
     partner_id = fields.Many2one(related="request_id.partner_id")
     user_id = fields.Many2one(related="request_id.user_id")
