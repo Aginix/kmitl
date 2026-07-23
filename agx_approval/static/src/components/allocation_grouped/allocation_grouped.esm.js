@@ -66,9 +66,12 @@ export class AllocationGroupedRenderer extends ListRenderer {
         return partner;
     }
 
-    /** Add an allocation row with the recipient pre-filled. */
-    addLineForPartner(partnerId) {
-        this.add({context: {default_partner_id: partnerId}});
+    /** Add an allocation row with the recipient of `record` pre-filled. */
+    addLineForRecord(record) {
+        const partner = record.data.partner_id;
+        if (partner) {
+            this.add({context: {default_partner_id: partner[0]}});
+        }
     }
 }
 AllocationGroupedRenderer.rowsTemplate = "agx_approval.AllocationGrouped.Rows";
