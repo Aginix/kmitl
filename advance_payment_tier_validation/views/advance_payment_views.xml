@@ -5,33 +5,17 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form"/>
         <field name="arch" type="xml">
-            <button name="action_submit" position="after">
+            <!-- Reviews are requested automatically on action_verify
+                 (to_verify → to_approve), so no manual request button is
+                 needed. The approve button only enables once the tier chain
+                 has validated. -->
+            <xpath expr="//button[@name='action_approve']" position="before">
                 <field name="rejected" invisible="1"/>
                 <field name="validation_status" invisible="1"/>
                 <field name="need_validation" invisible="1"/>
-                <button
-                    name="request_validation"
-                    string="ส่งคำขออนุมัติ"
-                    class="btn-primary"
-                    attrs="{'invisible': ['|', '|', '|',
-                        ('need_validation', '!=', True),
-                        ('validation_status', '=', 'pending'),
-                        ('rejected', '=', True),
-                        ('state', '!=', 'submitted')
-                    ]}"
-                    type="object"
-                />
-            </button>
-            <xpath expr="//button[@name='action_reject']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('is_requester', '=', False), ('validation_status', '=', 'pending')]}</attribute>
             </xpath>
-            <xpath expr="//button[@name='action_approve']" position="replace">
-                <button name="action_approve"
-                    string="อนุมัติ"
-                    type="object"
-                    class="btn-primary"
-                    attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', '!=', 'validated')]}"
-                    groups="advance_payment.group_advance_payment_manager"/>
+            <xpath expr="//button[@name='action_approve']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'to_approve'), ('validation_status', '!=', 'validated')]}</attribute>
             </xpath>
         </field>
     </record>

@@ -6,8 +6,8 @@ from odoo import api, fields, models
 class AdvancePayment(models.Model):
     _name = "advance.payment"
     _inherit = ["advance.payment", "tier.validation"]
-    _state_from = ["submitted"]
-    _state_to = ["approved"]
+    _state_from = ["to_approve"]
+    _state_to = ["waiting_transfer"]
     _tier_validation_manual_config = False
 
     state = fields.Selection(
@@ -17,6 +17,15 @@ class AdvancePayment(models.Model):
 
     def _add_tier_validation_buttons(self, node, params):
         return etree.Element("div")
+
+    def action_verify(self):
+        """After the officer's document check, request the approval reviews so
+        the tier chain runs while in to_approve."""
+        res = super().action_verify()
+        for rec in self:
+            if rec.state == "to_approve" and rec.need_validation:
+                rec.request_validation()
+        return res
 
     @api.model
     def _get_under_validation_exceptions(self):
@@ -47,7 +56,7 @@ class AdvancePayment(models.Model):
     def _rejected_tier(self, tiers=False):
         super()._rejected_tier(tiers=tiers)
         for rec in self:
-            if rec.state == "submitted":
+            if rec.state == "to_approve":
                 rec.with_context(skip_validation_check=True).state = "rejected"
                 rec._propagate_rejection_to_reference()
 
