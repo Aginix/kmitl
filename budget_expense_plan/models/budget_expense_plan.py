@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 class BudgetExpensePlan(models.Model):
     """Plan Document (เอกสารแผนเบิกจ่าย) -- a ส่วนงาน's holder of monthly แผน
     figures for one (แหล่งเงิน, ปีงบ). The unit *chooses its own activities*
-    (``activity_ids``, from the Template's configured activities); the funds and
+    (``template_activity_ids``, from the Template's configured activities); the funds and
     budget lines under each come from the Template (ADR-0004). Its grid is
     rendered live (not snapshotted, ADR-0002); Actual (ผล) is derived from budget
     consume (ADR-0003).
@@ -49,8 +49,11 @@ class BudgetExpensePlan(models.Model):
         domain="[('root_plan_id.code', '=', 'departments')]",
         tracking=True,
     )
-    activity_ids = fields.Many2many(
+    template_activity_ids = fields.Many2many(
         comodel_name="budget.expense.template.activity",
+        relation="budget_expense_plan_activity_rel",
+        column1="plan_id",
+        column2="template_activity_id",
         string="ด้าน/แผนงานที่จัดทำ",
         domain="[('template_id', '=', template_id)]",
         help="เลือกด้าน/แผนงานที่ส่วนงานนี้จะจัดทำแผน กองทุน/รายการงบมาจากแม่แบบ",

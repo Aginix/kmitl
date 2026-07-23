@@ -84,7 +84,7 @@ class BudgetExpensePlan(models.Model):
     def get_grid_data(self, plan_id):
         plan = self.browse(plan_id)
         plan.ensure_one()
-        chosen = plan.activity_ids.sorted(lambda a: (a.sequence, a.id))
+        chosen = plan.template_activity_ids.sorted(lambda a: (a.sequence, a.id))
         months_order = plan._fy_month_order()
         months = [
             {"m": m, "label": THAI_MONTH_ABBR.get(m, str(m)), "quarter": (i // 3) + 1}
@@ -197,7 +197,7 @@ class BudgetExpensePlan(models.Model):
         plan.ensure_one()
         if plan.state == "active":
             raise UserError(_("แผนอยู่ในสถานะ 'แผนใช้งาน' (ล็อก) แก้ไขไม่ได้"))
-        plan.write({"activity_ids": [(4, int(template_activity_id))]})
+        plan.write({"template_activity_ids": [(4, int(template_activity_id))]})
         return True
 
     @api.model
@@ -207,7 +207,7 @@ class BudgetExpensePlan(models.Model):
         if plan.state == "active":
             raise UserError(_("แผนอยู่ในสถานะ 'แผนใช้งาน' (ล็อก) แก้ไขไม่ได้"))
         # Amounts stay (tuple-keyed); they simply stop rendering (soft-hide).
-        plan.write({"activity_ids": [(3, int(template_activity_id))]})
+        plan.write({"template_activity_ids": [(3, int(template_activity_id))]})
         return True
 
 

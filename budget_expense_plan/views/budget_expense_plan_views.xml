@@ -61,7 +61,7 @@
                         </group>
                     </group>
                     <group string="ด้าน/แผนงานที่จัดทำ (กองทุน/รายการงบมาจากแม่แบบ)">
-                        <field name="activity_ids" nolabel="1" widget="many2many_tags"
+                        <field name="template_activity_ids" nolabel="1" widget="many2many_tags"
                             domain="[('template_id', '=', template_id)]"
                             options="{'no_create': True}"
                             attrs="{'readonly': [('state', '=', 'active')]}" />
