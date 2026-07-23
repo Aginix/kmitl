@@ -51,7 +51,8 @@ class PurchaseRequest(models.Model):
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        self.button_draft()
+        reason = (step and step.note) or _("Returned via Sarabun")
+        self._action_do_return(reason)
         return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_cancelled(self, document):

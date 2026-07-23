@@ -14,7 +14,7 @@
             <button name="button_to_approve" position="after">
                 <button
                     name="button_to_verify"
-                    states="draft"
+                    states="draft,returned"
                     string="Request approval"
                     type="object"
                     class="oe_highlight"

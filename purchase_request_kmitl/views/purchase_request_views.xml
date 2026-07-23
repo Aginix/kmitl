@@ -142,7 +142,7 @@
             <xpath expr="//button[@name='button_draft']" position="after">
                 <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"
+                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress,returned"
                     string="Cancel"
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
