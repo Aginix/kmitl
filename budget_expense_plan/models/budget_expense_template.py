@@ -191,6 +191,7 @@ class BudgetExpenseTemplateActivity(models.Model):
     )
     fund_ids = fields.Many2many(
         comodel_name="budget.expense.template.fund",
+        relation="budget_exp_tmpl_activity_fund_rel",
         string="กองทุน",
         domain="[('template_id', '=', parent.id)]",
     )
