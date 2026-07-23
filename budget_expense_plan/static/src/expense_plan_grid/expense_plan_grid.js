@@ -20,10 +20,10 @@ export class ExpensePlanGrid extends Component {
             this.props.action.context?.active_id ||
             false;
         this.state = useState({
-            data: { rows: [], months: [] },
+            data: { rows: [], months: [], available_activities: [] },
             loading: false,
             showActual: true,
-            dirty: {}, // "tlId|month" -> amount
+            dirty: {}, // "aId|fId|blId|month" -> amount
         });
         onWillStart(this.load.bind(this));
     }
@@ -47,13 +47,17 @@ export class ExpensePlanGrid extends Component {
         return Object.keys(this.state.dirty).length > 0;
     }
 
+    key(row, month) {
+        return `${row.activity_id}|${row.fund_id}|${row.budget_line_id}|${month}`;
+    }
+
     // ------------------------------------------------------------------
     // Editing
     // ------------------------------------------------------------------
     onAmountInput(row, month, ev) {
         const value = parseFloat(ev.target.value) || 0.0;
         row.plan[month] = value;
-        this.state.dirty[`${row.template_line_id}|${month}`] = value;
+        this.state.dirty[this.key(row, month)] = value;
     }
 
     async save() {
@@ -61,9 +65,11 @@ export class ExpensePlanGrid extends Component {
             return;
         }
         const changes = Object.entries(this.state.dirty).map(([key, amount]) => {
-            const [tlId, month] = key.split("|");
+            const [activity_id, fund_id, budget_line_id, month] = key.split("|");
             return {
-                template_line_id: parseInt(tlId),
+                activity_id: parseInt(activity_id),
+                fund_id: parseInt(fund_id),
+                budget_line_id: parseInt(budget_line_id),
                 month: parseInt(month),
                 amount,
             };
@@ -82,28 +88,37 @@ export class ExpensePlanGrid extends Component {
         await this.load();
     }
 
-    async exportXlsx() {
-        await this.action.doAction({
-            type: "ir.actions.report",
-            report_type: "xlsx",
-            report_name: "budget_expense_plan.expense_plan_xlsx",
-            report_file: "budget_expense_plan.expense_plan_xlsx",
-            model: PLAN_MODEL,
-            context: { active_ids: [this.planId], active_id: this.planId },
-        });
+    // ------------------------------------------------------------------
+    // Activity selection (the unit chooses its own activities)
+    // ------------------------------------------------------------------
+    async addActivity(ev) {
+        const taId = parseInt(ev.target.value);
+        if (!taId) {
+            return;
+        }
+        ev.target.value = "";
+        await this.orm.call(PLAN_MODEL, "add_activity", [this.planId, taId]);
+        await this.load();
+    }
+
+    async removeActivity(templateActivityId) {
+        await this.orm.call(PLAN_MODEL, "remove_activity", [
+            this.planId,
+            templateActivityId,
+        ]);
+        await this.load();
     }
 
     // ------------------------------------------------------------------
     // Rendering helpers
     // ------------------------------------------------------------------
     get groups() {
-        // Group rows by Activity for section rendering, preserving row order.
         const groups = [];
         let current = null;
         for (const row of this.state.data.rows) {
-            if (!current || current.activity_id !== row.activity_id) {
+            if (!current || current.template_activity_id !== row.template_activity_id) {
                 current = {
-                    activity_id: row.activity_id,
+                    template_activity_id: row.template_activity_id,
                     activity_name: row.activity_name,
                     rows: [],
                 };
@@ -142,6 +157,17 @@ export class ExpensePlanGrid extends Component {
         return value.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
+        });
+    }
+
+    async exportXlsx() {
+        await this.action.doAction({
+            type: "ir.actions.report",
+            report_type: "xlsx",
+            report_name: "budget_expense_plan.expense_plan_xlsx",
+            report_file: "budget_expense_plan.expense_plan_xlsx",
+            model: PLAN_MODEL,
+            context: { active_ids: [this.planId], active_id: this.planId },
         });
     }
 }

@@ -41,8 +41,7 @@
                             <field name="name" />
                             <field name="fiscal_year_id"
                                 attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="source_analytic_id"
-                                options="{'no_create': True}"
+                            <field name="source_analytic_id" options="{'no_create': True}"
                                 attrs="{'readonly': [('id', '!=', False)]}" />
                         </group>
                         <group>
@@ -50,17 +49,28 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="แถวแม่แบบ (กิจกรรม / กองทุน / รายการงบ)" name="lines">
-                            <field name="line_ids">
+                        <page string="กองทุน &amp; รายการงบ" name="funds">
+                            <p class="text-muted">
+                                ตั้งค่าว่าในแต่ละกองทุน มีรายการงบใดบ้าง (ตั้งค่ากองทุนก่อน แล้วจึงผูกกับด้าน/แผนงาน)
+                            </p>
+                            <field name="fund_ids">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
-                                    <field name="activity_analytic_id"
+                                    <field name="fund_analytic_id" options="{'no_create': True}" />
+                                    <field name="budget_line_ids" widget="many2many_tags"
                                         options="{'no_create': True}" />
-                                    <field name="fund_analytic_id"
-                                        options="{'no_create': True}" />
-                                    <field name="budget_line_id" />
-                                    <field name="category_id" readonly="1" optional="show" />
-                                    <field name="active" invisible="1" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="ด้าน/แผนงาน &amp; กองทุน" name="activities">
+                            <p class="text-muted">
+                                ตั้งค่าว่าในแต่ละด้าน/แผนงาน มีกองทุนใดบ้าง (เลือกจากกองทุนที่ตั้งค่าไว้ด้านบน)
+                            </p>
+                            <field name="activity_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="activity_analytic_id" options="{'no_create': True}" />
+                                    <field name="fund_ids" widget="many2many_tags" />
                                 </tree>
                             </field>
                         </page>
@@ -76,7 +86,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">สร้างแม่แบบแผนเบิกจ่าย</p>
-            <p>1 แม่แบบต่อ (แหล่งเงิน × ปีงบประมาณ) กำหนดกิจกรรม และคู่ (กองทุน, รายการงบ) ที่ทุกส่วนงานต้องทำ</p>
+            <p>1 แม่แบบต่อ (แหล่งเงิน × ปีงบประมาณ): ตั้งค่ากองทุน→รายการงบ และ ด้าน/แผนงาน→กองทุน ให้ทุกส่วนงานใช้ร่วมกัน</p>
         </field>
     </record>
 

@@ -2,13 +2,21 @@
 <templates xml:space="preserve">
 
     <t t-name="budget_expense_plan.ExpensePlanGrid" owl="1">
-        <Layout display="{ controlPanel: {} }">
+        <Layout display="{ controlPanel: { 'top-right': false, 'bottom-right': false } }">
             <t t-set-slot="control-panel-bottom-left">
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <button class="btn btn-primary" t-att-disabled="!isDirty or !state.data.editable"
                         t-on-click="save">บันทึกแผน</button>
                     <button class="btn btn-secondary" t-att-disabled="!isDirty"
                         t-on-click="discard">ยกเลิกการแก้ไข</button>
+                    <select t-if="state.data.editable and state.data.available_activities.length"
+                        class="form-select form-select-sm ms-2" style="width:auto"
+                        t-on-change="addActivity">
+                        <option value="">+ เพิ่มด้าน/แผนงาน…</option>
+                        <t t-foreach="state.data.available_activities" t-as="a" t-key="a.id">
+                            <option t-att-value="a.id" t-esc="a.name" />
+                        </t>
+                    </select>
                     <div class="form-check form-switch ms-2">
                         <input type="checkbox" class="form-check-input" id="epg_show_actual"
                             t-att-checked="state.showActual"
@@ -24,7 +32,10 @@
 
             <div class="o_epg_root p-3">
                 <h4 class="o_epg_title mb-3" t-esc="state.data.name" />
-                <div class="o_epg_scroll">
+                <div t-if="!state.data.rows.length" class="alert alert-info">
+                    ยังไม่ได้เลือกด้าน/แผนงาน — เลือกจาก "＋ เพิ่มด้าน/แผนงาน" ด้านบนเพื่อเริ่มกรอกแผน
+                </div>
+                <div t-else="" class="o_epg_scroll">
                     <table class="table table-sm table-bordered o_epg_table">
                         <thead>
                             <tr>
@@ -34,13 +45,18 @@
                                 <th class="o_epg_total">รวม</th>
                             </tr>
                         </thead>
-                        <tbody t-foreach="groups" t-as="grp" t-key="grp.activity_id">
+                        <tbody t-foreach="groups" t-as="grp" t-key="grp.template_activity_id">
                             <tr class="o_epg_group">
                                 <td t-att-colspan="state.data.months.length + 2">
-                                    <t t-esc="grp.activity_name" />
+                                    <span t-esc="grp.activity_name" />
+                                    <button t-if="state.data.editable"
+                                        class="btn btn-sm btn-link text-danger py-0 px-1"
+                                        title="เอาด้าน/แผนงานนี้ออก"
+                                        t-on-click="() => this.removeActivity(grp.template_activity_id)">×</button>
                                 </td>
                             </tr>
-                            <t t-foreach="grp.rows" t-as="row" t-key="row.template_line_id">
+                            <t t-foreach="grp.rows" t-as="row"
+                                t-key="row.fund_id + '-' + row.budget_line_id">
                                 <tr class="o_epg_plan">
                                     <td class="o_epg_label" t-att-rowspan="state.showActual ? 2 : 1">
                                         <div class="fw-bold" t-esc="row.budget_line_name" />

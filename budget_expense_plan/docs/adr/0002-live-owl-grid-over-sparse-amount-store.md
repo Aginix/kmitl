@@ -4,7 +4,7 @@ The plannable grid is large (Activity × Fund × Budget Line × 12 months) and t
 
 Instead:
 - A lightweight `budget.expense.plan` **header** per (ส่วนงาน × แหล่งเงิน × ปีงบ) holds state, ownership, access and chatter.
-- Plan amounts are stored **sparsely**, keyed by (header, **Template row id**, month) — only filled cells exist.
+- Plan amounts are stored **sparsely**, keyed by the **dimension tuple** (header, Activity, Fund, Budget Line, month) — only filled cells exist (keying revised from a Template-row id to the tuple by ADR-0004).
 - A custom **OWL client action** renders the grid live from the *current* Template and writes amounts; the Actual column is computed on the fly from budget consume.
 - Headers are **push-generated** for the Required Departments (one draft per required ส่วนงาน) so central can track who has/has not filled — chosen over lazy-on-first-open for v1 to make compliance visible; cheap to switch since the header carries no snapshot.
 
@@ -15,7 +15,6 @@ Instead:
 
 ## Consequences
 
-- Amounts key to a **Template row id** (a persistent record, not a transient config line), so editing a row's Fund/Budget Line **re-labels** existing amounts (they follow the row) and adding a row shows blank cells.
-- Removing a Template row that carries amounts **soft-hides** them (kept for audit, excluded from totals, restorable) — entered numbers are never silently dropped; central is warned before removing/editing a row that has data.
+- Amounts key to the **dimension tuple** (Activity, Fund, Budget Line, month) — not a stored row id (ADR-0004). This gives soft-hide for free: a row that leaves the grid (the ส่วนงาน de-selects an activity, or the Template drops a fund/budget line) keeps its amounts, hidden and excluded from grid totals, and they **reappear** on re-selection — entered numbers are never silently dropped.
 - A custom OWL grid is more work than standard views, and its consolidation/report surface must be built rather than inherited — accepted for the UX and the live binding.
 - The same OWL surface can host both entry (แผน only) and comparison (แผน beside ผล); the printed/consolidated report is a separate rendering over the same computed data.

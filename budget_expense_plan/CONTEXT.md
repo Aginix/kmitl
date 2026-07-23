@@ -1,6 +1,6 @@
 # Expense Plan
 
-Annual, monthly **แผนการเบิกจ่าย**: each ส่วนงาน plans how much it expects to เบิกจ่าย each month of a fiscal year, per budget line, and that plan is set beside actual expense (ผล). The plannable grid — which activities, and which fund/budget-line pairs under each — is fixed centrally as a Template; a ส่วนงาน fills in only the monthly Plan figures, and the Actual figures are derived from budget consume.
+Annual, monthly **แผนการเบิกจ่าย**: each ส่วนงาน plans how much it expects to เบิกจ่าย each month of a fiscal year, per budget line, and that plan is set beside actual expense (ผล). The structure is composed centrally as a Template — which budget lines sit under each fund, and which funds sit under each activity — while each ส่วนงาน **chooses which activities it will plan** and fills in the monthly Plan figures; the Actual figures are derived from budget consume.
 
 Shares the financial-dimension vocabulary of [Budget](../budget/CONTEXT.md) — **Activity (กิจกรรม)**, **Fund (กองทุน)**, **Department (ส่วนงาน)**, **Consume (เบิกจ่าย)** — and reuses the two-namespace formula idea from [Budget Revenue Comparison](../budget_revenue_comparison/CONTEXT.md).
 
@@ -23,11 +23,11 @@ The free-text formula on a Budget Line, evaluated by `safe_eval` over budget.acc
 _Avoid_: domain, filter (it is an arithmetic code expression, not an Odoo domain).
 
 **Template (แม่แบบแผนเบิกจ่าย)**:
-The central definition — one per (แหล่งเงิน × ปีงบประมาณ) — of which Activities are in scope and, under each Activity, which (Fund, Budget Line) pairs must be planned. Shared by every ส่วนงาน so plans consolidate. It is the shared row/column grid behind every Plan Document. Edited in draft and **published** to become usable; editing a published Template warns when Plan Documents already reference it (a Template edit propagates live — ADR-0002).
+The central definition — one per (แหล่งเงิน × ปีงบประมาณ) — holding two compositions (ADR-0004): **Fund → Budget Lines** (which รายการงบ sit under each กองทุน) and **Activity → Funds** (which กองทุน sit under each ด้าน/แผนงาน). It is the shared structure behind every Plan Document; a ส่วนงาน selects which Activities to plan and the funds + budget lines follow from these compositions. Edited in draft and **published** to become usable; a Template edit propagates live (ADR-0002).
 _Avoid_: report layout (the Template is master data, not a rendering); config; "active" (that names a Plan Document state, not the Template's — the Template is *published*).
 
 **Plan Document (เอกสารแผนเบิกจ่าย)**:
-One ส่วนงาน's holder of Plan figures for a (แหล่งเงิน, ปีงบ) — carries state, ownership and access, plus a sparse set of monthly Plan amounts. Its grid is **not** a snapshot: it is rendered live from the current Template, so a Template edit shows immediately. Actual figures are derived, never entered.
+One ส่วนงาน's holder of Plan figures for a (แหล่งเงิน, ปีงบ) — carries state, ownership, access, the ส่วนงาน's **chosen Activities**, and a sparse set of monthly Plan amounts keyed by (Activity, Fund, Budget Line, month). Its grid is **not** a snapshot: it is rendered live from the ส่วนงาน's chosen Activities crossed with the current Template's compositions, so a Template edit or an activity de/selection shows immediately (a de-selected activity's amounts persist, hidden, and reappear when re-added). Actual figures are derived, never entered.
 _Avoid_: template (a Plan Document is an *instance* of a Template, not the Template itself).
 
 **Required Department (ส่วนงานที่ต้องทำแผน)**:

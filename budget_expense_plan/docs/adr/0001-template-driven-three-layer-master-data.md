@@ -1,6 +1,8 @@
 # A central locked Template drives a three-layer master-data model
 
-The expense plan must let every ส่วนงาน enter monthly แผน figures against a grid that is **identical across units**, so central planning (กองแผน) can consolidate and compare. We model the master data in three layers rather than as one flat set of plan lines:
+> **Refined by [ADR-0004](./0004-unit-chosen-activities-template-fund-activity-composition.md):** Activities are no longer pinned centrally in the Template — each ส่วนงาน now **chooses its own activities**, and the Template instead holds two compositions (Fund→Budget Lines, Activity→Funds). Everything else below still holds: the central Budget Line catalog with its `expr`, the per-(source × fiscal year) Template, FY-versioning, and the Required Department config.
+
+The expense plan must let every ส่วนงาน enter monthly แผน figures against a grid whose **funds, budget lines and their groupings are identical across units**, so central planning (กองแผน) can consolidate and compare. We model the master data in three layers rather than as one flat set of plan lines:
 
 1. **Budget Line (`รายการงบ`) catalog** — a label + Category (one of the five expense roots) + an `expr` that curates the budget.account codes whose consume feeds the column. The `expr` lives here, defined once per column.
 2. **Template** — central and locked, one per (แหล่งเงิน × ปีงบประมาณ): the set of Activities in scope and, under each, the (Fund, Budget Line) pairs that must be planned. Shared by all ส่วนงาน.

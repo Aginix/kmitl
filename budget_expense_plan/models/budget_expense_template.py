@@ -4,12 +4,17 @@ from odoo.exceptions import UserError
 
 
 class BudgetExpenseTemplate(models.Model):
-    """Template (แม่แบบแผนเบิกจ่าย) -- the central, shared grid.
+    """Template (แม่แบบแผนเบิกจ่าย) -- the central, shared definition, one per
+    (แหล่งเงิน x ปีงบประมาณ). It holds two compositions (ADR-0004):
 
-    One per (แหล่งเงิน x ปีงบประมาณ): the set of Activities in scope and, under
-    each, the (Fund, Budget Line) pairs that must be planned. Every ส่วนงาน's
-    Plan Document renders this grid live (ADR-0002); a Template edit therefore
-    propagates immediately.
+    * **Fund -> Budget Lines** (``fund_ids``): which รายการงบ appear under each
+      กองทุน.
+    * **Activity -> Funds** (``activity_ids``): which กองทุน apply under each
+      ด้าน/แผนงาน/กิจกรรม.
+
+    A ส่วนงาน does not inherit a fixed set of activities: it *chooses* its own
+    activities on the Plan Document, and for each chosen activity the funds and
+    budget lines are supplied by these two compositions.
     """
 
     _name = "budget.expense.template"
@@ -18,9 +23,7 @@ class BudgetExpenseTemplate(models.Model):
 
     name = fields.Char(string="ชื่อแม่แบบ", required=True, translate=True)
     fiscal_year_id = fields.Many2one(
-        comodel_name="account.fiscal.year",
-        string="ปีงบประมาณ",
-        required=True,
+        comodel_name="account.fiscal.year", string="ปีงบประมาณ", required=True
     )
     source_analytic_id = fields.Many2one(
         comodel_name="account.analytic.account",
@@ -34,10 +37,15 @@ class BudgetExpenseTemplate(models.Model):
         default="draft",
         required=True,
     )
-    line_ids = fields.One2many(
-        comodel_name="budget.expense.template.line",
+    fund_ids = fields.One2many(
+        comodel_name="budget.expense.template.fund",
         inverse_name="template_id",
-        string="แถวแม่แบบ",
+        string="กองทุน & รายการงบ",
+    )
+    activity_ids = fields.One2many(
+        comodel_name="budget.expense.template.activity",
+        inverse_name="template_id",
+        string="ด้าน/แผนงาน & กองทุน",
     )
     plan_ids = fields.One2many(
         comodel_name="budget.expense.plan",
@@ -72,8 +80,10 @@ class BudgetExpenseTemplate(models.Model):
 
     def action_publish(self):
         for template in self:
-            if not template.line_ids.filtered("active"):
-                raise UserError(_("ต้องมีแถวแม่แบบอย่างน้อย 1 แถวก่อนเผยแพร่"))
+            if not template.fund_ids:
+                raise UserError(_("ต้องตั้งค่ากองทุน/รายการงบอย่างน้อย 1 รายการก่อนเผยแพร่"))
+            if not template.activity_ids:
+                raise UserError(_("ต้องตั้งค่าด้าน/แผนงานอย่างน้อย 1 รายการก่อนเผยแพร่"))
             template.state = "published"
 
     def action_reset_to_draft(self):
@@ -81,36 +91,28 @@ class BudgetExpenseTemplate(models.Model):
 
     def action_generate_plans(self):
         """Push-generate one draft Plan Document per Required Department that
-        does not yet have one for this Template (ADR-0002)."""
+        does not yet have one for this Template (ADR-0002). Each ส่วนงาน then
+        chooses its own activities."""
         self.ensure_one()
         Plan = self.env["budget.expense.plan"]
         required = self.env["budget.expense.required.department"].search(
             [("company_id", "=", self.company_id.id)]
         )
         if not required:
-            raise UserError(
-                _("ยังไม่ได้ตั้งค่า 'ส่วนงานที่ต้องทำแผน' — กรุณาตั้งค่าก่อน")
-            )
-        existing = Plan.search([("template_id", "=", self.id)])
-        existing_dept_ids = existing.mapped("department_analytic_id").ids
-        created = Plan
+            raise UserError(_("ยังไม่ได้ตั้งค่า 'ส่วนงานที่ต้องทำแผน' — กรุณาตั้งค่าก่อน"))
+        existing_dept_ids = Plan.search([("template_id", "=", self.id)]).mapped(
+            "department_analytic_id"
+        ).ids
         for req in required:
             if req.department_analytic_id.id in existing_dept_ids:
                 continue
-            created |= Plan.create(
+            Plan.create(
                 {
                     "template_id": self.id,
                     "department_analytic_id": req.department_analytic_id.id,
                 }
             )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("เอกสารแผนเบิกจ่าย"),
-            "res_model": "budget.expense.plan",
-            "view_mode": "tree,form",
-            "domain": [("template_id", "=", self.id)],
-            "context": {"default_template_id": self.id},
-        }
+        return self.action_view_plans()
 
     def action_view_plans(self):
         self.ensure_one()
@@ -124,13 +126,53 @@ class BudgetExpenseTemplate(models.Model):
         }
 
 
-class BudgetExpenseTemplateLine(models.Model):
-    """A Template row = (Activity, Fund, Budget Line). Plan amounts key to this
-    row's id (stable id, ADR-0002), so editing the row re-labels existing
-    amounts and archiving it (``active=False``) soft-hides them for audit."""
+class BudgetExpenseTemplateFund(models.Model):
+    """Fund composition: which รายการงบ (Budget Lines) appear under a กองทุน."""
 
-    _name = "budget.expense.template.line"
-    _description = "Expense Plan Template Line"
+    _name = "budget.expense.template.fund"
+    _description = "Expense Plan Template Fund"
+    _order = "sequence, id"
+
+    template_id = fields.Many2one(
+        comodel_name="budget.expense.template",
+        string="แม่แบบ",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    sequence = fields.Integer(default=10)
+    fund_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="กองทุน",
+        required=True,
+        domain="[('root_plan_id.code', '=', 'funds')]",
+    )
+    budget_line_ids = fields.Many2many(
+        comodel_name="budget.expense.line",
+        string="รายการงบ",
+    )
+    display_name = fields.Char(compute="_compute_display_name")
+    company_id = fields.Many2one(related="template_id.company_id", store=True)
+
+    _sql_constraints = [
+        (
+            "unique_fund",
+            "unique(template_id, fund_analytic_id)",
+            "กองทุนนี้ถูกตั้งค่าในแม่แบบแล้ว",
+        ),
+    ]
+
+    @api.depends("fund_analytic_id")
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = rec.fund_analytic_id.display_name
+
+
+class BudgetExpenseTemplateActivity(models.Model):
+    """Activity composition: which กองทุน apply under a ด้าน/แผนงาน/กิจกรรม."""
+
+    _name = "budget.expense.template.activity"
+    _description = "Expense Plan Template Activity"
     _order = "sequence, id"
 
     template_id = fields.Many2one(
@@ -147,39 +189,23 @@ class BudgetExpenseTemplateLine(models.Model):
         required=True,
         domain="[('root_plan_id.code', '=', 'activities')]",
     )
-    fund_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
+    fund_ids = fields.Many2many(
+        comodel_name="budget.expense.template.fund",
         string="กองทุน",
-        required=True,
-        domain="[('root_plan_id.code', '=', 'funds')]",
-    )
-    budget_line_id = fields.Many2one(
-        comodel_name="budget.expense.line",
-        string="รายการงบ",
-        required=True,
-        ondelete="restrict",
-    )
-    category_id = fields.Many2one(
-        related="budget_line_id.category_id", store=True, string="หมวดงบรายจ่าย"
+        domain="[('template_id', '=', parent.id)]",
     )
     display_name = fields.Char(compute="_compute_display_name")
-    active = fields.Boolean(default=True)
     company_id = fields.Many2one(related="template_id.company_id", store=True)
 
     _sql_constraints = [
         (
-            "unique_row",
-            "unique(template_id, activity_analytic_id, fund_analytic_id, budget_line_id)",
-            "แถวนี้ (กิจกรรม/กองทุน/รายการงบ) มีอยู่แล้วในแม่แบบ",
+            "unique_activity",
+            "unique(template_id, activity_analytic_id)",
+            "ด้าน/แผนงานนี้ถูกตั้งค่าในแม่แบบแล้ว",
         ),
     ]
 
-    @api.depends("activity_analytic_id", "fund_analytic_id", "budget_line_id")
+    @api.depends("activity_analytic_id")
     def _compute_display_name(self):
-        for line in self:
-            parts = [
-                line.activity_analytic_id.display_name,
-                line.fund_analytic_id.display_name,
-                line.budget_line_id.name,
-            ]
-            line.display_name = " / ".join(p for p in parts if p)
+        for rec in self:
+            rec.display_name = rec.activity_analytic_id.display_name

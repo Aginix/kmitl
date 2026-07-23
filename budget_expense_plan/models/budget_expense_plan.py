@@ -5,9 +5,11 @@ from odoo.exceptions import UserError, ValidationError
 
 class BudgetExpensePlan(models.Model):
     """Plan Document (เอกสารแผนเบิกจ่าย) -- a ส่วนงาน's holder of monthly แผน
-    figures for one (แหล่งเงิน, ปีงบ). Carries state/ownership/access; its grid
-    is rendered live from the Template (not snapshotted, ADR-0002). Actual (ผล)
-    is derived from budget consume (ADR-0003), never stored here.
+    figures for one (แหล่งเงิน, ปีงบ). The unit *chooses its own activities*
+    (``activity_ids``, from the Template's configured activities); the funds and
+    budget lines under each come from the Template (ADR-0004). Its grid is
+    rendered live (not snapshotted, ADR-0002); Actual (ผล) is derived from budget
+    consume (ADR-0003).
 
     State: draft -> confirmed (ส่วนงาน submits) -> active (central approves and
     locks; แผน no longer editable).
@@ -47,6 +49,12 @@ class BudgetExpensePlan(models.Model):
         domain="[('root_plan_id.code', '=', 'departments')]",
         tracking=True,
     )
+    activity_ids = fields.Many2many(
+        comodel_name="budget.expense.template.activity",
+        string="ด้าน/แผนงานที่จัดทำ",
+        domain="[('template_id', '=', template_id)]",
+        help="เลือกด้าน/แผนงานที่ส่วนงานนี้จะจัดทำแผน กองทุน/รายการงบมาจากแม่แบบ",
+    )
     state = fields.Selection(
         selection=[
             ("draft", "ร่าง"),
@@ -63,18 +71,14 @@ class BudgetExpensePlan(models.Model):
         inverse_name="plan_id",
         string="ยอดแผนรายเดือน",
     )
-    amount_total = fields.Monetary(
-        compute="_compute_amount_total", string="ยอดแผนรวม"
-    )
+    amount_total = fields.Monetary(compute="_compute_amount_total", string="ยอดแผนรวม")
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
         required=True,
         default=lambda self: self.env.company,
     )
-    currency_id = fields.Many2one(
-        related="company_id.currency_id", string="Currency"
-    )
+    currency_id = fields.Many2one(related="company_id.currency_id", string="Currency")
 
     _sql_constraints = [
         (
@@ -132,12 +136,15 @@ class BudgetExpensePlan(models.Model):
 
 
 class BudgetExpensePlanAmount(models.Model):
-    """A sparse monthly plan cell: (Plan Document, Template row, month) -> แผน
-    amount. Only filled cells exist. Locked once the Plan Document is active."""
+    """A sparse monthly plan cell keyed by the dimension tuple
+    (Plan Document, Activity, Fund, Budget Line, month) -> แผน amount (ADR-0004).
+    Tuple keying means amounts persist through Template edits and the unit
+    de/selecting activities (a hidden row's numbers reappear when re-added).
+    Locked once the Plan Document is active."""
 
     _name = "budget.expense.plan.amount"
     _description = "Expense Plan Monthly Amount"
-    _order = "template_line_id, month"
+    _order = "activity_analytic_id, fund_analytic_id, budget_line_id, month"
 
     plan_id = fields.Many2one(
         comodel_name="budget.expense.plan",
@@ -146,12 +153,14 @@ class BudgetExpensePlanAmount(models.Model):
         ondelete="cascade",
         index=True,
     )
-    template_line_id = fields.Many2one(
-        comodel_name="budget.expense.template.line",
-        string="แถวแม่แบบ",
-        required=True,
-        ondelete="cascade",
-        index=True,
+    activity_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account", string="ด้าน/แผนงาน", required=True
+    )
+    fund_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account", string="กองทุน", required=True
+    )
+    budget_line_id = fields.Many2one(
+        comodel_name="budget.expense.line", string="รายการงบ", required=True
     )
     month = fields.Integer(string="เดือน", required=True)
     amount = fields.Monetary(string="ยอดแผน", currency_field="currency_id")
@@ -161,8 +170,8 @@ class BudgetExpensePlanAmount(models.Model):
     _sql_constraints = [
         (
             "unique_cell",
-            "unique(plan_id, template_line_id, month)",
-            "มียอดแผนของแถว/เดือนนี้อยู่แล้ว",
+            "unique(plan_id, activity_analytic_id, fund_analytic_id, budget_line_id, month)",
+            "มียอดแผนของช่องนี้อยู่แล้ว",
         ),
         (
             "month_range",
@@ -175,9 +184,7 @@ class BudgetExpensePlanAmount(models.Model):
     def _check_plan_not_locked(self):
         for rec in self:
             if rec.plan_id.state == "active":
-                raise ValidationError(
-                    _("แผนอยู่ในสถานะ 'แผนใช้งาน' (ล็อก) แก้ไขยอดไม่ได้")
-                )
+                raise ValidationError(_("แผนอยู่ในสถานะ 'แผนใช้งาน' (ล็อก) แก้ไขยอดไม่ได้"))
 
     def write(self, vals):
         self._assert_unlocked()
@@ -189,6 +196,4 @@ class BudgetExpensePlanAmount(models.Model):
 
     def _assert_unlocked(self):
         if any(rec.plan_id.state == "active" for rec in self):
-            raise UserError(
-                _("แผนอยู่ในสถานะ 'แผนใช้งาน' (ล็อก) แก้ไขยอดไม่ได้")
-            )
+            raise UserError(_("แผนอยู่ในสถานะ 'แผนใช้งาน' (ล็อก) แก้ไขยอดไม่ได้"))
