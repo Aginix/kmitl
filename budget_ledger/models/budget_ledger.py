@@ -308,12 +308,14 @@ class BudgetLedger(models.AbstractModel):
         ).strftime("%H:%M")
 
     def _row_dims(self, line):
-        """The six dimensions as full-hierarchy ``complete_name`` labels."""
+        """The six dimensions as ``[code] complete_name`` labels (code + full
+        hierarchy), mirroring the analytic account's standard name_get."""
 
         def label(rec):
             if not rec:
                 return ""
-            return rec.complete_name or rec.display_name or rec.name or ""
+            name = rec.complete_name or rec.name or ""
+            return "[%s] %s" % (rec.code, name) if rec.code else name
 
         return {
             "department": label(line.department_analytic_id),

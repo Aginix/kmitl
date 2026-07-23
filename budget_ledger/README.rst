@@ -13,8 +13,8 @@ Each row is one ``budget.move.line`` normalised to a single "kind":
 * **รับโอน / โอนออก** (transfer in / out) — การโอนงบ, แยกทิศตามเครื่องหมาย
 * **เบิกจ่าย** (consume) — การใช้จ่ายจริง
 
-Rows carry all six financial dimensions inline as full-hierarchy
-(``complete_name``) chips, a signed amount, a record time, and a running
+Rows carry all six financial dimensions inline as ``[code] complete_name``
+chips (code + full hierarchy), a signed amount, a record time, and a running
 **งบคงเหลือ (ทางบัญชี)** = งบปัจจุบัน − เบิกจ่ายสะสม. The report covers the
 **expense budget only**.
 

@@ -90,7 +90,8 @@ audit detail (เลขที่ใบ / เอกสารต้นทาง / 
 After the first UAT:
 - **Expense-only** — revenue budget is out of scope; the budget-type toggle was
   removed and the backend forces `expense`.
-- **Dimension chips** show the full hierarchy (`complete_name`), not just the leaf.
+- **Dimension chips** show `[code] complete_name` — code + full hierarchy, not just
+  the leaf (mirrors the analytic account's standard name_get).
 - **Record time** — `date` is a `fields.Date` (no time), so each row also surfaces
   the `create_date` clock time (user tz): when the entry was recorded.
 - **Excel export** (`report_xlsx`) — `budget.ledger.action_export_xlsx(fy, options)`
