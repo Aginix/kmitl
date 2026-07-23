@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_budget_expense_line_tree" model="ir.ui.view">
+        <field name="name">budget.expense.line.tree</field>
+        <field name="model">budget.expense.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="category_id" />
+                <field name="name" />
+                <field name="expr" />
+                <field name="active" invisible="1" />
+                <field name="company_id" groups="base.group_multi_company" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_budget_expense_line_form" model="ir.ui.view">
+        <field name="name">budget.expense.line.form</field>
+        <field name="model">budget.expense.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon" title="Archived" bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="category_id" />
+                            <field name="sequence" />
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company" />
+                            <field name="active" invisible="1" />
+                        </group>
+                    </group>
+                    <group string="สูตรดึงผลเบิกจ่ายจริง">
+                        <field name="expr" nolabel="1" placeholder="เช่น  A['52400%']  หรือ  A['5101010038'] + A['5101010040']" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_budget_expense_line" model="ir.actions.act_window">
+        <field name="name">รายการงบ (แผนเบิกจ่าย)</field>
+        <field name="res_model">budget.expense.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">เพิ่มรายการงบสำหรับแผนเบิกจ่าย</p>
+            <p>แต่ละรายการกำหนดชื่อ หมวดงบรายจ่าย และสูตร <code>A['รหัส']</code> เพื่อดึงผลเบิกจ่ายจริง</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_budget_expense_plan_tree" model="ir.ui.view">
+        <field name="name">budget.expense.plan.tree</field>
+        <field name="model">budget.expense.plan</field>
+        <field name="arch" type="xml">
+            <tree create="false"
+                decoration-muted="state == 'draft'" decoration-bf="state == 'active'">
+                <field name="name" />
+                <field name="fiscal_year_id" />
+                <field name="source_analytic_id" />
+                <field name="department_analytic_id" />
+                <field name="amount_total" widget="monetary" sum="รวม" />
+                <field name="currency_id" invisible="1" />
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'confirmed'"
+                    decoration-success="state == 'active'" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_budget_expense_plan_form" model="ir.ui.view">
+        <field name="name">budget.expense.plan.form</field>
+        <field name="model">budget.expense.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_open_grid" type="object" string="กรอกแผน"
+                        class="oe_highlight" icon="fa-table" />
+                    <button name="action_confirm" type="object" string="ยืนยันแผน"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <button name="action_activate" type="object" string="อนุมัติ/ล็อกแผน"
+                        class="oe_highlight" groups="budget.group_budget_manager"
+                        attrs="{'invisible': [('state', '!=', 'confirmed')]}" />
+                    <button name="action_reset_to_draft" type="object" string="กลับเป็นร่าง"
+                        groups="budget.group_budget_manager"
+                        attrs="{'invisible': [('state', '=', 'draft')]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,active" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1" /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="template_id"
+                                attrs="{'readonly': [('id', '!=', False)]}"
+                                options="{'no_create': True}" />
+                            <field name="department_analytic_id"
+                                attrs="{'readonly': [('id', '!=', False)]}"
+                                options="{'no_create': True}" />
+                        </group>
+                        <group>
+                            <field name="fiscal_year_id" />
+                            <field name="source_analytic_id" />
+                            <field name="amount_total" widget="monetary" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="company_id" groups="base.group_multi_company" />
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_budget_expense_plan_search" model="ir.ui.view">
+        <field name="name">budget.expense.plan.search</field>
+        <field name="model">budget.expense.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="department_analytic_id" />
+                <field name="template_id" />
+                <filter name="filter_draft" string="ร่าง" domain="[('state', '=', 'draft')]" />
+                <filter name="filter_confirmed" string="ยืนยันแล้ว" domain="[('state', '=', 'confirmed')]" />
+                <filter name="filter_active" string="แผนใช้งาน" domain="[('state', '=', 'active')]" />
+                <group expand="0" string="จัดกลุ่มตาม">
+                    <filter name="group_fy" string="ปีงบประมาณ" context="{'group_by': 'fiscal_year_id'}" />
+                    <filter name="group_source" string="แหล่งเงิน" context="{'group_by': 'source_analytic_id'}" />
+                    <filter name="group_department" string="ส่วนงาน" context="{'group_by': 'department_analytic_id'}" />
+                    <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_budget_expense_plan" model="ir.actions.act_window">
+        <field name="name">แผนการเบิกจ่าย</field>
+        <field name="res_model">budget.expense.plan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_expense_plan_search" />
+    </record>
+
+</odoo>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="budget_expense_plan.ExpensePlanGrid" owl="1">
+        <Layout display="{ controlPanel: {} }">
+            <t t-set-slot="control-panel-bottom-left">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <button class="btn btn-primary" t-att-disabled="!isDirty or !state.data.editable"
+                        t-on-click="save">บันทึกแผน</button>
+                    <button class="btn btn-secondary" t-att-disabled="!isDirty"
+                        t-on-click="discard">ยกเลิกการแก้ไข</button>
+                    <div class="form-check form-switch ms-2">
+                        <input type="checkbox" class="form-check-input" id="epg_show_actual"
+                            t-att-checked="state.showActual"
+                            t-on-change="() => this.state.showActual = !this.state.showActual" />
+                        <label class="form-check-label" for="epg_show_actual">แสดงผลเบิกจ่ายจริง</label>
+                    </div>
+                    <button class="btn btn-link" t-on-click="exportXlsx">
+                        <i class="fa fa-file-excel-o me-1" />Export
+                    </button>
+                    <span t-if="!state.data.editable" class="badge text-bg-secondary">ล็อก (แผนใช้งาน)</span>
+                </div>
+            </t>
+
+            <div class="o_epg_root p-3">
+                <h4 class="o_epg_title mb-3" t-esc="state.data.name" />
+                <div class="o_epg_scroll">
+                    <table class="table table-sm table-bordered o_epg_table">
+                        <thead>
+                            <tr>
+                                <th class="o_epg_label">รายการ (กองทุน / รายการงบ)</th>
+                                <th t-foreach="state.data.months" t-as="mo" t-key="mo.m"
+                                    t-att-class="'o_epg_q' + mo.quarter" t-esc="mo.label" />
+                                <th class="o_epg_total">รวม</th>
+                            </tr>
+                        </thead>
+                        <tbody t-foreach="groups" t-as="grp" t-key="grp.activity_id">
+                            <tr class="o_epg_group">
+                                <td t-att-colspan="state.data.months.length + 2">
+                                    <t t-esc="grp.activity_name" />
+                                </td>
+                            </tr>
+                            <t t-foreach="grp.rows" t-as="row" t-key="row.template_line_id">
+                                <tr class="o_epg_plan">
+                                    <td class="o_epg_label" t-att-rowspan="state.showActual ? 2 : 1">
+                                        <div class="fw-bold" t-esc="row.budget_line_name" />
+                                        <div class="text-muted small">
+                                            <t t-esc="row.fund_name" /> · <t t-esc="row.category_name" />
+                                        </div>
+                                    </td>
+                                    <t t-foreach="state.data.months" t-as="mo" t-key="mo.m">
+                                        <td class="o_epg_cell">
+                                            <span t-if="state.showActual" class="o_epg_tag">แผน</span>
+                                            <input type="number" step="0.01" class="o_epg_input"
+                                                t-att-value="row.plan[mo.m]"
+                                                t-att-disabled="!state.data.editable"
+                                                t-on-change="(ev) => this.onAmountInput(row, mo.m, ev)" />
+                                        </td>
+                                    </t>
+                                    <td class="o_epg_total" t-esc="formatAmount(rowTotal(row, 'plan'))" />
+                                </tr>
+                                <tr t-if="state.showActual" class="o_epg_actual">
+                                    <t t-foreach="state.data.months" t-as="mo" t-key="mo.m">
+                                        <td class="o_epg_cell text-muted">
+                                            <span class="o_epg_tag">ผล</span>
+                                            <span t-esc="formatAmount(row.actual[mo.m])" />
+                                        </td>
+                                    </t>
+                                    <td class="o_epg_total text-muted" t-esc="formatAmount(rowTotal(row, 'actual'))" />
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr class="o_epg_grand">
+                                <td class="o_epg_label">รวมทั้งหมด (แผน)</td>
+                                <td t-foreach="state.data.months" t-as="mo" t-key="mo.m"
+                                    class="o_epg_total" t-esc="formatAmount(monthTotal(mo.m, 'plan'))" />
+                                <td class="o_epg_total" t-esc="formatAmount(grandTotal('plan'))" />
+                            </tr>
+                            <tr t-if="state.showActual" class="o_epg_grand text-muted">
+                                <td class="o_epg_label">รวมทั้งหมด (ผล)</td>
+                                <td t-foreach="state.data.months" t-as="mo" t-key="mo.m"
+                                    class="o_epg_total" t-esc="formatAmount(monthTotal(mo.m, 'actual'))" />
+                                <td class="o_epg_total" t-esc="formatAmount(grandTotal('actual'))" />
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </Layout>
+    </t>
+
+</templates>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_budget_expense_plan_form_ou" model="ir.ui.view">
+        <field name="name">budget.expense.plan.form.operating_unit</field>
+        <field name="model">budget.expense.plan</field>
+        <field name="inherit_id" ref="budget_expense_plan.view_budget_expense_plan_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <field name="operating_unit_id" widget="selection"
+                    groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_budget_expense_plan_tree_ou" model="ir.ui.view">
+        <field name="name">budget.expense.plan.tree.operating_unit</field>
+        <field name="model">budget.expense.plan</field>
+        <field name="inherit_id" ref="budget_expense_plan.view_budget_expense_plan_tree" />
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="operating_unit_id"
+                    groups="operating_unit.group_multi_operating_unit" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_budget_expense_plan_search_ou" model="ir.ui.view">
+        <field name="name">budget.expense.plan.search.operating_unit</field>
+        <field name="model">budget.expense.plan</field>
+        <field name="inherit_id" ref="budget_expense_plan.view_budget_expense_plan_search" />
+        <field name="arch" type="xml">
+            <filter name="group_department" position="after">
+                <filter name="group_operating_unit" string="Operating Unit"
+                    context="{'group_by': 'operating_unit_id'}"
+                    groups="operating_unit.group_multi_operating_unit" />
+            </filter>
+        </field>
+    </record>
+
+</odoo>

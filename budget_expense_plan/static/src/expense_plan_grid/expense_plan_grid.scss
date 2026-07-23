@@ -1,0 +1,82 @@
+.o_epg_root {
+    .o_epg_scroll {
+        overflow-x: auto;
+    }
+
+    .o_epg_table {
+        min-width: max-content;
+        font-size: 13px;
+
+        th,
+        td {
+            text-align: right;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        th.o_epg_label,
+        td.o_epg_label {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            background-color: #fff;
+            z-index: 1;
+            min-width: 220px;
+        }
+
+        thead th {
+            text-align: center;
+            background-color: #f0f4f8;
+        }
+
+        .o_epg_group td {
+            background-color: #e7edf3;
+            font-weight: 600;
+            text-align: left;
+            position: sticky;
+            left: 0;
+        }
+
+        .o_epg_cell {
+            padding: 1px 4px;
+        }
+
+        .o_epg_tag {
+            display: inline-block;
+            font-size: 10px;
+            color: #8a94a6;
+            margin-right: 3px;
+        }
+
+        .o_epg_input {
+            width: 92px;
+            text-align: right;
+            border: 1px solid transparent;
+            background: transparent;
+
+            &:focus {
+                border-color: #7c7bad;
+                background: #fff;
+            }
+
+            &:disabled {
+                color: #495057;
+            }
+        }
+
+        .o_epg_actual td {
+            background-color: #fafbfc;
+        }
+
+        .o_epg_total {
+            font-weight: 600;
+            background-color: #f7f9fb;
+        }
+
+        .o_epg_grand td {
+            font-weight: 700;
+            background-color: #eef2f6;
+            border-top: 2px solid #ccc;
+        }
+    }
+}
