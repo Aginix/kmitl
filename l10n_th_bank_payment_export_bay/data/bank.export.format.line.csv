@@ -18,7 +18,7 @@ bay_dtl_03,l10n_th_bank_payment_export_bay.bay_cashlink,42,Originator ID,,3,line
 bay_dtl_04,l10n_th_bank_payment_export_bay.bay_cashlink,43,Receiving Account,,10,line,TRUE,,,,,dynamic,rjust,0,line.sanitize_account_number(line.payment_partner_bank_id.acc_number)
 bay_dtl_05,l10n_th_bank_payment_export_bay.bay_cashlink,44,Payee Name,,20,line,TRUE,,,,,dynamic,ljust,,line.payment_partner_bank_id.acc_holder_name or line.payment_partner_id.display_name
 bay_dtl_06,l10n_th_bank_payment_export_bay.bay_cashlink,45,Amount,,11,line,TRUE,,,,,dynamic,rjust,0,"str(int(round(line.payment_amount * 100, 2)))"
-bay_dtl_07,l10n_th_bank_payment_export_bay.bay_cashlink,46,Filler,,25,line,TRUE,,,,,fixed,ljust,,
+bay_dtl_07,l10n_th_bank_payment_export_bay.bay_cashlink,46,Filler,,26,line,TRUE,,,,,fixed,ljust,,
 bay_dtl_08,l10n_th_bank_payment_export_bay.bay_cashlink,47,Originator ID,,3,line,TRUE,,,,,fixed,ljust,,001
 bay_dtl_09,l10n_th_bank_payment_export_bay.bay_cashlink,48,Value Period,,4,line,TRUE,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%m%y"")"
-bay_dtl_10,l10n_th_bank_payment_export_bay.bay_cashlink,49,Filler,,49,line,TRUE,,,TRUE,,fixed,ljust,,
+bay_dtl_10,l10n_th_bank_payment_export_bay.bay_cashlink,49,Filler,,48,line,TRUE,,,TRUE,,fixed,ljust,,

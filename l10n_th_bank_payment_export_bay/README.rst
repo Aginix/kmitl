@@ -41,22 +41,17 @@ Confirmed characteristics of that sample:
   a ``MMYY`` **Value Period**.
 * Amounts are satang integers (value × 100), zero-padded right-justified.
 
-.. IMPORTANT::
+.. NOTE::
 
-   **This layout is reconstructed and still needs official spec confirmation.**
+   The layout is **validated byte-for-byte against the real KMITL sample**: the
+   generated HEADER and the (unmasked) first DETAIL record regenerate the sample
+   exactly, 128 bytes each. The detail **Amount** width of **11** and the fixed
+   constants below are therefore confirmed for KMITL's current setup.
 
-   The sample was decoded by byte offset; several constants and one width could
-   not be derived unambiguously and are **pending official Krungsri CashLink
-   Direct Credit upload spec confirmation**:
+   The fixed constants ``712`` (header Code), ``A001`` (header Type Code) and
+   ``001`` (Originator ID) are literals taken from KMITL's real file. They only
+   need re-checking if KMITL's originating company/account with Krungsri
+   changes; a fresh bank test upload should then confirm them.
 
-   * Meaning of the fixed constants ``712`` (header Code), ``A001`` (header Type
-     Code) and ``001`` (Originator ID) — encoded as literals for now.
-   * Exact **Amount** field width in the detail record. One sample line was
-     masked to 10 digits; width was taken as **11** so the record sums to 128.
-   * Whether the header **Originator Acct/Ref** field is the originator bank
-     account number or a batch reference — currently derived from the first
-     line's journal bank account number.
-
-   Before production use, obtain the official *Krungsri CashLink ``PYR128_OUR``
-   upload file layout* (byte-position table) + a fresh, non-masked sample from
-   the bank and validate/adjust the CSV accordingly.
+   The header **Originator Acct/Ref** field is derived from the first line's
+   journal bank account number (matches the sample).

@@ -22,8 +22,8 @@ File layout
 ===========
 
 The layout in ``data/bank.export.format.line.csv`` was **reconstructed from a
-real (but masked / trimmed) KMITL sample file**, not from a public
-specification. Structure:
+real KMITL sample file** and reproduces it **byte-for-byte** (both sample
+detail records regenerate exactly: 123 and 125 bytes). Structure:
 
 * **No header record.** The file is ``N`` detail records followed by a single
   trailer record.
@@ -35,17 +35,22 @@ specification. Structure:
 * Both the detail and trailer records carry a **record code** (``7106`` on
   details, ``9100`` on the trailer) and the 7-digit **originator code**
   (``kbank_company_id``).
-* The final beneficiary-name field is variable length (not padded), so record
-  lengths vary; the fixed part of a detail record is 103 bytes and the trailer
-  is 53 bytes.
+* Each detail is: a 54-byte prefix (running no. + record code + originator +
+  account + amount + date, single-space delimited), a 24-byte **title** field,
+  the variable-length **beneficiary name** (not padded), then a fixed 25-byte
+  reserved field. Record lengths therefore vary with the name. The trailer is
+  53 bytes.
 
-.. IMPORTANT::
+.. NOTE::
 
-   The following items were inferred from the sample and are **pending official
-   K-Cash Connect Plus spec confirmation** before production use:
+   The layout is **validated byte-for-byte against the real KMITL sample**. The
+   fixed codes ``7106`` (detail) / ``9100`` (trailer) and the originator code
+   are taken from that file, so they are correct for KMITL's current setup.
 
-   #. the meaning of the record codes ``7106`` (detail) and ``9100`` (trailer);
-   #. the title/prefix field — its width (assumed 49) and source
-      (``partner.title.shortcut`` / ``name``);
-   #. the source of the 7-digit originator code (``kbank_company_id``);
-   #. validation of a generated file against a bank test upload.
+   Remaining data/config dependencies (not layout issues):
+
+   #. the **title** field value comes from ``partner.title.shortcut`` /
+      ``name`` — make sure partners carry the Thai title (e.g. ``นส.``, ``นาง``)
+      so it renders like the sample;
+   #. if KMITL's KBANK company/originator or product changes, re-check the
+      record codes and originator code against a fresh bank test upload.

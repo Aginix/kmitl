@@ -11,8 +11,10 @@ Both layouts are written in the TIS-620/cp874 encoding required by the bank.
 
 .. note::
 
-   The ``ktb_hdt`` layout was reconstructed from a masked/trimmed sample.
-   A few detail/trailer field widths (notably the detail amount width and the
-   trailer count/amount breakdown) still need to be confirmed against the
-   official KTB file-format specification. Fields awaiting confirmation are
-   marked with ``TODO`` in ``data/bank.export.format.line.csv``.
+   The ``ktb_hdt`` HEADER and DETAIL records are **validated byte-for-byte
+   against the real KMITL sample** (128 bytes each; the detail amount width of
+   13 was confirmed by reproducing the sample amount exactly). Only the TRAILER
+   record's internal count/amount field breakdown could not be fully confirmed
+   because the sample trailer reflects the untrimmed original batch; those
+   fields are marked ``TODO`` in ``data/bank.export.format.line.csv`` and should
+   be checked against a bank test upload.
