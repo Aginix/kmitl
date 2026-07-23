@@ -147,6 +147,13 @@
                     type="object"
                     groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
+                <button
+                    name="button_return"
+                    states="to_submit"
+                    string="Return"
+                    type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
+                />
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">

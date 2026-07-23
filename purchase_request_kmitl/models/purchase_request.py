@@ -9,10 +9,21 @@ class PurchaseRequest(models.Model):
             ("to_submit", "To Submit"),
             ("to_approve",),
             ("cancelled", "Cancelled"),
+            ("returned", "Returned"),
         ],
-        ondelete={"to_submit": "set default", "cancelled": "set default"},
+        ondelete={
+            "to_submit": "set default",
+            "cancelled": "set default",
+            "returned": "set default",
+        },
     )
 
+    line_ids = fields.One2many(
+        states={
+            "draft": [("readonly", False)],
+            "returned": [("readonly", False)],
+        },
+    )
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
         string="Procurement Type",
@@ -191,3 +202,22 @@ class PurchaseRequest(models.Model):
         }
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
         self.write({"state": "cancelled"})
+
+    def button_return(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับคำขอ (พ.1)"),
+            "res_model": "purchase.request.return.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_request_id": self.id},
+        }
+
+    def _action_do_return(self, reason):
+        self.ensure_one()
+        body = _(
+            "ตีกลับคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s"
+        ) % {"pr": self.name, "reason": reason}
+        self.message_post(body=body, subtype_xmlid="mail.mt_note")
+        self.write({"state": "returned"})

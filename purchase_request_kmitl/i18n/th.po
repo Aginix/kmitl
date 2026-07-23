@@ -1500,20 +1500,18 @@ msgid "Request status"
 msgstr ""
 
 #. module: purchase_request_kmitl
-#: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_return_wizard
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
-msgid "Return Purchase Request"
-msgstr "ตีกลับคำขอซื้อ"
-
-#. module: purchase_request_kmitl
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_return_wizard__reason
-msgid "Return Reason"
-msgstr "เหตุผลในการตีกลับ"
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_request_return_wizard
+msgid "Purchase Request Return Wizard"
+msgstr "Wizard ตีกลับคำขอ (พ.1)"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_return_wizard_form
 msgid "Return"
+msgstr "ตีกลับ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__returned
+msgid "Returned"
 msgstr "ตีกลับ"
 
 #. module: purchase_request
@@ -2274,10 +2272,3 @@ msgstr "สำหรับงานก่อสร้าง"
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_submit
 msgid "To Submit"
 msgstr "รอส่งขอความเห็นชอบให้จัดหา"
-
-#. module: purchase_request_kmitl
-#. odoo-python
-#: code:addons/purchase_request_kmitl/wizards/purchase_request_return_wizard.py:0
-#, python-format
-msgid "Purchase request returned. Reason: %s"
-msgstr "แบบขอให้จัดหา (พ.1) ถูกตีกลับ. เหตุผล: %s"
