@@ -15,25 +15,37 @@ Usage
 #. Create vendor payments (Manual, bank journal) as usual.
 #. From the Payments list, use *Create Bank Payment Export* (or create a
    ``bank.payment.export`` and *Get All Payments*).
-#. Select bank **KBANK**, fill the KBANK configuration (Company ID, Sender Name,
-   Service Type) and the Effective Date, then *Confirm* and *Export Text File*.
+#. Select bank **KBANK**, fill the KBANK configuration (Originator Code) and the
+   Effective Date, then *Confirm* and *Export Text File*.
+
+File layout
+===========
+
+The layout in ``data/bank.export.format.line.csv`` was **reconstructed from a
+real (but masked / trimmed) KMITL sample file**, not from a public
+specification. Structure:
+
+* **No header record.** The file is ``N`` detail records followed by a single
+  trailer record.
+* Fields within a record are **single-space delimited**; numeric fields are
+  zero-padded and amounts are expressed in *satang* (baht × 100).
+* Dates use ``YYMMDD``. Beneficiary account numbers are 10 digits.
+* The file is encoded **cp874 (TIS-620)** with ``CRLF`` line endings and a
+  trailing ``CRLF``.
+* Both the detail and trailer records carry a **record code** (``7106`` on
+  details, ``9100`` on the trailer) and the 7-digit **originator code**
+  (``kbank_company_id``).
+* The final beneficiary-name field is variable length (not padded), so record
+  lengths vary; the fixed part of a detail record is 103 bytes and the trailer
+  is 53 bytes.
 
 .. IMPORTANT::
 
-   **The file layout in** ``data/bank.export.format.line.csv`` **is a DRAFT.**
+   The following items were inferred from the sample and are **pending official
+   K-Cash Connect Plus spec confirmation** before production use:
 
-   Kasikornbank does not publish the byte-level file specification openly. The
-   shipped layout (Header ``HDCT``, 178 bytes / Detail ``D``, 487 bytes, amounts
-   in satang, ``YYMMDD`` dates, 10-digit same-bank account numbers) was
-   reconstructed from the public reverse-engineered library
-   `MicroBenz/kbank-payroll.js <https://github.com/MicroBenz/kbank-payroll.js>`_
-   and models KBANK's **same-bank K-Cash Connect Plus direct credit**.
-
-   Before production use you **must**:
-
-   #. obtain the official *K-Cash Connect Plus / K-Direct Credit File Format
-      Specification* from KBANK (relationship manager / K-BIZ Contact Center),
-   #. confirm the product used (same-bank direct credit vs interbank SMART — the
-      latter needs additional bank/branch code fields, like the KTB module),
-   #. validate a generated file against a real sample and a bank test upload,
-      then adjust the layout CSV (and add config fields) accordingly.
+   #. the meaning of the record codes ``7106`` (detail) and ``9100`` (trailer);
+   #. the title/prefix field — its width (assumed 49) and source
+      (``partner.title.shortcut`` / ``name``);
+   #. the source of the 7-digit originator code (``kbank_company_id``);
+   #. validation of a generated file against a bank test upload.

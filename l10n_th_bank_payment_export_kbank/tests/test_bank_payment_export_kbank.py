@@ -50,11 +50,21 @@ class TestBankPaymentExportKBANK(CommonBankPaymentExport):
             text, "Demo Text File. You must config `Bank Export Format` First."
         )
         records = [rec for rec in text.split("\r\n") if rec]
-        # First record is the HDCT header (178 chars); the rest are D details (487)
-        self.assertEqual(records[0][:4], "HDCT")
-        self.assertEqual(len(records[0]), 178)
-        for detail in records[1:]:
-            self.assertEqual(detail[0], "D")
-            self.assertEqual(len(detail), 487)
-        # Number of detail records equals the number of exported payment lines
-        self.assertEqual(len(records) - 1, len(bank_payment.export_line_ids))
+        # Layout reconstructed from the real KMITL sample: N space-delimited
+        # detail records followed by a single trailer (there is no header).
+        details, trailer = records[:-1], records[-1]
+        # One detail record per exported payment line.
+        self.assertEqual(len(details), len(bank_payment.export_line_ids))
+        for idx, detail in enumerate(details):
+            # Running number: 6-digit, sequential from 1.
+            self.assertEqual(detail[:6], str(idx + 1).zfill(6))
+            # Record code 7106 marks a detail record.
+            self.assertEqual(detail[7:11], "7106")
+            # Fixed part before the variable-length name field is 103 chars.
+            self.assertGreaterEqual(len(detail), 103)
+        # Trailer: 53 chars, code 9100, record count = number of details.
+        self.assertEqual(len(trailer), 53)
+        self.assertEqual(trailer[7:11], "9100")
+        self.assertEqual(trailer[:6], str(len(details)).zfill(6))
+        # The file must encode cleanly to the bank's TIS-620/cp874 encoding.
+        text.encode("cp874")
