@@ -65,7 +65,7 @@
                             <tbody>
                                 <tr>
                                     <td />
-                                    <td colspan="5" class="fw-bolder">
+                                    <td colspan="4" class="fw-bolder">
                                         <span t-out="o.category_id.name" />
                                         <span t-if="o.description" class="fw-normal ms-1" t-out="o.description" />
                                     </td>

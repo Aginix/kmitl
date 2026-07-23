@@ -172,9 +172,9 @@
                                 <div class="row mt-3 mb-1">
                                     <div class="col">
                                         <strong>ผู้รับเงิน: <span t-out="recipient.name" /></strong>
-                                        <t t-set="rec_bank" t-value="rec_allocs.mapped('partner_bank_id')[:1]" />
-                                        <span t-if="rec_bank" class="ms-3">ธนาคาร <span t-out="rec_bank.bank_id.name" /></span>
-                                        <span t-if="rec_bank" class="ms-2">เลขที่บัญชี <span t-out="rec_allocs[0]._get_masked_acc_number()" /></span>
+                                        <t t-set="rec_bank_alloc" t-value="rec_allocs.filtered('partner_bank_id')[:1]" />
+                                        <span t-if="rec_bank_alloc" class="ms-3">ธนาคาร <span t-out="rec_bank_alloc.partner_bank_id.bank_id.name" /></span>
+                                        <span t-if="rec_bank_alloc" class="ms-2">เลขที่บัญชี <span t-out="rec_bank_alloc._get_masked_acc_number()" /></span>
                                     </div>
                                 </div>
                                 <table class="table table-bordered table-sm mb-2">

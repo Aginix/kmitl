@@ -692,7 +692,9 @@ class ApprovalRequest(models.Model):
             if not rec.allocation_ids:
                 continue
             cap = rec.budget_commitment_amount or rec.total_amount
-            if cap and rec.total_actual_amount > cap:
+            if cap and rec.currency_id.compare_amounts(
+                rec.total_actual_amount, cap
+            ) > 0:
                 raise ValidationError(
                     _(
                         "ยอดค่าใช้จ่ายจริง (%(actual)s) เกินงบที่อนุมัติ/จองไว้ (%(cap)s)"

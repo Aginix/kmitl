@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class ApprovalRequestAllocation(models.Model):
@@ -91,6 +92,44 @@ class ApprovalRequestAllocation(models.Model):
         currency_field="currency_id",
         required=True,
     )
+
+    # Structural fields drive the disbursement built from this allocation; once
+    # the request leaves `actual` they may no longer change (the correction flow
+    # only touches the bank — see is_correction). Clerical fields stay writable.
+    _STRUCTURAL_FIELDS = {
+        "request_id",
+        "partner_id",
+        "product_id",
+        "amount",
+        "payment_type",
+    }
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            request = self.env["approval.request"].browse(vals.get("request_id"))
+            if request and not request.is_actual_editable:
+                raise UserError(
+                    _("ไม่สามารถเพิ่มรายการค่าใช้จ่ายจริงในสถานะนี้")
+                )
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if self._STRUCTURAL_FIELDS & set(vals):
+            for rec in self:
+                if not rec.request_id.is_actual_editable:
+                    raise UserError(
+                        _("ไม่สามารถแก้ไขรายการค่าใช้จ่ายจริงในสถานะนี้")
+                    )
+        return super().write(vals)
+
+    def unlink(self):
+        for rec in self:
+            if not rec.request_id.is_actual_editable:
+                raise UserError(
+                    _("ไม่สามารถลบรายการค่าใช้จ่ายจริงในสถานะนี้")
+                )
+        return super().unlink()
 
     @api.depends("request_id.participant_ids.partner_id")
     def _compute_allowed_recipient_ids(self):
