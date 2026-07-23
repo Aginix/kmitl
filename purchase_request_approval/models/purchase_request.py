@@ -45,7 +45,25 @@ class PurchaseRequest(models.Model):
             "date_approved": False,
             "assigned_to": False,
             "state": "draft",
-            "validation_status": "no"
+            "validation_status": "no",
+            "title": self.title,
+            "description": self.description,
+            "procurement_type_id": self.procurement_type_id.id,
+            "procurement_method_id": self.procurement_method_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "estimated_cost": self.estimated_cost,
+            "payment_type": self.payment_type,
+            "line_ids": [
+                (0, 0, {
+                    "product_id": line.product_id.id,
+                    "name": line.name,
+                    "product_qty": line.product_qty,
+                    "product_uom_id": line.product_uom_id.id,
+                    "price_unit": line.price_unit,
+                    "estimated_cost": line.estimated_cost,
+                })
+                for line in self.line_ids
+            ],
         }
 
     def button_create_approval(self):
@@ -194,10 +212,16 @@ class PurchaseRequest(models.Model):
 
     def _create_purchase_order_from_approval(self):
         self.ensure_one()
+        approval = self.request_approval_ids.filtered(
+            lambda a: a.state == "approved"
+        )[:1]
         wizard = (
             self.env["purchase.request.line.make.purchase.order"]
             .with_context(
-                active_model="purchase.request", active_ids=self.ids, active_id=self.id
+                active_model="purchase.request",
+                active_ids=self.ids,
+                active_id=self.id,
+                approval_id=approval.id,
             )
             .create({"supplier_id": self.partner_id.id})
         )

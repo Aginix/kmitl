@@ -7,8 +7,14 @@ from odoo.exceptions import UserError, ValidationError
 
 class PurchaseRequestApproval(models.Model):
     _name = "purchase.request.approval"
-    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "tier.validation", "sarabun.document.mixin"]
-    _inherits = {"purchase.request": "request_id"}
+    _inherit = [
+        "mail.thread",
+        "mail.activity.mixin",
+        "portal.mixin",
+        "thai.date.mixin",
+        "tier.validation",
+        "sarabun.document.mixin",
+    ]
 
     _description = "Purchase Request Approval"
     _order = "date_start desc, name desc"
@@ -98,17 +104,71 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+    requesting_department_id = fields.Many2one(
+        "hr.department", string="Department", tracking=True
+    )
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 
-    # _sql_constraints = [
-    #     (
-    #         "request_id_uniq",
-    #         "unique(request_id)",
-    #         _("A purchase approval already exists!"),
-    #     )
-    # ]
+    main_sarabun_document_id = fields.Many2one(
+        comodel_name="sarabun.document",
+        string="Main Sarabun Document",
+        copy=False,
+    )
+
+    # == Own fields (copied from purchase.request on creation) ==
+    title = fields.Char(string="Title")
+    description = fields.Text(string="Description")
+    procurement_type_id = fields.Many2one(
+        comodel_name="procurement.type",
+        string="Procurement Type",
+    )
+    procurement_method_id = fields.Many2one(
+        comodel_name="procurement.method",
+        string="Procurement Method",
+    )
+    account_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal Year",
+    )
+    estimated_cost = fields.Float(string="Estimated Cost")
+    payment_type = fields.Selection(
+        [("direct", "Direct paid"), ("advance", "Advance"), ("prepaid", "Prepaid")],
+    )
+    line_ids = fields.One2many(
+        comodel_name="purchase.request.approval.line",
+        inverse_name="approval_id",
+        string="Lines",
+    )
+
+    # == Related fields (read-through to purchase.request) ==
+    title = fields.Char(related="request_id.title")
+    description = fields.Text(related="request_id.description")
+    requested_by = fields.Many2one(related="request_id.requested_by")
+    department_id = fields.Many2one(related="request_id.department_id", store=True)
+    company_id = fields.Many2one(related="request_id.company_id", store=True)
+    partner_id = fields.Many2one(related="request_id.partner_id")
+    user_id = fields.Many2one(related="request_id.user_id")
+    product_id = fields.Many2one(related="request_id.product_id")
+    currency_id = fields.Many2one(related="request_id.currency_id")
+    amount_total = fields.Monetary(related="request_id.amount_total")
+    amount_untaxed = fields.Monetary(related="request_id.amount_untaxed")
+    amount_tax = fields.Monetary(related="request_id.amount_tax")
+    source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
+    budget_account_id = fields.Many2one(related="request_id.budget_account_id")
+    budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
+    analytic_distribution = fields.Json(related="request_id.analytic_distribution")
+    attachment_ids = fields.One2many(related="request_id.attachment_ids")
+    work_acceptance_committee_ids = fields.One2many(
+        related="request_id.work_acceptance_committee_ids"
+    )
+    tor_committee_ids = fields.One2many(related="request_id.tor_committee_ids")
+    price_determine_committee_ids = fields.One2many(
+        related="request_id.price_determine_committee_ids"
+    )
+    evaluation_committee_ids = fields.One2many(
+        related="request_id.evaluation_committee_ids"
+    )
 
     def button_draft(self):
         return self.write({"state": "draft"})
@@ -131,12 +191,11 @@ class PurchaseRequestApproval(models.Model):
             [self.id],
         )
         filename = self.name + ".pdf"
-        attachment = self.env["ir.attachment"].create(
+        self.env["ir.attachment"].create(
             {
                 "name": filename,
                 "res_id": self.id,
                 "res_model": self._name,
-                # "raw": base64.b64encode(report[0]),
                 "datas": base64.b64encode(report[0]),
                 "type": "binary",
                 "mimetype": "application/pdf",
@@ -159,7 +218,6 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def button_approved(self):
-        # Check if sarabun routing is pending
         for rec in self:
             document = rec.active_sarabun_document_id
             if document and document.is_circulating:
@@ -243,8 +301,12 @@ class PurchaseRequestApproval(models.Model):
         return self.state == "draft"
 
     def unlink(self):
-        if not self.env.user.has_group("purchase_request.group_purchase_request_manager"):
-            raise UserError(_("You do not have permission to delete purchase approvals."))
+        if not self.env.user.has_group(
+            "purchase_request.group_purchase_request_manager"
+        ):
+            raise UserError(
+                _("You do not have permission to delete purchase approvals.")
+            )
         for rec in self:
             if not rec._can_be_deleted():
                 raise UserError(
@@ -253,7 +315,6 @@ class PurchaseRequestApproval(models.Model):
         return super().unlink()
 
     def _compute_access_url(self):
-        """Compute the access URL for portal access."""
         super()._compute_access_url()
         for request in self:
             request.access_url = f"/my/purchase_request_approval/{request.id}"
@@ -336,7 +397,6 @@ class PurchaseRequestApproval(models.Model):
         return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
-        """Delegate Sarabun report to Purchase Request Approval report."""
         return self.env.ref(
             "purchase_request_approval.action_report_purchase_request_approvals"
         )

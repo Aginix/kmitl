@@ -55,7 +55,7 @@ class PurchaseRequestApproval(models.Model):
                         "product_qty": line._get_product_qty(),
                     }
                 )
-                for line in self.line_ids
+                for line in self.request_id.line_ids
                 if line._get_product_qty() != 0
             ],
         }
@@ -161,6 +161,6 @@ class PurchaseRequestApproval(models.Model):
         wa._link_to_disbursement(
             disbursement,
             analytic_distribution=self.analytic_distribution or False,
-            fine_tax_ids=self.line_ids.tax_id.ids,
+            fine_tax_ids=self.request_id.line_ids.tax_id.ids,
         )
         return disbursement

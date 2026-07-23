@@ -202,7 +202,7 @@
                         <div class="my-4" />
                         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
                                 t-field="o.product_id.name" /> จำนวน 1 รายการ เป็นเงิน <span
-                                t-out="o.estimated_cost" /> บาท โดยวิธี<span
+                                t-out="'{0:,.2f}'.format(o.estimated_cost)" /> บาท โดยวิธี<span
                                 t-field="o.procurement_method_id"
                             />
                             ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา
