@@ -122,6 +122,7 @@
                                 <field name="partner_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="product_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="description" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="payment_type" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="amount" sum="รวม" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="partner_bank_id" options="{'no_create': True, 'no_create_edit': True}" attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}"/>
                                 <field name="bank_id"/>

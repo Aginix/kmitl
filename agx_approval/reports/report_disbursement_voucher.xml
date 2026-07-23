@@ -84,6 +84,7 @@
                                                     <tr>
                                                         <td>
                                                             - <t t-out="a.product_id.name" /><t t-if="a.description"> (<t t-out="a.description" />)</t>
+                                                            <span class="text-muted"> · <t t-out="a.payment_type_label()" /></span>
                                                         </td>
                                                         <td style="text-align:right; width:30%" t-out="'{0:,.2f}'.format(a.amount)" />
                                                     </tr>

@@ -183,6 +183,7 @@
                                             <th class="text-center" style="width:8%">ลำดับ</th>
                                             <th class="text-center">รายการ</th>
                                             <th class="text-center">รายละเอียด</th>
+                                            <th class="text-center" style="width:14%">ประเภทการจ่าย</th>
                                             <th class="text-end" style="width:20%">จำนวนเงิน</th>
                                         </tr>
                                     </thead>
@@ -192,6 +193,7 @@
                                                 <td class="text-center" t-out="global_no" />
                                                 <td t-out="alloc.product_id.name" />
                                                 <td t-out="alloc.description" />
+                                                <td class="text-center" t-out="alloc.payment_type_label()" />
                                                 <td class="text-end" t-out="'{0:,.2f}'.format(alloc.amount)" />
                                             </tr>
                                             <t t-set="global_no" t-value="global_no + 1" />
@@ -202,7 +204,7 @@
                             <table class="table table-bordered table-sm mb-4">
                                 <tbody>
                                     <tr>
-                                        <td colspan="3" class="text-center fw-bolder">
+                                        <td colspan="4" class="text-center fw-bolder">
                                             รวมค่าใช้จ่ายจริงทั้งสิ้น
                                             <div class="fw-normal">
                                                 (<t t-esc="o.currency_id.with_context({'lang': 'th_TH'}).amount_to_text(actual_total)" />)

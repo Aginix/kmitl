@@ -23,12 +23,16 @@ A person involved in the activity — traveller, attendee, or related person —
 _Avoid_: payee, recipient (ผู้รับเงิน)
 
 **Actual Expense Allocation (ค่าใช้จ่ายจริง / จัดสรรรายคน)**:
-The after-mission breakdown recorded on the request: rows of (**recipient**, expense product, **actual** amount, bank). One row = one disbursement line; grouped by recipient it *is* the งบหน้าใบสำคัญคู่จ่าย view. Recipients are drawn from the participants.
+The after-mission breakdown recorded on the request: rows of (**recipient**, expense product, **actual** amount, **payment type**, bank). Grouped by recipient it *is* the งบหน้าใบสำคัญคู่จ่าย view; recipients are drawn from the participants. A `direct`/`prepaid` row bills into a disbursement line; an `advance` row is excluded from the disbursement and clears the recipient's สัญญายืม instead (see Payment type).
 _Avoid_: expense plan (that is the pre-spend estimate), payee sync
 
 **Recipient (ผู้รับเงิน)**:
 A participant who actually receives money — known only after the mission, named on an Actual Expense Allocation row with their bank. A single request may pay **several** recipients.
 _Avoid_: participant, payee-per-plan-line
+
+**Payment type (ประเภทการจ่ายเงิน)**:
+How an actual-allocation row's money is settled, recorded **per row** in the `actual` stage: `direct` (จ่ายตรง — the institute pays the named recipient directly), `prepaid` (สำรองจ่าย — a participant fronts the cost, then claims it back), or `advance` (เงินยืม — drawn against the recipient's สัญญายืม). `direct`/`prepaid` bill into a disbursement (one DR per request, header `direct` in the interim until the DR module supports per-line type); `advance` is excluded from the disbursement and clears the loan. One recipient may mix types across their rows.
+_Avoid_: the removed plan-level `payment_type` (ADR-0001 D6) — this is its post-mission, per-row successor ([ADR-0002](docs/adr/0002-payment-type-per-actual-row.md))
 
 **Pull back (ดึงกลับ — pre-routing)**:
 The clerk returning a *not-yet-sent* request to `draft` (via a confirm wizard, releasing the budget reservation), available only before the หนังสือ is sent to e-Saraban. **Distinct** from e-Saraban's own ดึงกลับ/ตีกลับ, which act on a *circulating* หนังสือ and land the request in `returned`.

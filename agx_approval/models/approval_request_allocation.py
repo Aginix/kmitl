@@ -62,6 +62,19 @@ class ApprovalRequestAllocation(models.Model):
 
     description = fields.Char(string="รายละเอียด")
 
+    payment_type = fields.Selection(
+        selection=[
+            ("direct", "จ่ายตรง"),
+            ("prepaid", "สำรองจ่าย"),
+            ("advance", "เงินยืม"),
+        ],
+        string="ประเภทการจ่ายเงิน",
+        required=True,
+        default="prepaid",
+        help="วิธีที่จ่ายเงินของแถวนี้ — จ่ายตรง/สำรองจ่าย จะเข้าใบเบิก (DR); "
+        "เงินยืม จะไม่เข้าใบเบิก แต่ไปเคลียร์กับสัญญายืม (ดู ADR-0002)",
+    )
+
     company_id = fields.Many2one(
         "res.company",
         related="request_id.company_id",
@@ -111,6 +124,14 @@ class ApprovalRequestAllocation(models.Model):
         if wht and self.amount:
             return self.currency_id.round(self.amount * wht.amount / 100.0)
         return 0.0
+
+    def payment_type_label(self):
+        """Human label of this row's payment type (จ่ายตรง/สำรองจ่าย/เงินยืม),
+        for the disbursement voucher and approval-request reports."""
+        self.ensure_one()
+        return dict(self._fields["payment_type"].selection).get(
+            self.payment_type, ""
+        )
 
     def _get_masked_acc_number(self):
         self.ensure_one()
