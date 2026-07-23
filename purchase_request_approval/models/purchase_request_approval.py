@@ -234,6 +234,13 @@ class PurchaseRequestApproval(models.Model):
         related="request_id.evaluation_committee_ids"
     )
 
+    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            rec.is_editable = rec.state in ("draft", "sarabun_returned")
+
     @api.depends("line_ids.price_total")
     def _amount_all(self):
         for record in self:
