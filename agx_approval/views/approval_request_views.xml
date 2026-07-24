@@ -92,7 +92,7 @@
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
                     <separator string="ค่าใช้จ่าย (แผน)"/>
-                    <field name="line_ids" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                    <field name="line_ids" widget="no_open_readonly_x2many" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                         <tree editable="bottom">
                             <field name="allowed_product_ids" invisible="1"/>
                             <field name="sequence" widget="handle"/>
@@ -103,7 +103,7 @@
                         </tree>
                     </field>
                     <separator string="รายชื่อ"/>
-                    <field name="participant_ids" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                    <field name="participant_ids" widget="no_open_readonly_x2many" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                         <tree editable="bottom">
                             <field name="allowed_partner_type_ids" invisible="1"/>
                             <field name="sequence" widget="handle"/>
