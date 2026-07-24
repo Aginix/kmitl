@@ -147,7 +147,23 @@ class PurchaseRequestApproval(models.Model):
     requested_by = fields.Many2one(related="request_id.requested_by")
     department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
-    partner_id = fields.Many2one(related="request_id.partner_id")
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Vendor",
+        tracking=True,
+    )
+    vat_included = fields.Selection(
+        [("exclusive", "VAT Exclusive"), ("inclusive", "VAT Inclusive")],
+        default="exclusive",
+        tracking=True,
+    )
+    tax_id = fields.Many2one(
+        "account.tax",
+        string="Tax",
+        domain="[('type_tax_use', 'in', ['purchase']), ('company_id', '=', company_id)]",
+        check_company=True,
+        context={"active_test": False},
+    )
     user_id = fields.Many2one(related="request_id.user_id")
     product_id = fields.Many2one(related="request_id.product_id")
     currency_id = fields.Many2one(related="request_id.currency_id")

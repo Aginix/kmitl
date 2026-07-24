@@ -167,6 +167,20 @@
                             <field name="account_fiscal_year_id" readonly="1" />
                             <field name="estimated_cost" readonly="1"/>
                             <field name="payment_type" readonly="1" />
+                            <field
+                                name="partner_id"
+                                attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('state', '!=', 'draft')]}"
+                                options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                            />
+                            <field
+                                name="vat_included"
+                                attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="tax_id"
+                                widget="selection"
+                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': ['&amp;', ('state', '!=', 'draft'), ('vat_included', '=', 'inclusive')], 'readonly': [('state', '!=', 'draft')]}"
+                            />
                         </group>
                     </group>
                     <notebook>

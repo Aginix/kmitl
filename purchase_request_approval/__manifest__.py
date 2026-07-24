@@ -6,6 +6,7 @@
     "category": "KMITL",
     "depends": [
         "purchase_request_kmitl",
+        "purchase_request_price_tax_included",
         "purchase_request_sarabun",
         "purchase_request_activity_kmitl",
         "thai_date_utils",
