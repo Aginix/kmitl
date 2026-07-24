@@ -40,7 +40,6 @@ class AdvancePayment(models.Model):
         "bank_id",
         "reference",
         "requested_by",
-        "department_id",
     }
 
     # Material fields are read-only in the UI in every non-draft state.
@@ -80,7 +79,7 @@ class AdvancePayment(models.Model):
     )
 
     contract_number = fields.Char(
-        string="เลขที่สัญญา",
+        string="Contract Number",
         copy=False,
         readonly=True,
         tracking=True,
@@ -121,13 +120,6 @@ class AdvancePayment(models.Model):
         related="requested_by.partner_id",
         string="Requestor Partner",
         store=False,
-    )
-
-    department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Department",
-        default=lambda self: self.env.user.employee_id.department_id,
-        states=READONLY_STATES,
     )
 
     is_reference_visible = fields.Boolean(
@@ -252,18 +244,24 @@ class AdvancePayment(models.Model):
         "a formal debt (ลูกหนี้โดยสมบูรณ์) at this moment.",
     )
 
-    usage_line_ids = fields.One2many(
-        comodel_name="advance.payment.usage.line",
-        inverse_name="agreement_id",
-        string="Usage Records",
-        readonly=True,
+    # Actual-expense summary (บันทึกค่าใช้จ่ายจริง) — recorded on the agreement,
+    # not itemized (ADR-0003).
+    expense_description = fields.Text(
+        string="คำอธิบายค่าใช้จ่าย",
         copy=False,
     )
 
-    amount_used = fields.Monetary(
-        string="Amount Used",
-        compute="_compute_amounts",
-        store=True,
+    actual_expense_amount = fields.Monetary(
+        string="ยอดค่าใช้จ่ายจริง",
+        copy=False,
+        tracking=True,
+    )
+
+    return_installment = fields.Boolean(
+        string="คืนหลายงวด",
+        copy=False,
+        help="Allow the money to be returned in several transfers instead of "
+        "one; the officer may toggle this in emergencies.",
     )
 
     amount_remaining = fields.Monetary(
@@ -272,18 +270,18 @@ class AdvancePayment(models.Model):
         store=True,
     )
 
-    leftover_amount = fields.Monetary(
-        string="ยอดคงเหลือ (ต้องคืน)",
+    return_amount = fields.Monetary(
+        string="ยอดที่ต้องคืน",
         compute="_compute_amounts",
         store=True,
-        help="Loan amount minus accepted actual expenses — the cash to return.",
+        help="Loan amount minus the actual expense — the cash to return.",
     )
 
     excess_amount = fields.Monetary(
         string="เงินคืนส่วนเกิน",
         compute="_compute_amounts",
         store=True,
-        help="Amount returned beyond the leftover; requires donation consent.",
+        help="Amount returned beyond the return amount; requires donation consent.",
     )
 
     payment_ids = fields.One2many(
@@ -402,8 +400,6 @@ class AdvancePayment(models.Model):
     def _onchange_requested_by(self):
         if self.bank_id and self.bank_id.partner_id != self.requested_by.partner_id:
             self.bank_id = False
-        if self.requested_by:
-            self.department_id = self.requested_by.employee_id.department_id
 
     @api.depends("analytic_distribution")
     def _compute_analytic_ids(self):
@@ -431,24 +427,22 @@ class AdvancePayment(models.Model):
 
     @api.depends(
         "loan_amount",
-        "usage_line_ids.amount",
+        "actual_expense_amount",
         "return_line_ids.amount",
         "return_line_ids.state",
     )
     def _compute_amounts(self):
         for rec in self:
-            used = sum(rec.usage_line_ids.mapped("amount"))
+            expense = rec.actual_expense_amount
             returned = sum(
                 rec.return_line_ids.filtered(
                     lambda l: l.state == "done"
                 ).mapped("amount")
             )
-            rec.amount_used = used
             rec.amount_returned = returned
-            rec.amount_remaining = rec.loan_amount - used - returned
-            leftover = rec.loan_amount - used
-            rec.leftover_amount = leftover
-            rec.excess_amount = max(0.0, returned - leftover)
+            rec.amount_remaining = rec.loan_amount - expense - returned
+            rec.return_amount = rec.loan_amount - expense
+            rec.excess_amount = max(0.0, returned - rec.return_amount)
 
     @api.depends("payment_ids")
     def _compute_payment_count(self):
@@ -465,6 +459,16 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.loan_amount < 0:
                 raise ValidationError(_("Loan amount cannot be negative."))
+
+    @api.constrains("actual_expense_amount", "loan_amount")
+    def _check_actual_expense(self):
+        for rec in self:
+            if rec.actual_expense_amount < 0:
+                raise ValidationError(_("Actual expense cannot be negative."))
+            if rec.actual_expense_amount > rec.loan_amount:
+                raise ValidationError(
+                    _("Actual expense cannot exceed the loan amount.")
+                )
 
     @api.constrains("name")
     def _check_name_unique(self):
@@ -728,23 +732,24 @@ class AdvancePayment(models.Model):
     # ------------------------------------------------------------------ #
 
     def action_submit_report(self):
-        """Borrower submits the expense report (in_progress → to_verify_report)."""
+        """Borrower submits the actual-expense report (in_progress → to_verify_report)."""
         for rec in self:
             if rec.state != "in_progress":
                 raise UserError(
                     _("Only in-progress agreements can submit an expense report.")
                 )
-            if not rec.usage_line_ids:
+            if not rec.expense_description:
                 raise UserError(
-                    _("Record the actual expenses before submitting the report.")
+                    _("Record the actual expense (description + amount) before"
+                      " submitting the report.")
                 )
             rec.state = "to_verify_report"
             rec.message_post(
                 body=_(
                     "นำส่งรายงานค่าใช้จ่าย: ใช้จริง <b>%(used)s</b>,"
-                    " คงเหลือ <b>%(left)s</b> %(currency)s",
-                    used=rec.amount_used,
-                    left=rec.leftover_amount,
+                    " ต้องคืน <b>%(left)s</b> %(currency)s",
+                    used=rec.actual_expense_amount,
+                    left=rec.return_amount,
                     currency=rec.currency_id.name,
                 ),
                 subtype_xmlid="mail.mt_note",
@@ -752,13 +757,13 @@ class AdvancePayment(models.Model):
 
     def action_accept_report(self):
         """Finance officer accepts the expense report (to_verify_report → ...).
-        No leftover → close; leftover > 0 → to_reconcile."""
+        No amount to return → close; return_amount > 0 → to_reconcile."""
         for rec in self:
             if rec.state != "to_verify_report":
                 raise UserError(_("Only submitted reports can be accepted."))
-            if rec.leftover_amount <= 0:
+            if rec.return_amount <= 0:
                 rec.message_post(
-                    body=_("ตรวจรับรายงานค่าใช้จ่าย ไม่มีเงินคงเหลือ ปิดสัญญา"),
+                    body=_("ตรวจรับรายงานค่าใช้จ่าย ไม่มีเงินต้องคืน ปิดสัญญา"),
                     subtype_xmlid="mail.mt_note",
                 )
                 rec._do_close()
@@ -766,9 +771,9 @@ class AdvancePayment(models.Model):
                 rec.state = "to_reconcile"
                 rec.message_post(
                     body=_(
-                        "ตรวจรับรายงานค่าใช้จ่าย มีเงินคงเหลือ <b>%(left)s %(currency)s</b>"
+                        "ตรวจรับรายงานค่าใช้จ่าย ต้องคืน <b>%(left)s %(currency)s</b>"
                         " รอผู้ยืมโอนคืน",
-                        left=rec.leftover_amount,
+                        left=rec.return_amount,
                         currency=rec.currency_id.name,
                     ),
                     subtype_xmlid="mail.mt_note",
@@ -812,7 +817,7 @@ class AdvancePayment(models.Model):
     def action_close(self):
         """Officer closes from to_verify_report when there is no leftover."""
         self.ensure_one()
-        if self.state == "to_verify_report" and self.leftover_amount <= 0:
+        if self.state == "to_verify_report" and self.return_amount <= 0:
             return self._do_close()
         raise UserError(
             _("An agreement closes automatically once the debt is fully settled.")
@@ -829,7 +834,7 @@ class AdvancePayment(models.Model):
                 body=_(
                     "ปิดสัญญา ใช้จริง <b>%(used)s</b> คืน <b>%(returned)s</b>"
                     " %(currency)s",
-                    used=rec.amount_used,
+                    used=rec.actual_expense_amount,
                     returned=rec.amount_returned,
                     currency=rec.currency_id.name,
                 ),
@@ -842,7 +847,7 @@ class AdvancePayment(models.Model):
             if rec.state != "done":
                 raise UserError(_("Only closed agreements can be reopened."))
             rec.date_closed = False
-            rec.state = "to_reconcile" if rec.leftover_amount > 0 else "in_progress"
+            rec.state = "to_reconcile" if rec.return_amount > 0 else "in_progress"
             rec.message_post(
                 body=_("Agreement reopened by <b>%(user)s</b>.", user=self.env.user.name),
                 subtype_xmlid="mail.mt_note",
@@ -943,17 +948,6 @@ class AdvancePayment(models.Model):
         else:
             action["domain"] = [("id", "in", self.payment_ids.ids)]
         return action
-
-    def action_open_usage_wizard(self):
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("บันทึกการใช้เงิน"),
-            "res_model": "advance.payment.usage.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"default_agreement_id": self.id},
-        }
 
     def action_open_return_wizard(self):
         self.ensure_one()

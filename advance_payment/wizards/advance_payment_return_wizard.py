@@ -32,9 +32,15 @@ class AdvancePaymentReturnWizard(models.TransientModel):
         readonly=True,
     )
 
-    amount_used = fields.Monetary(
-        string="Amount Used",
-        related="agreement_id.amount_used",
+    actual_expense_amount = fields.Monetary(
+        string="ยอดค่าใช้จ่ายจริง",
+        related="agreement_id.actual_expense_amount",
+        readonly=True,
+    )
+
+    return_amount = fields.Monetary(
+        string="ยอดที่ต้องคืน",
+        related="agreement_id.return_amount",
         readonly=True,
     )
 
@@ -78,6 +84,14 @@ class AdvancePaymentReturnWizard(models.TransientModel):
         if self.agreement_id.state != "to_reconcile":
             raise UserError(
                 _("A return can only be recorded while awaiting reconciliation.")
+            )
+        agreement = self.agreement_id
+        if not agreement.return_installment and agreement.return_line_ids.filtered(
+            lambda l: l.state != "rejected"
+        ):
+            raise UserError(
+                _("This agreement returns in a single transfer. Ask the loan"
+                  " officer to enable installments (คืนหลายงวด) to add another.")
             )
         if not self.attachment_ids:
             raise UserError(_("Please attach proof of bank transfer before confirming."))

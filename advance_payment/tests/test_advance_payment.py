@@ -239,7 +239,7 @@ class TestAdvancePayment(TransactionCase):
     # Expense report → accept                                              #
     # ------------------------------------------------------------------ #
 
-    def test_submit_report_requires_usage(self):
+    def test_submit_report_requires_expense(self):
         ap = self._make()
         ap.write({"state": "in_progress"})
         with self.assertRaises(UserError):
@@ -247,33 +247,40 @@ class TestAdvancePayment(TransactionCase):
 
     def test_submit_report_moves_to_verify_report(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "in_progress"})
-        self.env["advance.payment.usage.line"].create(
-            {"agreement_id": ap.id, "amount": 600, "date": "2026-01-01"}
+        ap.write(
+            {
+                "state": "in_progress",
+                "expense_description": "trip",
+                "actual_expense_amount": 600,
+            }
         )
         ap.action_submit_report()
         self.assertEqual(ap.state, "to_verify_report")
 
     def test_accept_report_no_leftover_closes(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_verify_report"})
-        self.env["advance.payment.usage.line"].create(
-            {"agreement_id": ap.id, "amount": 1000, "date": "2026-01-01"}
+        ap.write(
+            {
+                "state": "to_verify_report",
+                "expense_description": "all spent",
+                "actual_expense_amount": 1000,
+            }
         )
-        ap.invalidate_recordset()
         ap.action_accept_report()
         self.assertEqual(ap.state, "done")
 
     def test_accept_report_with_leftover_to_reconcile(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_verify_report"})
-        self.env["advance.payment.usage.line"].create(
-            {"agreement_id": ap.id, "amount": 700, "date": "2026-01-01"}
+        ap.write(
+            {
+                "state": "to_verify_report",
+                "expense_description": "partial",
+                "actual_expense_amount": 700,
+            }
         )
-        ap.invalidate_recordset()
         ap.action_accept_report()
         self.assertEqual(ap.state, "to_reconcile")
-        self.assertEqual(ap.leftover_amount, 300)
+        self.assertEqual(ap.return_amount, 300)
 
     # ------------------------------------------------------------------ #
     # Amounts                                                              #
@@ -281,18 +288,15 @@ class TestAdvancePayment(TransactionCase):
 
     def test_amounts(self):
         ap = self._make(amount=10000)
-        ap.write({"state": "in_progress"})
-        self.env["advance.payment.usage.line"].create(
-            {"agreement_id": ap.id, "amount": 3000, "date": "2026-01-01"}
-        )
+        ap.write({"state": "in_progress", "actual_expense_amount": 3000})
         self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 2000, "state": "done"}
         )
         ap.invalidate_recordset()
-        self.assertEqual(ap.amount_used, 3000)
+        self.assertEqual(ap.actual_expense_amount, 3000)
         self.assertEqual(ap.amount_returned, 2000)
         self.assertEqual(ap.amount_remaining, 5000)
-        self.assertEqual(ap.leftover_amount, 7000)
+        self.assertEqual(ap.return_amount, 7000)
         self.assertEqual(ap.excess_amount, 0)
 
     # ------------------------------------------------------------------ #
@@ -301,10 +305,7 @@ class TestAdvancePayment(TransactionCase):
 
     def test_auto_close_when_returned_covers_leftover(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_reconcile"})
-        self.env["advance.payment.usage.line"].create(
-            {"agreement_id": ap.id, "amount": 600, "date": "2026-01-01"}
-        )
+        ap.write({"state": "to_reconcile", "actual_expense_amount": 600})
         self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 400, "state": "done"}
         )
@@ -314,9 +315,12 @@ class TestAdvancePayment(TransactionCase):
 
     def test_multiple_partial_returns_close(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_reconcile"})
-        self.env["advance.payment.usage.line"].create(
-            {"agreement_id": ap.id, "amount": 400, "date": "2026-01-01"}
+        ap.write(
+            {
+                "state": "to_reconcile",
+                "actual_expense_amount": 400,
+                "return_installment": True,
+            }
         )
         self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 200, "state": "done"}
@@ -333,11 +337,8 @@ class TestAdvancePayment(TransactionCase):
 
     def test_over_return_needs_donation_consent(self):
         ap = self._make(amount=1000)
-        ap.write({"state": "to_reconcile"})
-        self.env["advance.payment.usage.line"].create(
-            {"agreement_id": ap.id, "amount": 200, "date": "2026-01-01"}
-        )
-        # leftover 800, returns 850 → excess 50
+        ap.write({"state": "to_reconcile", "actual_expense_amount": 200})
+        # return_amount 800, returns 850 → excess 50
         self.env["advance.payment.return.line"].create(
             {"agreement_id": ap.id, "amount": 850, "state": "done"}
         )

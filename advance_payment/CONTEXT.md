@@ -52,12 +52,16 @@ _Avoid_: cancel, withdraw, reset
 The upstream document a loan is created from — an Approval Request (คำขออนุมัติค่าใช้จ่าย, `approval.request`) or a Purchase Request (คำขอให้จัดหา, `purchase.request`). advance_payment never depends on these directly; the link lives only in bridge modules. A Disbursement Request (ใบเบิก/DR) is *not* a source and is unrelated to loans.
 _Avoid_: origin, parent, DR
 
-**Expense Report (รายงานค่าใช้จ่าย)**:
-The borrower's end-of-activity declaration of what was actually spent from the loan, with evidence, submitted to leave `in_progress`. It states the expense total and the resulting Leftover; the loan-responsible finance officer must accept it before the debt can close.
-_Avoid_: usage record, บันทึกการใช้เงิน (the old free-form field)
+**Expense Report / บันทึกค่าใช้จ่ายจริง**:
+The borrower's end-of-activity summary recorded directly on the agreement — description, actual expense amount, auto-computed return amount, and evidence (**no itemized lines**). Submitted to leave `in_progress`; the loan-responsible finance officer must accept it before the debt can close.
+_Avoid_: usage record, usage line, itemized expenses
 
-**Leftover (ยอดคงเหลือ / เงินเหลือจ่าย)**:
-Loan amount minus the accepted actual expenses — the cash the borrower must transfer back, in one or more partial transfers. Each recorded return amount must equal the real transfer.
+**Return installment (คืนหลายงวด)**:
+A per-agreement flag that lets the borrower return the money in several transfers instead of one; set by the borrower at report time and adjustable by the officer. Off by default (single return).
+_Avoid_: partial return (that is any one transfer)
+
+**Leftover / Return amount (ยอดคงเหลือ / เงินเหลือจ่าย)**:
+Loan amount minus the actual expense — the cash to transfer back (`return_amount`, auto-computed). Returned in a single transfer, or — when the Return installment flag is on — several that accumulate to it. Each recorded return must equal the real transfer.
 _Avoid_: change, remaining balance
 
 **Reconcile (ตรวจสอบยอดคืนในบัญชี)**:

@@ -15,7 +15,7 @@
                 <field name="requested_by" />
                 <field name="loan_type_id" />
                 <field name="loan_amount" />
-                <field name="amount_used" optional="show" />
+                <field name="actual_expense_amount" optional="show" />
                 <field name="amount_remaining" />
                 <field name="return_due_date" optional="show" />
                 <field name="state" widget="badge"
@@ -51,7 +51,7 @@
                 <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
                     attrs="{'invisible': [('state', '!=', 'to_reconcile')]}">
                     <strong>รอคืนเงิน</strong> — ยอดคงเหลือที่ต้องคืน
-                    <field name="leftover_amount" class="oe_inline" /> บาท </div>
+                    <field name="return_amount" class="oe_inline" /> บาท </div>
                 <header>
                     <field name="is_requester" invisible="1" />
                     <field name="is_officer" invisible="1" />
@@ -73,9 +73,6 @@
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'to_approve')]}"
                         groups="advance_payment.group_advance_payment_manager" />
-                    <button name="action_open_usage_wizard" string="บันทึกการใช้เงิน"
-                        type="object"
-                        attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}" />
                     <button name="action_submit_report" string="นำส่งรายงานค่าใช้จ่าย"
                         type="object" class="btn-primary"
                         attrs="{'invisible': ['|', ('state', '!=', 'in_progress'), ('is_requester', '=', False)]}" />
@@ -133,8 +130,6 @@
                             <field name="requested_by"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 groups="base.group_system" />
-                            <field name="department_id"
-                                attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="requested_by_partner_id" invisible="1" />
                             <field name="bank_id"
                                 domain="[('partner_id', '=', requested_by_partner_id)]"
@@ -163,7 +158,7 @@
                             <field name="return_due_date"
                                 attrs="{
                                     'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve'])],
-                                    'readonly': [('is_officer', '=', False)]
+                                    'readonly': ['|', ('is_officer', '=', False), ('state', 'in', ['done', 'cancel'])]
                                 }" />
                         </group>
                         <group name="attachments" string="เอกสารแนบ">
@@ -181,13 +176,20 @@
                         <field name="activity_analytic_id"
                             attrs="{'readonly': [('state', '!=', 'draft')]}" />
                     </group>
+                    <group name="actual_expense" string="บันทึกค่าใช้จ่ายจริง"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer'])]}">
+                        <field name="expense_description"
+                            attrs="{'readonly': [('state', '!=', 'in_progress')]}" />
+                        <field name="actual_expense_amount"
+                            attrs="{'readonly': [('state', '!=', 'in_progress')]}" />
+                        <field name="return_amount" />
+                        <field name="return_installment"
+                            attrs="{'readonly': ['|', ('state', 'in', ['done', 'cancel']), '&amp;', ('state', '!=', 'in_progress'), ('is_officer', '=', False)]}" />
+                    </group>
                     <group name="amount_summary" string="สรุปยอดเงิน"
                         attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve'])]}">
-                        <field name="amount_used" />
                         <field name="amount_returned" />
                         <field name="amount_remaining" />
-                        <field name="leftover_amount"
-                            attrs="{'invisible': [('state', 'in', ['waiting_transfer', 'in_progress'])]}" />
                         <field name="excess_amount"
                             attrs="{'invisible': [('excess_amount', '&lt;=', 0)]}" />
                         <field name="effective_date" />
@@ -207,19 +209,8 @@
                         <field name="cancel_reason" readonly="1" nolabel="1" />
                     </group>
                     <notebook>
-                        <page string="รายงานค่าใช้จ่าย" name="usage_lines"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer'])]}">
-                            <field name="usage_line_ids">
-                                <tree>
-                                    <field name="date" />
-                                    <field name="currency_id" invisible="1" />
-                                    <field name="amount" />
-                                    <field name="note" />
-                                </tree>
-                            </field>
-                        </page>
                         <page string="รายการคืนเงิน" name="return_lines"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer', 'in_progress'])]}">
+                            attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer'])]}">
                             <field name="return_line_ids"
                                 attrs="{'readonly': [('state', '!=', 'to_reconcile')]}">
                                 <tree>
