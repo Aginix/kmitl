@@ -244,7 +244,11 @@ class PurchaseRequest(models.Model):
                 active_id=self.id,
                 approval_id=approval.id,
             )
-            .create({"supplier_id": approval.partner_id.id})
+            .create({
+                "supplier_id": approval.partner_id.id,
+                "vat_included": approval.vat_included,
+                "tax_id": approval.tax_id.id,
+            })
         )
         wizard.make_purchase_order()
         return wizard

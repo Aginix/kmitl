@@ -170,17 +170,19 @@
                             <field name="payment_type" readonly="1" />
                             <field
                                 name="partner_id"
-                                attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('state', '!=', 'draft')]}"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
                             <field
                                 name="vat_included"
-                                attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('state', '!=', 'draft')]}"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
                             <field
                                 name="tax_id"
                                 widget="selection"
-                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': ['&amp;', ('state', '!=', 'draft'), ('vat_included', '=', 'inclusive')], 'readonly': [('state', '!=', 'draft')]}"
+                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('state', '!=', 'draft')]}"
                             />
                         </group>
                     </group>
@@ -188,10 +190,15 @@
                         <page name="lines" string="Products">
                             <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
+                                    <field name="currency_id" invisible="1"/>
                                     <field name="product_id" readonly="1" />
                                     <field name="name" readonly="1"/>
                                     <field name="product_qty"/>
                                     <field name="price_unit"/>
+                                    <field name="tax_id" optional="hide"/>
+                                    <field name="price_subtotal" widget="monetary" invisible="1"/>
+                                    <field name="price_total" widget="monetary" invisible="1"/>
+                                    <field name="price_tax" widget="monetary" optional="hide"/>
                                     <field name="estimated_cost" readonly="1"/>
                                 </tree>
                             </field>
