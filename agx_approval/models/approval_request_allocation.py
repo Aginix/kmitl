@@ -1,6 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class ApprovalRequestAllocation(models.Model):
