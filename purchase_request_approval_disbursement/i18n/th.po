@@ -44,6 +44,11 @@ msgid "Billing Status"
 msgstr "สถานะการเบิก"
 
 #. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__state__returned
+msgid "Returned"
+msgstr "ตีกลับ"
+
+#. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__cancel
 msgid "Cancelled"
 msgstr "ยกเลิก"

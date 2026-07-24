@@ -8,7 +8,6 @@
         "purchase_request_kmitl",
         "purchase_request_sarabun",
         "purchase_request_activity_kmitl",
-        "purchase_request_vendor_kmitl",
         "thai_date_utils",
         "portal",
         "purchase_request_egp",

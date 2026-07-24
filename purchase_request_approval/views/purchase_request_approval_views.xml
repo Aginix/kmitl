@@ -155,43 +155,31 @@
                     <group>
                         <group name="main_info" string="Main Information">
                             <field name="name" placeholder="Approval Reference..." readonly="1"/>
-                            <field name="title" readonly="1" />
-                            <field name="description" readonly="1"/>
+                            <field name="title" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="description" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="date_start" readonly="1" />
                             <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
                             <field name="department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
-                            <field name="procurement_type_id" readonly="1" />
-                            <field name="procurement_method_id" readonly="1" />
+                            <field name="procurement_type_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
+                            <field name="procurement_method_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
                             <field name="account_fiscal_year_id" readonly="1" />
-                            <field name="estimated_cost" readonly="1" />
-                            <field name="payment_type" readonly="1"/>
+                            <field name="estimated_cost" readonly="1"/>
+                            <field name="payment_type" readonly="1" />
                         </group>
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
-                            <field name="line_ids" readonly="1">
+                            <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
-                                    <field name="product_id" />
-                                    <field name="name"/>
+                                    <field name="product_id" readonly="1" />
+                                    <field name="name" readonly="1"/>
                                     <field name="product_qty"/>
-                                    <field name="estimated_cost" optional="show"/>
+                                    <field name="price_unit"/>
+                                    <field name="estimated_cost" readonly="1"/>
                                 </tree>
                             </field>
-                        </page>
-                        <page name="budget" string="Budget Information" attrs="{'invisible': [('estimated_cost', '=', 0)]}">
-                            <group>
-                                <group>
-                                    <field name="budget_account_id" readonly="1" options="{'no_open': True}"/>
-                                    <field name="activity_analytic_id" readonly="1" options="{'no_open': True}"/>
-                                    <field name="fund_analytic_id" readonly="1" options="{'no_open': True}"/>
-                                    <field name="source_analytic_id" readonly="1" options="{'no_open': True}"/>
-                                    <field name="department_analytic_id" readonly="1" options="{'no_open': True}"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
                         </page>
                         <page name="committee" string="Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}">
                             <separator string="Work Acceptance Committee"/>
@@ -254,7 +242,7 @@
                 />
                 <separator />
                 <filter name="filter_by_fy" string="Fiscal Year" domain="[('account_fiscal_year_id', '!=', False)]"/>
-                <filter name="filter_by_dept" string="Department" domain="[('department_id', '!=', False)]"/>
+                <filter name="filter_by_dept" string="Department" domain="[('requesting_department_id', '!=', False)]"/>
                 <separator />
                 <filter
                     name="today"

@@ -67,6 +67,9 @@ class PurchaseRequest(models.Model):
         string="Approved Date",
         copy=False,
     )
+    partner_id = fields.Many2one("res.partner", tracking=True)
+
+    # construction
     is_construction = fields.Boolean(string="Construction", readonly=True)
     title = fields.Char(string="Title", tracking=True)
     account_fiscal_year_id = fields.Many2one(
