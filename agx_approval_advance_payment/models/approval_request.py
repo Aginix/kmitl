@@ -68,7 +68,6 @@ class ApprovalRequest(models.Model):
         loan_type = self.env.ref("advance_payment.loan_type_other")
         return {
             "requested_by": self.owner_id.user_id.id or self.env.user.id,
-            "department_id": self.owner_id.department_id.id,
             "loan_reason": self.description or "",
             "loan_amount": self.total_amount,
             "loan_type_id": loan_type.id,
