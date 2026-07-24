@@ -69,7 +69,6 @@ class PurchaseRequest(models.Model):
             "procurement_type_id": self.procurement_type_id.id,
             "procurement_method_id": self.procurement_method_id.id,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "estimated_cost": self.estimated_cost,
             "payment_type": self.payment_type,
             "partner_id": self.partner_id.id,
             "vat_included": self.vat_included,
@@ -81,7 +80,6 @@ class PurchaseRequest(models.Model):
                     "product_qty": line.product_qty,
                     "product_uom_id": line.product_uom_id.id,
                     "price_unit": line.price_unit,
-                    "estimated_cost": line.estimated_cost,
                 })
                 for line in self.line_ids
             ],

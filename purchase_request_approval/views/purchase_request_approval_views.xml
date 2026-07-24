@@ -202,6 +202,11 @@
                                     <field name="estimated_cost" readonly="1"/>
                                 </tree>
                             </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="estimated_cost" invisible="1"/>
+                                <field name="tax_totals" widget="account-tax-totals-field" nolabel="1" colspan="2" readonly="1"/>
+                            </group>
                         </page>
                         <page name="committee" string="Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}">
                             <separator string="Work Acceptance Committee"/>
