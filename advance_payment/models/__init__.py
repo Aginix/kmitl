@@ -1,6 +1,7 @@
 from . import advance_payment_loan_type
 from . import advance_payment
 from . import res_config_settings
+from . import advance_payment_usage_line
 from . import advance_payment_return_line
 from . import account_payment
 from . import exception_rule

@@ -284,6 +284,17 @@ class AdvancePayment(models.Model):
         help="Amount returned beyond the return amount; requires donation consent.",
     )
 
+    # Informational usage records populated by integrations (e.g. the
+    # disbursement bridge). The debt is driven by actual_expense_amount, not by
+    # these lines — kept so bridges can extend the model.
+    usage_line_ids = fields.One2many(
+        comodel_name="advance.payment.usage.line",
+        inverse_name="agreement_id",
+        string="Usage Records",
+        readonly=True,
+        copy=False,
+    )
+
     payment_ids = fields.One2many(
         comodel_name="account.payment",
         inverse_name="advance_payment_id",
