@@ -162,6 +162,7 @@
                             <field name="department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
+                            <field name="company_id" invisible="1" />
                             <field name="procurement_type_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
                             <field name="account_fiscal_year_id" readonly="1" />
