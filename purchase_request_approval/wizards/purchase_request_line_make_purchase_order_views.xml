@@ -14,6 +14,12 @@
                     attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')]}"
                 />
             </xpath>
+            <xpath expr="//field[@name='item_ids']" position="after">
+                <group class="oe_subtotal_footer oe_right">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="tax_totals" widget="account-tax-totals-field" nolabel="1" colspan="2" readonly="1"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

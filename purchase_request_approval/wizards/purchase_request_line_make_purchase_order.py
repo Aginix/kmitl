@@ -14,6 +14,39 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         string="Tax",
         domain="[('type_tax_use', 'in', ['purchase'])]",
     )
+    amount_untaxed = fields.Monetary(compute="_compute_amount_all")
+    amount_tax = fields.Monetary(compute="_compute_amount_all")
+    amount_total = fields.Monetary(compute="_compute_amount_all")
+    tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
+    currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id)
+
+    @api.depends("item_ids.price_total", "item_ids.price_subtotal", "item_ids.price_tax")
+    def _compute_amount_all(self):
+        for wiz in self:
+            wiz.amount_untaxed = sum(wiz.item_ids.mapped("price_subtotal"))
+            wiz.amount_tax = sum(wiz.item_ids.mapped("price_tax"))
+            wiz.amount_total = wiz.amount_untaxed + wiz.amount_tax
+
+    @api.depends_context("lang")
+    @api.depends(
+        "item_ids.tax_id",
+        "item_ids.price_subtotal",
+        "amount_total",
+        "amount_untaxed",
+    )
+    def _compute_tax_totals(self):
+        for wiz in self:
+            currency = (
+                wiz.item_ids[:1].request_id.currency_id
+                or self.env.company.currency_id
+            )
+            wiz.tax_totals = self.env["account.tax"]._prepare_tax_totals(
+                [
+                    item._convert_to_tax_base_line_dict()
+                    for item in wiz.item_ids
+                ],
+                currency,
+            )
 
     @api.model
     def default_get(self, fields_list):
