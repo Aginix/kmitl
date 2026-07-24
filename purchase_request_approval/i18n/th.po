@@ -481,6 +481,11 @@ msgid "Ignore Exceptions"
 msgstr "ข้ามข้อยกเว้น"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request__state__in_approval
+msgid "In Approval"
+msgstr "อยู่ระหว่างอนุมัติ"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__is_budget_editable
 msgid "Is Budget Editable"
 msgstr ""
