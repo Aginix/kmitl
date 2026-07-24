@@ -111,11 +111,6 @@
                             </tbody>
                         </table>
 
-                        <div class="mt-5" style="width: 45%; margin-left: auto; text-align: center;">
-                            <div>ลงชื่อ <t t-out="'.' * 45" /></div>
-                            <div>( <span t-out="faculty.manager_id.name or ''" /> )</div>
-                            <div>คณบดี<span t-out="faculty.name" /></div>
-                        </div>
                     </div>
                 </t>
             </t>

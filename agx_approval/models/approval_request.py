@@ -664,13 +664,17 @@ class ApprovalRequest(models.Model):
             rec.total_actual_amount = sum(rec.allocation_ids.mapped("amount"))
 
     def _voucher_groups(self):
-        """งบหน้าใบสำคัญคู่จ่าย data: the actual allocation grouped per recipient,
-        with the per-recipient subtotal, withholding-tax total and voucher
-        (line) count. Recipient order follows the allocation."""
+        """งบหน้าใบสำคัญคู่จ่าย data: the disbursed actual allocation — จ่ายตรง /
+        สำรองจ่าย only; เงินยืม is excluded (it clears against the สัญญายืม, not a
+        disbursement) — grouped per recipient, with the per-recipient subtotal,
+        withholding-tax total and voucher (line) count."""
         self.ensure_one()
         groups = []
-        for recipient in self.allocation_ids.mapped("partner_id"):
-            allocs = self.allocation_ids.filtered(
+        allocations = self.allocation_ids.filtered(
+            lambda a: a.payment_type != "advance"
+        )
+        for recipient in allocations.mapped("partner_id"):
+            allocs = allocations.filtered(
                 lambda a: a.partner_id == recipient
             )
             wht_total = sum(a._wht_amount() for a in allocs)
