@@ -24,12 +24,6 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='supplier_id']" position="after">
-                <field name="vat_included" required="1"/>
-                <field
-                    name="tax_id"
-                    widget="selection"
-                    attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')]}"
-                />
                 <div colspan="2" class="alert alert-warning show" role="alert">
                     If vendor name not found, contact procurement staff to add the
                     information
