@@ -22,7 +22,6 @@
 
             .o_epg_tabx {
                 margin-left: 6px;
-                color: inherit;
                 opacity: 0.6;
                 cursor: pointer;
                 &:hover { opacity: 1; }
@@ -68,6 +67,13 @@
             font-weight: 600;
         }
 
+        // แผน / ผล sub-header row
+        .o_epg_sub {
+            font-size: 10px;
+            font-weight: 600;
+            color: #667085;
+        }
+
         // fund group header (same fund kept together)
         .o_epg_fund td {
             background-color: #e2e8f0;
@@ -81,16 +87,9 @@
             padding: 0 4px;
         }
 
-        .o_epg_tag {
-            display: inline-block;
-            font-size: 9px;
-            color: #98a2b3;
-            margin-right: 2px;
-            vertical-align: middle;
-        }
-
-        .o_epg_ro {
-            display: inline-block;
+        // ผล columns lightly tinted so the แผน/ผล pairing reads at a glance
+        .o_epg_actualcol {
+            background-color: #fafbfc;
         }
 
         // compact plan input
@@ -110,9 +109,8 @@
             }
         }
 
-        .o_epg_actual td {
-            background-color: #fafbfc;
-            font-size: 11px;
+        .o_epg_ro {
+            display: inline-block;
         }
 
         .o_epg_total {

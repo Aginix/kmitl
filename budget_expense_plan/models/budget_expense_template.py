@@ -5,16 +5,19 @@ from odoo.exceptions import UserError
 
 class BudgetExpenseTemplate(models.Model):
     """Template (แม่แบบแผนเบิกจ่าย) -- the central, shared definition, one per
-    (แหล่งเงิน x ปีงบประมาณ). It holds two compositions (ADR-0004):
+    (แหล่งเงิน x ปีงบประมาณ). It OWNS the whole structure (ADR-0004, ADR-0005):
 
+    * **Budget Lines** (``line_ids``): the รายการงบ catalog for this template
+      (label + category + ``expr``).
     * **Fund -> Budget Lines** (``fund_ids``): which รายการงบ appear under each
       กองทุน.
     * **Activity -> Funds** (``activity_ids``): which กองทุน apply under each
       ด้าน/แผนงาน/กิจกรรม.
 
-    A ส่วนงาน does not inherit a fixed set of activities: it *chooses* its own
-    activities on the Plan Document, and for each chosen activity the funds and
-    budget lines are supplied by these two compositions.
+    Because everything lives under the template, duplicating it copies the whole
+    structure (with internal links remapped) so a new fiscal year is just
+    "duplicate + change the year". A ส่วนงาน does not inherit a fixed set of
+    activities: it *chooses* its own activities on the Plan Document.
     """
 
     _name = "budget.expense.template"
@@ -23,7 +26,7 @@ class BudgetExpenseTemplate(models.Model):
 
     name = fields.Char(string="ชื่อแม่แบบ", required=True, translate=True)
     fiscal_year_id = fields.Many2one(
-        comodel_name="account.fiscal.year", string="ปีงบประมาณ", required=True
+        comodel_name="account.fiscal.year", string="ปีงบประมาณ"
     )
     source_analytic_id = fields.Many2one(
         comodel_name="account.analytic.account",
@@ -36,6 +39,11 @@ class BudgetExpenseTemplate(models.Model):
         string="สถานะ",
         default="draft",
         required=True,
+    )
+    line_ids = fields.One2many(
+        comodel_name="budget.expense.line",
+        inverse_name="template_id",
+        string="รายการงบ",
     )
     fund_ids = fields.One2many(
         comodel_name="budget.expense.template.fund",
@@ -80,14 +88,70 @@ class BudgetExpenseTemplate(models.Model):
 
     def action_publish(self):
         for template in self:
+            if not template.fiscal_year_id:
+                raise UserError(_("กรุณาระบุปีงบประมาณก่อนเผยแพร่"))
+            if not template.line_ids:
+                raise UserError(_("ต้องตั้งค่ารายการงบอย่างน้อย 1 รายการก่อนเผยแพร่"))
             if not template.fund_ids:
-                raise UserError(_("ต้องตั้งค่ากองทุน/รายการงบอย่างน้อย 1 รายการก่อนเผยแพร่"))
+                raise UserError(_("ต้องตั้งค่ากองทุนอย่างน้อย 1 รายการก่อนเผยแพร่"))
             if not template.activity_ids:
                 raise UserError(_("ต้องตั้งค่าด้าน/แผนงานอย่างน้อย 1 รายการก่อนเผยแพร่"))
             template.state = "published"
 
     def action_reset_to_draft(self):
         self.write({"state": "draft"})
+
+    def copy(self, default=None):
+        """Deep-copy the template for a new fiscal year, remapping the internal
+        Fund->Budget-Line and Activity->Fund links to the new copies (ADR-0005).
+        The year is cleared so the user picks the next year before publishing;
+        plans are never copied."""
+        self.ensure_one()
+        default = dict(default or {})
+        default.setdefault("state", "draft")
+        default.setdefault("fiscal_year_id", False)
+        default.setdefault("name", _("%s (สำเนา)") % (self.name or ""))
+        # handle children manually so M2m links can be remapped
+        default.update({"line_ids": [], "fund_ids": [], "activity_ids": [], "plan_ids": []})
+        new = super().copy(default)
+
+        line_map = {}
+        for line in self.line_ids:
+            line_map[line.id] = line.copy({"template_id": new.id}).id
+        fund_map = {}
+        for fund in self.fund_ids:
+            new_fund = fund.copy(
+                {
+                    "template_id": new.id,
+                    "budget_line_ids": [
+                        (6, 0, [line_map[l.id] for l in fund.budget_line_ids if l.id in line_map])
+                    ],
+                }
+            )
+            fund_map[fund.id] = new_fund.id
+        for act in self.activity_ids:
+            act.copy(
+                {
+                    "template_id": new.id,
+                    "fund_ids": [
+                        (6, 0, [fund_map[f.id] for f in act.fund_ids if f.id in fund_map])
+                    ],
+                }
+            )
+        return new
+
+    def action_duplicate(self):
+        """Duplicate this template (for the next year) and open the copy."""
+        self.ensure_one()
+        new = self.copy()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("แม่แบบแผนเบิกจ่าย"),
+            "res_model": "budget.expense.template",
+            "res_id": new.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def action_generate_plans(self):
         """Push-generate one draft Plan Document per Required Department that
@@ -150,6 +214,7 @@ class BudgetExpenseTemplateFund(models.Model):
     budget_line_ids = fields.Many2many(
         comodel_name="budget.expense.line",
         string="รายการงบ",
+        domain="[('template_id', '=', parent.id)]",
     )
     display_name = fields.Char(compute="_compute_display_name")
     company_id = fields.Many2one(related="template_id.company_id", store=True)

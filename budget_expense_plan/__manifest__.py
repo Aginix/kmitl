@@ -17,7 +17,6 @@
         "security/ir.model.access.csv",
         "data/ir_sequence.xml",
         "data/report_action_xlsx.xml",
-        "views/budget_expense_line_views.xml",
         "views/budget_expense_template_views.xml",
         "views/budget_expense_required_department_views.xml",
         "views/budget_expense_plan_views.xml",

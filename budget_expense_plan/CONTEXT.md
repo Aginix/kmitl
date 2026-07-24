@@ -11,8 +11,8 @@ The subject as a whole, and specifically a ส่วนงาน's monthly plan 
 _Avoid_: spending plan, cash-flow plan; do **not** confuse with Procurement Plan (แผนจัดซื้อจัดจ้าง — a per-procurement plan) nor with the installment section also called "แผนการเบิกจ่าย" inside a procurement plan.
 
 **Budget Line (รายการงบ)**:
-A catalog record defining one plannable **column**: a label, its Category, and an `expr`. It is **not** a budget.account — it *curates* one or more budget.account codes (via `expr`) whose consume rolls into this column. Examples: ค่าจ้างพนักงาน, ค่าใช้สอย, ค่าครุภัณฑ์.
-_Avoid_: budget account / รหัสงบประมาณ (that is the underlying budget.account node); งบประมาณ (too broad — reserve it for the general notion).
+One plannable **column**, **owned by a Template** (ADR-0005), not a global catalog: a label, its Category, and an `expr`. It is **not** a budget.account — it *curates* one or more budget.account codes (via `expr`) whose consume rolls into this column. Examples: ค่าจ้างพนักงาน, ค่าใช้สอย, ค่าครุภัณฑ์. Duplicating the Template copies its Budget Lines.
+_Avoid_: budget account / รหัสงบประมาณ (that is the underlying budget.account node); งบประมาณ (too broad — reserve it for the general notion); catalog (it is no longer a shared global catalog).
 
 **Category (หมวดงบรายจ่าย)**:
 One of the five expense roots of budget.account — 51000 งบบุคลากร, 52000 งบดำเนินงาน, 53000 งบลงทุน, 54000 งบเงินอุดหนุน, 55000 งบรายจ่ายอื่น (with 07020 งบกองทุนสำรอง as a sixth root in the chart). Every Budget Line belongs to exactly one.
@@ -23,7 +23,7 @@ The free-text formula on a Budget Line, evaluated by `safe_eval` over budget.acc
 _Avoid_: domain, filter (it is an arithmetic code expression, not an Odoo domain).
 
 **Template (แม่แบบแผนเบิกจ่าย)**:
-The central definition — one per (แหล่งเงิน × ปีงบประมาณ) — holding two compositions (ADR-0004): **Fund → Budget Lines** (which รายการงบ sit under each กองทุน) and **Activity → Funds** (which กองทุน sit under each ด้าน/แผนงาน). It is the shared structure behind every Plan Document; a ส่วนงาน selects which Activities to plan and the funds + budget lines follow from these compositions. Edited in draft and **published** to become usable; a Template edit propagates live (ADR-0002).
+The central definition — one per (แหล่งเงิน × ปีงบประมาณ) — that **owns** the Budget Lines plus two compositions (ADR-0004, ADR-0005): **Fund → Budget Lines** (which รายการงบ sit under each กองทุน) and **Activity → Funds** (which กองทุน sit under each ด้าน/แผนงาน). It is the shared structure behind every Plan Document; a ส่วนงาน selects which Activities to plan and the funds + budget lines follow from these compositions. Edited in draft and **published** to become usable; a Template edit propagates live (ADR-0002). A new fiscal year is a **duplicate** of the whole Template with the year changed (ADR-0005).
 _Avoid_: report layout (the Template is master data, not a rendering); config; "active" (that names a Plan Document state, not the Template's — the Template is *published*).
 
 **Plan Document (เอกสารแผนเบิกจ่าย)**:

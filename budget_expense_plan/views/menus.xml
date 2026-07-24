@@ -10,14 +10,7 @@
         sequence="35"
     />
 
-    <!-- Config: catalog + template + required departments -->
-    <menuitem
-        id="menu_budget_expense_line"
-        name="รายการงบ (แผนเบิกจ่าย)"
-        parent="budget.budget_config_menu"
-        action="action_budget_expense_line"
-        sequence="70"
-    />
+    <!-- Config: template (owns budget lines) + required departments -->
     <menuitem
         id="menu_budget_expense_template"
         name="แม่แบบแผนเบิกจ่าย"

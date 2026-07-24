@@ -58,58 +58,59 @@
                     <table class="table table-sm table-bordered o_epg_table">
                         <thead>
                             <tr>
-                                <th class="o_epg_label">รายการ (รายการงบ)</th>
+                                <th class="o_epg_label" t-att-rowspan="state.showActual ? 2 : 1">รายการงบ</th>
                                 <th t-foreach="state.data.months" t-as="mo" t-key="mo.m"
-                                    t-attf-class="o_epg_q{{ mo.quarter }}" t-esc="mo.label" />
-                                <th class="o_epg_total">รวม</th>
+                                    t-attf-class="o_epg_q{{ mo.quarter }}"
+                                    t-att-colspan="state.showActual ? 2 : 1" t-esc="mo.label" />
+                                <th class="o_epg_total" t-att-colspan="state.showActual ? 2 : 1">รวม</th>
+                            </tr>
+                            <tr t-if="state.showActual">
+                                <t t-foreach="state.data.months" t-as="mo" t-key="mo.m">
+                                    <th class="o_epg_sub">แผน</th>
+                                    <th class="o_epg_sub o_epg_actualcol">ผล</th>
+                                </t>
+                                <th class="o_epg_sub o_epg_total">แผน</th>
+                                <th class="o_epg_sub o_epg_total o_epg_actualcol">ผล</th>
                             </tr>
                         </thead>
                         <tbody t-foreach="fundGroups" t-as="grp" t-key="grp.fund_id">
                             <tr class="o_epg_fund">
-                                <td t-att-colspan="state.data.months.length + 2" t-esc="grp.fund_name" />
+                                <td t-att-colspan="1 + state.data.months.length * (state.showActual ? 2 : 1) + (state.showActual ? 2 : 1)"
+                                    t-esc="grp.fund_name" />
                             </tr>
-                            <t t-foreach="grp.rows" t-as="row"
-                                t-key="row.fund_id + '-' + row.budget_line_id">
-                                <tr class="o_epg_plan">
-                                    <td class="o_epg_label" t-att-rowspan="state.showActual ? 2 : 1">
-                                        <span class="fw-bold" t-esc="row.budget_line_name" />
-                                        <span class="text-muted small ms-1" t-esc="row.category_name" />
+                            <tr t-foreach="grp.rows" t-as="row"
+                                t-key="row.fund_id + '-' + row.budget_line_id" class="o_epg_line">
+                                <td class="o_epg_label">
+                                    <span class="fw-bold" t-esc="row.budget_line_name" />
+                                    <span class="text-muted small ms-1" t-esc="row.category_name" />
+                                </td>
+                                <t t-foreach="state.data.months" t-as="mo" t-key="mo.m">
+                                    <td class="o_epg_cell">
+                                        <input t-if="isEditable" type="text" inputmode="decimal"
+                                            class="o_epg_input"
+                                            t-att-value="formatInput(row.plan[mo.m])"
+                                            t-on-change="(ev) => this.onAmountInput(row, mo.m, ev)" />
+                                        <span t-else="" class="o_epg_ro" t-esc="formatAmount(row.plan[mo.m])" />
                                     </td>
-                                    <t t-foreach="state.data.months" t-as="mo" t-key="mo.m">
-                                        <td class="o_epg_cell">
-                                            <span t-if="state.showActual" class="o_epg_tag">แผน</span>
-                                            <input t-if="isEditable" type="text" inputmode="decimal"
-                                                class="o_epg_input"
-                                                t-att-value="formatInput(row.plan[mo.m])"
-                                                t-on-change="(ev) => this.onAmountInput(row, mo.m, ev)" />
-                                            <span t-else="" class="o_epg_ro" t-esc="formatAmount(row.plan[mo.m])" />
-                                        </td>
-                                    </t>
-                                    <td class="o_epg_total" t-esc="formatAmount(rowTotal(row, 'plan'))" />
-                                </tr>
-                                <tr t-if="state.showActual" class="o_epg_actual">
-                                    <t t-foreach="state.data.months" t-as="mo" t-key="mo.m">
-                                        <td class="o_epg_cell text-muted">
-                                            <span class="o_epg_tag">ผล</span>
-                                            <span t-esc="formatAmount(row.actual[mo.m])" />
-                                        </td>
-                                    </t>
-                                    <td class="o_epg_total text-muted" t-esc="formatAmount(rowTotal(row, 'actual'))" />
-                                </tr>
-                            </t>
+                                    <td t-if="state.showActual" class="o_epg_cell o_epg_actualcol text-muted"
+                                        t-esc="formatAmount(row.actual[mo.m])" />
+                                </t>
+                                <td class="o_epg_total" t-esc="formatAmount(rowTotal(row, 'plan'))" />
+                                <td t-if="state.showActual" class="o_epg_total o_epg_actualcol text-muted"
+                                    t-esc="formatAmount(rowTotal(row, 'actual'))" />
+                            </tr>
                         </tbody>
                         <tfoot>
                             <tr class="o_epg_grand">
-                                <td class="o_epg_label">รวมทั้งหมด (แผน)</td>
-                                <td t-foreach="state.data.months" t-as="mo" t-key="mo.m"
-                                    class="o_epg_total" t-esc="formatAmount(monthTotal(mo.m, 'plan'))" />
+                                <td class="o_epg_label">รวมทั้งหมด</td>
+                                <t t-foreach="state.data.months" t-as="mo" t-key="mo.m">
+                                    <td class="o_epg_total" t-esc="formatAmount(monthTotal(mo.m, 'plan'))" />
+                                    <td t-if="state.showActual" class="o_epg_total o_epg_actualcol text-muted"
+                                        t-esc="formatAmount(monthTotal(mo.m, 'actual'))" />
+                                </t>
                                 <td class="o_epg_total" t-esc="formatAmount(grandTotal('plan'))" />
-                            </tr>
-                            <tr t-if="state.showActual" class="o_epg_grand text-muted">
-                                <td class="o_epg_label">รวมทั้งหมด (ผล)</td>
-                                <td t-foreach="state.data.months" t-as="mo" t-key="mo.m"
-                                    class="o_epg_total" t-esc="formatAmount(monthTotal(mo.m, 'actual'))" />
-                                <td class="o_epg_total" t-esc="formatAmount(grandTotal('actual'))" />
+                                <td t-if="state.showActual" class="o_epg_total o_epg_actualcol text-muted"
+                                    t-esc="formatAmount(grandTotal('actual'))" />
                             </tr>
                         </tfoot>
                     </table>

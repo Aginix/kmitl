@@ -6,19 +6,24 @@ from .formula import validate_formula
 
 
 class BudgetExpenseLine(models.Model):
-    """Budget Line (รายการงบ) -- one plannable *column* of the expense plan.
-
-    A label + its Category (one of the five expense roots of ``budget.account``)
-    + an ``expr`` that curates the ``budget.account`` codes whose consume feeds
-    the column. It is NOT a ``budget.account``; it references one or more codes
-    through the ``A['<code>']`` formula so a single column can pool several
-    codes (e.g. ค่าจ้างพนักงาน = A['5101010038'] + A['5101010040']).
+    """Budget Line (รายการงบ) -- one plannable *column*, owned by a Template
+    (ADR-0005). A label + its Category (one of the five expense roots of
+    ``budget.account``) + an ``expr`` that curates the ``budget.account`` codes
+    whose consume feeds the column. Living under the Template means duplicating
+    the Template for a new fiscal year copies the budget lines too.
     """
 
     _name = "budget.expense.line"
     _description = "Expense Plan Budget Line (รายการงบ)"
-    _order = "category_id, sequence, id"
+    _order = "template_id, category_id, sequence, id"
 
+    template_id = fields.Many2one(
+        comodel_name="budget.expense.template",
+        string="แม่แบบ",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
     name = fields.Char(string="รายการงบ", required=True, translate=True)
     sequence = fields.Integer(default=10)
     category_id = fields.Many2one(
@@ -37,12 +42,7 @@ class BudgetExpenseLine(models.Model):
         ),
     )
     active = fields.Boolean(default=True)
-    company_id = fields.Many2one(
-        comodel_name="res.company",
-        string="Company",
-        required=True,
-        default=lambda self: self.env.company,
-    )
+    company_id = fields.Many2one(related="template_id.company_id", store=True)
 
     @api.constrains("expr")
     def _check_expr(self):
