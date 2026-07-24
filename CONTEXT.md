@@ -19,5 +19,9 @@ A flag chosen on the PR for who sources vendor and price: *ให้พัสด
 _Avoid_: deriving "must specify a vendor" from an amount threshold.
 
 **Assigned Officer**:
-The procurement officer (เจ้าหน้าที่พัสดุ) responsible for handling a document's work. Stored in the `assigned_to` field. A PA has no officer of its own — it derives from its parent PR's officer.
+The procurement officer (เจ้าหน้าที่พัสดุ) responsible for handling a document's work. **Each of PR, PA, and PO carries its own independent Assigned Officer** — PA does *not* derive from its parent PR; PA-stage work is typically claimed by a new officer when it moves into the buying stage, and unassigning on one document never affects the other. Stored in `assigned_to` on PR and PO; stored in `pa_assigned_to` on PA (because PA's `assigned_to` is the [[Approver]]).
 _Avoid_: Responsible (that's the PR creator, `user_id`), Buyer (PO `user_id`), Approver (the PA manager who signs off, a different role), Purchase Representative.
+
+**Approver** (PA):
+The manager (`group_purchase_request_manager`) who signs off the พจ.1. Stored in `purchase.request.approval.assigned_to`. Distinct from the [[Assigned Officer]] — an Approver *authorises* the buying; an Assigned Officer *does the work*.
+_Avoid_: Assigned Officer; confusing this with `pa_assigned_to`.

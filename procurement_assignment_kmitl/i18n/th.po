@@ -53,10 +53,25 @@ msgstr "มอบหมายให้ฉัน"
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_assign_officer_wizard__user_id
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_order__assigned_to
 #: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request__assigned_to
-#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request_approval__pr_assigned_to
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request_approval__pa_assigned_to
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_search_assignment
 msgid "Assigned Officer"
 msgstr "เจ้าหน้าที่ผู้รับผิดชอบ"
+
+#. module: procurement_assignment_kmitl
+#: model:ir.model.fields,field_description:procurement_assignment_kmitl.field_purchase_request_approval__pr_assigned_to
+msgid "PR Assigned Officer"
+msgstr "เจ้าหน้าที่ผู้รับผิดชอบ (พ.1)"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
+msgid "Assigned to me (พ.1)"
+msgstr "งานของฉัน (พ.1)"
+
+#. module: procurement_assignment_kmitl
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_search_assignment
+msgid "Assigned to me (พจ.1)"
+msgstr "งานของฉัน (พจ.1)"
 
 #. module: procurement_assignment_kmitl
 #. odoo-python

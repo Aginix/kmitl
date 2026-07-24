@@ -36,8 +36,9 @@ class AssignOfficerWizard(models.TransientModel):
         res = super().default_get(fields_list)
         if res.get("res_model") and res.get("res_id") and "user_id" in fields_list:
             record = self.env[res["res_model"]].browse(res["res_id"])
-            if record.assigned_to:
-                res["user_id"] = record.assigned_to.id
+            current_officer = record._assignment_get_officer()
+            if current_officer:
+                res["user_id"] = current_officer.id
         return res
 
     def action_assign(self):
@@ -45,8 +46,8 @@ class AssignOfficerWizard(models.TransientModel):
         record = self.env[self.res_model].browse(self.res_id)
         if not self.env.user.has_group(record._assign_manager_group):
             raise AccessError(_("Only a manager can assign another officer."))
-        old_officer = record.assigned_to
-        record.assigned_to = self.user_id
+        old_officer = record._assignment_get_officer()
+        record._assignment_set_officer(self.user_id)
         if old_officer and old_officer != self.user_id:
             record._assignment_clear_activity(old_officer)
         if self.user_id and self.user_id != self.env.user:

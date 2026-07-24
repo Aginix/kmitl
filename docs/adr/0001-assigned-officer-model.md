@@ -10,6 +10,11 @@ filter are uniform across documents.
 `request_id.assigned_to`, and PA's own `assigned_to` keeps its existing, distinct meaning (Approver).
 Hence PA has no assign buttons; its "My Approvals" list filters on `request_id.assigned_to`.
 
+> **Superseded in part by [ADR-0006](0006-pa-independent-assigned-officer.md).** The paragraph
+> above (PA derives its officer from the parent PR, no PA-side buttons) no longer holds: PA now
+> carries its own `pa_assigned_to` with the full assign UX. PA's `assigned_to` still means
+> Approver, unchanged. The rest of this ADR still stands.
+
 ## Considered options
 
 - **A new dedicated `assigned_officer_id` field** — clearer name, but leaves PR's OCA `assigned_to`
