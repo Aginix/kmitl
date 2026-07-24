@@ -166,6 +166,10 @@
                                     'readonly': [('is_officer', '=', False)]
                                 }" />
                         </group>
+                        <group name="attachments" string="เอกสารแนบ">
+                            <field name="attachment_ids" widget="many2many_binary"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
+                        </group>
                     </group>
                     <group name="analytic_dimensions" string="มิติทางบัญชี">
                         <field name="department_analytic_id"
@@ -231,10 +235,6 @@
                                         decoration-success="state == 'done'" />
                                 </tree>
                             </field>
-                        </page>
-                        <page string="เอกสารแนบ" name="attachments">
-                            <field name="attachment_ids" widget="many2many_binary"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
                         </page>
                     </notebook>
                 </sheet>
