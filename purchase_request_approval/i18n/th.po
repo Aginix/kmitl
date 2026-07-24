@@ -1147,7 +1147,17 @@ msgstr ""
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__vat_included
 msgid "Vat Included"
-msgstr "รวมภาษีมูลค่าเพิ่ม"
+msgstr "ภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__vat_included__exclusive
+msgid "VAT Exclusive"
+msgstr "ไม่มีภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__vat_included__inclusive
+msgid "VAT Inclusive"
+msgstr "มีภาษีมูลค่าเพิ่ม"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__verified_by
