@@ -34,7 +34,7 @@ class ApprovalRequestParticipant(models.Model):
         compute="_compute_allowed_partner_type_ids",
     )
 
-    description = fields.Char(string="รายละเอียด")
+    description = fields.Text(string="รายละเอียด")
 
     @api.depends(
         "request_id.category_id.allow_internal_partner",

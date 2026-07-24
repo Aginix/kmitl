@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class ApprovalRequestLine(models.Model):
@@ -80,3 +80,11 @@ class ApprovalRequestLine(models.Model):
             record.allowed_product_ids = (
                 record.request_id.category_id.allowed_product_ids
             )
+
+    @api.constrains("total_amount")
+    def _check_total_amount_positive(self):
+        for rec in self:
+            if rec.total_amount <= 0:
+                raise ValidationError(
+                    _("จำนวนเงินของรายการค่าใช้จ่าย (แผน) ต้องมากกว่า 0")
+                )

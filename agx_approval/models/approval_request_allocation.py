@@ -1,4 +1,5 @@
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError, _
 from odoo.exceptions import UserError
 
 
@@ -136,10 +137,20 @@ class ApprovalRequestAllocation(models.Model):
         for rec in self:
             rec.allowed_recipient_ids = rec.request_id.participant_ids.partner_id
 
-    @api.depends("request_id.category_id")
+    @api.depends("request_id.line_ids.product_id")
     def _compute_allowed_product_ids(self):
+        # Actual-expense products are limited to what the plan (ค่าใช้จ่ายแผน)
+        # already lists — you can only settle against a planned expense type.
         for rec in self:
-            rec.allowed_product_ids = rec.request_id.category_id.allowed_product_ids
+            rec.allowed_product_ids = rec.request_id.line_ids.product_id
+
+    @api.constrains("amount")
+    def _check_amount_positive(self):
+        for rec in self:
+            if rec.amount <= 0:
+                raise ValidationError(
+                    _("จำนวนเงินของค่าใช้จ่ายจริงต้องมากกว่า 0")
+                )
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
