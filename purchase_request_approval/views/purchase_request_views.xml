@@ -28,7 +28,7 @@
         <field name="priority">150</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <field name="partner_id" position="before">
+            <field name="vat_included" position="before">
                 <field
                     name="procurement_mode"
                     widget="radio"
