@@ -132,7 +132,7 @@ class SarabunDocument(models.Model):
             ("draft", "ร่าง (Draft)"),
             ("circulating", "กำลังดำเนินการ (Circulating)"),
             ("completed", "เสร็จสิ้น (Completed)"),
-            ("returned", "ตีกลับ (Returned)"),
+            ("returned", "รอการแก้ไขเอกสาร (Pending Revision)"),
             ("rejected", "ปฏิเสธ (Rejected)"),
             ("cancelled", "ยกเลิก (Cancelled)"),
         ],
@@ -248,6 +248,12 @@ class SarabunDocument(models.Model):
         help="True only for the sender (or a manager) while the หนังสือ may still be "
         "ดึงกลับ / ยกเลิกการส่ง — mirrors _check_sender_withdraw_allowed so a mere "
         "recipient never sees the withdraw button.",
+    )
+    can_return = fields.Boolean(
+        compute="_compute_can_return",
+        string="Can Return",
+        help="True for the sender or a current active gating actor — drives the "
+        "ตีกลับ (return-without-sign) button visibility.",
     )
 
     # current user's actionable step(s) + routing progress (UI)
@@ -494,6 +500,31 @@ class SarabunDocument(models.Model):
                 record.state == "circulating"
                 and not record.has_signed
                 and (record.sender_user_id == self.env.user or is_manager)
+            )
+
+    @api.depends(
+        "state",
+        "sender_user_id",
+        "routing_step_ids.state",
+        "routing_step_ids.gating",
+        "routing_step_ids.actor_user_ids",
+    )
+    def _compute_can_return(self):
+        is_manager = self.env.user.has_group("agx_sarabun.group_sarabun_manager")
+        uid = self.env.user
+        for record in self:
+            if record.state != "circulating":
+                record.can_return = False
+                continue
+            has_active_gating = bool(
+                record.routing_step_ids.filtered(
+                    lambda s: s.state == "active"
+                    and s.gating
+                    and uid in s.actor_user_ids
+                )
+            )
+            record.can_return = (
+                record.sender_user_id == uid or has_active_gating or is_manager
             )
 
     @api.depends(
@@ -819,6 +850,58 @@ class SarabunDocument(models.Model):
             "type": "ir.actions.act_window",
             "name": _("ดึงกลับ / ยกเลิกการส่ง"),
             "res_model": "sarabun.recall.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_document_id": self.id},
+        }
+
+    def _check_return_allowed(self):
+        """ตีกลับ (return-without-sign) guard — sender, current active gating
+        actor, or manager, while state=circulating. No step is stamped."""
+        self.ensure_one()
+        if self.state != "circulating":
+            raise UserError(_("Only a circulating document can be ตีกลับ (returned)."))
+        is_manager = self.env.user.has_group("agx_sarabun.group_sarabun_manager")
+        uid = self.env.user
+        is_sender = self.sender_user_id == uid
+        has_active_gating = bool(
+            self.routing_step_ids.filtered(
+                lambda s: s.state == "active"
+                and s.gating
+                and uid in s.actor_user_ids
+            )
+        )
+        if not (is_sender or has_active_gating or is_manager):
+            raise UserError(_(
+                "Only the sender or a current gating actor may ตีกลับ this document."
+            ))
+
+    def action_return_no_sign(self, reason=None):
+        """ตีกลับโดยไม่ลงนาม — circulating → returned; no step is stamped.
+        Archives the current chain and restarts on re-send (same as ADR-0006
+        ดึงกลับ), so the origin can edit and resend on the same number.
+        Fires ``_on_sarabun_returned`` with an empty step recordset."""
+        self.ensure_one()
+        self._check_return_allowed()
+        if not reason:
+            raise UserError(_("A reason is required to ตีกลับ."))
+        self.routing_step_ids._clear_activities()
+        self._restart_chain()
+        self.state = "returned"
+        self.message_post(
+            body=_("Document returned (ตีกลับ). Reason: %s") % reason
+        )
+        empty_step = self.env["sarabun.routing.step"]
+        self._call_origin("_on_sarabun_returned", self, empty_step)
+        return True
+
+    def action_open_return_wizard(self):
+        """Open the ตีกลับ wizard (collects the mandatory reason)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตีกลับเอกสาร"),
+            "res_model": "sarabun.return.wizard",
             "view_mode": "form",
             "target": "new",
             "context": {"default_document_id": self.id},

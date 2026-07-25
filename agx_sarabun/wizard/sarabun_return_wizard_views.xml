@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_return_wizard_form" model="ir.ui.view">
+        <field name="name">sarabun.return.wizard.form</field>
+        <field name="model">sarabun.return.wizard</field>
+        <field name="arch" type="xml">
+            <form string="ตีกลับเอกสาร">
+                <field name="document_id" invisible="1"/>
+                <group>
+                    <field name="reason" placeholder="ระบุเหตุผลการตีกลับ / reason..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="ยืนยัน (Confirm)"
+                            class="btn-primary"/>
+                    <button string="ยกเลิก (Cancel)" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
