@@ -371,7 +371,7 @@ class BudgetCommitment(models.Model):
     # --- Workflow Methods ---
 
     def action_reserve(self):
-        """Draft -> Reserved: validate reserve lines exist"""
+        """Draft -> Reserved: validate reserve lines exist and pool is available."""
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft commitments can be reserved."))
@@ -379,11 +379,90 @@ class BudgetCommitment(models.Model):
                 raise UserError(
                     _("Cannot reserve: no reserve lines found. Add reserve lines first.")
                 )
+            record._check_reserve_availability()
             if record.name == _("New"):
                 record.name = self.env["ir.sequence"].next_by_code(
                     "budget.commitment"
                 ) or _("New")
             record.state = "reserved"
+
+    def _check_reserve_availability(self):
+        """Block reserving more than the control-node Available (ADR-0005).
+
+        Runs while the commitment is still ``draft`` (so its own reserve lines are
+        not yet counted as ``used``). Skipped when ``budget.allow_negative`` is set.
+        Availability is evaluated with the **header** dimension combination
+        (``analytic_distribution``) — the reserve lines a host mixin builds carry
+        only a subset (activity+fund) while the header carries all dimensions —
+        paired with each reserve line's own budget account, so cross-charge lines
+        are each checked against their own pool.
+        """
+        self.ensure_one()
+        allow_negative = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("budget.allow_negative", False)
+        )
+        if allow_negative:
+            return
+        controller = self.env["budget.controller"]
+        fy_id = self.account_fiscal_year_id.id
+        company_id = self.company_id.id
+        rounding = self.currency_id.rounding or 0.01
+        avail_distribution = self._availability_distribution()
+        reserve_lines = self.line_ids.filtered(
+            lambda l: l.state == "posted" and l.move_type == "reserve"
+        )
+        per_account = {}
+        for line in reserve_lines:
+            per_account.setdefault(line.account_id, 0.0)
+            per_account[line.account_id] += line.amount
+        for account, amount in per_account.items():
+            available = controller.get_available(
+                account, avail_distribution, fy_id, company_id
+            )
+            if float_compare(available, amount, precision_rounding=rounding) < 0:
+                raise UserError(
+                    _(
+                        "Insufficient budget to reserve %(amount).2f on %(code)s: "
+                        "only %(available).2f available at the control node."
+                    )
+                    % {
+                        "amount": amount,
+                        "code": account.display_name,
+                        "available": available,
+                    }
+                )
+
+    # kmitl_project rides on the reserve line but the project pool is
+    # floating/UNTAGGED (ADR-0007), so availability must be evaluated without it.
+    # procurement_plan is NOT stripped: a plan's source appropriation IS tagged
+    # with its procurement_plan dimension, so the check must keep the tag to match
+    # it (procurement.plan._reserve_plan_commitment carries it in its own
+    # pre-check for the same reason).
+    _POOL_TAG_PLAN_CODES = ("kmitl_project",)
+
+    def _availability_distribution(self):
+        """The dimension combination to evaluate Available against: the header
+        distribution with the floating-pool tag (kmitl_project) removed, so a
+        project reservation is checked against its floating (untagged)
+        appropriation pool — matching kmitl.project._reserve_project_commitment,
+        whose pre-check builds analytic_data from the four financial dimensions
+        only. Plan (procurement_plan, tagged appropriation) and standalone
+        reservations are unchanged."""
+        self.ensure_one()
+        distribution = dict(self.analytic_distribution or {})
+        if not distribution:
+            return distribution
+        account_ids = [int(k) for k in distribution]
+        tag_accounts = self.env["account.analytic.account"].browse(
+            account_ids
+        ).filtered(
+            lambda a: a.root_plan_id and a.root_plan_id.code in self._POOL_TAG_PLAN_CODES
+        )
+        for acc in tag_accounts:
+            distribution.pop(str(acc.id), None)
+        return distribution
 
     def action_done(self):
         """Close the commitment"""

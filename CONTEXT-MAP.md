@@ -100,3 +100,11 @@ upfront.
   `in_cash + in_kind`; every cash-flow compute repoints from `project_value` to a
   `cash_target` that equals `in_cash` on research and `project_value` elsewhere. Base
   module behaviour is unchanged when the add-on is not installed.
+- **Budget ↔ Operating Units (cross-OU reservation)**: a standalone `budget.commitment`
+  (ใบจองงบประมาณ) may be reserved by one OU (the **Owning Unit** / funder — normally
+  central) _for_ another (the **Beneficiary Unit** — the requesting unit); both OUs see
+  the slip, the beneficiary draws it down through its own พ.1 / disbursement, and the
+  spend counts against the **funder's `department`** dimension while the
+  พ.1/`budget.move` carries the **beneficiary's OU** (budget ADR-0010, ADR-0011).
+  Consuming documents (`purchase.request`, `approval.request`) may **pick** any drawable
+  commitment — standalone, plan or project — instead of reserving their own.

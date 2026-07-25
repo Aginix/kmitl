@@ -61,6 +61,13 @@
                     <field name="analytic_distribution" invisible="1" />
 
                     <field
+                        name="reservation_commitment_id"
+                        options="{'no_create': True, 'no_open': True}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False)], 'readonly': [('hide_reserve_budget_button', '=', True)]}"
+                        placeholder="เลือกใบจองที่มีอยู่เพื่อหยิบไปใช้ (เว้นว่าง = จองใหม่)"
+                    />
+
+                    <field
                         name="budget_account_id"
                         readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"

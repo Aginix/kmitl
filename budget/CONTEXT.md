@@ -10,6 +10,14 @@ Budget appropriation, reservation and disbursement tracking for KMITL. Money is 
 The access-control boundary (`operating.unit`, from OCA). A user only sees budget moves/commitments whose `operating_unit_id` is among their allowed OUs (central-planning staff are granted all). It gates *visibility* — it is not a financial dimension and is never summed or shown as a report axis.
 _Avoid_: department, faculty (those name the financial dimension)
 
+**Owning Unit (หน่วยงานเจ้าของ/ผู้จอง, `operating_unit_id`)**:
+On a Budget Reservation, the OU that reserved the money and whose pool it draws from — the *funder* (normally central). This is the plain `operating_unit_id`.
+_Avoid_: beneficiary, requester
+
+**Beneficiary Unit (หน่วยงานผู้รับการสนับสนุน/ผู้ใช้, `beneficiary_operating_unit_id`)**:
+On a Budget Reservation, the single OU the reservation is made *for* — the unit that requested support and will spend the slip. A separate Many2one (one unit per slip). A user sees a reservation when their OU matches **either** the Owning Unit **or** the Beneficiary Unit. Kept single (not M2m) but explicit so the funder need not always be central — a unit may in future reserve for another unit.
+_Avoid_: owner, funder (that is the Owning Unit)
+
 **Department (ส่วนงาน, `department_analytic_id`)**:
 One of the six financial dimensions (the `departments` analytic plan), carried on move/commitment lines and used as a report **filter**. Mirrors the Operating Unit in meaning but is a separate field used for financial breakdown, not for access.
 _Avoid_: operating unit, OU
@@ -70,12 +78,20 @@ _Avoid_: change, revision
 
 A commitment holds one cap and a ledger of lines; each line is a reserve/obligate/consume entry. The three operations are **independent primitives** — a flow may fire them at different times (procurement instalments) or together (PO disbursement).
 
+**Budget Reservation / ใบจองงบประมาณ (a standalone `budget.commitment`)**:
+A `budget.commitment` created **directly** as a first-class document — reserved up front against a budget pool with no originating source document — and later **picked up** by consuming documents (PR / disbursement) that obligate/consume against it. Generalises the shared-commitment pattern: previously only a `procurement.plan` or `kmitl.project` could own a pre-reserved commitment, now a commitment may also stand alone. The reservation slip and the consuming document may belong to **different Operating Units** (central reserves, a unit spends).
+_Avoid_: allocation, earmark (use "reserve"); BC on its own is the *reservation slip*, not the spend.
+
+**Draw down (หยิบใบจองไปใช้)**:
+The act of a consuming document (PR / disbursement) **linking to an existing reservation** (`budget_commitment_id`) instead of reserving its own — after which its spend obligates/consumes against that shared commitment. A drawing document never re-reserves and inherits the reservation's dimensions + fiscal year locked. One reservation may be drawn by many documents up to its cap (plan keeps its one-active-PR rule; project and standalone allow many).
+_Avoid_: consume (that is only the final leg); draw-down is the linking, obligate/consume are what follow.
+
 **Approved Spending Limit (วงเงินอนุมัติ) / ขอใช้ทั้งหมด (3)**:
 The per-commitment cap (`commitment.amount`) — the amount a request was approved to spend. Dashboard column (3) = sum of caps over commitments still active (not cancelled). May exceed what is actually reserved.
 _Avoid_: budget, reserved amount
 
 **Reserve (จองงบ)**:
-Earmarking pool against a commitment; a `reserve` ledger line. **Timing depends on the allocation path.** For a *procurement plan* it fires the moment its source budget **appropriation is posted** — reserving the full `total_price` at once (not at *ready*; see ADR-0005). For a *project* the appropriation leaves the pool **floating** (see Floating Budget) and the reserve fires later, when the `kmitl.project` is confirmed (`draft→new`), reserving its full `budget_amount` — a deliberate divergence from the procurement-plan timing in ADR-0005 (see ADR-0007).
+Earmarking pool against a commitment; a `reserve` ledger line. **Timing depends on the allocation path.** For a *procurement plan* it fires the moment its source budget **appropriation is posted** — reserving the full `total_price` at once (not at *ready*; see ADR-0005). For a *project* the appropriation leaves the pool **floating** (see Floating Budget) and the reserve fires later, when the `kmitl.project` is confirmed (`draft→new`), reserving its full `budget_amount` — a deliberate divergence from the procurement-plan timing in ADR-0005 (see ADR-0007). A commitment may also be reserved **directly** as a standalone ใบจองงบประมาณ (Budget Reservation), independent of any plan/project/source document.
 _Avoid_: allocate, commit
 
 **Obligate (ผูกพัน)**:

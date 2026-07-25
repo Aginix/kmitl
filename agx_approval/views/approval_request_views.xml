@@ -78,6 +78,10 @@
                             <span class="ms-1">฿</span>
                         </div>
                         <field name="is_budget_editable" invisible="1"/>
+                        <field name="reservation_commitment_id" colspan="2"
+                            options="{'no_create': True, 'no_open': True}"
+                            attrs="{'invisible': [('budget_commitment_id', '!=', False)], 'readonly': [('hide_reserve_budget_button', '=', True)]}"
+                            placeholder="เลือกใบจองที่มีอยู่เพื่อหยิบไปใช้ (เว้นว่าง = จองใหม่)"/>
                         <button name="action_open_reservation_picker" type="object"
                             string="Select Budget from Chart (view balance)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"

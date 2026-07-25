@@ -11,11 +11,34 @@
             eval="[ref('budget_operating_unit.ir_rule_budget_move_allowed_operating_units'),
                    ref('budget_operating_unit.ir_rule_budget_move_line_allowed_operating_units'),
                    ref('budget_operating_unit.ir_rule_budget_transfer_allowed_operating_units'),
-                   ref('budget_operating_unit.ir_rule_budget_transfer_line_allowed_operating_units'),
-                   ref('budget_operating_unit.ir_rule_budget_commitment_allowed_operating_units')]"
+                   ref('budget_operating_unit.ir_rule_budget_transfer_line_allowed_operating_units')]"
         />
         <value
             eval="{'domain_force': &quot;['|','|',(1, '=', 1) if user.has_group('budget_operating_unit_access_all.group_all_ou_budget') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
+        />
+    </function>
+
+    <!-- Commitment keeps the beneficiary clause even under the all-OU override,
+         so a non-privileged Beneficiary Unit user still sees a reservation made
+         for them after access_all rewrites the base domain (ADR-0011). -->
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('budget_operating_unit.ir_rule_budget_commitment_allowed_operating_units')]"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|','|',(1, '=', 1) if user.has_group('budget_operating_unit_access_all.group_all_ou_budget') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),('beneficiary_operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
+        />
+    </function>
+
+    <!-- Commitment lines get the same all-OU bypass + beneficiary clause as the
+         header, so a group_all_ou_budget user sees the ledger lines of a cross-OU
+         reservation rather than an empty list. -->
+    <function model="ir.rule" name="write">
+        <value
+            eval="[ref('budget_operating_unit.ir_rule_budget_commitment_line_allowed_operating_units')]"
+        />
+        <value
+            eval="{'domain_force': &quot;['|','|','|',(1, '=', 1) if user.has_group('budget_operating_unit_access_all.group_all_ou_budget') else (0, '=', 1),('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids),('commitment_id.beneficiary_operating_unit_id','in', user.operating_unit_ids.ids)]&quot;}"
         />
     </function>
 

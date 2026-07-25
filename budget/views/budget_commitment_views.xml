@@ -38,7 +38,8 @@
                     <button name="action_open_reservation_picker" string="เลือกงบประมาณ"
                         type="object" class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_reserve" string="Reserve Budget" type="object"
+                    <button name="action_reserve" string="จองงบประมาณ" type="object"
+                        class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_obligate" string="ผูกพัน" type="object"
                         class="oe_highlight"

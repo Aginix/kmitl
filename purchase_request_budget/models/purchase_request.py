@@ -19,6 +19,33 @@ class PurchaseRequest(models.Model):
         help="Related budget commitment for this purchase request",
     )
 
+    reservation_commitment_id = fields.Many2one(
+        "budget.commitment",
+        string="ใบจองงบประมาณ",
+        domain=lambda self: self._domain_reservation_commitment_id(),
+        copy=False,
+        tracking=True,
+        help=(
+            "เลือกใบจองงบประมาณที่มีอยู่แล้วเพื่อหยิบไปใช้ (draw down) แทนการจองใหม่ "
+            "— เอกสารจะสืบทอดรหัสงบ/มิติ/ปีงบจากใบจองแบบล็อก และไม่จองซ้ำ. "
+            "เว้นว่างไว้เพื่อจองงบใหม่ตามกระบวนการเดิม."
+        ),
+    )
+
+    def _domain_reservation_commitment_id(self):
+        """Reservations this document may draw down (phase-1 dropdown).
+
+        Base: any reserved/in-progress commitment with obligable headroom. OU
+        visibility is already enforced by the record rules (owner or beneficiary
+        unit — ADR-0011). Plan/project bridges narrow this to exclude their own
+        shared commitments, which are drawn only through their dedicated
+        create-from-source flow so ADR-0006/0007 invariants are preserved.
+        """
+        return [
+            ("state", "in", ("reserved", "partial")),
+            ("available_to_obligate", ">", 0),
+        ]
+
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
@@ -103,11 +130,20 @@ class PurchaseRequest(models.Model):
 
     product_id = fields.Many2one(related=False, readonly=False)
 
-    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
+    @api.depends(
+        "state",
+        "budget_commitment_id",
+        "budget_commitment_id.state",
+        "reservation_commitment_id",
+    )
     def _compute_is_budget_editable(self):
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state in ("to_verify", "to_approve") and (
+            if rec.reservation_commitment_id:
+                # Drawing an existing reservation: dimensions are inherited and
+                # locked from the reservation, never edited on the request.
+                rec.is_budget_editable = False
+            elif rec.state in ("to_verify", "to_approve") and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
@@ -204,8 +240,14 @@ class PurchaseRequest(models.Model):
         return {}
 
     def action_reserve_budget(self):
-        """Reserve budget by creating commitment"""
+        """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
+
+        # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
+        # instead of creating a new commitment (ADR-0010) — presence of the pick
+        # is the sole discriminator, no extra flag.
+        if self.reservation_commitment_id:
+            return self._action_draw_from_reservation()
 
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
@@ -255,6 +297,88 @@ class PurchaseRequest(models.Model):
 
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
+
+    def _action_draw_from_reservation(self):
+        """Draw down an existing reservation (ใบจองงบประมาณ) instead of reserving.
+
+        Adopts the reservation's budget code, fiscal year and full dimension
+        distribution — locked onto the request and its lines — links it as the
+        request's commitment, and advances the request exactly like the
+        reserve-new path. No new reservation and no availability re-check: the
+        money is already locked; obligate/consume happen downstream at the
+        disbursement (ADR-0010)."""
+        self.ensure_one()
+        commitment = self.reservation_commitment_id
+        if commitment.state not in ("reserved", "partial"):
+            raise UserError(
+                _("ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้") % commitment.name
+            )
+        self._check_drawable_commitment(commitment)
+        self.write(
+            {
+                "budget_commitment_id": commitment.id,
+                "budget_account_id": commitment.account_id.id,
+                "account_fiscal_year_id": commitment.account_fiscal_year_id.id,
+                "analytic_distribution": commitment.analytic_distribution or False,
+            }
+        )
+        if self.line_ids and commitment.analytic_distribution:
+            self.line_ids.write(
+                {"analytic_distribution": commitment.analytic_distribution}
+            )
+        self._apply_budget_account_product()
+        self.message_post(
+            body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
+        )
+        self.button_to_submit()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "purchase.request",
+            "view_mode": "form",
+            "res_id": self.id,
+            "target": "current",
+            "context": self.env.context,
+        }
+
+    def _check_drawable_commitment(self, commitment):
+        """Raise if this document may not draw ``commitment``.
+
+        Base blocks any budget code the request could not itself select
+        (purchasable, product-backed — draw-down writes budget_account_id
+        directly, bypassing the UI-only field domain). Plan/project bridges
+        extend this to block their own shared commitments, which are drawn only
+        through their dedicated create-from-source flow (ADR-0006/0007).
+        """
+        if not self.env["budget.account"].search_count(
+            self._reservation_account_domain()
+            + [("id", "=", commitment.account_id.id)]
+        ):
+            raise UserError(
+                _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
+            )
+        return True
+
+    @api.onchange("reservation_commitment_id")
+    def _onchange_reservation_commitment_id(self):
+        """Preview the picked reservation's budget code + fiscal year on the live
+        form. The dimension distribution is written server-side on draw-down, not
+        here — re-assigning analytic_distribution in an onchange makes its no-op
+        compute wipe it on the unsaved record."""
+        commitment = self.reservation_commitment_id
+        if commitment:
+            self.budget_account_id = commitment.account_id.id
+            self.account_fiscal_year_id = commitment.account_fiscal_year_id.id
+
+    def _cancel_budget_commitment(self):
+        """A drawn reservation belongs to its owner, never to this request — detach
+        instead of cancelling when this PR drew an existing reservation (ADR-0010)."""
+        self.ensure_one()
+        if self.reservation_commitment_id:
+            self.write(
+                {"budget_commitment_id": False, "reservation_commitment_id": False}
+            )
+            return True
+        return super()._cancel_budget_commitment()
 
     def _compute_to_approve_allowed(self):
         super()._compute_to_approve_allowed()
