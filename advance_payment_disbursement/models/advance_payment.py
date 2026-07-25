@@ -1,5 +1,4 @@
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo import fields, models
 
 
 class AdvancePayment(models.Model):
@@ -24,19 +23,3 @@ class AdvancePayment(models.Model):
         if self.reference and self.reference._name == "purchase.request":
             self.reference.button_rejected()
         return super()._action_do_cancel(reason)
-
-    def action_disburse(self):
-        for rec in self:
-            if rec.state != "approved":
-                raise UserError(
-                    _("Only approved agreements can be disbursed.")
-                )
-        self.write({
-            "state": "in_progress",
-            "disbursement_state": "paid",
-        })
-        for rec in self:
-            rec.message_post(
-                body=_("ดำเนินการเบิกจ่ายแล้ว"),
-                subtype_xmlid="mail.mt_note",
-            )

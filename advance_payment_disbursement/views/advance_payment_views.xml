@@ -5,14 +5,6 @@
         <field name="model">advance.payment</field>
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='action_open_cancel_wizard']" position="before">
-                <button name="action_disburse"
-                    string="ดำเนินการเบิกจ่าย"
-                    type="object"
-                    class="btn-primary"
-                    attrs="{'invisible': [('state', '!=', 'approved')]}"
-                    groups="advance_payment.group_advance_payment_manager" />
-            </xpath>
             <!-- Readonly analytic dimension fields when created from purchase.request -->
             <xpath expr="//field[@name='department_analytic_id']" position="attributes">
                 <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('is_locked_by_reference', '=', True)]}</attribute>
@@ -27,24 +19,6 @@
                 <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('is_locked_by_reference', '=', True)]}</attribute>
             </xpath>
 
-            <xpath expr="//page[@name='return_lines']" position="before">
-                <page string="รายการใช้เงิน" name="usage_lines">
-                    <field name="usage_line_ids" readonly="1" nolabel="1">
-                        <tree>
-                            <field name="source_display" string="ที่มา" />
-                            <field name="date" string="วันที่" />
-                            <field name="partner_id" string="ผู้รับเงิน" />
-                            <field name="amount" string="จำนวนเงิน" />
-                            <field name="note" string="หมายเหตุ" />
-                            <field name="disbursement_state" widget="badge" string="สถานะ"
-                                decoration-info="disbursement_state == 'pre_approval'"
-                                decoration-primary="disbursement_state == 'approved'"
-                                decoration-warning="disbursement_state in ('bill_draft', 'payment_draft')"
-                                decoration-success="disbursement_state in ('bill_posted', 'payment_posted', 'done')" />
-                        </tree>
-                    </field>
-                </page>
-            </xpath>
         </field>
     </record>
 </odoo>
