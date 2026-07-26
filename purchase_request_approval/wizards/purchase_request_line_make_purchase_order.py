@@ -20,6 +20,19 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
     currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id)
 
+    @api.onchange("vat_included")
+    def _onchange_vat_included(self):
+        if self.vat_included == "inclusive":
+            if self.tax_id:
+                return
+            default_tax = self.env["account.tax"].search(
+                [("type_tax_use", "in", ["purchase"])],
+                limit=1,
+            )
+            self.tax_id = default_tax.id
+        else:
+            self.tax_id = False
+
     @api.depends("item_ids.price_total", "item_ids.price_subtotal", "item_ids.price_tax")
     def _compute_amount_all(self):
         for wiz in self:

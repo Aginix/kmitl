@@ -169,6 +169,23 @@ class PurchaseRequestApproval(models.Model):
         check_company=True,
         context={"active_test": False},
     )
+
+    @api.onchange("vat_included")
+    def _onchange_vat_included(self):
+        if self.vat_included == "inclusive":
+            if self.tax_id:
+                return
+            default_tax = self.env["account.tax"].search(
+                [
+                    ("type_tax_use", "in", ["purchase"]),
+                    ("company_id", "=", self.company_id.id),
+                ],
+                limit=1,
+            )
+            self.tax_id = default_tax.id
+        else:
+            self.tax_id = False
+
     user_id = fields.Many2one(related="request_id.user_id")
     product_id = fields.Many2one(related="request_id.product_id")
     currency_id = fields.Many2one(related="request_id.currency_id")
