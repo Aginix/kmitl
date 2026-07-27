@@ -6,6 +6,7 @@
     "category": "KMITL",
     "depends": [
         "purchase_request_kmitl",
+        "purchase_request_price_tax_included",
         "purchase_request_sarabun",
         "purchase_request_activity_kmitl",
         "thai_date_utils",
@@ -23,6 +24,7 @@
         "views/purchase_order_views.xml",
         "views/purchase_request_approval_report.xml",
         "wizards/purchase_request_approval_cancel_wizard_views.xml",
+        "wizards/purchase_request_line_make_purchase_order_views.xml",
         "views/purchase_request_approval_views.xml",
         "views/purchase_request_views.xml",
         "report/report_purchase_request_approval.xml",
