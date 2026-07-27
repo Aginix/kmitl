@@ -31,3 +31,10 @@ Hence PA has no assign buttons; its "My Approvals" list filters on `request_id.a
 - No dedicated "My Work" landing menu ships here. Officers find their work via the per-document
   "Assigned to me" filter; the landing/todo experience is deferred to a future generic
   `mail_activity_todo` app.
+
+> **Update (post ADR-0006 era)**: the deferred `mail_activity_todo` app has since landed and is the
+> real "งานที่ต้องทำ" view users open every day. That flipped the assumption behind
+> "self-assign creates no to-do" — with the unified inbox in production, a doc that fails to
+> schedule an activity is invisible to its assignee. Self-claim (`action_assignment_assign_me`) and
+> wizard-assign to self now both schedule a to-do for the assignee unconditionally, so the rule is
+> simply "assign anyone → they get an inbox entry". The old "no-self-todo" behaviour is gone.

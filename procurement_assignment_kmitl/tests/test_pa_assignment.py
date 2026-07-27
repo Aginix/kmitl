@@ -86,9 +86,21 @@ class TestPurchaseRequestApprovalAssignment(TransactionCase):
         self.pa.with_user(self.officer_a).action_assignment_assign_me()
         self.assertEqual(self.pa.pa_assigned_to, self.officer_a)
 
-    def test_self_claim_creates_no_activity(self):
+    def test_self_claim_creates_activity(self):
         self.pa.with_user(self.officer_a).action_assignment_assign_me()
-        self.assertFalse(self._todo_activities(self.pa, self.officer_a))
+        self.assertTrue(self._todo_activities(self.pa, self.officer_a))
+
+    def test_manager_wizard_self_assign_also_creates_activity(self):
+        wizard = self.Wizard.with_user(self.manager).create(
+            {
+                "res_model": "purchase.request.approval",
+                "res_id": self.pa.id,
+                "user_id": self.manager.id,
+            }
+        )
+        wizard.action_assign()
+        self.assertEqual(self.pa.pa_assigned_to, self.manager)
+        self.assertTrue(self._todo_activities(self.pa, self.manager))
 
     def test_takeover_guard_blocks_second_officer(self):
         self.pa.pa_assigned_to = self.officer_a

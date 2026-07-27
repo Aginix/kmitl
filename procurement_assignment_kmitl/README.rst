@@ -25,9 +25,10 @@ Features
   * **Assign…** — managers pick another officer through a wizard.
   * **Unassign** — managers clear the officer (shown only when assigned).
 
-* Assigning *another* officer raises a "To Do" activity for them; self-assign
-  does not. Reassigning or unassigning clears the previous officer's open
-  activity.
+* Assigning an officer — yourself or someone else, via banner button or
+  wizard — always raises a "To Do" activity for that officer, so the document
+  lands in their unified inbox (``mail_activity_todo``). Reassigning clears
+  the previous officer's activity; unassigning clears it entirely.
 * An **Assigned to me** search filter on PR and PO, and two filters on PA
   ("Assigned to me (พ.1)" and "Assigned to me (พจ.1)") so officers can list the
   documents assigned to them at each stage. (A dedicated landing/app page is

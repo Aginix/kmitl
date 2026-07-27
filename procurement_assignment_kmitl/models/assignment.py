@@ -114,6 +114,9 @@ class AssignedOfficerMixin:
             if officer:
                 rec._assignment_clear_activity(officer)
             rec._assignment_set_officer(me)
+            # Schedule a Todo for the assignee unconditionally so the doc lands
+            # in their unified inbox (mail_activity_todo). See ADR-0001 note.
+            rec._assignment_notify(me)
         return True
 
     def action_assignment_unassign(self):

@@ -45,6 +45,7 @@ msgstr "มอบหมายเจ้าหน้าที่จัดซื้
 
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_form_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
 msgid "Assign to me"
 msgstr "มอบหมายให้ฉัน"
@@ -95,6 +96,7 @@ msgstr "สามารถมอบหมายให้ตัวเองได
 
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_form_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
 msgid "Assign…"
 msgstr "มอบหมายให้..."
@@ -204,6 +206,7 @@ msgstr "เอกสารนี้ถูกมอบหมายให้ %s �
 
 #. module: procurement_assignment_kmitl
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_order_form_assignment
+#: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_approval_form_assignment
 #: model_terms:ir.ui.view,arch_db:procurement_assignment_kmitl.view_purchase_request_form_assignment
 msgid "Unassign"
 msgstr "ยกเลิกการมอบหมาย"

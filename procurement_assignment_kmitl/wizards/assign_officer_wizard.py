@@ -50,6 +50,6 @@ class AssignOfficerWizard(models.TransientModel):
         record._assignment_set_officer(self.user_id)
         if old_officer and old_officer != self.user_id:
             record._assignment_clear_activity(old_officer)
-        if self.user_id and self.user_id != self.env.user:
+        if self.user_id:
             record._assignment_notify(self.user_id)
         return {"type": "ir.actions.act_window_close"}
