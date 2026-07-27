@@ -8,19 +8,18 @@
             <form string="Approval Request">
                 <header>
                     <field name="hide_reserve_budget_button" invisible="1" />
-                    <field name="is_editable" invisible="1"/>
                     <field name="is_plan_editable" invisible="1"/>
                     <field name="is_actual_editable" invisible="1"/>
                     <field name="is_correction" invisible="1"/>
                     <button name="action_to_verify" string="ตรวจสอบ / จองงบประมาณ" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_reserve_budget" type="object" attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}" string="Reserve Budget" class="oe_highlight btn-success" groups="budget.group_budget_commitment" />
-                    <button name="action_approve" string="อนุมัติ" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['submitted', 'sent'])]}" groups="agx_approval.group_approval_manager"/>
+                    <button name="action_approve" string="อนุมัติ" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['to_send', 'sent'])]}" groups="agx_approval.group_approval_manager"/>
                     <button name="action_record_actual" string="บันทึกค่าใช้จ่ายจริง" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" />
                     <button name="action_bill" string="ส่งเบิก" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'actual')]}" />
                     <button name="%(agx_approval.action_report_disbursement_voucher)d" type="action" string="พิมพ์งบหน้าใบสำคัญคู่จ่าย" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['actual', 'billed'])]}" />
-                    <button name="action_open_pull_back_wizard" string="ดึงกลับ" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'submitted'])]}"/>
-                    <button name="action_cancel" string="ยกเลิก / ปฏิเสธ" type="object" attrs="{'invisible': [('state', 'not in', ['to_verify', 'submitted', 'approved'])]}" groups="agx_approval.group_approval_manager"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,submitted,sent,approved,actual,billed" />
+                    <button name="action_open_pull_back_wizard" string="ดึงกลับ" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send'])]}"/>
+                    <button name="action_cancel" string="ยกเลิก / ปฏิเสธ" type="object" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send', 'approved'])]}" groups="agx_approval.group_approval_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,approved,actual,billed" />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary', '=', False)]}">
                     <p>
@@ -66,7 +65,7 @@
                         </group>
                     </group>
                     <group name="attachment" string="เอกสารแนบ">
-                        <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_res_model': 'approval.request'}" widget="many2many_binary">
+                        <field name="attachment_ids" attrs="{'readonly': [('is_plan_editable','=', False)]}" context="{'default_res_model': 'approval.request'}" widget="many2many_binary">
                         </field>
                     </group>
                     <group name="budget" string="งบประมาณ">
@@ -152,7 +151,7 @@
                 <field name="owner_id" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="total_amount" sum="รวม" optional="show"/>
-                <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted', 'sent')" decoration-info="state == 'actual'" decoration-danger="state in ('rejected', 'returned')"/>
+                <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'to_send', 'sent')" decoration-info="state == 'actual'" decoration-danger="state in ('rejected', 'returned')"/>
             </tree>
         </field>
     </record>
@@ -168,7 +167,7 @@
                 <field name="owner_id" />
                 <filter name="filter_draft" string="ร่าง" domain="[('state', '=', 'draft')]" />
                 <filter name="filter_to_verify" string="รอตรวจสอบ/จองงบ" domain="[('state', '=', 'to_verify')]" />
-                <filter name="filter_submitted" string="รอส่งขออนุมัติ" domain="[('state', '=', 'submitted')]" />
+                <filter name="filter_submitted" string="รอส่งขออนุมัติ" domain="[('state', '=', 'to_send')]" />
                 <filter name="filter_sent" string="ส่งขออนุมัติแล้ว" domain="[('state', '=', 'sent')]" />
                 <filter name="filter_approved" string="อนุมัติแล้ว" domain="[('state', '=', 'approved')]" />
                 <filter name="filter_actual" string="บันทึกจริง" domain="[('state', '=', 'actual')]" />

@@ -46,8 +46,6 @@ class ApprovalRequest(models.Model):
         compute="_compute_hide_reserve_budget_button"
     )
 
-    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
-
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
@@ -150,14 +148,14 @@ class ApprovalRequest(models.Model):
     participant_ids = fields.One2many(
         "approval.request.participant",
         "request_id",
-        string="Participants",
+        string="รายชื่อ",
         copy=True,
     )
 
     allocation_ids = fields.One2many(
         "approval.request.allocation",
         "request_id",
-        string="Actual Expense Allocation",
+        string="ค่าใช้จ่ายจริง",
         copy=False,
     )
 
@@ -176,7 +174,7 @@ class ApprovalRequest(models.Model):
     state = fields.Selection([
         ("draft", "Draft"),
         ("to_verify", "รอตรวจสอบ / จองงบประมาณ"),
-        ("submitted", "รอส่งขออนุมัติ"),
+        ("to_send", "รอส่งขออนุมัติ"),
         ("sent", "ส่งขออนุมัติแล้ว"),
         ("approved", "คำขอได้รับอนุมัติแล้ว"),
         ("actual", "บันทึกค่าใช้จ่ายจริง"),
@@ -187,7 +185,7 @@ class ApprovalRequest(models.Model):
         default="draft",
         copy=False,
         tracking=True,
-        string="state"
+        string="สถานะ"
     )
 
     budget_commitment_id = fields.Many2one(
@@ -421,7 +419,7 @@ class ApprovalRequest(models.Model):
         for record in self:
             if record.state != "to_verify":
                 raise UserError(_("Only To Verify requests can be submitted."))
-            record.state = "submitted"
+            record.state = "to_send"
         return True
 
     def action_approve(self):
@@ -429,7 +427,7 @@ class ApprovalRequest(models.Model):
         bridge. When agx_approval_sarabun is installed the request is approved
         by the Sarabun document outcome instead (see _on_sarabun_completed)."""
         for record in self:
-            if record.state not in ("submitted", "sent"):
+            if record.state not in ("to_send", "sent"):
                 raise UserError(
                     _("Only submitted requests can be approved.")
                 )
@@ -474,7 +472,7 @@ class ApprovalRequest(models.Model):
         """ดึงกลับ (pre-routing): open the confirm wizard that returns a
         not-yet-sent request to draft."""
         self.ensure_one()
-        if self.state not in ("to_verify", "submitted"):
+        if self.state not in ("to_verify", "to_send"):
             raise UserError(
                 _("ดึงกลับได้เฉพาะสถานะ 'รอตรวจสอบ' หรือ 'รอส่งขออนุมัติ'")
             )
@@ -617,7 +615,7 @@ class ApprovalRequest(models.Model):
             ):
                 rec.is_budget_editable = can_edit
             else:
-                rec.is_budget_editable = rec.is_editable
+                rec.is_budget_editable = rec.state == "draft"
 
     @api.depends("state", "budget_commitment_id")
     def _compute_hide_reserve_budget_button(self):
@@ -647,11 +645,6 @@ class ApprovalRequest(models.Model):
         # Base has no return-correction mode; bridges override this.
         for rec in self:
             rec.is_correction = False
-
-    @api.depends("state")
-    def _compute_is_editable(self):
-        for rec in self:
-            rec.is_editable = rec.state == "draft"
 
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):

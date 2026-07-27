@@ -33,14 +33,14 @@ class ApprovalRequest(models.Model):
         return self.category_id.name
 
     def _sarabun_submit_guard(self):
-        # A request may only be routed once its budget is reserved (submitted).
-        return self.state == "submitted"
+        # A request may only be routed once its budget is reserved (to_send).
+        return self.state == "to_send"
 
     # -- Sarabun outcome → request state ----------------------------------
     def _on_sarabun_circulating(self, document):
         # หนังสือเริ่มเวียน → คำขออยู่ระหว่างขออนุมัติ. Also covers re-sending a
         # หนังสือ that was returned (ตีกลับ/ดึงกลับ) for revision.
-        if self.state in ("submitted", "returned"):
+        if self.state in ("to_send", "returned"):
             self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
@@ -63,8 +63,8 @@ class ApprovalRequest(models.Model):
 
     def _on_sarabun_cancelled(self, document):
         # ยกเลิกการส่ง: only the send is voided (register number cancelled) — fall
-        # back to ``submitted`` keeping the reservation, ready for a fresh หนังสือ.
-        self.state = "submitted"
+        # back to ``to_send`` keeping the reservation, ready for a fresh หนังสือ.
+        self.state = "to_send"
         return super()._on_sarabun_cancelled(document)
 
     @api.depends("state", "sarabun_state")

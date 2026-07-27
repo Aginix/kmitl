@@ -21,7 +21,7 @@ class ApprovalRequestPullBackConfirm(models.TransientModel):
     def action_confirm(self):
         self.ensure_one()
         request = self.request_id
-        if request.state not in ("to_verify", "submitted"):
+        if request.state not in ("to_verify", "to_send"):
             raise UserError(
                 _("ดึงกลับได้เฉพาะสถานะ 'รอตรวจสอบ' หรือ 'รอส่งขออนุมัติ'")
             )

@@ -14,7 +14,7 @@
 
             <!-- Add Submit to Sarabun button after To Verify button -->
             <xpath expr="//button[@name='action_to_verify']" position="after">
-                <button name="action_submit_to_sarabun" string="สร้างเอกสาร" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('sarabun_has_live_document', '=', True)]}" />
+                <button name="action_submit_to_sarabun" string="สร้างเอกสาร" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'to_send'), ('sarabun_has_live_document', '=', True)]}" />
             </xpath>
 
             <!-- Sarabun routing replaces direct approval. Hide the manual
