@@ -886,7 +886,11 @@ class SarabunDocument(models.Model):
         if not reason:
             raise UserError(_("A reason is required to ตีกลับ."))
         self.routing_step_ids._clear_activities()
-        self._restart_chain()
+        # _restart_chain writes active=False on ALL steps (incl. originator);
+        # the originator write-guard requires this SYSTEM operation to be sudo
+        # — see sarabun_routing_step.write() docstring and the same pattern in
+        # _sign_originator_step (line ~639). Authorization is enforced above.
+        self.sudo()._restart_chain()
         self.state = "returned"
         self.message_post(
             body=_("Document returned (ตีกลับ). Reason: %s") % reason
