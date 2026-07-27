@@ -558,13 +558,6 @@ class KrisProject(models.Model):
         self.write({"state": "in_progress", "ignore_exception": False})
 
     def action_cancel(self):
-        for rec in self:
-            if rec.state != "draft":
-                raise UserError(
-                    _("Only draft projects can be cancelled.")
-                )
-        # Cancelling abandons the project, so it must not be gated by the
-        # confirm/done validation rules; skip exception detection here.
         self.write({"state": "cancel", "ignore_exception": False})
 
     def action_draft(self):

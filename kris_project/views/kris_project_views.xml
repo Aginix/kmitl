@@ -143,6 +143,10 @@
                     <p><strong>Exception:</strong></p>
                     <field name="exceptions_summary"/>
                 </div>
+                <div class="dialog-warning-receipt alert alert-warning" role="alert"
+                    attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
+                    โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
+                </div>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
                     <field name="installment_editable" invisible="1"/>
@@ -152,10 +156,6 @@
                     <field name="warn_extra_overshoot" invisible="1"/>
                     <field name="warn_cancel_with_receipts" invisible="1"/>
                     <field name="warn_maintenance_exceeds_expense" invisible="1"/>
-                    <div class="alert alert-warning" role="alert"
-                        attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
-                        โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
-                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
