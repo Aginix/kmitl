@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo import models
+from odoo import _, models
+
+WA_REVIEW_ACTIVITY = (
+    "purchase_work_acceptance_portal.mail_activity_wa_review_requested"
+)
 
 
 class WorkAcceptance(models.Model):
@@ -12,35 +16,29 @@ class WorkAcceptance(models.Model):
         return f"{base_url}/wa/view/{self.id}?access_token={self.access_token}"
 
     def _notify_review_requested(self, tier_reviews):
-        """Suppress tier validation mail notifications — use custom WaSystray inbox instead."""
-        return
+        """Schedule a Todo per reviewer instead of OCA's subscribe/message_post
+        so the reviewer sees a single unified entry in the mail_activity_todo
+        systray. Execution category → cleared by Accept/Reject on the source."""
+        act_type = self.env.ref(WA_REVIEW_ACTIVITY, raise_if_not_found=False)
+        if not act_type:
+            return
+        for rec in self.sudo():
+            reviewers = tier_reviews.filtered(
+                lambda r: r.res_id == rec.id
+            ).mapped("reviewer_ids")
+            for user in reviewers:
+                rec.activity_schedule(
+                    WA_REVIEW_ACTIVITY,
+                    summary=_("Work acceptance %s awaits your review") % rec.name,
+                    user_id=user.id,
+                )
 
-    def request_validation(self):
-        res = super().request_validation()
-        for wa in self:
-            if not wa.work_acceptance_committee_ids:
-                continue
-            order_url = wa.purchase_id.get_portal_link() if wa.purchase_id else ""
-            wa_url = wa.get_portal_link()
-            for committee in wa.work_acceptance_committee_ids:
-                committee.get_portal_link()
-                user = committee.employee_id.user_id
-                if not user:
-                    continue
-                wa_link = f"{wa_url}&committee_token={committee.access_token}"
-                order_link = f"{order_url}&wa_token={wa.access_token}" if order_url else ""
-                Inbox = self.env["work.acceptance.inbox"].sudo()
-                existing = Inbox.search(
-                    [("user_id", "=", user.id), ("work_acceptance_id", "=", wa.id)],
-                    limit=1,
-                )
-                if existing:
-                    existing.write({"wa_url": wa_link, "order_url": order_link, "is_read": False})
-                else:
-                    Inbox.create({"user_id": user.id, "work_acceptance_id": wa.id, "wa_url": wa_link, "order_url": order_link})
-                self.env["bus.bus"]._sendone(
-                    user.partner_id,
-                    "work_acceptance/inbox",
-                    {"refresh": True, "wa_name": wa.name, "wa_id": wa.id},
-                )
+    def _notify_accepted_reviews(self):
+        res = super()._notify_accepted_reviews()
+        self.activity_feedback([WA_REVIEW_ACTIVITY], user_id=self.env.uid)
+        return res
+
+    def _notify_rejected_review(self):
+        res = super()._notify_rejected_review()
+        self.activity_feedback([WA_REVIEW_ACTIVITY], user_id=self.env.uid)
         return res
