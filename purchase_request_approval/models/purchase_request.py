@@ -24,24 +24,6 @@ class PurchaseRequest(models.Model):
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
 
-    procurement_mode = fields.Selection(
-        [
-            ("by_officer", "ให้พัสดุจัดหา"),
-            ("by_requester", "ผู้ขอระบุเอง"),
-        ],
-        string="โหมดจัดหา",
-        default="by_requester",
-        required=True,
-        tracking=True,
-    )
-
-    @api.onchange("procurement_mode")
-    def _onchange_procurement_mode(self):
-        if self.procurement_mode == "by_officer":
-            self.partner_id = False
-            self.vat_included = "exclusive"
-            self.tax_id = False
-
     def _transition_after_sarabun_approve(self):
         for rec in self:
             if not rec.is_egp:
