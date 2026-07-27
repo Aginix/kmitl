@@ -410,8 +410,6 @@ class ApprovalRequest(models.Model):
         self.ensure_one()
         if self.state != "draft":
             raise UserError(_("Only draft requests can be verified."))
-        if not self.line_ids:
-            raise UserError(_("กรุณาเพิ่มรายการค่าใช้จ่าย (แผน) อย่างน้อย 1 รายการ"))
         if self.detect_exceptions() and not self.ignore_exception:
             return self.with_context(
                 agx_exception_action="action_to_verify"

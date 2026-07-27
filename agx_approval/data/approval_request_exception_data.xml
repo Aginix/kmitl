@@ -2,14 +2,14 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="excep_zero_amount_line" model="exception.rule">
-            <field name="name">มีรายการค่าใช้จ่ายที่จำนวนเงินเป็น 0</field>
-            <field name="description">ทุกรายการค่าใช้จ่าย (แผน) ต้องระบุจำนวนเงินมากกว่า 0</field>
+        <record id="excep_no_line" model="exception.rule">
+            <field name="name">ไม่มีรายการค่าใช้จ่าย (แผน)</field>
+            <field name="description">คำขอต้องมีรายการค่าใช้จ่าย (แผน) อย่างน้อย 1 รายการ</field>
             <field name="sequence">10</field>
             <field name="model">approval.request</field>
             <field name="exception_type">by_py_code</field>
             <field name="code">
-if any(l.total_amount &lt;= 0 for l in self.line_ids):
+if not self.line_ids:
     failed = True
             </field>
             <field name="is_blocking" eval="True"/>
@@ -24,6 +24,21 @@ if any(l.total_amount &lt;= 0 for l in self.line_ids):
             <field name="exception_type">by_py_code</field>
             <field name="code">
 if not self.participant_ids:
+    failed = True
+            </field>
+            <field name="is_blocking" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="excep_invalid_period" model="exception.rule">
+            <field name="name">ช่วงเวลาไม่ถูกต้อง</field>
+            <field name="description">วันที่เริ่มต้นต้องไม่มากกว่าวันที่สิ้นสุด</field>
+            <field name="sequence">30</field>
+            <field name="model">approval.request</field>
+            <field name="exception_type">by_py_code</field>
+            <field name="code">
+if self.has_period and self.date_start and self.date_end \
+        and self.date_start &gt; self.date_end:
     failed = True
             </field>
             <field name="is_blocking" eval="True"/>
