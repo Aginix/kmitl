@@ -286,7 +286,7 @@
 
                 <widget
                     name="web_ribbon"
-                    title="Accepted"
+                    title="Work Accepted"
                     bg_color="bg-success"
                     attrs="{'invisible': [('state', '!=', 'accept')]}"
                 />
