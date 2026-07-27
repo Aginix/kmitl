@@ -11,7 +11,6 @@ class WorkAcceptance(models.Model):
 
     is_current_user_committee = fields.Boolean(
         compute="_compute_is_current_user_committee",
-        compute_sudo=True,
         help="True when the current user is on this WA's committee. "
         "Non-stored, re-evaluated per viewer.",
     )
@@ -21,10 +20,8 @@ class WorkAcceptance(models.Model):
     def _compute_is_current_user_committee(self):
         uid = self.env.uid
         for rec in self:
-            rec.is_current_user_committee = any(
-                c.employee_id.user_id.id == uid
-                for c in rec.work_acceptance_committee_ids
-            )
+            user_ids = rec.work_acceptance_committee_ids.employee_id.user_id.ids
+            rec.is_current_user_committee = uid in user_ids
 
     def get_portal_link(self):
         self.ensure_one()
