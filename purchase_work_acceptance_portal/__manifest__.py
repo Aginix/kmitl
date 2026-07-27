@@ -14,6 +14,7 @@
     ],
     "data": [
         "data/mail_activity_type.xml",
+        "views/work_acceptance_views.xml",
         "views/purchase_order_portal_template.xml",
         "views/work_acceptance_portal_template.xml",
     ],
