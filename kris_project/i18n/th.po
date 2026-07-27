@@ -1616,3 +1616,36 @@ msgstr "<b>หมายเหตุ:</b> %s"
 #, python-format
 msgid "None"
 msgstr "ไม่มี"
+
+#. module: kris_project
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
+msgid "Filename"
+msgstr "ชื่อไฟล์"
+
+#. module: kris_project
+#: model:ir.model.fields,field_description:kris_project.field_ir_attachment__document_type_id
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_attachment__document_type_id
+msgid "Document Type"
+msgstr "ประเภทเอกสาร"
+
+#. module: kris_project
+#: model:ir.actions.act_window,name:kris_project.action_kris_project_document_type
+#: model:ir.ui.menu,name:kris_project.menu_kris_project_document_type
+msgid "Document Types"
+msgstr "ประเภทเอกสาร"
+
+#. module: kris_project
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: kris_project
+#: model:ir.model,name:kris_project.model_kris_project_document_type
+msgid "KRIS Project Document Type"
+msgstr "ประเภทเอกสารโครงการ KRIS"
+
+#. module: kris_project
+#: model:ir.model,name:kris_project.model_kris_project_receipt_wizard_attachment
+msgid "KRIS Project Receipt Wizard Attachment"
+msgstr "เอกสารแนบใบเสร็จโครงการ KRIS"
