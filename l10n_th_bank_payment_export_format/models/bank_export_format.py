@@ -19,6 +19,13 @@ class BankExportFormat(models.Model):
     bank = fields.Selection(
         selection=[],
     )
+    encoding = fields.Char(
+        required=True,
+        default="utf-8",
+        help="Byte encoding used when the text file is downloaded. Thai bank "
+        "files are usually 'cp874' (TIS-620); keep 'utf-8' otherwise. The "
+        "value must be a valid Python codec name.",
+    )
     export_format_ids = fields.One2many(
         comodel_name="bank.export.format.line",
         inverse_name="bank_id",

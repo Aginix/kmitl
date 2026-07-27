@@ -182,6 +182,18 @@ class BankPaymentExport(models.Model):
 
     def _export_bank_payment_text_file(self):
         self.ensure_one()
-        if self.bank:
-            return self._generate_bank_payment_text()
-        return "Demo Text File. You must config `Bank Export Format` First."
+        if not self.bank:
+            return "Demo Text File. You must config `Bank Export Format` First."
+        text = self._generate_bank_payment_text()
+        prefix = self._get_text_file_prefix(text)
+        return "{}{}".format(prefix, text) if prefix else text
+
+    def _get_text_file_prefix(self, text):
+        """Hook returning a prefix block that a CSV layout cannot express
+        (e.g. a checksum line computed over the whole file body).
+
+        Base implementation returns an empty string. Override per bank, e.g.
+        SCB prepends a 40-character SHA-1 checksum line.
+        """
+        self.ensure_one()
+        return ""

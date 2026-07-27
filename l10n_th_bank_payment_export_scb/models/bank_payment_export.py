@@ -1,6 +1,7 @@
 # Copyright 2023 Ecosoft Co., Ltd. (http://ecosoft.co.th)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import hashlib
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -224,6 +225,40 @@ class BankPaymentExport(models.Model):
         if len(wht_income_type) == 4:
             wht_income_type = "{}.{}".format(wht_income_type[:3], wht_income_type[3:])
         return wht_income_type
+
+    def _get_amount_wht_invoice(self, invoice, line):
+        """Return the withholding-tax amount for an invoice in the SCB
+        006 invoice-detail sub-record.
+
+        Falls back to any ``amount_wht`` field on the invoice, else 0.0, so
+        the export no longer raises ``AttributeError`` when invoice detail is
+        present.
+
+        TODO: confirm the WHT source/rounding against the official SCB BCM
+        spec and a real sample that contains invoice/WHT detail (the KMITL
+        sample has none).
+        """
+        self.ensure_one()
+        return getattr(invoice, "amount_wht", 0.0) or 0.0
+
+    def _get_text_file_prefix(self, text):
+        """SCB BCM domestic files start with a 40-character SHA-1 checksum
+        line computed over the file body.
+
+        TODO: confirm the exact hash input/boundary against the official SCB
+        BCM spec + a full (untrimmed) sample. The KMITL sample is trimmed, so
+        this digest could not be reproduced byte-for-byte.
+        """
+        prefix = super()._get_text_file_prefix(text)
+        if self.bank == "SICOTHBK":
+            encoding = self.bank_export_format_id.encoding or "utf-8"
+            digest = (
+                hashlib.sha1(text.encode(encoding, errors="replace"))
+                .hexdigest()
+                .upper()
+            )
+            return "{}\r\n".format(digest)
+        return prefix
 
     def _check_constraint_confirm(self):
         res = super()._check_constraint_confirm()

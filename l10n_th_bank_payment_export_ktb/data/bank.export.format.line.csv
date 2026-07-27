@@ -43,3 +43,29 @@ ktb_format_41,l10n_th_bank_payment_export_ktb.ktb_ipay,50,E-mail Address,,40,lin
 ktb_format_42,l10n_th_bank_payment_export_ktb.ktb_ipay,51,SMS/Mobile Phone,,20,line,TRUE,,,fixed,ljust,,
 ktb_format_43,l10n_th_bank_payment_export_ktb.ktb_ipay,52,Receiving Sub-Branch Code,,4,line,TRUE,,,fixed,rjust,0,
 ktb_format_44,l10n_th_bank_payment_export_ktb.ktb_ipay,53,Fillers,,34,line,TRUE,TRUE,,fixed,ljust,,
+ktb_hdt_01,l10n_th_bank_payment_export_ktb.ktb_hdt,10,HEADER,line_section,,,,,,fixed,ljust,,
+ktb_hdt_02,l10n_th_bank_payment_export_ktb.ktb_hdt,11,Record Type,,1,,,,,fixed,ljust,,H
+ktb_hdt_03,l10n_th_bank_payment_export_ktb.ktb_hdt,12,Running Number,,6,,,,,fixed,rjust,0,1
+ktb_hdt_04,l10n_th_bank_payment_export_ktb.ktb_hdt,13,Sending Bank Code,,3,,,,,fixed,ljust,,006
+ktb_hdt_05,l10n_th_bank_payment_export_ktb.ktb_hdt,14,Sending A/C,,10,,,,,dynamic,rjust,0,rec.export_line_ids[:1].sanitize_account_number(rec.export_line_ids[:1].payment_journal_id.bank_account_id.acc_number)
+ktb_hdt_06,l10n_th_bank_payment_export_ktb.ktb_hdt,15,Company Name,,25,,,,,dynamic,ljust,,rec.ktb_sender_name or rec.company_id.name
+ktb_hdt_07,l10n_th_bank_payment_export_ktb.ktb_hdt,16,Effective Date,,6,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%d%m%y"")"
+ktb_hdt_08,l10n_th_bank_payment_export_ktb.ktb_hdt,17,Reserved,,1,,,,,fixed,ljust,,
+ktb_hdt_09,l10n_th_bank_payment_export_ktb.ktb_hdt,18,Filler,,76,,,TRUE,,fixed,ljust,0,
+ktb_hdt_10,l10n_th_bank_payment_export_ktb.ktb_hdt,20,DETAILS,line_section,,,,,,fixed,ljust,,
+ktb_hdt_11,l10n_th_bank_payment_export_ktb.ktb_hdt,21,Record Type,,1,line,TRUE,,,fixed,ljust,,D
+ktb_hdt_12,l10n_th_bank_payment_export_ktb.ktb_hdt,22,Running Number,,6,line,TRUE,,,dynamic,rjust,0,str(idx_line+2)
+ktb_hdt_13,l10n_th_bank_payment_export_ktb.ktb_hdt,23,Receiving Bank Code,,3,line,TRUE,,,dynamic,ljust,,"line.payment_partner_bank_id.bank_id.bank_code or """""
+ktb_hdt_14,l10n_th_bank_payment_export_ktb.ktb_hdt,24,Receiving A/C,,10,line,TRUE,,,dynamic,rjust,0,line.sanitize_account_number(line.payment_partner_bank_id.acc_number)
+ktb_hdt_15,l10n_th_bank_payment_export_ktb.ktb_hdt,25,Transaction Code,,1,line,TRUE,,,fixed,ljust,,C
+ktb_hdt_16,l10n_th_bank_payment_export_ktb.ktb_hdt,26,Amount,,13,line,TRUE,,,dynamic,rjust,0,"str(int(round(line.payment_amount * 100, 2)))"
+ktb_hdt_17,l10n_th_bank_payment_export_ktb.ktb_hdt,27,Filler,,94,line,TRUE,TRUE,,fixed,ljust,0,
+ktb_hdt_18,l10n_th_bank_payment_export_ktb.ktb_hdt,30,TRAILER,line_section,,,,,,fixed,ljust,,
+ktb_hdt_19,l10n_th_bank_payment_export_ktb.ktb_hdt,31,Record Type,,1,,,,,fixed,ljust,,T
+ktb_hdt_20,l10n_th_bank_payment_export_ktb.ktb_hdt,32,Total Record Count,,6,,,,,dynamic,rjust,0,str(len(rec.export_line_ids)+2)
+ktb_hdt_21,l10n_th_bank_payment_export_ktb.ktb_hdt,33,Sending Bank Code,,3,,,,,fixed,ljust,,006
+ktb_hdt_22,l10n_th_bank_payment_export_ktb.ktb_hdt,34,Sending A/C,,10,,,,,dynamic,rjust,0,rec.export_line_ids[:1].sanitize_account_number(rec.export_line_ids[:1].payment_journal_id.bank_account_id.acc_number)
+ktb_hdt_23,l10n_th_bank_payment_export_ktb.ktb_hdt,35,Reserved,,21,,,,,fixed,ljust,0,
+ktb_hdt_24,l10n_th_bank_payment_export_ktb.ktb_hdt,36,Transaction Count,,6,,,,,dynamic,rjust,0,str(len(rec.export_line_ids))
+ktb_hdt_25,l10n_th_bank_payment_export_ktb.ktb_hdt,37,Total Amount,,13,,,,,dynamic,rjust,0,"str(int(round(rec.total_amount * 100, 2)))"
+ktb_hdt_26,l10n_th_bank_payment_export_ktb.ktb_hdt,38,Filler,,68,,,TRUE,,fixed,ljust,0,
