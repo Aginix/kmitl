@@ -53,6 +53,30 @@ if self.state == 'draft' and self.warn_maintenance_exceeds_expense:
         <field name="active" eval="True"/>
     </record>
 
+    <record id="kris_excep_extra_exceeds_cap" model="exception.rule">
+        <field name="name">% Extra เกินเพดานของผู้รับงาน</field>
+        <field name="description">% Extra ต้องไม่เกินเพดานที่กำหนดตามผู้รับงาน (ส่วนงาน ≤ 40%, บุคคล ≤ 20%)</field>
+        <field name="sequence">19</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.warn_extra_exceeds_cap:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_extra_pct_no_receiver" model="exception.rule">
+        <field name="name">ต้องระบุผู้รับงานเมื่อคำนวณ Extra แบบเปอร์เซ็นต์</field>
+        <field name="description">เมื่อเลือกวิธีคำนวณ Extra แบบเปอร์เซ็นต์และระบุ % มากกว่า 0 ต้องระบุผู้รับงานเพื่อกำหนดเพดาน</field>
+        <field name="sequence">17</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.extra_calc_type == 'percentage' and self.extra_pct &gt; 0 and not self.receiver_type:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
     <record id="kris_excep_allocation_mismatch" model="exception.rule">
         <field name="name">The allocated total does not match the maintenance fee.</field>
         <field name="description">The total allocated revenue does not equal the value minus maintenance fees.</field>

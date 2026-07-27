@@ -152,6 +152,7 @@
                     <field name="warn_extra_overshoot" invisible="1"/>
                     <field name="warn_cancel_with_receipts" invisible="1"/>
                     <field name="warn_maintenance_exceeds_expense" invisible="1"/>
+                    <field name="warn_extra_exceeds_cap" invisible="1"/>
                     <div class="alert alert-warning" role="alert"
                         attrs="{'invisible': [('warn_cancel_with_receipts', '=', False)]}">
                         โครงการนี้มีการบันทึกรายรับแล้ว โปรดตรวจสอบก่อนยกเลิกโครงการ
@@ -271,15 +272,44 @@
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                     <field
-                                        name="extra_value"
+                                        name="operating_expense"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
+                                    <field
+                                        name="receiver_type"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
+                                        widget="radio"
+                                    />
+                                    <field
+                                        name="extra_calc_type"
+                                        attrs="{'readonly': [('can_edit', '=', False)]}"
+                                        widget="radio"
+                                    />
+                                    <field
+                                        name="extra_pct"
+                                        attrs="{
+                                            'invisible': [('extra_calc_type', '!=', 'percentage')],
+                                            'readonly': [('can_edit', '=', False)]
+                                        }"
+                                    />
+                                    <field
+                                        name="extra_value_cap_pct"
+                                        attrs="{'invisible': [
+                                            '|',
+                                            ('extra_calc_type', '!=', 'percentage'),
+                                            ('receiver_type', '=', False)
+                                        ]}"
+                                    />
+                                    <field
+                                        name="extra_fixed_amount"
+                                        attrs="{
+                                            'invisible': [('extra_calc_type', '!=', 'fixed')],
+                                            'readonly': [('can_edit', '=', False)]
+                                        }"
+                                    />
+                                    <field name="extra_value" readonly="1"/>
                                     <field
                                         name="extra_analytic_id"
-                                        attrs="{'readonly': [('can_edit', '=', False)]}"
-                                    />
-                                    <field
-                                        name="operating_expense"
                                         attrs="{'readonly': [('can_edit', '=', False)]}"
                                     />
                                 </group>
@@ -320,6 +350,11 @@
                                 attrs="{'invisible': [('warn_maintenance_exceeds_expense', '=', False)]}"
                             >
                                 มูลค่าหักค่าบำรุงเกินค่าดำเนินการ (Operating Expense) กรุณาตรวจสอบวิธีคิดค่าบำรุง
+                            </div>
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_extra_exceeds_cap', '=', False)]}"
+                            >
+                                % Extra เกินเพดานของผู้รับงาน (ส่วนงาน ≤ 40%, บุคคล ≤ 20%) กรุณาปรับ % หรือเปลี่ยนผู้รับงาน
                             </div>
                             <div class="mb-3"
                                 attrs="{'invisible': [('can_edit', '=', False)]}"
