@@ -82,11 +82,11 @@
                             string="เลือกงบจากผังงบประมาณ (ดูยอดคงเหลือ)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
                             attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
-                        <field name="budget_account_id" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
-                        <field name="activity_analytic_id" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
-                        <field name="department_analytic_id" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
-                        <field name="fund_analytic_id" widget="selection" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"/>
-                        <field name="source_analytic_id" widget="selection" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"/>
+                        <field name="budget_account_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="activity_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="department_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="fund_analytic_id" widget="selection" readonly="1"/>
+                        <field name="source_analytic_id" widget="selection" readonly="1"/>
                         <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}"/>
                         <field name="analytic_distribution" invisible="1"/>
                     </group>

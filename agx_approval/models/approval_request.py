@@ -559,6 +559,25 @@ class ApprovalRequest(models.Model):
         """Reserve budget by creating commitment"""
         self.ensure_one()
 
+        # รหัสงบประมาณ / มิติทางบัญชี ไม่บังคับกรอกในฟอร์ม — ตรวจครบที่เดียว
+        # ตอนกดจองงบประมาณ (budget engine จับคู่แบบครบทุกมิติหรือไม่มีเลย)
+        missing = []
+        if not self.budget_account_id:
+            missing.append(_("รหัสงบประมาณ"))
+        if not self.department_analytic_id:
+            missing.append(_("ส่วนงาน"))
+        if not self.source_analytic_id:
+            missing.append(_("แหล่งเงิน"))
+        if not self.fund_analytic_id:
+            missing.append(_("กองทุน"))
+        if not self.activity_analytic_id:
+            missing.append(_("กิจกรรม"))
+        if missing:
+            raise UserError(
+                _("กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s")
+                % ", ".join(missing)
+            )
+
         amount = sum(self.line_ids.mapped("total_amount"))
 
         # ปีงบยึดตามเอกสาร: check/reserve against this request's own fiscal year
