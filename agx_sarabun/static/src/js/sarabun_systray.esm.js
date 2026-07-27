@@ -7,9 +7,17 @@ import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
 const { Component, useState, onWillStart } = owl;
 
+/**
+ * e-Sarabun inbox tray (กล่องหนังสือเข้า).
+ *
+ * Lists the หนังสือ awaiting the current user's action — i.e. documents with an
+ * *active* routing step whose snapshot holders include the user. Refreshes on
+ * open (beforeOpen), on web-client load (onWillStart), and on the realtime bus
+ * event "sarabun_inbox_updated" pushed by the engine when a step activates/clears.
+ */
 export class SarabunSystray extends Component {
     setup() {
-        this.rpc = useService("rpc");
+        this.orm = useService("orm");
         this.action = useService("action");
 
         this.state = useState({
@@ -21,7 +29,7 @@ export class SarabunSystray extends Component {
             await this.fetchData();
         });
 
-        // Listen for real-time bus notifications via sarabunNotificationHandler service
+        // Realtime: the notification handler service re-broadcasts the bus event.
         useBus(this.env.bus, "sarabun_inbox_updated", () => {
             this.fetchData();
         });
@@ -29,16 +37,15 @@ export class SarabunSystray extends Component {
 
     async fetchData() {
         try {
-            const result = await this.rpc("/web/dataset/call_kw/res.users/get_sarabun_inbox_count", {
-                model: "res.users",
-                method: "get_sarabun_inbox_count",
-                args: [],
-                kwargs: {},
-            });
+            const result = await this.orm.call(
+                "sarabun.document",
+                "get_my_sarabun_inbox",
+                []
+            );
             this.state.documents = result.documents || [];
             this.state.totalCount = result.total_count || 0;
         } catch (error) {
-            console.error("Failed to fetch Sarabun inbox count:", error);
+            console.error("Failed to fetch e-Sarabun inbox:", error);
             this.state.documents = [];
             this.state.totalCount = 0;
         }

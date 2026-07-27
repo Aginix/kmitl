@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_addressee_prefix_tree" model="ir.ui.view">
+        <field name="name">sarabun.addressee.prefix.tree</field>
+        <field name="model">sarabun.addressee.prefix</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_sarabun_addressee_prefix" model="ir.actions.act_window">
+        <field name="name">Addressee Prefixes (คำขึ้นต้น)</field>
+        <field name="res_model">sarabun.addressee.prefix</field>
+        <field name="view_mode">tree</field>
+    </record>
+</odoo>

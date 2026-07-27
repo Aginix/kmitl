@@ -44,25 +44,25 @@
                             </h3>
                         </div>
                         <div class="row">
-                            <div class="col-8"> เลขที่ <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
+                            <div class="col-8"> เลขที่ <span class="ms-2 fw-normal" t-out="o.active_sarabun_document_id.name" />
                             </div>
                             <div class="col"> วันที่ <span
                                     class="ms-2 fw-normal"
-                                    t-esc="o.format_date_thai(o.main_sarabun_document_id.date)"
+                                    t-esc="o.format_date_thai(o.active_sarabun_document_id.date)"
                                 />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> หน่วยงาน <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
+                            <div class="col"> หน่วยงาน <span class="ms-2" t-out="o.active_sarabun_document_id.sender_department_id.display_name" />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> เรื่อง <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
+                            <div class="col"> เรื่อง <span class="ms-2" t-out="o.active_sarabun_document_id.subject" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                เรียน <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
+                                เรียน <span class="ms-2" t-out="o.active_sarabun_document_id.addressee" />
                             </div>
                         </div>
 
@@ -202,7 +202,7 @@
                         <div class="my-4" />
                         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
                                 t-field="o.product_id.name" /> จำนวน 1 รายการ เป็นเงิน <span
-                                t-out="o.estimated_cost" /> บาท โดยวิธี<span
+                                t-out="'{0:,.2f}'.format(o.estimated_cost)" /> บาท โดยวิธี<span
                                 t-field="o.procurement_method_id"
                             />
                             ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา
@@ -231,12 +231,6 @@
                             </li>
                             <li>บันทึกชี้แจงเพิ่มเติม (ถ้ามี)</li>
                         </ol>
-
-                        <div class="my-5" style="height: 10px" />
-
-                        <t
-                            t-call="purchase_request_approval.report_purchase_request_sign"
-                        />
                     </div>
                 </t>
             </t>
@@ -316,32 +310,15 @@
         </table>
     </template>
 
-    <template id="report_purchase_request_sign">
-        <div class="my-5">
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้รับผิดชอบ</div>
-                <div class="text-center my-2">
-                    ( <span t-field="o.requested_by" />
-                    )
-                </div>
-            </div>
-            <div class="my-5" />
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สร้างคำขอ</div>
-                <div class="text-center my-2">
-                    ( <span t-field="o.user_id" />
-                    )
-                </div>
-            </div>
-            <div class="my-5" />
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /></div>
-                <div class="text-center"> ( <span t-field="o.requested_by" /> ) </div>
-                <div class="text-center"> คณบดี <span
-                        t-out="o.department_id.master_department_id.name" />
-                </div>
-            </div>
-        </div>
-        <div class="my-5" />
+    <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
+         approval report (the origin embeds sarabun's block). Resolved from the origin
+         via active_sarabun_document_id; renders nothing until steps complete. -->
+    <template id="report_purchase_request_approval_sarabun_endorsement"
+              inherit_id="purchase_request_approval.report_purchase_request_approval" priority="99">
+        <xpath expr="//div[@class='page']" position="inside">
+            <t t-call="agx_sarabun.sarabun_endorsement_block">
+                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
+            </t>
+        </xpath>
     </template>
 </odoo>

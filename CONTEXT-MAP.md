@@ -17,6 +17,7 @@ This map is seeded lazily — modules are listed here as they get a `CONTEXT.md`
 - [Identity & Access](./iam/CONTEXT.md) — standalone app that delegates backend user/role/group/OU/access-right/record-rule administration without granting full Settings (`base.group_system`); a single `IAM Manager` group implying `erp_manager` plus one escalation guard.
 - [Todos](./mail_activity_todo/CONTEXT.md) — cross-cutting unified inbox (สิ่งที่ต้องทำ) of everything a user must act on; each Todo is a native `mail.activity` on its source record, surfaced in one consolidated page with a jump-to-source button. Owns no business state.
 - [Work Acceptance Portal Review](./purchase_work_acceptance_portal/CONTEXT.md) — committee review of a `work.acceptance` from a token-secured portal page; the review Todo is a `mail.activity` (Approval) delivered through the unified inbox, with portal/PO URLs surfaced as smart buttons on the WA backend form.
+- [e-Saraban](./agx_sarabun/CONTEXT.md) — electronic official-correspondence (งานสารบรรณ); a registered, numbered หนังสือ routed through an approval/endorsement chain. Other modules attach as origin records that spawn a Document.
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an Approval Request to the Disbursement Request it is billed into; returning a disbursement keeps it intact (at `signed`) and bounces the approval request to `returned`, where the requester corrects a limited set of fields and confirms to push them back onto the disbursement.
 
 ## Relationships

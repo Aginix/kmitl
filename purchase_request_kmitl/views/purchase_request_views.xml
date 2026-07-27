@@ -83,6 +83,15 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='line_ids']" position="before">
+                <group>
+                    <group>
+                        <field
+                            name="partner_id"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                        />
+                    </group>
+                </group>
                 <group name="warning_prepaid">
                     <group>
                         <div
@@ -100,6 +109,7 @@
 
             <xpath expr="//form" position="inside">
                 <field name="hide_create_po_button" invisible="1" />
+                <field name="can_reset_to_draft" invisible="1" />
             </xpath>
 
             <xpath expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']" position="attributes">
@@ -108,38 +118,30 @@
             </xpath>
 
             <button name="button_rejected" position="attributes">
-                <attribute name="states">to_approve</attribute>
-                <attribute
-                    name="groups"
-                >purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="states"/>
+                <attribute name="invisible">1</attribute>
             </button>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify,to_submit,to_approve</attribute>
-                <attribute
-                    name="groups"
-                >purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="states"/>
+                <attribute name="groups"/>
+                <attribute name="attrs">{'invisible': [('can_reset_to_draft', '=', False)]}</attribute>
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="after">
                 <button
-                    name="%(action_purchase_request_return_wizard)d"
-                    states="to_submit"
-                    string="Return"
-                    type="action"
-                />
-                <button
                     name="button_cancel"
-                    states="draft,to_verify,to_submit,to_approve"
+                    states="draft,to_verify,to_submit,to_approve,in_egp,in_approval,in_progress"
                     string="Cancel"
                     type="object"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
                 />
             </xpath>
 
             <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,to_verify,to_submit,to_approve,approved,in_progress,done</attribute>
+                >draft,to_verify,to_submit,to_approve,in_approval,in_progress,done</attribute>
             </xpath>
 
             <xpath expr="//h1/field[@name='name']" position="attributes">
@@ -149,7 +151,7 @@
             <xpath expr="//field[@name='assigned_to']" position="attributes">
                 <attribute
                     name="attrs"
-                >{'readonly': [('state','not in', ['to_approve', 'approved'])]}</attribute>
+                >{'readonly': [('state','not in', ['to_approve', 'approved', 'in_egp', 'in_approval', 'in_progress'])]}</attribute>
             </xpath>
 
 

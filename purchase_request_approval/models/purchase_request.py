@@ -10,9 +10,11 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-    hide_create_approval_button = fields.Boolean(
-        compute="_compute_hide_create_approval_button"
+    state = fields.Selection(
+        selection_add=[("in_approval", "In Approval"), ("approved",)],
+        ondelete={"in_approval": "set default"},
     )
+
     need_make_purchase_order = fields.Boolean(
         compute="_compute_need_make_purchase_order"
     )
@@ -21,6 +23,15 @@ class PurchaseRequest(models.Model):
         "purchase.request.approval", inverse_name="request_id"
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
+
+    def _transition_after_sarabun_approve(self):
+        for rec in self:
+            if not rec.is_egp:
+                rec._apply_sarabun_approve_metadata()
+                rec.write({"state": "in_approval"})
+                rec.button_create_approval()
+            else:
+                super(PurchaseRequest, rec)._transition_after_sarabun_approve()
 
     def _prepare_approval_vals(self):
         return {
@@ -34,7 +45,26 @@ class PurchaseRequest(models.Model):
             "date_approved": False,
             "assigned_to": False,
             "state": "draft",
-            "validation_status": "no"
+            "validation_status": "no",
+            "title": self.title,
+            "description": self.description,
+            "procurement_type_id": self.procurement_type_id.id,
+            "procurement_method_id": self.procurement_method_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "payment_type": self.payment_type,
+            "partner_id": self.partner_id.id,
+            "vat_included": self.vat_included,
+            "tax_id": self.tax_id.id,
+            "line_ids": [
+                (0, 0, {
+                    "product_id": line.product_id.id,
+                    "name": line.name,
+                    "product_qty": line.product_qty,
+                    "product_uom_id": line.product_uom_id.id,
+                    "price_unit": line.price_unit,
+                })
+                for line in self.line_ids
+            ],
         }
 
     def button_create_approval(self):
@@ -60,7 +90,6 @@ class PurchaseRequest(models.Model):
 
         message = self._purchase_request_approval_create_message_content(approval)
         self.message_post(body=message, message_type="comment")
-        self.button_in_progress()
 
         return {
             "name": _("Purchase Request Approval"),
@@ -101,9 +130,9 @@ class PurchaseRequest(models.Model):
         }
         return message
 
-    def _purchase_request_approval_rejected_message_content(self, approval):
+    def _purchase_request_approval_cancelled_message_content(self, approval):
         title = _(
-            "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected 👎."
+            "Purchase approval %(pa_name)s for your Request %(pr_name)s has been cancelled."
         ) % {
             "pr_name": self.name,
             "pa_name": approval.name,
@@ -111,15 +140,15 @@ class PurchaseRequest(models.Model):
         message = '<span class="text-danger">%s</span>' % title
         return message
 
-    @api.depends("state", "estimated_cost", "request_approval_count")
-    def _compute_hide_create_approval_button(self):
-        for rec in self:
-            if rec.request_approval_count > 0:
-                rec.hide_create_approval_button = True
-            elif rec.state in ("approved") and rec.estimated_cost <= 100000 and not rec.is_egp:
-                rec.hide_create_approval_button = False
-            else:
-                rec.hide_create_approval_button = True
+    def _purchase_request_approval_rejected_message_content(self, approval):
+        title = _(
+            "Purchase approval %(pa_name)s for your Request %(pr_name)s has been rejected."
+        ) % {
+            "pr_name": self.name,
+            "pa_name": approval.name,
+        }
+        message = '<span class="text-danger">%s</span>' % title
+        return message
 
     def _get_record_url(self):
         return "/web#id={}&model={}&view_type=form".format(self.id, self._name)
@@ -163,7 +192,10 @@ class PurchaseRequest(models.Model):
     def _hide_create_po_button(self):
         for rec in self:
             rec.hide_create_po_button = True
-            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
+            if (
+                rec.state in ('approved', 'in_progress')
+                and rec.purchase_count == 0
+            ):
                 rec.hide_create_po_button = False
             if rec.estimated_cost <= 100000:
                 rec.hide_create_po_button = True
@@ -172,6 +204,7 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         self._create_purchase_order_from_approval()
         self._done_activity_feedback_create_purchase_order_from_approval()
+        self.write({"state": "done"})
         return self.action_view_purchase_order()
 
     def _done_activity_feedback_create_purchase_order_from_approval(self):
@@ -180,12 +213,22 @@ class PurchaseRequest(models.Model):
 
     def _create_purchase_order_from_approval(self):
         self.ensure_one()
+        approval = self.request_approval_ids.filtered(
+            lambda a: a.state == "approved"
+        )[:1]
         wizard = (
             self.env["purchase.request.line.make.purchase.order"]
             .with_context(
-                active_model="purchase.request", active_ids=self.ids, active_id=self.id
+                active_model="purchase.request",
+                active_ids=self.ids,
+                active_id=self.id,
+                approval_id=approval.id,
             )
-            .create({"supplier_id": self.partner_id.id})
+            .create({
+                "supplier_id": approval.partner_id.id,
+                "vat_included": approval.vat_included,
+                "tax_id": approval.tax_id.id,
+            })
         )
         wizard.make_purchase_order()
         return wizard
@@ -201,12 +244,11 @@ class PurchaseRequest(models.Model):
     def _compute_need_make_purchase_order(self):
         for rec in self:
             if (
-                rec.state in ("approved", "in_progress")
-                and rec.estimated_cost <= 100000
+                rec.state == "in_progress"
+                and not rec.is_egp
                 and rec.purchase_count == 0
                 and rec.request_approval_ids
                 and rec.request_approval_ids.state in ("approved")
-                and rec.is_egp
             ):
                 rec.need_make_purchase_order = True
             else:
