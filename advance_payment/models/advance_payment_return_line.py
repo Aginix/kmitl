@@ -175,7 +175,7 @@ class AdvancePaymentReturnLine(models.Model):
             if rec.payment_id:
                 payment = rec.payment_id
                 if payment.state == "posted":
-                    payment.button_draft()
+                    payment.action_draft()
                 if payment.state != "cancel":
                     payment.action_cancel()
             rec.write({"state": "draft", "payment_id": False})

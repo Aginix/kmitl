@@ -899,7 +899,7 @@ class AdvancePayment(models.Model):
     def _cancel_payments(self):
         for payment in self.payment_ids.filtered(lambda p: p.state != "cancel"):
             if payment.state == "posted":
-                payment.button_draft()
+                payment.action_draft()
             elif payment.state == "submitted":
                 payment.write({"state": "draft"})
             payment.action_cancel()
