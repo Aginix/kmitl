@@ -30,6 +30,7 @@
         "data/approval_sequence.xml",
         "data/approval_category_group.xml",
         "data/approval_category.xml",
+        "data/approval_request_exception_data.xml",
         "reports/report_approval_request.xml",
     ],
     "assets": {

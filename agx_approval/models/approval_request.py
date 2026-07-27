@@ -407,20 +407,16 @@ class ApprovalRequest(models.Model):
 
     # -- transitions -------------------------------------------------------
     def action_to_verify(self):
-        for record in self:
-            if record.state != "draft":
-                raise UserError(_("Only draft requests can be verified."))
-            if not record.line_ids:
-                raise UserError(_("กรุณาเพิ่มรายการค่าใช้จ่าย (แผน) อย่างน้อย 1 รายการ"))
-            zero_lines = record.line_ids.filtered(lambda l: l.total_amount <= 0)
-            if zero_lines:
-                names = ", ".join(zero_lines.mapped("product_id.name"))
-                raise UserError(
-                    _("รายการค่าใช้จ่ายต่อไปนี้ต้องระบุจำนวนเงินมากกว่า 0: %s") % names
-                )
-            if not record.participant_ids:
-                raise UserError(_("กรุณาเพิ่มรายชื่ออย่างน้อย 1 รายชื่อ"))
-            record.state = "to_verify"
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(_("Only draft requests can be verified."))
+        if not self.line_ids:
+            raise UserError(_("กรุณาเพิ่มรายการค่าใช้จ่าย (แผน) อย่างน้อย 1 รายการ"))
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                agx_exception_action="action_to_verify"
+            )._popup_exceptions()
+        self.state = "to_verify"
         return True
 
     def action_submit(self):

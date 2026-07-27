@@ -928,20 +928,6 @@ msgid "กรุณาเพิ่มรายการค่าใช้จ่�
 msgstr ""
 
 #. module: agx_approval
-#. odoo-python
-#: code:addons/agx_approval/models/approval_request.py:0
-#, python-format
-msgid "กรุณาเพิ่มรายชื่ออย่างน้อย 1 รายชื่อ"
-msgstr ""
-
-#. module: agx_approval
-#. odoo-python
-#: code:addons/agx_approval/models/approval_request.py:0
-#, python-format
-msgid "รายการค่าใช้จ่ายต่อไปนี้ต้องระบุจำนวนเงินมากกว่า 0: %s"
-msgstr ""
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__fund_analytic_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__fund_analytic_id
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
