@@ -1,4 +1,8 @@
 .o_ak_dashboard {
+    // Fill the action area and scroll internally; without an explicit height
+    // the div grows past the viewport and Odoo's action container clips it
+    // (no scrollbar) once the charts make the page taller than the screen.
+    height: 100%;
     overflow: auto;
 
     .o_ak_card {
@@ -18,5 +22,17 @@
 
     .o_ak_card_amount {
         font-size: 1rem;
+    }
+
+    // ECharts measures its host at init, so the wrapper div needs an explicit
+    // height (budget's own .o_echart height rule is scoped to its overview).
+    .o_ak_chart .o_echart {
+        width: 100%;
+        height: 600px;
+    }
+
+    .o_ak_chart_sm .o_echart {
+        width: 100%;
+        height: 340px;
     }
 }

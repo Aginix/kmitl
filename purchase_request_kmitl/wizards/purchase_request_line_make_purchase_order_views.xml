@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- View purchase.request.line.make.purchase.order form -->
     <record id="view_purchase_request_line_make_purchase_order_form" model="ir.ui.view">
         <field name="name">view.purchase.request.line.make.purchase.order.form</field>
         <field name="model">purchase.request.line.make.purchase.order</field>

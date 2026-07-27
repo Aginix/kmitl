@@ -162,7 +162,7 @@
                         string="Reset to Draft"
                         type="object"
                         states="cancel,in_progress,done,terminated,conditional_close"
-                        groups="kris_project.group_kris_project_manager"
+                        groups="kris_project.group_kris_project_officer"
                     />
                     <field
                         name="state"
@@ -238,7 +238,11 @@
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
                         </group>
-                        <group name="contract_information" string="Contract Information">
+                        <group string="Contract Information (Institute - Employer)" name="contract_information">
+                            <field
+                                name="project_code"
+                                attrs="{'readonly': [('can_edit', '=', False)]}"
+                            />
                             <field
                                 name="contract_number"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
@@ -287,6 +291,9 @@
                                 name="client_org_type"
                                 attrs="{'readonly': [('can_edit', '=', False)]}"
                             />
+                        </group>
+                        <group string="Contract/MOU Information (KRIS - Project Manager)">
+                            <field name="kris_contract_date" attrs="{'readonly': [('can_edit', '=', False)]}"/>
                         </group>
                     </group>
                     <notebook>
@@ -575,7 +582,7 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="name"/>
                 <field name="project_name"/>
-                <field name="contract_number" optional="hide"/>
+                <field name="project_code" optional="hide"/>
                 <field name="project_category_id" optional="show"/>
                 <field name="project_type_id" optional="hide"/>
                 <field name="manager_id" optional="show"/>
@@ -607,9 +614,9 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name" string="Project"
-                    filter_domain="['|', '|', '|', ('name', 'ilike', self), ('project_name', 'ilike', self), ('contract_number', 'ilike', self), ('client_name', 'ilike', self)]"/>
+                    filter_domain="['|', '|', '|', ('name', 'ilike', self), ('project_name', 'ilike', self), ('project_code', 'ilike', self), ('client_name', 'ilike', self)]"/>
                 <field name="project_name" string="Project Name"/>
-                <field name="contract_number"/>
+                <field name="project_code"/>
                 <field name="client_name"/>
                 <field name="manager_id"/>
                 <field name="department_analytic_id"/>

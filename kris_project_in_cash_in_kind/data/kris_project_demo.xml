@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Demo showcase: research project #03 gets an in-kind matching fund so
+         QA can eyeball a reduced 60k maintenance fee (10% of 600k in_cash)
+         instead of the 75k it would be at the full 750k project_value.
+         Base kris_project seeds project_value=750,000 on this record; the
+         post_init_hook backfills in_cash=750,000 on install, and this file
+         re-splits it into 600k cash + 150k in-kind. -->
+    <record id="kris_project.kris_project_demo_03" model="kris.project">
+        <field name="in_cash">600000.0</field>
+        <field name="in_kind">150000.0</field>
+    </record>
+</odoo>

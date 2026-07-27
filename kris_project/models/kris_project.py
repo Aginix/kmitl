@@ -185,8 +185,16 @@ class KrisProject(models.Model):
         string="แม่แบบการจัดสรร",
     )
     # --- Contract fields ---
+    project_code = fields.Char(
+        string="Project Code",
+        tracking=True,
+    )
     contract_number = fields.Char(
-        string="Contract Number",
+        string="Employer Contract Number",
+        tracking=True,
+    )
+    kris_contract_date = fields.Date(
+        string="Contract/MOU Date",
         tracking=True,
     )
     date_contract_start = fields.Date(

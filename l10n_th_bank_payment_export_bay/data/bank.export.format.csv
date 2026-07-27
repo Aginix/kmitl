@@ -1,2 +1,2 @@
-id,name,bank
-bay_cashlink,BAY CashLink,BAY
+id,name,bank,encoding
+bay_cashlink,BAY CashLink Payroll (PYR128_OUR),BAY,cp874

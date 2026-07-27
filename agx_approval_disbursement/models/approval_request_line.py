@@ -11,7 +11,7 @@ class ApprovalRequestLine(models.Model):
         )
         return {
             "product_id": self.product_id.id,
-            "name": self.product_id.display_name,
+            "name": self.note or self.product_id.display_name,
             "quantity": 1,
             "price_unit": self.actual_amount,
             "account_id": account.id if account else False,

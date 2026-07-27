@@ -562,6 +562,11 @@ msgid "Next Activity Type"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""

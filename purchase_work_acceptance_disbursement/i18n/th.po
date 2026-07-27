@@ -141,3 +141,28 @@ msgstr "มูลค่าก่อนภาษีหลังหักค่า
 #: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_purchase_order__wa_fines_total
 msgid "Amount disbursed"
 msgstr "จำนวนเงินที่เบิกแล้ว"
+
+#. module: purchase_work_acceptance_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_disbursement.view_work_acceptance_form_inherit_disbursement
+msgid "Confirm Correction"
+msgstr "ยืนยันการแก้ไข"
+
+#. module: purchase_work_acceptance_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_disbursement.view_work_acceptance_form_inherit_disbursement
+msgid "Disbursement Correction"
+msgstr "การแก้ไขใบขอเบิก"
+
+#. module: purchase_work_acceptance_disbursement
+#: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_work_acceptance__disbursement_return_attachment_ids
+msgid "Correction Evidence"
+msgstr "เอกสารหลักฐานการแก้ไข"
+
+#. module: purchase_work_acceptance_disbursement
+#: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_work_acceptance__disbursement_return_note
+msgid "Correction Note"
+msgstr "หมายเหตุการแก้ไข"
+
+#. module: purchase_work_acceptance_disbursement
+#: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_work_acceptance__disbursement_return_bank_id
+msgid "Correction Bank Account"
+msgstr "บัญชีธนาคารที่แก้ไข"

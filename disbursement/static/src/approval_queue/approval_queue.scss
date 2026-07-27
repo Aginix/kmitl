@@ -1,0 +1,71 @@
+.o_approval_queue {
+    height: 100%;
+    overflow: auto;
+
+    .o_aq_row {
+        cursor: pointer;
+    }
+
+    .o_aq_detail > td {
+        background-color: transparent;
+    }
+}
+
+// Reusable name_search multi-select (mirrors accounting_kmitl_workflow's widget)
+.o_kmitl_ms {
+    position: relative;
+
+    .o_kmitl_ms_box {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.25rem;
+        min-height: 2.25rem;
+        height: auto;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .o_kmitl_ms_tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .o_kmitl_ms_x {
+        cursor: pointer;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .o_kmitl_ms_input {
+        flex: 1 1 4rem;
+        min-width: 4rem;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        padding: 0.1rem;
+    }
+
+    .o_kmitl_ms_dropdown {
+        position: absolute;
+        z-index: 1000;
+        left: 0;
+        right: 0;
+        top: 100%;
+        max-height: 14rem;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0 0 0.25rem 0.25rem;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .o_kmitl_ms_option {
+        padding: 0.3rem 0.5rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #f1f3f5;
+        }
+    }
+}

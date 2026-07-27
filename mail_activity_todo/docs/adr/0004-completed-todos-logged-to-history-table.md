@@ -16,6 +16,6 @@ To let users review Todos they have finished — which the inbox cannot show, be
 ## Consequences
 
 - New model `todo.log` (read-only to users; written via `sudo()` from the `_action_done` hook). The `mail_activity_todo` core defines the personal columns; the role-in-unit layer extends it with `responsible_role_id` / `operating_unit_id` via the `_todo_log_vals` hook.
-- Only activities with a `todo_category` are logged, so non-Todo activities (a plain "Call", etc.) are not captured.
+- Only activities with a `todo_category` are logged, so uncategorised activities (a plain "Call", etc.) are not captured — even though [ADR-0006](./0006-inbox-shows-all-assigned-activities.md) now shows them in the inbox. This scoping is deliberate; expanding it to log *every* completed activity is deferred (see ROADMAP) and only becomes useful paired with an auditor group that can read history beyond its own scope.
 - An activity cleared via `activity_feedback` on a *cancelling* transition (e.g. a plan put on hold) is logged like any completion; distinguishing "done" from "cancelled" is a later refinement, not v1.
 - A "Completed" view + menu live under the Todos app alongside the inbox; the default filter is "Completed by me".

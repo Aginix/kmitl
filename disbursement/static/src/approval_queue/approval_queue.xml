@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="disbursement.MultiRecordSelect" owl="1">
+        <div class="o_kmitl_ms" t-ref="root">
+            <div class="o_kmitl_ms_box form-control">
+                <span t-foreach="selected" t-as="rec" t-key="rec.id"
+                      class="badge text-bg-primary o_kmitl_ms_tag">
+                    <t t-esc="rec.name"/>
+                    <span class="o_kmitl_ms_x" t-on-click="() => this.remove(rec.id)">×</span>
+                </span>
+                <input t-if="inputVisible" type="text" class="o_kmitl_ms_input"
+                       t-att-placeholder="props.placeholder"
+                       t-att-value="state.query"
+                       t-on-focus="onFocus"
+                       t-on-input="onInput"/>
+            </div>
+            <div class="o_kmitl_ms_dropdown" t-if="state.open and state.options.length">
+                <div t-foreach="state.options" t-as="opt" t-key="opt.id"
+                     class="o_kmitl_ms_option" t-on-click="() => this.add(opt)">
+                    <t t-esc="opt.name"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="disbursement.ApprovalQueue" owl="1">
+        <div class="o_approval_queue o_action_manager p-3">
+            <div class="d-flex align-items-center mb-3">
+                <h2 class="me-auto mb-0"><t t-esc="labels.title"/></h2>
+                <button class="btn btn-primary" t-att-disabled="!state.selectedIds.length"
+                        t-on-click="approveSelected">
+                    <t t-esc="labels.approveSelected"/>
+                    (<t t-esc="state.selectedIds.length"/>)
+                </button>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="o_aq_filters row g-2 mb-3">
+                <div class="col-md-3">
+                    <label class="o_form_label"><t t-esc="labels.fiscalYear"/></label>
+                    <select class="form-select" t-on-change="onFiscalYearChange">
+                        <option value="">/</option>
+                        <option t-foreach="fiscalYears" t-as="fy" t-key="fy.id"
+                                t-att-value="fy.id"
+                                t-att-selected="isFiscalYearSelected(fy.id)">
+                            <t t-esc="fy.name"/>
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label"><t t-esc="labels.dateFrom"/></label>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateFrom" t-on-change="onDateFromChange"/>
+                </div>
+                <div class="col-md-2">
+                    <label class="o_form_label"><t t-esc="labels.dateTo"/></label>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateTo" t-on-change="onDateToChange"/>
+
+                </div>
+
+                <div class="col-md-3">
+                    <label class="o_form_label"><t t-esc="labels.departments"/></label>
+                    <MultiRecordSelect resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'departments']]"
+                        placeholder="labels.departments" selected="state.departments"
+                        onChange="(sel) => this.onSelectionChange('departments', sel)"/>
+                </div>
+                <div class="col-md-3">
+                    <label class="o_form_label"><t t-esc="labels.sources"/></label>
+                    <MultiRecordSelect resModel="'account.analytic.account'"
+                        domain="[['root_plan_id.code', '=', 'sources']]"
+                        placeholder="labels.sources" selected="state.sources"
+                        onChange="(sel) => this.onSelectionChange('sources', sel)"/>
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-link p-0" t-on-click="toggleAdvanced">
+                        <i t-att-class="state.showAdvanced ? 'fa fa-caret-down me-1' : 'fa fa-caret-right me-1'"/>
+                        <t t-if="state.showAdvanced"><t t-esc="labels.hideFilters"/></t>
+                        <t t-else=""><t t-esc="labels.moreFilters"/></t>
+                    </button>
+                </div>
+                <t t-if="state.showAdvanced">
+                    <div class="col-md-3">
+                        <label class="o_form_label"><t t-esc="labels.partners"/></label>
+                        <MultiRecordSelect resModel="'res.partner'"
+                            placeholder="labels.partners" selected="state.partners"
+                            onChange="(sel) => this.onSelectionChange('partners', sel)"/>
+                    </div>
+                </t>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center p-5">
+                    <span class="spinner-border" role="status"/>
+                </div>
+            </t>
+            <t t-elif="!state.requests.length">
+                <div class="text-center text-muted p-5">
+                    <t t-esc="labels.empty"/>
+                </div>
+            </t>
+            <t t-else="">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 32px;">
+                                <input type="checkbox" t-att-checked="allSelected"
+                                       t-on-click.stop="toggleSelectAll"/>
+                            </th>
+                            <th style="width: 24px;"/>
+                            <th><t t-esc="labels.number"/></th>
+                            <th><t t-esc="labels.date"/></th>
+                            <th><t t-esc="labels.responsible"/></th>
+                            <th class="text-end"><t t-esc="labels.total"/></th>
+                            <th class="text-end"><t t-esc="labels.net"/></th>
+                            <th class="text-end"><t t-esc="labels.actions"/></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.requests" t-as="dr" t-key="dr.id">
+                            <tr class="o_aq_row" t-on-click="() => this.toggleExpand(dr)">
+                                <td>
+                                    <input type="checkbox" t-att-checked="isSelected(dr.id)"
+                                           t-on-click.stop="() => this.toggleSelect(dr.id)"/>
+                                </td>
+                                <td>
+                                    <i class="fa" t-att-class="state.expandedId === dr.id ? 'fa-caret-down' : 'fa-caret-right'"/>
+                                </td>
+                                <td t-esc="dr.name"/>
+                                <td t-esc="dr.date"/>
+                                <td t-esc="displayName(dr.user_id)"/>
+                                <td class="text-end" t-esc="formatCurrency(dr.amount_total)"/>
+                                <td class="text-end" t-esc="formatCurrency(dr.amount_net)"/>
+                                <td class="text-end text-nowrap">
+                                    <button class="btn btn-sm btn-outline-secondary me-1"
+                                            t-on-click.stop="() => this.openRequest(dr)">
+                                        <i class="fa fa-external-link me-1"/><t t-esc="labels.open"/>
+                                    </button>
+                                    <button class="btn btn-sm btn-success me-1"
+                                            t-on-click.stop="() => this.approve(dr)">
+                                        <t t-esc="labels.approve"/>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            t-on-click.stop="() => this.reject(dr)">
+                                        <t t-esc="labels.reject"/>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr t-if="state.expandedId === dr.id" class="o_aq_detail">
+                                <td colspan="8" class="p-0">
+                                    <div class="p-3 bg-light border-top">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <div><strong><t t-esc="labels.date"/>:</strong> <t t-esc="dr.date"/></div>
+                                                <div><strong><t t-esc="labels.responsible"/>:</strong> <t t-esc="displayName(dr.user_id)"/></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div><strong><t t-esc="labels.department"/>:</strong> <t t-esc="displayName(dr.department_analytic_id)"/></div>
+                                                <div><strong><t t-esc="labels.source"/>:</strong> <t t-esc="displayName(dr.source_analytic_id)"/></div>
+                                                <div><strong><t t-esc="labels.fund"/>:</strong> <t t-esc="displayName(dr.fund_analytic_id)"/></div>
+                                                <div><strong><t t-esc="labels.activity"/>:</strong> <t t-esc="displayName(dr.activity_analytic_id)"/></div>
+                                            </div>
+                                        </div>
+                                        <div t-if="dr.note" class="mb-2">
+                                            <strong><t t-esc="labels.note"/>:</strong> <t t-esc="dr.note"/>
+                                        </div>
+                                        <table class="table table-sm table-bordered mb-0 bg-white">
+                                            <thead>
+                                                <tr>
+                                                    <th><t t-esc="labels.payee"/></th>
+                                                    <th><t t-esc="labels.description"/></th>
+                                                    <th class="text-end"><t t-esc="labels.quantity"/></th>
+                                                    <th class="text-end"><t t-esc="labels.unitPrice"/></th>
+                                                    <th class="text-end"><t t-esc="labels.subtotal"/></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="state.linesById[dr.id] || []" t-as="line" t-key="line.id">
+                                                    <tr>
+                                                        <td t-esc="displayName(line.partner_id)"/>
+                                                        <td t-esc="line.name"/>
+                                                        <td class="text-end" t-esc="line.quantity"/>
+                                                        <td class="text-end" t-esc="formatCurrency(line.price_unit)"/>
+                                                        <td class="text-end" t-esc="formatCurrency(line.price_subtotal)"/>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </t>
+        </div>
+    </t>
+
+</templates>

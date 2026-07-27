@@ -16,7 +16,6 @@
         "hr_department_operating_unit",
         "purchase_request_kmitl",
         "purchase_request_exception",
-        "purchase_request_vendor_kmitl",
         "purchase_request_tender_kmitl",
         "purchase_request_egp",
         "purchase_request_department",

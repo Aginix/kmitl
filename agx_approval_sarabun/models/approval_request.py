@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import _, api, fields, models
-
-_logger = logging.getLogger(__name__)
+from odoo import models
 
 
 class ApprovalRequest(models.Model):
@@ -14,12 +10,6 @@ class ApprovalRequest(models.Model):
         "portal.mixin",
         "thai.date.mixin",
     ]
-
-    main_sarabun_document_id = fields.Many2one(
-        comodel_name="sarabun.document",
-        string="Main Sarabun Document",
-        copy=False,
-    )
 
     def _compute_access_url(self):
         """Compute the access URL for portal access."""
@@ -39,53 +29,29 @@ class ApprovalRequest(models.Model):
                 "target": "new",
             }
 
-    def _prepare_sarabun_document_vals(self):
-        """Prepare values for creating a sarabun document."""
-        self.ensure_one()
-        vals = super()._prepare_sarabun_document_vals()
-        vals["subject"] = self.category_id.name
-        return vals
+    def _get_sarabun_subject(self):
+        return self.category_id.name
 
     def _on_sarabun_completed(self, document):
-        """Called when sarabun document routing is completed."""
-        _logger.info(
-            "Sarabun completed callback for Approval Request %s (id=%s) from document %s",
-            self.name,
-            self.id,
-            document.name,
-        )
         self.state = "approved"
-        self.message_post(
-            body=_("Approved via Sarabun document: %s") % document.name,
-        )
+        return super()._on_sarabun_completed(document)
 
-    def _on_sarabun_rejected(self, document, recipient):
-        """Called when sarabun document is rejected."""
+    def _on_sarabun_rejected(self, document, step):
+        # ปฏิเสธ is terminal: action_cancel lands the request in ``rejected`` and
+        # releases the budget commitment.
         self.action_cancel()
-        reason = recipient.comment if recipient else _("No reason provided")
-        self.message_post(
-            body=_("Rejected via Sarabun. Reason: %s") % reason,
-        )
+        return super()._on_sarabun_rejected(document, step)
 
-    def action_submit_to_sarabun(self):
-        """Submit approval request to Sarabun for approval routing."""
-        self.ensure_one()
-        result = self.action_create_sarabun_document()
-        document = self.env["sarabun.document"].browse(result.get("res_id"))
-        self.main_sarabun_document_id = document
-        self.message_post(
-            body=_("Submitted to Sarabun for approval: %s") % document.name,
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.document",
-            "res_id": document.id,
-            "view_mode": "form",
-            "target": "current",
-        }
+    def _on_sarabun_returned(self, document, step):
+        # ตีกลับ / ดึงกลับ are revisable: re-open to draft for amend & resubmit.
+        self.action_draft()
+        return super()._on_sarabun_returned(document, step)
+
+    def _on_sarabun_cancelled(self, document):
+        # ยกเลิกการส่ง (terminal): re-open to draft so it can be revised/resubmitted.
+        self.action_draft()
+        return super()._on_sarabun_cancelled(document)
 
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Approval Request report."""
-        return self.env.ref(
-            "agx_approval.action_report_approval_request"
-        )
+        return self.env.ref("agx_approval.action_report_approval_request")
