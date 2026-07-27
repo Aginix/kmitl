@@ -6,16 +6,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 11:10+0000\n"
-"PO-Revision-Date: 2026-02-25 18:13+0700\n"
+"POT-Creation-Date: 2026-07-27 04:47+0000\n"
+"PO-Revision-Date: 2026-07-27 04:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.6\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: agx_approval
+#: model:ir.actions.report,print_report_name:agx_approval.action_report_approval_request
+msgid "'Approval Request - %s' % (object.name)"
+msgstr "'ใบขออนุมัติค่าใช้จ่าย - %s' % (object.name)"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid ""
+"<i class=\"fa fa-check-circle me-1\" title=\"Budget Reserved\"/>\n"
+"                            <strong>Budget Reserved:</strong>"
+msgstr ""
+"<i class=\"fa fa-check-circle me-1\" title=\"จองงบประมาณแล้ว\"/>\n"
+"                            <strong>จองงบประมาณแล้ว:</strong>"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -26,29 +38,44 @@ msgstr ""
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "<span class=\"ms-1\">฿</span>"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "<span class=\"ms-2\">สังกัด</span>"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "<span class=\"mx-1\">—</span>"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 msgid "<span>Budget</span>"
 msgstr "<span>งบประมาณ</span>"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "<span>Total</span>"
-msgstr "<span>รวม</span>"
+msgid "<strong>Exception:</strong>"
+msgstr "<strong>ข้อยกเว้น:</strong>"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "ต้องดำเนินการ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__active
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__active
 msgid "Active"
-msgstr ""
+msgstr "ใช้งาน"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "กิจกรรม"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_exception_decoration
@@ -66,14 +93,64 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: agx_approval
+#. odoo-javascript
+#: code:addons/agx_approval/static/src/components/allocation_grouped/allocation_grouped.xml:0
+#: code:addons/agx_approval/static/src/components/allocation_grouped/allocation_grouped.xml:0
+#, python-format
+msgid "Add"
+msgstr "เพิ่ม"
+
+#. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_all_approval_menu
 msgid "All Approval"
 msgstr "คำขอทั้งหมด"
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_external_partner
+msgid "Allow External Person"
+msgstr "อนุญาตบุคคลภายนอก"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_internal_partner
+msgid "Allow Internal Personnel"
+msgstr "อนุญาตบุคลากรภายใน"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_student_partner
+msgid "Allow Student"
+msgstr "อนุญาตนักศึกษา"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_external_partner
+msgid ""
+"Allow selecting external persons (บุคคลภายนอก) — companies and others — as "
+"the payee on request lines of this category."
+msgstr ""
+"อนุญาตให้เลือกบุคคลภายนอก (บริษัทและอื่น ๆ) เป็นผู้รับเงินในรายการของหมวดนี้"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_internal_partner
+msgid ""
+"Allow selecting internal personnel (บุคลากรภายใน) as the payee on request "
+"lines of this category."
+msgstr "อนุญาตให้เลือกบุคลากรภายในเป็นผู้รับเงินในรายการของหมวดนี้"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_student_partner
+msgid ""
+"Allow selecting students (นักศึกษา) as the payee on request lines of this "
+"category."
+msgstr "อนุญาตให้เลือกนักศึกษาเป็นผู้รับเงินในรายการของหมวดนี้"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__allowed_product_ids
 msgid "Allowed Expenses"
-msgstr ""
+msgstr "รายการค่าใช้จ่ายที่อนุญาต"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__allowed_partner_type_ids
+msgid "Allowed Partner Types"
+msgstr "ประเภทผู้รับเงินที่อนุญาต"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__allowed_product_ids
@@ -81,9 +158,19 @@ msgid "Allowed Product IDs"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__allowed_product_ids
+msgid "Allowed Products"
+msgstr "รายการสินค้าที่อนุญาต"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__allowed_recipient_ids
+msgid "Allowed Recipients"
+msgstr "ผู้รับเงินที่อนุญาต"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__analytic_distribution
 msgid "Analytic"
-msgstr ""
+msgstr "บัญชีวิเคราะห์"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__analytic_distribution_search
@@ -94,6 +181,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__analytic_precision
 msgid "Analytic Precision"
 msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_exception_rule__model
+msgid "Apply on"
+msgstr "ใช้กับ"
 
 #. module: agx_approval
 #: model:ir.module.category,name:agx_approval.module_category_approval
@@ -107,7 +199,7 @@ msgstr "คำขออนุมัติค่าใช้จ่าย"
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_form
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_tree
 msgid "Approval Category"
-msgstr ""
+msgstr "ประเภทคำขออนุมัติ"
 
 #. module: agx_approval
 #: model:ir.actions.act_window,name:agx_approval.action_approval_category_group
@@ -116,76 +208,76 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_group_view_search
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_group_view_tree
 msgid "Approval Category Group"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Approval Details"
-msgstr "รายละเอียดคำขออนุมัติค่าใช้จ่าย"
+msgstr "กลุ่มประเภทคำขออนุมัติ"
 
 #. module: agx_approval
 #: model:ir.actions.act_window,name:agx_approval.action_approval_request
 #: model:ir.model,name:agx_approval.model_approval_request
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__related_model_id
+#: model:ir.model.fields.selection,name:agx_approval.selection__exception_rule__model__approval_request
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_tree
 msgid "Approval Request"
-msgstr ""
+msgstr "คำขออนุมัติค่าใช้จ่าย"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_request_allocation
+msgid "Approval Request Actual Expense Allocation"
+msgstr "การจัดสรรค่าใช้จ่ายจริง"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_request_exception_confirm
+msgid "Approval Request Exception Wizard"
+msgstr "วิซาร์ดข้อยกเว้นของคำขอ"
 
 #. module: agx_approval
 #: model:ir.model,name:agx_approval.model_approval_request_line
 msgid "Approval Request Line"
-msgstr ""
+msgstr "รายการค่าใช้จ่าย (แผน)"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_request_participant
+msgid "Approval Request Participant"
+msgstr "รายชื่อผู้เกี่ยวข้อง"
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_request_pull_back_confirm
+msgid "Approval Request Pull Back Confirmation"
+msgstr "ยืนยันการดึงกลับคำขอ"
+
+#. module: agx_approval
+#: model:ir.actions.report,name:agx_approval.action_report_approval_request
+msgid "Approval Request Report"
+msgstr "รายงานคำขออนุมัติ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_exception_rule__approval_request_ids
+msgid "Approval Requests"
+msgstr "คำขออนุมัติ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
 msgid "Approval category"
-msgstr ""
+msgstr "ประเภทคำขออนุมัติ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_kanban
 msgid "Approvals Types Image"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__approved
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
-msgid "Approved"
-msgstr "คำขอได้รับอนุมัติแล้ว"
+msgstr "รูปภาพประเภทคำขออนุมัติ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Archived"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model,name:agx_approval.model_ir_attachment
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Attachment"
-msgstr "เอกสารแนบ"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "File Name"
-msgstr "ชื่อไฟล์"
+msgstr "เก็บถาวร"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "จำนวนเอกสารแนบ"
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__billed
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
-msgid "Billed"
-msgstr "ส่งเบิกแล้ว"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Budget"
-msgstr "การใช้งบประมาณ"
-
-#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__budget_account_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_account_id
 msgid "Budget Account"
 msgstr "รหัสงบประมาณ"
@@ -193,46 +285,35 @@ msgstr "รหัสงบประมาณ"
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_commitment_id
 msgid "Budget Commitment"
-msgstr ""
+msgstr "การจองงบประมาณ"
 
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
-msgid "Budget commitment %s has been cancelled"
-msgstr ""
+msgid "Budget commitment %(name)s has been cancelled (%(reason)s)"
+msgstr "การจองงบประมาณ %(name)s ถูกยกเลิกแล้ว (%(reason)s)"
 
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "Budget reserved: %s for amount %s"
-msgstr ""
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Cancel"
-msgstr "ยกเลิก"
-
-#. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__rejected
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
-msgid "Rejected"
-msgstr "ปฏิเสธ"
+msgstr "จองงบประมาณแล้ว: %s จำนวน %s"
 
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "Cannot reserve budget due to insufficient funds: %s"
-msgstr ""
+msgstr "ไม่สามารถจองงบประมาณได้เนื่องจากวงเงินไม่เพียงพอ: %s"
 
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "Cannot reserve budget: %s"
-msgstr ""
+msgstr "ไม่สามารถจองงบประมาณได้: %s"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_category_menu
@@ -261,9 +342,10 @@ msgstr "จังหวัด/เมือง"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__company_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__company_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__company_id
 msgid "Company"
-msgstr ""
+msgstr "บริษัท"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__country_id
@@ -274,47 +356,52 @@ msgstr "ประเทศ"
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__create_uid
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__create_uid
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__create_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__create_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__create_uid
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__create_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__create_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "สร้างโดย"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__create_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__create_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__create_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__create_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__create_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__create_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__create_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__create_date
 msgid "Created on"
-msgstr ""
+msgstr "สร้างเมื่อ"
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__currency_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__currency_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "สกุลเงิน"
 
 #. module: agx_approval
 #: model:ir.actions.act_window,name:agx_approval.action_approval_dashboard
 msgid "Dashboard"
-msgstr ""
+msgstr "แดชบอร์ด"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__date_end
 msgid "Date End"
-msgstr ""
+msgstr "วันที่สิ้นสุด"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__date_start
 msgid "Date Start"
-msgstr ""
+msgstr "วันที่เริ่มต้น"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__default_description
 msgid "Default Description"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__department_id
-msgid "Department"
-msgstr "หน่วยงาน"
+msgstr "รายละเอียดเริ่มต้น"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__description
@@ -322,34 +409,51 @@ msgid "Description"
 msgstr "เหตุผล/ความจำเป็น"
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__direct
-msgid "Direct paid"
-msgstr "จ่ายตรง"
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__display_name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__display_name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__display_name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__display_name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__display_name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__display_name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__display_name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__draft
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Draft"
 msgstr "แบบร่าง"
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__product_id
-#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__product_id
-msgid "Expense"
-msgstr "รหัสค่าใช้จ่าย"
+#: model:ir.model,name:agx_approval.model_exception_rule
+msgid "Exception Rule"
+msgstr "กฎข้อยกเว้น"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__exception_ids
+msgid "Exceptions"
+msgstr "ข้อยกเว้น"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__exceptions_summary
+msgid "Exceptions Summary"
+msgstr "สรุปข้อยกเว้น"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__exception_ids
+msgid "Exceptions to resolve"
+msgstr "ข้อยกเว้นที่ต้องแก้ไข"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__line_ids
 msgid "Expense Lines"
-msgstr ""
+msgstr "รายการค่าใช้จ่าย (แผน)"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__account_fiscal_year_id
@@ -359,12 +463,12 @@ msgstr "ปีงบประมาณ"
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "ผู้ติดตาม"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "ผู้ติดตาม (คู่ค้า)"
 
 #. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request__activity_type_icon
@@ -373,8 +477,9 @@ msgstr ""
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
 msgid "Group By"
-msgstr ""
+msgstr "จัดกลุ่มตาม"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__has_city
@@ -408,7 +513,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__id
 msgid "ID"
 msgstr ""
 
@@ -434,8 +543,19 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__ignore_exception
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__ignore
+msgid "Ignore Exceptions"
+msgstr "ละเว้นข้อยกเว้น"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__image
 msgid "Image"
+msgstr "รูปภาพ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_actual_editable
+msgid "Is Actual Editable"
 msgstr ""
 
 #. module: agx_approval
@@ -444,8 +564,8 @@ msgid "Is Budget Editable"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_editable
-msgid "Is Editable"
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_correction
+msgid "Is Correction"
 msgstr ""
 
 #. module: agx_approval
@@ -454,10 +574,19 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_plan_editable
+msgid "Is Plan Editable"
+msgstr ""
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category____last_update
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group____last_update
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request____last_update
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation____last_update
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm____last_update
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line____last_update
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant____last_update
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -465,7 +594,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__write_uid
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__write_uid
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__write_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__write_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__write_uid
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__write_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__write_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__write_uid
 msgid "Last Updated by"
 msgstr ""
 
@@ -473,18 +606,27 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__write_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__write_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__write_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__write_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_exception_confirm__write_date
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__write_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__write_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__write_date
 msgid "Last Updated on"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__advance
-msgid "Advance"
-msgstr "เงินยืม"
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "Logo"
+msgstr ""
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_main_attachment_id
 msgid "Main Attachment"
+msgstr "เอกสารแนบหลัก"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__main_exception_id
+msgid "Main Exception"
 msgstr ""
 
 #. module: agx_approval
@@ -495,7 +637,12 @@ msgstr "จัดการคำขอ"
 #. module: agx_approval
 #: model:res.groups,name:agx_approval.group_approval_manager
 msgid "Manager"
-msgstr ""
+msgstr "ผู้จัดการ"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__budget_commitment_amount
+msgid "Maximum budget amount for this commitment (cap)"
+msgstr "วงเงินงบประมาณสูงสุดสำหรับการจองนี้"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_has_error
@@ -505,7 +652,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "ข้อความ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__my_activity_date_deadline
@@ -526,12 +673,6 @@ msgstr "คำขอของฉัน"
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__name
-msgid "Name"
-msgstr "เลขที่"
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
-#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
 msgid "Name"
 msgstr "ประเภทคำขอ"
 
@@ -562,11 +703,6 @@ msgid "Next Activity Type"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__note
-msgid "Note"
-msgstr "หมายเหตุ"
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
@@ -591,32 +727,40 @@ msgstr ""
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "Only To Verify requests can be submitted."
-msgstr ""
+msgstr "เฉพาะคำขอที่อยู่ในสถานะ 'รอตรวจสอบ' เท่านั้นที่สามารถส่งได้"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Only approved requests can record actual expenses."
+msgstr "เฉพาะคำขอที่ได้รับอนุมัติแล้วเท่านั้นที่สามารถบันทึกค่าใช้จ่ายจริงได้"
 
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "Only draft requests can be verified."
-msgstr ""
+msgstr "เฉพาะคำขอในสถานะร่างเท่านั้นที่สามารถตรวจสอบได้"
 
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
-msgid "Only submitted requests can be validated."
-msgstr ""
+msgid "Only requests with recorded actuals can be billed."
+msgstr "เฉพาะคำขอที่บันทึกค่าใช้จ่ายจริงแล้วเท่านั้นที่สามารถส่งเบิกได้"
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__partner_id
-#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__partner_id
-msgid "Payee"
-msgstr "ผู้รับเงิน"
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Only submitted requests can be approved."
+msgstr "เฉพาะคำขอที่รอส่งขออนุมัติเท่านั้นที่สามารถอนุมัติได้"
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__payment_type
-msgid "Payment Type"
-msgstr "ประเภทการจ่ายเงิน"
+#: model:ir.actions.act_window,name:agx_approval.action_approval_request_exception_confirm
+msgid "Outstanding exceptions to manage"
+msgstr "ข้อยกเว้นที่รอดำเนินการ"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -624,19 +768,25 @@ msgid "Period"
 msgstr "ระยะเวลา"
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__prepaid
-msgid "Prepaid"
-msgstr "สำรองจ่าย"
+#. odoo-javascript
+#: code:addons/agx_approval/static/src/components/allocation_grouped/allocation_grouped.xml:0
+#: code:addons/agx_approval/static/src/components/allocation_grouped/allocation_grouped.xml:0
+#, python-format
+msgid "Recipient"
+msgstr "ผู้รับเงิน"
 
 #. module: agx_approval
 #: model:ir.model.fields,help:agx_approval.field_approval_request__budget_commitment_id
 msgid "Related budget commitment for this approval request"
-msgstr ""
+msgstr "การจองงบประมาณสำหรับคำขอนี้"
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__request_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__request_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__request_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__request_id
 msgid "Request"
-msgstr ""
+msgstr "คำขอ"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__date
@@ -649,11 +799,6 @@ msgid "Request Group"
 msgstr "กลุ่มประเภทคำขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Request Lines"
-msgstr "รายชื่อ"
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__owner_id
 msgid "Request Owner"
 msgstr "ชื่อผู้ขออนุมัติ"
@@ -662,8 +807,8 @@ msgstr "ชื่อผู้ขออนุมัติ"
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
-msgid "Request is already cancelled."
-msgstr ""
+msgid "Request is already rejected."
+msgstr "คำขอถูกปฏิเสธแล้ว"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
@@ -671,9 +816,9 @@ msgid "Reserve Budget"
 msgstr "จองงบประมาณ"
 
 #. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Reset to draft"
-msgstr "ตีกลับ"
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_commitment_amount
+msgid "Reserved Amount"
+msgstr "วงเงินที่จอง"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__user_id
@@ -693,9 +838,11 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category__sequence
 #: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__sequence
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__sequence
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__sequence
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "ลำดับ"
 
 #. module: agx_approval
 #: model:ir.ui.menu,name:agx_approval.approval_setting_menu
@@ -710,12 +857,6 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__submitted
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
-msgid "Submitted"
-msgstr "รอการอนุมัติ"
 
 #. module: agx_approval
 #. odoo-python
@@ -734,28 +875,6 @@ msgid ""
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
-msgid "To Verify"
-msgstr "ขอการอนุมัติ"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Verify Request"
-msgstr "ยืนยันคำขอ"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
-msgid "Total"
-msgstr "รวม"
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount
-#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__total_amount
-msgid "Requested Amount"
-msgstr "ยอดขอเบิก"
-
-#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__total_amount
 msgid "Total Estimated Cost"
 msgstr "รวม"
@@ -768,20 +887,14 @@ msgstr ""
 #. module: agx_approval
 #: model:res.groups,name:agx_approval.group_approval_user
 msgid "User"
-msgstr ""
-
-#. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__validated
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
-msgid "Validated"
-msgstr "อนุมัติแล้ว"
+msgstr "ผู้ใช้"
 
 #. module: agx_approval
 #. odoo-python
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "Warning: Could not cancel budget commitment: %s"
-msgstr ""
+msgstr "คำเตือน: ไม่สามารถยกเลิกการจองงบประมาณได้: %s"
 
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__website_message_ids
@@ -794,161 +907,558 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__state
-msgid "state"
-msgstr "สถานะ"
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "cancelled"
+msgstr "ยกเลิกแล้ว"
 
 #. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "reset to draft"
+msgstr "รีเซ็ตเป็นร่าง"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "กรุณาเพิ่มรายการค่าใช้จ่าย (แผน) อย่างน้อย 1 รายการ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__fund_analytic_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__fund_analytic_id
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
 msgid "กองทุน"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__activity_analytic_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_analytic_id
 msgid "กิจกรรม"
 msgstr ""
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "ขอเบิกเงิน"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__approved
+msgid "คำขอได้รับอนุมัติแล้ว"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "ค่าใช้จ่าย (แผน)"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__allocation_ids
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "ค่าใช้จ่ายจริง"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ค่าใช้จ่ายจริง (จัดสรรรายผู้รับเงิน)"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "งบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.actions.report,name:agx_approval.action_report_disbursement_voucher
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "งบหน้าใบสำคัญคู่จ่าย"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "จำนวนที่ถูกหักภาษี"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__amount
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "จำนวนเงิน"
+msgstr "ยอดขอเบิก"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request_allocation.py:0
+#, python-format
+msgid "จำนวนเงินของค่าใช้จ่ายจริงต้องมากกว่า 0"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request_line.py:0
+#, python-format
+msgid "จำนวนเงินของรายการค่าใช้จ่าย (แผน) ต้องมากกว่า 0"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "จำนวนเงินที่ขอเบิก"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request_allocation__payment_type__direct
+msgid "จ่ายตรง"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "ฉบับ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__partner_id
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ชื่อ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "ชื่อผู้ถูกหักภาษี"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "ดึงกลับ"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+#, python-format
+msgid "ดึงกลับคำขอ"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/wizard/pull_back_confirm.py:0
+#, python-format
+msgid "ดึงกลับคำขอกลับสู่ร่าง%s"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#: code:addons/agx_approval/wizard/pull_back_confirm.py:0
+#, python-format
+msgid "ดึงกลับได้เฉพาะสถานะ 'รอตรวจสอบ' หรือ 'รอส่งขออนุมัติ'"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
+msgid "ด้าน/แผนงาน/กิจกรรม"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "ตรวจสอบ / จองงบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__returned
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "ตีกลับ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__bank_id
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ธนาคาร"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__partner_bank_id
+msgid "บัญชีธนาคาร"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__actual
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "บันทึกค่าใช้จ่ายจริง"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "บันทึกจริง"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__rejected
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "ปฏิเสธ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ประเภท"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ประเภทการจ่าย"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__payment_type
+msgid "ประเภทการจ่ายเงิน"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "ปีงบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ผู้ขออนุมัติ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ผู้รับผิดชอบ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__partner_id
+msgid "ผู้รับเงิน"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ผู้รับเงิน:"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "พิมพ์งบหน้าใบสำคัญคู่จ่าย"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
+msgid "มูลค่างบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid "ยกเลิก"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "ยกเลิก / ปฏิเสธ"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "ยอดค่าใช้จ่ายจริง (%(actual)s) เกินงบที่อนุมัติ/จองไว้ (%(cap)s)"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "ยังไม่มี Budget Commitment สำหรับเอกสารนี้"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid ""
+"ยืนยันการดึงกลับคำขอนี้กลับสู่สถานะ \"ร่าง\" "
+"ระบบจะปลดการจองงบประมาณที่จองไว้"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid "ยืนยันดึงกลับ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_tree
+msgid "รวม"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "รวมค่าใช้จ่ายจริงทั้งสิ้น"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "รวมทั้งสิ้น"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__total_actual_amount
+msgid "รวมยอดเบิกจริง"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "รวมเป็นเงินทั้งสิ้น"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "รวมใบสำคัญ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
+msgid "รหัสงบประมาณค่าใช้จ่าย"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
+msgid "รอตรวจสอบ / จองงบประมาณ"
+msgstr "ขอการอนุมัติ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "รอตรวจสอบ/จองงบ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_send
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "รอส่งขออนุมัติ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ระยะเวลา"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__product_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__product_id
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "รายการ"
+msgstr "รหัสค่าใช้จ่าย"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "รายการค่าใช้จ่าย (แผน)"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__participant_ids
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "รายชื่อ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "รายชื่อผู้เกี่ยวข้อง"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_allocation__description
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__description
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_participant__description
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "รายละเอียด"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "รายละเอียดคำขอ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "รายละเอียดงบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "ร่าง"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ลำดับ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_disbursement_voucher_document
+msgid "ลำดับที่"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "วันที่"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request_allocation__payment_type
+msgid ""
+"วิธีที่จ่ายเงินของแถวนี้ — จ่ายตรง/สำรองจ่าย จะเข้าใบเบิก (DR); เงินยืม "
+"จะไม่เข้าใบเบิก แต่ไปเคลียร์กับสัญญายืม (ดู ADR-0002)"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__state
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "สถานะ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request_allocation__payment_type__prepaid
+msgid "สำรองจ่าย"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__sent
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "ส่งขออนุมัติแล้ว"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "ส่งเบิก"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__department_analytic_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__department_analytic_id
 msgid "ส่วนงาน"
 msgstr ""
 
 #. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "หน่วยงาน"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "อนุมัติ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "อนุมัติแล้ว"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request_allocation__payment_type__advance
+msgid "เงินยืม"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__billed
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "เบิกแล้ว"
+msgstr "ส่งเบิกแล้ว"
+
+#. module: agx_approval
+#. odoo-javascript
+#: code:addons/agx_approval/static/src/components/allocation_grouped/allocation_grouped.xml:0
+#, python-format
+msgid "เพิ่มรายการของ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "เรื่อง"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "เลขที่"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "เลขที่บัญชี"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
+msgid "เลขที่ใบจองงบประมาณ"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "เลือกงบจากผังงบประมาณ (ดูยอดคงเหลือ)"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_pull_back_confirm__reason
+msgid "เหตุผล"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid "เหตุผลในการดึงกลับ (ถ้ามี)"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "เอกสารแนบ"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__source_analytic_id
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__source_analytic_id
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_budget
 msgid "แหล่งเงิน"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__attachment_ids
-msgid "Document Attachments"
-msgstr "เอกสารแนบ"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid ""
-"When payment type is Prepaid, please select the advance\n"
-"                                payer's name in the Partner field."
+#: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
+msgid "ใบขออนุมัติ"
 msgstr ""
-"กรณีเลือกประเภทการจ่ายเงินเป็นสำรองจ่าย\n"
-"                                ให้เลือกชื่อผู้สำรองจ่าย"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid ""
-"If vendor name not found, contact procurement staff to add the information."
-msgstr "ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน เพื่อเพิ่มข้อมูล"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Attachment for Approval Request"
-msgstr "เอกสารประกอบคำขออนุมัติ"
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_update_actual_amount_wizard_line__actual_amount
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__actual_amount
-msgid "Actual Amount"
-msgstr "ยอดเบิกจริง"
 
 #. module: agx_approval
 #. odoo-python
-#: code:addons/agx_approval/models/approval_request.py:0
-#: model_terms:ir.ui.view,arch_db:agx_approval.update_actual_amount_wizard_view_form
+#: code:addons/agx_approval/models/approval_request_allocation.py:0
 #, python-format
-msgid "Update actual amount"
-msgstr "แก้ไขยอดเบิกจริง"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Record Actual Disbursement"
-msgstr "ขอเบิกจริง"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Budget Reserved:"
-msgstr "จองงบแล้ว:"
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_commitment_amount
-msgid "Reserved Amount"
-msgstr "วงเงินที่จอง"
-
-#. module: agx_approval
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid ""
-"Use this to adjust the actual disbursement amount when it is lower than the "
-"approved amount. Values above the approved amount are not allowed."
+msgid "ไม่สามารถลบรายการค่าใช้จ่ายจริงในสถานะนี้"
 msgstr ""
-"ใช้ปุ่มนี้เพื่อปรับยอดเบิกจริงเมื่อยอดต่ำกว่ายอดที่ขออนุมัติ "
-"ไม่อนุญาตให้กรอกยอดที่สูงกว่ายอดที่ขออนุมัติ"
 
 #. module: agx_approval
 #. odoo-python
-#: code:addons/agx_approval/wizard/update_actual_amount_wizard.py:0
+#: code:addons/agx_approval/models/approval_request_line.py:0
 #, python-format
-msgid ""
-"Actual amount cannot exceed the approved amount on the following line(s): %s"
-msgstr "ยอดเบิกจริงต้องไม่เกินยอดที่ขออนุมัติในรายการต่อไปนี้: %s"
-
-#. module: agx_approval
-#: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard
-msgid "Update Actual Amount Wizard"
-msgstr "แก้ไขยอดเบิกจริง"
-
-#. module: agx_approval
-#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__ready_to_bill
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
-msgid "Ready to Bill"
-msgstr "พร้อมส่งเบิกจริง"
-
-#. module: agx_approval
-#: model:ir.model,name:agx_approval.model_approval_update_actual_amount_wizard_line
-msgid "Update Actual Amount Wizard Line"
+msgid "ไม่สามารถลบรายการค่าใช้จ่ายในสถานะนี้"
 msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_internal_partner
-msgid "Allow Internal Personnel"
-msgstr "อนุญาตบุคลากรภายใน"
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request_allocation.py:0
+#, python-format
+msgid "ไม่สามารถเพิ่มรายการค่าใช้จ่ายจริงในสถานะนี้"
+msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_external_partner
-msgid "Allow External Person"
-msgstr "อนุญาตบุคคลภายนอก"
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request_line.py:0
+#, python-format
+msgid "ไม่สามารถเพิ่มรายการค่าใช้จ่ายในสถานะนี้"
+msgstr ""
 
 #. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allow_student_partner
-msgid "Allow Student"
-msgstr "อนุญาตนักศึกษา"
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__allowed_partner_type_ids
-msgid "Allowed Partner Types"
-msgstr "ประเภทผู้รับเงินที่อนุญาต"
-
-#. module: agx_approval
-#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_internal_partner
-msgid ""
-"Allow selecting internal personnel (บุคลากรภายใน) as the payee on request "
-"lines of this category."
-msgstr "อนุญาตให้เลือกบุคลากรภายในเป็นผู้รับเงินในรายการของหมวดนี้"
-
-#. module: agx_approval
-#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_external_partner
-msgid ""
-"Allow selecting external persons (บุคคลภายนอก) — companies and others — as "
-"the payee on request lines of this category."
-msgstr "อนุญาตให้เลือกบุคคลภายนอก (บริษัทและอื่น ๆ) เป็นผู้รับเงินในรายการของหมวดนี้"
-
-#. module: agx_approval
-#: model:ir.model.fields,help:agx_approval.field_approval_category__allow_student_partner
-msgid ""
-"Allow selecting students (นักศึกษา) as the payee on request lines of this "
-"category."
-msgstr "อนุญาตให้เลือกนักศึกษาเป็นผู้รับเงินในรายการของหมวดนี้"
-
-#. module: agx_approval
-#: model:ir.model.fields,field_description:agx_approval.field_approval_request__payee_ids
-#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
-msgid "Payees"
-msgstr "ข้อมูลการจ่ายเงิน"
-
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request_allocation.py:0
+#, python-format
+msgid "ไม่สามารถแก้ไขรายการค่าใช้จ่ายจริงในสถานะนี้"
+msgstr ""
