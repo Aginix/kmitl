@@ -11,7 +11,7 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-external-link"
-                        attrs="{'invisible': [('is_current_user_committee', '=', False)]}">
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_review'), ('is_current_user_committee', '=', False)]}">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">ตรวจรับใน Portal</span>
                     </div>
@@ -20,7 +20,7 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-external-link"
-                        attrs="{'invisible': [('purchase_id', '=', False)]}">
+                        attrs="{'invisible': ['|', ('state', '!=', 'in_review'), ('purchase_id', '=', False)]}">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">ดู PO ใน Portal</span>
                     </div>
