@@ -32,9 +32,9 @@ _Avoid_: approval date, disbursement request date
 The finance officer's check of the submitted request against the real paper documents, at `to_verify`. Distinct from Approve. On failure the officer returns the request to the borrower to edit (back to `draft`).
 _Avoid_: approve, review, validate
 
-**Endorse (เห็นชอบ) / Approve (อนุมัติ)**:
-The management approval chain at `to_approve`, run via tier validation and routed by org unit — Faculty: Dean endorses → Deputy Rector approves; สนอ.: Finance Director (ผอ.กองคลัง) endorses → Deputy Rector approves. Endorse is the intermediate sign-off; Approve is the final one that releases the request to disbursement. A rejection here sends the request to `rejected`.
-_Avoid_: verify, confirm
+**Approve (อนุมัติ)**:
+The management sign-off at `to_approve` that releases the request to disbursement — today a **single step** by `group_advance_payment_manager`. The multi-tier Endorse → Approve chain routed by org unit (Faculty: Dean endorses → Deputy Rector approves; สนอ.: ผอ.กองคลัง endorses → Deputy Rector approves) is **not implemented**; there is no `rejected` state — a request that does not pass goes back to `draft` (ส่งกลับแก้ไข) or to `cancel`.
+_Avoid_: verify, confirm, endorse
 
 **Debt (หนี้เงินยืม / ลูกหนี้)**:
 What the borrower owes the institute. Created when the disbursement transfers on the Effective Date (equal to the loan amount) and reduced by clearing; when it reaches zero the agreement can close.

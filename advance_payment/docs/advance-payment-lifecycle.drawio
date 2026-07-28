@@ -43,9 +43,6 @@
         </mxCell>
 
         <!-- Negative states -->
-        <mxCell id="s_rejected" value="rejected&lt;br/&gt;(ไม่อนุมัติ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="740" y="300" width="180" height="48" as="geometry" />
-        </mxCell>
         <mxCell id="s_cancel" value="cancel&lt;br/&gt;(ยกเลิกสัญญา)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="740" y="410" width="180" height="48" as="geometry" />
         </mxCell>
@@ -74,7 +71,7 @@
         <mxCell id="e_verify_approve" value="② ตรวจสอบ (จนท.การเงิน)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_verify" target="s_approve" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_approve_transfer" value="③ อนุมัติครบชั้น (auto)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_approve" target="s_transfer" parent="1">
+        <mxCell id="e_approve_transfer" value="③ อนุมัติ (ผู้จัดการ)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_approve" target="s_transfer" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_transfer_inprogress" value="④ การเงินโอนเสร็จ (auto)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_transfer" target="s_inprogress" parent="1">
@@ -100,9 +97,6 @@
 
         <!-- Negative edges (dashed red) -->
         <mxCell id="e_verify_draft" value="ส่งกลับแก้ไข (จนท.)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;dashed=1;endArrow=block;exitX=0.15;exitY=0;exitDx=0;exitDy=0;entryX=0.15;entryY=1;entryDx=0;entryDy=0;" edge="1" source="s_verify" target="s_draft" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e_approve_rejected" value="ไม่อนุมัติ" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;dashed=1;endArrow=block;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="s_approve" target="s_rejected" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_approve_cancel" value="ยกเลิก" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;dashed=1;endArrow=block;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.2;entryDx=0;entryDy=0;" edge="1" source="s_approve" target="s_cancel" parent="1">

@@ -12,7 +12,7 @@ class AdvancePayment(models.Model):
 
         draft → to_verify → to_approve → waiting_transfer → in_progress
               → to_verify_report → to_reconcile → done
-        (+ negative: rejected [tier module], cancel)
+        (+ negative: cancel)
 
     A borrower may hold only one active agreement at a time (serial borrowing).
     """
@@ -649,7 +649,7 @@ class AdvancePayment(models.Model):
 
     def action_approve(self):
         """Approve and create the outbound disbursement payment
-        (to_approve → waiting_transfer). Called manually or by the tier engine."""
+        (to_approve → waiting_transfer)."""
         for rec in self:
             if rec.state != "to_approve":
                 raise UserError(_("Only agreements awaiting approval can be approved."))

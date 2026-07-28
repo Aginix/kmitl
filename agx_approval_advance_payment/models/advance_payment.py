@@ -38,20 +38,23 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.approval_request_count = 1 if rec.approval_request_id else 0
 
-    def _propagate_rejection_to_reference(self):
-        super()._propagate_rejection_to_reference()
+    def _action_do_cancel(self, reason):
+        """Cancel the source approval request too, mirroring what
+        advance_payment_disbursement does for a source purchase request."""
+        res = super()._action_do_cancel(reason)
         if self.approval_request_id and self.approval_request_id.state != "rejected":
             self.approval_request_id.action_cancel()
             self.approval_request_id.message_post(
                 body=_(
-                    "ปฏิเสธอัตโนมัติ เนื่องจากสัญญายืมเงิน"
+                    "ยกเลิกอัตโนมัติ เนื่องจากสัญญายืมเงิน"
                     " <a href='/web#id=%(id)s&amp;model=advance.payment'>"
-                    "<b>%(name)s</b></a> ไม่ได้รับการอนุมัติ",
+                    "<b>%(name)s</b></a> ถูกยกเลิก",
                     id=self.id,
                     name=self.name,
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+        return res
 
     def action_view_approval_request(self):
         self.ensure_one()
