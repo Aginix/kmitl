@@ -131,7 +131,12 @@ class PurchaseRequestApproval(models.Model):
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
     )
-    estimated_cost = fields.Float(string="Estimated Cost")
+    estimated_cost = fields.Monetary(
+        string="Estimated Cost",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+    )
     payment_type = fields.Selection(
         [("direct", "Direct paid"), ("advance", "Advance"), ("prepaid", "Prepaid")],
     )
@@ -147,13 +152,63 @@ class PurchaseRequestApproval(models.Model):
     requested_by = fields.Many2one(related="request_id.requested_by")
     department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
-    partner_id = fields.Many2one(related="request_id.partner_id")
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Vendor",
+        tracking=True,
+    )
+    vat_included = fields.Selection(
+        [("exclusive", "VAT Exclusive"), ("inclusive", "VAT Inclusive")],
+        default="exclusive",
+        tracking=True,
+    )
+    tax_id = fields.Many2one(
+        "account.tax",
+        string="Tax",
+        domain="[('type_tax_use', 'in', ['purchase']), ('company_id', '=', company_id)]",
+        check_company=True,
+        context={"active_test": False},
+    )
+
+    @api.onchange("vat_included")
+    def _onchange_vat_included(self):
+        if self.vat_included == "inclusive":
+            if self.tax_id:
+                return
+            default_tax = self.env["account.tax"].search(
+                [
+                    ("type_tax_use", "in", ["purchase"]),
+                    ("company_id", "=", self.company_id.id),
+                ],
+                limit=1,
+            )
+            self.tax_id = default_tax.id
+        else:
+            self.tax_id = False
+
     user_id = fields.Many2one(related="request_id.user_id")
     product_id = fields.Many2one(related="request_id.product_id")
     currency_id = fields.Many2one(related="request_id.currency_id")
-    amount_total = fields.Monetary(related="request_id.amount_total")
-    amount_untaxed = fields.Monetary(related="request_id.amount_untaxed")
-    amount_tax = fields.Monetary(related="request_id.amount_tax")
+    amount_untaxed = fields.Monetary(
+        string="Untaxed Amount",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+        tracking=True,
+    )
+    amount_tax = fields.Monetary(
+        string="Taxes",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+    )
+    amount_total = fields.Monetary(
+        string="Total",
+        store=True,
+        readonly=True,
+        compute="_amount_all",
+    )
+    tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
     source_analytic_id = fields.Many2one(related="request_id.source_analytic_id")
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
@@ -169,6 +224,44 @@ class PurchaseRequestApproval(models.Model):
     evaluation_committee_ids = fields.One2many(
         related="request_id.evaluation_committee_ids"
     )
+
+    @api.depends("line_ids.price_total")
+    def _amount_all(self):
+        for record in self:
+            line_ids = record.line_ids
+            if record.company_id.tax_calculation_rounding_method == "round_globally":
+                tax_results = self.env["account.tax"]._compute_taxes(
+                    [line._convert_to_tax_base_line_dict() for line in line_ids]
+                )
+                totals = tax_results["totals"]
+                amount_untaxed = (
+                    totals.get(record.currency_id, {}).get("amount_untaxed", 0.0)
+                )
+                amount_tax = (
+                    totals.get(record.currency_id, {}).get("amount_tax", 0.0)
+                )
+            else:
+                amount_untaxed = sum(line_ids.mapped("price_subtotal"))
+                amount_tax = sum(line_ids.mapped("price_tax"))
+            record.amount_untaxed = amount_untaxed
+            record.amount_tax = amount_tax
+            record.amount_total = amount_untaxed + amount_tax
+            record.estimated_cost = amount_untaxed + amount_tax
+
+    @api.depends_context("lang")
+    @api.depends(
+        "line_ids.tax_id",
+        "line_ids.price_subtotal",
+        "amount_total",
+        "amount_untaxed",
+    )
+    def _compute_tax_totals(self):
+        for record in self:
+            line_ids = record.line_ids
+            record.tax_totals = self.env["account.tax"]._prepare_tax_totals(
+                [x._convert_to_tax_base_line_dict() for x in line_ids],
+                record.currency_id or record.company_id.currency_id,
+            )
 
     def button_draft(self):
         return self.write({"state": "draft"})

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_purchase_request_line_make_purchase_order_form" model="ir.ui.view">
+        <field name="name">purchase.request.line.make.purchase.order.form.approval</field>
+        <field name="model">purchase.request.line.make.purchase.order</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_line_make_purchase_order"/>
+        <field name="priority">200</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='supplier_id']" position="after">
+                <field name="vat_included" required="1"/>
+                <field
+                    name="tax_id"
+                    widget="selection"
+                    attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='item_ids']" position="after">
+                <group class="oe_subtotal_footer oe_right">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="tax_totals" widget="account-tax-totals-field" nolabel="1" colspan="2" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,9 +1,89 @@
 # -*- coding: utf-8 -*-
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _inherit = "purchase.request.line.make.purchase.order"
+
+    vat_included = fields.Selection(
+        [("exclusive", "VAT Exclusive"), ("inclusive", "VAT Inclusive")],
+        default="exclusive",
+    )
+    tax_id = fields.Many2one(
+        "account.tax",
+        string="Tax",
+        domain="[('type_tax_use', 'in', ['purchase'])]",
+    )
+    amount_untaxed = fields.Monetary(compute="_compute_amount_all")
+    amount_tax = fields.Monetary(compute="_compute_amount_all")
+    amount_total = fields.Monetary(compute="_compute_amount_all")
+    tax_totals = fields.Binary(compute="_compute_tax_totals", exportable=False)
+    currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id)
+
+    @api.onchange("vat_included")
+    def _onchange_vat_included(self):
+        if self.vat_included == "inclusive":
+            if self.tax_id:
+                return
+            default_tax = self.env["account.tax"].search(
+                [("type_tax_use", "in", ["purchase"])],
+                limit=1,
+            )
+            self.tax_id = default_tax.id
+        else:
+            self.tax_id = False
+
+    @api.depends("item_ids.price_total", "item_ids.price_subtotal", "item_ids.price_tax")
+    def _compute_amount_all(self):
+        for wiz in self:
+            wiz.amount_untaxed = sum(wiz.item_ids.mapped("price_subtotal"))
+            wiz.amount_tax = sum(wiz.item_ids.mapped("price_tax"))
+            wiz.amount_total = wiz.amount_untaxed + wiz.amount_tax
+
+    @api.depends_context("lang")
+    @api.depends(
+        "item_ids.tax_id",
+        "item_ids.price_subtotal",
+        "amount_total",
+        "amount_untaxed",
+    )
+    def _compute_tax_totals(self):
+        for wiz in self:
+            currency = (
+                wiz.item_ids[:1].request_id.currency_id
+                or self.env.company.currency_id
+            )
+            wiz.tax_totals = self.env["account.tax"]._prepare_tax_totals(
+                [
+                    item._convert_to_tax_base_line_dict()
+                    for item in wiz.item_ids
+                ],
+                currency,
+            )
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        approval_id = self.env.context.get("approval_id")
+        if approval_id:
+            approval = self.env["purchase.request.approval"].browse(approval_id)
+            if approval.exists():
+                res.setdefault("vat_included", approval.vat_included)
+                res.setdefault("tax_id", approval.tax_id.id)
+                return res
+        active_ids = self.env.context.get("active_ids") or []
+        if active_ids and self.env.context.get("active_model") == "purchase.request":
+            request = self.env["purchase.request"].browse(active_ids[0])
+            if request.exists():
+                res.setdefault("vat_included", request.vat_included)
+                res.setdefault("tax_id", request.tax_id.id)
+        return res
+
+    @api.model
+    def _prepare_purchase_order_line(self, po, item):
+        res = super()._prepare_purchase_order_line(po, item)
+        res["taxes_id"] = [(4, item.tax_id.id)] if item.tax_id else False
+        return res
 
     @api.model
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
@@ -28,6 +108,9 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     @api.model
     def _prepare_item(self, line):
         res = super()._prepare_item(line)
+        # item.tax_id is now related from wiz_id.tax_id — drop any snapshot
+        # of PR-line tax_id set by upstream overrides.
+        res.pop("tax_id", None)
         approval_id = self.env.context.get("approval_id")
         if not approval_id:
             return res
@@ -45,3 +128,13 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             res["product_qty"] = pa_line.product_qty
             res["price_unit"] = pa_line.price_unit
         return res
+
+
+class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
+    _inherit = "purchase.request.line.make.purchase.order.item"
+
+    tax_id = fields.Many2one(
+        "account.tax",
+        string="Tax",
+        related="wiz_id.tax_id",
+    )

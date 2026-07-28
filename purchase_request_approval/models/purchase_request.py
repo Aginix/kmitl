@@ -51,8 +51,10 @@ class PurchaseRequest(models.Model):
             "procurement_type_id": self.procurement_type_id.id,
             "procurement_method_id": self.procurement_method_id.id,
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "estimated_cost": self.estimated_cost,
             "payment_type": self.payment_type,
+            "partner_id": self.partner_id.id,
+            "vat_included": self.vat_included,
+            "tax_id": self.tax_id.id,
             "line_ids": [
                 (0, 0, {
                     "product_id": line.product_id.id,
@@ -60,7 +62,6 @@ class PurchaseRequest(models.Model):
                     "product_qty": line.product_qty,
                     "product_uom_id": line.product_uom_id.id,
                     "price_unit": line.price_unit,
-                    "estimated_cost": line.estimated_cost,
                 })
                 for line in self.line_ids
             ],
@@ -223,7 +224,11 @@ class PurchaseRequest(models.Model):
                 active_id=self.id,
                 approval_id=approval.id,
             )
-            .create({"supplier_id": self.partner_id.id})
+            .create({
+                "supplier_id": approval.partner_id.id,
+                "vat_included": approval.vat_included,
+                "tax_id": approval.tax_id.id,
+            })
         )
         wizard.make_purchase_order()
         return wizard

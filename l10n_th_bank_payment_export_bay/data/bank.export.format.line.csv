@@ -1,43 +1,24 @@
 id,bank_id/id,sequence,name,display_type,lenght,match_group,need_loop,sub_loop,sub_value_loop,end_line,condition_line,value_type,value_alignment,value_blank_space,value
-bay_format_01,l10n_th_bank_payment_export_bay.bay_cashlink,10,HEADER,line_section,,,,,,,,fixed,ljust,,
-bay_format_02,l10n_th_bank_payment_export_bay.bay_cashlink,11,Record Type,,1,,,,,,,fixed,ljust,,H
-bay_format_03,l10n_th_bank_payment_export_bay.bay_cashlink,12,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_04,l10n_th_bank_payment_export_bay.bay_cashlink,13,Sequence,,6,,,,,,,fixed,rjust,0,1
-bay_format_05,l10n_th_bank_payment_export_bay.bay_cashlink,14,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_06,l10n_th_bank_payment_export_bay.bay_cashlink,15,Sending Bank Code,,3,,,,,,,fixed,ljust,,025
-bay_format_07,l10n_th_bank_payment_export_bay.bay_cashlink,16,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_08,l10n_th_bank_payment_export_bay.bay_cashlink,17,Company Account,,10,,,,,,,dynamic,rjust,0,line[0].sanitize_account_number(line[0].payment_journal_id.bank_account_id.acc_number)
-bay_format_09,l10n_th_bank_payment_export_bay.bay_cashlink,18,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_10,l10n_th_bank_payment_export_bay.bay_cashlink,19,Company Name,,40,,,,,,,dynamic,ljust,,rec.bay_sender_name or rec.company_id.name
-bay_format_11,l10n_th_bank_payment_export_bay.bay_cashlink,20,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_12,l10n_th_bank_payment_export_bay.bay_cashlink,21,Effective Date,,8,,,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%d%m20%y"")"
-bay_format_13,l10n_th_bank_payment_export_bay.bay_cashlink,22,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_14,l10n_th_bank_payment_export_bay.bay_cashlink,23,Total Amount,,13,,,,,,,dynamic,rjust,0,"str(int(round(rec.total_amount * 100, 2)))"
-bay_format_15,l10n_th_bank_payment_export_bay.bay_cashlink,24,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_16,l10n_th_bank_payment_export_bay.bay_cashlink,25,Transaction Count,,6,,,,,,,dynamic,rjust,0,str(len(line.ids))
-bay_format_17,l10n_th_bank_payment_export_bay.bay_cashlink,26,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_18,l10n_th_bank_payment_export_bay.bay_cashlink,27,Service Code,,2,,,,,,,dynamic,ljust,,rec.bay_service_type
-bay_format_19,l10n_th_bank_payment_export_bay.bay_cashlink,28,Separator,,1,,,,,,,fixed,ljust,,^
-bay_format_20,l10n_th_bank_payment_export_bay.bay_cashlink,29,Filler,,158,,,,,TRUE,,fixed,ljust,,
-bay_format_21,l10n_th_bank_payment_export_bay.bay_cashlink,40,DETAILS,line_section,,,,,,,,fixed,ljust,,
-bay_format_22,l10n_th_bank_payment_export_bay.bay_cashlink,41,Record Type,,1,line,TRUE,,,,,fixed,ljust,,D
-bay_format_23,l10n_th_bank_payment_export_bay.bay_cashlink,42,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_24,l10n_th_bank_payment_export_bay.bay_cashlink,43,Sequence,,6,line,TRUE,,,,,dynamic,rjust,0,str(idx_line+1)
-bay_format_25,l10n_th_bank_payment_export_bay.bay_cashlink,44,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_26,l10n_th_bank_payment_export_bay.bay_cashlink,45,Receiving Bank Code,,3,line,TRUE,,,,,dynamic,ljust,,line.payment_partner_bank_id.bank_id.bank_code
-bay_format_27,l10n_th_bank_payment_export_bay.bay_cashlink,46,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_28,l10n_th_bank_payment_export_bay.bay_cashlink,47,Receiving Branch Code,,4,line,TRUE,,,,,dynamic,rjust,0,line.payment_partner_bank_id.bank_id.bank_branch_code
-bay_format_29,l10n_th_bank_payment_export_bay.bay_cashlink,48,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_30,l10n_th_bank_payment_export_bay.bay_cashlink,49,Receiving Account,,11,line,TRUE,,,,,dynamic,rjust,0,line.sanitize_account_number(line.payment_partner_bank_id.acc_number)
-bay_format_31,l10n_th_bank_payment_export_bay.bay_cashlink,50,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_32,l10n_th_bank_payment_export_bay.bay_cashlink,51,Receiver Name,,50,line,TRUE,,,,,dynamic,ljust,,line.payment_partner_bank_id.acc_holder_name or line.payment_partner_bank_id.partner_id.display_name
-bay_format_33,l10n_th_bank_payment_export_bay.bay_cashlink,52,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_34,l10n_th_bank_payment_export_bay.bay_cashlink,53,Amount,,13,line,TRUE,,,,,dynamic,rjust,0,"str(int(round(line.payment_amount * 100, 2)))"
-bay_format_35,l10n_th_bank_payment_export_bay.bay_cashlink,54,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_36,l10n_th_bank_payment_export_bay.bay_cashlink,55,Effective Date,,8,line,TRUE,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%d%m20%y"")"
-bay_format_37,l10n_th_bank_payment_export_bay.bay_cashlink,56,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_38,l10n_th_bank_payment_export_bay.bay_cashlink,57,Reference,,20,line,TRUE,,,,,dynamic,ljust,,line.payment_id.name
-bay_format_39,l10n_th_bank_payment_export_bay.bay_cashlink,58,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_40,l10n_th_bank_payment_export_bay.bay_cashlink,59,Debit Credit,,1,line,TRUE,,,,,fixed,ljust,,C
-bay_format_41,l10n_th_bank_payment_export_bay.bay_cashlink,60,Separator,,1,line,TRUE,,,,,fixed,ljust,,^
-bay_format_42,l10n_th_bank_payment_export_bay.bay_cashlink,61,Filler,,129,line,TRUE,,,TRUE,,fixed,ljust,,
+bay_hdr_01,l10n_th_bank_payment_export_bay.bay_cashlink,10,HEADER,line_section,,,,,,,,fixed,ljust,,
+bay_hdr_02,l10n_th_bank_payment_export_bay.bay_cashlink,11,Record ID,,3,,,,,,,fixed,ljust,,507
+bay_hdr_03,l10n_th_bank_payment_export_bay.bay_cashlink,12,Originator ID,,3,,,,,,,fixed,ljust,,001
+bay_hdr_04,l10n_th_bank_payment_export_bay.bay_cashlink,13,File Date,,6,,,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%d%m%y"")"
+bay_hdr_05,l10n_th_bank_payment_export_bay.bay_cashlink,14,Originator Acct/Ref,,10,,,,,,,dynamic,rjust,0,rec.export_line_ids[:1].sanitize_account_number(rec.export_line_ids[:1].payment_journal_id.bank_account_id.acc_number)
+bay_hdr_06,l10n_th_bank_payment_export_bay.bay_cashlink,15,Sender Name,,20,,,,,,,dynamic,ljust,,"rec.bay_sender_name or """""
+bay_hdr_07,l10n_th_bank_payment_export_bay.bay_cashlink,16,Code,,3,,,,,,,fixed,ljust,,712
+bay_hdr_08,l10n_th_bank_payment_export_bay.bay_cashlink,17,Reserved,,27,,,,,,,fixed,ljust,,
+bay_hdr_09,l10n_th_bank_payment_export_bay.bay_cashlink,18,Type Code,,4,,,,,,,fixed,ljust,,A001
+bay_hdr_10,l10n_th_bank_payment_export_bay.bay_cashlink,19,Value Period,,4,,,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%m%y"")"
+bay_hdr_11,l10n_th_bank_payment_export_bay.bay_cashlink,20,Detail Count,,7,,,,,,,dynamic,rjust,0,str(len(rec.export_line_ids))
+bay_hdr_12,l10n_th_bank_payment_export_bay.bay_cashlink,21,Grand Total,,15,,,,,,,dynamic,rjust,0,"str(int(round(rec.total_amount * 100, 2)))"
+bay_hdr_13,l10n_th_bank_payment_export_bay.bay_cashlink,22,Filler,,26,,,,,TRUE,,fixed,ljust,,
+bay_dtl_01,l10n_th_bank_payment_export_bay.bay_cashlink,40,DETAILS,line_section,,,,,,,,fixed,ljust,,
+bay_dtl_02,l10n_th_bank_payment_export_bay.bay_cashlink,41,Record ID,,3,line,TRUE,,,,,fixed,ljust,,507
+bay_dtl_03,l10n_th_bank_payment_export_bay.bay_cashlink,42,Originator ID,,3,line,TRUE,,,,,fixed,ljust,,001
+bay_dtl_04,l10n_th_bank_payment_export_bay.bay_cashlink,43,Receiving Account,,10,line,TRUE,,,,,dynamic,rjust,0,line.sanitize_account_number(line.payment_partner_bank_id.acc_number)
+bay_dtl_05,l10n_th_bank_payment_export_bay.bay_cashlink,44,Payee Name,,20,line,TRUE,,,,,dynamic,ljust,,line.payment_partner_bank_id.acc_holder_name or line.payment_partner_id.display_name
+bay_dtl_06,l10n_th_bank_payment_export_bay.bay_cashlink,45,Amount,,11,line,TRUE,,,,,dynamic,rjust,0,"str(int(round(line.payment_amount * 100, 2)))"
+bay_dtl_07,l10n_th_bank_payment_export_bay.bay_cashlink,46,Filler,,26,line,TRUE,,,,,fixed,ljust,,
+bay_dtl_08,l10n_th_bank_payment_export_bay.bay_cashlink,47,Originator ID,,3,line,TRUE,,,,,fixed,ljust,,001
+bay_dtl_09,l10n_th_bank_payment_export_bay.bay_cashlink,48,Value Period,,4,line,TRUE,,,,,dynamic,ljust,,"rec.effective_date.strftime(""%m%y"")"
+bay_dtl_10,l10n_th_bank_payment_export_bay.bay_cashlink,49,Filler,,48,line,TRUE,,,TRUE,,fixed,ljust,,

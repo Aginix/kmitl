@@ -16,11 +16,15 @@ class BankPaymentExport(models.Model):
     )
     # Configuration
     kbank_company_id = fields.Char(
-        string="KBANK Company ID",
-        size=6,
+        string="KBANK Originator Code",
+        size=7,
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+        help="7-digit KBANK originator code (Company/Originator ID) printed in "
+        "each detail and the trailer record. Zero-padded to 7 digits on export. "
+        "TODO: confirm the exact source/meaning against the official K-Cash "
+        "Connect Plus file-format specification.",
     )
     kbank_sender_name = fields.Char(
         readonly=True,
