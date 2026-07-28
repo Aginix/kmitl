@@ -78,3 +78,18 @@ class WorkAcceptance(models.Model):
         res = super()._notify_rejected_review()
         self.activity_feedback([WA_REVIEW_ACTIVITY], user_id=self.env.uid)
         return res
+
+    def write(self, vals):
+        clear_ids = []
+        if vals.get("state") and vals["state"] != "in_review":
+            clear_ids = [rec.id for rec in self if rec.state == "in_review"]
+        res = super().write(vals)
+        if clear_ids:
+            act_type = self.env.ref(WA_REVIEW_ACTIVITY, raise_if_not_found=False)
+            if act_type:
+                self.env["mail.activity"].sudo().search([
+                    ("res_model", "=", "work.acceptance"),
+                    ("res_id", "in", clear_ids),
+                    ("activity_type_id", "=", act_type.id),
+                ]).unlink()
+        return res
