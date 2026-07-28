@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_approval_form_godmode" model="ir.ui.view">
+        <field name="name">purchase.request.approval.form.godmode</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id"
+               ref="purchase_request_approval.view_purchase_request_approval_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Expose the current-user God Mode flag for `attrs` references -->
+            <field name="name" position="before">
+                <field name="user_has_godmode" invisible="1"/>
+            </field>
+
+            <!-- Header fields: readonly except (draft) or (approved + godmode) -->
+            <field name="title" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="description" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="procurement_type_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="procurement_method_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="payment_type" position="attributes">
+                <!-- Base view hard-codes readonly="1"; override to dynamic attrs. -->
+                <attribute name="readonly">0</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="vat_included" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="tax_id" position="attributes">
+                <attribute name="attrs">{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+
+            <!-- One2many container: open up in (draft) or (approved + godmode) -->
+            <field name="line_ids" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+
+            <!-- Inner tree: block add/remove even in draft (per plan). -->
+            <xpath expr="//field[@name='line_ids']/tree" position="attributes">
+                <attribute name="create">0</attribute>
+                <attribute name="delete">0</attribute>
+            </xpath>
+
+            <!-- Inject related helpers into the editable tree so line-level
+                 attrs can reference the parent's state + godmode flag. -->
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='product_id']" position="before">
+                <field name="approval_state" invisible="1"/>
+                <field name="approval_user_has_godmode" invisible="1"/>
+            </xpath>
+
+            <!-- Line editable fields: unlock only in (draft) or (approved + godmode) -->
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='product_qty']" position="attributes">
+                <attribute name="attrs">{'readonly': [('approval_state', 'not in', ('draft',)), '|', ('approval_state', '!=', 'approved'), ('approval_user_has_godmode', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='price_unit']" position="attributes">
+                <attribute name="attrs">{'readonly': [('approval_state', 'not in', ('draft',)), '|', ('approval_state', '!=', 'approved'), ('approval_user_has_godmode', '=', False)]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

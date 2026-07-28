@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="group_pa_godmode" model="res.groups">
+            <field name="name">Purchase Request Approval: God Mode (post-approval edit)</field>
+            <field name="category_id"
+                   ref="purchase_request.module_category_purchase_request"/>
+            <field name="comment">อนุญาตให้แก้ไข พจ.1 (header + line qty/price) หลังอนุมัติแล้ว โดยยอดรวมต้องไม่เกินวงเงินที่จองไว้</field>
+        </record>
+    </data>
+</odoo>
