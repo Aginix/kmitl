@@ -11,14 +11,14 @@
                     <field name="is_plan_editable" invisible="1"/>
                     <field name="is_actual_editable" invisible="1"/>
                     <field name="is_correction" invisible="1"/>
-                    <button name="action_to_verify" string="ตรวจสอบ / จองงบประมาณ" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <button name="action_to_verify" string="Submit request" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_reserve_budget" type="object" attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}" string="Reserve Budget" class="oe_highlight btn-success" groups="budget.group_budget_commitment" />
-                    <button name="action_approve" string="อนุมัติ" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['to_send', 'sent'])]}" groups="agx_approval.group_approval_manager"/>
-                    <button name="action_record_actual" string="บันทึกค่าใช้จ่ายจริง" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" />
-                    <button name="action_bill" string="ส่งเบิก" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'actual')]}" />
-                    <button name="%(agx_approval.action_report_disbursement_voucher)d" type="action" string="พิมพ์งบหน้าใบสำคัญคู่จ่าย" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['actual', 'billed'])]}" />
-                    <button name="action_open_pull_back_wizard" string="ดึงกลับ" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send'])]}"/>
-                    <button name="action_cancel" string="ยกเลิก / ปฏิเสธ" type="object" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send', 'approved'])]}" groups="agx_approval.group_approval_manager"/>
+                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['to_send', 'sent'])]}" groups="agx_approval.group_approval_manager"/>
+                    <button name="action_record_actual" string="Record Actual Expense" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" />
+                    <button name="action_bill" string="Submit for Disbursement" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'actual')]}" />
+                    <button name="%(agx_approval.action_report_disbursement_voucher)d" type="action" string="Print Disbursement Voucher Cover" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['actual', 'billed'])]}" />
+                    <button name="action_open_pull_back_wizard" string="Pull Back" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send'])]}"/>
+                    <button name="action_cancel" string="Cancel / Reject" type="object" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send', 'approved'])]}" groups="agx_approval.group_approval_manager"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,approved,actual,billed" />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary', '=', False)]}">
@@ -43,7 +43,7 @@
                         </h1>
                     </div>
 
-                    <group name="approval_details" string="รายละเอียดคำขอ">
+                    <group name="approval_details" string="Request Details">
                         <group>
                             <field name="date" readonly="1"/>
                             <field name="id" invisible="1" />
@@ -64,11 +64,11 @@
                             <field name="description" attrs="{'readonly': [('is_plan_editable', '=', False)]}"/>
                         </group>
                     </group>
-                    <group name="attachment" string="เอกสารแนบ">
+                    <group name="attachment" string="Attachments">
                         <field name="attachment_ids" attrs="{'readonly': [('is_plan_editable','=', False)]}" context="{'default_res_model': 'approval.request'}" widget="many2many_binary">
                         </field>
                     </group>
-                    <group name="budget" string="งบประมาณ">
+                    <group name="budget" string="Budget">
                         <div colspan="2" class="alert alert-success my-2" role="alert" attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
                             <i class="fa fa-check-circle me-1" title="Budget Reserved"/>
                             <strong>Budget Reserved:</strong>
@@ -79,7 +79,7 @@
                         </div>
                         <field name="is_budget_editable" invisible="1"/>
                         <button name="action_open_reservation_picker" type="object"
-                            string="เลือกงบจากผังงบประมาณ (ดูยอดคงเหลือ)"
+                            string="Select Budget from Chart (view balance)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
                             attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
                         <field name="budget_account_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
@@ -90,7 +90,7 @@
                         <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}"/>
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
-                    <separator string="ค่าใช้จ่าย (แผน)"/>
+                    <separator string="Planned Expenses"/>
                     <field name="line_ids" widget="no_open_readonly_x2many" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                         <tree editable="bottom">
                             <field name="allowed_product_ids" invisible="1"/>
@@ -98,10 +98,10 @@
                             <field name="currency_id" invisible="1"/>
                             <field name="product_id"/>
                             <field name="description"/>
-                            <field name="total_amount" sum="รวม"/>
+                            <field name="total_amount" sum="Total"/>
                         </tree>
                     </field>
-                    <separator string="รายชื่อ"/>
+                    <separator string="Participants"/>
                     <field name="participant_ids" widget="no_open_readonly_x2many" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
                         <tree editable="bottom">
                             <field name="allowed_partner_type_ids" invisible="1"/>
@@ -111,7 +111,7 @@
                         </tree>
                     </field>
                     <div attrs="{'invisible': [('state', 'not in', ['actual', 'billed', 'returned'])]}">
-                        <separator string="ค่าใช้จ่ายจริง"/>
+                        <separator string="Actual Expenses"/>
                         <field name="allocation_ids" widget="allocation_grouped" attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
                             <tree editable="bottom" default_order="partner_id">
                                 <field name="allowed_recipient_ids" invisible="1"/>
@@ -122,7 +122,7 @@
                                 <field name="product_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="description" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="payment_type" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
-                                <field name="amount" sum="รวม" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="amount" sum="Total" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
                                 <field name="partner_bank_id" options="{'no_create': True, 'no_create_edit': True}" attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}"/>
                             </tree>
                         </field>
@@ -144,13 +144,15 @@
         <field name="name">approval.request.view.tree</field>
         <field name="model">approval.request</field>
         <field name="arch" type="xml">
-            <tree string="Approval Request">
+            <tree string="Approval Request" decoration-danger="main_exception_id != False">
                 <field name="name" />
                 <field name="date" />
                 <field name="category_id" />
                 <field name="owner_id" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
-                <field name="total_amount" sum="รวม" optional="show"/>
+                <field name="total_amount" sum="Total" optional="show"/>
+                <field name="main_exception_id" invisible="1"/>
+                <field name="exception_ids" widget="many2many_tags" string="Exceptions" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'to_send', 'sent')" decoration-info="state == 'actual'" decoration-danger="state in ('rejected', 'returned')"/>
             </tree>
         </field>
@@ -165,21 +167,23 @@
                 <field name="category_id" />
                 <field name="account_fiscal_year_id" />
                 <field name="owner_id" />
-                <filter name="filter_draft" string="ร่าง" domain="[('state', '=', 'draft')]" />
-                <filter name="filter_to_verify" string="รอตรวจสอบ/จองงบ" domain="[('state', '=', 'to_verify')]" />
-                <filter name="filter_submitted" string="รอส่งขออนุมัติ" domain="[('state', '=', 'to_send')]" />
-                <filter name="filter_sent" string="ส่งขออนุมัติแล้ว" domain="[('state', '=', 'sent')]" />
-                <filter name="filter_approved" string="อนุมัติแล้ว" domain="[('state', '=', 'approved')]" />
-                <filter name="filter_actual" string="บันทึกจริง" domain="[('state', '=', 'actual')]" />
-                <filter name="filter_billed" string="เบิกแล้ว" domain="[('state', '=', 'billed')]" />
-                <filter name="filter_returned" string="ตีกลับ" domain="[('state', '=', 'returned')]" />
-                <filter name="filter_rejected" string="ปฏิเสธ" domain="[('state', '=', 'rejected')]" />
+                <filter name="filter_exception" string="Has Exception" domain="[('main_exception_id', '!=', False)]"/>
+                <separator />
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]" />
+                <filter name="filter_to_verify" string="To Verify / Reserve Budget" domain="[('state', '=', 'to_verify')]" />
+                <filter name="filter_submitted" string="To Send" domain="[('state', '=', 'to_send')]" />
+                <filter name="filter_sent" string="Sent" domain="[('state', '=', 'sent')]" />
+                <filter name="filter_approved" string="Approved" domain="[('state', '=', 'approved')]" />
+                <filter name="filter_actual" string="Actual Recorded" domain="[('state', '=', 'actual')]" />
+                <filter name="filter_billed" string="Billed" domain="[('state', '=', 'billed')]" />
+                <filter name="filter_returned" string="Returned" domain="[('state', '=', 'returned')]" />
+                <filter name="filter_rejected" string="Rejected" domain="[('state', '=', 'rejected')]" />
                 <separator />
                 <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]" />
                 <group expand="0" string="Group By">
-                    <filter name="group_category" string="ประเภท" context="{'group_by': 'category_id'}"/>
-                    <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}"/>
-                    <filter name="group_fy" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_fy" string="Fiscal Year" context="{'group_by': 'account_fiscal_year_id'}"/>
                 </group>
             </search>
         </field>

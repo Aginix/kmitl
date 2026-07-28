@@ -1462,3 +1462,151 @@ msgstr ""
 #, python-format
 msgid "ไม่สามารถแก้ไขรายการค่าใช้จ่ายจริงในสถานะนี้"
 msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Approve"
+msgstr "อนุมัติ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Record Actual Expense"
+msgstr "บันทึกค่าใช้จ่ายจริง"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Submit for Disbursement"
+msgstr "ส่งเบิก"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Print Disbursement Voucher Cover"
+msgstr "พิมพ์งบหน้าใบสำคัญคู่จ่าย"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Pull Back"
+msgstr "ดึงกลับ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Cancel / Reject"
+msgstr "ยกเลิก / ปฏิเสธ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Request Details"
+msgstr "รายละเอียดคำขอ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Budget"
+msgstr "งบประมาณ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Select Budget from Chart (view balance)"
+msgstr "เลือกงบจากผังงบประมาณ (ดูยอดคงเหลือ)"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Planned Expenses"
+msgstr "ค่าใช้จ่าย (แผน)"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Participants"
+msgstr "รายชื่อ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Actual Expenses"
+msgstr "ค่าใช้จ่ายจริง"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_tree
+msgid "Total"
+msgstr "รวม"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Has Exception"
+msgstr "มีข้อยกเว้น"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "To Verify / Reserve Budget"
+msgstr "รอตรวจสอบ / จองงบประมาณ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "To Send"
+msgstr "รอส่งขออนุมัติ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Sent"
+msgstr "ส่งขออนุมัติแล้ว"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Actual Recorded"
+msgstr "บันทึกจริง"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Billed"
+msgstr "เบิกแล้ว"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Returned"
+msgstr "ตีกลับ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Rejected"
+msgstr "ปฏิเสธ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid "Pull Back Request"
+msgstr "ดึงกลับคำขอ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid ""
+"Confirm pulling this request back to \"Draft\" — the reserved budget will be "
+"released."
+msgstr "ยืนยันการดึงกลับคำขอนี้กลับสู่สถานะ \"ร่าง\" ระบบจะปลดการจองงบประมาณที่จองไว้"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid "Reason for pulling back (optional)"
+msgstr "เหตุผลในการดึงกลับ (ถ้ามี)"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid "Confirm Pull Back"
+msgstr "ยืนยันดึงกลับ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_pull_back_confirm_view_form
+msgid "Cancel"
+msgstr "ยกเลิก"
