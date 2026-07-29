@@ -20,6 +20,6 @@ class AdvancePayment(models.Model):
 
     def _action_do_cancel(self, reason):
         self.ensure_one()
-        if self.reference and self.reference._name == "purchase.request":
+        if self.reference_model == "purchase.request":
             self.reference.button_rejected()
         return super()._action_do_cancel(reason)

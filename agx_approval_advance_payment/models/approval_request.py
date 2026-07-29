@@ -73,7 +73,7 @@ class ApprovalRequest(models.Model):
             "loan_type_id": loan_type.id,
             "reference": "approval.request,%s" % self.id,
             "analytic_distribution": self.analytic_distribution,
-            "approval_request_id": self.id,
+            # approval_request_id is derived from `reference` (_compute_reference)
         }
 
     def action_create_advance_payment(self):

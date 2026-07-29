@@ -26,6 +26,9 @@ class AdvancePayment(models.Model):
         "analytic.mixin",
     ]
     _order = "main_exception_id asc, name desc, id desc"
+    # Bridge modules append their typed source-document mirror (e.g.
+    # "purchase_request_id.name") so a loan can be found by its source number.
+    _rec_names_search = ["name", "contract_number"]
 
     # States in which a borrower is considered to "hold" an agreement, for the
     # one-active-agreement-per-borrower rule (ADR-0001).
@@ -152,6 +155,53 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
+    # Model of the source document, derived from `reference` — the counterpart
+    # of the requirement declared on loan_type_id.reference_model. Stored so it
+    # is searchable and usable in exception-rule domains. Bridge modules extend
+    # _compute_reference to also fill their own typed Many2one mirror.
+    reference_model = fields.Char(
+        string="Reference Model",
+        compute="_compute_reference",
+        store=True,
+        compute_sudo=False,
+        readonly=True,
+        copy=False,
+    )
+
+    @api.depends("reference")
+    def _compute_reference(self):
+        for rec in self:
+            rec.reference_model = rec.reference._name if rec.reference else False
+
+    def _check_reference_status(self):
+        """Hook: verify the source document is in a state that may back a loan.
+
+        Override in bridge modules and raise ValidationError when it is not.
+        Only enforced while the agreement is still in draft — once submitted,
+        the source document is free to move on with its own lifecycle.
+        """
+        self.ensure_one()
+        return True
+
+    # Deliberately NOT triggered on `state`: a reset-to-draft must not fail
+    # just because the source document moved on with its own lifecycle.
+    @api.constrains("reference", "loan_type_id")
+    def _check_reference_matches_loan_type(self):
+        for rec in self:
+            required = rec.loan_type_id.reference_model
+            if rec.reference and required and rec.reference._name != required:
+                raise ValidationError(
+                    _(
+                        "Loan type '%(type)s' expects a reference of"
+                        " %(expected)s, but %(actual)s was given.",
+                        type=rec.loan_type_id.name,
+                        expected=required,
+                        actual=rec.reference._name,
+                    )
+                )
+            if rec.reference and rec.state == "draft":
+                rec._check_reference_status()
+
     @api.depends("reference", "loan_type_id.reference_model")
     def _compute_reference_state(self):
         allow = str2bool(
@@ -166,12 +216,16 @@ class AdvancePayment(models.Model):
 
     @api.onchange("loan_type_id")
     def _onchange_loan_type_id(self):
-        if self.loan_type_id and not self.loan_type_id.reference_model:
+        """Drop a reference the newly picked loan type cannot accept — including
+        when switching between two reference-backed types."""
+        required = self.loan_type_id.reference_model
+        if self.reference and (not required or self.reference._name != required):
             self.reference = False
 
     @api.onchange("reference")
     def _onchange_reference(self):
         if self.reference:
+            self._check_reference_status()
             vals = self._prepare_vals_from_reference()
             if vals:
                 self.update(vals)
@@ -192,7 +246,6 @@ class AdvancePayment(models.Model):
         string="Loan Type",
         required=True,
         states=READONLY_STATES,
-        domain="[('reference_model', '=', False)]",
     )
 
     loan_amount = fields.Monetary(
@@ -535,6 +588,19 @@ class AdvancePayment(models.Model):
         records = self.filtered(lambda s: s.state == "to_verify")
         if records:
             records._check_exception()
+
+    def name_get(self):
+        """Show the source document alongside the number, so a loan is
+        identifiable from an m2o without opening it."""
+        result = []
+        for rec in self:
+            # Always keyed on the ADV running number — it identifies the row for
+            # its whole life; the contract number is searchable separately.
+            name = rec.name
+            if rec.reference:
+                name = "%s (%s)" % (name, rec.reference.display_name)
+            result.append((rec.id, name))
+        return result
 
     def write(self, vals):
         protected = self._PROTECTED_FIELDS & set(vals)

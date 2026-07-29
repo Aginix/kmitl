@@ -33,6 +33,17 @@
         <field name="active" eval="True"/>
     </record>
 
+    <record id="excep_missing_reference" model="exception.rule">
+        <field name="name">ไม่ได้ระบุเอกสารอ้างอิง</field>
+        <field name="description">ประเภทเงินยืมนี้ต้องอ้างอิงเอกสารต้นทาง กรุณาระบุก่อนส่งคำขอ</field>
+        <field name="sequence">31</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('reference_model', '=', False), ('loan_type_id.reference_model', '!=', False)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
     <record id="excep_missing_analytic" model="exception.rule">
         <field name="name">ไม่ได้ระบุมิติทางบัญชีครบถ้วน</field>
         <field name="description">กรุณาระบุส่วนงาน แหล่งเงิน กองทุน และด้าน/แผนงาน/กิจกรรม ให้ครบถ้วน</field>
