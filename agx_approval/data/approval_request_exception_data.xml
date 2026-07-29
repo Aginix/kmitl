@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="excep_no_line" model="exception.rule">
+            <field name="name">ไม่มีรายการค่าใช้จ่าย (แผน)</field>
+            <field name="description">คำขอต้องมีรายการค่าใช้จ่าย (แผน) อย่างน้อย 1 รายการ</field>
+            <field name="sequence">10</field>
+            <field name="model">approval.request</field>
+            <field name="exception_type">by_py_code</field>
+            <field name="code">
+if not self.line_ids:
+    failed = True
+            </field>
+            <field name="is_blocking" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="excep_no_participant" model="exception.rule">
+            <field name="name">ไม่มีรายชื่อผู้เกี่ยวข้อง</field>
+            <field name="description">คำขอต้องมีรายชื่ออย่างน้อย 1 รายชื่อ</field>
+            <field name="sequence">20</field>
+            <field name="model">approval.request</field>
+            <field name="exception_type">by_py_code</field>
+            <field name="code">
+if not self.participant_ids:
+    failed = True
+            </field>
+            <field name="is_blocking" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="excep_invalid_period" model="exception.rule">
+            <field name="name">ช่วงเวลาไม่ถูกต้อง</field>
+            <field name="description">วันที่เริ่มต้นต้องไม่มากกว่าวันที่สิ้นสุด</field>
+            <field name="sequence">30</field>
+            <field name="model">approval.request</field>
+            <field name="exception_type">by_py_code</field>
+            <field name="code">
+if self.has_period and self.date_start and self.date_end \
+        and self.date_start &gt; self.date_end:
+    failed = True
+            </field>
+            <field name="is_blocking" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
