@@ -40,4 +40,25 @@
         />
     </record>
 
+    <!-- Wizard mirrors the receipt config so the chooser dialog appears while
+         uploads still live on the transient wizard record; action_save then
+         repoints the attachments to kris.project.receipt, preserving the
+         chosen document_type_id. -->
+    <record
+        id="config_kris_project_receipt_wizard"
+        model="ir.attachment.document.type.config"
+    >
+        <field
+            name="res_model_id"
+            ref="kris_project.model_kris_project_receipt_wizard"
+        />
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_contract'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_receipt'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_purchase'), 'sequence': 30})]"
+        />
+    </record>
+
 </odoo>
