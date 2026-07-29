@@ -69,13 +69,13 @@ class WorkAcceptance(models.Model):
                     user_id=user.id,
                 )
 
-    def _notify_accepted_reviews(self):
-        res = super()._notify_accepted_reviews()
+    def _validate_tier(self, tiers=False):
+        res = super()._validate_tier(tiers=tiers)
         self.activity_feedback([WA_REVIEW_ACTIVITY], user_id=self.env.uid)
         return res
 
-    def _notify_rejected_review(self):
-        res = super()._notify_rejected_review()
+    def _rejected_tier(self, tiers=False):
+        res = super()._rejected_tier(tiers=tiers)
         self.activity_feedback([WA_REVIEW_ACTIVITY], user_id=self.env.uid)
         return res
 
