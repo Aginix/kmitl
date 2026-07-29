@@ -69,8 +69,8 @@ class WorkAcceptance(models.Model):
                     user_id=user.id,
                 )
 
-    def _validate_tier(self, tiers=False):
-        res = super()._validate_tier(tiers=tiers)
+    def _validate_tier(self, reviews):
+        res = super()._validate_tier(reviews)
         self.activity_feedback([WA_REVIEW_ACTIVITY], user_id=self.env.uid)
         return res
 
