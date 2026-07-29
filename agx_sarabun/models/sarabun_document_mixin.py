@@ -120,8 +120,9 @@ class SarabunDocumentMixin(models.AbstractModel):
             "origin_res_id": self.id,
         }
         # The official number is NOT assigned at create — only the issuing ส่วนงาน
-        # is supplied; ลงทะเบียน happens atomically at send (§4). Omit when
-        # unresolved so the document's own default applies.
+        # is supplied; ลงทะเบียน happens atomically at completion, when the final
+        # approver signs (ADR-0010). Omit when unresolved so the document's own
+        # default applies.
         dept = self._get_sarabun_sender_department()
         if dept:
             vals["sender_department_id"] = dept.id

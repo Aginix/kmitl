@@ -146,7 +146,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 
 | Field | Type | Notes |
 |---|---|---|
-| `name` | Char (readonly, default `/`) | Official registered number, rendered in พ.ศ. Related/stored from `register_number_id.register_number`; assigned **at send**, stays `/` while draft. |
+| `name` | Char (readonly, default `/`) | Official registered number, rendered in พ.ศ. Set from `register_number_id.register_number`; assigned **at completion** (final ลงนาม/อนุมัติ — ADR-0010), stays `/` while draft/circulating. |
 | `kind` | Selection (related, stored) | Dev-extensible behaviour axis: `memo`/`circular`/`from_record`. Mirrored from `type_id.kind`. v1 emphasis = `from_record`. |
 | `type_id` | M2o → `sarabun.document.type` (required) | Admin-configurable concrete type; binds sequence/default-route/template. |
 | `subject` | Text (required) | **เรื่อง** — the document's title. Multi-line free text. |
@@ -168,7 +168,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `reference_document_ids` | M2m → `sarabun.document` | **อ้างถึง** prior in-system หนังสือ. |
 | `reference_line_ids` | O2m → `sarabun.reference.line` | **อ้างถึง** free-text out-of-system letters. |
 | `enclosure_ids` | O2m → `sarabun.enclosure` | **สิ่งที่ส่งมาด้วย**, ordered. |
-| `register_number_id` | M2o → `sarabun.document.number` | The register ledger row; set by `_register()` at send. |
+| `register_number_id` | M2o → `sarabun.document.number` | The register ledger row; set by `_register()` at completion (ADR-0010). |
 | `numbering_mode` | Selection `auto`(default)/`reserved`/`gap`/`manual` | Constrained to `auto` for `from_record` (see §4). |
 | `signed_pdf` | Binary (`attachment=True`) | **ฉบับลงนาม** — frozen immutable PDF at `completed`. Before that, preview renders live. |
 | `signed_pdf_filename` | Char | Render filename (reuses origin filename via `_get_report_base_filename`). |
@@ -200,12 +200,13 @@ Semantic helper fields (computed booleans, accessed as attributes — these
 `is_completed`, `is_returned`, `is_rejected`, `is_cancelled`, `is_terminal`
 (rejected or cancelled), `has_signed` (any positively-completed step whose `verb.is_signature`).
 
-Key methods (design intent): `action_send()` (validate → `_register()` →
-`state=circulating` → `_advance_stage()` activate first Stage),
-`action_recall()` (guarded by `not has_signed`), `_freeze_signed_copy()`
-(merge cover sheet + origin body → `signed_pdf`), `_register()` (atomic allocate,
-see §4), `_stage_complete(order)` / `_advance_stage()` (Stage gating logic),
-`_void_register(reason)` (terminal negatives).
+Key methods (design intent): `action_send()` (validate — incl. `_resolve_sequence()`
+register-exists guard — → `state=circulating` → `_advance_stage()` activate first
+Stage; does **not** number, ADR-0010), `action_recall()` (guarded by `not has_signed`),
+`_complete_document()` (`_register()` → `_freeze_signed_copy()`), `_freeze_signed_copy()`
+(merge cover sheet + origin body → `signed_pdf`), `_register()` (atomic allocate at
+completion, see §4), `_stage_complete(order)` / `_advance_stage()` (Stage gating logic),
+`_void_register(reason)` (guarded no-op on the normal path since ADR-0010).
 
 ### 1.3 `sarabun.routing.step` — the unified Route step (ADR-0001)
 
@@ -572,7 +573,7 @@ recipients with no `user_id` could not see the document.
 
 | Method | On | Purpose |
 |---|---|---|
-| `action_send()` | `sarabun.document` | draft → circulating. Seeds the Route, `_register()`s the number atomically (§4), activates stage 1 (resolve+snapshot+notify). If no sequence for (sender ส่วนงาน), **block with a clear error**. Fires `_on_sarabun_circulating`. |
+| `action_send()` | `sarabun.document` | draft → circulating. Seeds the Route, **verifies** a register resolves for (sender ส่วนงาน) — else **block with a clear error** — but does **not** number (ADR-0010: `_register()` runs at completion), activates stage 1 (resolve+snapshot+notify). Fires `_on_sarabun_circulating`. |
 | `_seed_route_from_template()` | `sarabun.document` | Materialise template lines into `waiting` steps. |
 | `_advance_stage()` | `sarabun.document` | If current stage complete, activate next stage or complete the Document. |
 | `act_on_step(disposition, payload, *, actor=None, token=None)` | `sarabun.routing.step` | **Single token-ready entry point** for all 5 dispositions. Validates the caller is a current holder of an `active` step (or a valid magic-link token in phase-2), dispatches to the disposition handler, fires the origin callback **in the same transaction** (a failing callback rolls the action back — ADR-0004), then `_advance_stage()`. |
@@ -597,7 +598,7 @@ sequenceDiagram
 
     Sender->>Doc: action_send()
     Doc->>Doc: _seed_route_from_template() (4 stages, waiting)
-    Doc->>Doc: _register() (atomic) -> state=circulating
+    Doc->>Doc: _resolve_sequence() (register-exists guard) -> state=circulating
     Doc->>Origin: _on_sarabun_circulating(document) (same txn)
     Doc->>S1: _advance_stage() activates stage1: snapshot holder, mail.activity
     Note over S1: clerk acts -> complete (เห็นชอบ)
@@ -621,7 +622,7 @@ sequenceDiagram
 ```
 
 At any active gating step the actor may instead **เกษียนสั่งการ**, **มอบหมาย**,
-**ตีกลับ** (→ returned), or **ปฏิเสธ** (→ rejected, number voided).
+**ตีกลับ** (→ returned), or **ปฏิเสธ** (→ rejected; never numbered — ADR-0010).
 
 ### 2.10 OLD mechanisms removed
 
@@ -645,6 +646,8 @@ Document between states, the guards, and the side effects. It supersedes the old
 `draft → sent → completed/cancelled` model (ADR-0002), which dead-ended rejected
 documents in `sent` and blocked cancellation after send.
 
+> **Numbering timing — [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md):** ลงทะเบียน (`_register()`) runs at **completion** (final ลงนาม/อนุมัติ), not at send. So a `circulating` / `returned` หนังสือ carries **no number** (`name = "/"`), and the "VOID the number" side effects on ปฏิเสธ / ยกเลิกการส่ง below are guarded no-ops (there is no number to void — abandoned documents consume no counter). Send keeps only a register-*exists* guard.
+
 ### 3.1 States
 
 The lifecycle lives in a single `state` field (`tracking=True`). The Route — the
@@ -655,11 +658,11 @@ tracks `strongest_verb_id` because Recall depends on it (ADR-0002).
 | `state` value | Thai term | Meaning | Terminal? | Revisable? |
 |---|---|---|---|---|
 | `draft` | ฉบับร่าง | Composed but not yet sent; no official number; freely editable. | no | yes |
-| `circulating` | กำลังดำเนินการ | In flight along its Route (renamed from old `sent`). Has an official number. | no | no (locked) |
-| `completed` | เสร็จสิ้น | All gating steps positively completed; ฉบับลงนาม frozen. | yes (positive) | no |
-| `returned` | ตีกลับ | Sent back for revision; revisable like a draft but the prior chain is kept as history. Number retained. | no | yes |
-| `rejected` | ปฏิเสธ | Terminal negative; number **voided**. Proceed by duplicating to a new draft. | yes (negative) | no |
-| `cancelled` | ยกเลิก/เรียกคืน | Withdrawn via เรียกคืน before any signature; number **voided**. | yes (negative) | no |
+| `circulating` | กำลังดำเนินการ | In flight along its Route (renamed from old `sent`). **No number yet** — assigned at completion (ADR-0010). | no | no (locked) |
+| `completed` | เสร็จสิ้น | All gating steps positively completed; **number assigned** (ADR-0010); ฉบับลงนาม frozen. | yes (positive) | no |
+| `returned` | ตีกลับ | Sent back for revision; revisable like a draft but the prior chain is kept as history. Still unnumbered. | no | yes |
+| `rejected` | ปฏิเสธ | Terminal negative; never numbered (nothing to void — ADR-0010). Proceed by duplicating to a new draft. | yes (negative) | no |
+| `cancelled` | ยกเลิก/เรียกคืน | Withdrawn via ยกเลิกการส่ง before any signature; never numbered (nothing to void — ADR-0010). | yes (negative) | no |
 
 Supporting fields the machine reads/writes (all defined in §1.2): `state`,
 `register_number_id`/`name`, `strongest_verb_id`, `routing_step_ids`,
@@ -674,12 +677,12 @@ Number voiding is recorded on the ledger row (`register_number_id.state = 'voide
 stateDiagram-v2
     [*] --> draft : create / duplicate-to-new-draft
 
-    draft --> circulating : action_send() [register guard]
+    draft --> circulating : action_send() [register-exists guard]
 
-    circulating --> completed : (auto) all gating steps done positively -> freeze ฉบับลงนาม
+    circulating --> completed : (auto) all gating steps done positively -> _register() + freeze ฉบับลงนาม
     circulating --> returned : ตีกลับ Return (choosable destination)
-    circulating --> rejected : ปฏิเสธ Reject -> VOID number
-    circulating --> cancelled : เรียกคืน Recall [no ลงนาม-อนุมัติ yet] -> VOID number
+    circulating --> rejected : ปฏิเสธ Reject (no number to void)
+    circulating --> cancelled : ยกเลิกการส่ง Cancel-send [no ลงนาม-อนุมัติ yet] (no number to void)
 
     returned --> circulating : action_send() (re-send after revision)
     returned --> draft : (optional) back to editing
@@ -693,8 +696,8 @@ stateDiagram-v2
         serve the frozen PDF thereafter.
     end note
     note right of rejected
-        register_number_id.state = voided
-        (เลขยกเลิก, permanent gap)
+        never numbered (ADR-0010):
+        no counter consumed, no gap
     end note
 ```
 
@@ -706,15 +709,15 @@ raise `UserError`/`ValidationError` with a clear message — **never** silently 
 
 | # | Event (method) | From | Guard | To | Side effects |
 |---|---|---|---|---|---|
-| 1 | **Send** `action_send()` | `draft`, `returned` | (a) Route has ≥1 gating step; (b) a register sequence resolves for *(sender ส่วนงาน)* — else block with clear error; (c) for `returned`-restart, chain already re-seeded (#4a). | `circulating` | `_register()`: allocate `name` atomically (row-lock + `unique(sequence,counter,fiscal_year)` backstop + retry; render พ.ศ., reset per ปีงบประมาณ); `_advance_stage()` activates stage 1 (`active`, **snapshot** holders into `actor_user_ids`, fire `mail.activity`). **Fire `_on_sarabun_circulating(document)`** in the same transaction. Document becomes read-locked. |
-| 2 | **Complete** (auto) `_advance_stage()` → `_complete_document()` | `circulating` | Every *gating* step in the **current Stage** positively completed; รับทราบ/`for_info` never blocks; no further gating step remains downstream. | `completed` | Freeze **ฉบับลงนาม** (`_freeze_signed_copy()`): render cover sheet + signature block + เกษียน trail, merge with origin report → immutable `signed_pdf`; portal/print now serve the frozen file. Recompute `strongest_verb_id`. Call `_on_sarabun_completed(document)` in the same transaction (failure rolls back — ADR-0004). Clear residual `mail.activity`. |
+| 1 | **Send** `action_send()` | `draft`, `returned` | (a) Route has ≥1 gating step; (b) a register sequence **resolves** for *(sender ส่วนงาน)* — else block with clear error; (c) for `returned`-restart, chain already re-seeded (#4a). | `circulating` | `_resolve_sequence()` verifies the register exists but does **not** allocate (ADR-0010 — numbering is deferred to #2); `_advance_stage()` activates stage 1 (`active`, **snapshot** holders into `actor_user_ids`, fire `mail.activity`). **Fire `_on_sarabun_circulating(document)`** in the same transaction. Document becomes read-locked, still `name = "/"`. |
+| 2 | **Complete** (auto) `_advance_stage()` → `_complete_document()` | `circulating` | Every *gating* step in the **current Stage** positively completed; รับทราบ/`for_info` never blocks; no further gating step remains downstream. | `completed` | `_register()`: allocate `name` atomically (row-lock + `unique(sequence,counter,fiscal_year)` backstop + retry; render พ.ศ., reset per ปีงบประมาณ) — the number runs **only now** (ADR-0010). Then freeze **ฉบับลงนาม** (`_freeze_signed_copy()`): render cover sheet + signature block + เกษียน trail, merge with origin report → immutable `signed_pdf`; portal/print now serve the frozen file. Recompute `strongest_verb_id`. Call `_on_sarabun_completed(document)` in the same transaction (failure rolls back — ADR-0004). Clear residual `mail.activity`. |
 | 3 | **Direct / Delegate** `act_on_step(...)` | `circulating` (step-level) | Actor is a snapshot holder of an *active* step with authority. | `circulating` (no state change) | Direct inserts the NEXT step(s); Delegate reassigns THIS step. `note` recorded. Re-evaluate `_advance_stage()`. Generic `_on_sarabun_step(step, disposition)` in-transaction. Intra-`circulating` moves, not lifecycle transitions. |
-| 4 | **Return** `action_return(destination)` | `circulating` | Actor is a snapshot holder of an *active* gating step with authority. `destination` ∈ {`sender_restart` (default), `resume_step`}. | `returned` | **Freeze the prior chain** (archive `routing_step_ids` into the attempt's frozen เกษียน trail — §3.4). Record returner, capacity, comment, destination. **Number RETAINED** (Return is recoverable). Re-seed/resume per destination (#4a/#4b). `_on_sarabun_returned(document, step)` in-transaction. Notify sender via `mail.activity`. |
+| 4 | **Return** `action_return(destination)` | `circulating` | Actor is a snapshot holder of an *active* gating step with authority. `destination` ∈ {`sender_restart` (default), `resume_step`}. | `returned` | **Freeze the prior chain** (archive `routing_step_ids` into the attempt's frozen เกษียน trail — §3.4). Record returner, capacity, comment, destination. Still **unnumbered** (ADR-0010 — no number is assigned until completion). Re-seed/resume per destination (#4a/#4b). `_on_sarabun_returned(document, step)` in-transaction. Notify sender via `mail.activity`. |
 | 4a | — *destination `sender_restart`* | — | — | `returned` | Re-seed a fresh Route from the template / `type_id.default_route_id` (steps `waiting`); sender revises then re-sends (#1) which re-activates Stage 1 from scratch. |
 | 4b | — *destination `resume_step`* | — | — | `returned` | **Archive the whole current attempt** (`active=False`, bump `attempt_seq`); recreate the picked step (and later) as fresh `waiting` steps in the new attempt (via `_resume_seed_vals`) so the prior chain is kept as history, **never overwritten** (ADR-0006). On re-send the Route resumes at the picked step. |
-| 5 | **Reject** `action_reject()` | `circulating` | Actor is a snapshot holder of an *active* gating step with authority. A single ปฏิเสธ in a co-approval Stage rejects the whole Document. | `rejected` (terminal) | **VOID the number** (`register_number_id.state='voided'`, `void_reason='rejected'`). Other active/waiting steps → `skipped`. Freeze the chain. Record rejecter/capacity/comment. `_on_sarabun_rejected(document, step)` in-transaction. Proceed via `action_duplicate_to_draft()` → new `draft` linked to the SAME origin (1:N). |
-| 6 | **ยกเลิกการส่ง / Cancel-send** `action_recall(reason)` | `circulating` | (a) sender (or manager); (b) **`not has_signed`**; (c) **reason required** (ADR-0006). If a signature exists → block, directing to a cancellation หนังสือ (#7). | `cancelled` (terminal) | **VOID the number** (`void_reason='cancelled'`). Skip active/waiting steps; clear `mail.activity`. `_on_sarabun_cancelled(document)` in-transaction. |
-| 6b | **ดึงกลับ / Recall** `action_pull_back(reason)` | `circulating` | Same guard as #6 (sender, `not has_signed`, **reason required**). | `returned` | **KEEP the number.** Archive the current chain (`active=False`, bump `attempt_seq`) and re-seed the template (restart) — a self-initiated ตีกลับ-to-sender (#4a). `_on_sarabun_recalled(document)` in-transaction; the mixin default delegates to `_on_sarabun_returned`. |
+| 5 | **Reject** `action_reject()` | `circulating` | Actor is a snapshot holder of an *active* gating step with authority. A single ปฏิเสธ in a co-approval Stage rejects the whole Document. | `rejected` (terminal) | No number to void — the หนังสือ was never numbered (ADR-0010); `_void_register('rejected')` is a guarded no-op. Other active/waiting steps → `skipped`. Freeze the chain. Record rejecter/capacity/comment. `_on_sarabun_rejected(document, step)` in-transaction. Proceed via `action_duplicate_to_draft()` → new `draft` linked to the SAME origin (1:N). |
+| 6 | **ยกเลิกการส่ง / Cancel-send** `action_recall(reason)` | `circulating` | (a) sender (or manager); (b) **`not has_signed`**; (c) **reason required** (ADR-0006). If a signature exists → block, directing to a cancellation หนังสือ (#7). | `cancelled` (terminal) | No number to void (ADR-0010 — never numbered; `_void_register('cancelled')` is a no-op). Skip active/waiting steps; clear `mail.activity`. `_on_sarabun_cancelled(document)` in-transaction. |
+| 6b | **ดึงกลับ / Recall** `action_pull_back(reason)` | `circulating` | Same guard as #6 (sender, `not has_signed`, **reason required**). | `returned` | Still **unnumbered** (ADR-0010 — nothing to keep). Archive the current chain (`active=False`, bump `attempt_seq`) and re-seed the template (restart) — a self-initiated ตีกลับ-to-sender (#4a). `_on_sarabun_recalled(document)` in-transaction; the mixin default delegates to `_on_sarabun_returned`. |
 | 7 | **Post-signature cancellation** (no in-place transition) | `completed` (or `circulating` after a signature) | A ลงนาม-อนุมัติ step has occurred. | unchanged | NOT a transition. Compose a **new cancellation หนังสือ** (referencing the original via อ้างถึง). Original keeps its number and `completed` state for audit. |
 | 8 | **Duplicate-to-new-draft** `action_duplicate_to_draft()` | `rejected` | — | new `draft` (NEW record) | Copies content into a fresh `draft`; links to the same origin (`origin_model`/`origin_res_id`), making it the new `active_sarabun_document_id`. The rejected original is untouched. |
 
@@ -740,6 +743,8 @@ In both cases the prior attempt's frozen steps remain queryable for the rendered
 read access).
 
 ### 3.5 Number voiding on reject / cancel
+
+> **Superseded for the normal path by [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md).** Because the number is now assigned at **completion**, a rejected (#5) or cancelled (#6) หนังสือ — both pre-completion — was **never numbered**, so there is nothing to void and no gap to record. `_void_register(reason)` is retained but is a **guarded no-op** on this path (kept for the reserved/manual compose paths). The paragraph below describes the *former* at-send behaviour and is kept for historical context.
 
 Per ระเบียบงานสารบรรณ, an official register number is **never reusable**
 (ADR-0002). When a *registered* Document (one that reached `circulating`) is
@@ -770,14 +775,20 @@ A `draft` or never-registered Document has no number to void.
 > (Register)** event. Reserve the word *register* for this; never call it
 > "numbering" generically. See CONTEXT.md › Numbering and ADR-0002 (voiding).
 
-### 4.1 The Register event — a distinct seam, auto-fired at send
+### 4.1 The Register event — a distinct seam, fired at completion (ADR-0010)
 
-ลงทะเบียน fires **automatically at send** (`draft → circulating`) but is kept a
-**distinct, named operation** so a phase-2 ธุรการหน่วยงาน clerk-gate can be slotted
-in front of it without touching the lifecycle transition.
+ลงทะเบียน fires **automatically at completion** (`circulating → completed`, when the
+final ลงนาม/อนุมัติ is in — [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md)),
+but is kept a **distinct, named operation** so a phase-2 ธุรการหน่วยงาน clerk-gate can
+be slotted in front of it without touching the lifecycle transition. **Send** no
+longer numbers — it only *verifies* a register resolves (fail-fast), so the route
+cannot reach its final signature only to strand there with nowhere to allocate.
 
 ```
-action_send()                      # sarabun.document : the lifecycle transition
+action_send()                      # verifies a register resolves; does NOT number
+  └─ _resolve_sequence()           # (sender ส่วนงาน); BLOCK on missing
+
+_complete_document()               # sarabun.document : the → completed transition
   └─ _register()                   # the SEAM — phase-2 inserts a clerk gate here
        └─ sequence.allocate(doc)   # sarabun.document.sequence : atomic allocation
 ```
@@ -787,23 +798,32 @@ action_send()                      # sarabun.document : the lifecycle transition
 def action_send(self):
     for doc in self:
         doc._guard_can_send()          # state in (draft, returned), route seeded, addressee, ...
-        doc._register()                # SEAM
-        doc.state = "circulating"      # CONTEXT: renamed from old "sent"
+        doc._resolve_sequence()        # register-EXISTS guard only (BLOCK on missing); no allocation
+        doc.state = "circulating"      # CONTEXT: renamed from old "sent"; name still "/"
         doc._advance_stage()           # activate stage 1
         doc._dispatch_origin_callback(doc, "_on_sarabun_circulating", doc)
+
+def _complete_document(self):
+    self.state = "completed"
+    self._register()                   # SEAM — the number runs only now
+    self._freeze_signed_copy()         # frozen PDF carries the number
+    ...
 
 def _register(self):
     """The ลงทะเบียน event. Distinct seam; phase-2 clerk-gate lands here."""
     self.ensure_one()
-    if self.register_number_id:        # idempotent: already registered (return -> resend)
+    if self.register_number_id:        # idempotent (guards a double completion)
         return
     seq = self._resolve_sequence()     # (sender ส่วนงาน); BLOCK on missing
     self.register_number_id = seq.allocate(self)   # atomic
 ```
 
-Idempotency: a `returned` Document keeps its number when re-sent, so `_register()`
-is a no-op if `register_number_id` is already set. Only `rejected`/`cancelled`
-void the number (§4.7), and those never re-enter `circulating`.
+Idempotency: `_register()` is a no-op if `register_number_id` is already set, so a
+`returned`-then-re-sent-then-completed Document is numbered once (at its single
+completion). Because a number is issued only on the terminal-positive transition,
+`rejected`/`cancelled` documents never hold one — the counter series is contiguous
+over completed documents, and the former void-on-negative path (§3.5) no longer
+fires (ADR-0010).
 
 ### 4.2 Sequence resolution — (sender ส่วนงาน), per-unit, BLOCK on missing
 
