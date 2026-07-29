@@ -47,8 +47,25 @@ class AccountPayment(models.Model):
         tracking=True,
         help="Result reported by the bank for this outbound e-payment. Set "
         "from the bank payment export line once the bank confirms the "
-        "transfer succeeded or failed.",
+        "transfer succeeded or failed. Cheque payments are confirmed manually "
+        "by the finance office instead.",
     )
+    is_cheque_payment = fields.Boolean(
+        related="kmitl_payment_type_id.is_cheque",
+        string="Is Cheque Payment",
+    )
+
+    def action_mark_bank_result_success(self):
+        """Finance manually confirms a cheque payment was actually paid.
+
+        Transfers are confirmed from the bank payment export line instead
+        (which also logs the e-payment result); this manual path exists for
+        cheques, which never enter a bank export.
+        """
+        self.write({"bank_result_status": "success"})
+
+    def action_mark_bank_result_failed(self):
+        self.write({"bank_result_status": "failed"})
 
     cheque_register_ids = fields.One2many(
         comodel_name="cheque.register",

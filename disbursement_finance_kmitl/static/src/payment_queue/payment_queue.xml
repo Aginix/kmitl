@@ -86,6 +86,7 @@
                             <th><t t-esc="labels.number"/></th>
                             <th><t t-esc="labels.date"/></th>
                             <th><t t-esc="labels.partner"/></th>
+                            <th><t t-esc="labels.subject"/></th>
                             <th class="text-end"><t t-esc="labels.amount"/></th>
                             <th class="text-center"><t t-esc="labels.bills"/></th>
                             <th class="text-end"><t t-esc="labels.actions"/></th>
@@ -101,6 +102,7 @@
                                 <td t-esc="record.name"/>
                                 <td t-esc="record.date"/>
                                 <td t-esc="displayName(record.partner_id)"/>
+                                <td t-esc="displayName(record.payment_subject_id)"/>
                                 <td class="text-end" t-esc="formatCurrency(record.amount_net)"/>
                                 <td class="text-center" t-esc="record.bill_count"/>
                                 <td class="text-end text-nowrap">

@@ -100,6 +100,35 @@
                         groups="disbursement_finance_kmitl.group_disbursement_payment_finance"/>
             </xpath>
 
+            <!-- Payment classification: subject chosen by the auditor.
+                 Editable until the audit is confirmed. -->
+            <xpath expr="//group[@name='disbursement_information']" position="inside">
+                <field name="payment_subject_id"
+                       options="{'no_create': True}"
+                       attrs="{'readonly': [('state', 'not in', ('draft', 'submitted', 'signed', 'verified', 'approved', 'bills_posted'))], 'required': [('state', '=', 'bills_posted')]}"
+                       force_save="1"/>
+            </xpath>
+
+            <!-- Payment page: per-line method / payee bank, editable by the
+                 auditor at bills_posted (base line_ids is readonly then). -->
+            <xpath expr="//page[@name='wht']" position="after">
+                <page string="การจ่ายเงิน" name="payment_classification"
+                      attrs="{'invisible': [('state', 'not in', ('bills_posted', 'payment_audited', 'payment_authorized', 'paid', 'cleared'))]}">
+                    <field name="payment_line_ids" nolabel="1"
+                           attrs="{'readonly': [('state', '!=', 'bills_posted')]}">
+                        <tree editable="bottom" create="0" delete="0">
+                            <field name="partner_id" readonly="1" string="Payee"/>
+                            <field name="partner_bank_id"
+                                   domain="[('partner_id', '=', partner_id)]"/>
+                            <field name="payment_method"/>
+                            <field name="price_total" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
             <!-- Payment smart buttons -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_payments"

@@ -17,6 +17,38 @@ rounds**. They use different vocabulary and different security groups.
 Round 2 deliberately uses the verbs **audit** and **authorize** so it never
 collides with round 1's verify/approve.
 
+## The three payment axes (do not conflate with `DR.payment_type`)
+
+Set by the **auditor** during Payment Audit. Three orthogonal concepts:
+
+- **Payment Subject / เรื่องที่จ่าย** (`kmitl.payment.subject`, master data in
+  `finance_kmitl`, one per DR, chosen by the auditor): *what* the payment is
+  for (e.g. เงินเดือน, เงินยืม/สำรองจ่าย, จ่ายตรงคู่ค้า, ค่าน้ำค่าไฟ). Admins
+  maintain the list. Not to be confused with `DR.payment_type`
+  (direct/advance/prepaid, inherited from the approval) nor with
+  `kmitl.payment.type` (the mechanical operation type that carries
+  `is_cheque` / journal / override account).
+- **Bank Policy / นโยบายหัวจ่าย** (field on the subject): how the Paying Bank
+  is chosen.
+  - `fixed` — every payment of the DR pays from the subject's configured
+    journal (e.g. salary → KTB; direct vendor → SCB, cross-bank routing is the
+    bank's job, not Odoo's).
+  - `payee_bank` — each payee is paid from the KMITL journal at the *payee's
+    own bank* (e.g. เงินยืม/สำรองจ่าย), matched by
+    `line.partner_bank_id.bank_id == journal.bank_account_id.bank_id` across
+    the institute's 4 banks (KTB/SCB/BAY/KBANK). A payee whose bank cannot be
+    matched **blocks the audit confirmation** (the error lists the unmatched
+    payees; the auditor switches those lines to cheque or fixes the bank
+    account first).
+- **Paying Bank / หัวจ่าย**: *which* KMITL bank account pays — a bank
+  `account.journal`, derived per payment from the subject's Bank Policy.
+- **Payment Method / วิธีจ่าย** (per DR **line**, defaulted from the subject):
+  *how* a payee is paid — bank transfer (โอน) or cheque (เช็ค). Any subject can
+  be paid either way. Lines of the same payee must share one method (one bill
+  per payee → one full payment per bill). The method resolves to a
+  `kmitl.payment.type` (transfer → จ่ายเงินออก, cheque → จ่ายเช็ค with
+  `is_cheque`) when finance creates the payment.
+
 ## Terms
 
 - **Payment Audit** (`action_audit`, `bills_posted → payment_audited`): the
@@ -28,8 +60,15 @@ collides with round 1's verify/approve.
   submits it and sends it to the bank via a bank payment export. The request
   stays at `payment_authorized` while the payment is in transit.
 - **Bank Result** (`account.payment.bank_result_status`): the actual outcome
-  reported by the bank for an outbound e-payment (`success` / `failed`),
-  recorded from the bank payment export line.
+  of an outbound payment (`success` / `failed`). For transfers it is recorded
+  from the bank payment export line; for cheques the finance office confirms
+  it **manually** on the payment (deliberately NOT hooked to the cheque
+  register lifecycle — the register remains a control log for numbering,
+  printing and clearing status only).
+- **Cheque timing note**: a DR cheque payment gets its cheque-register row at
+  **submit** (not at post, as non-DR cheque payments do), because in this
+  workflow posting happens last (clearing) while the physical cheque must be
+  numbered, printed and handed over long before that.
 - **Paid** (`action_confirm_paid`, `payment_authorized → paid`): the finance
   office confirms every payment of the request succeeded at the bank. The money
   has left; the accounting entry is **not** posted yet.

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Seed payment subjects gathered from the treasury office. journal_id is
+    database-specific (the institute's 4 bank journals: KTB / SCB / BAY /
+    KBANK), so it is left empty here — admins bind each subject to its
+    paying journal after install via Finance ▸ Settings ▸ Payment Subjects.
+-->
+<odoo noupdate="1">
+
+    <!-- เงินเดือน: บุคลากรบังคับมีบัญชี KTB → หัวจ่าย KTB ตายตัว -->
+    <record id="payment_subject_salary" model="kmitl.payment.subject">
+        <field name="name">เงินเดือน</field>
+        <field name="sequence">10</field>
+        <field name="bank_policy">fixed</field>
+        <field name="default_method">transfer</field>
+    </record>
+
+    <!-- เงินยืม/สำรองจ่าย: จ่ายจากหัวจ่ายธนาคารเดียวกับบัญชีผู้รับ -->
+    <record id="payment_subject_advance_reimburse" model="kmitl.payment.subject">
+        <field name="name">เงินยืม/สำรองจ่าย</field>
+        <field name="sequence">20</field>
+        <field name="bank_policy">payee_bank</field>
+        <field name="default_method">transfer</field>
+    </record>
+
+    <!-- จ่ายตรงคู่ค้า: หัวจ่าย SCB ตายตัว (ต่างธนาคารระบบแบงก์ route เอง) -->
+    <record id="payment_subject_vendor_direct" model="kmitl.payment.subject">
+        <field name="name">จ่ายตรงคู่ค้า</field>
+        <field name="sequence">30</field>
+        <field name="bank_policy">fixed</field>
+        <field name="default_method">transfer</field>
+    </record>
+
+    <!-- ค่าน้ำค่าไฟ: ออกเป็นเช็คธนาคาร -->
+    <record id="payment_subject_utilities" model="kmitl.payment.subject">
+        <field name="name">ค่าน้ำค่าไฟ</field>
+        <field name="sequence">40</field>
+        <field name="bank_policy">fixed</field>
+        <field name="default_method">cheque</field>
+    </record>
+
+</odoo>

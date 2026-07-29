@@ -686,3 +686,39 @@ msgstr "กรุณาเลือกสมุดเช็ค (สมุดร�
 #, python-format
 msgid "Configure a Cheque Layout on journal '%s' before printing."
 msgstr "กรุณาตั้งค่ารูปแบบการพิมพ์เช็คให้สมุดรายวัน '%s' ก่อนพิมพ์"
+
+#. module: finance_kmitl
+#: model:ir.model,name:finance_kmitl.model_kmitl_payment_subject
+msgid "KMITL Payment Subject (เรื่องที่จ่าย)"
+msgstr "เรื่องที่จ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__bank_policy
+msgid "Bank Policy"
+msgstr "นโยบายหัวจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__journal_id
+msgid "Paying Journal"
+msgstr "หัวจ่าย (สมุดธนาคาร)"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__default_method
+msgid "Default Method"
+msgstr "วิธีจ่ายตั้งต้น"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__bank_result_status
+msgid "Bank Result"
+msgstr "ผลการจ่ายจากธนาคาร"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_account_payment__is_cheque_payment
+msgid "Is Cheque Payment"
+msgstr "จ่ายด้วยเช็ค"
+
+#. module: finance_kmitl
+#: model:ir.ui.menu,name:finance_kmitl.menu_settings_payment_subjects
+#: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_subject
+msgid "Payment Subjects (เรื่องที่จ่าย)"
+msgstr "เรื่องที่จ่าย"

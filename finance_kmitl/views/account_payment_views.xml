@@ -16,6 +16,28 @@
             <!-- Add Submit button before the hidden Confirm -->
             <xpath expr="//button[@name='action_post']" position="before">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" data-hotkey="v" />
+                <!-- Cheque payments never enter a bank export, so finance
+                     confirms their actual result manually here. Transfers are
+                     confirmed from the bank payment export line instead. -->
+                <field name="is_cheque_payment" invisible="1"/>
+                <button name="action_mark_bank_result_success"
+                        string="ยืนยันจ่ายสำเร็จ (เช็ค)"
+                        type="object"
+                        class="btn-success"
+                        attrs="{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('is_cheque_payment', '=', False), ('bank_result_status', '=', 'success')]}"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+                <button name="action_mark_bank_result_failed"
+                        string="จ่ายไม่สำเร็จ (เช็ค)"
+                        type="object"
+                        attrs="{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('is_cheque_payment', '=', False), ('bank_result_status', '=', 'failed')]}"
+                        groups="finance_kmitl.group_finance_kmitl_user_out"/>
+            </xpath>
+
+            <!-- Bank result (set by export-line marking or the cheque buttons) -->
+            <xpath expr="//field[@name='payment_type']" position="before">
+                <field name="bank_result_status"
+                       attrs="{'invisible': [('bank_result_status', '=', False)]}"
+                       readonly="1"/>
             </xpath>
 
             <!-- Update Reset to Draft to also work from submitted -->

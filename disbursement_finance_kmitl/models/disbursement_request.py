@@ -87,6 +87,36 @@ class DisbursementRequest(models.Model):
         },
     )
 
+    # ------------------------------------------------------------------
+    # Payment classification (set by the auditor during Payment Audit)
+    # ------------------------------------------------------------------
+    payment_subject_id = fields.Many2one(
+        comodel_name="kmitl.payment.subject",
+        string="Payment Subject",
+        tracking=True,
+        copy=False,
+        help="เรื่องที่จ่าย — drives how the paying bank (หัวจ่าย) is chosen "
+        "and the default payment method per line.",
+    )
+    # Editable alias of line_ids for the Payment page: the base line_ids
+    # one2many is readonly after draft (READONLY_STATES), but the auditor must
+    # set the per-line payment method at bills_posted.
+    payment_line_ids = fields.One2many(
+        comodel_name="disbursement.request.line",
+        inverse_name="request_id",
+        string="Payment Lines",
+        copy=False,
+    )
+
+    @api.onchange("payment_subject_id")
+    def _onchange_payment_subject_id(self):
+        """Default every line's method from the subject; the auditor then
+        adjusts only the exception lines."""
+        if self.payment_subject_id:
+            self.line_ids.update(
+                {"payment_method": self.payment_subject_id.default_method}
+            )
+
     # One2many via the stored back-reference on account.payment, so payment
     # progress recomputes reactively (no search() inside computes).
     payment_ids = fields.One2many(
@@ -172,15 +202,138 @@ class DisbursementRequest(models.Model):
         return res
 
     # ------------------------------------------------------------------
+    # Payment classification helpers
+    # ------------------------------------------------------------------
+    def _resolve_line_journal(self, line):
+        """Return the paying journal (หัวจ่าย) for a request line.
+
+        Cheque lines and the ``fixed`` bank policy pay from the subject's
+        configured journal. Under ``payee_bank`` a transfer line pays from the
+        institute's bank journal at the payee's own bank, matched by the bank
+        behind each journal's account. Returns an empty recordset when no
+        journal can be determined.
+        """
+        self.ensure_one()
+        subject = self.payment_subject_id
+        Journal = self.env["account.journal"]
+        if not subject:
+            return Journal
+        if line.payment_method == "cheque" or subject.bank_policy == "fixed":
+            return subject.journal_id
+        payee_bank = line.partner_bank_id.bank_id
+        if not payee_bank:
+            return Journal
+        return Journal.search(
+            [
+                ("type", "=", "bank"),
+                ("company_id", "=", self.company_id.id),
+                ("bank_account_id.bank_id", "=", payee_bank.id),
+            ],
+            limit=1,
+        )
+
+    def _check_payment_classification(self):
+        """Validate the auditor's classification before confirming the audit.
+
+        Fills empty line methods from the subject default, then blocks with an
+        actionable error listing the offending payees when the classification
+        cannot drive payment creation.
+        """
+        for record in self:
+            subject = record.payment_subject_id
+            if not subject:
+                raise UserError(
+                    _("Select the payment subject (เรื่องที่จ่าย) before "
+                      "confirming the audit.")
+                )
+            record.line_ids.filtered(lambda l: not l.payment_method).update(
+                {"payment_method": subject.default_method}
+            )
+
+            cheque_lines = record.line_ids.filtered(
+                lambda l: l.payment_method == "cheque"
+            )
+            if not subject.journal_id and (
+                subject.bank_policy == "fixed" or cheque_lines
+            ):
+                raise UserError(
+                    _(
+                        "Payment subject '%s' has no paying journal "
+                        "configured. Set it in Finance ▸ Settings ▸ Payment "
+                        "Subjects first."
+                    )
+                    % subject.name
+                )
+
+            # One bill per payee, paid in full by one payment — so all lines
+            # of the same payee must share one method.
+            mixed = [
+                partner.name
+                for partner, lines in record._lines_by_partner().items()
+                if len(set(lines.mapped("payment_method"))) > 1
+            ]
+            if mixed:
+                raise UserError(
+                    _(
+                        "Payees with mixed payment methods (each payee must "
+                        "use a single method): %s"
+                    )
+                    % ", ".join(mixed)
+                )
+
+            transfer_lines = record.line_ids.filtered(
+                lambda l: l.payment_method == "transfer"
+            )
+            no_bank = transfer_lines.filtered(lambda l: not l.partner_bank_id)
+            if no_bank:
+                raise UserError(
+                    _(
+                        "Transfer payees without a bank account (switch them "
+                        "to cheque or add the account): %s"
+                    )
+                    % ", ".join(no_bank.mapped("partner_id.name"))
+                )
+
+            unmatched = transfer_lines.filtered(
+                lambda l: not record._resolve_line_journal(l)
+            )
+            if unmatched:
+                raise UserError(
+                    _(
+                        "Payees whose bank cannot be matched to a paying "
+                        "journal (switch them to cheque or fix the bank "
+                        "account): %s"
+                    )
+                    % ", ".join(sorted(set(unmatched.mapped("partner_id.name"))))
+                )
+        return True
+
+    def _lines_by_partner(self):
+        """Group request lines by payee partner (mirrors the bill grouping)."""
+        self.ensure_one()
+        grouped = {}
+        for line in self.line_ids:
+            grouped.setdefault(
+                line.partner_id, self.env["disbursement.request.line"]
+            )
+            grouped[line.partner_id] |= line
+        return grouped
+
+    # ------------------------------------------------------------------
     # Workflow actions (forward-only, no reject in this phase)
     # ------------------------------------------------------------------
     def action_audit(self):
-        """Auditor verifies the disbursement after the bills are posted."""
+        """Auditor verifies the disbursement after the bills are posted.
+
+        Confirming the audit locks in the payment classification: subject,
+        per-line method, and a resolvable paying journal for every payee.
+        """
         for record in self:
             if record.state != "bills_posted":
                 raise UserError(
                     _("Only bills-posted requests can be audited.")
                 )
+            record._check_payment_classification()
             record.state = "payment_audited"
             record.activity_feedback([TO_AUDIT_ACTIVITY])
             record._schedule_payment_todo(TO_AUTHORIZE_ACTIVITY, AUTHORIZER_GROUP)
@@ -345,29 +498,35 @@ class DisbursementRequest(models.Model):
         if not unpaid_bills:
             raise UserError(_("No posted unpaid bills to pay."))
 
-        payment_type = self.env.ref(
+        # Journal (หัวจ่าย) and operation type are driven by the auditor's
+        # classification: subject bank policy + per-line method.
+        self._check_payment_classification()
+        transfer_type = self.env.ref(
             "finance_kmitl.payment_type_normal_outbound",
             raise_if_not_found=False,
         )
-        journal = payment_type.journal_id if payment_type else False
-        if not journal:
-            journal = self.env["account.journal"].search(
-                [
-                    ("type", "=", "bank"),
-                    ("company_id", "=", self.company_id.id),
-                ],
-                order="sequence, id",
-                limit=1,
-            )
-        if not journal:
-            raise UserError(
-                _("No bank journal configured for the outbound payment type "
-                  "or company %s.")
-                % self.company_id.name
-            )
+        cheque_type = self.env.ref(
+            "finance_kmitl.payment_type_cheque_outbound",
+            raise_if_not_found=False,
+        )
+        lines_by_partner = self._lines_by_partner()
 
         payments = self.env["account.payment"]
         for bill in unpaid_bills:
+            partner_lines = lines_by_partner.get(bill.partner_id)
+            if not partner_lines:
+                raise UserError(
+                    _("No request lines found for payee %s.")
+                    % bill.partner_id.name
+                )
+            method = partner_lines[0].payment_method or "transfer"
+            journal = self._resolve_line_journal(partner_lines[0])
+            if not journal:
+                raise UserError(
+                    _("No paying journal could be resolved for payee %s.")
+                    % bill.partner_id.name
+                )
+            payment_type = cheque_type if method == "cheque" else transfer_type
             payable_lines = bill.line_ids.filtered(
                 lambda l: l.account_type == "liability_payable"
                 and not l.reconciled

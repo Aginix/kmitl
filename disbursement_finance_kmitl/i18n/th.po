@@ -257,3 +257,69 @@ msgstr "ยอดสุทธิ"
 #: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
 msgid "Bills"
 msgstr "จำนวนใบตั้งหนี้"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_subject_id
+#: code:addons/disbursement_finance_kmitl/static/src/payment_queue/payment_queue.js:0
+msgid "Payment Subject"
+msgstr "เรื่องที่จ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request_line__payment_method
+msgid "Payment Method"
+msgstr "วิธีจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_line_ids
+msgid "Payment Lines"
+msgstr "รายการจ่ายรายผู้รับ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Select the payment subject (เรื่องที่จ่าย) before confirming the audit."
+msgstr "กรุณาเลือกเรื่องที่จ่ายก่อนยืนยันการตรวจสอบ"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Payment subject '%s' has no paying journal configured. Set it in Finance ▸ "
+"Settings ▸ Payment Subjects first."
+msgstr "เรื่องที่จ่าย '%s' ยังไม่ได้กำหนดหัวจ่าย กรุณาตั้งค่าที่ การเงิน ▸ Settings ▸ เรื่องที่จ่าย ก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Payees with mixed payment methods (each payee must use a single method): %s"
+msgstr "ผู้รับที่เลือกวิธีจ่ายปนกัน (ผู้รับแต่ละรายต้องใช้วิธีเดียว): %s"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Transfer payees without a bank account (switch them to cheque or add the "
+"account): %s"
+msgstr "ผู้รับแบบเงินโอนที่ไม่มีบัญชีธนาคาร (เปลี่ยนเป็นเช็คหรือเพิ่มบัญชีก่อน): %s"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Payees whose bank cannot be matched to a paying journal (switch them to "
+"cheque or fix the bank account): %s"
+msgstr "ผู้รับที่จับคู่ธนาคารกับหัวจ่ายไม่ได้ (เปลี่ยนเป็นเช็คหรือแก้บัญชีธนาคารก่อน): %s"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "No paying journal could be resolved for payee %s."
+msgstr "ไม่สามารถระบุหัวจ่ายสำหรับผู้รับ %s ได้"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid "No request lines found for payee %s."
+msgstr "ไม่พบรายการขอเบิกของผู้รับ %s"

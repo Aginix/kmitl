@@ -536,6 +536,7 @@ def _create_bill_payment_demo(env, drs):
             _bill_dr(dr, wht_tax if index == WHT_DR_INDEX else None)
             if target == "bill":
                 continue
+            _classify_dr(env, dr)
             dr.action_audit()
             if target == "audit":
                 continue
@@ -592,6 +593,38 @@ def _bill_dr(dr, wht_tax=None):
         dr.line_ids[:1].wht_tax_id = wht_tax.id
     dr.action_create_bill()
     dr.action_post_bills()
+
+
+def _classify_dr(env, dr):
+    """Auditor's payment classification demo: subject + payee bank accounts.
+
+    Uses the "จ่ายตรงคู่ค้า" subject (fixed bank policy) bound to the first
+    bank journal, and gives every payee a bank account so the transfer lines
+    pass the audit validation.
+    """
+    subject = env.ref(
+        "finance_kmitl.payment_subject_vendor_direct",
+        raise_if_not_found=False,
+    )
+    if not subject:
+        return
+    if not subject.journal_id:
+        subject.journal_id = env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", dr.company_id.id)],
+            limit=1,
+        )
+    dr.payment_subject_id = subject
+    dr.line_ids.update({"payment_method": subject.default_method})
+    ktb_bank = env["res.bank"].search([("bic", "=", "KRTHTHBK")], limit=1)
+    for partner in dr.line_ids.partner_id:
+        if not partner.bank_ids:
+            env["res.partner.bank"].create({
+                "partner_id": partner.id,
+                "acc_number": "999%07d" % partner.id,
+                "bank_id": ktb_bank.id if ktb_bank else False,
+            })
+    for line in dr.line_ids.filtered(lambda l: not l.partner_bank_id):
+        line.partner_bank_id = line.partner_id.bank_ids[:1]
 
 
 def _finalize_payment(env, dr, do_clear):
