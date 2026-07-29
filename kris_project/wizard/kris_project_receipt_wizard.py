@@ -47,7 +47,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
     )
     attachment_ids = fields.Many2many(
         comodel_name="ir.attachment",
-        string="Attachments",
+        string="Attachment",
     )
     note = fields.Text(
         string="Note",
