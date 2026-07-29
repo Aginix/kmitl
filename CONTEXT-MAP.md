@@ -54,6 +54,10 @@ upfront.
 - [e-Saraban](./agx_sarabun/CONTEXT.md) — electronic official-correspondence
   (งานสารบรรณ); a registered, numbered หนังสือ routed through an approval/endorsement
   chain. Other modules attach as origin records that spawn a Document.
+- [Approval Request (Expense Plan)](./agx_approval/CONTEXT.md) — expense-approval form
+  reframed as proposing an _expense plan_ (what is planned to be spent + who is
+  involved); the payee is deliberately **not** on the plan — the recipient is settled
+  later at disbursement. Routed for approval through e-Saraban.
 - [Approval ↔ Disbursement Bridge](./agx_approval_disbursement/CONTEXT.md) — links an
   Approval Request to the Disbursement Request it is billed into; returning a
   disbursement keeps it intact (at `signed`) and bounces the approval request to

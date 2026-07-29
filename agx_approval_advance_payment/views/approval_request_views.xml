@@ -14,7 +14,7 @@
 
             <!-- Declare invisible computed fields in header -->
             <xpath
-                expr="//header/field[@name='is_editable']"
+                expr="//header/field[@name='has_active_disbursement']"
                 position="after"
             >
                 <field name="show_create_disbursement_button" invisible="1" />
