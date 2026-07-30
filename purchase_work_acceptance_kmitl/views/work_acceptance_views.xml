@@ -390,6 +390,8 @@
                     </div>
                     <field name="fines_total" nolabel="1"/>
                 </group>
+                <separator string="Supporting Documents"/>
+                <field name="supporting_document_ids" widget="many2many_binary"/>
             </xpath>
         </field>
     </record>

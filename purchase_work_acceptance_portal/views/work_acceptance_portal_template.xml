@@ -358,6 +358,45 @@
                             </section>
 
                             <section
+                                id="supporting_documents"
+                                class="mt-4"
+                                style="page-break-inside: auto"
+                                t-if="work_acceptance.supporting_document_ids"
+                            >
+                                <h4>เอกสารประกอบการตรวจรับ</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead class="bg-100">
+                                            <tr>
+                                                <th>ชื่อเอกสาร</th>
+                                                <th>ดาวน์โหลด</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t
+                                                t-foreach="work_acceptance.supporting_document_ids"
+                                                t-as="doc"
+                                            >
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="doc.name" />
+                                                    </td>
+                                                    <td>
+                                                        <a
+                                                            t-attf-href="/web/content/#{doc.id}?download=true"
+                                                            target="_blank"
+                                                        >
+                                                            <i class="fa fa-download" /> ดาวน์โหลด
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+
+                            <section
                                 id="committee_ids"
                                 class="mt-4"
                                 style="page-break-inside: auto"

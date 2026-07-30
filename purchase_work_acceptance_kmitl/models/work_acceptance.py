@@ -37,6 +37,10 @@ class WorkAcceptance(models.Model):
         domain=[("res_model", "=", "work.acceptance")],
         tracking=True,
     )
+    supporting_document_ids = fields.Many2many(
+        "ir.attachment",
+        string="Supporting Documents",
+    )
 
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="work.acceptance.committee",
