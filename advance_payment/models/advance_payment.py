@@ -248,6 +248,14 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
+    # The reference model this loan type *requires* — as opposed to
+    # `reference_model`, which is the model actually attached. Exposed so views
+    # can swap in a model-specific picker (ADR-0007).
+    loan_type_reference_model = fields.Selection(
+        related="loan_type_id.reference_model",
+        string="Required Reference Model",
+    )
+
     loan_amount = fields.Monetary(
         string="Loan Amount",
         required=True,

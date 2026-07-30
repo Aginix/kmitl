@@ -7,13 +7,18 @@ class AdvancePayment(models.Model):
 
     _rec_names_search = ["name", "contract_number", "approval_request_id.name"]
 
-    # Typed mirror of `reference` when it points at an approval request. Derived
-    # rather than set by hand so the two can never drift apart.
+    # Typed mirror of `reference`, and the borrower's picker for it: compute for
+    # display, inverse for input, following the repo's analytic_distribution →
+    # *_analytic_id idiom. `reference` stays the source of truth (ADR-0007); a
+    # `domain` on a fields.Reference would apply to every model in its selection
+    # and so cannot express "requests I am a participant of" (ADR-0003).
     approval_request_id = fields.Many2one(
         comodel_name="approval.request",
         string="Approval Request",
         compute="_compute_reference",
+        inverse="_inverse_approval_request_id",
         store=True,
+        readonly=False,
         index=True,
         ondelete="restrict",
         compute_sudo=False,
@@ -22,6 +27,22 @@ class AdvancePayment(models.Model):
 
     approval_request_count = fields.Integer(
         compute="_compute_approval_request_count",
+    )
+
+    # Sum of the request's เงินยืม allocation rows that name this loan as their
+    # Funding Loan — used to prefill the expense report and to warn on drift.
+    allocation_expense_amount = fields.Monetary(
+        string="ค่าใช้จ่ายจริงตามใบขออนุมัติ",
+        compute="_compute_allocation_expense_amount",
+    )
+
+    has_expense_divergence = fields.Boolean(
+        compute="_compute_allocation_expense_amount",
+    )
+
+    exceeds_ar_headroom = fields.Boolean(
+        compute="_compute_exceeds_ar_headroom",
+        help="Technical flag read by the borrowing-headroom exception rule.",
     )
 
     reference = fields.Reference(
@@ -36,10 +57,20 @@ class AdvancePayment(models.Model):
                 rec.reference if rec.reference_model == "approval.request" else False
             )
 
+    def _inverse_approval_request_id(self):
+        """Picking a request writes it into `reference`, the source of truth."""
+        for rec in self:
+            if rec.approval_request_id:
+                rec.reference = rec.approval_request_id
+            elif rec.reference_model == "approval.request":
+                rec.reference = False
+
     def _check_reference_status(self):
         res = super()._check_reference_status()
         ar = self.approval_request_id
-        if ar and ar.state != "approved":
+        if not ar:
+            return res
+        if ar.state != "approved":
             raise ValidationError(
                 _(
                     "Approval request %(name)s must be approved before it can"
@@ -48,18 +79,28 @@ class AdvancePayment(models.Model):
                     state=dict(ar._fields["state"].selection).get(ar.state),
                 )
             )
+        # Only a participant may borrow against a request (ADR-0003). The UI
+        # domain already filters this; enforce it for RPC / import too.
+        if self.requested_by.partner_id not in ar.participant_ids.partner_id:
+            raise ValidationError(
+                _(
+                    "%(user)s is not listed as a participant of %(name)s, so"
+                    " cannot borrow against it.",
+                    user=self.requested_by.name,
+                    name=ar.name,
+                )
+            )
         return res
 
     def _prepare_vals_from_reference(self):
-        """Pull the loan values off the source approval request — the mirror of
-        approval.request._prepare_advance_payment_vals for the manual path."""
+        """Pull what the request can tell us. The amount is deliberately NOT
+        prefilled from the request total: each borrower declares their own
+        (ADR-0003), bounded by the request's Borrowing Headroom."""
         vals = super()._prepare_vals_from_reference()
         ar = self.approval_request_id
         if ar:
             vals.update(
                 {
-                    "requested_by": ar.owner_id.user_id.id or self.env.user.id,
-                    "loan_amount": ar.total_amount,
                     "loan_reason": ar.description or "",
                     "analytic_distribution": ar.analytic_distribution,
                 }
@@ -87,23 +128,71 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.approval_request_count = 1 if rec.approval_request_id else 0
 
-    def _action_do_cancel(self, reason):
-        """Cancel the source approval request too, mirroring what
-        advance_payment_disbursement does for a source purchase request."""
-        res = super()._action_do_cancel(reason)
-        if self.approval_request_id and self.approval_request_id.state != "rejected":
-            self.approval_request_id.action_cancel()
-            self.approval_request_id.message_post(
-                body=_(
-                    "ยกเลิกอัตโนมัติ เนื่องจากสัญญายืมเงิน"
-                    " <a href='/web#id=%(id)s&amp;model=advance.payment'>"
-                    "<b>%(name)s</b></a> ถูกยกเลิก",
-                    id=self.id,
-                    name=self.name,
-                ),
-                subtype_xmlid="mail.mt_note",
+    @api.depends(
+        "actual_expense_amount",
+        "approval_request_id.allocation_ids.amount",
+        "approval_request_id.allocation_ids.advance_payment_id",
+    )
+    def _compute_allocation_expense_amount(self):
+        for rec in self:
+            rows = rec.approval_request_id.allocation_ids.filtered(
+                lambda a, r=rec: a.advance_payment_id == r
             )
-        return res
+            total = sum(rows.mapped("amount"))
+            rec.allocation_expense_amount = total
+            rec.has_expense_divergence = bool(rows) and bool(
+                rec.currency_id.compare_amounts(rec.actual_expense_amount, total)
+            )
+
+    @api.depends(
+        "loan_amount",
+        "approval_request_id.borrowing_headroom",
+        "approval_request_id.advance_payment_ids.loan_amount",
+        "approval_request_id.advance_payment_ids.state",
+    )
+    def _compute_exceeds_ar_headroom(self):
+        for rec in self:
+            ar = rec.approval_request_id
+            if not ar:
+                rec.exceeds_ar_headroom = False
+                continue
+            # Headroom excluding this loan, so an already-counted draft does not
+            # block itself.
+            available = ar.borrowing_headroom
+            if rec.state != "cancel":
+                available += rec.loan_amount
+            rec.exceeds_ar_headroom = bool(
+                ar.borrowing_cap
+                and rec.currency_id.compare_amounts(rec.loan_amount, available) > 0
+            )
+
+    def action_prefill_expense_from_allocation(self):
+        """Fill the expense report from the request's เงินยืม rows naming this
+        loan. Prefill, not derive: the borrower still confirms and submits it,
+        because the debt is theirs (ADR-0005)."""
+        self.ensure_one()
+        rows = self.approval_request_id.allocation_ids.filtered(
+            lambda a: a.advance_payment_id == self
+        )
+        if not rows:
+            raise ValidationError(
+                _("There are no เงินยืม rows on %(name)s naming this agreement yet.",
+                  name=self.approval_request_id.display_name)
+            )
+        self.write(
+            {
+                "actual_expense_amount": sum(rows.mapped("amount")),
+                "expense_description": "\n".join(
+                    "- %s %s: %s"
+                    % (
+                        row.partner_id.display_name,
+                        row.product_id.display_name or "",
+                        row.amount,
+                    )
+                    for row in rows
+                ),
+            }
+        )
 
     def action_view_approval_request(self):
         self.ensure_one()

@@ -49,7 +49,7 @@ The borrower withdrawing their own not-yet-approved request back to `draft` (to 
 _Avoid_: cancel, withdraw, reset
 
 **Source Reference (AR / PR)**:
-The upstream document a loan is created from — an Approval Request (คำขออนุมัติค่าใช้จ่าย, `approval.request`) or a Purchase Request (คำขอให้จัดหา, `purchase.request`). Held in the `reference` Reference field, with `reference_model` derived from it; each bridge additionally mirrors it into a typed Many2one (`purchase_request_id`, `approval_request_id`) for searching, grouping and FK integrity. advance_payment never depends on these models directly; the mirrors and the auto-fill live only in bridge modules. A Disbursement Request (ใบเบิก/DR) is *not* a source and is unrelated to loans. See ADR-0007.
+The upstream document a loan is created from — an Approval Request (ใบขออนุมัติ / expense plan, `approval.request`) or a Purchase Request (คำขอให้จัดหา, `purchase.request`). A Purchase Request backs **one** loan; an Approval Request may back **several**, one per participant who chose to borrow, each capped by the request's remaining headroom (`agx_approval` ADR-0003). Held in the `reference` Reference field, with `reference_model` derived from it; each bridge additionally mirrors it into a typed Many2one (`purchase_request_id`, `approval_request_id`) for searching, grouping and FK integrity. advance_payment never depends on these models directly; the mirrors and the auto-fill live only in bridge modules. A Disbursement Request (ใบเบิก/DR) is *not* a source and is unrelated to loans. See ADR-0007.
 _Avoid_: origin, parent, DR
 
 **Required reference model (`loan_type_id.reference_model`)**:
@@ -57,7 +57,7 @@ The *declaration*, on the loan-type master data, that loans of that type must be
 _Avoid_: reference type, document type
 
 **Expense Report / บันทึกค่าใช้จ่ายจริง**:
-The borrower's end-of-activity summary recorded directly on the agreement — description, actual expense amount, auto-computed return amount, and evidence (**no itemized lines**). Submitted to leave `in_progress`; the loan-responsible finance officer must accept it before the debt can close.
+The borrower's end-of-activity summary recorded directly on the agreement — description, actual expense amount, auto-computed return amount, and evidence (**no itemized lines**). Submitted to leave `in_progress`; the loan-responsible finance officer must accept it before the debt can close. It covers every baht drawn on the loan, which may include money the borrower paid to *other* people — the debt is the borrower's alone even when the spending was the group's.
 _Avoid_: usage record, usage line, itemized expenses
 
 **Return installment (คืนหลายงวด)**:
