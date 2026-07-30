@@ -39,6 +39,9 @@ class WorkAcceptance(models.Model):
     )
     supporting_document_ids = fields.Many2many(
         "ir.attachment",
+        "work_acceptance_supporting_doc_rel",
+        "wa_id",
+        "attachment_id",
         string="Supporting Documents",
     )
 
@@ -193,6 +196,11 @@ class WorkAcceptance(models.Model):
 
     def _default_start_date(self):
         return fields.Date.today()
+
+    def _compute_message_attachment_count(self):
+        super()._compute_message_attachment_count()
+        for record in self:
+            record.message_attachment_count -= len(record.supporting_document_ids)
 
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
