@@ -42,4 +42,5 @@ class POMaterialWithdrawalWizard(models.TransientModel):
                 "dept_head_id": self.dept_head_id.id,
                 "disburser_id": self.disburser_id.id,
             },
+            config=False,
         )
