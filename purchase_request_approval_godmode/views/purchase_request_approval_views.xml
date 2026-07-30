@@ -12,37 +12,31 @@
                 <field name="user_has_godmode" invisible="1"/>
             </field>
 
-            <!-- Header fields: readonly except (draft) or (approved + godmode) -->
-            <field name="title" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
-            </field>
-            <field name="description" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
-            </field>
+            <!-- Header fields: readonly except (draft) or (to_approve/approved + godmode) -->
             <field name="procurement_type_id" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
             <field name="procurement_method_id" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
             <field name="payment_type" position="attributes">
                 <!-- Base view hard-codes readonly="1"; override to dynamic attrs. -->
                 <attribute name="readonly">0</attribute>
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
             <field name="partner_id" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
             <field name="vat_included" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
             <field name="tax_id" position="attributes">
-                <attribute name="attrs">{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
 
-            <!-- One2many container: open up in (draft) or (approved + godmode) -->
+            <!-- One2many container: open up in (draft) or (to_approve/approved + godmode) -->
             <field name="line_ids" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', '!=', 'approved'), ('user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
 
             <!-- Inner tree: block add/remove even in draft (per plan). -->
@@ -58,12 +52,17 @@
                 <field name="approval_user_has_godmode" invisible="1"/>
             </xpath>
 
-            <!-- Line editable fields: unlock only in (draft) or (approved + godmode) -->
+            <!-- Line editable fields: unlock in (draft) or (to_approve/approved + godmode) -->
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='name']" position="attributes">
+                <!-- Base tree hard-codes readonly="1" on line name; override. -->
+                <attribute name="readonly">0</attribute>
+                <attribute name="attrs">{'readonly': [('approval_state', 'not in', ('draft',)), '|', ('approval_state', 'not in', ('to_approve', 'approved')), ('approval_user_has_godmode', '=', False)]}</attribute>
+            </xpath>
             <xpath expr="//field[@name='line_ids']/tree/field[@name='product_qty']" position="attributes">
-                <attribute name="attrs">{'readonly': [('approval_state', 'not in', ('draft',)), '|', ('approval_state', '!=', 'approved'), ('approval_user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('approval_state', 'not in', ('draft',)), '|', ('approval_state', 'not in', ('to_approve', 'approved')), ('approval_user_has_godmode', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='line_ids']/tree/field[@name='price_unit']" position="attributes">
-                <attribute name="attrs">{'readonly': [('approval_state', 'not in', ('draft',)), '|', ('approval_state', '!=', 'approved'), ('approval_user_has_godmode', '=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('approval_state', 'not in', ('draft',)), '|', ('approval_state', 'not in', ('to_approve', 'approved')), ('approval_user_has_godmode', '=', False)]}</attribute>
             </xpath>
 
         </field>
