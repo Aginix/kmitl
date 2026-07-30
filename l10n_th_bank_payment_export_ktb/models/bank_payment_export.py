@@ -146,12 +146,28 @@ class BankPaymentExport(models.Model):
 
     def _check_constraint_create_bank_payment_export(self, payments):
         res = super()._check_constraint_create_bank_payment_export(payments)
-        payment_bic_bank = list(set(payments.mapped("journal_id.bank_id.bic")))
+        # The sending bank comes from the account the money is paid out of.
+        # KMITL's journals are voucher types (ใบสำคัญ) shared by every bank, so
+        # the paying account is what identifies the bank and the cheque of
+        # "one sending account per export"; the journal's own bank account is
+        # the fallback for payments made outside that setup.
+        sending_accounts = payments.mapped("paying_account_id")
+        if sending_accounts:
+            payment_bic_bank = list(
+                set(sending_accounts.mapped("paying_bank_id.bic"))
+            )
+            sending_count = len(sending_accounts)
+        else:
+            payment_bic_bank = list(set(payments.mapped("journal_id.bank_id.bic")))
+            sending_count = len(payments.mapped("journal_id"))
         payment_bank = len(payment_bic_bank) == 1 and payment_bic_bank[0] or ""
-        # Check case KTB must have 1 journal / 1 PE
-        if payment_bank == "KRTHTHBK" and len(payments.mapped("journal_id")) > 1:
+        # Check case KTB must have 1 sending account / 1 PE
+        if payment_bank == "KRTHTHBK" and sending_count > 1:
             raise UserError(
-                _("KTB can create bank payment export 1 Journal / 1 Payment Export.")
+                _(
+                    "KTB can create bank payment export 1 sending account / "
+                    "1 Payment Export."
+                )
             )
         for payment in payments:
             # Which outbound payment method may be exported is a company

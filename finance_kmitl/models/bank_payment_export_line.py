@@ -59,6 +59,44 @@ class BankPaymentExportLine(models.Model):
     )
 
     # -------------------------------------------------------------------------
+    # Sending account (หัวจ่าย) — what the bank file calls "Sending A/C"
+    # -------------------------------------------------------------------------
+    # The journal is the voucher type (ใบสำคัญ) and carries no bank account, so
+    # the sending side comes from the payment's paying account. The journal's
+    # own bank account stays as the fallback for payments made outside the
+    # disbursement flow.
+    sending_account_id = fields.Many2one(
+        comodel_name="account.account",
+        related="payment_id.paying_account_id",
+        string="Sending Account",
+        readonly=True,
+    )
+    sending_bank_id = fields.Many2one(
+        comodel_name="res.bank",
+        compute="_compute_sending_account",
+        string="Sending Bank",
+    )
+    sending_acc_number = fields.Char(
+        compute="_compute_sending_account",
+        string="Sending A/C Number",
+    )
+
+    @api.depends(
+        "payment_id.paying_account_id",
+        "payment_id.journal_id.bank_account_id",
+    )
+    def _compute_sending_account(self):
+        for line in self:
+            paying_account = line.payment_id.paying_account_id
+            if paying_account.paying_bank_id or paying_account.paying_acc_number:
+                line.sending_bank_id = paying_account.paying_bank_id
+                line.sending_acc_number = paying_account.paying_acc_number
+            else:
+                journal_bank = line.payment_id.journal_id.bank_account_id
+                line.sending_bank_id = journal_bank.bank_id
+                line.sending_acc_number = journal_bank.acc_number
+
+    # -------------------------------------------------------------------------
     # E-payment result confirmation (manual)
     # -------------------------------------------------------------------------
     def _apply_epayment_result(self, status, ref=None, date=None, note=None):

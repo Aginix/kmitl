@@ -55,6 +55,36 @@ class AccountPayment(models.Model):
         string="Is Cheque Payment",
     )
 
+    paying_account_id = fields.Many2one(
+        comodel_name="account.account",
+        string="Paying Account",
+        domain="[('is_paying_account', '=', True)]",
+        check_company=True,
+        copy=False,
+        tracking=True,
+        states={"draft": [("readonly", False)]},
+        readonly=True,
+        help="หัวจ่าย — the account the money leaves from. KMITL settles a "
+        "payable in one step (no outstanding/transit account), so this is the "
+        "account the payment is booked against.",
+    )
+
+    @api.depends("paying_account_id", "payment_method_line_id", "payment_type")
+    def _compute_outstanding_account_id(self):
+        """Book the payment straight against the paying account (หัวจ่าย).
+
+        Odoo's two-step model parks the money on an outstanding account until
+        the bank statement is reconciled. KMITL does not run bank statements —
+        a payment *is* the settlement — so the money side of the entry goes
+        directly to the chosen paying account, and the outstanding account only
+        serves payments that have none (i.e. everything outside the
+        disbursement flow).
+        """
+        super()._compute_outstanding_account_id()
+        for payment in self:
+            if payment.paying_account_id:
+                payment.outstanding_account_id = payment.paying_account_id
+
     def action_mark_bank_result_success(self):
         """Finance manually confirms a cheque payment was actually paid.
 
@@ -155,6 +185,7 @@ class AccountPayment(models.Model):
             "amount": self.amount,
             "currency_id": self.currency_id.id,
             "journal_id": self.journal_id.id,
+            "paying_account_id": self.paying_account_id.id,
             "cheque_date": self.date,
             "ref": self.ref or self.name,
             "payment_id": self.id,
@@ -301,4 +332,29 @@ class AccountPayment(models.Model):
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",
         )
+
+    def write(self, vals):
+        """Follow a change of paying account on the journal entry.
+
+        ``paying_account_id`` is deliberately kept out of the synchronisation
+        triggers (a full move rebuild would collapse the withholding-tax
+        write-off lines), so the money line is repointed surgically instead.
+        """
+        res = super().write(vals)
+        if "paying_account_id" in vals:
+            self._kmitl_repoint_liquidity_line()
+        return res
+
+    def _kmitl_repoint_liquidity_line(self):
+        for payment in self:
+            if not payment.paying_account_id or payment.state != "draft":
+                continue
+            liquidity_lines = payment._seek_for_lines()[0]
+            stale = liquidity_lines.filtered(
+                lambda l: l.account_id != payment.paying_account_id
+            )
+            if stale:
+                stale.with_context(
+                    skip_account_move_synchronization=True
+                ).write({"account_id": payment.paying_account_id.id})
 

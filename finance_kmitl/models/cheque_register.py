@@ -36,15 +36,25 @@ class ChequeRegister(models.Model):
     )
     journal_id = fields.Many2one(
         comodel_name="account.journal",
-        string="Bank/Cheque Book",
+        string="Voucher Journal",
         domain="[('type', 'in', ('bank', 'cash'))]",
         tracking=True,
+        help="The voucher type (ใบสำคัญ) the cheque was issued under.",
+    )
+    paying_account_id = fields.Many2one(
+        comodel_name="account.account",
+        string="Bank/Cheque Book",
+        domain="[('is_paying_account', '=', True)]",
+        tracking=True,
+        help="หัวจ่าย — the account the cheque is drawn on. It carries the "
+        "bank and the account number, and identifies the cheque book.",
     )
     bank_id = fields.Many2one(
         comodel_name="res.bank",
-        related="journal_id.bank_id",
+        related="paying_account_id.paying_bank_id",
         string="Bank",
         readonly=True,
+        store=True,
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
@@ -115,11 +125,17 @@ class ChequeRegister(models.Model):
                 ) or _("New")
         return super().create(vals_list)
 
-    @api.constrains("cheque_number", "journal_id", "direction", "company_id")
+    @api.constrains(
+        "cheque_number", "paying_account_id", "direction", "company_id"
+    )
     def _check_unique_outbound_number(self):
         """Issued cheques must keep consecutive, non-repeating numbers per cheque
         book. A cancelled cheque still occupies its number (never reused). Received
-        cheques carry numbers from external banks, so no uniqueness is enforced."""
+        cheques carry numbers from external banks, so no uniqueness is enforced.
+
+        The cheque book belongs to the paying account (หัวจ่าย) — the bank
+        account the cheque is drawn on — not to the voucher journal, which may
+        be shared by cheques drawn on several accounts."""
         for cheque in self:
             if cheque.direction != "outbound" or not cheque.cheque_number:
                 continue
@@ -128,7 +144,7 @@ class ChequeRegister(models.Model):
                     ("id", "!=", cheque.id),
                     ("direction", "=", "outbound"),
                     ("cheque_number", "=", cheque.cheque_number),
-                    ("journal_id", "=", cheque.journal_id.id),
+                    ("paying_account_id", "=", cheque.paying_account_id.id),
                     ("company_id", "=", cheque.company_id.id),
                 ]
             )

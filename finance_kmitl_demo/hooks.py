@@ -602,12 +602,37 @@ def _bill_dr(dr, wht_tax=None):
     dr.action_post_bills()
 
 
-def _classify_dr(env, dr):
-    """Auditor's payment classification demo: subject + payee bank accounts.
+def _demo_paying_account(env, company, bank):
+    """Flag a KTB bank account in the chart as a paying account (หัวจ่าย)."""
+    account = env["account.account"].search(
+        [
+            ("company_id", "=", company.id),
+            ("is_paying_account", "=", True),
+            ("paying_bank_id", "=", bank.id if bank else False),
+        ],
+        limit=1,
+    )
+    if account:
+        return account
+    account = env["account.account"].search(
+        [("company_id", "=", company.id), ("account_type", "=", "asset_cash")],
+        limit=1,
+    )
+    if not account:
+        return account
+    account.write({
+        "is_paying_account": True,
+        "paying_bank_id": bank.id if bank else False,
+        "paying_acc_number": "0281038783",
+    })
+    return account
 
-    Uses the "จ่ายตรงคู่ค้า" subject (fixed bank policy) bound to the first
-    bank journal, and gives every payee a bank account so the transfer lines
-    pass the audit validation.
+
+def _classify_dr(env, dr):
+    """Auditor's payment classification demo: subject, paying account, banks.
+
+    Uses the "จ่ายตรงคู่ค้า" subject bound to a KTB paying account, and gives
+    every payee a bank account so the transfer lines pass the audit validation.
     """
     subject = env.ref(
         "finance_kmitl.payment_subject_vendor_direct",
@@ -615,14 +640,14 @@ def _classify_dr(env, dr):
     )
     if not subject:
         return
-    if not subject.journal_id:
-        subject.journal_id = env["account.journal"].search(
-            [("type", "=", "bank"), ("company_id", "=", dr.company_id.id)],
-            limit=1,
-        )
-    dr.payment_subject_id = subject
-    dr.line_ids.update({"payment_method": subject.default_method})
     ktb_bank = env["res.bank"].search([("bic", "=", "KRTHTHBK")], limit=1)
+    paying_account = _demo_paying_account(env, dr.company_id, ktb_bank)
+    if paying_account and not subject.allowed_paying_account_ids:
+        subject.write({
+            "allowed_paying_account_ids": [(6, 0, paying_account.ids)],
+            "default_paying_account_id": paying_account.id,
+        })
+    dr.payment_subject_id = subject
     for partner in dr.line_ids.partner_id:
         if not partner.bank_ids:
             env["res.partner.bank"].create({
@@ -632,6 +657,8 @@ def _classify_dr(env, dr):
             })
     for line in dr.line_ids.filtered(lambda l: not l.partner_bank_id):
         line.partner_bank_id = line.partner_id.bank_ids[:1]
+    # Fills method + paying account per line, matching the payee's bank.
+    dr._apply_subject_defaults(dr.line_ids)
 
 
 def _finalize_payment(env, dr, do_clear):

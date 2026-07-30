@@ -5,9 +5,12 @@
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context(lang='th_TH')"/>
-                    <!-- Fall back to a default (in-memory) layout when the cheque
-                         book has none configured yet, so printing still works. -->
-                    <t t-set="layout" t-value="o.journal_id.cheque_layout_id or o.env['cheque.layout'].new({})"/>
+                    <!-- The cheque book, and so its print calibration, belongs
+                         to the paying account (หัวจ่าย); the journal layout is
+                         kept as a fallback for rows created before that, and a
+                         default (in-memory) layout keeps printing working when
+                         neither is configured. -->
+                    <t t-set="layout" t-value="o.paying_account_id.cheque_layout_id or o.journal_id.cheque_layout_id or o.env['cheque.layout'].new({})"/>
 
                     <style>
                         * {

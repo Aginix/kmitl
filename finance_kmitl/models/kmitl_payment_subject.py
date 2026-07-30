@@ -1,21 +1,23 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class KmitlPaymentSubject(models.Model):
     """Payment subject (เรื่องที่จ่าย) — what an outbound payment is for.
 
-    The subject drives *how the paying bank is chosen* (bank policy) and the
-    default payment method, so the disbursement auditor only has to pick one
-    subject per request and adjust the exception lines:
+    A subject answers two questions for the disbursement auditor, so that
+    picking one subject per request is normally all that is needed:
 
-    - ``fixed``: every payment pays from the subject's configured journal
-      (e.g. salary → KTB because staff must hold a KTB account; direct vendor
-      payments → SCB, cross-bank routing is the bank system's job).
-    - ``payee_bank``: each payee is paid from the institute's journal at the
-      payee's own bank (e.g. เงินยืม/สำรองจ่าย), matched by the bank of the
-      payee's account against the bank of each bank journal.
+    - *how* it is paid — the default payment method (เงินโอน / เช็ค / เงินสด);
+    - *out of which account* — a default paying account (หัวจ่าย) plus the set
+      of accounts allowed for this subject.
+
+    The allowed set is what makes the real cases fall out of one mechanism:
+    salary allows only the KTB account; a staff advance allows all four bank
+    accounts and each payee is served from the account at their own bank;
+    direct vendor payments allow only the SCB account.
     """
 
     _name = "kmitl.payment.subject"
@@ -29,41 +31,74 @@ class KmitlPaymentSubject(models.Model):
         selection=[
             ("transfer", "เงินโอน"),
             ("cheque", "เช็ค"),
+            ("cash", "เงินสด"),
         ],
         string="Default Method",
         required=True,
         default="transfer",
-        help="How this subject is paid — chosen first. Default payment method "
-        "applied to every request line; the auditor can override individual "
-        "lines. Cheque subjects need no paying bank here: cheques draw on the "
-        "journal configured on the 'จ่ายเช็ค' payment type.",
+        help="Payment method applied to every request line by default; the "
+        "auditor can override individual lines.",
     )
-    bank_policy = fields.Selection(
-        selection=[
-            ("fixed", "ธนาคารตายตัว"),
-            ("payee_bank", "ตามธนาคารผู้รับ"),
-        ],
-        string="Bank Policy",
-        required=True,
-        default="fixed",
-        help="Transfers only — how the paying bank (หัวจ่าย) is chosen: the "
-        "main paying journal for every payment, or the institute's journal at "
-        "each payee's own bank.",
+    default_paying_account_id = fields.Many2one(
+        comodel_name="account.account",
+        string="Default Paying Account",
+        domain="[('is_paying_account', '=', True)]",
+        help="หัวจ่ายตั้งต้น — used for a payee whose own bank is not among "
+        "the allowed accounts.",
     )
-    journal_id = fields.Many2one(
-        comodel_name="account.journal",
-        string="Main Paying Journal",
-        domain="[('type', '=', 'bank')]",
-        help="หัวจ่ายหลัก — the paying bank for transfers under the fixed "
-        "policy. Not used for cheque subjects (cheques draw on the journal of "
-        "the 'จ่ายเช็ค' payment type).",
+    allowed_paying_account_ids = fields.Many2many(
+        comodel_name="account.account",
+        relation="kmitl_payment_subject_paying_account_rel",
+        column1="subject_id",
+        column2="account_id",
+        string="Allowed Paying Accounts",
+        domain="[('is_paying_account', '=', True)]",
+        help="หัวจ่ายที่อนุญาต — the accounts this subject may be paid from. "
+        "With more than one, each payee is served from the account held at "
+        "their own bank, falling back to the default.",
     )
 
-    @api.onchange("default_method")
-    def _onchange_default_method(self):
-        """Cheque subjects carry no paying bank — clear the transfer-only
-        settings so a hidden, stale bank policy can never silently route a
-        payment."""
-        if self.default_method == "cheque":
-            self.bank_policy = "fixed"
-            self.journal_id = False
+    @api.onchange("default_paying_account_id")
+    def _onchange_default_paying_account_id(self):
+        """The default must be usable, so keep it inside the allowed set."""
+        if (
+            self.default_paying_account_id
+            and self.default_paying_account_id
+            not in self.allowed_paying_account_ids
+        ):
+            self.allowed_paying_account_ids |= self.default_paying_account_id
+
+    @api.constrains("default_paying_account_id", "allowed_paying_account_ids")
+    def _check_default_is_allowed(self):
+        for subject in self:
+            if (
+                subject.default_paying_account_id
+                and subject.allowed_paying_account_ids
+                and subject.default_paying_account_id
+                not in subject.allowed_paying_account_ids
+            ):
+                raise ValidationError(
+                    _(
+                        "The default paying account of '%s' must be one of its "
+                        "allowed paying accounts."
+                    )
+                    % subject.name
+                )
+
+    def _paying_account_for_bank(self, bank):
+        """Return the allowed paying account held at ``bank``, else the default.
+
+        This is what serves a staff advance out of the payee's own bank without
+        any extra policy switch: allow the four bank accounts and the payee's
+        bank decides, while a subject that allows a single account always
+        returns that one.
+        """
+        self.ensure_one()
+        allowed = self.allowed_paying_account_ids
+        if bank:
+            match = allowed.filtered(lambda a: a.paying_bank_id == bank)
+            if match:
+                return match[0]
+        if self.default_paying_account_id:
+            return self.default_paying_account_id
+        return allowed[:1]

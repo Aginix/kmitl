@@ -28,30 +28,31 @@ Set by the **auditor** during Payment Audit. Three orthogonal concepts:
   (direct/advance/prepaid, inherited from the approval) nor with
   `kmitl.payment.type` (the mechanical operation type that carries
   `is_cheque` / journal / override account).
-- **Bank Policy / นโยบายหัวจ่าย** (field on the subject, **transfers only** —
-  the method is chosen first; a cheque subject carries no paying bank): how
-  the Paying Bank is chosen.
-  - `fixed` — every payment of the DR pays from the subject's **main paying
-    journal (หัวจ่ายหลัก)** (e.g. salary → KTB; direct vendor → SCB,
-    cross-bank routing is the bank's job, not Odoo's).
-  - `payee_bank` — each payee is paid from the KMITL journal at the *payee's
-    own bank* (e.g. เงินยืม/สำรองจ่าย), matched by
-    `line.partner_bank_id.bank_id == journal.bank_account_id.bank_id` across
-    the institute's 4 banks (KTB/SCB/BAY/KBANK). A payee whose bank cannot be
-    matched **blocks the audit confirmation** (the error lists the unmatched
-    payees; the auditor switches those lines to cheque or fixes the bank
-    account first).
-  - Cheque lines draw on the journal configured on the **'จ่ายเช็ค' payment
-    type** (a single system-wide setting), with the subject's main journal as
-    fallback — never a per-subject requirement.
-- **Paying Bank / หัวจ่าย**: *which* KMITL bank account pays — a bank
-  `account.journal`, derived per payment from the subject's Bank Policy.
+- **Paying Account / หัวจ่าย** (`account.account` flagged
+  `is_paying_account`): *which* account the money leaves from. In the KMITL
+  chart one GL account is one real bank account, so the account itself carries
+  `paying_bank_id` and `paying_acc_number` — the bank export and the cheque
+  register read them there instead of from a journal. Cash accounts qualify
+  too (KMITL types cash-in-hand `asset_current` and banks `asset_cash`, so the
+  flag, not the type, decides).
+- **Allowed / default paying accounts** (on the subject): the accounts a
+  subject may pay from, plus the fallback. One mechanism covers every real
+  case — allow a single account and it is always used (salary → KTB, direct
+  vendor → SCB); allow several and **each payee is served from the account at
+  their own bank** (เงินยืม/สำรองจ่าย), falling back to the default when no
+  account matches. Set per DR **line**, defaulted at audit time.
+- **Voucher journal / ใบสำคัญ** (`account.payment.journal_id`): the document
+  type (PV/RV/PVR/PAR) that numbers the payment. It is *not* a bank account —
+  KMITL settles a payable in one step (no bank statement, no outstanding
+  account), so the money side of the entry is booked straight against the
+  paying account (`_compute_outstanding_account_id` is overridden to return
+  it).
 - **Payment Method / วิธีจ่าย** (per DR **line**, defaulted from the subject):
-  *how* a payee is paid — bank transfer (โอน) or cheque (เช็ค). Any subject can
-  be paid either way. Lines of the same payee must share one method (one bill
-  per payee → one full payment per bill). The method resolves to a
-  `kmitl.payment.type` (transfer → จ่ายเงินออก, cheque → จ่ายเช็ค with
-  `is_cheque`) when finance creates the payment.
+  *how* a payee is paid — เงินโอน / เช็ค / เงินสด. Any subject can be paid any
+  way. Lines of the same payee must share one method, one payee bank account
+  and one paying account (one bill per payee → one full payment per bill). The
+  method resolves to a `kmitl.payment.type` (transfer → จ่ายเงินออก, cheque →
+  จ่ายเช็ค with `is_cheque`) when finance creates the payment.
 
 ## Terms
 

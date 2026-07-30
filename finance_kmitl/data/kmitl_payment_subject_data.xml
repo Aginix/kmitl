@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Seed payment subjects gathered from the treasury office. journal_id is
-    database-specific (the institute's 4 bank journals: KTB / SCB / BAY /
-    KBANK), so it is left empty here — admins bind each subject to its
-    paying journal after install via Finance ▸ Settings ▸ Payment Subjects.
+    Seed payment subjects gathered from the treasury office. The paying
+    accounts (หัวจ่าย) are chart-of-accounts records the treasury office flags
+    and may differ per database, so they are left empty here — after install,
+    flag the accounts in Finance ▸ Settings ▸ หัวจ่าย and then bind them to
+    each subject in Finance ▸ Settings ▸ Payment Subjects:
+
+      เงินเดือน            → allow only the KTB account
+      เงินยืม/สำรองจ่าย     → allow all four bank accounts (payee's bank decides)
+      จ่ายตรงคู่ค้า         → allow only the SCB account
+      ค่าน้ำค่าไฟ          → cheque, allow the account the cheque book is drawn on
 -->
 <odoo noupdate="1">
 
@@ -11,7 +17,6 @@
     <record id="payment_subject_salary" model="kmitl.payment.subject">
         <field name="name">เงินเดือน</field>
         <field name="sequence">10</field>
-        <field name="bank_policy">fixed</field>
         <field name="default_method">transfer</field>
     </record>
 
@@ -19,7 +24,6 @@
     <record id="payment_subject_advance_reimburse" model="kmitl.payment.subject">
         <field name="name">เงินยืม/สำรองจ่าย</field>
         <field name="sequence">20</field>
-        <field name="bank_policy">payee_bank</field>
         <field name="default_method">transfer</field>
     </record>
 
@@ -27,7 +31,6 @@
     <record id="payment_subject_vendor_direct" model="kmitl.payment.subject">
         <field name="name">จ่ายตรงคู่ค้า</field>
         <field name="sequence">30</field>
-        <field name="bank_policy">fixed</field>
         <field name="default_method">transfer</field>
     </record>
 
@@ -35,7 +38,6 @@
     <record id="payment_subject_utilities" model="kmitl.payment.subject">
         <field name="name">ค่าน้ำค่าไฟ</field>
         <field name="sequence">40</field>
-        <field name="bank_policy">fixed</field>
         <field name="default_method">cheque</field>
     </record>
 

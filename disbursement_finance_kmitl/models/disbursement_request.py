@@ -110,12 +110,30 @@ class DisbursementRequest(models.Model):
 
     @api.onchange("payment_subject_id")
     def _onchange_payment_subject_id(self):
-        """Default every line's method from the subject; the auditor then
-        adjusts only the exception lines."""
+        """Default every line's method and paying account from the subject;
+        the auditor then adjusts only the exception lines."""
         if self.payment_subject_id:
-            self.line_ids.update(
-                {"payment_method": self.payment_subject_id.default_method}
-            )
+            self._apply_subject_defaults(self.line_ids)
+
+    def _apply_subject_defaults(self, lines):
+        """Fill method and paying account (หัวจ่าย) on ``lines`` from the
+        subject, leaving values the auditor already set alone.
+
+        A subject that allows several paying accounts serves each payee from
+        the account held at their own bank — that is what pays a staff advance
+        out of the payee's bank without any extra setting.
+        """
+        self.ensure_one()
+        subject = self.payment_subject_id
+        if not subject:
+            return
+        for line in lines:
+            if not line.payment_method:
+                line.payment_method = subject.default_method
+            if not line.paying_account_id:
+                line.paying_account_id = subject._paying_account_for_bank(
+                    line.partner_bank_id.bank_id
+                )
 
     # One2many via the stored back-reference on account.payment, so payment
     # progress recomputes reactively (no search() inside computes).
@@ -204,57 +222,12 @@ class DisbursementRequest(models.Model):
     # ------------------------------------------------------------------
     # Payment classification helpers
     # ------------------------------------------------------------------
-    def _resolve_line_journal(self, line):
-        """Return the paying journal (หัวจ่าย) for a request line.
-
-        Cheque lines draw on the journal configured on the 'จ่ายเช็ค' payment
-        type (subjects carry no paying bank for cheques); the subject's main
-        journal is a fallback. Transfer lines pay from the subject's main
-        journal under the ``fixed`` policy, or — under ``payee_bank`` — from
-        the institute's bank journal at the payee's own bank, matched by the
-        bank behind each journal's account. Returns an empty recordset when no
-        journal can be determined.
-        """
-        self.ensure_one()
-        subject = self.payment_subject_id
-        Journal = self.env["account.journal"]
-        if not subject:
-            return Journal
-        company = self.company_id
-        if line.payment_method == "cheque":
-            cheque_type = self.env.ref(
-                "finance_kmitl.payment_type_cheque_outbound",
-                raise_if_not_found=False,
-            )
-            cheque_journal = cheque_type.journal_id if cheque_type else Journal
-            return (
-                cheque_journal.filtered(lambda j: j.company_id == company)
-                or subject.journal_id.filtered(
-                    lambda j: j.company_id == company
-                )
-            )
-        if subject.bank_policy == "fixed":
-            return subject.journal_id.filtered(
-                lambda j: j.company_id == company
-            )
-        payee_bank = line.partner_bank_id.bank_id
-        if not payee_bank:
-            return Journal
-        return Journal.search(
-            [
-                ("type", "=", "bank"),
-                ("company_id", "=", self.company_id.id),
-                ("bank_account_id.bank_id", "=", payee_bank.id),
-            ],
-            limit=1,
-        )
-
     def _check_payment_classification(self):
         """Validate the auditor's classification before confirming the audit.
 
-        Fills empty line methods from the subject default, then blocks with an
-        actionable error listing the offending payees when the classification
-        cannot drive payment creation.
+        Fills the empty method / paying account from the subject, then blocks
+        with an actionable error listing the offending payees when the
+        classification cannot drive payment creation.
         """
         for record in self:
             subject = record.payment_subject_id
@@ -263,86 +236,73 @@ class DisbursementRequest(models.Model):
                     _("Select the payment subject (เรื่องที่จ่าย) before "
                       "confirming the audit.")
                 )
-            record.line_ids.filtered(lambda l: not l.payment_method).update(
-                {"payment_method": subject.default_method}
-            )
+            record._apply_subject_defaults(record.line_ids)
 
-            cheque_lines = record.line_ids.filtered(
-                lambda l: l.payment_method == "cheque"
+            no_account = record.line_ids.filtered(
+                lambda l: not l.paying_account_id
             )
-            transfer_lines_all = record.line_ids.filtered(
-                lambda l: l.payment_method == "transfer"
-            )
-            # A cheque subject carries no paying bank at all, so it cannot
-            # drive transfers — the auditor must keep its lines on cheque.
-            if subject.default_method == "cheque" and transfer_lines_all:
+            if no_account:
                 raise UserError(
                     _(
-                        "Payment subject '%(subject)s' is a cheque subject "
-                        "(no paying bank configured) — switch these transfer "
-                        "lines back to cheque: %(payees)s",
+                        "Payees with no paying account (หัวจ่าย) — set the "
+                        "allowed accounts on subject '%(subject)s' or pick one "
+                        "per line: %(payees)s",
                         subject=subject.name,
                         payees=", ".join(
-                            sorted(set(
-                                transfer_lines_all.mapped("partner_id.name")
-                            ))
+                            sorted(set(no_account.mapped("partner_id.name")))
                         ),
                     )
                 )
-            if (
-                transfer_lines_all
-                and subject.bank_policy == "fixed"
-                and not subject.journal_id
-            ):
-                raise UserError(
-                    _(
-                        "Payment subject '%s' has no main paying journal "
-                        "(หัวจ่ายหลัก) configured for transfers. Set it in "
-                        "Finance ▸ Settings ▸ Payment Subjects first."
-                    )
-                    % subject.name
+            if subject.allowed_paying_account_ids:
+                not_allowed = record.line_ids.filtered(
+                    lambda l: l.paying_account_id
+                    not in subject.allowed_paying_account_ids
                 )
-            if cheque_lines and not record._resolve_line_journal(
-                cheque_lines[0]
-            ):
-                raise UserError(
-                    _(
-                        "No journal configured for cheque payments. Set the "
-                        "journal on the 'จ่ายเช็ค' payment type (Finance ▸ "
-                        "Settings ▸ Payment Types) first."
+                if not_allowed:
+                    raise UserError(
+                        _(
+                            "Paying accounts not allowed for subject "
+                            "'%(subject)s': %(accounts)s",
+                            subject=subject.name,
+                            accounts=", ".join(
+                                sorted(set(
+                                    not_allowed.mapped(
+                                        "paying_account_id.display_name"
+                                    )
+                                ))
+                            ),
+                        )
                     )
-                )
 
-            # One bill per payee, paid in full by one payment — so all lines
-            # of the same payee must share one method and one bank account.
+            # One bill per payee, paid in full by one payment — so all lines of
+            # the same payee must share one method, one payee bank account and
+            # one paying account.
             lines_by_partner = record._lines_by_partner()
-            mixed = [
-                partner.name
-                for partner, lines in lines_by_partner.items()
-                if len(set(lines.mapped("payment_method"))) > 1
-            ]
-            if mixed:
-                raise UserError(
-                    _(
-                        "Payees with mixed payment methods (each payee must "
-                        "use a single method): %s"
-                    )
-                    % ", ".join(mixed)
-                )
-            mixed_banks = [
-                partner.name
-                for partner, lines in lines_by_partner.items()
-                if len(lines.mapped("partner_bank_id")) > 1
-            ]
-            if mixed_banks:
-                raise UserError(
-                    _(
-                        "Payees with more than one bank account on their lines "
-                        "(the bill and its payment can only carry one, so pick "
-                        "a single account per payee): %s"
-                    )
-                    % ", ".join(mixed_banks)
-                )
+            for field_name, message in (
+                (
+                    "payment_method",
+                    _("Payees with mixed payment methods (each payee must use "
+                      "a single method): %s"),
+                ),
+                (
+                    "partner_bank_id",
+                    _("Payees with more than one bank account on their lines "
+                      "(the bill and its payment can only carry one, so pick a "
+                      "single account per payee): %s"),
+                ),
+                (
+                    "paying_account_id",
+                    _("Payees paid from more than one paying account (หัวจ่าย) "
+                      "— one payment per payee can only draw on one: %s"),
+                ),
+            ):
+                mixed = [
+                    partner.name
+                    for partner, lines in lines_by_partner.items()
+                    if len(set(lines.mapped(field_name))) > 1
+                ]
+                if mixed:
+                    raise UserError(message % ", ".join(mixed))
 
             transfer_lines = record.line_ids.filtered(
                 lambda l: l.payment_method == "transfer"
@@ -355,19 +315,6 @@ class DisbursementRequest(models.Model):
                         "to cheque or add the account): %s"
                     )
                     % ", ".join(no_bank.mapped("partner_id.name"))
-                )
-
-            unmatched = transfer_lines.filtered(
-                lambda l: not record._resolve_line_journal(l)
-            )
-            if unmatched:
-                raise UserError(
-                    _(
-                        "Payees whose bank cannot be matched to a paying "
-                        "journal (switch them to cheque or fix the bank "
-                        "account): %s"
-                    )
-                    % ", ".join(sorted(set(unmatched.mapped("partner_id.name"))))
                 )
         return True
 
@@ -561,8 +508,9 @@ class DisbursementRequest(models.Model):
         if not unpaid_bills:
             raise UserError(_("No posted unpaid bills to pay."))
 
-        # Journal (หัวจ่าย) and operation type are driven by the auditor's
-        # classification: subject bank policy + per-line method.
+        # The paying account (หัวจ่าย) and the operation type come from the
+        # auditor's classification; the journal is the voucher type (ใบสำคัญ)
+        # configured on the operation type, not a bank account.
         self._check_payment_classification()
         transfer_type = self.env.ref(
             "finance_kmitl.payment_type_normal_outbound",
@@ -583,13 +531,27 @@ class DisbursementRequest(models.Model):
                     % bill.partner_id.name
                 )
             method = partner_lines[0].payment_method or "transfer"
-            journal = self._resolve_line_journal(partner_lines[0])
+            paying_account = partner_lines[0].paying_account_id
+            payment_type = cheque_type if method == "cheque" else transfer_type
+            journal = payment_type.journal_id if payment_type else False
+            if not journal:
+                journal = self.env["account.journal"].search(
+                    [
+                        ("type", "=", "bank"),
+                        ("company_id", "=", self.company_id.id),
+                    ],
+                    order="sequence, id",
+                    limit=1,
+                )
             if not journal:
                 raise UserError(
-                    _("No paying journal could be resolved for payee %s.")
-                    % bill.partner_id.name
+                    _(
+                        "No voucher journal (ใบสำคัญ) configured on the "
+                        "outbound payment type, and no bank journal found for "
+                        "company %s."
+                    )
+                    % self.company_id.name
                 )
-            payment_type = cheque_type if method == "cheque" else transfer_type
             payable_lines = bill.line_ids.filtered(
                 lambda l: l.account_type == "liability_payable"
                 and not l.reconciled
@@ -625,6 +587,7 @@ class DisbursementRequest(models.Model):
                 "amount": amount,
                 "currency_id": bill.currency_id.id,
                 "journal_id": journal.id,
+                "paying_account_id": paying_account.id,
                 "payment_type": "outbound",
                 "partner_type": "supplier",
                 "ref": _("%s - %s", self.name, bill.name),

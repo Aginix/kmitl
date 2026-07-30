@@ -6,8 +6,8 @@ from odoo.tests.common import TransactionCase, tagged
 
 @tagged("post_install", "-at_install")
 class TestPaymentWorkflow(TransactionCase):
-    """Post-bill payment-execution workflow: state machine + guards +
-    the auditor's payment classification (subject / bank policy / method).
+    """Post-bill payment-execution workflow: state machine + guards + the
+    auditor's classification (subject / paying account / method).
 
     The pre-bill approval (with budget) and the bill posting are exercised by
     finance_kmitl_demo; here we drive the round-2 states directly (writing the
@@ -33,56 +33,73 @@ class TestPaymentWorkflow(TransactionCase):
             )
             cls.distribution[str(account.id)] = 100
 
+        cls.ktb = cls.env["res.bank"].create({"name": "KTB test", "bic": "KRTHTHBK"})
+        cls.scb = cls.env["res.bank"].create({"name": "SCB test", "bic": "SICOTHBK"})
         cls.partner = cls.env["res.partner"].create({"name": "Vendor A"})
         cls.partner_bank = cls.env["res.partner.bank"].create({
             "partner_id": cls.partner.id,
             "acc_number": "111-1-11111-1",
+            "bank_id": cls.ktb.id,
         })
         cls.expense_account = cls.env["account.account"].search(
             [("account_type", "=", "expense"),
              ("company_id", "=", cls.company.id)],
             limit=1,
-        )
-        if not cls.expense_account:
-            cls.expense_account = cls.env["account.account"].create({
-                "name": "Test Expense",
-                "code": "TESTEXP",
-                "account_type": "expense",
-                "company_id": cls.company.id,
-            })
+        ) or cls.env["account.account"].create({
+            "name": "Test Expense", "code": "TESTEXP",
+            "account_type": "expense", "company_id": cls.company.id,
+        })
         cls.product = cls.env["product.product"].create({
             "name": "Service", "type": "service",
         })
-        cls.bank_journal = cls.env["account.journal"].search(
-            [("type", "=", "bank"), ("company_id", "=", cls.company.id)],
-            limit=1,
+
+        # Paying accounts (หัวจ่าย): one per bank, as in the KMITL chart.
+        cls.paying_ktb = cls._make_paying_account(
+            "PAYKTB", "ธ.กรุงไทย test", cls.ktb, "028-1-03878-3"
         )
-        if not cls.bank_journal:
-            cls.bank_journal = cls.env["account.journal"].create({
-                "name": "Bank Test", "type": "bank", "code": "BNKT",
-                "company_id": cls.company.id,
-            })
-        cls.subject_fixed = cls.env["kmitl.payment.subject"].create({
-            "name": "Test fixed subject",
-            "bank_policy": "fixed",
-            "journal_id": cls.bank_journal.id,
+        cls.paying_scb = cls._make_paying_account(
+            "PAYSCB", "ธ.ไทยพาณิชย์ test", cls.scb, "088-2-11066-5"
+        )
+        cls.subject_single = cls.env["kmitl.payment.subject"].create({
+            "name": "Salary test",
             "default_method": "transfer",
+            "allowed_paying_account_ids": [(6, 0, cls.paying_ktb.ids)],
+            "default_paying_account_id": cls.paying_ktb.id,
         })
-        cls.subject_payee_bank = cls.env["kmitl.payment.subject"].create({
-            "name": "Test payee-bank subject",
-            "bank_policy": "payee_bank",
+        cls.subject_multi = cls.env["kmitl.payment.subject"].create({
+            "name": "Advance test",
             "default_method": "transfer",
+            "allowed_paying_account_ids": [
+                (6, 0, (cls.paying_ktb + cls.paying_scb).ids)
+            ],
+            "default_paying_account_id": cls.paying_ktb.id,
         })
 
-    def _make_billed_request(self, classify=True, partner=None):
+    @classmethod
+    def _make_paying_account(cls, code, name, bank, acc_number):
+        return cls.env["account.account"].create({
+            "name": name,
+            "code": code,
+            "account_type": "asset_cash",
+            "company_id": cls.company.id,
+            "is_paying_account": True,
+            "paying_bank_id": bank.id,
+            "paying_acc_number": acc_number,
+        })
+
+    def _make_billed_request(self, subject=None, partner=None, bank=None):
         """A request forced to ``bills_posted`` (round-2 entry point)."""
         partner = partner or self.partner
+        partner_bank = self.partner_bank if partner == self.partner else False
+        if bank is not None and partner_bank:
+            partner_bank.bank_id = bank
         request = self.env["disbursement.request"].create({
             "date": "2026-01-15",
             "partner_type": "multi",
             "analytic_distribution": self.distribution,
             "line_ids": [(0, 0, {
                 "partner_id": partner.id,
+                "partner_bank_id": partner_bank.id if partner_bank else False,
                 "product_id": self.product.id,
                 "name": "Service",
                 "quantity": 1,
@@ -92,8 +109,7 @@ class TestPaymentWorkflow(TransactionCase):
             })],
         })
         request.state = "bills_posted"
-        if classify:
-            request.payment_subject_id = self.subject_fixed
+        request.payment_subject_id = subject or self.subject_single
         return request
 
     # ------------------------------------------------------------------
@@ -103,33 +119,31 @@ class TestPaymentWorkflow(TransactionCase):
         request = self._make_billed_request()
         request.action_audit()
         self.assertEqual(request.state, "payment_audited")
-        # Audit fills the line method from the subject default.
+        # The audit fills method and paying account from the subject.
         self.assertEqual(request.line_ids.payment_method, "transfer")
+        self.assertEqual(request.line_ids.paying_account_id, self.paying_ktb)
         request.action_authorize()
         self.assertEqual(request.state, "payment_authorized")
 
     def test_audit_requires_bills_posted(self):
         request = self._make_billed_request()
-        request.action_audit()  # -> payment_audited
+        request.action_audit()
         with self.assertRaises(UserError):
-            request.action_audit()  # wrong source state
+            request.action_audit()
 
     def test_authorize_requires_audited(self):
         request = self._make_billed_request()
         with self.assertRaises(UserError):
-            request.action_authorize()  # still bills_posted
+            request.action_authorize()
 
     def test_confirm_paid_requires_payment(self):
         request = self._make_billed_request()
         request.action_audit()
         request.action_authorize()
-        # No payment created yet -> cannot confirm as paid.
         with self.assertRaises(UserError):
             request.action_confirm_paid()
 
     def test_pipeline_done_when_cleared(self):
-        # Revived pipeline (C1): a cleared request reports 'done' so the
-        # "Done" filter and reporting work again.
         request = self._make_billed_request()
         request.state = "cleared"
         self.assertEqual(request.pipeline_status, "done")
@@ -146,17 +160,39 @@ class TestPaymentWorkflow(TransactionCase):
     # Payment classification (audit validation)
     # ------------------------------------------------------------------
     def test_audit_requires_subject(self):
-        request = self._make_billed_request(classify=False)
+        request = self._make_billed_request()
+        request.payment_subject_id = False
         with self.assertRaises(UserError):
             request.action_audit()
 
-    def test_fixed_policy_requires_journal(self):
+    def test_subject_with_no_account_blocks(self):
         subject = self.env["kmitl.payment.subject"].create({
-            "name": "No journal", "bank_policy": "fixed",
-            "default_method": "transfer",
+            "name": "No account", "default_method": "transfer",
         })
-        request = self._make_billed_request(classify=False)
-        request.payment_subject_id = subject
+        request = self._make_billed_request(subject=subject)
+        with self.assertRaisesRegex(UserError, "Vendor A"):
+            request.action_audit()
+
+    def test_multi_account_subject_picks_payee_bank(self):
+        """Allowing several paying accounts serves each payee from the account
+        held at their own bank — no extra policy switch."""
+        request = self._make_billed_request(
+            subject=self.subject_multi, bank=self.scb
+        )
+        request.action_audit()
+        self.assertEqual(request.line_ids.paying_account_id, self.paying_scb)
+
+    def test_multi_account_subject_falls_back_to_default(self):
+        other_bank = self.env["res.bank"].create({"name": "Elsewhere"})
+        request = self._make_billed_request(
+            subject=self.subject_multi, bank=other_bank
+        )
+        request.action_audit()
+        self.assertEqual(request.line_ids.paying_account_id, self.paying_ktb)
+
+    def test_account_outside_allowed_blocks(self):
+        request = self._make_billed_request(subject=self.subject_single)
+        request.line_ids.paying_account_id = self.paying_scb
         with self.assertRaises(UserError):
             request.action_audit()
 
@@ -173,55 +209,12 @@ class TestPaymentWorkflow(TransactionCase):
         request.action_audit()
         self.assertEqual(request.state, "payment_audited")
 
-    def test_cheque_subject_needs_no_journal(self):
-        """A cheque subject carries no paying bank: the cheque draws on the
-        journal configured on the 'จ่ายเช็ค' payment type instead."""
-        cheque_type = self.env.ref("finance_kmitl.payment_type_cheque_outbound")
-        cheque_type.journal_id = self.bank_journal
-        subject = self.env["kmitl.payment.subject"].create({
-            "name": "Cheque subject", "bank_policy": "fixed",
-            "default_method": "cheque",
-        })
-        partner = self.env["res.partner"].create({"name": "Utility Co"})
-        request = self._make_billed_request(classify=False, partner=partner)
-        request.payment_subject_id = subject
-        request.action_audit()
-        self.assertEqual(request.state, "payment_audited")
-        self.assertEqual(
-            request._resolve_line_journal(request.line_ids), self.bank_journal
-        )
-
-    def test_transfer_override_under_cheque_subject_blocks(self):
-        """A cheque subject has no paying bank, so a line overridden to
-        transfer must be switched back — the error says so by payee name."""
-        subject = self.env["kmitl.payment.subject"].create({
-            "name": "Cheque only subject", "bank_policy": "fixed",
-            "default_method": "cheque",
-        })
-        request = self._make_billed_request(classify=False)
-        request.payment_subject_id = subject
-        request.line_ids.payment_method = "transfer"
-        with self.assertRaisesRegex(UserError, "Vendor A"):
-            request.action_audit()
-
-    def test_cheque_without_any_journal_blocks(self):
-        cheque_type = self.env.ref("finance_kmitl.payment_type_cheque_outbound")
-        cheque_type.journal_id = False
-        subject = self.env["kmitl.payment.subject"].create({
-            "name": "Cheque subject no journal", "bank_policy": "fixed",
-            "default_method": "cheque",
-        })
-        partner = self.env["res.partner"].create({"name": "Utility Co"})
-        request = self._make_billed_request(classify=False, partner=partner)
-        request.payment_subject_id = subject
-        with self.assertRaisesRegex(UserError, "จ่ายเช็ค"):
-            request.action_audit()
-
     def test_mixed_methods_same_payee_blocks(self):
         request = self._make_billed_request()
         request.write({
             "line_ids": [(0, 0, {
                 "partner_id": self.partner.id,
+                "partner_bank_id": self.partner_bank.id,
                 "product_id": self.product.id,
                 "name": "Second line",
                 "quantity": 1,
@@ -235,55 +228,45 @@ class TestPaymentWorkflow(TransactionCase):
         with self.assertRaisesRegex(UserError, "Vendor A"):
             request.action_audit()
 
-    def test_mixed_banks_same_payee_blocks(self):
-        """One bill per payee carries one bank account, so lines of the same
-        payee may not designate different accounts."""
-        request = self._make_billed_request()
-        second_bank = self.env["res.partner.bank"].create({
-            "partner_id": self.partner.id,
-            "acc_number": "333-3-33333-3",
-        })
-        request.line_ids.partner_bank_id = self.partner_bank
+    def test_mixed_paying_accounts_same_payee_blocks(self):
+        request = self._make_billed_request(subject=self.subject_multi)
         request.write({
             "line_ids": [(0, 0, {
                 "partner_id": self.partner.id,
+                "partner_bank_id": self.partner_bank.id,
                 "product_id": self.product.id,
                 "name": "Second line",
                 "quantity": 1,
                 "price_unit": 500.0,
                 "account_id": self.expense_account.id,
                 "analytic_distribution": self.distribution,
-                "partner_bank_id": second_bank.id,
             })],
         })
+        request.line_ids[0].paying_account_id = self.paying_ktb
+        request.line_ids[1].paying_account_id = self.paying_scb
         with self.assertRaisesRegex(UserError, "Vendor A"):
             request.action_audit()
 
-    def test_payee_bank_policy_resolves_matching_journal(self):
-        bank = self.env["res.bank"].create({"name": "Match Bank"})
-        company_account = self.env["res.partner.bank"].create({
-            "partner_id": self.company.partner_id.id,
-            "acc_number": "222-2-22222-2",
-            "bank_id": bank.id,
-        })
-        journal = self.env["account.journal"].create({
-            "name": "Match Bank Journal", "type": "bank", "code": "MBNK",
-            "company_id": self.company.id,
-            "bank_account_id": company_account.id,
-        })
-        self.partner_bank.bank_id = bank
-        request = self._make_billed_request(classify=False)
-        request.payment_subject_id = self.subject_payee_bank
-        request.action_audit()
-        self.assertEqual(request.state, "payment_audited")
-        self.assertEqual(
-            request._resolve_line_journal(request.line_ids), journal
-        )
+    # ------------------------------------------------------------------
+    # Paying account master data
+    # ------------------------------------------------------------------
+    def test_paying_account_at_bank_needs_number(self):
+        from odoo.exceptions import ValidationError
 
-    def test_payee_bank_policy_unmatched_blocks_with_name(self):
-        other_bank = self.env["res.bank"].create({"name": "Elsewhere Bank"})
-        self.partner_bank.bank_id = other_bank
-        request = self._make_billed_request(classify=False)
-        request.payment_subject_id = self.subject_payee_bank
-        with self.assertRaisesRegex(UserError, "Vendor A"):
-            request.action_audit()
+        with self.assertRaises(ValidationError):
+            self.env["account.account"].create({
+                "name": "Bank no number", "code": "PAYNONUM",
+                "account_type": "asset_cash", "company_id": self.company.id,
+                "is_paying_account": True, "paying_bank_id": self.ktb.id,
+            })
+
+    def test_subject_default_must_be_allowed(self):
+        from odoo.exceptions import ValidationError
+
+        with self.assertRaises(ValidationError):
+            self.env["kmitl.payment.subject"].create({
+                "name": "Bad default",
+                "default_method": "transfer",
+                "allowed_paying_account_ids": [(6, 0, self.paying_ktb.ids)],
+                "default_paying_account_id": self.paying_scb.id,
+            })

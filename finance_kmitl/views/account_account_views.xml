@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Chart of accounts form: mark the account as a paying account (หัวจ่าย) -->
+    <record id="view_account_form_inherit_paying" model="ir.ui.view">
+        <field name="name">account.account.form.inherit.paying.finance_kmitl</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="after">
+                <group string="หัวจ่าย (Paying Account)" name="paying_account">
+                    <field name="is_paying_account"/>
+                    <field name="paying_bank_id"
+                           attrs="{'invisible': [('is_paying_account', '=', False)]}"
+                           options="{'no_create': True}"/>
+                    <field name="paying_acc_number"
+                           attrs="{'invisible': [('is_paying_account', '=', False)], 'required': [('paying_bank_id', '!=', False)]}"/>
+                    <field name="cheque_layout_id"
+                           attrs="{'invisible': ['|', ('is_paying_account', '=', False), ('paying_bank_id', '=', False)]}"
+                           options="{'no_create': True}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Chart of accounts list/search: find the paying accounts quickly -->
+    <record id="view_account_list_inherit_paying" model="ir.ui.view">
+        <field name="name">account.account.list.inherit.paying.finance_kmitl</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="after">
+                <field name="is_paying_account" optional="hide"/>
+                <field name="paying_bank_id" optional="hide"/>
+                <field name="paying_acc_number" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_search_inherit_paying" model="ir.ui.view">
+        <field name="name">account.account.search.inherit.paying.finance_kmitl</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_search"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <separator/>
+                <filter string="หัวจ่าย (Paying Accounts)" name="paying_accounts"
+                        domain="[('is_paying_account', '=', True)]"/>
+                <filter string="Bank" name="group_paying_bank"
+                        context="{'group_by': 'paying_bank_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Paying accounts as their own master-data list, next to the other
+         finance settings, so the treasury office does not have to hunt for
+         them in the full chart of accounts. -->
+    <record id="action_paying_account" model="ir.actions.act_window">
+        <field name="name">หัวจ่าย (Paying Accounts)</field>
+        <field name="res_model">account.account</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_paying_account', '=', True)]</field>
+        <field name="context">{'default_is_paying_account': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ยังไม่มีหัวจ่าย
+            </p>
+            <p>
+                หัวจ่ายคือบัญชีในผังบัญชีที่สถาบันใช้จ่ายเงินออก
+                เปิดบัญชีในผังบัญชีแล้วติ๊ก "หัวจ่าย" พร้อมระบุธนาคารและเลขบัญชี
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_settings_paying_accounts"
+        name="หัวจ่าย (Paying Accounts)"
+        parent="menu_payment_settings"
+        action="action_paying_account"
+        sequence="8"
+    />
+
+</odoo>

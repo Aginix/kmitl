@@ -9,8 +9,8 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="default_method"/>
-                <field name="bank_policy" optional="show"/>
-                <field name="journal_id" optional="show"/>
+                <field name="default_paying_account_id" optional="show"/>
+                <field name="allowed_paying_account_ids" widget="many2many_tags" optional="show"/>
             </tree>
         </field>
     </record>
@@ -26,22 +26,25 @@
                         <h1><field name="name" placeholder="e.g. เงินเดือน"/></h1>
                     </div>
                     <group>
-                        <!-- Step 1: choose cheque or transfer. Cheque needs no
-                             paying bank here (cheques draw on the journal of
-                             the 'จ่ายเช็ค' payment type); transfers configure
-                             the main paying journal / bank policy. -->
-                        <group>
+                        <group string="วิธีจ่าย">
                             <field name="default_method" widget="radio"/>
-                            <field name="bank_policy" widget="radio"
-                                   attrs="{'invisible': [('default_method', '=', 'cheque')]}"/>
-                            <field name="journal_id"
-                                   attrs="{'invisible': ['|', ('default_method', '=', 'cheque'), ('bank_policy', '=', 'payee_bank')], 'required': [('default_method', '=', 'transfer'), ('bank_policy', '=', 'fixed')]}"/>
+                        </group>
+                        <group string="หัวจ่าย">
+                            <field name="allowed_paying_account_ids"
+                                   widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                            <field name="default_paying_account_id"
+                                   options="{'no_create': True}"/>
                         </group>
                         <group>
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>
                     </group>
+                    <div class="text-muted">
+                        อนุญาตหัวจ่ายมากกว่า 1 บัญชี = จ่ายผู้รับแต่ละรายจากบัญชีของธนาคารเดียวกับผู้รับ
+                        (ถ้าไม่ตรงกับบัญชีใดเลย จะใช้หัวจ่ายตั้งต้น)
+                    </div>
                 </sheet>
             </form>
         </field>

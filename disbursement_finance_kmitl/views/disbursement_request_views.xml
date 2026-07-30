@@ -121,6 +121,9 @@
                             <field name="partner_bank_id"
                                    domain="[('partner_id', '=', partner_id)]"/>
                             <field name="payment_method"/>
+                            <field name="paying_account_id"
+                                   options="{'no_create': True}"
+                                   domain="[('is_paying_account', '=', True)]"/>
                             <field name="price_total" readonly="1"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
