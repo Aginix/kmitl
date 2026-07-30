@@ -77,23 +77,36 @@
                             options="{'no_create': True, 'no_open': True}"
                             attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
                         <field name="is_budget_editable" invisible="1"/>
+                        <field name="budget_commitment_state" invisible="1"/>
+                        <!-- Ask which way first, then show only that way's fields.
+                             The mode is a UI affordance: the server still keys
+                             draw-down off reservation_commitment_id (ADR-0010). Each
+                             branch also stays visible whenever its own value is
+                             already set, so a record can never hide the thing that
+                             actually drives the reserve action. -->
+                        <field name="budget_selection_mode" colspan="2"
+                            widget="radio" options="{'horizontal': True}"
+                            attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
+
                         <field name="reservation_commitment_id" colspan="2"
                             widget="budget_commitment_info"
                             options="{'no_create': True, 'no_open': True}"
-                            attrs="{'invisible': [('budget_commitment_id', '!=', False)], 'readonly': [('is_budget_editable', '=', False)]}"
-                            placeholder="เลือกใบจองที่มีอยู่เพื่อหยิบไปใช้ (เว้นว่าง = จองใหม่)"/>
+                            attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '!=', 'reservation'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
+                            placeholder="เลือกใบจองงบประมาณที่จะหยิบไปใช้"/>
+
                         <button name="action_open_reservation_picker" type="object"
-                            string="Select Budget from Chart (view balance)"
+                            string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
-                            attrs="{'invisible': ['|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False)]}"/>
-                        <!-- Only while budget is still being chosen: once reserved,
-                             the same values are in the commitment card above. -->
-                        <field name="budget_account_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" attrs="{'invisible': [('budget_commitment_id', '!=', False)]}"/>
-                        <field name="activity_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" attrs="{'invisible': [('budget_commitment_id', '!=', False)]}"/>
-                        <field name="department_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" attrs="{'invisible': [('budget_commitment_id', '!=', False)]}"/>
-                        <field name="fund_analytic_id" widget="selection" readonly="1" attrs="{'invisible': [('budget_commitment_id', '!=', False)]}"/>
-                        <field name="source_analytic_id" widget="selection" readonly="1" attrs="{'invisible': [('budget_commitment_id', '!=', False)]}"/>
-                        <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" attrs="{'invisible': [('budget_commitment_id', '!=', False)]}"/>
+                            attrs="{'invisible': ['|', '|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False), ('budget_selection_mode', '!=', 'chart')]}"/>
+                        <!-- Only while budget is still being chosen from the chart:
+                             once reserved the same values are in the card above, and
+                             under the reservation mode they come from the slip. -->
+                        <field name="budget_account_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"/>
+                        <field name="activity_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"/>
+                        <field name="department_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"/>
+                        <field name="fund_analytic_id" widget="selection" readonly="1" attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"/>
+                        <field name="source_analytic_id" widget="selection" readonly="1" attrs="{'invisible': ['|', ('budget_selection_mode', '!=', 'chart'), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"/>
+                        <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" attrs="{'invisible': ['&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')]}"/>
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
                     <separator string="Planned Expenses"/>

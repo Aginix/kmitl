@@ -223,6 +223,28 @@ class ApprovalRequest(models.Model):
         """
         return super()._reservation_account_domain() + self._domain_budget_account_id()
 
+    budget_commitment_state = fields.Selection(
+        related="budget_commitment_id.state",
+        string="สถานะใบจอง",
+        readonly=True,
+        help=(
+            "ใช้ในฟอร์มเพื่อแยก 'มีใบจองที่ยังใช้งานอยู่' ออกจาก 'ใบจองถูกยกเลิกแล้ว' "
+            "— การยกเลิกใบจองไม่ล้างค่า budget_commitment_id จึงต้องดูสถานะประกอบ"
+        ),
+    )
+    budget_selection_mode = fields.Selection(
+        selection=[
+            ("chart", "เลือกจากผังงบประมาณ (จองงบใหม่)"),
+            ("reservation", "หยิบจากใบจองงบประมาณที่มีอยู่"),
+        ],
+        string="วิธีเลือกงบประมาณ",
+        default="chart",
+        copy=False,
+        help=(
+            "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
+            "หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+        ),
+    )
     reservation_commitment_id = fields.Many2one(
         "budget.commitment",
         string="ใบจองงบประมาณ",
@@ -594,6 +616,12 @@ class ApprovalRequest(models.Model):
         if self.reservation_commitment_id:
             return self._action_draw_from_reservation()
 
+        # Chose "หยิบจากใบจอง" but picked nothing: say so, instead of falling
+        # through to reserve-new and complaining about the dimensions the mode
+        # switch deliberately cleared.
+        if self.budget_selection_mode == "reservation":
+            raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
+
         # รหัสงบประมาณ / มิติทางบัญชี ไม่บังคับกรอกในฟอร์ม — ตรวจครบที่เดียว
         # ตอนกดจองงบประมาณ (budget engine จับคู่แบบครบทุกมิติหรือไม่มีเลย)
         missing = []
@@ -736,6 +764,23 @@ class ApprovalRequest(models.Model):
         record (its compute is a no-op)."""
         if self.reservation_commitment_id:
             self.budget_account_id = self.reservation_commitment_id.account_id.id
+
+    @api.onchange("budget_selection_mode")
+    def _onchange_budget_selection_mode(self):
+        """Clear whichever side of the choice is now inactive.
+
+        ``budget_selection_mode`` is a **UI affordance only** — the server still
+        keys draw-down off the presence of ``reservation_commitment_id``
+        (ADR-0010), never off this field. Leaving the unused side filled would
+        make the form say one thing and the reserve action do another: a stale
+        chart selection under "หยิบจากใบจอง", or a stale slip under "เลือกจากผัง"
+        that would silently draw instead of reserving.
+        """
+        if self.budget_selection_mode == "chart":
+            self.reservation_commitment_id = False
+        else:
+            self.budget_account_id = False
+            self.analytic_distribution = False
 
     def _cancel_budget_commitment(self):
         """A drawn reservation belongs to its owner, never to this request — detach
