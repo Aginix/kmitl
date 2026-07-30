@@ -152,6 +152,22 @@ class TestP3Numbering(SarabunCommon):
             self._act(step, "complete", self.user_a)
         self.assertEqual(doc.register_number_id.sequence_id, self.sequence)
 
+    def test_archived_book_not_used_at_send(self):
+        """A draft still holding a book the unit retired (archive) must not issue from
+        it: send falls back to the unit's active default instead of the stale pick."""
+        second = self._second_register()
+        doc = self._make_doc()
+        self.assertEqual(doc.sequence_id, self.sequence)  # unit's only book at create
+        self.dept.default_sarabun_sequence_id = second
+        self.sequence.active = False  # the picked book is retired after the draft
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        doc.action_send()
+        self.assertEqual(doc.sequence_id, second)  # fell back to the active default
+        step = doc.routing_step_ids.filtered("gating")[:1]
+        with self.mute_pdf():
+            self._act(step, "complete", self.user_a)
+        self.assertEqual(doc.register_number_id.sequence_id, second)
+
     def test_fiscal_year_bucket(self):
         """ปีงบประมาณ runs Oct–Sep; Oct–Dec roll into the next budget year (พ.ศ.)."""
         seq = self.sequence

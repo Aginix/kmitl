@@ -981,7 +981,13 @@ class SarabunDocument(models.Model):
         or ambiguous; never number from a default pool (DESIGN §4.2)."""
         self.ensure_one()
         dept = self.sender_department_id
-        seq = self.sequence_id or (dept and dept._sarabun_default_sequence())
+        # An archived book must not issue a number: sequence_id is a stored compute
+        # snapshotted at create, so a draft can still hold a book the unit retired
+        # afterwards. Treat an inactive pick as unset and fall back to the unit's
+        # (active) default — everywhere else already filters archived books out.
+        seq = (self.sequence_id.active and self.sequence_id) or (
+            dept and dept._sarabun_default_sequence()
+        )
         if not seq:
             unit = dept.display_name
             if dept and dept._sarabun_registers():
