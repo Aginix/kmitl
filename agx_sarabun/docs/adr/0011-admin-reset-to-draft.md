@@ -1,0 +1,30 @@
+# Admin reset-to-draft: force a signed/completed หนังสือ back to draft, keeping number and original Route
+
+A UAT need has no home in the existing lifecycle: a หนังสือ is **fully approved and signed**, then a **typo** is found. ดึงกลับ (ADR-0006) cannot serve it — ดึงกลับ is sender-only, `circulating`-only, and **blocked once an authoritative sign has occurred** (`has_signed`). ตีกลับ / ปฏิเสธ are approver moves *during* routing, not after completion. The only existing "redo" for a finished document is `action_duplicate_to_draft` (→ a **new** draft with a **new** number) — but the requirement is explicitly to correct and re-issue **on the same number, along the same route**.
+
+We add an **admin-only Reset**, deliberately in a **separate, optional module** (`agx_sarabun_reset`, gated on its own `group_sarabun_reset`). It is a dangerous override — it bypasses the `has_signed` guard, un-freezes an official signed record, and can pull a document out of an otherwise-terminal state — so not every deployment should carry it.
+
+> **Interaction with [ADR-0010](./0010-register-number-at-completion-not-at-send.md) (landed same day).** ADR-0010 moved ลงทะเบียน from *send* to *completion*, so only a `completed` หนังสือ carries a number; `circulating` / `returned` / `rejected` / `cancelled` are unnumbered. This makes Reset's number handling mostly automatic: the primary case (reset a `completed` typo doc) **keeps** the already-issued number (see below), and the "reclaim a voided number" path below is now a **rare edge** — reject/cancel no longer void anything on the normal path, so it only bites for the reserved/manual-compose numbers ADR-0010 left in place.
+
+**Reset returns a หนังสือ from any non-`draft` state — including `completed`, `rejected`, and `cancelled` — to an editable `draft`, keeping its registered number (when it has one — only `completed` does per ADR-0010) and its original Route**, so the mistake can be fixed and the document re-sent from the start. Concretely it:
+
+- **Archives the finished attempt, never overwrites** (the ADR-0006 invariant): the completed/signed steps freeze as a historical attempt (`active=False`, `attempt_seq` bumped); prior signatures survive on the archived Route for audit.
+- **Recreates the Route as originally created** — the seeded backbone (route template if the document has one, else the `created_by_disposition='seed'` steps). Runtime **เกษียนสั่งการ insertions (`'direct'`) are dropped**; if the new run needs them, actors เกษียนสั่งการ again. This is `_restart_chain` with its no-template fallback narrowed from "recreate all live steps" to "recreate only the seed steps".
+- **Un-freezes** the ฉบับลงนาม (clears `signed_pdf` / `signed_at`). The prior signed PDF is **discarded, not retained** — the audit of *who signed what* survives on the archived steps + chatter; the rendered artifact is not kept.
+- **Keeps the number.** A `completed` หนังสือ's number survives the reset (`register_number_id` / `name` left intact) and is re-used verbatim when it re-completes — `_assign_register_number` is idempotent (ADR-0010). Unnumbered states (`circulating` / `returned` / `rejected` / `cancelled`) have nothing to keep. **Reclaim (rare edge):** if a voided register row *does* exist (a reserved/manual number — ADR-0010 leaves reject/cancel unnumbered), reset un-voids it (`voided → used`) for **this same document**, never a different one.
+- **Rolls the origin back** by firing `_on_sarabun_recalled` — from the origin's view Reset *is* a ดึงกลับ, a cycle every consumer already supports; re-completion then re-advances the origin cleanly (symmetric with ดึงกลับ → edit → re-send).
+- Requires a **mandatory reason** (a wizard, like the other backward moves), recorded in chatter with the actor.
+
+## Considered alternatives
+
+- **Reset-in-place** (wipe the same step records back to waiting). Rejected: it destroys the audit of what was approved/signed — violating the module's one hard invariant (archive-not-overwrite). Archive-then-recreate gives the identical user-visible result (a fresh Route on the same number) while keeping history.
+- **Re-register a new number for `rejected` / `cancelled`** (keep "voided = never reissued" absolute). Rejected: the requirement is "same number", and reclaiming a document's **own** voided number is not recycling to a *different* document, so the register stays auditable with the reclaim recorded.
+- **A dedicated `_on_sarabun_reset` origin callback.** Rejected for v1: reusing `_on_sarabun_recalled` needs **no core change** and maps onto a cycle consumers already handle. A dedicated callback can be added later if a consumer must distinguish the two.
+
+## Consequences
+
+- **Refines the register invariant** (ADR-0002 / *Voided number*): a voided number is never reissued *to another document*, but the original document may **reclaim its own** via Reset. Auditors will see a number go `voided → used`; the reclaim event carries actor + reason. (Rare since ADR-0010 — voided rows now arise only on the reserved/manual-compose paths, not from reject/cancel.)
+- **`rejected` / `cancelled` are no longer absolutely terminal** — Reset is the one admin escape. Normal (non-admin) flow still treats them as terminal.
+- **New module `agx_sarabun_reset`** — depends on `agx_sarabun`; adds `group_sarabun_reset` (implies `group_sarabun_manager`), a `sarabun.reset.wizard` (mandatory reason), `action_reset_to_draft(reason)` + `action_open_reset_wizard` on `sarabun.document` (via `_inherit`, no core edit beyond the extension point), and the reset button (visible when `state != 'draft'` and the user is in `group_sarabun_reset`).
+- **Engine reuse:** Reset shares `_restart_chain` / `_bump_attempt_and_archive` / `_ensure_originator_step`; the only genuinely new pieces are the "seed-only" route recreation and the number un-void. It must **bypass** `_check_sender_withdraw_allowed` — that guard is exactly what Reset overrides.
+- **Docs-first, not runtime-tested yet** — like the rest of agx_sarabun (pre-production, UAT reinstallable; no migration / version bump for the parallel verb-catalogue change either).
