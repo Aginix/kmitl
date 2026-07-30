@@ -408,9 +408,9 @@ class BudgetCommitment(models.Model):
 
         One dict per record: identity plus label/value rows the widget renders
         verbatim, so labels, translations and money formatting all stay
-        server-side and the widget stays dumb. Bridge modules enrich it by
-        overriding :meth:`_reservation_info_rows` (``budget_operating_unit``
-        appends the owning/beneficiary unit).
+        server-side and the widget stays dumb. Bridge modules may enrich it by
+        overriding :meth:`_reservation_info_rows`; the operating unit is left out
+        on purpose (it is the visibility axis, not what a slip is picked by).
         """
         state_labels = dict(self._fields["state"]._description_selection(self.env))
         return [
