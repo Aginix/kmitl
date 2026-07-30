@@ -60,11 +60,22 @@
                     <field name="is_budget_editable" invisible="1" />
                     <field name="analytic_distribution" invisible="1" />
 
+                    <!-- The reserved commitment, however it came to be: reserved by
+                         this request or drawn from an existing slip. Same widget as
+                         the picker below, so the two paths read alike. -->
+                    <field
+                        name="budget_commitment_id"
+                        colspan="2" nolabel="1"
+                        widget="budget_commitment_info" readonly="1"
+                        options="{'no_create': True, 'no_open': True}"
+                        attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                    />
+
                     <field
                         name="reservation_commitment_id"
                         widget="budget_commitment_info"
                         options="{'no_create': True, 'no_open': True}"
-                        attrs="{'invisible': [('budget_commitment_id', '!=', False), ('reservation_commitment_id', '=', False)], 'readonly': [('state', 'not in', ['draft', 'to_submit', 'to_approve'])]}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False)], 'readonly': [('state', 'not in', ['draft', 'to_submit', 'to_approve'])]}"
                         placeholder="เลือกใบจองที่มีอยู่เพื่อหยิบไปใช้ (เว้นว่าง = จองใหม่)"
                     />
 

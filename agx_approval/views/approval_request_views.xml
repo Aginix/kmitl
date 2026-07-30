@@ -69,19 +69,18 @@
                         </field>
                     </group>
                     <group name="budget" string="Budget">
-                        <div colspan="2" class="alert alert-success my-2" role="alert" attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
-                            <i class="fa fa-check-circle me-1" title="Budget Reserved"/>
-                            <strong>Budget Reserved:</strong>
-                            <field name="budget_commitment_id" readonly="1" nolabel="1" class="oe_inline ms-1"/>
-                            <span class="mx-1">—</span>
-                            <field name="budget_commitment_amount" readonly="1" nolabel="1" widget="monetary" class="oe_inline"/>
-                            <span class="ms-1">฿</span>
-                        </div>
+                        <!-- The reserved commitment, however it came to be: reserved
+                             by this request or drawn from an existing slip. Same
+                             widget as the picker below, so the two paths read alike. -->
+                        <field name="budget_commitment_id" colspan="2" nolabel="1"
+                            widget="budget_commitment_info" readonly="1"
+                            options="{'no_create': True, 'no_open': True}"
+                            attrs="{'invisible': [('budget_commitment_id', '=', False)]}"/>
                         <field name="is_budget_editable" invisible="1"/>
                         <field name="reservation_commitment_id" colspan="2"
                             widget="budget_commitment_info"
                             options="{'no_create': True, 'no_open': True}"
-                            attrs="{'invisible': [('budget_commitment_id', '!=', False), ('reservation_commitment_id', '=', False)], 'readonly': [('state', 'not in', ['draft', 'to_verify'])]}"
+                            attrs="{'invisible': [('budget_commitment_id', '!=', False)], 'readonly': [('state', 'not in', ['draft', 'to_verify'])]}"
                             placeholder="เลือกใบจองที่มีอยู่เพื่อหยิบไปใช้ (เว้นว่าง = จองใหม่)"/>
                         <button name="action_open_reservation_picker" type="object"
                             string="Select Budget from Chart (view balance)"
