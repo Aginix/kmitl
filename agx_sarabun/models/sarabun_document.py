@@ -187,11 +187,12 @@ class SarabunDocument(models.Model):
         inverse_name="document_id",
         string="Routing History",
         domain=[("active", "=", False)],
+        # Audit accessor only — the form no longer lists prior attempts beside the
+        # live Route (a ดึงกลับ / ตีกลับ / รีเซ็ต re-runs the whole เส้นทาง).
         # Without active_test=False the ORM drops every archived row on the way out
         # (_RelationalMulti.convert_to_record filters x2many values by `active`
-        # whenever active_test is on) — the domain would fetch them and the record
-        # conversion would then hand back an empty set, so the History tab always
-        # rendered blank.
+        # whenever active_test is on): the domain fetches them and the record
+        # conversion then hands back an empty set, so every reader saw nothing.
         context={"active_test": False},
         copy=False,
         help="Frozen steps of closed attempts (kept for the เกษียน trail).",

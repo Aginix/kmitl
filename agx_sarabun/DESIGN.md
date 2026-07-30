@@ -163,7 +163,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `origin_res_id` | Integer (indexed) | Origin record id. The `(model,res_id)` pair is the **1:N** link origin → documents. |
 | `route_template_id` | M2o → `sarabun.route.template` | The template that **seeded** the steps. Not authoritative once seeded (ADR-0001). |
 | `routing_step_ids` | O2m → `sarabun.routing.step` | The living Route (current attempt). |
-| `archived_step_ids` | O2m → `sarabun.routing.step` (computed/filtered, `active=False`) | Frozen steps of closed attempts, kept for the rendered เกษียน trail (see §3). |
+| `archived_step_ids` | O2m → `sarabun.routing.step` (domain `active=False`, `active_test=False`) | Frozen steps of closed attempts, kept for audit (see §3). **Not shown on the form** — ดึงกลับ / ตีกลับ / รีเซ็ต all re-run the whole เส้นทาง, so the prior attempt is noise beside the live Route. |
 | `attempt_seq` | Integer | Generation counter bumped on each re-send; stamps steps so prior attempts survive as history (see §3). |
 | `reference_document_ids` | M2m → `sarabun.document` | **อ้างถึง** prior in-system หนังสือ. |
 | `reference_line_ids` | O2m → `sarabun.reference.line` | **อ้างถึง** free-text out-of-system letters. |
@@ -731,7 +731,8 @@ trail** rather than deleting it. Implementation: each *attempt* is a generation
 marker (`attempt_seq` bumped on each re-send); the steps of a closed attempt are
 archived (`active=False` + `attempt_seq` stamp) so they survive as immutable
 history, while `routing_step_ids` shows only the current attempt's steps and
-`archived_step_ids` exposes the rest.
+`archived_step_ids` exposes the rest **for audit** — the form deliberately does
+not render it, since every backward move re-runs the whole เส้นทาง.
 
 - **`sender_restart`** (default): the chain is **restarted** — a new attempt's
   steps are freshly seeded in `waiting`; on `action_send()` the Route re-activates

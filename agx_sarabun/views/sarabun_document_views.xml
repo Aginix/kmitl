@@ -216,22 +216,11 @@
                                     </group>
                                 </form>
                             </field>
-                            <separator string="ประวัติการเดินเรื่อง (History)"
-                                       attrs="{'invisible': [('archived_step_ids', '=', [])]}"/>
-                            <field name="archived_step_ids" readonly="1"
-                                   attrs="{'invisible': [('archived_step_ids', '=', [])]}">
-                                <tree>
-                                    <field name="attempt_seq"/>
-                                    <field name="order"/>
-                                    <field name="verb"/>
-                                    <field name="target_name"/>
-                                    <field name="state"/>
-                                    <field name="disposition"/>
-                                    <field name="acted_by_id"/>
-                                    <field name="acted_date"/>
-                                    <field name="note"/>
-                                </tree>
-                            </field>
+                            <!-- No ประวัติการเดินเรื่อง (History) list here: ดึงกลับ /
+                                 ตีกลับ / รีเซ็ต all mean "run the whole เส้นทาง again",
+                                 so the prior attempt is noise on the form. The rows are
+                                 still archived (audit / archived_step_ids), just not
+                                 shown beside the live Route. -->
                         </page>
                         <page string="อ้างถึง (References)" name="references">
                             <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
