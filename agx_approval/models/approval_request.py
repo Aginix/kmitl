@@ -753,16 +753,17 @@ class ApprovalRequest(models.Model):
         "state",
         "budget_commitment_id",
         "budget_commitment_id.state",
-        "reservation_commitment_id",
     )
     def _compute_is_budget_editable(self):
+        # Means "budget selection is still open on this request", which is also
+        # exactly when a reservation may be picked — so the reservation field
+        # rides on this rather than re-listing states (they come from several
+        # modules). Drawing an existing reservation does not close selection: the
+        # user must be able to un-pick. The chart picker is hidden view-side
+        # while a reservation is picked, since dimensions then come from it.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.reservation_commitment_id:
-                # Drawing an existing reservation: dimensions are inherited and
-                # locked from the reservation, never edited on the request.
-                rec.is_budget_editable = False
-            elif rec.state in ("to_verify") and (
+            if rec.state in ("to_verify") and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):

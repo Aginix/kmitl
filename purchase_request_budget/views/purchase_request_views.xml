@@ -55,7 +55,7 @@
                 <button name="action_open_reservation_picker" type="object"
                     string="เลือกงบประมาณจากผังงบ (ดูยอดคงเหลือ)"
                     class="btn btn-primary mb-2" icon="fa-sitemap"
-                    attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
+                    attrs="{'invisible': ['|', ('is_budget_editable', '=', False), ('reservation_commitment_id', '!=', False)]}"/>
                 <group name="budget_details" string="Budget Details">
                     <field name="is_budget_editable" invisible="1" />
                     <field name="analytic_distribution" invisible="1" />
@@ -75,38 +75,38 @@
                         name="reservation_commitment_id"
                         widget="budget_commitment_info"
                         options="{'no_create': True, 'no_open': True}"
-                        attrs="{'invisible': [('budget_commitment_id', '!=', False)], 'readonly': [('state', 'not in', ['draft', 'to_submit', 'to_approve'])]}"
+                        attrs="{'invisible': [('budget_commitment_id', '!=', False)], 'readonly': [('is_budget_editable', '=', False)]}"
                         placeholder="เลือกใบจองที่มีอยู่เพื่อหยิบไปใช้ (เว้นว่าง = จองใหม่)"
                     />
 
                     <field
                         name="budget_account_id"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')], 'invisible': [('budget_commitment_id', '!=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field name="budget_account_id" invisible="1" />
                     <field
                         name="activity_analytic_id"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')], 'invisible': [('budget_commitment_id', '!=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field name="activity_analytic_id" invisible="1" />
                     <field
                         name="department_analytic_id"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')], 'invisible': [('budget_commitment_id', '!=', False)]}"
                         options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                     />
                     <field name="department_analytic_id" invisible="1" />
                     <field
                         name="fund_analytic_id"
                         widget="selection"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')], 'invisible': [('budget_commitment_id', '!=', False)]}"
                     />
                     <field name="fund_analytic_id" widget="selection" invisible="1" />
                     <field
                         name="source_analytic_id"
                         widget="selection"
-                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"
+                        readonly="1" attrs="{'required': [('state', '=', 'to_verify')], 'invisible': [('budget_commitment_id', '!=', False)]}"
                     />
                     <field name="source_analytic_id" widget="selection" invisible="1" />
                     <field name="product_id" invisible="1" />

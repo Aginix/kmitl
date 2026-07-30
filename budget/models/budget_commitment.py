@@ -426,27 +426,46 @@ class BudgetCommitment(models.Model):
             for record in self
         ]
 
+    # The four financial dimensions are always listed, even when empty: the
+    # engine matches all dimensions or pins a missing one to False, so "this
+    # reservation has no กองทุน" is information the reader needs, not noise.
+    _RESERVATION_INFO_FIELDS = (
+        "account_id",
+        "department_analytic_id",
+        "source_analytic_id",
+        "activity_analytic_id",
+        "fund_analytic_id",
+        "account_fiscal_year_id",
+    )
+    # โครงการ/แผนจัดซื้อจัดจ้าง are source markers rather than part of every
+    # reservation — a standalone slip carries neither — so they are listed only
+    # when set, instead of adding two empty rows to the common case.
+    _RESERVATION_INFO_FIELDS_IF_SET = (
+        "kmitl_project_analytic_id",
+        "procurement_plan_analytic_id",
+    )
+
     def _reservation_info_rows(self):
         """Dimension/identity rows shown by the widget (label, value) pairs."""
         self.ensure_one()
-        fields_to_show = (
-            "account_id",
-            "department_analytic_id",
-            "source_analytic_id",
-            "activity_analytic_id",
-            "fund_analytic_id",
-            "account_fiscal_year_id",
-        )
         rows = []
-        for fname in fields_to_show:
-            record_field = self._fields[fname]
+        for fname in self._RESERVATION_INFO_FIELDS:
             value = self[fname]
             rows.append(
                 {
-                    "label": record_field._description_string(self.env),
+                    "label": self._fields[fname]._description_string(self.env),
                     "value": value.display_name if value else "-",
                 }
             )
+        for fname in self._RESERVATION_INFO_FIELDS_IF_SET:
+            value = self[fname]
+            if value:
+                rows.append(
+                    {
+                        "label": self._fields[fname]._description_string(self.env),
+                        "value": value.display_name,
+                    }
+                )
         return rows
 
     def _reservation_info_amounts(self):
