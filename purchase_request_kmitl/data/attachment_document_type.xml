@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Document type master records -->
+
+    <record id="doctype_tor" model="ir.attachment.document.type">
+        <field name="name">Specification (TOR)</field>
+    </record>
+
+    <record id="doctype_rfq" model="ir.attachment.document.type">
+        <field name="name">Quotation</field>
+    </record>
+
+    <record id="doctype_etc" model="ir.attachment.document.type">
+        <field name="name">Etc</field>
+    </record>
+
+    <!-- Model configuration for purchase.request -->
+
+    <record id="config_purchase_request" model="ir.attachment.document.type.config">
+        <field name="res_model_id" ref="purchase_request.model_purchase_request" />
+        <field
+            name="line_ids"
+            eval="[(5, 0, 0),
+                   (0, 0, {'document_type_id': ref('doctype_tor'), 'sequence': 10}),
+                   (0, 0, {'document_type_id': ref('doctype_rfq'), 'sequence': 20}),
+                   (0, 0, {'document_type_id': ref('doctype_etc'), 'sequence': 30})]"
+        />
+    </record>
+
+</odoo>
