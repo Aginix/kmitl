@@ -34,7 +34,7 @@ class WorkAcceptance(models.Model):
         "ir.attachment",
         "res_id",
         string="Document Attachments",
-        domain=[("res_model", "=", "work.acceptance")],
+        domain=[("res_model", "=", "work.acceptance"), ("res_field", "=", False)],
         tracking=True,
     )
     supporting_document_ids = fields.Many2many(
@@ -197,10 +197,27 @@ class WorkAcceptance(models.Model):
     def _default_start_date(self):
         return fields.Date.today()
 
-    def _compute_message_attachment_count(self):
-        super()._compute_message_attachment_count()
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._set_supporting_doc_res_field()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "supporting_document_ids" in vals:
+            self._set_supporting_doc_res_field()
+        return res
+
+    def _set_supporting_doc_res_field(self):
         for record in self:
-            record.message_attachment_count -= len(record.supporting_document_ids)
+            attachments = record.supporting_document_ids.filtered(
+                lambda a: a.res_field != "supporting_document_ids"
+            )
+            if attachments:
+                attachments.sudo().write(
+                    {"res_field": "supporting_document_ids"}
+                )
 
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):
