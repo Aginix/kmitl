@@ -220,7 +220,7 @@ msgstr ""
 #: model:ir.model,name:purchase_work_acceptance_kmitl.model_ir_attachment
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
 msgid "Attachment"
-msgstr "การแนบ"
+msgstr "หลักฐานเอกสารการตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_attachment_count
