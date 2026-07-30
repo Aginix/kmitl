@@ -20,7 +20,6 @@ class TestAdvancePayment(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         # Exception rules that need full master data are off for these tests.
-        cls.env.ref("advance_payment.excep_missing_department").active = False
         cls.env.ref("advance_payment.excep_missing_analytic").active = False
 
         cls.manager = cls.env.ref("base.user_admin")  # in manager group
