@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_material_withdrawal_po" model="ir.actions.report">
+        <field name="name">ใบเบิกวัสดุ (พ.43)</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_order_report_kmitl.report_material_withdrawal_po</field>
+        <field name="report_file">purchase_order_report_kmitl.report_material_withdrawal_po</field>
+        <field name="paperformat_id" ref="paperformat_purchase_order_report"/>
+        <field name="print_report_name">'ใบเบิกวัสดุ - %s' % (object.name)</field>
+    </record>
+
+    <template id="report_material_withdrawal_po">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
+                    <t t-set="currency" t-value="o.currency_id"/>
+                    <t t-set="requester" t-value="o.env['hr.employee'].browse(data.get('requester_id')) if data else o.env['hr.employee']"/>
+                    <t t-set="dept_head" t-value="o.env['hr.employee'].browse(data.get('dept_head_id')) if data else o.env['hr.employee']"/>
+                    <t t-set="disburser" t-value="o.env['hr.employee'].browse(data.get('disburser_id')) if data else o.env['hr.employee']"/>
+                    <t t-set="activity_name" t-value="o.activity_analytic_id.name if 'activity_analytic_id' in o._fields and o.activity_analytic_id else ''"/>
+                    <style>
+                        * {
+                            font-family: "THSarabunNew", Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        p, span, div, td, th {
+                            font-size: 16pt;
+                            line-height: 1.3;
+                        }
+                        table.mw-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        table.mw-table th, table.mw-table td {
+                            border: 1px solid #000;
+                            padding: 4px 6px;
+                            vertical-align: middle;
+                        }
+                        .sig-line {
+                            border-bottom: 1px dotted #000;
+                            display: inline-block;
+                            min-width: 260px;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <div style="position: absolute; top: 0px; left: 0px">
+                            <img t-if="o.company_id.logo"
+                                 t-att-src="image_data_uri(o.company_id.logo)"
+                                 style="max-height: 90px" alt="Logo"/>
+                        </div>
+                        <div style="position: absolute; top: 0px; right: 0px">
+                            <div>พ.43</div>
+                        </div>
+
+                        <div style="height: 100px"/>
+                        <h3 class="text-center fw-bolder">ใบเบิกวัสดุ</h3>
+                        <div class="my-3"/>
+
+                        <div class="row">
+                            <div class="col-7">
+                                เลขที่เอกสาร
+                                <span class="ms-2 fw-bolder text-decoration-underline"
+                                      t-out="o.name"/>
+                            </div>
+                            <div class="col">
+                                วันที่
+                                <span class="ms-2 fw-bolder text-decoration-underline"
+                                      t-out="o.format_date_thai(o.date_order)"/>
+                            </div>
+                        </div>
+
+                        <div class="my-3"/>
+                        <p style="text-indent: 4em">
+                            ด้วย
+                            <span class="fw-bolder text-decoration-underline"
+                                  t-out="requester.name or '&#160;' * 30"/>
+                            มีความประสงค์ขอเบิกวัสดุตามรายการและจำนวน
+                            <span class="fw-bolder text-decoration-underline"
+                                  t-out="len(o.order_line)"/>
+                            รายการ เพื่อใช้ในงาน
+                            <span class="fw-bolder text-decoration-underline"
+                                  t-out="activity_name"/>
+                            และมอบให้
+                            <span class="fw-bolder text-decoration-underline"
+                                  t-out="requester.name or '&#160;' * 30"/>
+                            เป็นผู้รับพัสดุแทน
+                        </p>
+
+                        <div class="my-3"/>
+
+                        <table class="mw-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" rowspan="2" style="width: 6%">ลำดับ</th>
+                                    <th class="text-center" rowspan="2">รายการ</th>
+                                    <th class="text-center" rowspan="2" style="width: 8%">หน่วยนับ</th>
+                                    <th class="text-center" colspan="2" style="width: 14%">จำนวน</th>
+                                    <th class="text-center" colspan="3" style="width: 32%">ส่วนของงานพัสดุ</th>
+                                    <th class="text-center" rowspan="2" style="width: 10%">หมายเหตุ</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">เบิก</th>
+                                    <th class="text-center">จ่าย</th>
+                                    <th class="text-center">รหัสวัสดุ</th>
+                                    <th class="text-center">ต้นทุน/หน่วย</th>
+                                    <th class="text-center">จำนวนเงิน</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="row_no" t-value="1"/>
+                                <t t-foreach="o.order_line" t-as="line">
+                                    <tr>
+                                        <td class="text-center" t-out="row_no"/>
+                                        <td t-out="line.product_id.name or line.name or ''"/>
+                                        <td class="text-center"
+                                            t-out="line.product_uom.name or ''"/>
+                                        <td class="text-center"
+                                            t-out="'{0:,.0f}'.format(line.product_qty)"/>
+                                        <td class="text-center"
+                                            t-out="'{0:,.0f}'.format(line.product_qty)"/>
+                                        <td class="text-center"
+                                            t-out="line.product_id.default_code or ''"/>
+                                        <td class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.price_unit)"/>
+                                        <td class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.price_subtotal)"/>
+                                        <td/>
+                                    </tr>
+                                    <t t-set="row_no" t-value="row_no + 1"/>
+                                </t>
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        (
+                                        <span t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_untaxed)"/>
+                                        )
+                                    </td>
+                                    <td class="text-end fw-bolder"
+                                        t-out="'{0:,.2f}'.format(o.amount_untaxed)"/>
+                                    <td/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div style="height: 60px"/>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div>ลงชื่อ <span class="sig-line"/> ผู้ขอเบิก/ผู้รับของ</div>
+                                <div style="margin-left: 3em">
+                                    ( <span t-out="requester.name or '&#160;' * 40"/> )
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div>ลงชื่อ <span class="sig-line"/> หัวหน้าหน่วยงาน</div>
+                                <div style="margin-left: 3em">
+                                    ( <span t-out="dept_head.name or '&#160;' * 40"/> )
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div>ลงชื่อ <span class="sig-line"/> ผู้เบิกจ่าย</div>
+                                <div style="margin-left: 3em">
+                                    ( <span t-out="disburser.name or '&#160;' * 40"/> )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -88,6 +88,13 @@
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
                     />
+                    <button
+                        name="%(purchase_request_approval.action_material_withdrawal_wizard)d"
+                        string="พิมพ์ใบเบิกวัสดุ"
+                        type="action"
+                        states="approved"
+                        context="{'default_approval_id': active_id}"
+                    />
                     <field
                         name="state"
                         widget="statusbar"
