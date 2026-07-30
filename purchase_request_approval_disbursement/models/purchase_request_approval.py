@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseRequestApproval(models.Model):
-    _name = 'purchase.request.approval'
-    _inherit = ['purchase.request.approval', 'disbursement.return.source.mixin']
+    _name = "purchase.request.approval"
+    _inherit = ["purchase.request.approval", "disbursement.return.source.mixin"]
     _disbursement_return_state = "approved"
 
     state = fields.Selection(
@@ -22,28 +20,45 @@ class PurchaseRequestApproval(models.Model):
     )
 
     use_purchase_order = fields.Boolean(
-        string='Use Purchase Order',
-        default=True,
-        tracking=True
+        string="Use Purchase Order", default=True, tracking=True
     )
 
+    contract_mode = fields.Selection(
+        selection=[
+            ("with_po", "สร้างสัญญา / ใบสั่งซื้อ / ใบสั่งจ้าง"),
+            ("no_po", "ไม่ทำสัญญา (จ่ายตรง)"),
+        ],
+        string="วิธีการดำเนินการหลังอนุมัติ",
+        compute="_compute_contract_mode",
+        inverse="_inverse_contract_mode",
+        store=True,
+        tracking=True,
+    )
+
+    @api.depends("use_purchase_order")
+    def _compute_contract_mode(self):
+        for rec in self:
+            rec.contract_mode = "with_po" if rec.use_purchase_order else "no_po"
+
+    def _inverse_contract_mode(self):
+        for rec in self:
+            rec.use_purchase_order = rec.contract_mode == "with_po"
+
     purchase_order_id = fields.Many2one(
-        comodel_name='purchase.order',
-        compute='_compute_purchase_order_id',
-        string='Purchase Order',
+        comodel_name="purchase.order",
+        compute="_compute_purchase_order_id",
+        string="Purchase Order",
         store=True,
     )
 
     display_purchase_order = fields.Char(
-        string="Purchase Order",
-        compute="_compute_display_purchase_order",
-        store=False
+        string="Purchase Order", compute="_compute_display_purchase_order", store=False
     )
 
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
         inverse_name="purchase_request_approval_id",
-        string='Disbursement Requests',
+        string="Disbursement Requests",
     )
 
     billing_status = fields.Selection(
@@ -54,15 +69,15 @@ class PurchaseRequestApproval(models.Model):
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
-        string='Billing Status',
+        string="Billing Status",
         compute="_compute_billing_status",
         store=True,
         tracking=True,
     )
 
     disbursement_request_count = fields.Integer(
-        string='Disbursement Request Count',
-        compute='_compute_disbursement_request',
+        string="Disbursement Request Count",
+        compute="_compute_disbursement_request",
     )
 
     disbursement_request_total = fields.Monetary(
@@ -99,7 +114,8 @@ class PurchaseRequestApproval(models.Model):
     def _compute_disbursement_request(self):
         for approval in self:
             approval.disbursement_request_total = sum(
-                approval.disbursement_request_ids.mapped("amount_total"))
+                approval.disbursement_request_ids.mapped("amount_total")
+            )
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
 
     @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
@@ -142,10 +158,12 @@ class PurchaseRequestApproval(models.Model):
             "partner_id": self.partner_id.id,
             "partner_type": "multi",
             "line_ids": [
-                Command.create({
-                    **line._prepare_disbursement_request_line_vals(),
-                    "partner_id": self.partner_id.id,
-                })
+                Command.create(
+                    {
+                        **line._prepare_disbursement_request_line_vals(),
+                        "partner_id": self.partner_id.id,
+                    }
+                )
                 for line in self.request_id.line_ids
             ],
             "ref": self.request_id.name,
@@ -208,7 +226,9 @@ class PurchaseRequestApproval(models.Model):
             subtype_xmlid="mail.mt_note",
         )
 
-    def _purchase_request_approval_create_bill_message_content(self, disbursement_request):
+    def _purchase_request_approval_create_bill_message_content(
+        self, disbursement_request
+    ):
         message = _(
             "Billing %(dr_name)s for %(pa_name)s created successfully, waiting for operation."
         ) % {
