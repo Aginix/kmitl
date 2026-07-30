@@ -347,7 +347,11 @@ class SarabunRoutingStep(models.Model):
     def _clear_activities(self):
         """Clear every action-required activity tied to these steps (all holders) —
         first-to-act and on every lifecycle close (§7.2)."""
-        links = self.env["sarabun.routing.step.activity"].search(
+        # sudo: the to-dos being cleared belong to the OTHER actors (mail.activity's
+        # ir.rule only lets a user unlink their own / self-created ones), and clearing
+        # them is an engine operation — e.g. the sender's ดึงกลับ drops the approvers'
+        # pending activities.
+        links = self.env["sarabun.routing.step.activity"].sudo().search(
             [("step_id", "in", self.ids)]
         )
         links.mapped("activity_id").unlink()
