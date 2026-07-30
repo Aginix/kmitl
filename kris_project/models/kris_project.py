@@ -129,15 +129,10 @@ class KrisProject(models.Model):
         string="Project Value",
         tracking=True,
     )
-    equipment_cost = fields.Monetary(
-        string="Equipment Cost",
-        tracking=True,
-    )
     operating_expense = fields.Monetary(
         string="Operating Expense",
         compute="_compute_operating_expense",
         store=True,
-        readonly=False,
         tracking=True,
     )
     extra_value = fields.Monetary(
@@ -246,6 +241,12 @@ class KrisProject(models.Model):
         string="การจัดสรรรายได้",
         copy=True,
     )
+    expense_line_ids = fields.One2many(
+        comodel_name="kris.project.expense.line",
+        inverse_name="project_id",
+        string="Deductible Cost",
+        copy=True,
+    )
     attachment_ids = fields.Many2many(
         comodel_name="ir.attachment",
         relation="kris_project_attachment_rel",
@@ -320,6 +321,9 @@ class KrisProject(models.Model):
     warn_maintenance_exceeds_expense = fields.Boolean(
         compute="_compute_warnings",
     )
+    warn_expense_exceeds_value = fields.Boolean(
+        compute="_compute_warnings",
+    )
 
     @api.depends(
         "maintenance_deduction_amount",
@@ -333,6 +337,7 @@ class KrisProject(models.Model):
         "no_installment_tracking",
         "state",
         "receipt_ids",
+        "expense_line_ids.amount",
     )
     def _compute_warnings(self):
         prec = self.env["decimal.precision"].precision_get("Account")
@@ -345,6 +350,15 @@ class KrisProject(models.Model):
                 float_compare(
                     rec.maintenance_deduction_amount,
                     rec.operating_expense,
+                    precision_digits=prec,
+                )
+                > 0
+            )
+            expense_total = sum(rec.expense_line_ids.mapped("amount"))
+            rec.warn_expense_exceeds_value = (
+                float_compare(
+                    expense_total,
+                    rec.project_value,
                     precision_digits=prec,
                 )
                 > 0
@@ -454,10 +468,12 @@ class KrisProject(models.Model):
             else:
                 rec.project_duration = 0
 
-    @api.depends("project_value", "equipment_cost")
+    @api.depends("project_value", "expense_line_ids.amount")
     def _compute_operating_expense(self):
         for rec in self:
-            rec.operating_expense = rec.project_value - rec.equipment_cost
+            rec.operating_expense = rec.project_value - sum(
+                rec.expense_line_ids.mapped("amount")
+            )
 
     @api.onchange("project_category_id")
     def _onchange_project_category_id(self):
@@ -466,6 +482,7 @@ class KrisProject(models.Model):
             and self.project_type_id.category_id != self.project_category_id
         ):
             self.project_type_id = False
+        self.expense_line_ids = [(5, 0, 0)]
 
     @api.onchange("maintenance_deduction_type")
     def _onchange_maintenance_deduction_type(self):

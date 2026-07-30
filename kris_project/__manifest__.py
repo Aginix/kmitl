@@ -21,6 +21,7 @@
     "data": [
         "data/sequence.xml",
         "data/kris_project_type_data.xml",
+        "data/kris_project_expense_type_data.xml",
         "data/kris_project_allocation_data.xml",
         "data/kris_project_tracking_data.xml",
         "data/kris_project_exception_data.xml",
@@ -29,6 +30,7 @@
         "wizard/kris_project_exception_confirm_view.xml",
         "wizard/kris_project_state_wizard_view.xml",
         "views/kris_project_type_views.xml",
+        "views/kris_project_expense_type_views.xml",
         "views/kris_project_allocation_views.xml",
         "views/kris_project_receipt_wizard_views.xml",
         "views/kris_project_views.xml",

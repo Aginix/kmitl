@@ -34,12 +34,29 @@ class KrisProjectCommon(TransactionCase):
         cls.item_a = cls.AllocationItem.create({"name": "Alloc A", "sequence": 10})
         cls.item_b = cls.AllocationItem.create({"name": "Alloc B", "sequence": 20})
 
+        cls.expense_type_equipment = cls.env["kris.project.expense.type"].create(
+            {"name": "ค่าครุภัณฑ์ (test)"}
+        )
+
     def _make_project(self, **vals):
-        """Create a draft project with the required fields prefilled."""
+        """Create a draft project with the required fields prefilled.
+
+        For test ergonomics, ``equipment_cost=N`` is translated to an
+        ``expense_line_ids`` write so existing call sites keep working after
+        the field was generalised into the dynamic deductible-cost model.
+        """
         base = {
             "project_name": "Test Project",
             "project_category_id": self.category.id,
             "project_type_id": self.ptype.id,
         }
+        equipment_cost = vals.pop("equipment_cost", None)
         base.update(vals)
+        if equipment_cost is not None:
+            base.setdefault("expense_line_ids", []).append(
+                (0, 0, {
+                    "expense_type_id": self.expense_type_equipment.id,
+                    "amount": equipment_cost,
+                })
+            )
         return self.Project.create(base)

@@ -112,12 +112,12 @@ class TestKrisProjectCompute(KrisProjectCommon):
                 "name": "R1",
                 "date": date(2025, 1, 1),
                 "amount": 300_000.0,
-                "equipment_cost_in_installment": 50_000.0,
+                "deductible_cost_in_installment": 50_000.0,
             }
         )
         self.assertAlmostEqual(p.total_installment_amount, 1_000_000.0, 2)
         self.assertAlmostEqual(p.total_received_amount, 300_000.0, 2)
-        # net = amount - equipment_cost_in_installment = 300,000 - 50,000
+        # net = amount - deductible_cost_in_installment = 300,000 - 50,000
         self.assertAlmostEqual(p.total_net_received, 250_000.0, 2)
         self.assertAlmostEqual(p.revenue_remaining, 700_000.0, 2)
         self.assertAlmostEqual(p.over_revenue, 0.0, 2)

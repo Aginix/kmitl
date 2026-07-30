@@ -16,7 +16,7 @@
                         options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field name="date"/>
-                    <field name="equipment_cost_in_installment"/>
+                    <field name="deductible_cost_in_installment"/>
                     <field name="amount"/>
                     <field name="extra_income"/>
                     <field name="net_amount" readonly="1"/>

@@ -35,8 +35,8 @@ class KrisProjectReceipt(models.Model):
         required=True,
         tracking=True,
     )
-    equipment_cost_in_installment = fields.Monetary(
-        string="Equipment Cost in Installment",
+    deductible_cost_in_installment = fields.Monetary(
+        string="Deductible Cost in Installment",
         default=0.0,
         tracking=True,
     )
@@ -104,10 +104,10 @@ class KrisProjectReceipt(models.Model):
             allocation_lines._compute_actual_amount()
         return result
 
-    @api.depends("amount", "equipment_cost_in_installment")
+    @api.depends("amount", "deductible_cost_in_installment")
     def _compute_net_amount(self):
         for rec in self:
-            rec.net_amount = rec.amount - rec.equipment_cost_in_installment
+            rec.net_amount = rec.amount - rec.deductible_cost_in_installment
 
     @api.constrains("extra_income", "project_id")
     def _check_extra_income_total(self):

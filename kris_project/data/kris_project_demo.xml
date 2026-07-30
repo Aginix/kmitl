@@ -1166,13 +1166,18 @@
             <field name="client_location">ปทุมธานี</field>
             <field name="client_org_type">private</field>
             <field name="project_value">1000000.0</field>
-            <field name="equipment_cost">200000.0</field>
             <field name="project_code">สญ.67-017</field>
             <field name="date_contract_start">2024-11-15</field>
             <field name="date_contract_end">2025-11-14</field>
             <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04"/>
             <field name="manager_id" ref="demo_mgr_05"/>
             <field name="allocation_template_id" ref="allocation_template_standard"/>
+        </record>
+        <record id="kris_project_demo_17_expense_equipment" model="kris.project.expense.line">
+            <field name="project_id" ref="kris_project_demo_17"/>
+            <field name="expense_type_id" ref="expense_type_equipment"/>
+            <field name="sequence">10</field>
+            <field name="amount">200000.0</field>
         </record>
         <record id="kris_project_demo_17_alloc_central" model="kris.project.allocation.line">
             <field name="project_id" ref="kris_project_demo_17"/>
@@ -1263,7 +1268,7 @@
             <field name="name">RCPT-67-017-1</field>
             <field name="date">2025-05-20</field>
             <field name="amount">500000.0</field>
-            <field name="equipment_cost_in_installment">200000.0</field>
+            <field name="deductible_cost_in_installment">200000.0</field>
         </record>
         <record id="kris_project_demo_17_rcpt_01_alloc_central" model="kris.project.receipt.allocation">
             <field name="receipt_id" ref="kris_project_demo_17_rcpt_01"/>
