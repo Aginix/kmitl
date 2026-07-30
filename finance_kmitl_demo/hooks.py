@@ -587,6 +587,9 @@ def _approve_dr(dr):
     dr.action_submit()
     dr.action_sign()
     dr.action_validate()
+    # Two approvers sign off before the budget is committed: the Finance
+    # Division Director first, then the Rector-delegated approver.
+    dr.action_approve_finance()
     dr.action_approve()
 
 
