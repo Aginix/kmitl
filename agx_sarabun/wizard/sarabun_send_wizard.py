@@ -11,6 +11,9 @@ class SarabunSendWizard(models.TransientModel):
     document_id = fields.Many2one(
         "sarabun.document", required=True, readonly=True,
     )
+    sender_department_id = fields.Many2one(
+        related="document_id.sender_department_id", readonly=True,
+    )
 
     def action_confirm(self):
         self.ensure_one()

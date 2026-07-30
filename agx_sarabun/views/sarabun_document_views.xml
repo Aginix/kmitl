@@ -52,6 +52,11 @@
                            statusbar_visible="draft,circulating,completed"/>
                 </header>
                 <sheet>
+                    <!-- ยกเลิก / ปฏิเสธ are terminal states the statusbar does not show
+                         (statusbar_visible = draft,circulating,completed) — the ribbon
+                         is what tells the reader the หนังสือ is dead. -->
+                    <widget name="web_ribbon" title="ยกเลิกการส่ง" bg_color="bg-danger"
+                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_origin" type="object"
                                 class="oe_stat_button" icon="fa-external-link"
@@ -87,6 +92,12 @@
                         <group name="doc_meta" string="ทะเบียนหนังสือ">
                             <field name="name" string="ที่" readonly="1"/>
                             <field name="date" string="วันที่" readonly="1"/>
+                            <!-- เล่มทะเบียน — which of the unit's registers issues the
+                                 number (ADR-0012). Prefilled from the unit's default;
+                                 pinned at send, so read-only afterwards. -->
+                            <field name="sequence_id" string="เล่มทะเบียน"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"
+                                   options="{'no_create': True, 'no_open': True}"/>
                             <!-- เลขที่หนังสือ sits with ที่ (same concern) — manual compose only. -->
                             <field name="numbering_mode"
                                    attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"/>
@@ -205,22 +216,11 @@
                                     </group>
                                 </form>
                             </field>
-                            <separator string="ประวัติการเดินเรื่อง (History)"
-                                       attrs="{'invisible': [('archived_step_ids', '=', [])]}"/>
-                            <field name="archived_step_ids" readonly="1"
-                                   attrs="{'invisible': [('archived_step_ids', '=', [])]}">
-                                <tree>
-                                    <field name="attempt_seq"/>
-                                    <field name="order"/>
-                                    <field name="verb"/>
-                                    <field name="target_name"/>
-                                    <field name="state"/>
-                                    <field name="disposition"/>
-                                    <field name="acted_by_id"/>
-                                    <field name="acted_date"/>
-                                    <field name="note"/>
-                                </tree>
-                            </field>
+                            <!-- No ประวัติการเดินเรื่อง (History) list here: ดึงกลับ /
+                                 ตีกลับ / รีเซ็ต all mean "run the whole เส้นทาง again",
+                                 so the prior attempt is noise on the form. The rows are
+                                 still archived (audit / archived_step_ids), just not
+                                 shown beside the live Route. -->
                         </page>
                         <page string="อ้างถึง (References)" name="references">
                             <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>
