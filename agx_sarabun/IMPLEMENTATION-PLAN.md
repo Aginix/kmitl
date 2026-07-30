@@ -118,6 +118,8 @@ P1.5 Position ──────┘                                             
 ---
 
 ### Phase 3 — Numbering / register
+> **Updated by [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md):** the number is now assigned **at completion** (final ลงนาม/อนุมัติ), not at send — send only *verifies* a register resolves. Read "at send" below as "at completion", and the *Voided number* deliverable as retained-but-dormant (rejected/cancelled documents are never numbered, so no gaps arise on the normal path).
+
 **Rationale:** the official number is assigned **at send** (draft → circulating), so the register depends on P2's lifecycle transition being in place. Isolated as its own phase because it carries the highest data-integrity stakes (atomicity, voiding, per-unit registers).
 
 **Deliverables**
