@@ -110,6 +110,65 @@ def _create_journals(env, company):
             lines.payment_account_id = journal.default_account_id
 
 
+# KMITL payment methods (data/account_payment_method.xml). Creating a 'multi'
+# method auto-adds lines only to journals existing at that moment; the KMITL
+# journals are created later in this hook, so their lines are added here.
+PAYMENT_METHOD_XMLIDS = [
+    "account_kmitl.payment_method_transfer_out",
+    "account_kmitl.payment_method_transfer_in",
+    "account_kmitl.payment_method_cheque_out",
+    "account_kmitl.payment_method_cheque_in",
+    "account_kmitl.payment_method_cash_out",
+    "account_kmitl.payment_method_cash_in",
+]
+
+
+def _setup_payment_method_lines(env, company):
+    """Offer the KMITL payment methods (เงินโอน / เช็ค / เงินสด) on every
+    KMITL bank journal, in both directions.
+
+    Idempotent: journals already carrying a method are skipped. New and
+    pre-existing lines without a payment account are pointed at the journal's
+    default account, the same convention ``_create_journals`` applies to the
+    stock manual lines.
+    """
+    Journal = env["account.journal"]
+    MethodLine = env["account.payment.method.line"]
+    methods = env["account.payment.method"]
+    for xmlid in PAYMENT_METHOD_XMLIDS:
+        method = env.ref(xmlid, raise_if_not_found=False)
+        if method:
+            methods |= method
+    if not methods:
+        return
+
+    bank_codes = [j["code"] for j in JOURNALS if j["type"] == "bank"]
+    journals = Journal.search(
+        [("company_id", "=", company.id), ("code", "in", bank_codes)]
+    )
+    for journal in journals:
+        lines = (
+            journal.inbound_payment_method_line_ids
+            + journal.outbound_payment_method_line_ids
+        )
+        for method in methods - lines.payment_method_id:
+            MethodLine.create(
+                {
+                    "journal_id": journal.id,
+                    "payment_method_id": method.id,
+                    "name": method.name,
+                }
+            )
+        if journal.default_account_id:
+            lines = (
+                journal.inbound_payment_method_line_ids
+                + journal.outbound_payment_method_line_ids
+            )
+            lines.filtered(
+                lambda l: not l.payment_account_id
+            ).payment_account_id = journal.default_account_id
+
+
 def _register_account_xmlids(env, company):
     """Publish stable, company-independent external ids for the accounts that
     other modules reference (e.g. account_asset_kmitl asset profiles,
@@ -244,6 +303,7 @@ def post_init_hook(cr, registry):
     _purge_generic_accounting_demo(env, company)
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
+    _setup_payment_method_lines(env, company)
     _register_account_xmlids(env, company)
     _deactivate_default_journals(env, company)
     _create_withholding_taxes(env, company)
