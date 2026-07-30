@@ -8,7 +8,6 @@
                 <field name="document_id" invisible="1"/>
                 <div class="alert alert-warning" role="alert">
                     รีเซ็ตเอกสารกลับเป็นร่าง โดยคงเลขหนังสือและเส้นทางเดิม
-                    (การลงนามเดิมจะถูกเก็บเป็นประวัติ) — Admin override (ADR-0011).
                 </div>
                 <group>
                     <field name="reason" placeholder="ระบุเหตุผล / reason..."/>
