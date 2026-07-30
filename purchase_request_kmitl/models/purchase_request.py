@@ -68,7 +68,7 @@ class PurchaseRequest(models.Model):
         copy=False,
     )
     partner_id = fields.Many2one("res.partner", tracking=True)
-    
+
     # construction
     is_construction = fields.Boolean(string="Construction", readonly=True)
     title = fields.Char(string="Title", tracking=True)
@@ -78,8 +78,9 @@ class PurchaseRequest(models.Model):
         tracking=True,
     )
     attachment_ids = fields.One2many(
-        "ir.attachment",
-        "res_id",
+        comodel_name="ir.attachment",
+        inverse_name="res_id",
+        domain=[("res_model", "=", "purchase.request")],
         string="Document Attachments",
         tracking=True,
     )
@@ -130,9 +131,7 @@ class PurchaseRequest(models.Model):
             if rec.state == "to_approve":
                 rec.can_reset_to_draft = is_manager
             elif rec.state in ("to_verify", "to_submit"):
-                rec.can_reset_to_draft = (
-                    is_manager or rec.requested_by == self.env.user
-                )
+                rec.can_reset_to_draft = is_manager or rec.requested_by == self.env.user
             else:
                 rec.can_reset_to_draft = False
 
@@ -140,8 +139,7 @@ class PurchaseRequest(models.Model):
     def _hide_create_po_button(self):
         for rec in self:
             rec.hide_create_po_button = not (
-                rec.state in ("approved", "in_progress")
-                and rec.purchase_count == 0
+                rec.state in ("approved", "in_progress") and rec.purchase_count == 0
             )
 
     def get_estimated_cost_currency(self, date=False):
@@ -187,8 +185,9 @@ class PurchaseRequest(models.Model):
 
     def _action_do_cancel(self, reason):
         self.ensure_one()
-        body = _(
-            "ยกเลิกคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s"
-        ) % {"pr": self.name, "reason": reason}
+        body = _("ยกเลิกคำขอ (พ.1) %(pr)s เหตุผล: %(reason)s") % {
+            "pr": self.name,
+            "reason": reason,
+        }
         self.message_post(body=body, subtype_xmlid="mail.mt_note")
         self.write({"state": "cancelled"})

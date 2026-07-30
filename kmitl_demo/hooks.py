@@ -257,7 +257,6 @@ def _ensure_sarabun_register(env, department):
         seq = env["sarabun.document.sequence"].create(
             {
                 "name": "ทะเบียนหนังสือ %s" % department.display_name,
-                "code": "REG-%s" % department.id,
                 "sender_department_id": department.id,
             }
         )

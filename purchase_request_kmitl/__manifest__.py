@@ -15,6 +15,7 @@
         "purchase_order_kmitl",
         "purchase_operating_unit",
         "web_m2x_options",
+        "web_attachment_document_type",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -24,6 +25,7 @@
         "data/purchase_request_line_exception.xml",
         "data/procurement_type.xml",
         "data/procurement_method.xml",
+        "data/attachment_document_type.xml",
         "views/procurement_method_views.xml",
         "views/procurement_type_views.xml",
         "views/procurement_committee_views.xml",
