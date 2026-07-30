@@ -482,11 +482,26 @@ class BudgetCommitmentMixin(models.AbstractModel):
         }
 
     def _cancel_budget_commitment(self):
-        """Cancel the linked budget commitment."""
+        """Cancel the linked budget commitment, releasing its reservation.
+
+        Case 1 (ยกเลิกรายการ → ยกเลิกใบจองด้วย): tears down the whole commitment,
+        cancelling the reserve so the earmark returns to the pool.
+
+        A fully consumed commitment sits in the ``done`` band, where the
+        commitment-level cancel is deliberately blocked (budget test_92 — a
+        completed commitment is not voided in one step, or its still-locking
+        reserve would silently leak). So when its owning document is cancelled,
+        first revert this document's obligate/consume lines — which reopens the
+        commitment via ``_sync_state`` — then cancel it. The revert is a no-op
+        when nothing was consumed, so reserved/partial commitments behave exactly
+        as before.
+        """
         self.ensure_one()
         commitment = self._get_commitment_field_value("commitment_id")
         if not commitment:
             return True
+        if commitment.state == "done":
+            self._revert_budget_consumption()
         commitment.action_cancel()
         return True
 
@@ -652,6 +667,40 @@ class BudgetCommitmentMixin(models.AbstractModel):
             commitment.action_done()
 
         return consume_line
+
+    def _revert_budget_consumption(
+        self, move_types=("obligate", "consume"), method="cancel"
+    ):
+        """Revert (คืนบัญชีงบประมาณ) the budget this document locked.
+
+        Symmetric to :meth:`_consume_commitment`: reverts the obligate/consume
+        ledger lines this document posted on its linked commitment so the amount
+        returns to the pool, leaving the reservation open and re-opening the
+        commitment automatically (done → partial/reserved) so the document can
+        be corrected and re-consumed. Delegates to
+        :meth:`budget.commitment.revert_document_lines`, which is state-safe
+        (works even at ``done``).
+
+        ``method="cancel"`` (default) cancels the lines + their ``budget.move``
+        — used when the whole document is voided (Case 1). ``method="reverse"``
+        posts offsetting negative lines instead, keeping a "posted then
+        reversed" audit trail — the treatment for an accounting send-back
+        (ตีกลับ) once ตัดงบ already reached the GL, before a re-approve reposts
+        the pair (Case 2). Pass ``("consume",)`` to revert only the disbursement.
+
+        No-op when no commitment is linked.
+
+        :returns: the affected ``budget.commitment.line`` recordset — the
+            cancelled lines (``cancel``) or the reversal lines (``reverse``);
+            empty if no commitment is linked or nothing matched.
+        """
+        self.ensure_one()
+        commitment = self._get_commitment_field_value("commitment_id")
+        if not commitment:
+            return self.env["budget.commitment.line"]
+        return commitment.revert_document_lines(
+            self._name, self.id, move_types=move_types, method=method
+        )
 
     def _update_commitment_amount(self, new_amount):
         """Update commitment cap amount."""

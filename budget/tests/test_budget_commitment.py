@@ -666,3 +666,104 @@ class TestBudgetCommitment(TransactionCase):
         self.assertEqual(c.available_to_obligate, 0)
         with self.assertRaises(UserError):
             c.action_return_leftover()
+
+    # ====================================================================
+    # 7. Revert a document's consumption (revert_document_lines)
+    #    Case 1 = cancel (void), Case 2 = reverse (keep trail, re-approve).
+    # ====================================================================
+
+    def test_70_reverse_keeps_trail_and_reopens(self):
+        """method='reverse' offsets the obligate+consume pair, keeps the
+        originals posted, and reopens a done commitment (Case 2)."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        src = ("budget.commitment", c.id)
+        self._add_line(c, "obligate", 100_000, res_model=src[0], res_id=src[1])
+        self._add_line(c, "consume", 100_000, res_model=src[0], res_id=src[1])
+        self.assertEqual(c.state, "done")
+
+        reversals = c.revert_document_lines(*src, method="reverse")
+
+        # Net exposure cleared, reservation intact, commitment reopened.
+        self.assertEqual(c.total_obligated, 0)
+        self.assertEqual(c.total_consumed, 0)
+        self.assertEqual(c.total_reserved, 100_000)
+        self.assertEqual(c.available_to_obligate, 100_000)
+        self.assertEqual(c.state, "reserved")
+        # Originals kept (not cancelled) + two reversal lines posted.
+        self.assertEqual(len(reversals), 2)
+        self.assertTrue(
+            all(r.state == "posted" and r.amount == -100_000 for r in reversals)
+        )
+        posted = c.line_ids.filtered(lambda l: l.state == "posted")
+        self.assertEqual(len(posted), 5)  # reserve + obligate + consume + 2 reversals
+        # The reversing consume mirrors the GL with a +balance budget.move.
+        rev_consume = reversals.filtered(lambda l: l.move_type == "consume")
+        self.assertTrue(rev_consume.budget_move_id)
+        self.assertEqual(
+            sum(rev_consume.budget_move_id.line_ids.mapped("balance")), 100_000
+        )
+
+    def test_71_reverse_then_reapprove(self):
+        """After a reverse, re-posting the pair (re-approve) succeeds."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        src = ("budget.commitment", c.id)
+        self._add_line(c, "obligate", 100_000, res_model=src[0], res_id=src[1])
+        self._add_line(c, "consume", 100_000, res_model=src[0], res_id=src[1])
+        c.revert_document_lines(*src, method="reverse")
+        self.assertEqual(c.available_to_obligate, 100_000)
+        # Re-approve: post the pair again after fixing the data.
+        self._add_line(c, "obligate", 100_000, res_model=src[0], res_id=src[1])
+        self._add_line(c, "consume", 100_000, res_model=src[0], res_id=src[1])
+        self.assertEqual(c.total_obligated, 100_000)
+        self.assertEqual(c.total_consumed, 100_000)
+        self.assertEqual(c.state, "done")
+
+    def test_72_revert_only_targets_the_named_document(self):
+        """Reverts only the given document's lines; others stay posted."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        doc_a = ("budget.commitment", c.id)
+        doc_b = ("budget.account", self.account_1.id)
+        self._add_line(c, "obligate", 40_000, res_model=doc_a[0], res_id=doc_a[1])
+        self._add_line(c, "consume", 40_000, res_model=doc_a[0], res_id=doc_a[1])
+        self._add_line(c, "obligate", 30_000, res_model=doc_b[0], res_id=doc_b[1])
+        self._add_line(c, "consume", 30_000, res_model=doc_b[0], res_id=doc_b[1])
+        self.assertEqual(c.total_consumed, 70_000)
+
+        c.revert_document_lines(*doc_a, method="cancel")
+
+        # Only doc A's 40k reverted; doc B's 30k intact.
+        self.assertEqual(c.total_obligated, 30_000)
+        self.assertEqual(c.total_consumed, 30_000)
+
+    def test_73_reverse_consume_only_keeps_obligation(self):
+        """move_types=('consume',) reverses only the disbursement."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        src = ("budget.commitment", c.id)
+        self._add_line(c, "obligate", 100_000, res_model=src[0], res_id=src[1])
+        self._add_line(c, "consume", 100_000, res_model=src[0], res_id=src[1])
+        c.revert_document_lines(*src, move_types=("consume",), method="reverse")
+        self.assertEqual(c.total_consumed, 0)
+        self.assertEqual(c.total_obligated, 100_000)  # obligation stands
+        self.assertEqual(c.state, "partial")
+
+    def test_74_revert_reopens_done_so_it_can_cancel(self):
+        """Reverting the consume reopens a done commitment so a Case 1 teardown
+        (action_cancel) no longer hits the done guard (complements test_92)."""
+        c = self._create_commitment(100_000)
+        c.action_reserve()
+        src = ("budget.commitment", c.id)
+        self._add_line(c, "obligate", 100_000, res_model=src[0], res_id=src[1])
+        self._add_line(c, "consume", 100_000, res_model=src[0], res_id=src[1])
+        self.assertEqual(c.state, "done")
+        # Direct cancel is blocked while done (test_92)...
+        with self.assertRaises(UserError):
+            c.action_cancel()
+        # ...but reverting the pair reopens it, then cancel succeeds.
+        c.revert_document_lines(*src, method="cancel")
+        self.assertEqual(c.state, "reserved")
+        c.action_cancel()
+        self.assertEqual(c.state, "cancel")

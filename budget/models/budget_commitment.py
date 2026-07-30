@@ -705,6 +705,75 @@ class BudgetCommitment(models.Model):
             "context": context,
         }
 
+    def revert_document_lines(
+        self, res_model, res_id, move_types=("obligate", "consume"), method="cancel"
+    ):
+        """Revert the ledger lines a source document posted on this commitment.
+
+        Targets only this commitment's posted lines stamped with the given
+        ``(res_model, res_id)`` whose ``move_type`` is in ``move_types`` —
+        leaving the reservation (by default) and any other document's lines
+        untouched. Two strategies:
+
+        * ``method="cancel"`` (default) — set the lines to ``cancel`` and cascade
+          each linked ``budget.move`` to ``cancel``. Cleanest full undo; used when
+          the owning document is voided (Case 1) and for reverting while the
+          commitment is still active. Idempotent (already-cancelled lines are
+          filtered out). Returns the cancelled lines.
+        * ``method="reverse"`` — keep the original lines and post offsetting
+          negative lines (one per ``move_type``, for the document's net amount,
+          taking account/analytics from its first line). Each negative
+          ``consume`` auto-creates a reversing ``budget.move``. This preserves a
+          "posted then reversed" audit trail — the right treatment once a real
+          disbursement reached the GL (Case 2: revert ตัดงบ, keep the BC, then
+          re-approve). Returns the reversal lines it created.
+
+        Safe at any state, including ``done`` (the line-level cancel has no state
+        guard and the B1 create-guard exempts negative lines), so an accounting
+        send-back (ตีกลับ) can revert ตัดงบ without cancelling the commitment;
+        ``_sync_state`` re-opens the band (done → partial/reserved) so the
+        document can be corrected and re-consumed. The default reverts the whole
+        ``obligate`` + ``consume`` pair the KMITL flows post together, so a
+        re-approve reposts a clean pair; pass ``("consume",)`` to revert only the
+        disbursement and keep the obligation.
+        """
+        self.ensure_one()
+        lines = self.line_ids.filtered(
+            lambda l: l.state == "posted"
+            and l.move_type in move_types
+            and l.res_model == res_model
+            and l.res_id == res_id
+        )
+        if method != "reverse":
+            lines.action_cancel()
+            return lines
+        # method == "reverse": offset the net exposure per move_type. Reverse
+        # consume before obligate before reserve so the cascade constraint
+        # (consumed <= obligated <= reserved) holds at every intermediate step.
+        line_model = self.env["budget.commitment.line"]
+        reversals = line_model
+        for move_type in ("consume", "obligate", "reserve"):
+            if move_type not in move_types:
+                continue
+            group = lines.filtered(lambda l, mt=move_type: l.move_type == mt)
+            net = sum(group.mapped("amount"))
+            if not group or self.currency_id.is_zero(net):
+                continue
+            ref = group[0]
+            reversals |= line_model.create(
+                {
+                    "commitment_id": self.id,
+                    "move_type": move_type,
+                    "account_id": ref.account_id.id,
+                    "analytic_distribution": ref.analytic_distribution,
+                    "amount": -net,
+                    "res_model": res_model,
+                    "res_id": res_id,
+                    "name": _("Revert: %s") % (ref.name or ref.move_type),
+                }
+            )
+        return reversals
+
     def action_view_budget_moves(self):
         """View related budget moves"""
         self.ensure_one()
