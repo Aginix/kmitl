@@ -27,7 +27,6 @@
                     <group>
                         <group string="หน่วยงานเจ้าของเล่ม (หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน)">
                             <field name="sender_department_id"/>
-                            <field name="code"/>
                             <field name="active" widget="boolean_toggle"/>
                         </group>
                         <group string="Rendering">

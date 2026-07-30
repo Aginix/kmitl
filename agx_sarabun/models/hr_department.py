@@ -27,7 +27,7 @@ class HrDepartment(models.Model):
         compute="_compute_sarabun_officer_count",
     )
 
-    # === เล่มทะเบียนหนังสือ (register books — ADR-0011) ===
+    # === เล่มทะเบียนหนังสือ (register books — ADR-0012) ===
     sarabun_sequence_ids = fields.One2many(
         comodel_name="sarabun.document.sequence",
         inverse_name="sender_department_id",

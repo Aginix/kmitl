@@ -4,7 +4,7 @@
 
 We therefore make the register a **book the หน่วยงาน owns many of, and the หนังสือ picks one**:
 
-- `unique(sender_department_id)` is **dropped**. A ส่วนงาน may own any number of `sarabun.document.sequence` records (they stay distinguishable by their unique `code`).
+- `unique(sender_department_id)` is **dropped**. A ส่วนงาน may own any number of `sarabun.document.sequence` records, identified by **ส่วนงาน + ชื่อเล่ม**. The old required, institute-unique `code` goes with it: nothing ever resolved or rendered from it (resolution is by `sequence_id`, rendering by `prefix`/`suffix`/`padding`), so all it did was force the admin to invent a unique string for every new book — and, now that books are created often, make a duplicate fail on a confusing uniqueness error. `copy()` suffixes the ชื่อเล่ม with `(สำเนา)` instead, since the name is now the only thing telling two books of one unit apart.
 - `sarabun.document.sequence_id` — the **เล่มทะเบียน this หนังสือ issues from**. Stored, computed from the sender ส่วนงาน but user-editable (`readonly=False`), domain-bound to the unit's active books, and validated to belong to that unit.
 - `hr.department.default_sarabun_sequence_id` — the unit's **เล่มทะเบียนหลัก**, so a drafter does not choose a book on every หนังสือ. When the unit owns exactly one book that book is used with no configuration at all.
 - `_resolve_sequence()` = the หนังสือ's book → else the unit's default → else the unit's only book. **Ambiguous** (several books, no default) is an error at send, same class of fail-fast as **missing** (no book at all): "โปรดเลือกเล่มทะเบียน". Never fall back to an arbitrary book — silent numbering from the wrong series is the anti-pattern CONTEXT forbids.

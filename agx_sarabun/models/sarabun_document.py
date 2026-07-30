@@ -275,7 +275,7 @@ class SarabunDocument(models.Model):
         readonly=False,
         copy=False,
         domain="[('sender_department_id', '=', sender_department_id), ('active', '=', True)]",
-        help="เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0011) — ตั้งต้นจากเล่มทะเบียนหลัก "
+        help="เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — ตั้งต้นจากเล่มทะเบียนหลัก "
         "ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง.",
     )
     register_number_id = fields.Many2one(
@@ -975,7 +975,7 @@ class SarabunDocument(models.Model):
                 ))
 
     def _resolve_sequence(self):
-        """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0011): the book chosen
+        """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0012): the book chosen
         on the document, else the unit's เล่มทะเบียนหลัก / only book. Block on missing
         or ambiguous; never number from a default pool (DESIGN §4.2)."""
         self.ensure_one()

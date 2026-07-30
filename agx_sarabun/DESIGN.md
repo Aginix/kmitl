@@ -155,7 +155,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `content` | Html (sanitized) | **เนื้อหา (body)** — free rich text. The letter body for composed memo/circular; an optional covering note above the origin report for `from_record`. Editable while `draft`/`returned`; rendered on the cover sheet. Full regulation memo layout is phase-2. |
 | `remark` | Html (sanitized) | **หมายเหตุ (Remark)** — an optional **internal** note captured after `content`. Working notes only — **not** part of the letter body and not rendered as official content. |
 | `sender_user_id` | M2o → `res.users` (readonly) | The composer. |
-| `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — owns the เล่มทะเบียน the หนังสือ may issue from (ADR-0011). |
+| `sender_department_id` | M2o → `hr.department` (required) | **sender ส่วนงาน** — owns the เล่มทะเบียน the หนังสือ may issue from (ADR-0012). |
 | `sender_suffix` | Char | Sub-unit / extension display. |
 | `state` | Selection (readonly, tracked) | `draft → circulating → completed`; negative `returned`/`rejected`/`cancelled` (see §3). Replaces old `sent`. |
 | `strongest_verb_id` | M2o → `sarabun.verb` (computed/stored) | Highest-`rank` verb positively completed so far (`False` = none). Drives Recall eligibility (ADR-0002: Recall only if no signature verb — `verb.is_signature` — has completed yet). |
@@ -168,7 +168,7 @@ Inherits `mail.thread`, `mail.activity.mixin`, `portal.mixin`, `thai.date.mixin`
 | `reference_document_ids` | M2m → `sarabun.document` | **อ้างถึง** prior in-system หนังสือ. |
 | `reference_line_ids` | O2m → `sarabun.reference.line` | **อ้างถึง** free-text out-of-system letters. |
 | `enclosure_ids` | O2m → `sarabun.enclosure` | **สิ่งที่ส่งมาด้วย**, ordered. |
-| `sequence_id` | M2o → `sarabun.document.sequence` (computed, stored, editable) | **เล่มทะเบียน** this หนังสือ issues from (ADR-0011). Defaults to the unit's เล่มทะเบียนหลัก / only book; editable while draft/returned; **pinned at send**. |
+| `sequence_id` | M2o → `sarabun.document.sequence` (computed, stored, editable) | **เล่มทะเบียน** this หนังสือ issues from (ADR-0012). Defaults to the unit's เล่มทะเบียนหลัก / only book; editable while draft/returned; **pinned at send**. |
 | `register_number_id` | M2o → `sarabun.document.number` | The register ledger row; set by `_register()` at completion (ADR-0010). |
 | `numbering_mode` | Selection `auto`(default)/`reserved`/`gap`/`manual` | Constrained to `auto` for `from_record` (see §4). |
 | `signed_pdf` | Binary (`attachment=True`) | **ฉบับลงนาม** — frozen immutable PDF at `completed`. Before that, preview renders live. |
@@ -303,7 +303,7 @@ used a hardcoded Selection `code` as both behaviour key *and* identifier.
 |---|---|---|
 | `name` | Char (required, translate) | Concrete type name, e.g. "บันทึกข้อความกองคลัง". |
 | `kind` | Selection (required) | The fixed axis: `memo`/`circular`/`from_record` (phase-2: `external`/`order`/`announcement`). Drives report template, numbering, routing rules. |
-| ~~`sequence_id`~~ | — | **Dropped.** The type does not bind a register: the เล่มทะเบียน is chosen on the หนังสือ / defaulted by the unit (ADR-0011). |
+| ~~`sequence_id`~~ | — | **Dropped.** The type does not bind a register: the เล่มทะเบียน is chosen on the หนังสือ / defaulted by the unit (ADR-0012). |
 | `default_route_id` | M2o → `sarabun.route.template` | Seed template. |
 | `report_template_id` | M2o → `ir.actions.report` | Compose/cover-sheet template for this type. |
 | `active`, `sequence` | Boolean/Integer | |
@@ -317,7 +317,7 @@ Atomic, per-ส่วนงาน, fiscal-year-reset register (full behaviour in
 tables are given in §4.8 to avoid duplication. Key shape:
 
 - **`sarabun.document.sequence`** — a **เล่มทะเบียน** owned by a `sender_department_id`
-  (a unit may own several — ADR-0011; the หนังสือ picks one via `sequence_id`);
+  (a unit may own several — ADR-0012; the หนังสือ picks one via `sequence_id`);
   `reset_period` default `fiscal_year` (also `yearly`/`never`); `allocate(document)`
   acquires a row lock, computes the next counter, writes the number row, and retries
   on the `unique(sequence_id, counter, fiscal_year)` backstop.
@@ -830,7 +830,7 @@ fires (ADR-0010).
 ### 4.2 Sequence resolution — the เล่มทะเบียน the หนังสือ picks, BLOCK on missing/ambiguous
 
 A ส่วนงาน owns **as many เล่มทะเบียน as it needs**
-([ADR-0011](./docs/adr/0011-multiple-register-books-per-unit.md)); the หนังสือ says
+([ADR-0012](./docs/adr/0012-multiple-register-books-per-unit.md)); the หนังสือ says
 which book it issues from (`sequence_id`), defaulting to the unit's
 **เล่มทะเบียนหลัก** (`hr.department.default_sarabun_sequence_id`) — or, when the unit
 owns exactly one book, to that book with no configuration at all. The old

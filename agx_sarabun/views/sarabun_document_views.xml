@@ -93,7 +93,7 @@
                             <field name="name" string="ที่" readonly="1"/>
                             <field name="date" string="วันที่" readonly="1"/>
                             <!-- เล่มทะเบียน — which of the unit's registers issues the
-                                 number (ADR-0011). Prefilled from the unit's default;
+                                 number (ADR-0012). Prefilled from the unit's default;
                                  pinned at send, so read-only afterwards. -->
                             <field name="sequence_id" string="เล่มทะเบียน"
                                    attrs="{'readonly': [('is_editable', '=', False)]}"

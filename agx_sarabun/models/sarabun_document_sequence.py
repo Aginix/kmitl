@@ -2,7 +2,7 @@
 """The Register (ลงทะเบียน) — atomic, per-เล่มทะเบียน, ปีงบประมาณ-reset numbering.
 Replaces the old max()+1 race and the broken fiscal reset (ADR-0002, DESIGN §4).
 
-A ส่วนงาน may keep SEVERAL เล่มทะเบียน (ADR-0011); the หนังสือ picks the book it is
+A ส่วนงาน may keep SEVERAL เล่มทะเบียน (ADR-0012); the หนังสือ picks the book it is
 issued from (defaulting to the unit's เล่มทะเบียนหลัก).
 """
 import logging
@@ -21,10 +21,9 @@ class SarabunDocumentSequence(models.Model):
     _order = "name"
 
     name = fields.Char(required=True)
-    code = fields.Char(required=True)
     active = fields.Boolean(default=True)
 
-    # === Owning unit: a ส่วนงาน may keep several เล่มทะเบียน (ADR-0011) ===
+    # === Owning unit: a ส่วนงาน may keep several เล่มทะเบียน (ADR-0012) ===
     sender_department_id = fields.Many2one(
         "hr.department", string="ส่วนงาน (Issuing Unit)", required=True, index=True,
         help="หน่วยงานเจ้าของเล่มทะเบียนนี้ — หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน; "
@@ -47,11 +46,19 @@ class SarabunDocumentSequence(models.Model):
     number_ids = fields.One2many("sarabun.document.number", "sequence_id", string="Numbers")
     next_counter = fields.Integer(compute="_compute_next_counter", string="Next Number")
 
-    # NOTE: no unique(sender_department_id) — a ส่วนงาน keeps as many เล่มทะเบียน as it
-    # needs (ADR-0011); the register books are told apart by their unique ``code``.
-    _sql_constraints = [
-        ("code_uniq", "unique(code)", "Register code must be unique!"),
-    ]
+    # NOTE: no unique constraint — a ส่วนงาน keeps as many เล่มทะเบียน as it needs
+    # (ADR-0012) and books are identified by ส่วนงาน + ชื่อเล่ม. The old required,
+    # institute-unique ``code`` was dropped: nothing resolved or rendered from it,
+    # so it only forced the admin to invent a unique string per book.
+
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        """Suffix the duplicate's ชื่อเล่ม. Two books of one ส่วนงาน are told apart by
+        their name alone, so a plain copy would be indistinguishable in the list."""
+        self.ensure_one()
+        default = dict(default or {})
+        default.setdefault("name", _("%s (สำเนา)") % (self.name or ""))
+        return super().copy(default)
 
     # ------------------------------------------------------------------ helpers
     def _fiscal_year_for(self, date):

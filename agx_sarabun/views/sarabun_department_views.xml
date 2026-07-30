@@ -35,13 +35,12 @@
                                options="{'no_create': True, 'no_open': True}"
                                help="เล่มทะเบียนที่หนังสือของหน่วยงานนี้ใช้เป็นค่าเริ่มต้น — ผู้จัดทำเลือกเล่มอื่นได้รายฉบับ"/>
                     </group>
-                    <!-- หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน (ADR-0011) — ตั้งค่าเล่มได้จากที่นี่. -->
+                    <!-- หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน (ADR-0012) — ตั้งค่าเล่มได้จากที่นี่. -->
                     <group string="เล่มทะเบียนหนังสือ (Registers)" col="2">
                         <field name="sarabun_sequence_ids" nolabel="1" colspan="2"
                                context="{'default_sender_department_id': id}">
                             <tree>
                                 <field name="name"/>
-                                <field name="code"/>
                                 <field name="prefix"/>
                                 <field name="reset_period"/>
                                 <field name="next_counter"/>

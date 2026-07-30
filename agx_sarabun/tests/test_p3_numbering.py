@@ -84,15 +84,22 @@ class TestP3Numbering(SarabunCommon):
         self.assertFalse(doc.register_number_id)
         self.assertEqual(doc.name, "/")
 
-    # ------------------------------------------------ เล่มทะเบียน (ADR-0011)
+    # ------------------------------------------------ เล่มทะเบียน (ADR-0012)
     def _second_register(self):
         """A second เล่มทะเบียน for the same ส่วนงาน."""
         return self.Sequence.create({
             "name": "ทะเบียนหนังสือเวียน กองทดสอบ",
-            "code": "REG-TEST-2",
             "sender_department_id": self.dept.id,
             "prefix": "ว ",
         })
+
+    def test_duplicate_register_is_distinguishable(self):
+        """Duplicating a เล่มทะเบียน suffixes its name — the unit's books are told
+        apart by name alone now that ``code`` is gone."""
+        copy = self.sequence.copy()
+        self.assertNotEqual(copy.name, self.sequence.name)
+        self.assertIn(self.sequence.name, copy.name)
+        self.assertEqual(copy.sender_department_id, self.dept)
 
     def test_single_register_is_picked_without_choosing(self):
         """A unit with one register needs no choice — the หนังสือ defaults to it."""

@@ -14,7 +14,7 @@ class SarabunSendWizard(models.TransientModel):
     sender_department_id = fields.Many2one(
         related="document_id.sender_department_id", readonly=True,
     )
-    # Confirming the send is the moment "ส่งด้วยทะเบียนเล่มไหน" is decided (ADR-0011):
+    # Confirming the send is the moment "ส่งด้วยทะเบียนเล่มไหน" is decided (ADR-0012):
     # show the resolved เล่มทะเบียน and let the sender switch books before it is pinned.
     sequence_id = fields.Many2one(
         related="document_id.sequence_id",
