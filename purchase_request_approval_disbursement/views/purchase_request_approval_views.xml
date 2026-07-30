@@ -68,31 +68,22 @@
             </xpath>
             <xpath expr="//group[1]" position="before">
                 <h2>Purchase Request Approval Form</h2>
-                <div class="alert alert-primary o_pra_contract_mode" role="region">
-                    <h4 class="mb-2">
-                        <i class="fa fa-file-signature me-1" />
-                        เลือกวิธีการดำเนินการหลังอนุมัติ
-                    </h4>
-                    <field name="use_purchase_order" invisible="1" />
-                    <field
-                        name="contract_mode"
-                        widget="radio"
-                        nolabel="1"
-                        attrs="{'readonly': [('state', 'not in', ['draft'])]}"
-                    />
-                    <div class="text-muted small mt-2">
-                        <div
-                            attrs="{'invisible': [('contract_mode', '!=', 'with_po')]}"
-                        >
-                            <i class="fa fa-arrow-right me-1" />
-                            หลังอนุมัติ ต้องสร้าง Purchase Order ก่อน จึงเบิกจ่ายได้
-                        </div>
-                        <div attrs="{'invisible': [('contract_mode', '!=', 'no_po')]}">
-                            <i class="fa fa-arrow-right me-1" />
-                            หลังอนุมัติ สร้างใบขอเบิก (Bill) ได้ทันที ไม่ต้องมีสัญญา/ใบสั่งซื้อ
-                        </div>
-                    </div>
-                </div>
+                <field name="use_purchase_order" invisible="1" />
+            </xpath>
+            <xpath
+                expr="//group[@name='procurement_info']/field[@name='procurement_type_id']"
+                position="before"
+            >
+                <label
+                    for="contract_mode"
+                    string="วิธีการดำเนินการ"
+                    class="o_form_label o_form_label_required"
+                />
+                <field
+                    name="contract_mode"
+                    nolabel="1"
+                    attrs="{'readonly': [('state', 'not in', ['draft'])]}"
+                />
             </xpath>
             <!-- Return-to-source correction: Confirm button + statusbar + fields -->
             <xpath expr="//field[@name='state'][@widget='statusbar']" position="before">

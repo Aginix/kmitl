@@ -18,20 +18,6 @@ msgstr ""
 "X-Generator: Poedit 3.8\n"
 
 #. module: purchase_request_approval_disbursement
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
-msgid ""
-"<i class=\"fa fa-arrow-right me-1\"/>\n"
-"                            หลังอนุมัติ ต้องสร้าง Purchase Order ก่อน จึงเบิกจ่ายได้"
-msgstr ""
-
-#. module: purchase_request_approval_disbursement
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
-msgid ""
-"<i class=\"fa fa-arrow-right me-1\"/>\n"
-"                            หลังอนุมัติ สร้างใบขอเบิก (Bill) ได้ทันที ไม่ต้องมีสัญญา/ใบสั่งซื้อ"
-msgstr ""
-
-#. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_search
 msgid "Bill Status"
 msgstr ""
@@ -206,20 +192,27 @@ msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้า�
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__contract_mode
-msgid "วิธีการดำเนินการหลังอนุมัติ"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "วิธีการดำเนินการ"
+msgstr "วิธีการดำเนินการ"
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__contract_mode__with_po
 msgid "สร้างสัญญา / ใบสั่งซื้อ / ใบสั่งจ้าง"
-msgstr ""
-
-#. module: purchase_request_approval_disbursement
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
-msgid "เลือกวิธีการดำเนินการหลังอนุมัติ"
-msgstr ""
+msgstr "สร้างสัญญา / ใบสั่งซื้อ / ใบสั่งจ้าง"
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__contract_mode__no_po
 msgid "ไม่ทำสัญญา (จ่ายตรง)"
+msgstr "ไม่ทำสัญญา (จ่ายตรง)"
+
+#. module: purchase_request_approval_disbursement
+#. odoo-python
+#: code:addons/purchase_request_approval_disbursement/models/purchase_request_approval.py:0
+#, python-format
+msgid ""
+"กรุณาเลือก 'วิธีการดำเนินการ' (สร้างสัญญา/ใบสั่งซื้อ/จ้าง หรือ ไม่ทำสัญญา) "
+"ก่อนส่งอนุมัติ"
 msgstr ""
+"กรุณาเลือก 'วิธีการดำเนินการ' (สร้างสัญญา/ใบสั่งซื้อ/จ้าง หรือ ไม่ทำสัญญา) "
+"ก่อนส่งอนุมัติ"

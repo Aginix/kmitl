@@ -1,4 +1,5 @@
 from odoo import Command, _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestApproval(models.Model):
@@ -19,30 +20,44 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    use_purchase_order = fields.Boolean(
-        string="Use Purchase Order", default=True, tracking=True
-    )
-
     contract_mode = fields.Selection(
         selection=[
             ("with_po", "สร้างสัญญา / ใบสั่งซื้อ / ใบสั่งจ้าง"),
             ("no_po", "ไม่ทำสัญญา (จ่ายตรง)"),
         ],
-        string="วิธีการดำเนินการหลังอนุมัติ",
-        compute="_compute_contract_mode",
-        inverse="_inverse_contract_mode",
+        string="วิธีการดำเนินการ",
+        tracking=True,
+        copy=False,
+    )
+
+    use_purchase_order = fields.Boolean(
+        string="Use Purchase Order",
+        compute="_compute_use_purchase_order",
+        inverse="_inverse_use_purchase_order",
         store=True,
         tracking=True,
     )
 
-    @api.depends("use_purchase_order")
-    def _compute_contract_mode(self):
+    @api.depends("contract_mode")
+    def _compute_use_purchase_order(self):
+        for rec in self:
+            rec.use_purchase_order = rec.contract_mode == "with_po"
+
+    def _inverse_use_purchase_order(self):
         for rec in self:
             rec.contract_mode = "with_po" if rec.use_purchase_order else "no_po"
 
-    def _inverse_contract_mode(self):
+    def button_to_approve(self):
         for rec in self:
-            rec.use_purchase_order = rec.contract_mode == "with_po"
+            if not rec.contract_mode:
+                raise UserError(
+                    _(
+                        "กรุณาเลือก 'วิธีการดำเนินการ' "
+                        "(สร้างสัญญา/ใบสั่งซื้อ/จ้าง หรือ ไม่ทำสัญญา) "
+                        "ก่อนส่งอนุมัติ"
+                    )
+                )
+        return super().button_to_approve()
 
     purchase_order_id = fields.Many2one(
         comodel_name="purchase.order",
