@@ -44,7 +44,10 @@
                             </h3>
                         </div>
                         <div class="row">
-                            <div class="col-8"> เลขที่ <span class="ms-2 fw-normal" t-out="o.active_sarabun_document_id.name" />
+                            <div class="col-8"> เลขที่ <span
+                                    class="ms-2 fw-normal"
+                                    t-out="o.active_sarabun_document_id.name"
+                                />
                             </div>
                             <div class="col"> วันที่ <span
                                     class="ms-2 fw-normal"
@@ -53,29 +56,44 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> หน่วยงาน <span class="ms-2" t-out="o.active_sarabun_document_id.sender_department_id.display_name" />
+                            <div class="col"> หน่วยงาน <span
+                                    class="ms-2"
+                                    t-out="o.active_sarabun_document_id.sender_department_id.display_name"
+                                />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> เรื่อง <span class="ms-2" t-out="o.active_sarabun_document_id.subject" />
+                            <div class="col"> เรื่อง <span
+                                    class="ms-2"
+                                    t-out="o.active_sarabun_document_id.subject"
+                                />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                เรียน <span class="ms-2" t-out="o.active_sarabun_document_id.addressee" />
+                                เรียน <span
+                                    class="ms-2"
+                                    t-out="o.active_sarabun_document_id.addressee"
+                                />
                             </div>
                         </div>
 
                         <div class="my-4" />
                         <p style="text-indent: 6em"> ตาม ใบขอซื้อขอจ้าง,PR ต้องการ<span>
                                 <span t-field="o.procurement_type_id" />
-                                <span t-out="o.product_id.name"
-                                />
+                                <span t-out="o.product_id.name" />
                             </span>
-                            ด้วยวิธีการ<span t-field="o.procurement_method_id" /> เลขที่ <span
-                                t-field="o.request_id" /> ลงวันที่ 3 กรกฎาคม พ.ศ. 2568
-                            ได้รับอนุมัติหลักการและงบประมาณ <span t-out="o.product_id.name" />
-                            งบประมาณ <t t-out="'{0:,.2f}'.format(o.amount_total)" /> บาท (<t
+                            ด้วยวิธีการ<span
+                                t-field="o.procurement_method_id"
+                            /> เลขที่ <span
+                                t-field="o.request_id"
+                            /> ลงวันที่ 3 กรกฎาคม พ.ศ. 2568
+                            ได้รับอนุมัติหลักการและงบประมาณ <span
+                                t-out="o.product_id.name"
+                            />
+                            งบประมาณ <t
+                                t-out="'{0:,.2f}'.format(o.amount_total)"
+                            /> บาท (<t
                                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
                             />)
                             นั้น </p>
@@ -176,7 +194,7 @@
                         <div class="my-4" />
                         <p>รายละเอียดงบประมาณ</p>
 
-                        <div class="my-4"></div>
+                        <div class="my-4" />
                         <div class="mb-2">
                             และพร้อมกันนี้ได้แนบเอกสารประกอบการพิจารณา ดังนี้
                         </div>
@@ -186,7 +204,7 @@
                                 >1</span> ชุด </li>
                             <li> ใบเสนอราคาพัสดุ <span
                                     class="fw-bolder text-decoration-underline"
-                                    t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'rfq'))"
+                                    t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
                                 />
                                 ชุด
                             </li>
@@ -194,17 +212,17 @@
                                 เอกสารคุณสมบัติ จำนวน
                                 <span
                                     class="fw-bolder text-decoration-underline"
-                                    t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'tor'))"
+                                    t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
                                 />
                                 ชุด
                             </li> -->
                         </ol>
                         <div class="my-4" />
                         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
-                                t-field="o.product_id.name" /> จำนวน 1 รายการ เป็นเงิน <span
-                                t-out="o.estimated_cost" /> บาท โดยวิธี<span
-                                t-field="o.procurement_method_id"
-                            />
+                                t-field="o.product_id.name"
+                            /> จำนวน 1 รายการ เป็นเงิน <span
+                                t-out="'{0:,.2f}'.format(o.estimated_cost)"
+                            /> บาท โดยวิธี<span t-field="o.procurement_method_id" />
                             ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา
                             56 (2) ข้อ (ข) และกฎกระทรวง เรื่อง
                             กำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธี<span
@@ -212,8 +230,10 @@
                             />วงเงินจัดซื้อจัดจ้างที่ไม่ทำข้อตกลงเป็นหนังสือและวงเงินจัดซื้อจัดจ้างในการแต่งตั้งผู้ตรวจรับพัสดุ
                             พ.ศ. 2560 ข้อ 1 ซึ่งอยู่ใต้อำนาจจัดซื้อจัดจ้างและบริหารพัสดุภาครัฐ พ.ศ.
                             2560 และได้ตรวจสอบเอกสารการเงินเป็นที่เรียบร้อยแล้ว โดยขอเบิกจ่ายจาก <span
-                                t-field="o.source_analytic_id.name" /> ประจำปีพ.ศ. <span
-                                t-field="o.account_fiscal_year_id.name" />
+                                t-field="o.source_analytic_id.name"
+                            /> ประจำปีพ.ศ. <span
+                                t-field="o.account_fiscal_year_id.name"
+                            />
                         </p>
                         <div class="my-4" />
                         <p>จาก <span t-field="o.partner_id.name" /></p>
@@ -221,11 +241,17 @@
 
                         <ol>
                             <li> อนุมัติให้คณะกรรมการตรวจรับพัสดุ ประกอบด้วย <ul
-                                    style="list-style-type: none; margin-left: 20px">
+                                    style="list-style-type: none; margin-left: 20px"
+                                >
                                     <t t-set="idx" t-value="0" />
-                                    <t t-foreach="o.work_acceptance_committee_ids" t-as="committee">
+                                    <t
+                                        t-foreach="o.work_acceptance_committee_ids"
+                                        t-as="committee"
+                                    >
                                         <t t-set="idx" t-value="idx + 1" />
-                                        <li><t t-esc="idx" />. <t t-esc="committee.name" /></li>
+                                        <li><t t-esc="idx" />. <t
+                                                t-esc="committee.name"
+                                            /></li>
                                     </t>
                                 </ul>
                             </li>
@@ -245,7 +271,9 @@
             </ol>
         </li>
         <t t-if="o.estimated_cost > 100000">
-            <li> ขออนุมัติแต่งตั้งคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน ดังต่อไปนี้ <ol>
+            <li
+            > ขออนุมัติแต่งตั้งคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน ดังต่อไปนี้ <ol
+                >
                     <li t-foreach="o.tor_committee_ids" t-as="committee">
                         <span t-field="committee.employee_id" />
                     </li>
@@ -264,7 +292,7 @@
                 </ol>
             </li>
         </t>
-        <t t-else=""></t>
+        <t t-else="" />
     </template>
 
     <template id="report_purchase_request_budget">
@@ -313,11 +341,14 @@
     <!-- ADR-0007: append sarabun's เกษียน trail + signature block at the tail of the
          approval report (the origin embeds sarabun's block). Resolved from the origin
          via active_sarabun_document_id; renders nothing until steps complete. -->
-    <template id="report_purchase_request_approval_sarabun_endorsement"
-              inherit_id="purchase_request_approval.report_purchase_request_approval" priority="99">
+    <template
+        id="report_purchase_request_approval_sarabun_endorsement"
+        inherit_id="purchase_request_approval.report_purchase_request_approval"
+        priority="99"
+    >
         <xpath expr="//div[@class='page']" position="inside">
             <t t-call="agx_sarabun.sarabun_endorsement_block">
-                <t t-set="doc" t-value="o.active_sarabun_document_id"/>
+                <t t-set="doc" t-value="o.active_sarabun_document_id" />
             </t>
         </xpath>
     </template>

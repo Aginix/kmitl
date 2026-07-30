@@ -8,14 +8,18 @@
             <form string="Approval Request">
                 <header>
                     <field name="hide_reserve_budget_button" invisible="1" />
-                    <field name="is_editable" invisible="1"/>
+                    <field name="is_plan_editable" invisible="1"/>
+                    <field name="is_actual_editable" invisible="1"/>
+                    <field name="is_correction" invisible="1"/>
+                    <button name="action_to_verify" string="Submit request" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_reserve_budget" type="object" attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}" string="Reserve Budget" class="oe_highlight btn-success" groups="budget.group_budget_commitment" />
-                    <button name="action_to_verify" string="Verify Request" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                    <!-- <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'to_verify')]}" /> -->
-                    <button name="action_approve" string="อนุมัติ" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['submitted', 'validated'])]}" groups="agx_approval.group_approval_manager"/>
-                    <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'submitted'])]}" groups="agx_approval.group_approval_manager"/>
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="agx_approval.group_approval_manager"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,submitted,approved,ready_to_bill,billed" />
+                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['to_send', 'sent'])]}" groups="agx_approval.group_approval_manager"/>
+                    <button name="action_record_actual" string="Record Actual Expense" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" />
+                    <button name="action_bill" string="Submit for Disbursement" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'actual')]}" />
+                    <button name="%(agx_approval.action_report_disbursement_voucher)d" type="action" string="Print Disbursement Voucher Cover" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['actual', 'billed'])]}" />
+                    <button name="action_open_pull_back_wizard" string="Pull Back" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send'])]}"/>
+                    <button name="action_cancel" string="Cancel / Reject" type="object" attrs="{'invisible': [('state', 'not in', ['to_verify', 'to_send', 'approved'])]}" groups="agx_approval.group_approval_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_verify,to_send,sent,approved,actual,billed" />
                 </header>
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary', '=', False)]}">
                     <p>
@@ -39,30 +43,29 @@
                         </h1>
                     </div>
 
-                    <group name="approval_details" string="Approval Details">
+                    <group name="approval_details" string="Request Details">
                         <group>
                             <field name="date" readonly="1"/>
                             <field name="id" invisible="1" />
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="payment_type" required="1" widget="radio" options="{'horizontal': true}"/>
-                            <field name="owner_id" widget="employee_detail_many2one"/>
+                            <field name="owner_id" widget="employee_detail_many2one" attrs="{'readonly': [('is_plan_editable', '=', False)]}"/>
                             <field name="user_id" readonly="1"/>
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
                             <field name="has_country_id" invisible="1" />
                             <label for="date_start" string="Period" attrs="{'invisible': [('has_period', '!=', True)]}"/>
                             <div class="o_row" attrs="{'invisible': [('has_period', '!=', True)]}">
-                                <field name="date_start" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'date_end'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
+                                <field name="date_start" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'date_end'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)], 'readonly': [('is_plan_editable', '=', False)]}"/>
                                 <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
-                                <field name="date_end" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'date_start'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
+                                <field name="date_end" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'date_start'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)], 'readonly': [('is_plan_editable', '=', False)]}"/>
                             </div>
-                            <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)]}"/>
-                            <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)]}"/>
-                            <field name="description" />
+                            <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)], 'readonly': [('is_plan_editable', '=', False)]}"/>
+                            <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)], 'readonly': [('is_plan_editable', '=', False)]}"/>
+                            <field name="description" attrs="{'readonly': [('is_plan_editable', '=', False)]}"/>
                         </group>
                     </group>
-                    <group name="attachment" string="Attachment for Approval Request">
-                        <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_res_model': 'approval.request'}" widget="many2many_binary">
+                    <group name="attachment" string="Attachments">
+                        <field name="attachment_ids" attrs="{'readonly': [('is_plan_editable','=', False)]}" context="{'default_res_model': 'approval.request'}" widget="many2many_binary">
                         </field>
                     </group>
                     <group name="budget" string="Budget">
@@ -76,59 +79,57 @@
                         </div>
                         <field name="is_budget_editable" invisible="1"/>
                         <button name="action_open_reservation_picker" type="object"
-                            string="Select budget from chart (view balances)"
+                            string="Select Budget from Chart (view balance)"
                             class="btn btn-primary mb-2" icon="fa-sitemap" colspan="2"
                             attrs="{'invisible': [('is_budget_editable', '=', False)]}"/>
-                        <field name="budget_account_id" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
-                        <field name="activity_analytic_id" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
-                        <field name="department_analytic_id" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
-                        <field name="fund_analytic_id" widget="selection" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"/>
-                        <field name="source_analytic_id" widget="selection" readonly="1" attrs="{'required': [('state', '=', 'to_verify')]}"/>
+                        <field name="budget_account_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="activity_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="department_analytic_id" readonly="1" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="fund_analytic_id" widget="selection" readonly="1"/>
+                        <field name="source_analytic_id" widget="selection" readonly="1"/>
                         <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}"/>
                         <field name="analytic_distribution" invisible="1"/>
                     </group>
-                    <button name="action_open_actual_amount_wizard" string="Record Actual Disbursement" help="Use this to adjust the actual disbursement amount when it is lower than the approved amount. Values above the approved amount are not allowed." type="object" class="btn btn-primary my-3" attrs="{'invisible': [('state', '!=', 'approved')]}" />
-                    <group name="warning_partner">
-                        <group>
-                            <div colspan="2" class="alert alert-warning show" role="alert" attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}">
-                                If vendor name not found, contact procurement staff to add the information.
-                            </div>
+                    <separator string="Planned Expenses"/>
+                    <field name="line_ids" widget="no_open_readonly_x2many" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                        <tree editable="bottom">
+                            <field name="allowed_product_ids" invisible="1"/>
+                            <field name="sequence" widget="handle"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="product_id"/>
+                            <field name="description"/>
+                            <field name="total_amount" sum="Total"/>
+                        </tree>
+                    </field>
+                    <separator string="Participants"/>
+                    <field name="participant_ids" widget="no_open_readonly_x2many" attrs="{'readonly': [('is_plan_editable', '=', False)]}">
+                        <tree editable="bottom">
+                            <field name="allowed_partner_type_ids" invisible="1"/>
+                            <field name="sequence" widget="handle"/>
+                            <field name="partner_id"/>
+                            <field name="description"/>
+                        </tree>
+                    </field>
+                    <div attrs="{'invisible': [('state', 'not in', ['actual', 'billed', 'returned'])]}">
+                        <separator string="Actual Expenses"/>
+                        <field name="allocation_ids" widget="allocation_grouped" attrs="{'readonly': ['&amp;', ('is_actual_editable', '=', False), ('is_correction', '=', False)]}">
+                            <tree editable="bottom" default_order="partner_id">
+                                <field name="allowed_recipient_ids" invisible="1"/>
+                                <field name="allowed_product_ids" invisible="1"/>
+                                <field name="sequence" widget="handle"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="partner_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="product_id" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="description" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="payment_type" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="amount" sum="Total" attrs="{'readonly': [('parent.is_actual_editable', '=', False)]}"/>
+                                <field name="partner_bank_id" options="{'no_create': True, 'no_create_edit': True}" attrs="{'readonly': ['&amp;', ('parent.is_actual_editable', '=', False), ('parent.is_correction', '=', False)]}"/>
+                            </tree>
+                        </field>
+                        <group class="oe_subtotal_footer oe_right">
+                            <field name="total_actual_amount" widget="monetary"/>
                         </group>
-                    </group>
-                    <group name="warning_prepaid">
-                        <group>
-                            <div colspan="2" class="alert alert-warning show" role="alert" attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}">
-                                When payment type is Prepaid, please select the advance
-                                payer's name in the Partner field.
-                            </div>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page name="request_lines" string="Request Lines">
-                            <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
-                                <tree editable="bottom">
-                                    <field name="allowed_product_ids" invisible="1"/>
-                                    <field name="allowed_partner_type_ids" invisible="1"/>
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="partner_id"/>
-                                    <field name="product_id"/>
-                                    <field name="note"/>
-                                    <field name="total_amount" sum="Total"/>
-                                    <field name="actual_amount" attrs="{'column_invisible': [('parent.state', 'not in', ['approved', 'billed'])]}" readonly="1" sum="Total"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page name="payees" string="Payees">
-                            <field name="payee_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
-                                <tree editable="bottom" create="0" delete="0">
-                                    <field name="partner_id" readonly="1"/>
-                                    <field name="partner_bank_id" options="{'no_create': True, 'no_create_edit': True}"/>
-                                    <field name="bank_id"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
+                    </div>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" />
@@ -143,13 +144,16 @@
         <field name="name">approval.request.view.tree</field>
         <field name="model">approval.request</field>
         <field name="arch" type="xml">
-            <tree string="Approval Request">
+            <tree string="Approval Request" decoration-danger="main_exception_id != False">
                 <field name="name" />
                 <field name="date" />
                 <field name="category_id" />
                 <field name="owner_id" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
-                <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'submitted')" decoration-info="state == 'ready_to_bill'" decoration-danger="state == 'rejected'"/>
+                <field name="total_amount" sum="Total" optional="show"/>
+                <field name="main_exception_id" invisible="1"/>
+                <field name="exception_ids" widget="many2many_tags" string="Exceptions" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state in ('billed', 'approved')" decoration-muted="state == 'draft'" decoration-warning="state in ('to_verify', 'to_send', 'sent')" decoration-info="state == 'actual'" decoration-danger="state in ('rejected', 'returned')"/>
             </tree>
         </field>
     </record>
@@ -162,15 +166,25 @@
                 <field name="name" />
                 <field name="category_id" />
                 <field name="account_fiscal_year_id" />
+                <field name="owner_id" />
+                <filter name="filter_exception" string="Has Exception" domain="[('main_exception_id', '!=', False)]"/>
+                <separator />
                 <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]" />
-                <filter name="filter_submitted" string="Submitted" domain="[('state', '=', 'submitted')]" />
-                <filter name="filter_validated" string="Validated" domain="[('state', '=', 'validated')]" />
+                <filter name="filter_to_verify" string="To Verify / Reserve Budget" domain="[('state', '=', 'to_verify')]" />
+                <filter name="filter_submitted" string="To Send" domain="[('state', '=', 'to_send')]" />
+                <filter name="filter_sent" string="Sent" domain="[('state', '=', 'sent')]" />
                 <filter name="filter_approved" string="Approved" domain="[('state', '=', 'approved')]" />
-                <filter name="filter_ready_to_bill" string="Ready to Bill" domain="[('state', '=', 'ready_to_bill')]" />
+                <filter name="filter_actual" string="Actual Recorded" domain="[('state', '=', 'actual')]" />
                 <filter name="filter_billed" string="Billed" domain="[('state', '=', 'billed')]" />
+                <filter name="filter_returned" string="Returned" domain="[('state', '=', 'returned')]" />
                 <filter name="filter_rejected" string="Rejected" domain="[('state', '=', 'rejected')]" />
                 <separator />
                 <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_fy" string="Fiscal Year" context="{'group_by': 'account_fiscal_year_id'}"/>
+                </group>
             </search>
         </field>
     </record>

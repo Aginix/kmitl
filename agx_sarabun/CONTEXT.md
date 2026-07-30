@@ -42,23 +42,32 @@ _Avoid_: the old `recipient_type` vocabulary "user / department / role"; framing
 
 ### Step verbs (what a step requires)
 
-Step verbs are **admin-configurable master data** (`sarabun.verb`); the built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. A verb carries **three independent axes** (ADR-0008): **`gating`** (must be positively completed for its Stage to pass), **`show_signature`** (renders a signature block on the official document — the แสดง / ไม่แสดงลายเซ็น toggle), and **`is_signature`** (the authoritative approval-sign that closes the ดึงกลับ / ยกเลิก window and signs in the step's Position capacity; only ลงนาม-อนุมัติ). Invariant: `is_signature ⇒ show_signature`. The model is **provisional, pending review after real use**.
+Step verbs are **admin-configurable master data** (`sarabun.verb`); the built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. A verb carries **three independent axes** (ADR-0008): **`gating`** (must be positively completed for its Stage to pass), **`show_signature`** (renders a signature block on the official document — the แสดง / ไม่แสดงลายเซ็น toggle), and **`is_signature`** (an authoritative approval-sign that closes the ดึงกลับ / ยกเลิก window and signs in the step's Position capacity). Invariant: `is_signature ⇒ show_signature`. Two verbs may share the same three axes and still be kept as **distinct records** — the label is the human instruction the actor reads ("what am I being asked to do"), so a different instruction earns its own verb even when behaviour coincides. The catalogue below is the **UAT-reviewed set** (the earlier behaviour-derived 6 were replaced on UAT feedback); it is **provisional, pending review after real use**. The ผู้จัดทำ verbs are separate (see originator) and were left untouched by the UAT revision.
 
-**รับทราบ (Acknowledge)** — gating ✗ · show_signature ✗:
-For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel; renders nothing on the document.
+**รับทราบ / ถือปฏิบัติ / จัดเก็บเข้าแฟ้ม (Acknowledge, read-only)** — gating ✗ · show_signature ✗:
+For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel; renders nothing on the letter.
 
-**ตรวจสอบ / พิจารณา (Verify / Consider)** — gating ✓ · show_signature ✗:
-An intermediate actor (often a เจ้าหน้าที่ธุรการ / หัวหน้างาน) must review before the หนังสือ moves on, but **carries no signature** — their name is in the Route, not on the letter.
+**รับทราบและลงนาม (Acknowledge & sign)** — gating ✗ · show_signature ✓:
+An acknowledgement that also **puts a signature on the letter** (e.g. a post-decision sign-off). Still **non-gating** — never blocks the chain.
 
-**ส่งต่อ (Forward)** — gating ✗ · show_signature ✗:
-A pass-along in the chain; name in the Route, no signature.
+**ตรวจเอกสาร (Check)** — gating ✓ · show_signature ✗:
+An intermediate actor must check the document before it moves on, but **carries no signature** — name in the Route, not on the letter.
 
-**เห็นชอบ (Endorse)** — gating ✓ · show_signature ✓:
-Mid-chain gatekeeping — the actor reviews and passes upward with an opinion, **signing** their endorsement. **Gating**; may also ตีกลับ or ปฏิเสธ. Not the authoritative sign (does not close recall).
+**ผ่านเรื่อง / กลั่นกรอง (Screen)** — gating ✓ · show_signature ✓:
+A screening gate the matter must pass; the screener **signs** (ลงนามกำกับ). **Gating**; not the authoritative sign.
 
-**ลงนาม-อนุมัติ (Sign-Approve)** — gating ✓ · show_signature ✓ · is_signature ✓:
-The authority's decision **and** signature, made in the capacity of the step's target Position. **Gating**, and the authoritative sign = ส่งออก. Signing and approving are one verb for now (split deferred until a real case appears).
-_Avoid_: "approve" on its own (it carries the signature); coupling "shows a signature" with "gating" (they are independent axes — ADR-0008)
+**ตรวจสอบและลงนามกำกับ (Verify & countersign)** — gating ✓ · show_signature ✓:
+Verify and **countersign**. **Gating**; not the authoritative sign (does not close recall).
+
+**พิจารณา / ให้ความเห็นและลงนามกำกับ (Consider & countersign)** — gating ✓ · show_signature ✓:
+Give an opinion and **countersign**, passing upward. **Gating**; may also ตีกลับ / ปฏิเสธ. Not the authoritative sign (does not close recall).
+
+**ลงนามในใบปะหน้า / เอกสารเพื่อลงนาม (Sign-out)** — gating ✓ · show_signature ✓ · is_signature ✓:
+The authoritative signature that **issues** the หนังสือ (ส่งออก), made in the capacity of the step's target Position. **Gating**, and closes the recall window.
+
+**อนุมัติ / อนุญาต / เห็นชอบและลงนามกำกับ (Approve & sign)** — gating ✓ · show_signature ✓ · is_signature ✓:
+An approving authority's **decision and signature**. Also **authoritative** — closes the recall window (a document may legitimately have more than one authoritative sign; the *first* to occur closes ดึงกลับ / ยกเลิก).
+_Avoid_: coupling "shows a signature" with "gating" (they are independent axes — ADR-0008); assuming a **single** authoritative signer (both Sign-out and Approve are is_signature — supersedes the earlier "only ลงนาม-อนุมัติ" wording in ADR-0008); a pure non-signing "ส่งต่อ (Forward)" verb (dropped in the UAT set — a pass-along now either checks, screens, or acknowledges)
 
 ### Dispositions (how the active actor responds)
 
@@ -76,16 +85,20 @@ Send a circulating Document back for revision — available **only to the active
 _Avoid_: reject (Return is recoverable; Reject is terminal); a fixed sender-restart default (the returner chooses each time)
 
 **ดึงกลับ (Recall)**:
-The **sender** pulls a circulating Document **back to an editable state, keeping its registered number**, to revise and re-send (แบบ pull-back-to-edit). The prior routing chain is archived as history and the chain restarts on re-send; the Document lands in state `returned` — behaving as a self-initiated ตีกลับ-to-sender. Permitted **only while no ลงนาม-อนุมัติ step has occurred**. Contrast ยกเลิกการส่ง: ดึงกลับ *keeps* the number and expects a re-send.
-_Avoid_: เรียกคืน (one term now — ดึงกลับ); cancel / void-the-number (that is ยกเลิกการส่ง, a different act)
+The **sender** pulls a circulating Document **back to an editable state**, to revise and re-send (แบบ pull-back-to-edit). The prior routing chain is archived as history and the chain restarts on re-send; the Document lands in state `returned` — behaving as a self-initiated ตีกลับ-to-sender. Permitted **only while no ลงนาม-อนุมัติ step has occurred**. Contrast ยกเลิกการส่ง: ดึงกลับ is recoverable and expects a re-send; ยกเลิกการส่ง is terminal. (Since ADR-0010 the number runs only at completion, so neither act touches a number — a circulating หนังสือ has none.)
+_Avoid_: เรียกคืน (one term now — ดึงกลับ); "keeps the number" as the distinguishing trait (there is no number yet — ADR-0010; the distinction is recoverable-vs-terminal)
 
 **ยกเลิกการส่ง (Cancel-send)**:
-The **sender** withdraws a circulating Document **terminally** — it lands in state `cancelled` and its registered number is **voided** (a permanent gap; see Voided number). For "this send should never have happened", not "let me fix it" (that is ดึงกลับ). Permitted **only while no ลงนาม-อนุมัติ step has occurred**; once a signature exists the Document is part of the record and withdrawal instead requires issuing a cancellation หนังสือ.
-_Avoid_: ดึงกลับ (ดึงกลับ keeps the number and re-sends; ยกเลิกการส่ง voids it and ends the Document); recall / เรียกคืน (the old name conflated these two acts)
+The **sender** withdraws a circulating Document **terminally** — it lands in state `cancelled`. For "this send should never have happened", not "let me fix it" (that is ดึงกลับ). Permitted **only while no ลงนาม-อนุมัติ step has occurred**; once a signature exists the Document is part of the record and withdrawal instead requires issuing a cancellation หนังสือ. (Since ADR-0010 the หนังสือ was never numbered at this point, so there is no number to void.)
+_Avoid_: ดึงกลับ (ดึงกลับ is recoverable and re-sends; ยกเลิกการส่ง ends the Document); recall / เรียกคืน (the old name conflated these two acts); "voids the number" (nothing to void — ADR-0010)
 
 **Voided number (เลขยกเลิก)**:
-A registered document number whose Document was rejected or cancelled — kept as a **permanent gap, never reissued**, so the register stays auditable.
-_Avoid_: released number, reusable number
+A register ledger row marked as a permanent, never-reissued gap. **Largely historical since [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md):** because a number is now issued only at completion, rejected/cancelled documents were never numbered and so produce no voided gaps on the normal path — the mechanism (`_void_register`, `state='voided'`) is retained only for the reserved/manual compose paths. Where such a voided row *does* exist, an admin **Reset** ([ADR-0011](./docs/adr/0011-admin-reset-to-draft.md)) may let the *original* Document **reclaim its own** number (un-void → `used`), audited on the ledger + chatter; a voided number is still never handed to a *different* Document.
+_Avoid_: released number, reusable number; treating voided gaps as a normal outcome of reject/cancel (they no longer are — ADR-0010); reissuing a voided number to *another* Document (only the original may reclaim its own, via Reset — ADR-0011)
+
+**Reset (to draft — admin override, ADR-0011)**:
+An **admin-only** force-return of a หนังสือ from **any non-draft state** — including `completed`, and even the otherwise-terminal `rejected` / `cancelled` — back to an editable **`draft`**, **keeping its registered number (when it has one) and its original Route**. It exists for the case ดึงกลับ cannot serve: a mistake found *after* the document is signed / completed (typically a typo in an already-fully-approved หนังสือ) that must be corrected and re-sent from the start. It **archives the finished attempt as history** (never overwrites — prior signatures survive on the archived Route), **recreates the Route as it was originally created** (the seeded backbone; runtime เกษียนสั่งการ insertions are *dropped*), **un-freezes** the ฉบับลงนาม (the prior signed PDF is discarded), and **rolls the origin back** so it is treated exactly like a ดึงกลับ. Since [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md) only a `completed` หนังสือ carries a number, so "keep the number" bites in the completed case — its number survives the reset and is re-used verbatim when it re-completes (`_assign_register_number` is idempotent); resetting an unnumbered `circulating` / `returned` / `rejected` / `cancelled` หนังสือ simply has no number to keep (any rare voided reserved/manual number is reclaimed). A reason is mandatory (kept in chatter). It is a **deliberately separate, optional capability**, granted **per-user independently of the Manager access level** (a Sarabun Manager need not hold it) — and not every deployment grants it at all.
+_Avoid_: equating Reset with ดึงกลับ (Reset is admin-only, works *after* signing / completion / rejection, and un-freezes); treating `rejected` / `cancelled` as absolutely terminal (Reset is the one admin escape); carrying the prior run's เกษียนสั่งการ insertions into the new Route (Reset restores the original); assuming every reset หนังสือ has a number to keep (only a completed one does — ADR-0010)
 
 ### Concurrency
 
@@ -104,8 +117,12 @@ _Avoid_: all-must-approve quorum on a single step
 ### Numbering
 
 **ลงทะเบียน (Register)**:
-The act of assigning a Document its official running number from a sequence. In v1 it fires **automatically at send** (draft → circulating), but is kept a *distinct event* so a ธุรการหน่วยงาน clerk-gate can be inserted in phase 2. The sequence is resolved automatically from the **sender ส่วนงาน** — each ส่วนงาน issues from **one register shared across all its document types** (a หน่วยงาน keeps a single running number series; the earlier per-`(ส่วนงาน × type)` split was dropped on feedback), not one institute-wide pool; if no sequence is configured for that unit the send is **blocked with a clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ (fiscal year, Oct–Sep)** by default and render in พ.ศ. A number is allocated atomically (row-locked) and never recycled (see Voided number).
-_Avoid_: numbering (reserve "register" for the official, audited act)
+The act of assigning a Document its official running number from a sequence. It fires **automatically at completion** — when the **final** ผู้มีอำนาจลงนาม/อนุมัติ has signed ([ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md)), so a หนังสือ has **no number while it travels its approval route** (ที่ = `/` throughout `draft`/`circulating`/`returned`) — but is kept a *distinct event* so a ธุรการหน่วยงาน clerk-gate can be inserted in phase 2. **Send** does not number; it only *verifies* a register resolves (fail-fast). The sequence is resolved automatically from the **sender ส่วนงาน** — each ส่วนงาน issues from **one register shared across all its document types** (a หน่วยงาน keeps a single running number series; the earlier per-`(ส่วนงาน × type)` split was dropped on feedback), not one institute-wide pool; if no sequence is configured for that unit the send is **blocked with a clear error**, never silently numbered from a default. Numbers reset per **ปีงบประมาณ (fiscal year, Oct–Sep)** by default and render in พ.ศ.; the number's ปีงบ is taken from the **completion (registration) moment**. A number is allocated atomically (row-locked) and never recycled. Because it is issued only on successful completion, an abandoned (rejected/cancelled) หนังสือ consumes **no** number — the series has no gaps from failed routes. While unnumbered (throughout `draft`/`circulating`/`returned`) the หนังสือ is referred to **by its เรื่อง** — there is **no interim/temporary reference code**; the official number replaces the เรื่อง as its identifier only once ลงทะเบียน runs. **Operationally a หนังสือ never straddles a ปีงบประมาณ boundary** — a draft prepared near year-end is only *ส่ง* in the new year — so the completion ปีงบ (which the number uses) and the ลงวันที่ ปีงบ always coincide.
+_Avoid_: numbering (reserve "register" for the official, audited act); assuming a circulating หนังสือ already has its number (it does not — ADR-0010); an interim/provisional number during the route (there is none — the เรื่อง identifies it)
+
+**ลงวันที่ (Document date, `date`)**:
+The official date printed on the หนังสือ header beside ที่. It is the date the หนังสือ is **ส่ง (issued into circulation)** — stamped at `action_send`, re-stamped on each re-send — **not** the create-draft date, so a draft held over the ปีงบประมาณ boundary is dated in the new year when actually sent. Owner-adjustable in a later phase.
+_Avoid_: the create/draft timestamp; the completion date (the number's ปีงบ comes from completion, ลงวันที่ from send — they coincide because a หนังสือ never straddles a fiscal-year boundary)
 
 ### Signing & record
 

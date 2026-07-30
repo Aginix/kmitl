@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="web.Many2ManyBinaryField" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@aria-atomic='true']" position="attributes">
+            <attribute
+                name="t-attf-class"
+            >oe_fileupload {{props.className ? props.className : ''}} {{ doctypeState.isDraggingOver ? 'o_attachment_doctype_dragging_over' : '' }}</attribute>
+            <attribute name="t-on-dragenter.prevent">onDragEnter</attribute>
+            <attribute name="t-on-dragover.prevent">onDragOver</attribute>
+            <attribute name="t-on-dragleave.prevent">onDragLeave</attribute>
+            <attribute name="t-on-drop.prevent">onDrop</attribute>
+        </xpath>
+        <xpath expr="//div[@aria-atomic='true']" position="inside">
+            <div
+                t-if="doctypeState.isDraggingOver"
+                class="o_attachment_doctype_dropzone_overlay"
+            >
+                <span class="fa fa-cloud-upload me-2" />Drop files to attach
+            </div>
+            <div
+                t-if="doctypeState.uploading"
+                class="o_attachment_doctype_uploading_overlay"
+            >
+                <span class="fa fa-spin fa-spinner me-2" />Uploading...
+            </div>
+        </xpath>
+        <xpath expr="//FileInput" position="attributes">
+            <attribute name="beforeOpen.bind">beforeAttachClick</attribute>
+        </xpath>
+    </t>
+
+    <t
+        t-inherit="web.Many2ManyBinaryField.attachment_preview"
+        t-inherit-mode="extension"
+        owl="1"
+    >
+        <xpath expr="//a[@download='']" position="attributes">
+            <attribute name="download" />
+            <attribute name="target">_blank</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('caption') and hasclass('small')]" position="after">
+            <div t-if="doctypeState.options.length" class="caption small text-muted">
+                <span>Document Type:</span>
+                <span
+                    t-if="file.document_type_id"
+                    t-attf-class="badge text-bg-primary ms-1 {{ editable ? 'o_attachment_doctype_badge_clickable' : '' }}"
+                    t-att-role="editable ? 'button' : null"
+                    t-att-title="editable ? 'Change Document Type' : null"
+                    t-on-click="() => this.onBadgeClick(file.id, file.document_type_id[0])"
+                    t-esc="file.document_type_id[1]"
+                />
+                <span
+                    t-else=""
+                    t-attf-class="badge text-bg-warning ms-1 {{ editable ? 'o_attachment_doctype_badge_clickable' : '' }}"
+                    t-att-role="editable ? 'button' : null"
+                    t-att-title="editable ? 'Set Document Type' : null"
+                    t-on-click="() => this.onBadgeClick(file.id, null)"
+                >- Set type -</span>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

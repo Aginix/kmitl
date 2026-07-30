@@ -603,6 +603,8 @@ msgstr "กรุณาเลือกแม่แบบการจัดสร
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__allocation_ids
 #: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard_line__allocation_line_id
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Allocation"
 msgstr "การจัดสรร"
 
@@ -1453,7 +1455,11 @@ msgstr "บริษัทเอกชน"
 
 #. module: kris_project
 #: model:ir.model.fields,field_description:kris_project.field_kris_project__attachment_ids
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt__attachment_ids
+#: model:ir.model.fields,field_description:kris_project.field_kris_project_receipt_wizard__attachment_ids
 #: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_form
+#: model_terms:ir.ui.view,arch_db:kris_project.view_kris_project_receipt_wizard_form
 msgid "Attachment"
 msgstr "เอกสารแนบ"
 

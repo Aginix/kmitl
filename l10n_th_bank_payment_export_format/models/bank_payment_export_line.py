@@ -17,3 +17,18 @@ class BankPaymentExportLine(models.Model):
         This allows the function to be called from safe_eval context
         """
         return sanitize_account_number(acc_number) or ""
+
+    def _get_receiver_branch_code_gsb(self):
+        """Return the receiving branch code for a Government Savings Bank
+        (GSB, ``GSBATHBK``) recipient.
+
+        Referenced by the KTB and SCB layouts for GSB recipients, which
+        historically require special branch handling. Until the official bank
+        specs are confirmed, fall back to the recipient bank's branch code so
+        the export no longer raises ``AttributeError``.
+
+        TODO: confirm the exact GSB branch-code/name derivation against the
+        official KTB iPay and SCB BCM file-format specifications.
+        """
+        self.ensure_one()
+        return self.payment_partner_bank_id.bank_id.bank_branch_code or ""

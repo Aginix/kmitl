@@ -10,41 +10,27 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="after">
                 <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('state', '!=', 'returned')]}">
-                    <p><strong>Returned:</strong> This request was returned from its disbursement. Correct the payee bank, description or disbursement evidence, then click Confirm Correction.</p>
+                    attrs="{'invisible': [('is_correction', '=', False)]}">
+                    <p><strong>ตีกลับจากการเบิก:</strong> คำขอนี้ถูกตีกลับจากใบเบิก แก้ไขบัญชีผู้รับเงิน คำอธิบาย หรือหลักฐานการเบิก แล้วกด "ยืนยันการแก้ไข"</p>
                 </div>
             </xpath>
-            <xpath expr="//header/button[@name='action_to_verify']" position="after">
+            <xpath expr="//header/field[@name='is_correction']" position="after">
                 <field name="has_active_disbursement" invisible="1" />
-                <button
-                    name="action_ready_to_bill"
-                    string="Confirm Ready to Bill"
-                    type="object"
-                    class="oe_highlight"
-                    groups="agx_approval.group_approval_user"
-                    attrs="{'invisible': ['|', '|', ('state', '!=', 'approved'), ('payment_type', 'not in', ['direct', 'prepaid']), ('has_active_disbursement', '=', True)]}"
-                />
-                <button
-                    name="action_create_disbursement_request"
-                    string="Create Bill"
-                    type="object"
-                    class="oe_highlight"
-                    groups="disbursement.group_disbursement_user"
-                    attrs="{'invisible': ['|', ('state', '!=', 'ready_to_bill'), ('has_active_disbursement', '=', True)]}"
-                />
+            </xpath>
+            <xpath expr="//header/button[@name='action_bill']" position="attributes">
+                <attribute name="name">action_create_disbursement_request</attribute>
+                <attribute name="groups">disbursement.group_disbursement_user</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'actual'), ('has_active_disbursement', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="after">
                 <button
                     name="action_confirm_correction"
-                    string="Confirm Correction"
+                    string="ยืนยันการแก้ไข"
                     type="object"
                     class="oe_highlight"
                     groups="agx_approval.group_approval_user"
-                    attrs="{'invisible': [('state', '!=', 'returned')]}"
+                    attrs="{'invisible': [('is_correction', '=', False)]}"
                 />
-            </xpath>
-            <xpath expr="//field[@name='payee_ids']" position="attributes">
-                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft', 'returned'))]}</attribute>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
@@ -62,11 +48,11 @@
                 </button>
             </xpath>
             <xpath expr="//group[@name='attachment']" position="after">
-                <group name="attachment_for_disbursement" string="Attachment for Disbursement"
-                    attrs="{'invisible': [('state', 'not in', ['approved', 'ready_to_bill', 'billed', 'returned'])]}">
+                <group name="attachment_for_disbursement" string="เอกสารแนบสำหรับการเบิก"
+                    attrs="{'invisible': [('state', 'not in', ['approved', 'actual', 'billed', 'returned'])]}">
                     <field name="disbursement_attachment_ids"
                         widget="many2many_binary"
-                        attrs="{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('state', '!=', 'returned')]}">
+                        attrs="{'readonly': ['&amp;', ('disbursement_request_count', '>', 0), ('is_correction', '=', False)]}">
                     </field>
                 </group>
             </xpath>

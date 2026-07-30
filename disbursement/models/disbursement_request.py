@@ -8,6 +8,18 @@ from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
+# Two-approver step on the DR: the Finance Division Director (ผอ.กองคลัง)
+# approves first, then the Rector-delegated approver (ผู้ได้รับมอบอำนาจอธิการบดี).
+# The budget is obligated/consumed only on the second (Rector) approval.
+FINANCE_DIRECTOR_GROUP = "disbursement.group_disbursement_finance_director"
+RECTOR_DELEGATE_GROUP = "disbursement.group_disbursement_rector_delegate"
+# Execution Todos pushed to each approver group so the approval surfaces in the
+# unified Todo notification center; cleared by acting on the DR, not "Mark read".
+DR_APPROVE_FINANCE_ACTIVITY = "disbursement.mail_activity_dr_approve_finance"
+DR_APPROVE_RECTOR_ACTIVITY = "disbursement.mail_activity_dr_approve_rector"
+# Pushed to the requester when an approver rejects the request.
+DR_REJECTED_ACTIVITY = "disbursement.mail_activity_dr_rejected"
+
 
 class DisbursementRequest(models.Model):
     _name = "disbursement.request"
@@ -276,6 +288,41 @@ class DisbursementRequest(models.Model):
         readonly=True,
         copy=False,
         default="draft",
+    )
+
+    # Two-approver sub-workflow, tracked in parallel with ``state`` (which stays
+    # ``verified`` for both approval steps). Kept separate so the accounting /
+    # finance bridges and the return flow, which key off ``state``, are untouched.
+    approval_state = fields.Selection(
+        selection=[
+            ("none", "None"),
+            ("pending_finance", "Pending Finance Director"),
+            ("pending_rector", "Pending Rector-delegated Approver"),
+            ("approved", "Approved"),
+            ("rejected", "Rejected"),
+        ],
+        string="Approval",
+        default="none",
+        required=True,
+        readonly=True,
+        copy=False,
+        tracking=True,
+    )
+
+    finance_approver_id = fields.Many2one(
+        "res.users", string="Finance Director", copy=False, readonly=True
+    )
+    finance_approve_date = fields.Datetime(
+        string="Finance Approved On", copy=False, readonly=True
+    )
+    rector_approver_id = fields.Many2one(
+        "res.users", string="Rector-delegated Approver", copy=False, readonly=True
+    )
+    rector_approve_date = fields.Datetime(
+        string="Rector Approved On", copy=False, readonly=True
+    )
+    approval_reject_reason = fields.Text(
+        string="Approval Reject Reason", copy=False, readonly=True
     )
 
     analytic_distribution = fields.Json(
@@ -617,8 +664,10 @@ class DisbursementRequest(models.Model):
 
         Used by the form statusbar so the user sees a single progressive
         bar from draft → ... → approved → bill_* → payment_* → done. The
-        underlying state and pipeline_status fields still drive button
-        visibility, security, and search filters.
+        two-approver sub-workflow is shown separately by its own
+        ``approval_state`` status bar, not merged in here. The underlying
+        state and pipeline_status fields still drive button visibility,
+        security, and search filters.
         """
         for rec in self:
             if rec.state == "cancel":
@@ -793,23 +842,218 @@ class DisbursementRequest(models.Model):
         return True
 
     def action_validate(self):
-        """Inspector validates the request"""
+        """Inspector validates the request and opens the two-approver step.
+
+        The verified request now needs two approvals in sequence: the Finance
+        Division Director (ผอ.กองคลัง) then the Rector-delegated approver
+        (ผู้ได้รับมอบอำนาจอธิการบดี). Entering ``verified`` starts the sub-workflow
+        at ``pending_finance`` and pushes a Todo to the Finance Director group.
+        """
         for record in self:
             if record.state != "signed":
                 raise UserError(_("Only signed requests can be validated."))
             record.state = "verified"
+            record.approval_state = "pending_finance"
+            record._schedule_approval_todo(
+                FINANCE_DIRECTOR_GROUP, DR_APPROVE_FINANCE_ACTIVITY
+            )
+        return True
+
+    def action_approve_finance(self):
+        """First approval: the Finance Division Director (ผอ.กองคลัง).
+
+        Records the sign-off and hands over to the Rector-delegated approver.
+        No budget is touched yet — that happens only on the second approval.
+        """
+        for record in self:
+            if record.state != "verified" or record.approval_state != "pending_finance":
+                raise UserError(
+                    _("Only a verified request awaiting the Finance Director "
+                      "can be approved at this step.")
+                )
+            record.finance_approver_id = self.env.user
+            record.finance_approve_date = fields.Datetime.now()
+            record.activity_feedback([DR_APPROVE_FINANCE_ACTIVITY])
+            record.approval_state = "pending_rector"
+            record._schedule_approval_todo(
+                RECTOR_DELEGATE_GROUP, DR_APPROVE_RECTOR_ACTIVITY
+            )
         return True
 
     def action_approve(self):
-        """Director approves and commits budget"""
+        """Final approval: the Rector-delegated approver commits the budget.
+
+        Only reachable once the Finance Director has approved
+        (``approval_state == 'pending_rector'``). This is the single point where
+        the budget is obligated and consumed.
+        """
         for record in self:
-            if record.state != "verified":
+            if record.state != "verified" or record.approval_state != "pending_rector":
                 raise UserError(
-                    _("Only verified requests can be approved.")
+                    _("Only a request awaiting the Rector-delegated approval "
+                      "can be approved.")
                 )
             record._action_approve_budget()
             record.state = "approved"
+            record.approval_state = "approved"
+            record.rector_approver_id = self.env.user
+            record.rector_approve_date = fields.Datetime.now()
+            record.activity_feedback([DR_APPROVE_RECTOR_ACTIVITY])
         return True
+
+    def action_approve_batch(self):
+        """Approve many requests at once from the approver queue.
+
+        Each request is approved in its own savepoint so one that fails (e.g.
+        insufficient budget on the Rector step) does not roll back the rest.
+        Dispatches by ``approval_state`` so it serves both approver queues, and
+        returns a summary notification.
+        """
+        approved = self.env["disbursement.request"]
+        failures = []
+        for record in self:
+            try:
+                with self.env.cr.savepoint():
+                    if record.approval_state == "pending_finance":
+                        record.action_approve_finance()
+                    elif record.approval_state == "pending_rector":
+                        record.action_approve()
+                    else:
+                        continue
+                approved |= record
+            except (UserError, ValidationError) as error:
+                self.env.invalidate_all()
+                failures.append(
+                    (record.display_name, error.args and error.args[0] or _("error"))
+                )
+            except Exception as error:  # noqa: BLE001 - isolate per-record failures
+                self.env.invalidate_all()
+                failures.append((record.display_name, str(error)))
+
+        message = _("%s request(s) approved.") % len(approved)
+        if failures:
+            message += "\n" + _("Could not approve:") + "\n"
+            message += "\n".join(
+                "• %s — %s" % (name, reason) for name, reason in failures
+            )
+        if failures and not approved:
+            notification_type = "danger"
+        elif failures:
+            notification_type = "warning"
+        else:
+            notification_type = "success"
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Approval"),
+                "message": message,
+                "type": notification_type,
+                "sticky": bool(failures),
+            },
+        }
+
+    def action_open_reject_wizard(self):
+        """Open the wizard that captures the rejection reason (either approver)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Reject Approval"),
+            "res_model": "disbursement.reject.wizard",
+            "view_mode": "form",
+            "views": [(False, "form")],
+            "target": "new",
+            "context": {"default_request_id": self.id},
+        }
+
+    def _action_reject(self, reason):
+        """Reject the pending approval and notify the requester.
+
+        Keeps the request at ``verified`` (``state`` untouched) and marks the
+        sub-workflow ``rejected``; a Todo goes back to the requester and the
+        request can be re-sent for approval via ``action_request_approval``.
+        """
+        self.ensure_one()
+        if self.approval_state not in ("pending_finance", "pending_rector"):
+            raise UserError(
+                _("Only a request awaiting approval can be rejected.")
+            )
+        self.activity_unlink(
+            [DR_APPROVE_FINANCE_ACTIVITY, DR_APPROVE_RECTOR_ACTIVITY]
+        )
+        self.approval_state = "rejected"
+        self.approval_reject_reason = reason
+        if self.user_id:
+            self.activity_schedule(
+                DR_REJECTED_ACTIVITY,
+                user_id=self.user_id.id,
+                note=reason or "",
+            )
+        self.message_post(
+            body=_(
+                "<p><b>Approval rejected</b></p><p>Reason: <b>%s</b></p>"
+            ) % (reason or _("no reason given")),
+            subtype_xmlid="mail.mt_comment",
+        )
+        return True
+
+    def action_request_approval(self):
+        """Re-send a rejected request for approval, restarting at the Finance
+        Director step."""
+        self.ensure_one()
+        if self.approval_state != "rejected":
+            raise UserError(
+                _("Only a rejected request can be re-sent for approval.")
+            )
+        self.activity_feedback([DR_REJECTED_ACTIVITY])
+        self.write({
+            "finance_approver_id": False,
+            "finance_approve_date": False,
+            "rector_approver_id": False,
+            "rector_approve_date": False,
+            "approval_reject_reason": False,
+            "approval_state": "pending_finance",
+        })
+        self._schedule_approval_todo(
+            FINANCE_DIRECTOR_GROUP, DR_APPROVE_FINANCE_ACTIVITY
+        )
+        return True
+
+    def _schedule_approval_todo(self, group_xmlid, act_type_xmlid):
+        """Push an execution Todo to every member of ``group_xmlid`` so the
+        pending approval surfaces in their Todo inbox (mirrors the
+        accounting_kmitl_workflow fan-out)."""
+        group = self.env.ref(group_xmlid)
+        for record in self:
+            for approver in group.users:
+                record.activity_schedule(
+                    act_type_xmlid,
+                    user_id=approver.id,
+                    note=record.name or "",
+                )
+
+    def _reset_approval(self):
+        """Reset the two-approver sub-workflow and drop its pending Todos.
+
+        Called when a request leaves the approval window (cancel / draft /
+        return-to-verification) so the next time it reaches ``verified`` the
+        cycle starts fresh."""
+        to_reset = self.filtered(lambda r: r.approval_state != "none")
+        if not to_reset:
+            return
+        to_reset.activity_unlink([
+            DR_APPROVE_FINANCE_ACTIVITY,
+            DR_APPROVE_RECTOR_ACTIVITY,
+            DR_REJECTED_ACTIVITY,
+        ])
+        to_reset.write({
+            "approval_state": "none",
+            "finance_approver_id": False,
+            "finance_approve_date": False,
+            "rector_approver_id": False,
+            "rector_approve_date": False,
+            "approval_reject_reason": False,
+        })
 
     def _action_approve_budget(self):
         """Obligate and consume from the pre-linked budget commitment.
@@ -982,6 +1226,7 @@ class DisbursementRequest(models.Model):
                         subtype_xmlid="mail.mt_note",
                     )
             record.state = "cancel"
+        self._reset_approval()
         return True
 
     def action_draft(self):
@@ -995,6 +1240,7 @@ class DisbursementRequest(models.Model):
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False
+        self._reset_approval()
         return True
 
     def _compute_access_url(self):

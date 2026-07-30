@@ -68,6 +68,12 @@ class KrisProjectReceipt(models.Model):
         string="Currency",
         readonly=True,
     )
+    attachment_ids = fields.One2many(
+        comodel_name="ir.attachment",
+        inverse_name="res_id",
+        domain=[("res_model", "=", "kris.project.receipt")],
+        string="Attachment",
+    )
     project_state = fields.Selection(
         related="project_id.state",
         string="Project State",

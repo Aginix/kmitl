@@ -36,7 +36,7 @@ class PurchaseRequest(models.Model):
     def _compute_is_editable(self):
         res = super()._compute_is_editable()
         for record in self:
-            if record.state in ("to_verify"):
+            if record.state != "draft":
                 record.is_editable = False
 
     @api.depends("requested_by")

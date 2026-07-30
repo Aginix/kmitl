@@ -1,16 +1,19 @@
 """Post-init demo data for the KMITL post-budget finance flow.
 
-Three demo stories run in order from ``post_init``:
+Four demo stories run in order from ``post_init``:
 
 * the disbursement flow (``PR -> PA -> PO -> Work Acceptance -> DR``), moved here
   from ``kmitl_demo``;
 * vendor bills, payments and a KTB bank payment export built from those DRs;
-* fixed assets with posted depreciation.
+* fixed assets with posted depreciation;
+* standalone outbound vendor payments (draft/submitted) to fill the payment
+  list and treasury reports with data.
 
 The disbursement flow reuses two helpers from ``kmitl_demo`` (the purchase
 end-to-end flow uses them too) instead of duplicating them.
 """
 import logging
+from datetime import timedelta
 
 from odoo import SUPERUSER_ID, api, fields
 from odoo.exceptions import UserError
@@ -37,6 +40,7 @@ def post_init(cr, registry):
     )
     _create_bill_payment_demo(env, drs)
     _create_asset_demo(env)
+    _create_standalone_payment_demo(env)
 
 
 def _admin_employee(env):
@@ -805,3 +809,112 @@ def _post_depreciation(asset, today, all_lines=False):
         lines = lines.filtered(lambda l: l.line_date and l.line_date <= today)
     if lines:
         lines.create_move()
+
+
+# === Step D: standalone vendor payments ===
+#
+# 50 outbound (supplier) payments created directly, cycling through the demo
+# vendors, dimensions, amounts and dates. They are NOT linked to vendor bills so
+# the install stays fast; half are left in ``draft`` and half ``submitted`` so
+# the payment list and treasury reports show data in both states.
+
+STANDALONE_PAYMENT_COUNT = 50
+# (activity, fund, source, dept) — dimension xmlids reused from DR_CASES.
+STANDALONE_PAYMENT_DIMENSIONS = [
+    ("activity_09007", "fund_0600", "source_1", "dept_89390"),
+    ("activity_06", "fund_0200", "source_2", "dept_01"),
+    ("activity_09", "fund_0100", "source_1", "dept_01"),
+    ("activity_00", "fund_0300", "source_2", "dept_01"),
+    ("activity_06", "fund_0500", "source_2", "dept_01"),
+    ("activity_06", "fund_0400", "source_3", "dept_01"),
+]
+STANDALONE_PAYMENT_MEMOS = [
+    "ค่าวัสดุสำนักงาน",
+    "ค่าวัสดุคอมพิวเตอร์",
+    "ค่าวัสดุวิทยาศาสตร์",
+    "ค่าจ้างเหมาบริการทำความสะอาด",
+    "ค่าซ่อมแซมและบำรุงรักษาครุภัณฑ์",
+    "ค่าเช่าอุปกรณ์สำนักงาน",
+    "ค่าที่ปรึกษา/ผู้เชี่ยวชาญ",
+    "ค่าจัดอบรมสัมมนา",
+    "ค่าโปรแกรมคอมพิวเตอร์",
+    "ค่าจ้างเหมาบริการทั่วไป",
+]
+
+
+def _create_standalone_payment_demo(env):
+    """Create standalone outbound vendor payments across draft/submitted.
+
+    Payments are created directly (not from a bill) so the install stays fast,
+    and each one is built inside its own try/except so a failure never aborts
+    the install.
+
+    Must run after the Story B bank export: that export grabs every submitted
+    payment company-wide, so creating these submitted payments earlier would
+    pull them into it unintentionally.
+    """
+    company = env.ref("base.main_company")
+    fiscal_year = env.ref("kmitl_demo.account_fiscal_year_y2568")
+    payment_type = env.ref(
+        "finance_kmitl.payment_type_normal_outbound",
+        raise_if_not_found=False,
+    )
+    journal = env["account.journal"].search(
+        [("type", "=", "bank"), ("company_id", "=", company.id)],
+        limit=1,
+    )
+    if not payment_type or not journal:
+        _logger.warning(
+            "finance_kmitl_demo: standalone payments skipped "
+            "(missing outbound payment type or bank journal)."
+        )
+        return
+
+    _logger.info(
+        "Creating standalone payment demo (%s records)...",
+        STANDALONE_PAYMENT_COUNT,
+    )
+    currency = journal.currency_id or company.currency_id
+    created = 0
+    for index in range(STANDALONE_PAYMENT_COUNT):
+        try:
+            vendor = env.ref(
+                "kmitl_demo.vendor_demo_%03d" % (index % 20 + 1),
+                raise_if_not_found=False,
+            )
+            if not vendor:
+                continue
+            dimensions = STANDALONE_PAYMENT_DIMENSIONS[
+                index % len(STANDALONE_PAYMENT_DIMENSIONS)
+            ]
+            accounts = [
+                env.ref("account_analytic_kmitl.%s" % code, raise_if_not_found=False)
+                for code in dimensions
+            ]
+            analytic = {account.id: 100 for account in accounts if account}
+            memo = STANDALONE_PAYMENT_MEMOS[index % len(STANDALONE_PAYMENT_MEMOS)]
+            payment = env["account.payment"].create(
+                {
+                    "partner_id": vendor.id,
+                    "partner_type": "supplier",
+                    "payment_type": "outbound",
+                    "kmitl_payment_type_id": payment_type.id,
+                    "journal_id": journal.id,
+                    "currency_id": currency.id,
+                    "amount": 5000 + (index % 20) * 1850 + index * 25,
+                    "date": fiscal_year.date_from + timedelta(days=index * 7),
+                    "ref": "[DEMO-PAY] %s #%02d" % (memo, index + 1),
+                    "analytic_distribution": analytic,
+                }
+            )
+            # Leave half draft, half submitted so both states show in the list.
+            if index % 2 == 0:
+                payment.action_submit()
+            created += 1
+        except Exception as error:  # noqa: BLE001 - demo must never abort install
+            _logger.warning(
+                "finance_kmitl_demo: standalone payment #%s skipped (%s)",
+                index + 1,
+                error,
+            )
+    _logger.info("Standalone payment demo created (%s records).", created)

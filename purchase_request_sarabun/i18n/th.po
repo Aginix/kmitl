@@ -326,7 +326,7 @@ msgstr "สร้างเอกสาร"
 #. module: purchase_request_sarabun
 #: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.view_purchase_request_form_sarabun
 msgid "Sarabun Document"
-msgstr "หนังสือ"
+msgstr "หนังสืออนุมัติ"
 
 #. module: purchase_request_sarabun
 #: model_terms:ir.ui.view,arch_db:purchase_request_sarabun.report_purchase_request_budget
