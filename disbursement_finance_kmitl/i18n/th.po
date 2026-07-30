@@ -337,5 +337,13 @@ msgstr "ไม่สามารถระบุหัวจ่ายสำหร
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
+msgid ""
+"Payees with more than one bank account on their lines (the bill and its "
+"payment can only carry one, so pick a single account per payee): %s"
+msgstr "ผู้รับที่มีบัญชีธนาคารมากกว่า 1 บัญชีในรายการ (ใบตั้งหนี้และใบจ่ายเก็บได้บัญชีเดียว กรุณาเลือกบัญชีเดียวต่อผู้รับ): %s"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
 msgid "No request lines found for payee %s."
 msgstr "ไม่พบรายการขอเบิกของผู้รับ %s"

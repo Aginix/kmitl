@@ -314,10 +314,11 @@ class DisbursementRequest(models.Model):
                 )
 
             # One bill per payee, paid in full by one payment — so all lines
-            # of the same payee must share one method.
+            # of the same payee must share one method and one bank account.
+            lines_by_partner = record._lines_by_partner()
             mixed = [
                 partner.name
-                for partner, lines in record._lines_by_partner().items()
+                for partner, lines in lines_by_partner.items()
                 if len(set(lines.mapped("payment_method"))) > 1
             ]
             if mixed:
@@ -327,6 +328,20 @@ class DisbursementRequest(models.Model):
                         "use a single method): %s"
                     )
                     % ", ".join(mixed)
+                )
+            mixed_banks = [
+                partner.name
+                for partner, lines in lines_by_partner.items()
+                if len(lines.mapped("partner_bank_id")) > 1
+            ]
+            if mixed_banks:
+                raise UserError(
+                    _(
+                        "Payees with more than one bank account on their lines "
+                        "(the bill and its payment can only carry one, so pick "
+                        "a single account per payee): %s"
+                    )
+                    % ", ".join(mixed_banks)
                 )
 
             transfer_lines = record.line_ids.filtered(

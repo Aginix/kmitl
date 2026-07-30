@@ -235,6 +235,30 @@ class TestPaymentWorkflow(TransactionCase):
         with self.assertRaisesRegex(UserError, "Vendor A"):
             request.action_audit()
 
+    def test_mixed_banks_same_payee_blocks(self):
+        """One bill per payee carries one bank account, so lines of the same
+        payee may not designate different accounts."""
+        request = self._make_billed_request()
+        second_bank = self.env["res.partner.bank"].create({
+            "partner_id": self.partner.id,
+            "acc_number": "333-3-33333-3",
+        })
+        request.line_ids.partner_bank_id = self.partner_bank
+        request.write({
+            "line_ids": [(0, 0, {
+                "partner_id": self.partner.id,
+                "product_id": self.product.id,
+                "name": "Second line",
+                "quantity": 1,
+                "price_unit": 500.0,
+                "account_id": self.expense_account.id,
+                "analytic_distribution": self.distribution,
+                "partner_bank_id": second_bank.id,
+            })],
+        })
+        with self.assertRaisesRegex(UserError, "Vendor A"):
+            request.action_audit()
+
     def test_payee_bank_policy_resolves_matching_journal(self):
         bank = self.env["res.bank"].create({"name": "Match Bank"})
         company_account = self.env["res.partner.bank"].create({
