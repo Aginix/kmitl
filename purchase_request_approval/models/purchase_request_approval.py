@@ -345,6 +345,17 @@ class PurchaseRequestApproval(models.Model):
             "context": {"default_approval_id": self.id},
         }
 
+    def action_open_material_withdrawal_wizard(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("พิมพ์ใบเบิกวัสดุ (พ.43)"),
+            "res_model": "purchase.request.approval.material.withdrawal.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
     def _action_do_cancel(self, reason):
         self.ensure_one()
         pa_body = _(

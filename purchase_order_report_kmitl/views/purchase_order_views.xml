@@ -8,11 +8,10 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button
-                    name="%(purchase_order_report_kmitl.action_po_material_withdrawal_wizard)d"
+                    name="action_open_material_withdrawal_wizard"
                     string="พิมพ์ใบเบิกวัสดุ"
-                    type="action"
+                    type="object"
                     attrs="{'invisible': [('state', 'not in', ('purchase', 'done'))]}"
-                    context="{'default_order_id': active_id}"
                 />
             </xpath>
         </field>
