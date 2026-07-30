@@ -45,6 +45,8 @@
             "budget/static/src/reservation_picker/budget_reservation_picker.js",
             "budget/static/src/reservation_picker/budget_reservation_picker.xml",
             "budget/static/src/reservation_picker/budget_reservation_picker.scss",
+            "budget/static/src/commitment_info/budget_commitment_info.js",
+            "budget/static/src/commitment_info/budget_commitment_info.xml",
         ],
     },
     "auto_install": False,

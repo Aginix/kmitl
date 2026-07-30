@@ -31,6 +31,26 @@ class BudgetCommitment(models.Model):
         ),
     )
 
+    def _reservation_info_rows(self):
+        """Append the owner/beneficiary units to the reservation info widget.
+
+        Who reserved and who may spend is the first thing a beneficiary needs to
+        recognise a cross-OU support slip by, so it belongs next to the
+        dimensions (ADR-0011). Only shown in multi-OU installations.
+        """
+        rows = super()._reservation_info_rows()
+        if not self.env.user.has_group("operating_unit.group_multi_operating_unit"):
+            return rows
+        for fname in ("operating_unit_id", "beneficiary_operating_unit_id"):
+            value = self[fname]
+            rows.append(
+                {
+                    "label": self._fields[fname]._description_string(self.env),
+                    "value": value.display_name if value else "-",
+                }
+            )
+        return rows
+
     @api.constrains("beneficiary_operating_unit_id", "operating_unit_id")
     def _check_beneficiary_reserve_right(self):
         """Reserving *for another unit* is restricted to central-planning.

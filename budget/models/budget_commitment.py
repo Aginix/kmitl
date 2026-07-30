@@ -2,7 +2,7 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class BudgetCommitment(models.Model):
     _description = "Budget Commitment"
     _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _order = "date desc, name desc, id desc"
-    _rec_names_search = ["name", "ref"]
+    _rec_names_search = ["name", "ref", "title"]
 
     READONLY_STATES = {
         "reserved": [("readonly", True)],
@@ -38,6 +38,18 @@ class BudgetCommitment(models.Model):
         default=lambda self: _("New"),
         readonly=False,
         states=READONLY_STATES,
+    )
+    title = fields.Char(
+        string="ชื่อรายการจอง",
+        tracking=True,
+        index="trigram",
+        readonly=False,
+        states=READONLY_STATES,
+        help=(
+            "ชื่อ/วัตถุประสงค์ของใบจองงบประมาณ แสดงคู่กับเลขที่ใบจองทุกที่ที่ต้องเลือกใบจอง "
+            "(เช่น ช่องหยิบใบจองใน พ.1 / ใบขออนุมัติ) — ใบจองที่สร้างจากโครงการหรือ"
+            "แผนจัดซื้อจัดจ้างจะเติมชื่อของเอกสารต้นทางให้อัตโนมัติ"
+        ),
     )
     ref = fields.Char(
         string="Reference",
@@ -367,6 +379,91 @@ class BudgetCommitment(models.Model):
         for record in self:
             if record.amount <= 0:
                 raise UserError(_("Commitment cap amount must be positive."))
+
+    # --- Display ---
+
+    def name_get(self):
+        """Show ``BC0001 - ชื่อรายการจอง`` instead of the bare number.
+
+        A reservation is picked by *what it is for* (a การจอง for a project, a
+        plan, or a unit's support), so every place that offers a commitment —
+        the draw-down dropdown on พ.1 / ใบขออนุมัติ above all — must carry the
+        title next to the number.
+        """
+        return [
+            (record.id, "%s - %s" % (record.name, record.title))
+            if record.title
+            else (record.id, record.name)
+            for record in self
+        ]
+
+    @api.depends("name", "title")
+    def _compute_display_name(self):
+        # Base depends only on _rec_name (``name``), so editing the title would
+        # otherwise leave a stale display_name in cache.
+        return super()._compute_display_name()
+
+    def get_reservation_info(self):
+        """Display payload for the ``budget_commitment_info`` field widget.
+
+        One dict per record: identity plus label/value rows the widget renders
+        verbatim, so labels, translations and money formatting all stay
+        server-side and the widget stays dumb. Bridge modules enrich it by
+        overriding :meth:`_reservation_info_rows` (``budget_operating_unit``
+        appends the owning/beneficiary unit).
+        """
+        state_labels = dict(self._fields["state"]._description_selection(self.env))
+        return [
+            {
+                "id": record.id,
+                "name": record.name,
+                "title": record.title or "",
+                "state": record.state,
+                "state_label": state_labels.get(record.state, record.state),
+                "rows": record._reservation_info_rows(),
+                "amounts": record._reservation_info_amounts(),
+            }
+            for record in self
+        ]
+
+    def _reservation_info_rows(self):
+        """Dimension/identity rows shown by the widget (label, value) pairs."""
+        self.ensure_one()
+        fields_to_show = (
+            "account_id",
+            "department_analytic_id",
+            "source_analytic_id",
+            "activity_analytic_id",
+            "fund_analytic_id",
+            "account_fiscal_year_id",
+        )
+        rows = []
+        for fname in fields_to_show:
+            record_field = self._fields[fname]
+            value = self[fname]
+            rows.append(
+                {
+                    "label": record_field._description_string(self.env),
+                    "value": value.display_name if value else "-",
+                }
+            )
+        return rows
+
+    def _reservation_info_amounts(self):
+        """Money rows shown by the widget. ``available_to_obligate`` is the one
+        that decides whether a document can still draw from this reservation, so
+        it is flagged for emphasis."""
+        self.ensure_one()
+        return [
+            {
+                "label": self._fields[fname]._description_string(self.env),
+                "value": formatLang(
+                    self.env, self[fname], currency_obj=self.currency_id
+                ),
+                "highlight": fname == "available_to_obligate",
+            }
+            for fname in ("amount", "total_obligated", "available_to_obligate")
+        ]
 
     # --- Workflow Methods ---
 

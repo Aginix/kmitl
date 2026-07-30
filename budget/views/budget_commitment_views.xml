@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <tree string="Budget Commitments">
                 <field name="name" optional="show" />
+                <field name="title" optional="show" />
                 <field name="date" optional="hide" />
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
@@ -72,6 +73,10 @@
                         <h1>
                             <field name="name" readonly="1" />
                         </h1>
+                        <h2>
+                            <field name="title"
+                                placeholder="ชื่อรายการจอง เช่น จองงบสนับสนุนคณะวิศวกรรมศาสตร์"/>
+                        </h2>
                     </div>
 
                     <group>
@@ -182,7 +187,8 @@
         <field name="model">budget.commitment</field>
         <field name="arch" type="xml">
             <search string="Budget Commitments">
-                <field name="name"/>
+                <field name="name" string="ใบจองงบประมาณ"
+                    filter_domain="['|', '|', ('name', 'ilike', self), ('title', 'ilike', self), ('ref', 'ilike', self)]"/>
                 <field name="user_id"/>
                 <field name="account_fiscal_year_id"/>
 
