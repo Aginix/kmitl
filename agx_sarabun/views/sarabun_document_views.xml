@@ -172,7 +172,7 @@
                                         <group name="step_what">
                                             <field name="order" string="ลำดับ"
                                                    attrs="{'readonly': [('is_originator', '=', True)]}"/>
-                                            <field name="verb"/>
+                                            <field name="verb" widget="selection" />
                                         </group>
                                         <group>
                                             <field name="for_info" string="สำเนาเรียน (CC)"
@@ -196,7 +196,7 @@
                                         </field>
                                     </group>
 
-                                    <group string="ไทม์ไลน์ (Timeline)" col="2">
+                                    <group string="ไทม์ไลน์ (Timeline)" col="2" name="timeline">
                                         <field name="activated_date" readonly="1"/>
                                         <field name="read_date" readonly="1"/>
                                         <field name="sent_date" readonly="1"/>
