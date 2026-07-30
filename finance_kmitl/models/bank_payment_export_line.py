@@ -11,20 +11,28 @@ class BankPaymentExportLine(models.Model):
     # -------------------------------------------------------------------------
     @api.model
     def _domain_payment_id(self):
-        method_manual_out = self.env.ref(
-            "account.account_payment_method_manual_out",
+        """Only KMITL transfer payments awaiting the bank are selectable.
+
+        Overrides the base domain twice over: it accepts ``submitted``
+        payments (KMITL exports before posting) and keys off the KMITL
+        เงินโอน method instead of Odoo's stock Manual one, so cheque and cash
+        payments never end up in an e-payment file.
+        """
+        method_transfer_out = self.env.ref(
+            "account_kmitl.payment_method_transfer_out",
             raise_if_not_found=False,
         )
-        if not method_manual_out:
+        if not method_transfer_out:
             return "[('id', '=', 0)]"
         domain = (
             "[('export_status', '=', 'draft'), "
             "('state', '=', 'submitted'), "
             "('payment_method_id', '=', %s), "
+            "('kmitl_payment_type_id.is_cheque', '=', False), "
             "('journal_id.type', '=', 'bank'), "
             "('company_id', '=', company_id), "
             "('currency_id', '=', currency_id)]"
-            % (method_manual_out.id)
+            % (method_transfer_out.id)
         )
         return domain
 
