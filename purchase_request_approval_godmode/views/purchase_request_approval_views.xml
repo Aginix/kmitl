@@ -13,6 +13,12 @@
             </field>
 
             <!-- Header fields: readonly except (draft) or (to_approve/approved + godmode) -->
+            <field name="title" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
+            <field name="description" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
+            </field>
             <field name="procurement_type_id" position="attributes">
                 <attribute name="attrs">{'readonly': [('state', 'not in', ('draft',)), '|', ('state', 'not in', ('to_approve', 'approved')), ('user_has_godmode', '=', False)]}</attribute>
             </field>
