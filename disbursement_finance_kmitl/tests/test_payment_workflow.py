@@ -173,6 +173,50 @@ class TestPaymentWorkflow(TransactionCase):
         request.action_audit()
         self.assertEqual(request.state, "payment_audited")
 
+    def test_cheque_subject_needs_no_journal(self):
+        """A cheque subject carries no paying bank: the cheque draws on the
+        journal configured on the 'จ่ายเช็ค' payment type instead."""
+        cheque_type = self.env.ref("finance_kmitl.payment_type_cheque_outbound")
+        cheque_type.journal_id = self.bank_journal
+        subject = self.env["kmitl.payment.subject"].create({
+            "name": "Cheque subject", "bank_policy": "fixed",
+            "default_method": "cheque",
+        })
+        partner = self.env["res.partner"].create({"name": "Utility Co"})
+        request = self._make_billed_request(classify=False, partner=partner)
+        request.payment_subject_id = subject
+        request.action_audit()
+        self.assertEqual(request.state, "payment_audited")
+        self.assertEqual(
+            request._resolve_line_journal(request.line_ids), self.bank_journal
+        )
+
+    def test_transfer_override_under_cheque_subject_blocks(self):
+        """A cheque subject has no paying bank, so a line overridden to
+        transfer must be switched back — the error says so by payee name."""
+        subject = self.env["kmitl.payment.subject"].create({
+            "name": "Cheque only subject", "bank_policy": "fixed",
+            "default_method": "cheque",
+        })
+        request = self._make_billed_request(classify=False)
+        request.payment_subject_id = subject
+        request.line_ids.payment_method = "transfer"
+        with self.assertRaisesRegex(UserError, "Vendor A"):
+            request.action_audit()
+
+    def test_cheque_without_any_journal_blocks(self):
+        cheque_type = self.env.ref("finance_kmitl.payment_type_cheque_outbound")
+        cheque_type.journal_id = False
+        subject = self.env["kmitl.payment.subject"].create({
+            "name": "Cheque subject no journal", "bank_policy": "fixed",
+            "default_method": "cheque",
+        })
+        partner = self.env["res.partner"].create({"name": "Utility Co"})
+        request = self._make_billed_request(classify=False, partner=partner)
+        request.payment_subject_id = subject
+        with self.assertRaisesRegex(UserError, "จ่ายเช็ค"):
+            request.action_audit()
+
     def test_mixed_methods_same_payee_blocks(self):
         request = self._make_billed_request()
         request.write({

@@ -699,8 +699,8 @@ msgstr "นโยบายหัวจ่าย"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__journal_id
-msgid "Paying Journal"
-msgstr "หัวจ่าย (สมุดธนาคาร)"
+msgid "Main Paying Journal"
+msgstr "หัวจ่ายหลัก (สมุดธนาคาร)"
 
 #. module: finance_kmitl
 #: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__default_method

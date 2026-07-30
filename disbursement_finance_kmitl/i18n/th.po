@@ -285,9 +285,25 @@ msgstr "กรุณาเลือกเรื่องที่จ่ายก
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
 #, python-format
 msgid ""
-"Payment subject '%s' has no paying journal configured. Set it in Finance ▸ "
-"Settings ▸ Payment Subjects first."
-msgstr "เรื่องที่จ่าย '%s' ยังไม่ได้กำหนดหัวจ่าย กรุณาตั้งค่าที่ การเงิน ▸ Settings ▸ เรื่องที่จ่าย ก่อน"
+"Payment subject '%s' has no main paying journal (หัวจ่ายหลัก) configured for "
+"transfers. Set it in Finance ▸ Settings ▸ Payment Subjects first."
+msgstr "เรื่องที่จ่าย '%s' ยังไม่ได้กำหนดหัวจ่ายหลักสำหรับเงินโอน กรุณาตั้งค่าที่ การเงิน ▸ Settings ▸ เรื่องที่จ่าย ก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"No journal configured for cheque payments. Set the journal on the 'จ่ายเช็ค' "
+"payment type (Finance ▸ Settings ▸ Payment Types) first."
+msgstr "ยังไม่ได้กำหนดสมุดธนาคารสำหรับจ่ายเช็ค กรุณาตั้งค่า Journal บนประเภทการจ่าย 'จ่ายเช็ค' (การเงิน ▸ Settings ▸ Payment Types) ก่อน"
+
+#. module: disbursement_finance_kmitl
+#: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0
+#, python-format
+msgid ""
+"Payment subject '%(subject)s' is a cheque subject (no paying bank "
+"configured) — switch these transfer lines back to cheque: %(payees)s"
+msgstr "เรื่องที่จ่าย '%(subject)s' เป็นเรื่องจ่ายเช็ค (ไม่มีหัวจ่าย) — กรุณาเปลี่ยนแถวเงินโอนต่อไปนี้กลับเป็นเช็ค: %(payees)s"
 
 #. module: disbursement_finance_kmitl
 #: code:addons/disbursement_finance_kmitl/models/disbursement_request.py:0

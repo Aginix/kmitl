@@ -207,10 +207,12 @@ class DisbursementRequest(models.Model):
     def _resolve_line_journal(self, line):
         """Return the paying journal (หัวจ่าย) for a request line.
 
-        Cheque lines and the ``fixed`` bank policy pay from the subject's
-        configured journal. Under ``payee_bank`` a transfer line pays from the
-        institute's bank journal at the payee's own bank, matched by the bank
-        behind each journal's account. Returns an empty recordset when no
+        Cheque lines draw on the journal configured on the 'จ่ายเช็ค' payment
+        type (subjects carry no paying bank for cheques); the subject's main
+        journal is a fallback. Transfer lines pay from the subject's main
+        journal under the ``fixed`` policy, or — under ``payee_bank`` — from
+        the institute's bank journal at the payee's own bank, matched by the
+        bank behind each journal's account. Returns an empty recordset when no
         journal can be determined.
         """
         self.ensure_one()
@@ -218,8 +220,23 @@ class DisbursementRequest(models.Model):
         Journal = self.env["account.journal"]
         if not subject:
             return Journal
-        if line.payment_method == "cheque" or subject.bank_policy == "fixed":
-            return subject.journal_id
+        company = self.company_id
+        if line.payment_method == "cheque":
+            cheque_type = self.env.ref(
+                "finance_kmitl.payment_type_cheque_outbound",
+                raise_if_not_found=False,
+            )
+            cheque_journal = cheque_type.journal_id if cheque_type else Journal
+            return (
+                cheque_journal.filtered(lambda j: j.company_id == company)
+                or subject.journal_id.filtered(
+                    lambda j: j.company_id == company
+                )
+            )
+        if subject.bank_policy == "fixed":
+            return subject.journal_id.filtered(
+                lambda j: j.company_id == company
+            )
         payee_bank = line.partner_bank_id.bank_id
         if not payee_bank:
             return Journal
@@ -253,16 +270,47 @@ class DisbursementRequest(models.Model):
             cheque_lines = record.line_ids.filtered(
                 lambda l: l.payment_method == "cheque"
             )
-            if not subject.journal_id and (
-                subject.bank_policy == "fixed" or cheque_lines
+            transfer_lines_all = record.line_ids.filtered(
+                lambda l: l.payment_method == "transfer"
+            )
+            # A cheque subject carries no paying bank at all, so it cannot
+            # drive transfers — the auditor must keep its lines on cheque.
+            if subject.default_method == "cheque" and transfer_lines_all:
+                raise UserError(
+                    _(
+                        "Payment subject '%(subject)s' is a cheque subject "
+                        "(no paying bank configured) — switch these transfer "
+                        "lines back to cheque: %(payees)s",
+                        subject=subject.name,
+                        payees=", ".join(
+                            sorted(set(
+                                transfer_lines_all.mapped("partner_id.name")
+                            ))
+                        ),
+                    )
+                )
+            if (
+                transfer_lines_all
+                and subject.bank_policy == "fixed"
+                and not subject.journal_id
             ):
                 raise UserError(
                     _(
-                        "Payment subject '%s' has no paying journal "
-                        "configured. Set it in Finance ▸ Settings ▸ Payment "
-                        "Subjects first."
+                        "Payment subject '%s' has no main paying journal "
+                        "(หัวจ่ายหลัก) configured for transfers. Set it in "
+                        "Finance ▸ Settings ▸ Payment Subjects first."
                     )
                     % subject.name
+                )
+            if cheque_lines and not record._resolve_line_journal(
+                cheque_lines[0]
+            ):
+                raise UserError(
+                    _(
+                        "No journal configured for cheque payments. Set the "
+                        "journal on the 'จ่ายเช็ค' payment type (Finance ▸ "
+                        "Settings ▸ Payment Types) first."
+                    )
                 )
 
             # One bill per payee, paid in full by one payment — so all lines

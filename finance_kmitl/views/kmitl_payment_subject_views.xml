@@ -8,9 +8,9 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="bank_policy"/>
-                <field name="journal_id" optional="show"/>
                 <field name="default_method"/>
+                <field name="bank_policy" optional="show"/>
+                <field name="journal_id" optional="show"/>
             </tree>
         </field>
     </record>
@@ -26,13 +26,18 @@
                         <h1><field name="name" placeholder="e.g. เงินเดือน"/></h1>
                     </div>
                     <group>
-                        <group>
-                            <field name="bank_policy" widget="radio"/>
-                            <field name="journal_id"
-                                   attrs="{'required': [('bank_policy', '=', 'fixed')]}"/>
-                        </group>
+                        <!-- Step 1: choose cheque or transfer. Cheque needs no
+                             paying bank here (cheques draw on the journal of
+                             the 'จ่ายเช็ค' payment type); transfers configure
+                             the main paying journal / bank policy. -->
                         <group>
                             <field name="default_method" widget="radio"/>
+                            <field name="bank_policy" widget="radio"
+                                   attrs="{'invisible': [('default_method', '=', 'cheque')]}"/>
+                            <field name="journal_id"
+                                   attrs="{'invisible': ['|', ('default_method', '=', 'cheque'), ('bank_policy', '=', 'payee_bank')], 'required': [('default_method', '=', 'transfer'), ('bank_policy', '=', 'fixed')]}"/>
+                        </group>
+                        <group>
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>

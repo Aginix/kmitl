@@ -28,11 +28,12 @@ Set by the **auditor** during Payment Audit. Three orthogonal concepts:
   (direct/advance/prepaid, inherited from the approval) nor with
   `kmitl.payment.type` (the mechanical operation type that carries
   `is_cheque` / journal / override account).
-- **Bank Policy / นโยบายหัวจ่าย** (field on the subject): how the Paying Bank
-  is chosen.
-  - `fixed` — every payment of the DR pays from the subject's configured
-    journal (e.g. salary → KTB; direct vendor → SCB, cross-bank routing is the
-    bank's job, not Odoo's).
+- **Bank Policy / นโยบายหัวจ่าย** (field on the subject, **transfers only** —
+  the method is chosen first; a cheque subject carries no paying bank): how
+  the Paying Bank is chosen.
+  - `fixed` — every payment of the DR pays from the subject's **main paying
+    journal (หัวจ่ายหลัก)** (e.g. salary → KTB; direct vendor → SCB,
+    cross-bank routing is the bank's job, not Odoo's).
   - `payee_bank` — each payee is paid from the KMITL journal at the *payee's
     own bank* (e.g. เงินยืม/สำรองจ่าย), matched by
     `line.partner_bank_id.bank_id == journal.bank_account_id.bank_id` across
@@ -40,6 +41,9 @@ Set by the **auditor** during Payment Audit. Three orthogonal concepts:
     matched **blocks the audit confirmation** (the error lists the unmatched
     payees; the auditor switches those lines to cheque or fixes the bank
     account first).
+  - Cheque lines draw on the journal configured on the **'จ่ายเช็ค' payment
+    type** (a single system-wide setting), with the subject's main journal as
+    fallback — never a per-subject requirement.
 - **Paying Bank / หัวจ่าย**: *which* KMITL bank account pays — a bank
   `account.journal`, derived per payment from the subject's Bank Policy.
 - **Payment Method / วิธีจ่าย** (per DR **line**, defaulted from the subject):
