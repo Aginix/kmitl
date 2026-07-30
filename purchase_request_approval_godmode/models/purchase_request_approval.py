@@ -1,30 +1,10 @@
 # -*- coding: utf-8 -*-
-import base64
-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import float_compare
 
 
 GODMODE_GROUP = "purchase_request_approval_godmode.group_pa_godmode"
-
-# Header fields whose value appears in the พจ.1 PDF report. God-Mode edits
-# touching any of these must trigger PDF attachment regeneration so the
-# Sarabun export/print flow reflects the corrected data.
-# `line_ids` is included because line qty / price / name all show in the PDF.
-_PDF_VISIBLE_FIELDS = frozenset(
-    {
-        "title",
-        "description",
-        "partner_id",
-        "procurement_type_id",
-        "procurement_method_id",
-        "payment_type",
-        "vat_included",
-        "tax_id",
-        "line_ids",
-    }
-)
 
 # States in which God-Mode unlocks editing.
 _GODMODE_STATES = ("to_approve", "approved")
@@ -100,55 +80,12 @@ class PurchaseRequestApproval(models.Model):
                 )
 
     def write(self, vals):
-        """God-Mode writes are silent (no chatter / no follower notification)
-        and refresh the PA PDF attachment when a field visible in the report
-        has changed.
-        """
+        """God-Mode writes are silent (no chatter / no follower notification)."""
         if self.env.user.has_group(GODMODE_GROUP):
             silent_self = self.with_context(
                 tracking_disable=True,
                 mail_notrack=True,
                 mail_create_nolog=True,
             )
-            res = super(PurchaseRequestApproval, silent_self).write(vals)
-            if set(vals) & _PDF_VISIBLE_FIELDS:
-                for rec in silent_self:
-                    if rec.state in _GODMODE_STATES:
-                        rec._regenerate_report_pdf()
-            return res
+            return super(PurchaseRequestApproval, silent_self).write(vals)
         return super().write(vals)
-
-    def _regenerate_report_pdf(self):
-        """Drop the currently-stored พจ.1 PDF attachment, render a fresh one,
-        and re-freeze the Sarabun signed_pdf if the หนังสือ has already been
-        completed (is_frozen). Without the re-freeze, `action_print_report`
-        would still serve the stale signed copy.
-        """
-        self.ensure_one()
-        if not self.name:
-            return
-        filename = self.name + ".pdf"
-        old_attachments = self.env["ir.attachment"].search(
-            [
-                ("res_model", "=", self._name),
-                ("res_id", "=", self.id),
-                ("name", "=", filename),
-            ]
-        )
-        old_attachments.unlink()
-        self.report_generate()
-        self._refreeze_sarabun_signed_pdf()
-
-    def _refreeze_sarabun_signed_pdf(self):
-        """If this PA's Sarabun document has already been frozen (completed
-        routing), re-render and overwrite its signed_pdf so that
-        `action_print_report` / the portal download serve the corrected PDF.
-        """
-        self.ensure_one()
-        doc = self.active_sarabun_document_id
-        if not doc or not doc.is_frozen:
-            return
-        pdf = doc._render_official_pdf()
-        doc.sudo().write({
-            "signed_pdf": base64.b64encode(pdf),
-        })
