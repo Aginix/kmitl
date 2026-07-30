@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-"""The Register (ลงทะเบียน) — atomic, per-(ส่วนงาน × type), ปีงบประมาณ-reset
-numbering. Replaces the old max()+1 race and the broken fiscal reset (ADR-0002,
-DESIGN §4).
+"""The Register (ลงทะเบียน) — atomic, per-เล่มทะเบียน, ปีงบประมาณ-reset numbering.
+Replaces the old max()+1 race and the broken fiscal reset (ADR-0002, DESIGN §4).
+
+A ส่วนงาน may keep SEVERAL เล่มทะเบียน (ADR-0011); the หนังสือ picks the book it is
+issued from (defaulting to the unit's เล่มทะเบียนหลัก).
 """
 import logging
 
@@ -15,16 +17,18 @@ _logger = logging.getLogger(__name__)
 
 class SarabunDocumentSequence(models.Model):
     _name = "sarabun.document.sequence"
-    _description = "Sarabun Register (per ส่วนงาน × type)"
+    _description = "Sarabun Register (เล่มทะเบียนหนังสือ)"
     _order = "name"
 
     name = fields.Char(required=True)
     code = fields.Char(required=True)
     active = fields.Boolean(default=True)
 
-    # === Resolution key: one register per ส่วนงาน, shared across ALL document types ===
+    # === Owning unit: a ส่วนงาน may keep several เล่มทะเบียน (ADR-0011) ===
     sender_department_id = fields.Many2one(
         "hr.department", string="ส่วนงาน (Issuing Unit)", required=True, index=True,
+        help="หน่วยงานเจ้าของเล่มทะเบียนนี้ — หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน; "
+        "หนังสือจะเลือกว่าจะออกเลขจากเล่มใด (ค่าเริ่มต้น = เล่มทะเบียนหลักของหน่วยงาน).",
     )
 
     # === Rendering ===
@@ -43,10 +47,10 @@ class SarabunDocumentSequence(models.Model):
     number_ids = fields.One2many("sarabun.document.number", "sequence_id", string="Numbers")
     next_counter = fields.Integer(compute="_compute_next_counter", string="Next Number")
 
+    # NOTE: no unique(sender_department_id) — a ส่วนงาน keeps as many เล่มทะเบียน as it
+    # needs (ADR-0011); the register books are told apart by their unique ``code``.
     _sql_constraints = [
         ("code_uniq", "unique(code)", "Register code must be unique!"),
-        ("unit_uniq", "unique(sender_department_id)",
-         "Only one register per ส่วนงาน (all document types share it)."),
     ]
 
     # ------------------------------------------------------------------ helpers

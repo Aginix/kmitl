@@ -25,7 +25,7 @@
                         <h1><field name="name" placeholder="ทะเบียนหนังสือกองคลัง"/></h1>
                     </div>
                     <group>
-                        <group string="Resolution key (ส่วนงาน — one register per unit)">
+                        <group string="หน่วยงานเจ้าของเล่ม (หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน)">
                             <field name="sender_department_id"/>
                             <field name="code"/>
                             <field name="active" widget="boolean_toggle"/>

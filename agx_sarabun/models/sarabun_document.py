@@ -187,6 +187,12 @@ class SarabunDocument(models.Model):
         inverse_name="document_id",
         string="Routing History",
         domain=[("active", "=", False)],
+        # Without active_test=False the ORM drops every archived row on the way out
+        # (_RelationalMulti.convert_to_record filters x2many values by `active`
+        # whenever active_test is on) — the domain would fetch them and the record
+        # conversion would then hand back an empty set, so the History tab always
+        # rendered blank.
+        context={"active_test": False},
         copy=False,
         help="Frozen steps of closed attempts (kept for the เกษียน trail).",
     )
@@ -261,6 +267,17 @@ class SarabunDocument(models.Model):
     )
 
     # === Numbering / Register (P3 — ADR-0002 §4) ===
+    sequence_id = fields.Many2one(
+        comodel_name="sarabun.document.sequence",
+        string="เล่มทะเบียน (Register Book)",
+        compute="_compute_sequence_id",
+        store=True,
+        readonly=False,
+        copy=False,
+        domain="[('sender_department_id', '=', sender_department_id), ('active', '=', True)]",
+        help="เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0011) — ตั้งต้นจากเล่มทะเบียนหลัก "
+        "ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง.",
+    )
     register_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
         string="Register Number",
@@ -288,7 +305,7 @@ class SarabunDocument(models.Model):
     reserved_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
         string="Reserved Number",
-        domain="[('state', '=', 'reserved')]",
+        domain="[('state', '=', 'reserved'), ('sequence_id', '=', sequence_id)]",
     )
 
     # === Signing / official record (P5 — DESIGN §5) ===
@@ -355,6 +372,32 @@ class SarabunDocument(models.Model):
             record.is_cancelled = record.state == "cancelled"
             record.is_terminal = record.state in ("rejected", "cancelled")
             record.is_editable = record.state in ("draft", "returned")
+
+    @api.depends("sender_department_id")
+    def _compute_sequence_id(self):
+        """Default the เล่มทะเบียน from the unit (its เล่มทะเบียนหลัก, or its only book)
+        — so the drafter never has to pick when the unit keeps a single register.
+        Editable (readonly=False) until sent; a numbered หนังสือ keeps the book its
+        number actually came from."""
+        for record in self:
+            if record.register_number_id:
+                record.sequence_id = record.register_number_id.sequence_id
+            elif record.sender_department_id:
+                record.sequence_id = record.sender_department_id._sarabun_default_sequence()
+            else:
+                record.sequence_id = False
+
+    @api.constrains("sequence_id", "sender_department_id")
+    def _check_sequence_department(self):
+        for record in self:
+            seq = record.sequence_id
+            if seq and seq.sender_department_id != record.sender_department_id:
+                raise ValidationError(_(
+                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s'."
+                ) % {
+                    "book": seq.display_name,
+                    "unit": record.sender_department_id.display_name,
+                })
 
     @api.depends("origin_model", "origin_res_id")
     def _compute_origin_reference(self):
@@ -580,7 +623,10 @@ class SarabunDocument(models.Model):
                 raise UserError(_(
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
-            doc._resolve_sequence()  # P3: fail fast if the unit has no register
+            # P3: fail fast if no register resolves, and PIN the resolved เล่มทะเบียน
+            # so a later config change can't move the หนังสือ to another book between
+            # ส่ง and ลงทะเบียน (which runs at completion — ADR-0010/0011).
+            doc.sequence_id = doc._resolve_sequence()
             doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
             # ลงวันที่ = the ส่ง (issue) date, not the create-draft date (ADR-0010): a
             # draft held over from the old ปีงบประมาณ is dated when it is actually sent
@@ -870,9 +916,14 @@ class SarabunDocument(models.Model):
         self._call_origin("_on_sarabun_rejected", self, step)
 
     def _bump_attempt_and_archive(self):
-        """Freeze the current attempt's steps as history and start a new attempt."""
+        """Freeze the current attempt's steps as history and start a new attempt.
+
+        sudo: archiving is an ENGINE write over the whole chain — the originator row
+        included — so it must pass the ผู้จัดทำ/ผู้ส่ง write-guard. Without it the
+        sender's own ดึงกลับ (which runs in their user env, unlike a returner's
+        sudoed ตีกลับ) died on "the ผู้จัดทำ/ผู้ส่ง step is fixed"."""
         self.ensure_one()
-        self.routing_step_ids.write({"active": False})
+        self.routing_step_ids.sudo().write({"active": False})
         self.attempt_seq = (self.attempt_seq or 1) + 1
 
     def _restart_chain(self):
@@ -924,20 +975,24 @@ class SarabunDocument(models.Model):
                 ))
 
     def _resolve_sequence(self):
-        """Resolve the register from the sender ส่วนงาน — one shared register per
-        unit across all document types. Block on missing; never number from a
-        default pool (DESIGN §4.2)."""
+        """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0011): the book chosen
+        on the document, else the unit's เล่มทะเบียนหลัก / only book. Block on missing
+        or ambiguous; never number from a default pool (DESIGN §4.2)."""
         self.ensure_one()
-        seq = self.env["sarabun.document.sequence"].search([
-            ("sender_department_id", "=", self.sender_department_id.id),
-            ("active", "=", True),
-        ], limit=1)
+        dept = self.sender_department_id
+        seq = self.sequence_id or (dept and dept._sarabun_default_sequence())
         if not seq:
+            unit = dept.display_name
+            if dept and dept._sarabun_registers():
+                raise UserError(_(
+                    "ส่วนงาน '%(unit)s' มีหลายเล่มทะเบียน — โปรดเลือกเล่มทะเบียนที่จะใช้ส่ง "
+                    "(หรือกำหนดเล่มทะเบียนหลักของหน่วยงาน)."
+                ) % {"unit": unit})
             raise UserError(_(
                 "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. "
                 "(No register configured for unit '%(unit)s'.) "
                 "Configure a register before sending."
-            ) % {"unit": self.sender_department_id.display_name})
+            ) % {"unit": unit})
         return seq
 
     def _assign_register_number(self):

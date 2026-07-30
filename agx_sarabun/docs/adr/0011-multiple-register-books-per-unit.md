@@ -1,0 +1,19 @@
+# หนึ่งส่วนงานมีได้หลายเล่มทะเบียน (register books), chosen per หนังสือ
+
+**Amends the register-resolution rule of [ADR-0002](./0002-document-lifecycle-negative-paths.md) / DESIGN §4.2.** Resolution has already moved once: from per-`(ส่วนงาน × type)` to **one register per ส่วนงาน, shared across all document types** — enforced in the schema by `unique(sender_department_id)` on `sarabun.document.sequence`. Feedback from the units says that single running series is still too narrow: a หน่วยงาน routinely keeps **several เล่มทะเบียน** side by side (e.g. หนังสือภายนอก vs หนังสือเวียน, or a separate เล่ม per ผู้บริหาร/ภารกิจ), each with its own prefix and its own counter.
+
+We therefore make the register a **book the หน่วยงาน owns many of, and the หนังสือ picks one**:
+
+- `unique(sender_department_id)` is **dropped**. A ส่วนงาน may own any number of `sarabun.document.sequence` records (they stay distinguishable by their unique `code`).
+- `sarabun.document.sequence_id` — the **เล่มทะเบียน this หนังสือ issues from**. Stored, computed from the sender ส่วนงาน but user-editable (`readonly=False`), domain-bound to the unit's active books, and validated to belong to that unit.
+- `hr.department.default_sarabun_sequence_id` — the unit's **เล่มทะเบียนหลัก**, so a drafter does not choose a book on every หนังสือ. When the unit owns exactly one book that book is used with no configuration at all.
+- `_resolve_sequence()` = the หนังสือ's book → else the unit's default → else the unit's only book. **Ambiguous** (several books, no default) is an error at send, same class of fail-fast as **missing** (no book at all): "โปรดเลือกเล่มทะเบียน". Never fall back to an arbitrary book — silent numbering from the wrong series is the anti-pattern CONTEXT forbids.
+- `action_send()` **pins** the resolved book onto `sequence_id`. ลงทะเบียน runs later, at completion ([ADR-0010](./0010-register-number-at-completion-not-at-send.md)), so without the pin a config change mid-route could move the หนังสือ to another series between ส่ง and ลงทะเบียน.
+
+## Consequences
+
+- **The counter is per book, not per unit.** `sarabun.document.number` is already keyed `unique(sequence_id, counter, fiscal_year)` and `allocate()` row-locks the sequence, so parallel books simply run parallel series — no engine change was needed. A unit that keeps one book is bit-for-bit unchanged.
+- **Existing databases self-heal.** Dropping the entry from `_sql_constraints` makes Odoo drop the `sarabun_document_sequence_unit_uniq` constraint on module update (stale `ir.model.constraint` xmlid → `unlink` → `ALTER TABLE … DROP CONSTRAINT`); no migration script. Existing documents get `sequence_id` from the stored compute — their unit's only book, or the book their number actually came from when already registered.
+- **Where the choice is made.** The เล่มทะเบียน sits in the ทะเบียนหนังสือ group of the document form (beside ที่ / วันที่) and is repeated, editable, on the **send wizard** — ส่ง is the moment "ส่งด้วยทะเบียนอะไร" is really decided. It becomes read-only once the หนังสือ leaves draft/returned.
+- **Configuration lives on the unit.** ธุรการหน่วยงาน config (hr.department form) now also lists the unit's books and its เล่มทะเบียนหลัก, so the whole per-unit sarabun setup is one screen. The Registers menu keeps managing books directly.
+- **`kind`/type still does not select a register.** The book is chosen by the *drafter* (or defaulted by the unit), not derived from `sarabun.document.type` — reviving the per-type binding would re-create the coupling ADR-0002's successor removed. A unit that wants a book per type simply sets no default and picks.

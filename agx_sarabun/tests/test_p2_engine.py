@@ -198,6 +198,20 @@ class TestP2Engine(SarabunCommon):
         # a fresh waiting chain exists to re-send on the same number
         self.assertTrue(doc.routing_step_ids.filtered(lambda s: s.state == "waiting"))
 
+    def test_pull_back_by_the_sender_themselves(self):
+        """ดึงกลับ run by the SENDER (not as superuser): archiving the chain must not
+        trip the ผู้จัดทำ/ผู้ส่ง write-guard. Regression — the guard used to reject the
+        sender's own recall with "the ผู้จัดทำ/ผู้ส่ง step is fixed", so a หนังสือ could
+        never be pulled back from the UI even though nobody had signed yet."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.action_send()
+        doc_as_sender = doc.with_user(self.user_a)
+        self.assertTrue(doc_as_sender.can_withdraw)
+        doc_as_sender.action_pull_back(reason="แก้ไขเนื้อหาก่อนส่งใหม่")
+        self.assertTrue(doc.is_returned)
+        self.assertTrue(doc.routing_step_ids.filtered("is_originator"))
+
     def test_recall_requires_reason(self):
         """Every backward move needs a reason (ADR-0006)."""
         doc = self._make_doc()
