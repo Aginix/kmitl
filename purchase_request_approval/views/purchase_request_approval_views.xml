@@ -162,24 +162,51 @@
                             <field name="department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
+                            <field name="company_id" invisible="1" />
                             <field name="procurement_type_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
                             <field name="procurement_method_id" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="selection" />
                             <field name="account_fiscal_year_id" readonly="1" />
                             <field name="estimated_cost" readonly="1"/>
                             <field name="payment_type" readonly="1" />
+                            <field
+                                name="partner_id"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
+                            />
+                            <field
+                                name="vat_included"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="tax_id"
+                                widget="selection"
+                                attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('state', '!=', 'draft')]}"
+                            />
                         </group>
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
                             <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
+                                    <field name="currency_id" invisible="1"/>
                                     <field name="product_id" readonly="1" />
                                     <field name="name" readonly="1"/>
                                     <field name="product_qty"/>
                                     <field name="price_unit"/>
+                                    <field name="tax_id" optional="hide"/>
+                                    <field name="price_subtotal" widget="monetary" invisible="1"/>
+                                    <field name="price_total" widget="monetary" invisible="1"/>
+                                    <field name="price_tax" widget="monetary" optional="hide"/>
                                     <field name="estimated_cost" readonly="1"/>
                                 </tree>
                             </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="estimated_cost" invisible="1"/>
+                                <field name="tax_totals" widget="account-tax-totals-field" nolabel="1" colspan="2" readonly="1"/>
+                            </group>
                         </page>
                         <page name="committee" string="Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}">
                             <separator string="Work Acceptance Committee"/>

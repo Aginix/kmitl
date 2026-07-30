@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models
+from odoo import api, models
 
 
 class ApprovalRequest(models.Model):
@@ -32,25 +32,50 @@ class ApprovalRequest(models.Model):
     def _get_sarabun_subject(self):
         return self.category_id.name
 
+    def _sarabun_submit_guard(self):
+        # A request may only be routed once its budget is reserved (to_send).
+        return self.state == "to_send"
+
+    # -- Sarabun outcome → request state ----------------------------------
+    def _on_sarabun_circulating(self, document):
+        # หนังสือเริ่มเวียน → คำขออยู่ระหว่างขออนุมัติ. Also covers re-sending a
+        # หนังสือ that was returned (ตีกลับ/ดึงกลับ) for revision.
+        if self.state in ("to_send", "returned"):
+            self.state = "sent"
+        return super()._on_sarabun_circulating(document)
+
     def _on_sarabun_completed(self, document):
+        # อนุมัติ → คำขอได้รับอนุมัติแล้ว
         self.state = "approved"
         return super()._on_sarabun_completed(document)
 
     def _on_sarabun_rejected(self, document, step):
-        # ปฏิเสธ is terminal: action_cancel lands the request in ``rejected`` and
+        # ปฏิเสธ (terminal): action_cancel lands the request in ``rejected`` and
         # releases the budget commitment.
         self.action_cancel()
         return super()._on_sarabun_rejected(document, step)
 
     def _on_sarabun_returned(self, document, step):
-        # ตีกลับ / ดึงกลับ are revisable: re-open to draft for amend & resubmit.
-        self.action_draft()
+        # ตีกลับ / ดึงกลับ: land in ``returned`` — editable everywhere except the
+        # budget (see _compute_is_plan_editable), then the หนังสือ is re-sent.
+        self.state = "returned"
         return super()._on_sarabun_returned(document, step)
 
     def _on_sarabun_cancelled(self, document):
-        # ยกเลิกการส่ง (terminal): re-open to draft so it can be revised/resubmitted.
-        self.action_draft()
+        # ยกเลิกการส่ง: only the send is voided (register number cancelled) — fall
+        # back to ``to_send`` keeping the reservation, ready for a fresh หนังสือ.
+        self.state = "to_send"
         return super()._on_sarabun_cancelled(document)
+
+    @api.depends("state", "sarabun_state")
+    def _compute_is_plan_editable(self):
+        """A Sarabun-returned request reopens the whole plan for editing (except
+        budget). A disbursement return leaves the หนังสือ ``completed`` and is
+        handled as a narrow correction instead — so it stays locked here."""
+        super()._compute_is_plan_editable()
+        for rec in self:
+            if rec.state == "returned" and rec.sarabun_state == "returned":
+                rec.is_plan_editable = True
 
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Approval Request report."""
