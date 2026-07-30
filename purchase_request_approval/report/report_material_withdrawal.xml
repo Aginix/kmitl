@@ -17,9 +17,6 @@
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
                     <t t-set="currency" t-value="o.currency_id"/>
-                    <t t-set="requester" t-value="o.env['hr.employee'].browse(data.get('requester_id')) if data else o.env['hr.employee']"/>
-                    <t t-set="dept_head" t-value="o.env['hr.employee'].browse(data.get('dept_head_id')) if data else o.env['hr.employee']"/>
-                    <t t-set="disburser" t-value="o.env['hr.employee'].browse(data.get('disburser_id')) if data else o.env['hr.employee']"/>
                     <t t-set="doc_date" t-value="o.approval_date or o.date_start or o.create_date"/>
                     <style>
                         * {
