@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Official KMITL receipt (ใบเสร็จรับเงิน / OFFICIAL RECEIPT).
+        This is a fixed-format legal document and is intentionally BILINGUAL
+        (Thai + English on every label) to match the institute's official form,
+        which is why the labels are inline rather than translated via i18n.
+    -->
+    <template id="report_receipt_kmitl_document">
+        <t t-call="web.basic_layout">
+            <style>
+                * { font-family: 'THSarabunNew', Arial, sans-serif; }
+                .page, .page p, .page span, .page div, .page td, .page th {
+                    font-size: 16pt;
+                    line-height: 1.25;
+                }
+            </style>
+            <div class="page">
+                <t t-if="o.state == 'cancelled'">
+                    <div style="position: absolute; top: 320px; left: 180px;
+                                transform: rotate(-30deg); font-size: 96px;
+                                color: red; opacity: 0.25; z-index: 1000;">
+                        ยกเลิก / CANCELLED
+                    </div>
+                </t>
+
+                <!-- Top: crest / No. -->
+                <div class="row">
+                    <div class="col-8 text-center offset-2">
+                        <img t-if="o.company_id.logo"
+                             t-att-src="image_data_uri(o.company_id.logo)"
+                             style="max-height: 70px;"
+                             alt="Logo"/>
+                    </div>
+                    <div class="col-2 text-right">
+                        <div>เลขที่ / No.
+                            <span t-field="o.name"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h3 style="margin-bottom: 0;">ใบเสร็จรับเงิน</h3>
+                        <h4 style="margin-top: 0;">OFFICIAL RECEIPT</h4>
+                        <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหาร ลาดกระบัง</div>
+                        <div>King Mongkut's Institute of Technology Ladkrabang</div>
+                        <div>ถนนฉลองกรุง เขตลาดกระบัง กรุงเทพ 10520</div>
+                        <div>Chalongkrung Road, Ladkrabang Bangkok 10520</div>
+                    </div>
+                </div>
+
+                <!-- Date -->
+                <div class="row mt8">
+                    <div class="col-12 text-right">
+                        <span>วันที่ / Date</span>
+                        <span t-field="o.date"/>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="row mt8">
+                    <div class="col-12">
+                        <div class="mb-1">
+                            <strong>รับเงินจาก / RECEIVED FROM</strong>
+                            <span t-esc="o.customer_name or (o.partner_id and o.partner_id.name) or ''"/>
+                        </div>
+                        <div class="mb-1">
+                            <strong>ที่อยู่ / ADDRESS</strong>
+                            <span t-esc="o.customer_address or ''"/>
+                        </div>
+                        <div class="mb-1">
+                            <strong>เป็นค่า / PAY FOR</strong>
+                            <span t-esc="'  '.join(o.line_ids.mapped('name'))"/>
+                        </div>
+                        <div class="mb-1">
+                            <strong>จำนวนเงิน / THE SUM OF</strong>
+                            <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
+                            <span>บาท / BAHT</span>
+                        </div>
+                        <div class="mb-1" style="font-style: italic;">
+                            (
+                            <span t-esc="o.currency_id.with_context(lang='th_TH').amount_to_text(o.amount_total)"/>
+                            /
+                            <span t-esc="o.currency_id.with_context(lang='en_US').amount_to_text(o.amount_total)"/>
+                            )
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment method + bank table -->
+                <div class="row mt8">
+                    <div class="col-3">
+                        <div>
+                            <span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:11px;font-size:9px;">
+                                <t t-if="o.payment_method_id.payment_type == 'cash'">✓</t>
+                            </span>
+                            เงินสด / CASH
+                        </div>
+                        <div>
+                            <span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:11px;font-size:9px;">
+                                <t t-if="o.payment_method_id.payment_type == 'cheque'">✓</t>
+                            </span>
+                            เช็ค / CHEQUE
+                        </div>
+                        <div>
+                            <span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:11px;font-size:9px;">
+                                <t t-if="o.payment_method_id.payment_type == 'transfer'">✓</t>
+                            </span>
+                            เงินโอน / MONEY TRANSFER
+                        </div>
+                    </div>
+                    <div class="col-9">
+                        <table class="table table-bordered" style="margin-bottom:0;">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">จำนวนเงิน บาท / BAHT</th>
+                                    <th class="text-center">ธนาคาร / DRAWEE BANK</th>
+                                    <th class="text-center">เลขที่ / NUMBER</th>
+                                    <th class="text-center">วันที่ / DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
+                                    </td>
+                                    <td/>
+                                    <td/>
+                                    <td/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Confirmation + signature -->
+                <div class="row" style="margin-top: 40px;">
+                    <div class="col-7">
+                        ได้รับเงินจำนวนดังกล่าวข้างต้นไว้เป็นการถูกต้องแล้ว
+                        <br/>
+                        Received the amount stated above
+                    </div>
+                    <div class="col-5 text-center">
+                        <div>โดย / by</div>
+                        <div style="margin-top: 40px;">............................................</div>
+                        <div t-esc="o.user_id.name or ''"/>
+                        <div t-esc="o.department_id.display_name or ''"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_receipt_kmitl">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="receipt_kmitl.report_receipt_kmitl_document"
+                   t-lang="o.partner_id.lang or 'th_TH'"/>
+            </t>
+        </t>
+    </template>
+</odoo>

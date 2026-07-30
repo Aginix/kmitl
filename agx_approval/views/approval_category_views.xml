@@ -15,6 +15,9 @@
                         <field name="has_city" />
                         <field name="has_country_id" />
                         <field name="allowed_product_ids" widget="many2many_tags"/>
+                        <field name="allow_internal_partner"/>
+                        <field name="allow_external_partner"/>
+                        <field name="allow_student_partner"/>
                         <field name="budget_account_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                         <field name="activity_analytic_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                         <field name="department_analytic_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
@@ -73,7 +76,7 @@
         <field name="arch" type="xml">
             <search string="Approval category">
                 <field name="name" />
-                <group string="Group By">
+                <group name="group_by" string="Group By">
                     <filter string="Category Group" name="group_by_group_id" context="{'group_by': 'group_id'}"/>
                 </group>
             </search>

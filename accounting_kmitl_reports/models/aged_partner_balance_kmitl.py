@@ -105,7 +105,9 @@ class AgedPartnerBalanceKmitl(models.AbstractModel):
 
         # Resolve the selected dimensions to the moves that carry them.
         move_ids = None
-        leaves = self._kmitl_build_dim_leaves(options.get("dims") or {})
+        leaves = self._kmitl_build_dim_leaves(
+            options.get("dims") or {}, options.get("dim_only_self")
+        )
         if leaves:
             move_ids = self.env["account.move.line"].search(leaves).move_id.ids
 
@@ -227,6 +229,13 @@ class AgedPartnerBalanceKmitl(models.AbstractModel):
             "accounting_kmitl_reports.action_report_aged_partner_balance_kmitl_xlsx",
         )
 
+    @api.model
+    def action_export_csv(self, options):
+        return self._kmitl_report_action(
+            options,
+            "accounting_kmitl_reports.action_report_aged_partner_balance_kmitl_csv",
+        )
+
     # ------------------------------------------------------------------
     # QWeb PDF rendering — reuse the shared compute.
     # ------------------------------------------------------------------
@@ -342,3 +351,42 @@ class AgedPartnerBalanceXlsxKmitl(models.AbstractModel):
 
         sheet.set_column(0, 0, 42)
         sheet.set_column(1, last_col, 15)
+
+
+class AgedPartnerBalanceCsvKmitl(models.AbstractModel):
+    """CSV export of the aged partner balance — one flat row per partner, with
+    the account code/name repeated on every row (no account subtotals / grand
+    total), so the file is ready for pivot/analysis. Shares the compute with
+    the screen / PDF / XLSX."""
+
+    _name = "report.accounting_kmitl_reports.aged_partner_balance_csv"
+    _inherit = "accounting_kmitl_reports.csv.report"
+    _description = "KMITL Aged Partner Balance CSV"
+
+    def _kmitl_csv_rows(self, options):
+        report = self.env[
+            "report.accounting_kmitl_reports.aged_partner_balance_kmitl"
+        ]
+        result = report.get_aged_partner_data(options)
+        keys = ("residual",) + BUCKETS
+        rows = [
+            [
+                _("Account Code"),
+                _("Account Name"),
+                _("Partner"),
+                _("Total"),
+                _("Current"),
+                _("1-30"),
+                _("31-60"),
+                _("61-90"),
+                _("91-120"),
+                _("120+"),
+            ]
+        ]
+        for account in result["accounts"]:
+            for partner in account["partners"]:
+                rows.append(
+                    [account["code"], account["name"], partner["name"]]
+                    + [self._csv_num(partner[k]) for k in keys]
+                )
+        return rows

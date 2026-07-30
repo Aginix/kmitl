@@ -11,7 +11,6 @@ class PurchaseRequestLine(models.Model):
 
     product_uom_id = fields.Many2one(
         comodel_name="uom.uom",
-        domain=[],
     )
 
     product_id = fields.Many2one(

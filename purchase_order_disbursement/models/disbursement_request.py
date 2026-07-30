@@ -29,6 +29,12 @@ class DisbursementRequest(models.Model):
             else:
                 rec.purchase_id = False
 
+    def _get_return_source(self):
+        """A PO-linked DR returns to its purchase order for correction. (A DR
+        that also has a Work Acceptance is routed to the WA by the WA bridge,
+        which overrides this and wins via the module dependency order.)"""
+        return self.purchase_id or super()._get_return_source()
+
     def _compute_analytic(self):
         """Merge analytic_distribution from first PO line when reference is a PO."""
         super()._compute_analytic()

@@ -202,7 +202,7 @@
                 <filter name="this_year" string="This Year" domain="[('date', '>=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
                                 ('date', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"/>
 
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
                     <filter name="group_by_user" string="Requested by" domain="[]" context="{'group_by': 'user_id'}"/>
                     <filter name="group_by_type" string="Transfer Type" domain="[]" context="{'group_by': 'transfer_type'}"/>

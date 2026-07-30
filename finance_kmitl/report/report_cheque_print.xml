@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_cheque_print">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context(lang='th_TH')"/>
+                    <!-- Fall back to a default (in-memory) layout when the cheque
+                         book has none configured yet, so printing still works. -->
+                    <t t-set="layout" t-value="o.journal_id.cheque_layout_id or o.env['cheque.layout'].new({})"/>
+
+                    <style>
+                        * {
+                        font-family: "THSarabunNew", "Sarabun", Arial, sans-serif;
+                        }
+                    </style>
+
+                    <div class="page" t-attf-style="position: relative; font-size: {{layout.font_size or 14}}pt;">
+
+                        <!-- A/C Payee Only crossing (top-left, diagonal) -->
+                        <div t-if="o.crossed"
+                             t-attf-style="position:absolute; top:{{layout.crossing_top}}mm; left:{{layout.crossing_left}}mm; transform: rotate(-60deg); transform-origin: left top;">
+                            <span style="border-top:1px solid #000; border-bottom:1px solid #000; padding:0.5mm 2mm; font-size:9pt; white-space:nowrap;">A/C PAYEE ONLY</span>
+                        </div>
+
+                        <!-- Date digits DDMMYYYY aligned to the pre-printed boxes -->
+                        <div t-attf-style="position:absolute; top:{{layout.date_top}}mm; left:{{layout.date_left}}mm; letter-spacing:{{layout.date_spacing}}mm;">
+                            <span t-out="o.date_digits(layout.date_buddhist_year)"/>
+                        </div>
+
+                        <!-- Payee -->
+                        <div t-attf-style="position:absolute; top:{{layout.payee_top}}mm; left:{{layout.payee_left}}mm; white-space:nowrap;">
+                            <span t-out="o.partner_id.name or ''"/>
+                        </div>
+
+                        <!-- Strike out 'หรือผู้ถือ' (or bearer) -->
+                        <div t-if="o.strike_bearer"
+                             t-attf-style="position:absolute; top:{{layout.bearer_top}}mm; left:{{layout.bearer_left}}mm; width:26mm; border-top:1.5px solid #000;"/>
+
+                        <!-- Amount in figures -->
+                        <div t-attf-style="position:absolute; top:{{layout.amount_figure_top}}mm; left:{{layout.amount_figure_left}}mm; white-space:nowrap;">
+                            <span t-out="'{:,.2f}'.format(o.amount)"/>
+                        </div>
+
+                        <!-- Amount in Thai words -->
+                        <div t-attf-style="position:absolute; top:{{layout.amount_text_top}}mm; left:{{layout.amount_text_left}}mm; white-space:nowrap;">
+                            <span t-out="o.amount_in_words()"/>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

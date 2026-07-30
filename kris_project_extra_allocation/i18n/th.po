@@ -1,0 +1,91 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kris_project_extra_allocation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model,name:kris_project_extra_allocation.model_kris_project
+msgid "KRIS Project"
+msgstr "โครงการ KRIS"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model,name:kris_project_extra_allocation.model_kris_project_extra_analytic_line
+msgid "KRIS Project Extra Payee Line"
+msgstr "รายการผู้รับค่า Extra"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model.fields,field_description:kris_project_extra_allocation.field_kris_project__extra_analytic_ids
+msgid "Extra Payees"
+msgstr "ผู้รับค่า Extra"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model.fields,field_description:kris_project_extra_allocation.field_kris_project_extra_analytic_line__analytic_account_id
+msgid "Extra Payee"
+msgstr "ผู้รับค่า Extra"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model.fields,field_description:kris_project_extra_allocation.field_kris_project_extra_analytic_line__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model.fields,field_description:kris_project_extra_allocation.field_kris_project_extra_analytic_line__percentage
+msgid "Percentage"
+msgstr "เปอร์เซ็นต์"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model.fields,field_description:kris_project_extra_allocation.field_kris_project_extra_analytic_line__project_id
+msgid "Project"
+msgstr "โครงการ"
+
+#. module: kris_project_extra_allocation
+#: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
+msgid "Extra Project Management Fee Allocation"
+msgstr "การจัดสรรค่าบริหารจัดการโครงการ (Extra)"
+
+#. module: kris_project_extra_allocation
+#: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
+msgid "Total Extra Value of Project"
+msgstr "ค่า Extra รวม"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model.fields,field_description:kris_project_extra_allocation.field_kris_project__extra_value_project_pct
+#: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
+msgid "As % of Project Value"
+msgstr "คิดเป็น % ของมูลค่างาน"
+
+#. module: kris_project_extra_allocation
+#: model_terms:ir.ui.view,arch_db:kris_project_extra_allocation.view_kris_project_form_extra_allocation
+msgid "Total"
+msgstr "รวม"
+
+#. module: kris_project_extra_allocation
+#: model:exception.rule,name:kris_project_extra_allocation.kris_excep_extra_value_no_payees
+msgid "Extra payees required"
+msgstr "ต้องระบุผู้รับค่า Extra"
+
+#. module: kris_project_extra_allocation
+#: model:exception.rule,description:kris_project_extra_allocation.kris_excep_extra_value_no_payees
+msgid "Extra payees must be set when Extra Value is greater than zero."
+msgstr "ต้องระบุผู้รับค่า Extra เมื่อมีค่า Extra มากกว่าศูนย์"
+
+#. module: kris_project_extra_allocation
+#: model:ir.model.constraint,message:kris_project_extra_allocation.constraint_kris_project_extra_analytic_line_unique_project_analytic
+msgid "Each payee can only appear once per project."
+msgstr "ผู้รับแต่ละรายเลือกได้เพียงครั้งเดียวต่อโครงการ"
+
+#. module: kris_project_extra_allocation
+#. odoo-python
+#: code:addons/kris_project_extra_allocation/models/kris_project_extra_analytic_line.py:0
+#, python-format
+msgid "Payee %s is already added to this project."
+msgstr "ผู้รับ %s ถูกเพิ่มในโครงการนี้แล้ว"

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="excep_self_canceling_pair" model="exception.rule">
+        <field name="name">คู่บัญชีหักล้างตัวเอง (Dr./Cr. รหัสบัญชีเดียวกัน)</field>
+        <field name="description">สมุดรายวันมีเพียง 1 คู่ ที่ใช้รหัสบัญชีเดียวกันทั้ง Dr. และ Cr. ด้วยยอดเท่ากัน ทำให้รายการหักล้างตัวเองไม่มีผลทางบัญชี กรุณาตรวจสอบว่าเป็นการบันทึกโดยตั้งใจ</field>
+        <field name="sequence">50</field>
+        <field name="model">account.move</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+lines = obj.line_ids.filtered(
+    lambda l: l.account_id and l.display_type not in ('line_section', 'line_note')
+)
+if len(lines) == 2 and lines[0].account_id == lines[1].account_id:
+    debit_lines = lines.filtered(lambda l: l.debit &gt; 0)
+    credit_lines = lines.filtered(lambda l: l.credit &gt; 0)
+    if len(debit_lines) == 1 and len(credit_lines) == 1 \
+            and debit_lines.debit == credit_lines.credit:
+        failed = True
+        </field>
+        <field name="active" eval="True" />
+        <field name="is_blocking" eval="False" />
+    </record>
+</odoo>

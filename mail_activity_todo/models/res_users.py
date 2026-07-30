@@ -1,16 +1,26 @@
-from odoo import fields, models, modules
+from odoo import api, fields, models, modules
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
 
     def _my_todo_count_domain(self):
+        # Fork A (ADR-0006): the inbox is every open activity assigned to me,
+        # minus the ones I've dismissed with Mark as Read. Category is not a gate.
         return [
             ("is_my_todo", "=", True),
             ("is_read_by_me", "=", False),
-            ("todo_category", "!=", False),
         ]
 
+    def _my_read_todo_domain(self):
+        # History (ADR-0003): the inbox's read complement — my Todos that I have
+        # dismissed with Mark as Read. Same recipient base, flipped read flag.
+        return [
+            ("is_my_todo", "=", True),
+            ("is_read_by_me", "=", True),
+        ]
+
+    @api.model
     def get_my_todo_count(self):
         """Systray payload: open Todos grouped by source model with per-model
         icon and overdue/today/planned counts.
@@ -32,7 +42,12 @@ class ResUsers(models.Model):
         def ensure(model_id, model_name):
             grp = groups.get(model_id)
             if grp is None:
-                model = self.env["ir.model"].browse(model_id).model
+                # sudo: regular users have no read access to ir.model, but the
+                # technical model name is non-sensitive metadata (read_group
+                # already resolves res_model_id names via sudo). Without this the
+                # whole payload raises AccessError for non-admins and the systray
+                # / Discuss panel silently show nothing.
+                model = self.env["ir.model"].sudo().browse(model_id).model
                 icon = False
                 try:
                     icon_module = self.env[model]._original_module

@@ -76,7 +76,7 @@
                     <notebook>
                         <page string="การดำเนินงาน">
                             <group>
-                                <group string="แผน">
+                                <group name="plan" string="แผน">
                                     <field name="purchase_request_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
                                     <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
                                     <field name="approval_signing_eta" attrs="{'readonly': [('state', 'not in', ('draft', 'new'))]}" />
@@ -133,7 +133,7 @@
                 <filter name="hide_draft_cancel" string="ซ่อนร่าง/ยกเลิก" domain="[('state', 'not in', ('draft', 'cancel'))]" />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator/>
-                <group expand="1" string="Group By">
+                <group expand="1" name="group_by" string="Group By">
                     <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter string="ส่วนงาน" name="group_by_department" context="{'group_by': 'department_analytic_id'}" />
                     <filter string="แหล่งเงิน" name="group_by_source" context="{'group_by': 'source_analytic_id'}" />

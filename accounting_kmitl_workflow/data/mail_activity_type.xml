@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- Pushed to the maker (submitted_by) when their entry is rejected, so it
+         surfaces in the unified Todo inbox. 'execution' = clears only by acting
+         on the source (resubmitting), not by "Mark as Read". -->
+    <record id="mail_activity_move_rejected" model="mail.activity.type">
+        <field name="name">Entry rejected</field>
+        <field name="summary">Your entry was rejected — please revise and resubmit</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">account.move</field>
+        <field name="icon">fa-times-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+
+    <!-- Pushed to the approvers when a maker submits an entry, so it surfaces
+         in their Todo inbox. 'execution' = clears by acting on the source
+         (approving / rejecting), not by "Mark as Read". -->
+    <record id="mail_activity_move_to_approve" model="mail.activity.type">
+        <field name="name">Entry to approve</field>
+        <field name="summary">An entry was submitted and is waiting for your approval</field>
+        <field name="todo_category">execution</field>
+        <field name="res_model">account.move</field>
+        <field name="icon">fa-check-circle</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

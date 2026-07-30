@@ -29,37 +29,37 @@ class ApprovalRequest(models.Model):
         for rec in self:
             rec.advance_payment_count = 1 if rec.advance_payment_id else 0
 
-    @api.depends("state", "payment_type", "advance_payment_id")
+    @api.depends("state", "advance_payment_id")
     def _compute_show_create_advance_payment_button(self):
+        """Borrowing money (ยืมเงิน) is a discretionary action taken after the
+        request is approved — it is no longer pre-declared via a payment type."""
         for rec in self:
             rec.show_create_advance_payment_button = (
                 rec.state == "approved"
-                and rec.payment_type == "advance"
-                and rec.owner_id == self.env.user
+                and rec.owner_id.user_id == self.env.user
                 and not rec.advance_payment_id
             )
 
     @api.depends(
         "state",
-        "payment_type",
         "advance_payment_id",
         "advance_payment_id.state",
-        "disbursement_request_ids.state",
+        "has_active_disbursement",
     )
     def _compute_show_create_disbursement_button(self):
         for rec in self:
-            if rec.payment_type == "advance":
-                # Show "Create Bill" only when the linked advance payment
-                # has funds disbursed (in_progress state)
+            if rec.advance_payment_id:
+                # Borrowed money: bill only once the linked advance payment has
+                # funds disbursed (in_progress).
                 rec.show_create_disbursement_button = (
-                    rec.state in ("approved", "billed")
-                    and bool(rec.advance_payment_id)
+                    rec.state == "actual"
                     and rec.advance_payment_id.state == "in_progress"
                     and not rec.has_active_disbursement
                 )
             else:
+                # Direct pay: bill as soon as actuals are recorded.
                 rec.show_create_disbursement_button = (
-                    rec.state in ("approved", "billed")
+                    rec.state == "actual"
                     and not rec.has_active_disbursement
                 )
 
@@ -67,8 +67,8 @@ class ApprovalRequest(models.Model):
         self.ensure_one()
         loan_type = self.env.ref("advance_payment.loan_type_other")
         return {
-            "requested_by": self.owner_id.id,
-            "department_id": self.department_id.id,
+            "requested_by": self.owner_id.user_id.id or self.env.user.id,
+            "department_id": self.owner_id.department_id.id,
             "loan_reason": self.description or "",
             "loan_amount": self.total_amount,
             "loan_type_id": loan_type.id,
@@ -82,10 +82,6 @@ class ApprovalRequest(models.Model):
         if self.state != "approved":
             raise UserError(
                 _("Only approved approval requests can create advance payments.")
-            )
-        if self.payment_type != "advance":
-            raise UserError(
-                _("Payment type must be 'Advance' to create an advance payment.")
             )
         if self.advance_payment_id:
             raise UserError(

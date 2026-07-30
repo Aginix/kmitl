@@ -10,12 +10,42 @@
         groups="accounting_kmitl.group_accounting_kmitl_user"
     />
 
-    <!-- ใบตั้งเจ้าหนี้ (Vendor Bills) -->
+    <!-- Dashboard (landing page — lowest sequence so it opens first) -->
+    <menuitem
+        id="menu_accounting_dashboard"
+        name="Dashboard"
+        parent="menu_accounting_root"
+        action="action_accounting_dashboard"
+        sequence="5"
+    />
+
+    <!-- เจ้าหนี้ (Accounts Payable) -->
+    <menuitem
+        id="menu_payable"
+        name="เจ้าหนี้"
+        parent="menu_accounting_root"
+        sequence="10"
+    />
     <menuitem
         id="menu_vendor_bills"
-        name="ใบตั้งเจ้าหนี้"
-        parent="menu_accounting_root"
+        name="ใบตั้งหนี้"
+        parent="menu_payable"
         action="account.action_move_in_invoice_type"
+        sequence="10"
+    />
+
+    <!-- ลูกหนี้ (Accounts Receivable) -->
+    <menuitem
+        id="menu_receivable"
+        name="ลูกหนี้"
+        parent="menu_accounting_root"
+        sequence="11"
+    />
+    <menuitem
+        id="menu_receivable_bills"
+        name="ใบตั้งหนี้"
+        parent="menu_receivable"
+        action="account.action_move_out_invoice_type"
         sequence="10"
     />
 
@@ -30,9 +60,9 @@
     <menuitem
         id="menu_vendor_payment_moves"
         name="ใบล้างเจ้าหนี้"
-        parent="menu_accounting_root"
+        parent="menu_payable"
         action="action_vendor_payment_moves"
-        sequence="15"
+        sequence="20"
     />
 
     <!-- Journal Entries -->
@@ -49,7 +79,7 @@
         id="menu_account_entries"
         name="Account Entries"
         parent="menu_journal_entries"
-        action="account.action_move_journal_line"
+        action="action_account_entries"
         sequence="5"
     />
 
