@@ -41,6 +41,7 @@ class BudgetCommitment(models.Model):
     )
     title = fields.Char(
         string="ชื่อรายการจอง",
+        required=True,
         tracking=True,
         index="trigram",
         readonly=False,
