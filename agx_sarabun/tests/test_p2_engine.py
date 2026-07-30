@@ -181,17 +181,19 @@ class TestP2Engine(SarabunCommon):
         with self.assertRaises(UserError):
             doc.action_recall(reason="x")
 
-    def test_pull_back_keeps_number_and_returns(self):
-        """ดึงกลับ → returned, KEEP the number, archive + bump the attempt (ADR-0006)."""
+    def test_pull_back_returns_and_rearchives(self):
+        """ดึงกลับ → returned, archive + bump the attempt (ADR-0006). Since ADR-0010
+        the number runs only at completion, so a circulating doc carries none — the
+        pull-back is purely back-to-editable, re-sendable on the same (still empty)
+        register."""
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
         doc.action_send()
-        number = doc.register_number_id
+        self.assertFalse(doc.register_number_id)  # not numbered while circulating
         attempt = doc.attempt_seq
         doc.action_pull_back(reason="แก้ไขเนื้อหาก่อนส่งใหม่")
         self.assertTrue(doc.is_returned)
-        self.assertEqual(doc.register_number_id, number)            # number kept
-        self.assertNotEqual(doc.register_number_id.state, "voided")
+        self.assertFalse(doc.register_number_id)  # still unnumbered
         self.assertEqual(doc.attempt_seq, attempt + 1)              # prior chain archived
         # a fresh waiting chain exists to re-send on the same number
         self.assertTrue(doc.routing_step_ids.filtered(lambda s: s.state == "waiting"))

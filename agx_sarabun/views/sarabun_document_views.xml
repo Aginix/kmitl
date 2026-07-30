@@ -69,8 +69,9 @@
                     </group>
                     <!-- Header laid out to mirror the หนังสือ (cf. report/sarabun_reports):
                          ส่วนราชการ (หน่วยงาน)  |  ที่ · วันที่  →  เรื่อง  →  เรียน.
-                         No banner headline: ที่ (name) is '/' until numbered at send,
-                         so it lives as a small register field like on the real document. -->
+                         No banner headline: ที่ (name) is '/' until numbered at
+                         completion (final ลงนาม/อนุมัติ — ADR-0010), so it lives as a
+                         small register field like on the real document. -->
                     <group>
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's
@@ -171,7 +172,7 @@
                                         <group name="step_what">
                                             <field name="order" string="ลำดับ"
                                                    attrs="{'readonly': [('is_originator', '=', True)]}"/>
-                                            <field name="verb"/>
+                                            <field name="verb" widget="selection" />
                                         </group>
                                         <group>
                                             <field name="for_info" string="สำเนาเรียน (CC)"
@@ -195,7 +196,7 @@
                                         </field>
                                     </group>
 
-                                    <group string="ไทม์ไลน์ (Timeline)" col="2">
+                                    <group string="ไทม์ไลน์ (Timeline)" col="2" name="timeline">
                                         <field name="activated_date" readonly="1"/>
                                         <field name="read_date" readonly="1"/>
                                         <field name="sent_date" readonly="1"/>

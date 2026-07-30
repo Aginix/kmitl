@@ -1,5 +1,7 @@
 # Official document renders signatures only (per-verb `show_signature`); the drafter need not sign
 
+> **Update (UAT revision):** the non-originator verb *catalogue* was replaced on UAT feedback — the 6 behaviour-derived verbs became the 8 reviewed verbs in *Step verbs* ([CONTEXT.md](../../CONTEXT.md)). The **three-axis model below stands unchanged**; only two incidental statements are superseded: `is_signature` is **no longer unique to ลงนาม-อนุมัติ** (the UAT set has **two** authoritative signs — *ลงนามในใบปะหน้า/เอกสารเพื่อลงนาม* and *อนุมัติ/อนุญาต/เห็นชอบและลงนามกำกับ*; the first to occur closes the recall window), and a pure non-signing *ส่งต่อ* verb was dropped.
+
 **Amends [ADR-0007](./0007-official-pdf-source-embeds-endorsement-block.md) and the *เกษียน trail* / *Step verbs* / *originator* / *Endorsement block* language in [CONTEXT.md](../../CONTEXT.md).** ADR-0007 defined the embedded endorsement block as **เกษียน trail + Signature block(s)**, rendering an endorsement line for every positive-done gating step (เห็นชอบ) and a signature for every ลงนาม-อนุมัติ. Two requirements from real use change this:
 
 1. **The official document shows *only signatures*, never the routing trail.** Who ตรวจสอบ / พิจารณา / ส่งต่อ a หนังสือ is routing history (kept on the steps + chatter for audit, and visible in the Route), **not** something printed on the letter. A signature block appears only where the acting verb is a *signing* verb.

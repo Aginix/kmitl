@@ -34,8 +34,8 @@ class SarabunDocument(models.Model):
         default="/",
         tracking=True,
         index="trigram",
-        help="Official registered number (rendered in พ.ศ.). Assigned at send (P3); "
-        "stays '/' while draft.",
+        help="Official registered number (rendered in พ.ศ.). Assigned only when the "
+        "final approver signs — completion (ADR-0010); stays '/' while draft/circulating.",
     )
 
     # === Classification (kind / type) ===
@@ -59,8 +59,11 @@ class SarabunDocument(models.Model):
         required=True,
         default=fields.Date.context_today,
         tracking=True,
-        help="Defaults to today at creation (auto). Kept read-only in the form for "
-        "now; making it editable is a later phase.",
+        help="ลงวันที่ — the หนังสือ's official date, printed beside ที่. It is the "
+        "date it is ส่ง (issued into circulation), (re)stamped at action_send "
+        "(ADR-0010), NOT the create-draft date — so a draft held over ปีงบประมาณ "
+        "year-end is dated in the new year when actually sent. Owner-editable is a "
+        "later phase; kept read-only in the form for now.",
     )
     addressee_prefix_id = fields.Many2one(
         comodel_name="sarabun.addressee.prefix",
@@ -263,7 +266,7 @@ class SarabunDocument(models.Model):
         string="Register Number",
         readonly=True,
         copy=False,
-        help="The register ledger row assigned by ลงทะเบียน at send.",
+        help="The register ledger row assigned by ลงทะเบียน at completion (ADR-0010).",
     )
     numbering_mode = fields.Selection(
         selection=[
@@ -486,12 +489,22 @@ class SarabunDocument(models.Model):
 
     # === Display ===
     def name_get(self):
+        # While unnumbered (draft → circulating → returned, until completion —
+        # ADR-0010) the หนังสือ is identified purely by its เรื่อง; no interim
+        # code. The official number prefixes the เรื่อง only once ลงทะเบียน runs
+        # at completion.
         result = []
         for record in self:
-            name = record.name if record.name and record.name != "/" else _("New")
-            if record.subject:
-                name = f"{name} — {record.subject}"
-            result.append((record.id, name))
+            numbered = record.name and record.name != "/"
+            if numbered:
+                label = (
+                    f"{record.name} — {record.subject}"
+                    if record.subject
+                    else record.name
+                )
+            else:
+                label = record.subject or _("(ยังไม่มีเรื่อง)")
+            result.append((record.id, label))
         return result
 
     def _status_label(self):
@@ -549,8 +562,10 @@ class SarabunDocument(models.Model):
     # === Send / Recall (lifecycle transitions) ===
     def action_send(self):
         """draft|returned → circulating: ensure the ผู้จัดทำ step, seed the approver
-        chain (if needed), auto-sign the originator (ส่ง = ลงนามผู้จัดทำ), register (P3),
-        activate stage 1."""
+        chain (if needed), auto-sign the originator (ส่ง = ลงนามผู้จัดทำ), activate
+        stage 1. The official number is NOT assigned here — ลงทะเบียน now runs only
+        when the final approver signs (see ``_complete_document``); send merely
+        verifies a register resolves so the route can't strand at completion."""
         for doc in self:
             if doc.state not in ("draft", "returned"):
                 raise UserError(_("Only draft or returned documents can be sent."))
@@ -565,8 +580,13 @@ class SarabunDocument(models.Model):
                 raise UserError(_(
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
+            doc._resolve_sequence()  # P3: fail fast if the unit has no register
             doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
-            doc._assign_register_number()  # P3: atomic per-(ส่วนงาน × type) allocation
+            # ลงวันที่ = the ส่ง (issue) date, not the create-draft date (ADR-0010): a
+            # draft held over from the old ปีงบประมาณ is dated when it is actually sent
+            # in the new one, so ที่ and ลงวันที่ stay in the same fiscal year (a หนังสือ
+            # never straddles the year boundary). Re-stamped on each re-send.
+            doc.date = fields.Date.context_today(doc)
             doc.state = "circulating"
             doc.message_post(body=_("Document sent for routing."))
             doc._call_origin("_on_sarabun_circulating", doc)
@@ -800,6 +820,9 @@ class SarabunDocument(models.Model):
             return
         self.state = "completed"
         self.routing_step_ids._clear_activities()  # clear any remaining to-dos
+        # ลงทะเบียน happens HERE — the number runs only once the final ลงนาม/อนุมัติ is
+        # in (ADR-0010). Must precede the freeze so the frozen PDF carries the number.
+        self._assign_register_number()
         self._freeze_signed_copy()  # P5
         self.message_post(body=_("All routing completed. Document is now complete."))
         self._call_origin("_on_sarabun_completed", self)
@@ -919,7 +942,9 @@ class SarabunDocument(models.Model):
 
     def _assign_register_number(self):
         """ลงทะเบียน — the distinct Register seam (phase-2 clerk gate lands here).
-        Idempotent: a returned document keeps its number on re-send.
+        Called at completion (ADR-0010): the number runs only once the final
+        ลงนาม/อนุมัติ is in, so a document that is rejected/cancelled mid-route never
+        consumes a number. Idempotent (guarded on ``register_number_id``).
 
         NOTE: do not rename back to ``_register`` — that name is reserved by
         Odoo's ORM (BaseModel._register, the registry-visibility flag) and gets
@@ -947,7 +972,11 @@ class SarabunDocument(models.Model):
         self.name = number.register_number
 
     def _void_register(self, reason):
-        """Void the register number as a permanent gap (เลขยกเลิก) — never reissued."""
+        """Void the register number as a permanent gap (เลขยกเลิก) — never reissued.
+
+        Since ADR-0010 the number is assigned at completion, so reject/cancel (both
+        pre-completion) find no number to void — this is a guarded no-op on the normal
+        path, kept for the ledger's reserved/manual paths and belt-and-braces."""
         self.ensure_one()
         if self.register_number_id:
             self.register_number_id.write({
