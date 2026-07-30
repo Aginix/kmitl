@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Reset admin — a deliberately separate grant (ADR-0011): resetting a
+             signed / completed / terminal หนังสือ is a dangerous override, so it is
+             its own group. Implies Manager (a resetter is at least a full manager). -->
+        <record id="group_sarabun_reset" model="res.groups">
+            <field name="name">Reset Admin</field>
+            <field name="category_id" ref="agx_sarabun.module_category_sarabun"/>
+            <field name="implied_ids" eval="[(4, ref('agx_sarabun.group_sarabun_manager'))]"/>
+        </record>
+    </data>
+</odoo>
