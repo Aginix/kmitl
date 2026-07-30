@@ -83,6 +83,36 @@ class AccountPayment(models.Model):
             payment.amount_wht = sum(abs(line.balance) for line in wht_lines)
             payment.amount_before_wht = payment.amount + payment.amount_wht
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Payments created programmatically (e.g. from a disbursement request)
+        # never run the onchange. The method line is injected into the values
+        # rather than written afterwards so the journal entry is built with the
+        # right outstanding account straight away.
+        for vals in vals_list:
+            self._kmitl_inject_payment_method_line(vals)
+        return super().create(vals_list)
+
+    @api.model
+    def _kmitl_inject_payment_method_line(self, vals):
+        """Preset the เช็ค method line for a cheque operation type."""
+        if vals.get("payment_method_line_id") or not vals.get(
+            "kmitl_payment_type_id"
+        ):
+            return
+        payment_type = self.env["kmitl.payment.type"].browse(
+            vals["kmitl_payment_type_id"]
+        )
+        if not payment_type.is_cheque:
+            return
+        journal = self.env["account.journal"].browse(
+            vals.get("journal_id") or payment_type.journal_id.id
+        )
+        direction = vals.get("payment_type") or payment_type.direction
+        line = journal._kmitl_cheque_method_line(direction)
+        if line:
+            vals["payment_method_line_id"] = line.id
+
     @api.depends("cheque_register_ids")
     def _compute_cheque_register_count(self):
         for payment in self:
@@ -189,6 +219,24 @@ class AccountPayment(models.Model):
             self.payment_type = self.kmitl_payment_type_id.direction
             if self.kmitl_payment_type_id.journal_id:
                 self.journal_id = self.kmitl_payment_type_id.journal_id
+            self._apply_kmitl_payment_method_line()
+
+    def _apply_kmitl_payment_method_line(self):
+        """Point a cheque operation type at the journal's เช็ค method line.
+
+        Without this a cheque payment would keep the journal's default method
+        (เงินโอน, the first line). The bank export also filters cheque
+        operation types out on its own, so a journal missing the เช็ค line
+        cannot leak a cheque into an e-payment file.
+        """
+        for payment in self:
+            if not payment.kmitl_payment_type_id.is_cheque:
+                continue
+            line = payment.journal_id._kmitl_cheque_method_line(
+                payment.payment_type
+            )
+            if line:
+                payment.payment_method_line_id = line
 
     @api.depends("kmitl_payment_type_id")
     def _compute_destination_account_id(self):
@@ -242,6 +290,13 @@ class AccountPayment(models.Model):
     def _get_trigger_fields_to_synchronize(self):
         # Extend the base tuple (immutable) so that changing kmitl_payment_type_id
         # also triggers a move re-synchronization (account/journal may change).
+        # Deliberately NOT including payment_method_line_id: rebuilding the
+        # move collapses the withholding-tax write-off lines (they are
+        # recreated from name/account/amount only, losing wht_tax_id and
+        # tax_base_amount). The method line is instead set in the create values
+        # so the move is built against the right outstanding account from the
+        # start, and a UI change of the operation type re-synchronises through
+        # kmitl_payment_type_id anyway.
         return (
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",

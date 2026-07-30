@@ -148,22 +148,18 @@ class BankPaymentExport(models.Model):
         res = super()._check_constraint_create_bank_payment_export(payments)
         payment_bic_bank = list(set(payments.mapped("journal_id.bank_id.bic")))
         payment_bank = len(payment_bic_bank) == 1 and payment_bic_bank[0] or ""
-        method_manual_out = self.env.ref("account.account_payment_method_manual_out")
         # Check case KTB must have 1 journal / 1 PE
         if payment_bank == "KRTHTHBK" and len(payments.mapped("journal_id")) > 1:
             raise UserError(
                 _("KTB can create bank payment export 1 Journal / 1 Payment Export.")
             )
         for payment in payments:
-            if (
-                payment.payment_method_id.id != method_manual_out.id
-                or payment.journal_id.type != "bank"
-            ):
+            # Which outbound payment method may be exported is a company
+            # policy, enforced by the module that owns the methods (the base
+            # domain and finance_kmitl); here we only require a bank journal.
+            if payment.journal_id.type != "bank":
                 raise UserError(
-                    _(
-                        "You can export bank payments with journal 'Bank' "
-                        "and Payment method 'Manual' only"
-                    )
+                    _("You can export bank payments with journal 'Bank' only")
                 )
             if payment.company_id.currency_id != payment.currency_id:
                 raise UserError(

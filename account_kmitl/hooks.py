@@ -2,6 +2,8 @@ import logging
 
 from odoo import SUPERUSER_ID, api
 
+from .models.account_payment_method import KMITL_PAYMENT_METHODS
+
 _logger = logging.getLogger(__name__)
 
 # Journal master data. ``account`` is the account code used as the journal's
@@ -110,63 +112,86 @@ def _create_journals(env, company):
             lines.payment_account_id = journal.default_account_id
 
 
-# KMITL payment methods (data/account_payment_method.xml). Creating a 'multi'
-# method auto-adds lines only to journals existing at that moment; the KMITL
-# journals are created later in this hook, so their lines are added here.
-PAYMENT_METHOD_XMLIDS = [
-    "account_kmitl.payment_method_transfer_out",
-    "account_kmitl.payment_method_transfer_in",
-    "account_kmitl.payment_method_cheque_out",
-    "account_kmitl.payment_method_cheque_in",
-    "account_kmitl.payment_method_cash_out",
-    "account_kmitl.payment_method_cash_in",
+# Odoo's built-in methods, offered on every stock bank journal. KMITL pays
+# only by transfer / cheque / cash, so these are taken off its journals.
+STOCK_METHOD_XMLIDS = [
+    "account.account_payment_method_manual_in",
+    "account.account_payment_method_manual_out",
 ]
+
+
+def _kmitl_payment_journals(env, company):
+    """Every journal that can carry a payment method line for the company.
+
+    Archived journals are included: ``_deactivate_default_journals`` archives
+    the journals the chart loader created, and un-archiving one later must not
+    bring Odoo's Manual method back into service.
+    """
+    return (
+        env["account.journal"]
+        .with_context(active_test=False)
+        .search(
+            [("company_id", "=", company.id), ("type", "in", ("bank", "cash"))]
+        )
+    )
 
 
 def _setup_payment_method_lines(env, company):
     """Offer the KMITL payment methods (เงินโอน / เช็ค / เงินสด) on every
-    KMITL bank journal, in both directions.
+    bank/cash journal, in both directions, and drop Odoo's stock Manual one.
 
-    Idempotent: journals already carrying a method are skipped. New and
-    pre-existing lines without a payment account are pointed at the journal's
-    default account, the same convention ``_create_journals`` applies to the
-    stock manual lines.
+    ``account.journal._default_*_payment_methods`` (overridden in
+    ``models/account_journal.py``) already gives every journal created from now
+    on the KMITL methods; this pass fixes up the journals that already exist —
+    the ones created before this module was installed, and the KMITL journals
+    ``_create_journals`` creates a few lines above.
+
+    Idempotent: methods already on a journal are left alone. Lines without a
+    payment account are pointed at the journal's default account, the same
+    convention ``_create_journals`` applies. Removing a Manual line that a
+    payment already uses only detaches it from the journal (core
+    ``account.payment.method.line.unlink``), so posted history is preserved.
     """
-    Journal = env["account.journal"]
     MethodLine = env["account.payment.method.line"]
-    methods = env["account.payment.method"]
-    for xmlid in PAYMENT_METHOD_XMLIDS:
+    stock_methods = env["account.payment.method"]
+    for xmlid in STOCK_METHOD_XMLIDS:
         method = env.ref(xmlid, raise_if_not_found=False)
         if method:
-            methods |= method
-    if not methods:
-        return
+            stock_methods |= method
 
-    bank_codes = [j["code"] for j in JOURNALS if j["type"] == "bank"]
-    journals = Journal.search(
-        [("company_id", "=", company.id), ("code", "in", bank_codes)]
-    )
-    for journal in journals:
+    sequences = {
+        method["code"]: method["sequence"] for method in KMITL_PAYMENT_METHODS
+    }
+    for journal in _kmitl_payment_journals(env, company):
+        wanted = env["account.payment.method"]
+        for payment_type in ("inbound", "outbound"):
+            wanted |= journal._kmitl_default_payment_methods(payment_type)
+        if not wanted:
+            continue
         lines = (
             journal.inbound_payment_method_line_ids
             + journal.outbound_payment_method_line_ids
         )
-        for method in methods - lines.payment_method_id:
+        for method in wanted - lines.payment_method_id:
             MethodLine.create(
                 {
                     "journal_id": journal.id,
                     "payment_method_id": method.id,
                     "name": method.name,
+                    "sequence": sequences.get(method.code, 10),
                 }
             )
+        lines = (
+            journal.inbound_payment_method_line_ids
+            + journal.outbound_payment_method_line_ids
+        )
         if journal.default_account_id:
-            lines = (
-                journal.inbound_payment_method_line_ids
-                + journal.outbound_payment_method_line_ids
-            )
             lines.filtered(
                 lambda l: not l.payment_account_id
             ).payment_account_id = journal.default_account_id
+        lines.filtered(
+            lambda l: l.payment_method_id in stock_methods
+        ).unlink()
 
 
 def _register_account_xmlids(env, company):
