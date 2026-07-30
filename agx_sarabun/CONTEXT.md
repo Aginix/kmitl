@@ -42,23 +42,32 @@ _Avoid_: the old `recipient_type` vocabulary "user / department / role"; framing
 
 ### Step verbs (what a step requires)
 
-Step verbs are **admin-configurable master data** (`sarabun.verb`); the built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. A verb carries **three independent axes** (ADR-0008): **`gating`** (must be positively completed for its Stage to pass), **`show_signature`** (renders a signature block on the official document — the แสดง / ไม่แสดงลายเซ็น toggle), and **`is_signature`** (the authoritative approval-sign that closes the ดึงกลับ / ยกเลิก window and signs in the step's Position capacity; only ลงนาม-อนุมัติ). Invariant: `is_signature ⇒ show_signature`. The model is **provisional, pending review after real use**.
+Step verbs are **admin-configurable master data** (`sarabun.verb`); the built-ins below are seeded and referenced by the engine via their **xmlid** (`agx_sarabun.verb_*`) — there is no separate identity/code field. Admins may add or relabel verbs. A verb carries **three independent axes** (ADR-0008): **`gating`** (must be positively completed for its Stage to pass), **`show_signature`** (renders a signature block on the official document — the แสดง / ไม่แสดงลายเซ็น toggle), and **`is_signature`** (an authoritative approval-sign that closes the ดึงกลับ / ยกเลิก window and signs in the step's Position capacity). Invariant: `is_signature ⇒ show_signature`. Two verbs may share the same three axes and still be kept as **distinct records** — the label is the human instruction the actor reads ("what am I being asked to do"), so a different instruction earns its own verb even when behaviour coincides. The catalogue below is the **UAT-reviewed set** (the earlier behaviour-derived 6 were replaced on UAT feedback); it is **provisional, pending review after real use**. The ผู้จัดทำ verbs are separate (see originator) and were left untouched by the UAT revision.
 
-**รับทราบ (Acknowledge)** — gating ✗ · show_signature ✗:
-For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel; renders nothing on the document.
+**รับทราบ / ถือปฏิบัติ / จัดเก็บเข้าแฟ้ม (Acknowledge, read-only)** — gating ✗ · show_signature ✗:
+For information; the actor confirms receipt. **Non-gating** — does not block the chain and may run in parallel; renders nothing on the letter.
 
-**ตรวจสอบ / พิจารณา (Verify / Consider)** — gating ✓ · show_signature ✗:
-An intermediate actor (often a เจ้าหน้าที่ธุรการ / หัวหน้างาน) must review before the หนังสือ moves on, but **carries no signature** — their name is in the Route, not on the letter.
+**รับทราบและลงนาม (Acknowledge & sign)** — gating ✗ · show_signature ✓:
+An acknowledgement that also **puts a signature on the letter** (e.g. a post-decision sign-off). Still **non-gating** — never blocks the chain.
 
-**ส่งต่อ (Forward)** — gating ✗ · show_signature ✗:
-A pass-along in the chain; name in the Route, no signature.
+**ตรวจเอกสาร (Check)** — gating ✓ · show_signature ✗:
+An intermediate actor must check the document before it moves on, but **carries no signature** — name in the Route, not on the letter.
 
-**เห็นชอบ (Endorse)** — gating ✓ · show_signature ✓:
-Mid-chain gatekeeping — the actor reviews and passes upward with an opinion, **signing** their endorsement. **Gating**; may also ตีกลับ or ปฏิเสธ. Not the authoritative sign (does not close recall).
+**ผ่านเรื่อง / กลั่นกรอง (Screen)** — gating ✓ · show_signature ✓:
+A screening gate the matter must pass; the screener **signs** (ลงนามกำกับ). **Gating**; not the authoritative sign.
 
-**ลงนาม-อนุมัติ (Sign-Approve)** — gating ✓ · show_signature ✓ · is_signature ✓:
-The authority's decision **and** signature, made in the capacity of the step's target Position. **Gating**, and the authoritative sign = ส่งออก. Signing and approving are one verb for now (split deferred until a real case appears).
-_Avoid_: "approve" on its own (it carries the signature); coupling "shows a signature" with "gating" (they are independent axes — ADR-0008)
+**ตรวจสอบและลงนามกำกับ (Verify & countersign)** — gating ✓ · show_signature ✓:
+Verify and **countersign**. **Gating**; not the authoritative sign (does not close recall).
+
+**พิจารณา / ให้ความเห็นและลงนามกำกับ (Consider & countersign)** — gating ✓ · show_signature ✓:
+Give an opinion and **countersign**, passing upward. **Gating**; may also ตีกลับ / ปฏิเสธ. Not the authoritative sign (does not close recall).
+
+**ลงนามในใบปะหน้า / เอกสารเพื่อลงนาม (Sign-out)** — gating ✓ · show_signature ✓ · is_signature ✓:
+The authoritative signature that **issues** the หนังสือ (ส่งออก), made in the capacity of the step's target Position. **Gating**, and closes the recall window.
+
+**อนุมัติ / อนุญาต / เห็นชอบและลงนามกำกับ (Approve & sign)** — gating ✓ · show_signature ✓ · is_signature ✓:
+An approving authority's **decision and signature**. Also **authoritative** — closes the recall window (a document may legitimately have more than one authoritative sign; the *first* to occur closes ดึงกลับ / ยกเลิก).
+_Avoid_: coupling "shows a signature" with "gating" (they are independent axes — ADR-0008); assuming a **single** authoritative signer (both Sign-out and Approve are is_signature — supersedes the earlier "only ลงนาม-อนุมัติ" wording in ADR-0008); a pure non-signing "ส่งต่อ (Forward)" verb (dropped in the UAT set — a pass-along now either checks, screens, or acknowledges)
 
 ### Dispositions (how the active actor responds)
 
@@ -84,8 +93,12 @@ The **sender** withdraws a circulating Document **terminally** — it lands in s
 _Avoid_: ดึงกลับ (ดึงกลับ is recoverable and re-sends; ยกเลิกการส่ง ends the Document); recall / เรียกคืน (the old name conflated these two acts); "voids the number" (nothing to void — ADR-0010)
 
 **Voided number (เลขยกเลิก)**:
-A register ledger row marked as a permanent, never-reissued gap. **Largely historical since [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md):** because a number is now issued only at completion, rejected/cancelled documents were never numbered and so produce no voided gaps on the normal path. The mechanism (`_void_register`, `state='voided'`) is retained only for the reserved/manual compose paths.
-_Avoid_: released number, reusable number; treating voided gaps as a normal outcome of reject/cancel (they no longer are — ADR-0010)
+A register ledger row marked as a permanent, never-reissued gap. **Largely historical since [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md):** because a number is now issued only at completion, rejected/cancelled documents were never numbered and so produce no voided gaps on the normal path — the mechanism (`_void_register`, `state='voided'`) is retained only for the reserved/manual compose paths. Where such a voided row *does* exist, an admin **Reset** ([ADR-0011](./docs/adr/0011-admin-reset-to-draft.md)) may let the *original* Document **reclaim its own** number (un-void → `used`), audited on the ledger + chatter; a voided number is still never handed to a *different* Document.
+_Avoid_: released number, reusable number; treating voided gaps as a normal outcome of reject/cancel (they no longer are — ADR-0010); reissuing a voided number to *another* Document (only the original may reclaim its own, via Reset — ADR-0011)
+
+**Reset (to draft — admin override, ADR-0011)**:
+An **admin-only** force-return of a หนังสือ from **any non-draft state** — including `completed`, and even the otherwise-terminal `rejected` / `cancelled` — back to an editable **`draft`**, **keeping its registered number (when it has one) and its original Route**. It exists for the case ดึงกลับ cannot serve: a mistake found *after* the document is signed / completed (typically a typo in an already-fully-approved หนังสือ) that must be corrected and re-sent from the start. It **archives the finished attempt as history** (never overwrites — prior signatures survive on the archived Route), **recreates the Route as it was originally created** (the seeded backbone; runtime เกษียนสั่งการ insertions are *dropped*), **un-freezes** the ฉบับลงนาม (the prior signed PDF is discarded), and **rolls the origin back** so it is treated exactly like a ดึงกลับ. Since [ADR-0010](./docs/adr/0010-register-number-at-completion-not-at-send.md) only a `completed` หนังสือ carries a number, so "keep the number" bites in the completed case — its number survives the reset and is re-used verbatim when it re-completes (`_assign_register_number` is idempotent); resetting an unnumbered `circulating` / `returned` / `rejected` / `cancelled` หนังสือ simply has no number to keep (any rare voided reserved/manual number is reclaimed). A reason is mandatory (kept in chatter). It is a **deliberately separate, optional capability**, granted **per-user independently of the Manager access level** (a Sarabun Manager need not hold it) — and not every deployment grants it at all.
+_Avoid_: equating Reset with ดึงกลับ (Reset is admin-only, works *after* signing / completion / rejection, and un-freezes); treating `rejected` / `cancelled` as absolutely terminal (Reset is the one admin escape); carrying the prior run's เกษียนสั่งการ insertions into the new Route (Reset restores the original); assuming every reset หนังสือ has a number to keep (only a completed one does — ADR-0010)
 
 ### Concurrency
 
