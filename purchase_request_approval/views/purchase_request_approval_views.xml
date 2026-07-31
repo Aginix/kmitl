@@ -237,7 +237,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page name="document" string="เอกสารแนบ">
+                        <page name="document" string="Attachment">
                             <field name="attachment_ids"
                                    widget="many2many_binary"
                                    context="{'default_res_model': 'purchase.request.approval'}"/>
