@@ -22,10 +22,10 @@ class PurchaseRequestApproval(models.Model):
 
     contract_mode = fields.Selection(
         selection=[
-            ("with_po", "สร้างสัญญา / ใบสั่งซื้อ / ใบสั่งจ้าง"),
-            ("no_po", "ไม่ทำสัญญา (จ่ายตรง)"),
+            ("with_po", "Create Contract / Purchase Order"),
+            ("no_po", "No Contract (Direct Payment)"),
         ],
-        string="วิธีการดำเนินการ",
+        string="Contract Mode",
         tracking=True,
         copy=False,
     )
@@ -52,9 +52,9 @@ class PurchaseRequestApproval(models.Model):
             if not rec.contract_mode:
                 raise UserError(
                     _(
-                        "กรุณาเลือก 'วิธีการดำเนินการ' "
-                        "(สร้างสัญญา/ใบสั่งซื้อ/จ้าง หรือ ไม่ทำสัญญา) "
-                        "ก่อนดำเนินการต่อ"
+                        "Please select 'Contract Mode' "
+                        "(Create Contract / Purchase Order, or No Contract) "
+                        "before proceeding."
                     )
                 )
 

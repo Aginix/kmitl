@@ -76,7 +76,7 @@
             >
                 <label
                     for="contract_mode"
-                    string="วิธีการดำเนินการ"
+                    string="Contract Mode"
                     class="o_required_modifier"
                 />
                 <field
