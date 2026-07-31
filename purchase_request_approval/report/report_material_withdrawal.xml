@@ -3,18 +3,21 @@
 
     <record id="action_report_material_withdrawal" model="ir.actions.report">
         <field name="name">ใบเบิกวัสดุ (พ.43)</field>
-        <field name="model">purchase.request.approval</field>
+        <field name="model">purchase.request.approval.material.withdrawal.wizard</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">purchase_request_approval.report_material_withdrawal</field>
         <field name="report_file">purchase_request_approval.report_material_withdrawal</field>
         <field name="paperformat_id" ref="paperformat_purchase_request_approval_report"/>
-        <field name="print_report_name">'ใบเบิกวัสดุ - %s' % (object.name)</field>
+        <field name="print_report_name">'ใบเบิกวัสดุ - %s' % (object.approval_id.name)</field>
     </record>
 
     <template id="report_material_withdrawal_document">
-        <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
+        <t t-set="o" t-value="w.approval_id.with_context({'lang': 'th_TH'})"/>
         <t t-set="currency" t-value="o.currency_id"/>
         <t t-set="doc_date" t-value="o.approval_date or o.date_start or o.create_date"/>
+        <t t-set="requester" t-value="w.requester_id"/>
+        <t t-set="dept_head" t-value="w.dept_head_id"/>
+        <t t-set="disburser" t-value="w.disburser_id"/>
         <style>
             * {
                 font-family: "THSarabunNew", Arial, sans-serif;
@@ -71,7 +74,7 @@
             <p style="text-indent: 4em">
                 ด้วย
                 <span class="fw-bolder text-decoration-underline"
-                      t-out="requester.name or '&#160;' * 30"/>
+                      t-out="requester.name or ''"/>
                 มีความประสงค์ขอเบิกวัสดุตามรายการและจำนวน
                 <span class="fw-bolder text-decoration-underline"
                       t-out="len(o.line_ids)"/>
@@ -80,7 +83,7 @@
                       t-out="o.activity_analytic_id.name or ''"/>
                 และมอบให้
                 <span class="fw-bolder text-decoration-underline"
-                      t-out="requester.name or '&#160;' * 30"/>
+                      t-out="requester.name or ''"/>
                 เป็นผู้รับพัสดุแทน
             </p>
 
@@ -145,7 +148,7 @@
                 <div class="col-6">
                     <div>ลงชื่อ <span class="sig-line"/> ผู้ขอเบิก/ผู้รับของ</div>
                     <div style="margin-left: 3em">
-                        ( <span t-out="requester.name or '&#160;' * 40"/> )
+                        ( <span t-out="requester.name or ''"/> )
                     </div>
                 </div>
             </div>
@@ -154,7 +157,7 @@
                 <div class="col-6">
                     <div>ลงชื่อ <span class="sig-line"/> หัวหน้าหน่วยงาน</div>
                     <div style="margin-left: 3em">
-                        ( <span t-out="dept_head.name or '&#160;' * 40"/> )
+                        ( <span t-out="dept_head.name or ''"/> )
                     </div>
                 </div>
             </div>
@@ -163,7 +166,7 @@
                 <div class="col-6">
                     <div>ลงชื่อ <span class="sig-line"/> ผู้เบิกจ่าย</div>
                     <div style="margin-left: 3em">
-                        ( <span t-out="disburser.name or '&#160;' * 40"/> )
+                        ( <span t-out="disburser.name or ''"/> )
                     </div>
                 </div>
             </div>
@@ -172,8 +175,10 @@
 
     <template id="report_material_withdrawal">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="purchase_request_approval.report_material_withdrawal_document"/>
+            <t t-foreach="docs" t-as="w">
+                <t t-call="web.basic_layout">
+                    <t t-call="purchase_request_approval.report_material_withdrawal_document"/>
+                </t>
             </t>
         </t>
     </template>

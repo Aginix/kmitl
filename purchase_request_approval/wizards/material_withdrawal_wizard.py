@@ -35,12 +35,4 @@ class MaterialWithdrawalWizard(models.TransientModel):
             raise UserError(_("ไม่มีรายการวัสดุใน พจ.1 นี้"))
         return self.env.ref(
             "purchase_request_approval.action_report_material_withdrawal"
-        ).report_action(
-            self.approval_id,
-            data={
-                "requester_id": self.requester_id.id,
-                "dept_head_id": self.dept_head_id.id,
-                "disburser_id": self.disburser_id.id,
-            },
-            config=False,
-        )
+        ).report_action(self, config=False)

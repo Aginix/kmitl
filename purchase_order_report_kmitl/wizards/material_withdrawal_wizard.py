@@ -35,12 +35,4 @@ class POMaterialWithdrawalWizard(models.TransientModel):
             raise UserError(_("ไม่มีรายการใน PO นี้"))
         return self.env.ref(
             "purchase_order_report_kmitl.action_report_material_withdrawal"
-        ).report_action(
-            self.order_id,
-            data={
-                "requester_id": self.requester_id.id,
-                "dept_head_id": self.dept_head_id.id,
-                "disburser_id": self.disburser_id.id,
-            },
-            config=False,
-        )
+        ).report_action(self, config=False)
