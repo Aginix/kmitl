@@ -47,17 +47,24 @@ class PurchaseRequestApproval(models.Model):
         for rec in self:
             rec.contract_mode = "with_po" if rec.use_purchase_order else "no_po"
 
-    def button_to_approve(self):
+    def _check_contract_mode_selected(self):
         for rec in self:
             if not rec.contract_mode:
                 raise UserError(
                     _(
                         "กรุณาเลือก 'วิธีการดำเนินการ' "
                         "(สร้างสัญญา/ใบสั่งซื้อ/จ้าง หรือ ไม่ทำสัญญา) "
-                        "ก่อนส่งอนุมัติ"
+                        "ก่อนดำเนินการต่อ"
                     )
                 )
+
+    def button_to_approve(self):
+        self._check_contract_mode_selected()
         return super().button_to_approve()
+
+    def action_submit_to_sarabun(self):
+        self._check_contract_mode_selected()
+        return super().action_submit_to_sarabun()
 
     purchase_order_id = fields.Many2one(
         comodel_name="purchase.order",

@@ -77,7 +77,7 @@
                 <label
                     for="contract_mode"
                     string="วิธีการดำเนินการ"
-                    class="o_form_label o_form_label_required"
+                    class="o_required_modifier"
                 />
                 <field
                     name="contract_mode"
