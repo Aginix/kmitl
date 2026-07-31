@@ -18,6 +18,7 @@
         <t t-set="requester" t-value="w.requester_id"/>
         <t t-set="dept_head" t-value="w.dept_head_id"/>
         <t t-set="disburser" t-value="w.disburser_id"/>
+        <t t-set="activity_name" t-value="o.request_id.activity_analytic_id.name if o.request_id and 'activity_analytic_id' in o.request_id._fields and o.request_id.activity_analytic_id else ''"/>
         <style>
             * {
                 font-family: "THSarabunNew", Arial, sans-serif;
@@ -80,7 +81,7 @@
                       t-out="len(o.line_ids)"/>
                 รายการ เพื่อใช้ในงาน
                 <span class="fw-bolder text-decoration-underline"
-                      t-out="o.activity_analytic_id.name or ''"/>
+                      t-out="activity_name"/>
                 และมอบให้
                 <span class="fw-bolder text-decoration-underline"
                       t-out="requester.name or ''"/>
