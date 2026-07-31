@@ -173,6 +173,26 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.reference_model = rec.reference._name if rec.reference else False
 
+    # Which earmark the borrowed cash comes out of. Copied off the source
+    # document when the reference is picked, never reserved by the loan itself —
+    # a loan creating its own commitment would double-reserve the same money
+    # (agx_approval ADR-0003). A snapshot on purpose: the source is free to
+    # release or re-point its own commitment afterwards without erasing the
+    # record of where this cash came from. Empty for a standalone loan, whose
+    # budget source is still an open policy question (ADR-0008).
+    budget_commitment_id = fields.Many2one(
+        "budget.commitment",
+        string="ใบจองงบประมาณ",
+        readonly=True,
+        copy=False,
+        index=True,
+        ondelete="restrict",
+        tracking=True,
+        help="ใบจองงบประมาณที่เงินยืมก้อนนี้เบิกออกมา "
+        "คัดลอกมาจากเอกสารต้นทางตอนเลือกเอกสารอ้างอิง "
+        "และใช้ส่งต่อให้ขั้นตัดงบประมาณ",
+    )
+
     def _check_reference_status(self):
         """Hook: verify the source document is in a state that may back a loan.
 

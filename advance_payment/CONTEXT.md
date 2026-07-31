@@ -52,6 +52,10 @@ _Avoid_: cancel, withdraw, reset
 The upstream document a loan is created from — an Approval Request (ใบขออนุมัติ / expense plan, `approval.request`) or a Purchase Request (คำขอให้จัดหา, `purchase.request`). A Purchase Request backs **one** loan; an Approval Request may back **several**, one per participant who chose to borrow, each capped by the request's remaining headroom (`agx_approval` ADR-0003). Held in the `reference` Reference field, with `reference_model` derived from it; each bridge additionally mirrors it into a typed Many2one (`purchase_request_id`, `approval_request_id`) for searching, grouping and FK integrity. advance_payment never depends on these models directly; the mirrors and the auto-fill live only in bridge modules. A Disbursement Request (ใบเบิก/DR) is *not* a source and is unrelated to loans. See ADR-0007.
 _Avoid_: origin, parent, DR
 
+**Budget Commitment (ใบจองงบประมาณ)**:
+The `budget.commitment` the borrowed cash is drawn against, copied onto the loan from its Source Reference when the reference is picked and held as a snapshot (`budget_commitment_id`). The loan **never reserves its own** — the source document already reserved this money, and reserving again would draw the appropriation down twice. Empty on a standalone loan, whose budget source is an open policy question. Recording it is *not* ตัดงบ: consuming the budget for borrowed money is still parked, and nothing on the loan path obligates or consumes today. See ADR-0008 and `agx_approval` ADR-0003.
+_Avoid_: budget, reservation, earmark (for the document itself), ตัดงบ (that is the consume step)
+
 **Required reference model (`loan_type_id.reference_model`)**:
 The *declaration*, on the loan-type master data, that loans of that type must be backed by a source document of a given model. Distinct from `advance.payment.reference_model`, which is the *actual* model of the attached document. A mismatch between the two is a hard `ValidationError`; a missing document is a blocking exception at submit.
 _Avoid_: reference type, document type

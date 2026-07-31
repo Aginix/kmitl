@@ -63,6 +63,7 @@ class AdvancePayment(models.Model):
                     "loan_amount": pr.get_estimated_cost_currency(),
                     "loan_reason": pr.description or "",
                     "analytic_distribution": pr.analytic_distribution,
+                    "budget_commitment_id": pr.budget_commitment_id.id,
                 }
             )
         return vals

@@ -103,6 +103,9 @@ class AdvancePayment(models.Model):
                 {
                     "loan_reason": ar.description or "",
                     "analytic_distribution": ar.analytic_distribution,
+                    # The request's own earmark — the loan rides it rather than
+                    # reserving again (ADR-0003).
+                    "budget_commitment_id": ar.budget_commitment_id.id,
                 }
             )
         return vals

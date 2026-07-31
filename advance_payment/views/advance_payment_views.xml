@@ -150,6 +150,8 @@
                                     'invisible': [('is_reference_visible', '=', False)],
                                     'readonly': ['|', ('is_locked_by_reference', '=', True), ('id', '!=', False)]
                                 }" />
+                            <field name="budget_commitment_id"
+                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}" />
                             <field name="loan_reason"
                                 attrs="{'readonly': [('state', 'not in', ['draft', 'to_verify'])]}" />
                             <field name="currency_id" invisible="1" />

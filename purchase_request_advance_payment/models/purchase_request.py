@@ -46,6 +46,7 @@ class PurchaseRequest(models.Model):
             "loan_type_id": loan_type.id,
             "loan_reason": self.description or "",
             "analytic_distribution": self.analytic_distribution,
+            "budget_commitment_id": self.budget_commitment_id.id,
         }
 
     def action_create_advance_payment(self):
