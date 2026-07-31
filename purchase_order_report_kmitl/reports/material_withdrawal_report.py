@@ -3,7 +3,7 @@ from odoo import api, models
 
 
 class POMaterialWithdrawalReport(models.AbstractModel):
-    _name = "report.purchase_order_report_kmitl.report_material_withdrawal_po"
+    _name = "report.purchase_order_report_kmitl.report_material_withdrawal"
     _description = "Material Withdrawal (พ.43) Report Values from PO"
 
     @api.model
