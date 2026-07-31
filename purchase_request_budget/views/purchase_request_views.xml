@@ -82,6 +82,7 @@
 
                     <field
                         name="reservation_commitment_id"
+                        colspan="2"
                         widget="budget_commitment_info"
                         options="{'no_create': True, 'no_open': True}"
                         attrs="{'invisible': ['|', '&amp;', ('budget_selection_mode', '!=', 'reservation'), ('reservation_commitment_id', '=', False), '&amp;', ('budget_commitment_id', '!=', False), ('budget_commitment_state', '!=', 'cancel')], 'readonly': [('is_budget_editable', '=', False)]}"
