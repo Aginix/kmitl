@@ -87,9 +87,10 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <page name="document" string="Attachment">
+                <page name="document" string="เอกสารแนบ">
                     <field name="attachment_ids"
                            widget="many2many_binary"
+                           string="เอกสารแนบ"
                            context="{'default_res_model': 'purchase.order'}"/>
                 </page>
             </xpath>
