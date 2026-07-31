@@ -25,21 +25,9 @@
         </field>
     </record>
 
-    <!-- Budget Details - add project_analytic_id dimension to the budget group -->
-    <record id="view_purchase_request_form_kmitl_project_budget" model="ir.ui.view">
-        <field name="name">view.purchase.request.form (KMITL Project Budget)</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_budget.view_purchase_request_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='source_analytic_id']" position="after">
-                <field
-                    name="project_analytic_id"
-                    readonly="1"
-                    options="{'no_open': True}"
-                />
-            </xpath>
-        </field>
-    </record>
+    <!-- The kmitl_project ownership-tag dimension is shown inside the
+         budget_reservation widget (show_pool_dimensions on purchase_request_budget),
+         so no separate project_analytic_id field is added to the budget group. -->
 
     <!-- Discoverability: tell users where project-driven พ.1 come from, shown only
          on a fresh, non-project-linked draft. Project พ.1 are created from the

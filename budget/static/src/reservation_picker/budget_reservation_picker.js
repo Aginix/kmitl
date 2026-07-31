@@ -30,6 +30,11 @@ export class BudgetReservationPicker extends BudgetDashboard {
         this.resModel = ctx.res_model;
         this.resId = ctx.res_id;
         this.selectMode = !!ctx.select_only;
+        // Return-selection (field widget): hand the choice back via onClose
+        // instead of writing it server-side, so the host applies it in-memory
+        // and persists on its own Save (ADR-0009). Default false keeps the
+        // button hosts (PR/PO/DR/commitment) on the server-write path.
+        this.returnSelection = !!ctx.return_selection;
         this.accountDomain = ctx.account_domain || false;
         this.state.selectedId = false;
         this.state.amounts = {};
@@ -347,6 +352,21 @@ export class BudgetReservationPicker extends BudgetDashboard {
                 );
                 return;
             }
+        }
+        // Field-widget path: return the (single) selection to the opener instead
+        // of writing server-side — the widget does an in-memory record.update and
+        // the host's normal Save persists it (ADR-0009).
+        if (this.returnSelection) {
+            const sel = this.selections[0] || {};
+            this.actionService.doAction({
+                type: "ir.actions.act_window_close",
+                infos: {
+                    account_id: sel.account_id,
+                    distribution: this.selectedDistribution,
+                    fiscal_year_id: this.state.fiscalYearId,
+                },
+            });
+            return;
         }
         // The host's apply_reservation_selection writes back; its cross-charge /
         // single-code / domain constraints raise to the user.
