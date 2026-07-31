@@ -237,6 +237,11 @@
                                 </group>
                             </group>
                         </page>
+                        <page name="signed_attachment" string="เอกสารเซ็นแล้ว">
+                            <field name="signed_attachment_ids"
+                                   widget="many2many_binary"
+                                   context="{'default_res_model': 'purchase.request.approval'}"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="o_attachment_preview" />

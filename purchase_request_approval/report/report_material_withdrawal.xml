@@ -87,10 +87,6 @@
                 รายการ เพื่อใช้ในงาน
                 <span class="fw-bolder text-decoration-underline"
                       t-out="activity_name"/>
-                และมอบให้
-                <span class="fw-bolder text-decoration-underline"
-                      t-out="requester.name or ''"/>
-                เป็นผู้รับพัสดุแทน
             </p>
 
             <div class="my-3"/>
@@ -102,13 +98,12 @@
                         <th class="text-center" rowspan="2">รายการ</th>
                         <th class="text-center" rowspan="2" style="width: 8%">หน่วยนับ</th>
                         <th class="text-center" colspan="2" style="width: 14%">จำนวน</th>
-                        <th class="text-center" colspan="3" style="width: 32%">ส่วนของงานพัสดุ</th>
+                        <th class="text-center" colspan="2" style="width: 24%">ส่วนของงานพัสดุ</th>
                         <th class="text-center" rowspan="2" style="width: 10%">หมายเหตุ</th>
                     </tr>
                     <tr>
                         <th class="text-center">เบิก</th>
                         <th class="text-center">จ่าย</th>
-                        <th class="text-center">รหัสวัสดุ</th>
                         <th class="text-center">ต้นทุน/หน่วย</th>
                         <th class="text-center">จำนวนเงิน</th>
                     </tr>
@@ -125,8 +120,6 @@
                                 t-out="'{0:,.0f}'.format(line.product_qty)"/>
                             <td class="text-center"
                                 t-out="'{0:,.0f}'.format(line.product_qty)"/>
-                            <td class="text-center"
-                                t-out="line.product_id.default_code or ''"/>
                             <td class="text-end"
                                 t-out="'{0:,.2f}'.format(line.price_unit)"/>
                             <td class="text-end"
@@ -136,7 +129,7 @@
                         <t t-set="row_no" t-value="row_no + 1"/>
                     </t>
                     <tr>
-                        <td colspan="7" class="text-center">
+                        <td colspan="6" class="text-center">
                             (
                             <span t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_untaxed)"/>
                             )
