@@ -39,7 +39,12 @@
             .sig-line {
                 border-bottom: 1px dotted #000;
                 display: inline-block;
-                min-width: 260px;
+                width: 200px;
+                vertical-align: baseline;
+            }
+            .sig-row {
+                margin-bottom: 1rem;
+                white-space: nowrap;
             }
         </style>
 
@@ -144,30 +149,24 @@
 
             <div style="height: 60px"/>
 
-            <div class="row mb-4">
-                <div class="col-6">
-                    <div>ลงชื่อ <span class="sig-line"/> ผู้ขอเบิก/ผู้รับของ</div>
-                    <div style="margin-left: 3em">
-                        ( <span t-out="requester.name or ''"/> )
-                    </div>
+            <div class="sig-row">
+                <div>ลงชื่อ <span class="sig-line"/> ผู้ขอเบิก/ผู้รับของ</div>
+                <div style="margin-left: 3em">
+                    ( <span t-out="requester.name or ''"/> )
                 </div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-6">
-                    <div>ลงชื่อ <span class="sig-line"/> หัวหน้าหน่วยงาน</div>
-                    <div style="margin-left: 3em">
-                        ( <span t-out="dept_head.name or ''"/> )
-                    </div>
+            <div class="sig-row">
+                <div>ลงชื่อ <span class="sig-line"/> หัวหน้าหน่วยงาน</div>
+                <div style="margin-left: 3em">
+                    ( <span t-out="dept_head.name or ''"/> )
                 </div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-6">
-                    <div>ลงชื่อ <span class="sig-line"/> ผู้เบิกจ่าย</div>
-                    <div style="margin-left: 3em">
-                        ( <span t-out="disburser.name or ''"/> )
-                    </div>
+            <div class="sig-row">
+                <div>ลงชื่อ <span class="sig-line"/> ผู้เบิกจ่าย</div>
+                <div style="margin-left: 3em">
+                    ( <span t-out="disburser.name or ''"/> )
                 </div>
             </div>
         </div>
