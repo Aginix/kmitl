@@ -470,19 +470,22 @@ class BudgetCommitment(models.Model):
         return rows
 
     def _reservation_info_amounts(self):
-        """Money rows shown by the widget. ``available_to_obligate`` is the one
-        that decides whether a document can still draw from this reservation, so
-        it is flagged for emphasis."""
+        """Money rows shown by the widget: just the reservation's own amount.
+
+        Kept as a list so a bridge can still add a figure, but the widget shows
+        one by default. The obligated/leftover breakdown belongs on the
+        reservation itself — on a consuming document it read as a ledger the
+        reader had to interpret, where all they are answering is "is this the
+        right slip, and for how much".
+        """
         self.ensure_one()
         return [
             {
-                "label": self._fields[fname]._description_string(self.env),
+                "label": _("จำนวนเงิน"),
                 "value": formatLang(
-                    self.env, self[fname], currency_obj=self.currency_id
+                    self.env, self.amount, currency_obj=self.currency_id
                 ),
-                "highlight": fname == "available_to_obligate",
             }
-            for fname in ("amount", "total_obligated", "available_to_obligate")
         ]
 
     # --- Workflow Methods ---
