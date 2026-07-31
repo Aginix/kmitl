@@ -82,6 +82,7 @@
                 <field
                     name="contract_mode"
                     nolabel="1"
+                    class="o_required_modifier"
                     attrs="{'readonly': [('state', 'not in', ['draft'])]}"
                 />
             </xpath>
