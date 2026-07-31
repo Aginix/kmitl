@@ -223,6 +223,20 @@ class ApprovalRequest(models.Model):
         """
         return super()._reservation_account_domain() + self._domain_budget_account_id()
 
+    def _get_commitment_title(self):
+        """ชื่อรายการจอง of a commitment this request reserves = its ประเภทคำขออนุมัติ.
+
+        The mixin's default would take the request's free-text ``description``,
+        which is written for the approver, not as a label — often a whole
+        paragraph. The approval category is the request's actual kind, is
+        required on every request, and is what the budget side recognises the
+        reservation by.
+        """
+        self.ensure_one()
+        if self.category_id:
+            return self.category_id.name
+        return super()._get_commitment_title()
+
     budget_commitment_state = fields.Selection(
         related="budget_commitment_id.state",
         string="สถานะใบจอง",
