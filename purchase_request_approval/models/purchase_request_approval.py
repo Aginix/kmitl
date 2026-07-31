@@ -213,11 +213,10 @@ class PurchaseRequestApproval(models.Model):
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
     analytic_distribution = fields.Json(related="request_id.analytic_distribution")
-    attachment_ids = fields.One2many(related="request_id.attachment_ids")
-    signed_attachment_ids = fields.One2many(
+    attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
         inverse_name="res_id",
-        string="เอกสารเซ็นแล้ว",
+        string="Document Attachments",
         domain=[("res_model", "=", "purchase.request.approval")],
         auto_join=True,
     )

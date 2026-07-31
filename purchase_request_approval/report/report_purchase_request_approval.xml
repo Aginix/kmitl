@@ -204,7 +204,7 @@
                                 >1</span> ชุด </li>
                             <li> ใบเสนอราคาพัสดุ <span
                                     class="fw-bolder text-decoration-underline"
-                                    t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
+                                    t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_rfq')))"
                                 />
                                 ชุด
                             </li>
@@ -212,7 +212,7 @@
                                 เอกสารคุณสมบัติ จำนวน
                                 <span
                                     class="fw-bolder text-decoration-underline"
-                                    t-out="len(o.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
+                                    t-out="len(o.request_id.attachment_ids.filtered(lambda x: x.document_type_id == env.ref('purchase_request_kmitl.doctype_tor')))"
                                 />
                                 ชุด
                             </li> -->
