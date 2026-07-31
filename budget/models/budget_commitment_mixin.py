@@ -96,7 +96,6 @@ class BudgetCommitmentMixin(models.AbstractModel):
         source_analytic_id=None,
         ref=None,
         description=None,
-        title=None,
         auto_reserve=True,
         **kwargs,
     ):
@@ -233,7 +232,11 @@ class BudgetCommitmentMixin(models.AbstractModel):
             "amount": amount,
             "analytic_distribution": header_analytic or False,
             "ref": ref,
-            "title": title or self._get_commitment_title(),
+            # Not a positional parameter: the vals are built three frames below
+            # _create_budget_commitment, and every layer forwards **kwargs — so an
+            # explicit title rides in there and the hook covers everyone else,
+            # without changing a signature the bridges override.
+            "title": kwargs.get("title") or self._get_commitment_title(),
             "description": description or "",
             "user_id": self.env.user.id,
             "line_ids": [(0, 0, line_vals)],
