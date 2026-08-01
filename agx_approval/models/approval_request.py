@@ -223,6 +223,72 @@ class ApprovalRequest(models.Model):
         """
         return super()._reservation_account_domain() + self._domain_budget_account_id()
 
+    def _get_commitment_title(self):
+        """ชื่อรายการจอง of a commitment this request reserves = its ประเภทคำขออนุมัติ.
+
+        The mixin's default would take the request's free-text ``description``,
+        which is written for the approver, not as a label — often a whole
+        paragraph. The approval category is the request's actual kind, is
+        required on every request, and is what the budget side recognises the
+        reservation by.
+        """
+        self.ensure_one()
+        if self.category_id:
+            return self.category_id.name
+        return super()._get_commitment_title()
+
+    budget_commitment_state = fields.Selection(
+        related="budget_commitment_id.state",
+        string="สถานะใบจอง",
+        readonly=True,
+        help=(
+            "ใช้ในฟอร์มเพื่อแยก 'มีใบจองที่ยังใช้งานอยู่' ออกจาก 'ใบจองถูกยกเลิกแล้ว' "
+            "— การยกเลิกใบจองไม่ล้างค่า budget_commitment_id จึงต้องดูสถานะประกอบ"
+        ),
+    )
+    budget_selection_mode = fields.Selection(
+        selection=[
+            ("chart", "เลือกจากผังงบประมาณ (จองงบใหม่)"),
+            ("reservation", "หยิบจากใบจองงบประมาณที่มีอยู่"),
+        ],
+        string="วิธีเลือกงบประมาณ",
+        default="chart",
+        copy=False,
+        help=(
+            "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
+            "หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+        ),
+    )
+    reservation_commitment_id = fields.Many2one(
+        "budget.commitment",
+        string="ใบจองงบประมาณ",
+        domain=lambda self: self._domain_reservation_commitment_id(),
+        copy=False,
+        tracking=True,
+        help=(
+            "เลือกใบจองงบประมาณที่มีอยู่แล้วเพื่อหยิบไปใช้ (draw down) แทนการจองใหม่ "
+            "— เอกสารจะสืบทอดรหัสงบ/มิติจากใบจองแบบล็อก และไม่จองซ้ำ. "
+            "ใช้เมื่อเลือกวิธี 'หยิบจากใบจองงบประมาณที่มีอยู่'."
+        ),
+    )
+
+    def _domain_reservation_commitment_id(self):
+        """Reservations this request may draw down (phase-1 dropdown). OU
+        visibility (owner or beneficiary unit) is enforced by the record rules
+        (ADR-0011). Plan/project shared commitments are drawn only through their
+        dedicated create-from-source flows (ADR-0006/0007), so they are excluded
+        here — guarded by field existence since agx_approval does not depend on
+        procurement_plan / kmitl_project."""
+        domain = [
+            ("state", "in", ("reserved", "partial")),
+            ("available_to_obligate", ">", 0),
+        ]
+        Commitment = self.env["budget.commitment"]
+        for fname in ("procurement_plan_id", "kmitl_project_id"):
+            if fname in Commitment._fields:
+                domain.append((fname, "=", False))
+        return domain
+
     def apply_reservation_selection(self, selections, dims=None):
         """Picker write-back: set the budget code + dimensions, then push the
         distribution onto the request lines (the analytic_distribution onchange
@@ -556,8 +622,19 @@ class ApprovalRequest(models.Model):
         }
 
     def action_reserve_budget(self):
-        """Reserve budget by creating commitment"""
+        """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
+
+        # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
+        # instead of creating a new commitment (ADR-0010).
+        if self.reservation_commitment_id:
+            return self._action_draw_from_reservation()
+
+        # Chose "หยิบจากใบจอง" but picked nothing: say so, instead of falling
+        # through to reserve-new and complaining about the dimensions the mode
+        # switch deliberately cleared.
+        if self.budget_selection_mode == "reservation":
+            raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
 
         # รหัสงบประมาณ / มิติทางบัญชี ไม่บังคับกรอกในฟอร์ม — ตรวจครบที่เดียว
         # ตอนกดจองงบประมาณ (budget engine จับคู่แบบครบทุกมิติหรือไม่มีเลย)
@@ -626,11 +703,126 @@ class ApprovalRequest(models.Model):
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
 
-    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
+    def _action_draw_from_reservation(self):
+        """Draw down an existing reservation (ใบจองงบประมาณ) instead of reserving.
+
+        Adopts the reservation's budget code and full dimension distribution —
+        locked onto the request and its lines — links it as the request's
+        commitment, and submits the request exactly like the reserve-new path. No
+        new reservation and no availability re-check: the money is already locked;
+        obligate/consume happen downstream at the disbursement (ADR-0010). The
+        request keeps its own computed fiscal year; the shared commitment carries
+        the fiscal year it was reserved in."""
+        self.ensure_one()
+        commitment = self.reservation_commitment_id
+        if commitment.state not in ("reserved", "partial"):
+            raise UserError(
+                _("ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้") % commitment.name
+            )
+        self._check_drawable_commitment(commitment)
+        self.write(
+            {
+                "budget_commitment_id": commitment.id,
+                "budget_account_id": commitment.account_id.id,
+                "analytic_distribution": commitment.analytic_distribution or False,
+            }
+        )
+        if (
+            self.line_ids
+            and commitment.analytic_distribution
+            and "analytic_distribution" in self.line_ids._fields
+        ):
+            self.line_ids.update(
+                {"analytic_distribution": commitment.analytic_distribution}
+            )
+        self.message_post(
+            body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
+        )
+        self.action_submit()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "approval.request",
+            "view_mode": "form",
+            "res_id": self.id,
+            "target": "current",
+            "context": self.env.context,
+        }
+
+    def _check_drawable_commitment(self, commitment):
+        """Block drawing a reservation this request must not use: a plan/project
+        shared commitment (drawn only through their create-from-source flows,
+        ADR-0006/0007) or a budget code this request could not itself select
+        (must be purchasable + product-backed)."""
+        for fname, label in (
+            ("procurement_plan_id", _("แผนจัดซื้อจัดจ้าง")),
+            ("kmitl_project_id", _("โครงการ")),
+        ):
+            if fname in commitment._fields and commitment[fname]:
+                raise UserError(
+                    _("ใบจองงบประมาณของ%sต้องหยิบผ่านเอกสารต้นทางเท่านั้น") % label
+                )
+        if not self.env["budget.account"].search_count(
+            self._reservation_account_domain()
+            + [("id", "=", commitment.account_id.id)]
+        ):
+            raise UserError(
+                _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
+            )
+        return True
+
+    @api.onchange("reservation_commitment_id")
+    def _onchange_reservation_commitment_id(self):
+        """Preview the picked reservation's budget code on the live form. The
+        dimension distribution is written server-side on draw-down, not here —
+        re-assigning analytic_distribution in an onchange wipes it on the unsaved
+        record (its compute is a no-op)."""
+        if self.reservation_commitment_id:
+            self.budget_account_id = self.reservation_commitment_id.account_id.id
+
+    @api.onchange("budget_selection_mode")
+    def _onchange_budget_selection_mode(self):
+        """Clear whichever side of the choice is now inactive.
+
+        ``budget_selection_mode`` is a **UI affordance only** — the server still
+        keys draw-down off the presence of ``reservation_commitment_id``
+        (ADR-0010), never off this field. Leaving the unused side filled would
+        make the form say one thing and the reserve action do another: a stale
+        chart selection under "หยิบจากใบจอง", or a stale slip under "เลือกจากผัง"
+        that would silently draw instead of reserving.
+        """
+        if self.budget_selection_mode == "chart":
+            self.reservation_commitment_id = False
+        else:
+            self.budget_account_id = False
+            self.analytic_distribution = False
+
+    def _cancel_budget_commitment(self):
+        """A drawn reservation belongs to its owner, never to this request — detach
+        instead of cancelling when this request drew an existing reservation
+        (ADR-0010)."""
+        self.ensure_one()
+        if self.reservation_commitment_id:
+            self.write(
+                {"budget_commitment_id": False, "reservation_commitment_id": False}
+            )
+            return True
+        return super()._cancel_budget_commitment()
+
+    @api.depends(
+        "state",
+        "budget_commitment_id",
+        "budget_commitment_id.state",
+    )
     def _compute_is_budget_editable(self):
+        # Means "budget selection is still open on this request", which is also
+        # exactly when a reservation may be picked — so the reservation field
+        # rides on this rather than re-listing states (they come from several
+        # modules). Drawing an existing reservation does not close selection: the
+        # user must be able to un-pick. The chart picker is hidden view-side
+        # while a reservation is picked, since dimensions then come from it.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state == "to_verify" and (
+            if rec.state in ("to_verify") and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):

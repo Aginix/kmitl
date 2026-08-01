@@ -373,6 +373,10 @@ class BudgetMixin(models.AbstractModel):
 
         return {
             'name': self._get_budget_commitment_name(),
+            # title is required on budget.commitment; this mixin already derives a
+            # human label for the (legacy) name, so reuse it rather than add a
+            # second hook for the same string.
+            'title': self._get_budget_commitment_name(),
             'date': self.date,
             'analytic_distribution': header_dist or False,
             'account_fiscal_year_id': self._get_fiscal_year_id(),
