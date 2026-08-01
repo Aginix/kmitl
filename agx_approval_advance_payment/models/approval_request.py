@@ -111,7 +111,7 @@ class ApprovalRequest(models.Model):
         cascade in either direction."""
         for rec in self:
             live = rec.advance_payment_ids.filtered(
-                lambda loan: loan.state != "cancel"
+                lambda loan: loan.state not in ("cancel", "done")
             )
             if live:
                 raise UserError(
