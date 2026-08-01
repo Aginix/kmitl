@@ -80,7 +80,8 @@
                     options="{'no_create': True, 'no_create_edit': True}"
                     attrs="{
                         'readonly': [('parent.is_actual_editable', '=', False)],
-                        'required': [('payment_type', '=', 'advance')],
+                        'required': ['&amp;', ('payment_type', '=', 'advance'),
+                                     ('parent.advance_payment_count', '!=', 0)],
                         'column_invisible': [('parent.advance_payment_count', '=', 0)]
                     }"
                 />
