@@ -65,6 +65,14 @@ class AdvancePayment(models.Model):
             elif rec.reference_model == "approval.request":
                 rec.reference = False
 
+    @api.onchange("approval_request_id")
+    def _onchange_approval_request_id(self):
+        """This picker stands in for the `reference` widget on AR-backed loans,
+        so it has to run the same prefill: `reference` itself is only written by
+        the inverse at save time, long after `_onchange_reference` could fire."""
+        if self.approval_request_id:
+            self._apply_vals_from_reference()
+
     def _check_reference_status(self):
         res = super()._check_reference_status()
         ar = self.approval_request_id

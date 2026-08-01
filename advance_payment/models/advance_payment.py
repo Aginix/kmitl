@@ -224,10 +224,19 @@ class AdvancePayment(models.Model):
     @api.onchange("reference")
     def _onchange_reference(self):
         if self.reference:
-            self._check_reference_status()
-            vals = self._prepare_vals_from_reference()
-            if vals:
-                self.update(vals)
+            self._apply_vals_from_reference()
+
+    def _apply_vals_from_reference(self):
+        """Validate the source document and pull its values onto the loan.
+
+        Bridge modules that replace the `reference` widget with a typed picker
+        must call this from their own onchange — otherwise picking a source
+        document never prefills anything.
+        """
+        self._check_reference_status()
+        vals = self._prepare_vals_from_reference()
+        if vals:
+            self.update(vals)
 
     def _prepare_vals_from_reference(self):
         """Return dict of field values to auto-fill from the reference document.
