@@ -355,7 +355,7 @@ class BudgetAppropriation(models.Model):
         for record in self:
             if record.state != "review":
                 record.hide_post_button = True
-            elif not is_manager and record.appropriation_type == "initial":
+            elif not is_manager:
                 record.hide_post_button = True
             else:
                 record.hide_post_button = False
@@ -378,15 +378,12 @@ class BudgetAppropriation(models.Model):
 
     def action_post(self):
         """Post appropriation and create budget move"""
-        is_manager = self.env.user.has_group("budget.group_budget_manager")
-        if not is_manager:
-            initial = self.filtered(lambda r: r.appropriation_type == "initial")
-            if initial:
-                raise UserError(
-                    _(
-                        "เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถอนุมัติการจัดสรรงบประมาณต้นปีได้"
-                    )
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise UserError(
+                _(
+                    "เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถอนุมัติการจัดสรรงบประมาณได้"
                 )
+            )
         self._create_budget_move()
         self.write({"state": "posted"})
 
@@ -412,6 +409,13 @@ class BudgetAppropriation(models.Model):
             if record.budget_move_id and record.budget_move_id.state == "posted":
                 raise UserError(
                     _("Cannot reset to draft: Related budget move is already posted.")
+                )
+            if (
+                record.user_id != self.env.user
+                and not self.env.user.has_group("budget.group_budget_manager")
+            ):
+                raise UserError(
+                    _("Only the responsible user or a budget manager can reset to draft.")
                 )
         self.write({"state": "draft"})
 

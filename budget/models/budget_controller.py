@@ -473,5 +473,6 @@ class BudgetController(models.AbstractModel):
             "company_id": company_id,
             "currency_id": self.env.company.currency_id.id,
             "amount": amount,
+            "is_auto_created": True,
             "line_ids": [(0, 0, line_vals)],
         }

@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class BudgetAppropriationCompilation(models.Model):
@@ -576,9 +576,26 @@ class BudgetAppropriationCompilation(models.Model):
         self.write({"state": "confirmed"})
 
     def action_done(self):
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise UserError(
+                _("เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถเปลี่ยนสถานะเป็นเสร็จสิ้นได้")
+            )
         self.write({"state": "done"})
 
     def action_draft(self):
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise UserError(
+                _("เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถเปลี่ยนสถานะกลับเป็นร่างได้")
+            )
+        for record in self:
+            if record.master_summary_id and record.master_summary_id.state != "draft":
+                raise UserError(
+                    _(
+                        "ไม่สามารถเปลี่ยนสถานะกลับเป็นร่างได้ เนื่องจากสรุปภาพรวม '%s' "
+                        "อยู่ในสถานะ %s อยู่"
+                    )
+                    % (record.master_summary_id.name, record.master_summary_id.state)
+                )
         self.write({"state": "draft"})
 
     def action_open_f4_report(self):
