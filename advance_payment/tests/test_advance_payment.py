@@ -20,7 +20,13 @@ class TestAdvancePayment(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         # Exception rules that need full master data are off for these tests.
-        cls.env.ref("advance_payment.excep_missing_analytic").active = False
+        # The dimension rule belongs to advance_payment_budget, which these
+        # tests do not require but post_install may well have installed.
+        analytic_rule = cls.env.ref(
+            "advance_payment_budget.excep_missing_analytic", raise_if_not_found=False
+        )
+        if analytic_rule:
+            analytic_rule.active = False
 
         cls.manager = cls.env.ref("base.user_admin")  # in manager group
         Users = cls.env["res.users"]

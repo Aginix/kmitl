@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The dimensions live in this module, so the rule that checks them does
+         too. Not noupdate: the policy should follow the module. -->
+    <record id="excep_missing_analytic" model="exception.rule">
+        <field name="name">ไม่ได้ระบุมิติทางบัญชีครบถ้วน</field>
+        <field name="description">กรุณาระบุส่วนงาน แหล่งเงิน กองทุน และด้าน/แผนงาน/กิจกรรม ให้ครบถ้วน</field>
+        <field name="sequence">32</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">if not self.department_analytic_id or not self.source_analytic_id or not self.fund_analytic_id or not self.activity_analytic_id:
+    failed = True</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

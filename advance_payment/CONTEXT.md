@@ -53,8 +53,12 @@ The upstream document a loan is created from — an Approval Request (ใบข�
 _Avoid_: origin, parent, DR
 
 **Budget Commitment (ใบจองงบประมาณ)**:
-The `budget.commitment` the borrowed cash is drawn against, copied onto the loan from its Source Reference when the reference is picked and held as a snapshot (`budget_commitment_id`). The loan **never reserves its own** — the source document already reserved this money, and reserving again would draw the appropriation down twice. Empty on a standalone loan, whose budget source is an open policy question. Recording it is *not* ตัดงบ: consuming the budget for borrowed money is still parked, and nothing on the loan path obligates or consumes today. See ADR-0008 and `agx_approval` ADR-0003.
+The `budget.commitment` the borrowed cash is drawn against, copied onto the loan from its Source Reference when the reference is picked and held as a snapshot (`budget_commitment_id`). The loan **never reserves its own** — the source document already reserved this money, and reserving again would draw the appropriation down twice. Empty on a standalone loan, whose budget source is an open policy question. Recording it is *not* ตัดงบ: consuming the budget for borrowed money is still parked, and nothing on the loan path obligates or consumes today. Lives in the `advance_payment_budget` bridge, not in this module. See ADR-0008, ADR-0009 and `agx_approval` ADR-0003.
 _Avoid_: budget, reservation, earmark (for the document itself), ตัดงบ (that is the consume step)
+
+**มิติทางบัญชี (financial dimensions)**:
+The four dimensions a loan is charged to — ส่วนงาน, แหล่งเงิน, กองทุน, ด้าน/แผนงาน/กิจกรรม — held in `analytic_distribution` with `*_analytic_id` pickers computed from it, per the repo-wide idiom. They live in the `advance_payment_budget` bridge together with the ใบจองงบประมาณ, so the loan lifecycle in this module needs no budget stack (ADR-0009). Completeness is enforced by a blocking exception at submit, and the pickers lock once a Source Reference supplies them.
+_Avoid_: analytic accounts (that is the underlying model), cost centre
 
 **Required reference model (`loan_type_id.reference_model`)**:
 The *declaration*, on the loan-type master data, that loans of that type must be backed by a source document of a given model. Distinct from `advance.payment.reference_model`, which is the *actual* model of the attached document. A mismatch between the two is a hard `ValidationError`; a missing document is a blocking exception at submit.

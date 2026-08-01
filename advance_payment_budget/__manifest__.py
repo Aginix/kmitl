@@ -1,20 +1,19 @@
 {
-    "name": "Purchase Request - Advance Payment Bridge",
+    "name": "Advance Payment - Budget Bridge",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
-        "purchase_request_kmitl",
-        "purchase_request_budget",
         "advance_payment",
-        "advance_payment_budget",
+        "budget",
+        "account_analytic_kmitl",
     ],
     "data": [
-        "views/purchase_request_views.xml",
+        "data/advance_payment_exception_data.xml",
         "views/advance_payment_views.xml",
     ],
     "installable": True,
-    "auto_install": False,
+    "auto_install": True,
     "license": "LGPL-3",
 }

@@ -150,8 +150,6 @@
                                     'invisible': [('is_reference_visible', '=', False)],
                                     'readonly': ['|', ('is_locked_by_reference', '=', True), ('id', '!=', False)]
                                 }" />
-                            <field name="budget_commitment_id"
-                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}" />
                             <field name="loan_reason"
                                 attrs="{'readonly': [('state', 'not in', ['draft', 'to_verify'])]}" />
                             <field name="currency_id" invisible="1" />
@@ -167,16 +165,6 @@
                             <field name="attachment_ids" widget="many2many_binary"
                                 attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}" />
                         </group>
-                    </group>
-                    <group name="analytic_dimensions" string="มิติทางบัญชี">
-                        <field name="department_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                        <field name="source_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                        <field name="fund_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                        <field name="activity_analytic_id"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}" />
                     </group>
                     <group name="actual_expense" string="บันทึกค่าใช้จ่ายจริง"
                         attrs="{'invisible': [('state', 'in', ['draft', 'to_verify', 'to_approve', 'waiting_transfer'])]}">

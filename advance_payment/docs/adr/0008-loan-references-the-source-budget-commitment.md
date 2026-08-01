@@ -11,7 +11,9 @@ Until now nothing connected a loan to งบประมาณ at all: `advance.
 - from `approval.request.budget_commitment_id` (`agx_approval_advance_payment`)
 - from `purchase.request.budget_commitment_id` (`purchase_request_advance_payment`, both the pull and the push path — ADR-0007 §Consequences records that the two overlap by design)
 
-The loan **does not reserve**. It rides the earmark the source document already reserved. `budget` joins `advance_payment`'s `depends` — a declaration of what the module actually uses, not new coupling: `budget` was already in its transitive closure through `finance_kmitl`.
+The loan **does not reserve**. It rides the earmark the source document already reserved.
+
+> Amended by ADR-0009: `budget_commitment_id` and the analytic dimensions now live in the `advance_payment_budget` bridge, not in `advance_payment` itself. Everything below about *what* the field means and *why* it is a copied snapshot is unchanged; only its module home moved.
 
 ## Why
 

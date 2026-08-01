@@ -106,7 +106,6 @@ class AdvancePaymentReturnLine(models.Model):
             "partner_id": self.agreement_id.requested_by.partner_id.id,
             "amount": self.amount,
             "currency_id": self.currency_id.id,
-            "analytic_distribution": self.agreement_id.analytic_distribution,
             "kmitl_payment_type_id": payment_type.id,
             "payment_type": payment_type.direction,
         }

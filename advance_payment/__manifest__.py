@@ -12,8 +12,6 @@
         "purchase_request",
         "finance_kmitl",
         "base_exception",
-        "account_analytic_kmitl",
-        "budget",
     ],
     "data": [
         "security/security.xml",

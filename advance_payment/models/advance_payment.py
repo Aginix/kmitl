@@ -23,7 +23,6 @@ class AdvancePayment(models.Model):
         "mail.thread",
         "mail.activity.mixin",
         "base.exception",
-        "analytic.mixin",
     ]
     _order = "main_exception_id asc, name desc, id desc"
     # Bridge modules append their typed source-document mirror (e.g.
@@ -172,26 +171,6 @@ class AdvancePayment(models.Model):
     def _compute_reference(self):
         for rec in self:
             rec.reference_model = rec.reference._name if rec.reference else False
-
-    # Which earmark the borrowed cash comes out of. Copied off the source
-    # document when the reference is picked, never reserved by the loan itself —
-    # a loan creating its own commitment would double-reserve the same money
-    # (agx_approval ADR-0003). A snapshot on purpose: the source is free to
-    # release or re-point its own commitment afterwards without erasing the
-    # record of where this cash came from. Empty for a standalone loan, whose
-    # budget source is still an open policy question (ADR-0008).
-    budget_commitment_id = fields.Many2one(
-        "budget.commitment",
-        string="ใบจองงบประมาณ",
-        readonly=True,
-        copy=False,
-        index=True,
-        ondelete="restrict",
-        tracking=True,
-        help="ใบจองงบประมาณที่เงินยืมก้อนนี้เบิกออกมา "
-        "คัดลอกมาจากเอกสารต้นทางตอนเลือกเอกสารอ้างอิง "
-        "และใช้ส่งต่อให้ขั้นตัดงบประมาณ",
-    )
 
     def _check_reference_status(self):
         """Hook: verify the source document is in a state that may back a loan.
@@ -447,75 +426,10 @@ class AdvancePayment(models.Model):
         domain=[("res_model", "=", "advance.payment")],
     )
 
-    # Analytic dimension fields — computed from analytic_distribution, not stored
-    _analytic_keys = {
-        "activities": "activity_analytic_id",
-        "departments": "department_analytic_id",
-        "funds": "fund_analytic_id",
-        "sources": "source_analytic_id",
-    }
-
-    activity_analytic_id = fields.Many2one(
-        "account.analytic.account",
-        string="ด้าน/แผนงาน/กิจกรรม",
-        compute="_compute_analytic_ids",
-        inverse="_inverse_activity_analytic_id",
-        domain=[("root_plan_id.code", "=", "activities")],
-        store=False,
-    )
-    department_analytic_id = fields.Many2one(
-        "account.analytic.account",
-        string="ส่วนงาน",
-        compute="_compute_analytic_ids",
-        inverse="_inverse_department_analytic_id",
-        domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
-    )
-    fund_analytic_id = fields.Many2one(
-        "account.analytic.account",
-        string="กองทุน",
-        compute="_compute_analytic_ids",
-        inverse="_inverse_fund_analytic_id",
-        domain=[("root_plan_id.code", "=", "funds")],
-        store=False,
-    )
-    source_analytic_id = fields.Many2one(
-        "account.analytic.account",
-        string="แหล่งเงิน",
-        compute="_compute_analytic_ids",
-        inverse="_inverse_source_analytic_id",
-        domain=[("root_plan_id.code", "=", "sources")],
-        store=False,
-    )
-
     @api.onchange("requested_by")
     def _onchange_requested_by(self):
         if self.bank_id and self.bank_id.partner_id != self.requested_by.partner_id:
             self.bank_id = False
-
-    @api.depends("analytic_distribution")
-    def _compute_analytic_ids(self):
-        for rec in self:
-            values = {f: False for f in self._analytic_keys.values()}
-            account_ids = [int(k) for k in (rec.analytic_distribution or {})]
-            for account in self.env["account.analytic.account"].browse(account_ids):
-                field = self._analytic_keys.get(account.plan_id.code)
-                if field:
-                    values[field] = account.id
-            for field, val in values.items():
-                rec[field] = val
-
-    def _inverse_activity_analytic_id(self):
-        self._update_analytic_distribution("activities")
-
-    def _inverse_department_analytic_id(self):
-        self._update_analytic_distribution("departments")
-
-    def _inverse_fund_analytic_id(self):
-        self._update_analytic_distribution("funds")
-
-    def _inverse_source_analytic_id(self):
-        self._update_analytic_distribution("sources")
 
     @api.depends(
         "loan_amount",
@@ -593,7 +507,6 @@ class AdvancePayment(models.Model):
             "amount": self.loan_amount,
             "currency_id": self.currency_id.id,
             "advance_payment_id": self.id,
-            "analytic_distribution": self.analytic_distribution,
             "kmitl_payment_type_id": payment_type.id,
             "payment_type": payment_type.direction,
         }
