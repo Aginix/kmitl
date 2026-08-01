@@ -11,6 +11,9 @@ class AdvancePayment(models.Model):
     ใบจองงบประมาณ its cash is drawn against.
     """
 
+    # _name is required alongside a multi-entry _inherit: Odoo only defaults it
+    # to _inherit[0] when there is exactly one parent.
+    _name = "advance.payment"
     _inherit = ["advance.payment", "analytic.mixin"]
 
     # Which earmark the borrowed cash comes out of. Copied off the source
