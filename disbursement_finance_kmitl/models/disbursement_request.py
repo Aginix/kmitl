@@ -132,7 +132,7 @@ class DisbursementRequest(models.Model):
                 line.payment_method = subject.default_method
             if not line.paying_account_id:
                 line.paying_account_id = subject._paying_account_for_bank(
-                    line.partner_bank_id.bank_id
+                    line.partner_bank_id.bank_id, company=self.company_id
                 )
 
     # One2many via the stored back-reference on account.payment, so payment

@@ -85,13 +85,15 @@ class KmitlPaymentSubject(models.Model):
                     % subject.name
                 )
 
-    def _paying_account_for_bank(self, bank):
-        """Return the allowed paying account held at ``bank``, else the default.
+    def _paying_account_for_bank(self, bank, company=None):
+        """Return the paying account (หัวจ่าย) that serves a payee at ``bank``.
 
-        This is what serves a staff advance out of the payee's own bank without
-        any extra policy switch: allow the four bank accounts and the payee's
-        bank decides, while a subject that allows a single account always
-        returns that one.
+        This is KMITL's rule: a payee banking with one of the main paying banks
+        is paid from the account held there; everyone else is paid from the
+        fallback. The fallback is the subject's own default when it sets one,
+        otherwise the institute-wide default on the company — so the general
+        rule is stated once and a subject only overrides when it differs (e.g.
+        salary allows the KTB account only).
         """
         self.ensure_one()
         allowed = self.allowed_paying_account_ids
@@ -101,4 +103,9 @@ class KmitlPaymentSubject(models.Model):
                 return match[0]
         if self.default_paying_account_id:
             return self.default_paying_account_id
+        company = company or self.env.company
+        if company.default_paying_account_id and (
+            not allowed or company.default_paying_account_id in allowed
+        ):
+            return company.default_paying_account_id
         return allowed[:1]
