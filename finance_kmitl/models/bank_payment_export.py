@@ -65,7 +65,14 @@ class BankPaymentExport(models.Model):
         )
 
     def _check_constraint_create_bank_payment_export(self, payments):
-        """Override to accept submitted payments instead of posted."""
+        """Replace the base check, which insists on posted manual payments.
+
+        Deliberately does not call super(): KMITL exports *submitted* payments
+        on the KMITL transfer method, which the base rejects outright. The
+        per-bank rules layered on top would be silenced by that, so they are
+        invoked through their own hook.
+        """
+        self._check_bank_specific_constraint(payments)
         comment_template = payments[0].bank_payment_template_id
         previous_currency = False
         method_transfer_out = self._transfer_payment_method()

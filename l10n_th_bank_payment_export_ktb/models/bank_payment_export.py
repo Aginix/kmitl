@@ -146,6 +146,12 @@ class BankPaymentExport(models.Model):
 
     def _check_constraint_create_bank_payment_export(self, payments):
         res = super()._check_constraint_create_bank_payment_export(payments)
+        self._check_bank_specific_constraint(payments)
+        return res
+
+    def _check_bank_specific_constraint(self, payments):
+        """KTB's own rules, reachable even when the base check is replaced."""
+        super()._check_bank_specific_constraint(payments)
         # The sending bank comes from the account the money is paid out of.
         # KMITL's journals are voucher types (ใบสำคัญ) shared by every bank, so
         # the paying account is what identifies the bank and the cheque of

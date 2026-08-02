@@ -21,6 +21,17 @@ class BankPaymentExport(models.Model):
         tracking=True,
     )
 
+    def _check_bank_specific_constraint(self, payments):
+        """Per-bank rules on the payments going into an export.
+
+        The base ``_check_constraint_create_bank_payment_export`` is written
+        for the stock "posted manual payment" flow, so a localisation that
+        needs different rules replaces it outright rather than extending it —
+        which would also silence the per-bank rules layered on top. Bank
+        modules put their rules here instead, and any replacement calls this.
+        """
+        return True
+
     def _set_global_dict(self):
         """Set global dict for eval"""
         today = fields.Date.context_today(self)

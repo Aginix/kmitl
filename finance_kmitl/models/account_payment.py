@@ -137,7 +137,7 @@ class AccountPayment(models.Model):
 
     @api.model
     def _kmitl_inject_payment_method_line(self, vals):
-        """Preset the เช็ค method line for a cheque operation type."""
+        """Preset the เช็ค / เงินสด method line for its operation type."""
         if vals.get("payment_method_line_id") or not vals.get(
             "kmitl_payment_type_id"
         ):
@@ -145,13 +145,14 @@ class AccountPayment(models.Model):
         payment_type = self.env["kmitl.payment.type"].browse(
             vals["kmitl_payment_type_id"]
         )
-        if not payment_type.is_cheque:
+        code = payment_type._kmitl_method_code()
+        if not code:
             return
         journal = self.env["account.journal"].browse(
             vals.get("journal_id") or payment_type.journal_id.id
         )
         direction = vals.get("payment_type") or payment_type.direction
-        line = journal._kmitl_cheque_method_line(direction)
+        line = journal._kmitl_method_line(direction, code)
         if line:
             vals["payment_method_line_id"] = line.id
 
@@ -167,11 +168,14 @@ class AccountPayment(models.Model):
         ever gain an export and neither may be held back by the export gate.
         """
         self.ensure_one()
-        method_code = self.payment_method_id.code
-        return self.payment_type == "outbound" and method_code in (
-            "kmitl_transfer",
-            "manual",
-        )
+        # Keyed off the operation type, which the disbursement flow sets
+        # explicitly — the method line is only a consequence of it, and a cash
+        # payment whose line was never forced would otherwise look like a
+        # transfer and be held back forever.
+        payment_type = self.kmitl_payment_type_id
+        if payment_type.is_cheque or payment_type.is_cash:
+            return False
+        return self.payment_type == "outbound"
 
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
@@ -274,18 +278,18 @@ class AccountPayment(models.Model):
             self._apply_kmitl_payment_method_line()
 
     def _apply_kmitl_payment_method_line(self):
-        """Point a cheque operation type at the journal's เช็ค method line.
+        """Point a cheque / cash operation type at its own method line.
 
-        Without this a cheque payment would keep the journal's default method
-        (เงินโอน, the first line). The bank export also filters cheque
-        operation types out on its own, so a journal missing the เช็ค line
-        cannot leak a cheque into an e-payment file.
+        Without this such a payment would keep the journal's default method
+        (เงินโอน, the first line) and would then look like a transfer to the
+        bank export.
         """
         for payment in self:
-            if not payment.kmitl_payment_type_id.is_cheque:
+            code = payment.kmitl_payment_type_id._kmitl_method_code()
+            if not code:
                 continue
-            line = payment.journal_id._kmitl_cheque_method_line(
-                payment.payment_type
+            line = payment.journal_id._kmitl_method_line(
+                payment.payment_type, code
             )
             if line:
                 payment.payment_method_line_id = line
@@ -361,22 +365,27 @@ class AccountPayment(models.Model):
         triggers (a full move rebuild would collapse the withholding-tax
         write-off lines), so the money line is repointed surgically instead.
         """
-        res = super().write(vals)
+        # The money line has to be found BEFORE the write: afterwards the
+        # account it still carries is the old one, which no longer counts as a
+        # liquidity account, so _seek_for_lines would no longer return it.
+        stale_lines = {}
         if "paying_account_id" in vals:
-            self._kmitl_repoint_liquidity_line()
+            for payment in self:
+                if payment.state in ("draft", "submitted"):
+                    stale_lines[payment.id] = payment._seek_for_lines()[0]
+        res = super().write(vals)
+        if stale_lines:
+            self._kmitl_repoint_liquidity_line(stale_lines)
         return res
 
-    def _kmitl_repoint_liquidity_line(self):
+    def _kmitl_repoint_liquidity_line(self, stale_lines):
         # 'submitted' counts too: a KMITL payment spends its whole exportable
         # life there, and its entry is not posted yet.
         for payment in self:
-            if not payment.paying_account_id or payment.state not in (
-                "draft",
-                "submitted",
-            ):
+            lines = stale_lines.get(payment.id)
+            if not payment.paying_account_id or not lines:
                 continue
-            liquidity_lines = payment._seek_for_lines()[0]
-            stale = liquidity_lines.filtered(
+            stale = lines.filtered(
                 lambda l: l.account_id != payment.paying_account_id
             )
             if stale:

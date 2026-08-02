@@ -43,6 +43,27 @@ class AccountAccount(models.Model):
         help="Print calibration for the cheque book drawn on this account.",
     )
 
+    @api.constrains("is_paying_account", "account_type")
+    def _check_paying_account_type(self):
+        """A paying account may not be a receivable/payable account.
+
+        Odoo classifies a payment's journal items by account, testing the money
+        side before the counterpart: an account that is both would swallow the
+        payable line and make the payment unsavable.
+        """
+        for account in self:
+            if account.is_paying_account and account.account_type in (
+                "asset_receivable",
+                "liability_payable",
+            ):
+                raise ValidationError(
+                    _(
+                        "'%s' is a receivable/payable account, so it cannot "
+                        "also be a paying account (หัวจ่าย)."
+                    )
+                    % account.display_name
+                )
+
     @api.constrains("is_paying_account", "paying_bank_id", "paying_acc_number")
     def _check_paying_account(self):
         """A paying account held at a bank must carry its account number.

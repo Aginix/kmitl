@@ -45,6 +45,7 @@
         <field name="name">จ่ายเงินสด</field>
         <field name="direction">outbound</field>
         <field name="sequence">60</field>
+        <field name="is_cash" eval="True"/>
     </record>
 
 </odoo>

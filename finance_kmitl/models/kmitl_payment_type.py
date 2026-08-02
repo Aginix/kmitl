@@ -30,6 +30,12 @@ class KmitlPaymentType(models.Model):
         string="Override Account",
         help="Override the destination account. Leave empty to use partner's default.",
     )
+    is_cash = fields.Boolean(
+        string="Paid/Received in Cash",
+        help="Payments of this type are settled over the counter. Like "
+        "cheques they never travel in an e-payment file, so they are exempt "
+        "from the bank-export gate.",
+    )
     is_cheque = fields.Boolean(
         string="Paid/Received by Cheque",
         help="Payments of this type are settled by cheque. They are exempt from "
@@ -37,3 +43,16 @@ class KmitlPaymentType(models.Model):
         "cheque control register when the payment is posted.",
     )
 
+    def _kmitl_method_code(self):
+        """The KMITL payment method this operation type settles with.
+
+        Only cheque and cash need forcing: a transfer is the journal's first
+        method line anyway, and an operation type that is neither leaves the
+        method alone.
+        """
+        self.ensure_one()
+        if self.is_cheque:
+            return "kmitl_cheque"
+        if self.is_cash:
+            return "kmitl_cash"
+        return False
