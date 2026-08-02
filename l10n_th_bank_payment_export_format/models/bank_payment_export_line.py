@@ -11,6 +11,29 @@ _logger = logging.getLogger(__name__)
 class BankPaymentExportLine(models.Model):
     _inherit = 'bank.payment.export.line'
 
+    # The sending side of the file — "Sending A/C" and its branch in the bank
+    # layouts. Exposed as fields so the format lines do not have to know where
+    # the paying account lives: by default it is the bank account behind the
+    # payment's journal, and a localisation that pays out of somewhere else
+    # (e.g. finance_kmitl, whose journals are voucher types) extends the
+    # compute.
+    sending_bank_id = fields.Many2one(
+        comodel_name='res.bank',
+        compute='_compute_sending_account',
+        string='Sending Bank',
+    )
+    sending_acc_number = fields.Char(
+        compute='_compute_sending_account',
+        string='Sending A/C Number',
+    )
+
+    @api.depends('payment_id.journal_id.bank_account_id')
+    def _compute_sending_account(self):
+        for line in self:
+            journal_bank = line.payment_id.journal_id.bank_account_id
+            line.sending_bank_id = journal_bank.bank_id
+            line.sending_acc_number = journal_bank.acc_number
+
     def sanitize_account_number(self, acc_number):
         """
         Wrapper method to call sanitize_account_number function
