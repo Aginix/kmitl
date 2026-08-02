@@ -19,8 +19,7 @@ class AccountMove(models.Model):
             payment = move.payment_id
             if (
                 payment
-                and payment.payment_type == "outbound"
-                and not payment.kmitl_payment_type_id.is_cheque
+                and payment._needs_bank_export()
                 and payment.export_status == "draft"
             ):
                 raise UserError(

@@ -151,15 +151,20 @@ class BankPaymentExport(models.Model):
         # the paying account is what identifies the bank and the cheque of
         # "one sending account per export"; the journal's own bank account is
         # the fallback for payments made outside that setup.
-        sending_accounts = payments.mapped("paying_account_id")
-        if sending_accounts:
-            payment_bic_bank = list(
-                set(sending_accounts.mapped("paying_bank_id.bic"))
-            )
-            sending_count = len(sending_accounts)
-        else:
-            payment_bic_bank = list(set(payments.mapped("journal_id.bank_id.bic")))
-            sending_count = len(payments.mapped("journal_id"))
+        # One entry per payment so that a batch mixing paying accounts with
+        # journal-based senders is still counted as several sending accounts.
+        senders = set()
+        bics = set()
+        for payment in payments:
+            paying_account = payment.paying_account_id
+            if paying_account:
+                senders.add(("account", paying_account.id))
+                bics.add(paying_account.paying_bank_id.bic)
+            else:
+                senders.add(("journal", payment.journal_id.id))
+                bics.add(payment.journal_id.bank_id.bic)
+        payment_bic_bank = list(bics)
+        sending_count = len(senders)
         payment_bank = len(payment_bic_bank) == 1 and payment_bic_bank[0] or ""
         # Check case KTB must have 1 sending account / 1 PE
         if payment_bank == "KRTHTHBK" and sending_count > 1:

@@ -85,6 +85,18 @@ class AccountPayment(models.Model):
             if payment.paying_account_id:
                 payment.outstanding_account_id = payment.paying_account_id
 
+    def _get_valid_liquidity_accounts(self):
+        """Accept the paying account as the payment's money account.
+
+        Core recognises a move line as the liquidity line only when its account
+        is one it knows about (the journal's default, the method line's
+        outstanding account, ...). Since the money is booked against the paying
+        account instead, it has to be added here — otherwise ``_seek_for_lines``
+        files it as a write-off and every create/write on the payment fails the
+        "one and only one outstanding account" check.
+        """
+        return super()._get_valid_liquidity_accounts() | self.paying_account_id
+
     def action_mark_bank_result_success(self):
         """Finance manually confirms a cheque payment was actually paid.
 
@@ -148,14 +160,23 @@ class AccountPayment(models.Model):
         for payment in self:
             payment.cheque_register_count = len(payment.cheque_register_ids)
 
+    def _needs_bank_export(self):
+        """Only an outbound bank transfer travels in an e-payment file.
+
+        Cheques are handed over and cash is paid at the counter, so neither can
+        ever gain an export and neither may be held back by the export gate.
+        """
+        self.ensure_one()
+        method_code = self.payment_method_id.code
+        return self.payment_type == "outbound" and method_code in (
+            "kmitl_transfer",
+            "manual",
+        )
+
     def action_post(self):
         """Validate bank export for outbound, then reconcile after posting."""
         for payment in self:
-            if (
-                payment.payment_type == "outbound"
-                and not payment.kmitl_payment_type_id.is_cheque
-                and payment.export_status == "draft"
-            ):
+            if payment._needs_bank_export() and payment.export_status == "draft":
                 raise UserError(
                     _("Payment must be exported to bank before posting.")
                 )
@@ -346,8 +367,13 @@ class AccountPayment(models.Model):
         return res
 
     def _kmitl_repoint_liquidity_line(self):
+        # 'submitted' counts too: a KMITL payment spends its whole exportable
+        # life there, and its entry is not posted yet.
         for payment in self:
-            if not payment.paying_account_id or payment.state != "draft":
+            if not payment.paying_account_id or payment.state not in (
+                "draft",
+                "submitted",
+            ):
                 continue
             liquidity_lines = payment._seek_for_lines()[0]
             stale = liquidity_lines.filtered(

@@ -41,4 +41,10 @@
         <field name="is_cheque" eval="True"/>
     </record>
 
+    <record id="payment_type_cash_outbound" model="kmitl.payment.type">
+        <field name="name">จ่ายเงินสด</field>
+        <field name="direction">outbound</field>
+        <field name="sequence">60</field>
+    </record>
+
 </odoo>

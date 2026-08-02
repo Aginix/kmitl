@@ -520,6 +520,14 @@ class DisbursementRequest(models.Model):
             "finance_kmitl.payment_type_cheque_outbound",
             raise_if_not_found=False,
         )
+        cash_type = self.env.ref(
+            "finance_kmitl.payment_type_cash_outbound",
+            raise_if_not_found=False,
+        )
+        type_by_method = {
+            "cheque": cheque_type,
+            "cash": cash_type or transfer_type,
+        }
         lines_by_partner = self._lines_by_partner()
 
         payments = self.env["account.payment"]
@@ -532,7 +540,7 @@ class DisbursementRequest(models.Model):
                 )
             method = partner_lines[0].payment_method or "transfer"
             paying_account = partner_lines[0].paying_account_id
-            payment_type = cheque_type if method == "cheque" else transfer_type
+            payment_type = type_by_method.get(method) or transfer_type
             journal = payment_type.journal_id if payment_type else False
             if not journal:
                 journal = self.env["account.journal"].search(
