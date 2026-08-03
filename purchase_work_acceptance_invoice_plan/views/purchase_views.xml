@@ -32,12 +32,9 @@
                 />
             </xpath>
             <xpath expr="//button[@name='action_view_wa']" position="attributes">
-                <attribute name="groups">purchase.group_purchase_user</attribute>
-                <field name="action_view_wa" position="attributes">
-                    <attribute name="attrs">
-                          {'invisible': ['|', '|', ('use_invoice_plan', '=', True), ('state', 'not in', ('purchase', 'done')), ('wa_accepted', '=', True)]}
-                     </attribute>
-                </field>
+                <attribute name="attrs">
+                    {'invisible': ['|', '|', ('use_invoice_plan', '=', True), ('state', 'not in', ('purchase', 'done')), ('wa_accepted', '=', True)]}
+                </attribute>
             </xpath>
         </field>
     </record>
