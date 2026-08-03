@@ -155,6 +155,7 @@ class PurchaseRequestApproval(models.Model):
     partner_id = fields.Many2one(
         "res.partner",
         string="Vendor",
+        required=True,
         tracking=True,
     )
     vat_included = fields.Selection(
@@ -442,12 +443,6 @@ class PurchaseRequestApproval(models.Model):
         return action
 
     # === Sarabun Document Integration ===
-
-    def _sarabun_submit_guard(self):
-        self.ensure_one()
-        if not self.partner_id:
-            raise UserError(_("กรุณาระบุผู้ขาย (Vendor) ก่อนสร้างสารบัญ"))
-        return super()._sarabun_submit_guard()
 
     def _get_sarabun_subject(self):
         return self.title or self.name
