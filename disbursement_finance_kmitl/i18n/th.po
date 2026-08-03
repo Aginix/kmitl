@@ -270,6 +270,16 @@ msgid "Payment Method"
 msgstr "วิธีจ่าย"
 
 #. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request_line__paying_account_id
+msgid "Paying Account"
+msgstr "หัวจ่าย"
+
+#. module: disbursement_finance_kmitl
+#: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request_line__paying_account_match
+msgid "Match Result"
+msgstr "ผลลัพธ์การจับคู่"
+
+#. module: disbursement_finance_kmitl
 #: model:ir.model.fields,field_description:disbursement_finance_kmitl.field_disbursement_request__payment_line_ids
 msgid "Payment Lines"
 msgstr "รายการจ่ายรายผู้รับ"

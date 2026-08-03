@@ -722,3 +722,18 @@ msgstr "จ่ายด้วยเช็ค"
 #: model:ir.actions.act_window,name:finance_kmitl.action_kmitl_payment_subject
 msgid "Payment Subjects (เรื่องที่จ่าย)"
 msgstr "เรื่องที่จ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__auto_match_payee_bank
+msgid "Auto-match by Payee's Bank"
+msgstr "จับคู่หัวจ่ายตามธนาคารผู้รับ"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__default_paying_account_id
+msgid "Main / Fallback Paying Account"
+msgstr "หัวจ่ายหลัก / หัวจ่ายสำรอง"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__allowed_paying_account_ids
+msgid "Allowed Paying Accounts"
+msgstr "หัวจ่ายที่อนุญาต"

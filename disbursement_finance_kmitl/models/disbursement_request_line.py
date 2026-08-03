@@ -1,6 +1,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class DisbursementRequestLine(models.Model):
@@ -25,5 +25,31 @@ class DisbursementRequestLine(models.Model):
         copy=False,
         help="หัวจ่าย — the account the money leaves from. Defaulted from the "
         "request's payment subject (the account at the payee's own bank when "
-        "the subject allows several); lines of the same payee must share one.",
+        "the subject auto-matches); lines of the same payee must share one.",
     )
+    paying_account_match = fields.Selection(
+        selection=[
+            ("bank", "ตรงธนาคารผู้รับ"),
+            ("fallback", "ใช้หัวจ่ายสำรอง"),
+            ("main", "หัวจ่ายหลัก"),
+            ("manual", "เลือกเอง"),
+        ],
+        string="Match Result",
+        copy=False,
+        readonly=True,
+        help="How the paying account was chosen, so the auditor can spot the "
+        "payees that fell to the fallback and double-check them. Editing the "
+        "paying account by hand marks the line as chosen manually.",
+    )
+
+    @api.onchange("paying_account_id")
+    def _onchange_paying_account_id(self):
+        """A hand-picked account is provenance of its own.
+
+        Only fires from the UI: the subject-derived assignment writes through
+        the ORM, which does not run onchange, so it never mislabels itself.
+        """
+        for line in self:
+            line.paying_account_match = (
+                "manual" if line.paying_account_id else False
+            )

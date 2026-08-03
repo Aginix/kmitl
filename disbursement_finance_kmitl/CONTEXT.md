@@ -35,12 +35,20 @@ Set by the **auditor** during Payment Audit. Three orthogonal concepts:
   register read them there instead of from a journal. Cash accounts qualify
   too (KMITL types cash-in-hand `asset_current` and banks `asset_cash`, so the
   flag, not the type, decides).
-- **Allowed / default paying accounts** (on the subject): the accounts a
-  subject may pay from, plus the fallback. One mechanism covers every real
-  case — allow a single account and it is always used (salary → KTB, direct
-  vendor → SCB); allow several and **each payee is served from the account at
-  their own bank** (เงินยืม/สำรองจ่าย), falling back to the default when no
-  account matches. Set per DR **line**, defaulted at audit time.
+- **Auto-match / จับคู่ตามธนาคารผู้รับ** (flag on the subject): when on, each
+  payee is served from the **allowed** account held at the bank of their own
+  bank account (เงินยืม/สำรองจ่าย); a payee whose bank matches none falls to
+  the subject's account, which then reads as the **fallback / หัวจ่ายสำรอง**.
+  When off, every payee pays from that same account, which reads as the
+  **main / หัวจ่ายหลัก** (salary → KTB, direct vendor → SCB) — one field, two
+  roles, the label follows the flag. Left empty it inherits the
+  institute-wide default on the company. Set per DR **line** at audit time.
+- **Match Result / ผลลัพธ์การจับคู่** (`paying_account_match` on the line):
+  how the line's paying account was chosen — ตรงธนาคารผู้รับ (`bank`),
+  ใช้หัวจ่ายสำรอง (`fallback`, highlighted for the auditor to re-check),
+  หัวจ่ายหลัก (`main`), or เลือกเอง (`manual`, set when the auditor picks the
+  account by hand). Switching the subject re-derives every line except the
+  `manual` ones.
 - **Voucher journal / ใบสำคัญ** (`account.payment.journal_id`): the document
   type (PV/RV/PVR/PAR) that numbers the payment. It is *not* a bank account —
   KMITL settles a payable in one step (no bank statement, no outstanding

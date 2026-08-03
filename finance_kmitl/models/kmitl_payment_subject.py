@@ -39,12 +39,21 @@ class KmitlPaymentSubject(models.Model):
         help="Payment method applied to every request line by default; the "
         "auditor can override individual lines.",
     )
+    auto_match_payee_bank = fields.Boolean(
+        string="Auto-match by Payee's Bank",
+        help="จับคู่หัวจ่ายตามธนาคารผู้รับ — pay each payee from the allowed "
+        "account held at the bank of their own bank account; a payee whose "
+        "bank matches none of them is paid from the fallback account. When "
+        "off, every payee is paid from the main paying account.",
+    )
     default_paying_account_id = fields.Many2one(
         comodel_name="account.account",
-        string="Default Paying Account",
+        string="Main / Fallback Paying Account",
         domain="[('is_paying_account', '=', True)]",
-        help="หัวจ่ายตั้งต้น — used for a payee whose own bank is not among "
-        "the allowed accounts.",
+        help="With auto-match off: the one account (หัวจ่ายหลัก) every payee "
+        "is paid from. With auto-match on: the fallback (หัวจ่ายสำรอง) for a "
+        "payee whose bank matches no allowed account. Left empty, the "
+        "institute-wide default on the company applies.",
     )
     allowed_paying_account_ids = fields.Many2many(
         comodel_name="account.account",
@@ -53,9 +62,8 @@ class KmitlPaymentSubject(models.Model):
         column2="account_id",
         string="Allowed Paying Accounts",
         domain="[('is_paying_account', '=', True)]",
-        help="หัวจ่ายที่อนุญาต — the accounts this subject may be paid from. "
-        "With more than one, each payee is served from the account held at "
-        "their own bank, falling back to the default.",
+        help="หัวจ่ายที่อนุญาต — the accounts auto-match may pick from, one "
+        "per bank.",
     )
 
     @api.onchange("default_paying_account_id")
@@ -86,26 +94,35 @@ class KmitlPaymentSubject(models.Model):
                 )
 
     def _paying_account_for_bank(self, bank, company=None):
-        """Return the paying account (หัวจ่าย) that serves a payee at ``bank``.
+        return self._paying_account_with_match(bank, company=company)[0]
 
-        This is KMITL's rule: a payee banking with one of the main paying banks
-        is paid from the account held there; everyone else is paid from the
-        fallback. The fallback is the subject's own default when it sets one,
-        otherwise the institute-wide default on the company — so the general
-        rule is stated once and a subject only overrides when it differs (e.g.
-        salary allows the KTB account only).
+    def _paying_account_with_match(self, bank, company=None):
+        """Return ``(paying account, match)`` for a payee banking at ``bank``.
+
+        With auto-match on, a payee banking with one of the allowed paying
+        banks is paid from the account held there (match ``bank``); everyone
+        else falls to the subject's fallback account (match ``fallback``).
+        With auto-match off every payee is paid from the main account (match
+        ``main``). A subject that leaves the account empty inherits the
+        institute-wide default on the company, so the general rule is stated
+        once and a subject only overrides when it differs (e.g. salary pays
+        from the KTB account only).
+
+        The match code is recorded on the disbursement line so the auditor can
+        see which payees fell to the fallback and double-check them.
         """
         self.ensure_one()
         allowed = self.allowed_paying_account_ids
-        if bank:
+        if self.auto_match_payee_bank and bank:
             match = allowed.filtered(lambda a: a.paying_bank_id == bank)
             if match:
-                return match[0]
+                return match[0], "bank"
+        how = "fallback" if self.auto_match_payee_bank else "main"
         if self.default_paying_account_id:
-            return self.default_paying_account_id
+            return self.default_paying_account_id, how
         company = company or self.env.company
         if company.default_paying_account_id and (
             not allowed or company.default_paying_account_id in allowed
         ):
-            return company.default_paying_account_id
-        return allowed[:1]
+            return company.default_paying_account_id, how
+        return allowed[:1], how

@@ -110,18 +110,31 @@ class DisbursementRequest(models.Model):
 
     @api.onchange("payment_subject_id")
     def _onchange_payment_subject_id(self):
-        """Default every line's method and paying account from the subject;
-        the auditor then adjusts only the exception lines."""
+        """Default every line's method and paying account from the subject.
+
+        Switching the subject re-derives the lines the auditor did not pick by
+        hand — their match result records who chose them, so a hand-picked
+        account (``manual``) is preserved while everything derived from the
+        previous subject follows the new one.
+        """
         if self.payment_subject_id:
+            derived = self.line_ids.filtered(
+                lambda l: l.paying_account_match != "manual"
+            )
+            derived.update(
+                {"payment_method": False, "paying_account_id": False,
+                 "paying_account_match": False}
+            )
             self._apply_subject_defaults(self.line_ids)
 
     def _apply_subject_defaults(self, lines):
         """Fill method and paying account (หัวจ่าย) on ``lines`` from the
         subject, leaving values the auditor already set alone.
 
-        A subject that allows several paying accounts serves each payee from
-        the account held at their own bank — that is what pays a staff advance
-        out of the payee's bank without any extra setting.
+        A subject that auto-matches serves each payee from the allowed account
+        held at their own bank — that is what pays a staff advance out of the
+        payee's bank without any extra setting — and stamps how each line was
+        resolved so the auditor can review the ones that fell to the fallback.
         """
         self.ensure_one()
         subject = self.payment_subject_id
@@ -131,9 +144,11 @@ class DisbursementRequest(models.Model):
             if not line.payment_method:
                 line.payment_method = subject.default_method
             if not line.paying_account_id:
-                line.paying_account_id = subject._paying_account_for_bank(
+                account, match = subject._paying_account_with_match(
                     line.partner_bank_id.bank_id, company=self.company_id
                 )
+                line.paying_account_id = account
+                line.paying_account_match = match if account else False
 
     # One2many via the stored back-reference on account.payment, so payment
     # progress recomputes reactively (no search() inside computes).

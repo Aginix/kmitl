@@ -69,6 +69,7 @@ class TestPaymentWorkflow(TransactionCase):
         cls.subject_multi = cls.env["kmitl.payment.subject"].create({
             "name": "Advance test",
             "default_method": "transfer",
+            "auto_match_payee_bank": True,
             "allowed_paying_account_ids": [
                 (6, 0, (cls.paying_ktb + cls.paying_scb).ids)
             ],
@@ -174,13 +175,14 @@ class TestPaymentWorkflow(TransactionCase):
             request.action_audit()
 
     def test_multi_account_subject_picks_payee_bank(self):
-        """Allowing several paying accounts serves each payee from the account
-        held at their own bank — no extra policy switch."""
+        """Auto-match serves each payee from the account held at their own
+        bank, and records the match so the auditor can see it."""
         request = self._make_billed_request(
             subject=self.subject_multi, bank=self.scb
         )
         request.action_audit()
         self.assertEqual(request.line_ids.paying_account_id, self.paying_scb)
+        self.assertEqual(request.line_ids.paying_account_match, "bank")
 
     def test_multi_account_subject_falls_back_to_default(self):
         other_bank = self.env["res.bank"].create({"name": "Elsewhere"})
@@ -189,6 +191,50 @@ class TestPaymentWorkflow(TransactionCase):
         )
         request.action_audit()
         self.assertEqual(request.line_ids.paying_account_id, self.paying_ktb)
+        # The line is flagged as fallen-to-fallback for the auditor to review.
+        self.assertEqual(request.line_ids.paying_account_match, "fallback")
+
+    def test_no_auto_match_ignores_payee_bank(self):
+        """With auto-match off the payee's bank is irrelevant: everyone pays
+        from the main account, even when another allowed account matches."""
+        subject = self.env["kmitl.payment.subject"].create({
+            "name": "Fixed multi test",
+            "default_method": "transfer",
+            "auto_match_payee_bank": False,
+            "allowed_paying_account_ids": [
+                (6, 0, (self.paying_ktb + self.paying_scb).ids)
+            ],
+            "default_paying_account_id": self.paying_ktb.id,
+        })
+        request = self._make_billed_request(subject=subject, bank=self.scb)
+        request.action_audit()
+        self.assertEqual(request.line_ids.paying_account_id, self.paying_ktb)
+        self.assertEqual(request.line_ids.paying_account_match, "main")
+
+    def test_subject_change_keeps_manual_lines(self):
+        """Re-deriving on a subject switch respects a hand-picked account."""
+        request = self._make_billed_request(subject=self.subject_multi)
+        request._apply_subject_defaults(request.line_ids)
+        line = request.line_ids
+        line.write({
+            "paying_account_id": self.paying_scb.id,
+            "paying_account_match": "manual",
+        })
+        request.payment_subject_id = self.subject_single
+        request._onchange_payment_subject_id()
+        self.assertEqual(line.paying_account_id, self.paying_scb)
+        self.assertEqual(line.paying_account_match, "manual")
+
+    def test_subject_change_rederives_derived_lines(self):
+        request = self._make_billed_request(subject=self.subject_multi)
+        request._apply_subject_defaults(request.line_ids)
+        self.assertEqual(
+            request.line_ids.paying_account_id, self.paying_ktb
+        )
+        request.payment_subject_id = self.subject_single
+        request._onchange_payment_subject_id()
+        self.assertEqual(request.line_ids.paying_account_id, self.paying_ktb)
+        self.assertEqual(request.line_ids.paying_account_match, "main")
 
     def test_account_outside_allowed_blocks(self):
         request = self._make_billed_request(subject=self.subject_single)

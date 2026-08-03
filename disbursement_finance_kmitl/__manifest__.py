@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement ↔ KMITL Finance Bridge",
-    "version": "16.0.2.1.1",
+    "version": "16.0.2.2.0",
     "category": "KMITL/Finance",
     "summary": "DR ↔ Payment: post-bill payment-execution workflow "
     "(audit → authorize → pay → clear), WHT, e-payment result, and "

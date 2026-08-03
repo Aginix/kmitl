@@ -49,16 +49,27 @@ MAIN_PAYING_ACCOUNTS = [
 # The fallback for a payee whose bank is none of the above.
 DEFAULT_PAYING_ACCOUNT_CODE = "1112210004"
 
-# Which of the main accounts each seeded subject may pay from. A subject that
-# lists one account always uses it; one that lists several serves each payee
-# from the account at their own bank.
+# Which of the main accounts each seeded subject may pay from, and whether the
+# subject auto-matches by the payee's bank. Auto-match serves each payee from
+# the allowed account at their own bank, falling back to the subject's
+# main/fallback account; without it every payee pays from that one account.
 SUBJECT_PAYING_ACCOUNTS = {
-    "finance_kmitl.payment_subject_salary": ["1112210010"],
-    "finance_kmitl.payment_subject_advance_reimburse": [
-        entry["code"] for entry in MAIN_PAYING_ACCOUNTS
-    ],
-    "finance_kmitl.payment_subject_vendor_direct": ["1112210004"],
-    "finance_kmitl.payment_subject_utilities": ["1112210004"],
+    "finance_kmitl.payment_subject_salary": {
+        "codes": ["1112210010"],
+        "auto_match": False,
+    },
+    "finance_kmitl.payment_subject_advance_reimburse": {
+        "codes": [entry["code"] for entry in MAIN_PAYING_ACCOUNTS],
+        "auto_match": True,
+    },
+    "finance_kmitl.payment_subject_vendor_direct": {
+        "codes": ["1112210004"],
+        "auto_match": False,
+    },
+    "finance_kmitl.payment_subject_utilities": {
+        "codes": ["1112210004"],
+        "auto_match": False,
+    },
 }
 
 
@@ -127,17 +138,22 @@ def _setup_subject_paying_accounts(env, accounts):
 
     Subjects an administrator already configured are left untouched.
     """
-    for xmlid, codes in SUBJECT_PAYING_ACCOUNTS.items():
+    for xmlid, config in SUBJECT_PAYING_ACCOUNTS.items():
         subject = env.ref(xmlid, raise_if_not_found=False)
         if not subject or subject.allowed_paying_account_ids:
             continue
         allowed = [
-            accounts[code].id for code in codes if accounts.get(code)
+            accounts[code].id
+            for code in config["codes"]
+            if accounts.get(code)
         ]
         if not allowed:
             continue
         default = accounts.get(DEFAULT_PAYING_ACCOUNT_CODE)
-        vals = {"allowed_paying_account_ids": [(6, 0, allowed)]}
+        vals = {
+            "allowed_paying_account_ids": [(6, 0, allowed)],
+            "auto_match_payee_bank": config["auto_match"],
+        }
         if default and default.id in allowed:
             vals["default_paying_account_id"] = default.id
         else:

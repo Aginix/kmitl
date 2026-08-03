@@ -30,11 +30,21 @@
                             <field name="default_method" widget="radio"/>
                         </group>
                         <group string="หัวจ่าย">
+                            <field name="auto_match_payee_bank"/>
                             <field name="allowed_paying_account_ids"
                                    widget="many2many_tags"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True}"
+                                   attrs="{'invisible': [('auto_match_payee_bank', '=', False)]}"/>
+                            <!-- One field, two roles: the label follows the
+                                 auto-match flag. -->
                             <field name="default_paying_account_id"
-                                   options="{'no_create': True}"/>
+                                   string="หัวจ่ายหลัก"
+                                   options="{'no_create': True}"
+                                   attrs="{'invisible': [('auto_match_payee_bank', '=', True)]}"/>
+                            <field name="default_paying_account_id"
+                                   string="หัวจ่ายสำรอง (fallback)"
+                                   options="{'no_create': True}"
+                                   attrs="{'invisible': [('auto_match_payee_bank', '=', False)]}"/>
                         </group>
                         <group>
                             <field name="sequence"/>
@@ -42,8 +52,10 @@
                         </group>
                     </group>
                     <div class="text-muted">
-                        อนุญาตหัวจ่ายมากกว่า 1 บัญชี = จ่ายผู้รับแต่ละรายจากบัญชีของธนาคารเดียวกับผู้รับ
-                        (ถ้าไม่ตรงกับบัญชีใดเลย จะใช้หัวจ่ายตั้งต้น)
+                        เปิด "จับคู่ตามธนาคารผู้รับ" = จ่ายผู้รับแต่ละรายจากหัวจ่ายของธนาคารเดียวกับบัญชีผู้รับ
+                        (ไม่ตรงกับที่อนุญาตเลย จะใช้หัวจ่ายสำรอง) ·
+                        ปิด = ทุกรายจ่ายจากหัวจ่ายหลักบัญชีเดียว ·
+                        เว้นว่างหัวจ่ายหลัก/สำรอง = ใช้หัวจ่ายตั้งต้นของสถาบัน
                     </div>
                 </sheet>
             </form>

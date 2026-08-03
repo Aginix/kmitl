@@ -25,6 +25,7 @@
         <field name="name">เงินยืม/สำรองจ่าย</field>
         <field name="sequence">20</field>
         <field name="default_method">transfer</field>
+        <field name="auto_match_payee_bank" eval="True"/>
     </record>
 
     <!-- จ่ายตรงคู่ค้า: หัวจ่าย SCB ตายตัว (ต่างธนาคารระบบแบงก์ route เอง) -->
