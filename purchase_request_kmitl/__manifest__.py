@@ -26,6 +26,7 @@
         "data/procurement_type.xml",
         "data/procurement_method.xml",
         "data/attachment_document_type.xml",
+        'data/res_users_role.xml',
         "views/procurement_method_views.xml",
         "views/procurement_type_views.xml",
         "views/procurement_committee_views.xml",
