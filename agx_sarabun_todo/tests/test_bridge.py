@@ -54,6 +54,61 @@ class TestSarabunTodoBridge(SarabunCommon):
         self.assertEqual(len(sarabun_groups), 1)
         self.assertEqual(sarabun_groups[0]["total_count"], 1)
 
+    def test_completing_step_logs_history(self):
+        """Acting on a step snapshots the actor's Todo into todo.log so it surfaces
+        under "Completed by me". Core unlinks the activity (bypassing _action_done),
+        so the bridge must log it from _stamp (ADR-0004)."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
+        doc.with_user(self.user_a).action_send()
+        self.assertTrue(self._activities(doc, self.user_b))  # Todo present first
+        step = self._active_step(doc)
+        with self.mute_pdf():
+            self._act(step, "complete", self.user_b)
+        # Todo cleared from the inbox …
+        self.assertFalse(self._activities(doc, self.user_b))
+        # … but recorded in history, attributed to the actor (not env.uid).
+        log = self.env["todo.log"].search(
+            [("res_model", "=", "sarabun.document"), ("res_id", "=", doc.id)]
+        )
+        self.assertEqual(len(log), 1)
+        self.assertEqual(log.completed_by, self.user_b)
+        self.assertEqual(log.user_id, self.user_b)
+        self.assertEqual(log.todo_category, "execution")
+
+    def test_first_to_act_holder_not_logged(self):
+        """First-to-act: when one holder acts, the co-holder's copy vanishes but is
+        NOT logged — they never completed anything ("Completed by me" stays clean)."""
+        doc = self._make_doc(sender=self.user_a)
+        # A gating step held jointly (position with two holders: user_a + user_b).
+        self._add_step(doc, order=10, verb="sign_approve",
+                       target_mode="position", position=self.pos_multi)
+        doc.with_user(self.user_a).action_send()
+        step = self._active_step(doc)
+        with self.mute_pdf():
+            self._act(step, "complete", self.user_a)  # user_a acts first
+        logs = self.env["todo.log"].search(
+            [("res_model", "=", "sarabun.document"), ("res_id", "=", doc.id)]
+        )
+        self.assertEqual(len(logs), 1)  # only the actor's copy, not user_b's
+        self.assertEqual(logs.completed_by, self.user_a)
+        self.assertEqual(logs.user_id, self.user_a)
+
+    def test_recall_teardown_not_logged(self):
+        """A ยกเลิกการส่ง (recall) tears the pending Todo down without logging it —
+        it was never completed, only aborted."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.with_user(self.user_a).action_send()
+        self.assertTrue(self._activities(doc, self.user_b))
+        doc.with_user(self.user_a).action_recall(reason="เปลี่ยนใจ")
+        self.assertFalse(self._activities(doc, self.user_b))  # torn down
+        self.assertFalse(
+            self.env["todo.log"].search(
+                [("res_model", "=", "sarabun.document"), ("res_id", "=", doc.id)]
+            )
+        )  # but no history row
+
     def test_readonly_holder_opens_ack_todo_no_accesserror(self):
         """A read-only involved holder (not the sender) opens their รับทราบ Todo with
         no AccessError — mail.activity read delegates to the doc's _mail_post_access,
