@@ -53,6 +53,7 @@
                     name="action_egp_in_progress"
                     type="object"
                     string="อยู่ในกระบวนการ e-GP"
+                    groups="purchase.group_purchase_user"
                     attrs="{'invisible': ['|', ('state', '!=', 'in_egp'), ('egp_status', '!=', 'waiting')]}"
                     class="btn-primary"
                 />

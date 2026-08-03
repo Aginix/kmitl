@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<odoo>
     <!-- View purchase.order form -->
     <record id="view_purchase_order_form" model="ir.ui.view">
         <field name="name">view.purchase.order.form</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase_manual_delivery.purchase_order_view_form_inherit"/>
+        <field
+            name="inherit_id"
+            ref="purchase_manual_delivery.purchase_order_view_form_inherit"
+        />
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='button_confirm_manual'][@states='draft']" position="attributes">
-              <attribute name="string">Confirm PO</attribute>
+            <xpath
+                expr="//button[@name='button_confirm_manual'][@states='draft']"
+                position="attributes"
+            >
+                <attribute name="string">Confirm PO</attribute>
+                <attribute name="groups">purchase.group_purchase_user</attribute>
             </xpath>
         </field>
     </record>
-
-  </odoo>
+</odoo>
