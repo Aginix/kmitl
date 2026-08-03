@@ -199,12 +199,12 @@ msgstr "วิธีการดำเนินการ"
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__contract_mode__with_po
 msgid "Create Contract / Purchase Order"
-msgstr "สร้างสัญญา / ใบสั่งซื้อ / ใบสั่งจ้าง"
+msgstr "สร้างสัญญา / ใบสั่งซื้อ / จ้าง"
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__contract_mode__no_po
 msgid "No Contract / Purchase Order"
-msgstr "ไม่ทำสัญญา/ใบสั่งซื้อ/จ้าง"
+msgstr "ไม่ทำสัญญา / ใบสั่งซื้อ / จ้าง"
 
 #. module: purchase_request_approval_disbursement
 #. odoo-python
