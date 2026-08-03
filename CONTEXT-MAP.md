@@ -63,6 +63,10 @@ upfront.
   disbursement keeps it intact (at `signed`) and bounces the approval request to
   `returned`, where the requester corrects a limited set of fields and confirms to push
   them back onto the disbursement.
+- [Advance Payment](./advance_payment/CONTEXT.md) — employee cash-advance loans
+  (สัญญายืมเงิน); a single-disbursement loan to one borrower, tracked from request
+  through clearing to closure. A borrower may hold only one active agreement at a time,
+  so multi-activity needs are met by serial borrowing.
 
 ## Relationships
 
@@ -89,6 +93,13 @@ upfront.
   description and disbursement evidence, then **Confirm Correction** pushes those onto
   the kept disbursement and moves the AR back to `billed` (`agx_approval_disbursement`
   ADR-0001).
+- **Approval Request ↔ Advance Payment**: once a request is `approved`, each participant
+  who is an internal employee may **pull** their own สัญญายืม and pick the request on the
+  loan form — the request never pushes loans out. A request may back several loans,
+  capped by its Borrowing Headroom. The loan clears **itself**; an `advance` allocation
+  row only _names_ the Funding Loan it was paid from, which need not be the recipient's
+  own. No cancellation cascades in either direction (`agx_approval` ADR-0003). Budget
+  consumption for borrowed money is **parked**.
 - **All contexts → Todos**: a workflow schedules/clears a `mail.activity` (a Todo) at
   its own state transitions; Todos only aggregates and surfaces them and holds no
   business state (`mail_activity_todo` ADR-0001). v1 source is Procurement Plan only;
@@ -100,3 +111,11 @@ upfront.
   `in_cash + in_kind`; every cash-flow compute repoints from `project_value` to a
   `cash_target` that equals `in_cash` on research and `project_value` elsewhere. Base
   module behaviour is unchanged when the add-on is not installed.
+- **Budget ↔ Operating Units (cross-OU reservation)**: a standalone `budget.commitment`
+  (ใบจองงบประมาณ) may be reserved by one OU (the **Owning Unit** / funder — normally
+  central) _for_ another (the **Beneficiary Unit** — the requesting unit); both OUs see
+  the slip, the beneficiary draws it down through its own พ.1 / disbursement, and the
+  spend counts against the **funder's `department`** dimension while the
+  พ.1/`budget.move` carries the **beneficiary's OU** (budget ADR-0010, ADR-0011).
+  Consuming documents (`purchase.request`, `approval.request`) may **pick** any drawable
+  commitment — standalone, plan or project — instead of reserving their own.

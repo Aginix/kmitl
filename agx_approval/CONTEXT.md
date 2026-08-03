@@ -22,17 +22,29 @@ _Avoid_: request line, payee line, actual expense
 A person involved in the activity — traveller, attendee, or related person — listed on the plan (person + note, no bank, no amount). The roster from which recipients are later chosen: to pay someone they must first appear here.
 _Avoid_: payee, recipient (ผู้รับเงิน)
 
+**Borrowing Participant (ผู้ยืมในคำขอ)**:
+A Participant who drew a สัญญายืม against this request rather than fronting the cost. Borrowing is **per person and discretionary** — each participant decides for themselves once the request is approved and *before* the money is spent — and the amount is the borrower's own declaration, since the plan apportions nothing per person. A request may have none, one borrowing on the group's behalf, several borrowing their own, or any mix with people who front the cost instead.
+_Avoid_: recipient (that is the post-mission ผู้รับเงิน), payee, advance row, per-line borrowing
+
+**Borrowing Headroom (วงเงินยืมคงเหลือของคำขอ)**:
+The request's approved amount (reserved budget, else the plan total) minus every **non-cancelled** สัญญายืม already drawn against it — what the remaining participants may still borrow. A *closed* loan still consumes it: the cash left the institute under this request.
+_Avoid_: remaining budget, credit limit, per-person cap
+
 **Actual Expense Allocation (ค่าใช้จ่ายจริง / จัดสรรรายคน)**:
-The after-mission breakdown recorded on the request: rows of (**recipient**, expense product, **actual** amount, **payment type**, bank). Grouped by recipient it *is* the งบหน้าใบสำคัญคู่จ่าย view; recipients are drawn from the participants. A `direct`/`prepaid` row bills into a disbursement line; an `advance` row is excluded from the disbursement and clears the recipient's สัญญายืม instead (see Payment type).
-_Avoid_: expense plan (that is the pre-spend estimate), payee sync
+The after-mission breakdown recorded on the request: rows of (**recipient**, expense product, **actual** amount, **payment type**, bank). Grouped by recipient it *is* the งบหน้าใบสำคัญคู่จ่าย view; recipients are drawn from the participants. A `direct`/`prepaid` row bills into a disbursement line; an `advance` row is excluded from the disbursement and instead **names the Funding Loan** it was paid out of (see Payment type). The allocation is the *itemisation* of what happened; it never clears a loan by itself.
+_Avoid_: expense plan (that is the pre-spend estimate), payee sync, loan clearing
 
 **Recipient (ผู้รับเงิน)**:
 A participant who actually receives money — known only after the mission, named on an Actual Expense Allocation row with their bank. A single request may pay **several** recipients.
 _Avoid_: participant, payee-per-plan-line
 
 **Payment type (ประเภทการจ่ายเงิน)**:
-How an actual-allocation row's money is settled, recorded **per row** in the `actual` stage: `direct` (จ่ายตรง — the institute pays the named recipient directly), `prepaid` (สำรองจ่าย — a participant fronts the cost, then claims it back), or `advance` (เงินยืม — drawn against the recipient's สัญญายืม). `direct`/`prepaid` bill into a disbursement (one DR per request, header `direct` in the interim until the DR module supports per-line type); `advance` is excluded from the disbursement and clears the loan. One recipient may mix types across their rows.
+How an actual-allocation row's money is settled, recorded **per row** in the `actual` stage: `direct` (จ่ายตรง — the institute pays the named recipient directly), `prepaid` (สำรองจ่าย — a participant fronts the cost, then claims it back), or `advance` (เงินยืม — paid out of a Funding Loan). `direct`/`prepaid` bill into a disbursement (one DR per request, header `direct` in the interim until the DR module supports per-line type); `advance` is excluded from the disbursement. One recipient may mix types across their rows.
 _Avoid_: the removed plan-level `payment_type` (ADR-0001 D6) — this is its post-mission, per-row successor ([ADR-0002](docs/adr/0002-payment-type-per-actual-row.md))
+
+**Funding Loan (แหล่งเงินของแถวเงินยืม)**:
+The สัญญายืม an `advance` allocation row was paid out of — **chosen per row** from the loans drawn against this request, and **not necessarily the recipient's own**: one participant may borrow on the group's behalf and pay the others from it. Answers "which loan did this money come from", which is a different question from "who received it".
+_Avoid_: the recipient's loan, borrower's loan (it may be someone else's), auto-matched loan
 
 **Pull back (ดึงกลับ — pre-routing)**:
 The clerk returning a *not-yet-sent* request to `draft` (via a confirm wizard, releasing the budget reservation), available only before the หนังสือ is sent to e-Saraban. **Distinct** from e-Saraban's own ดึงกลับ/ตีกลับ, which act on a *circulating* หนังสือ and land the request in `returned`.

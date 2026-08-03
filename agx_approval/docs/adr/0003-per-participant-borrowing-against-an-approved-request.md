@@ -1,0 +1,36 @@
+# Borrowing is per participant, pulled from the loan side, and clears itself
+
+Status: accepted (2026-07) — **supersedes the §"Scope 2 sketch" of [ADR-0002](0002-payment-type-per-actual-row.md)**; the rest of ADR-0002 stands.
+
+## Context & Decision
+
+Once a request is `approved`, each **Participant** decides for themselves whether to draw a สัญญายืม or front the cost. One may borrow on the whole group's behalf, several may borrow their own, some may front and some borrow — every mix occurs. So the unit of borrowing is **the person, not the expense line**: neither `approval.request.line` (which is by expense type and carries no person) nor `approval.request.allocation` (which does not exist yet at `approved`) can be that unit.
+
+Borrowing is **pulled, not pushed**. The borrower opens their own `advance.payment` form and picks the request; the request does not create loans for people. The owner-only "Create Advance Payment" button, `action_create_advance_payment` and `_compute_show_create_advance_payment_button` are removed, and `approval_request.advance_payment_id` becomes `advance_payment_ids` (O2m).
+
+**Who may borrow.** Only a participant who is an internal employee with a `res.users` — `advance_payment` [ADR-0005](../../../advance_payment/docs/adr/0005-governance-creator-only-and-bank-control.md) requires the borrower to create and submit their own loan, and external/company/student participants have no login. This costs nothing, because **borrowing is taking on the debt, not receiving the money**: a lecturer may borrow alone and pay students from it, and those students appear later as Recipients on the allocation.
+
+**When.** The request must be `approved` — not `actual`. A loan takes time to reach disbursement, and by `actual` the money has already been spent; that is สำรองจ่าย, not ยืม. Consequence accepted: the owner recording actuals closes the borrowing window for everyone.
+
+**How much.** The borrower declares the amount (the plan apportions nothing per person), bounded by the **Borrowing Headroom** — the sum of non-cancelled loans against a request may not exceed its reserved budget, else its plan total. Enforced as a *blocking* `exception.rule` at loan submit, mirroring `_check_allocation_within_budget` on the actual side. A `done` loan still consumes headroom; a `cancel`led one does not.
+
+**Clearing.** The loan clears **itself**: the borrower submits their own expense report and the loan officer accepts it (`advance_payment` [ADR-0003](../../../advance_payment/docs/adr/0003-settlement-and-close.md)). An `advance` allocation row is the *itemisation* of what happened and never writes into a loan. `allocation.advance_payment_id` therefore changes meaning from ADR-0002's auto-matched *"the recipient's loan"* to a **user-chosen Funding Loan** — "which loan did this money come from", a different question from "who received it". It is required on every `advance` row, restricted to loans linked to this request, and must not point at a cancelled loan. To avoid double typing, the loan's expense report is **prefilled** (not derived) from the rows naming it, with a non-blocking divergence warning on both sides.
+
+**Failure.** No cascade in either direction. A request may not be rejected while any non-cancelled loan is linked — the borrowers clear or cancel their own loans first (a cancelled trip is a zero-expense report plus a full return). `returned` is a correction round and does not touch loans at all.
+
+## Considered options
+
+- **AR drives clearing** (ADR-0002's sketch: billing writes a `usage_line` per `advance` row). Rejected: `usage_line` is informational since the advance_payment redesign, its `_check_total_not_exceeding` cap is gone, and it would let a trip leader's data entry clear someone else's personally-liable debt — against ADR-0005. It also chains the borrower's closure to the owner finishing the whole request, contradicting the rule that a loan closes only when *its own* mission and money are settled.
+- **Derive the loan's `actual_expense_amount` from the allocation rows.** Rejected: one field would be computed when AR-backed and typed when standalone, and the borrower's own submit step would disappear.
+- **Auto-match rows to loans by `requested_by_partner_id == allocation.partner_id`** (ADR-0002's sketch). Rejected outright: it cannot express one participant borrowing for the group, which is a normal case.
+- **Relax the one-active-agreement-per-borrower rule per request.** Rejected: it is a policy ("at most one open debt per person"), not a technical limit, and overlapping approved trips are served by สำรองจ่าย. A borrower is unblocked as soon as they submit their expense report, since `to_verify_report`/`to_reconcile` are not "active" states.
+- **Hide requests with no headroom from the picker.** Rejected: a request vanishing without explanation is worse than being told "เหลือ X" at submit.
+
+## Consequences
+
+- `advance.payment.approval_request_id` becomes **compute + inverse + editable** with its own domain (participant of the request ∧ `approved`), following the repo's `analytic_distribution` → `*_analytic_id` idiom. `reference` stays the source of truth ([advance_payment ADR-0007](../../../advance_payment/docs/adr/0007-source-reference-declared-by-loan-type-mirrored-per-bridge.md)); a `domain` on a `fields.Reference` would apply to every model in its selection and so cannot express this.
+- `_compute_show_create_disbursement_button` drops its `advance_payment_id.state == "in_progress"` gate and collapses to one branch: `advance` rows never enter a disbursement, so the direct/prepaid recipients must not be held hostage to someone else's loan state.
+- `agx_approval_advance_payment._action_do_cancel` — which cancelled the request when its loan was cancelled — is **removed**. Under one-loan-per-request it was defensible; under per-participant it would let one borrower reject the whole trip.
+- Two records describe the same spending (a lump sum on the loan, itemised rows on the request) and are reconciled by warning, not by construction. Accepted for now; the divergence must be visible on both sides.
+- No record-rule change is needed: `agx_approval` ships **no** `ir.rule` on `approval.request`, so a participant can already read any request. (Separately alarming: every internal user also has write and unlink on every request.)
+- **Parked: budget consumption for borrowed money.** Policy is settled — *the budget is used when the cash is transferred out, and returning the leftover returns it to the budget* — but its mapping onto the engine's จองงบ → ผูกพัน → ตัดงบ stages is not, nor is the scope. Today a request funded entirely by loans produces no disbursement, so its `budget.commitment` stays reserved forever: nothing obligates or consumes it. The recommendation on the table is to obligate at disbursement and consume the accepted expense amount, via `budget.commitment.mixin` against **the request's** commitment (a loan creating its own would double-reserve), limited to AR-backed loans; standalone loans and their budget source are a separate policy question. This was an edge case under the old header-level `payment_type`; per-participant borrowing makes it the main path.

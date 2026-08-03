@@ -41,12 +41,12 @@ class PurchaseRequest(models.Model):
         loan_type = self.env.ref("advance_payment.loan_type_procurement")
         return {
             "requested_by": self.requested_by.id,
-            "department_id": self.department_id.id,
             "reference": "purchase.request,%s" % self.id,
             "loan_amount": self.get_estimated_cost_currency(),
             "loan_type_id": loan_type.id,
             "loan_reason": self.description or "",
             "analytic_distribution": self.analytic_distribution,
+            "budget_commitment_id": self.budget_commitment_id.id,
         }
 
     def action_create_advance_payment(self):

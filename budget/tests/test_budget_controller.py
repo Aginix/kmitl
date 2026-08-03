@@ -96,6 +96,7 @@ class TestBudgetController(TransactionCase):
         commitment = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
+                "title": "Test commitment",
                 "account_id": account.id,
                 "amount": amount,
                 "analytic_distribution": dist or False,
@@ -200,6 +201,7 @@ class TestBudgetController(TransactionCase):
         return self.env["budget.commitment"].create(
             {
                 "date": date.today(),
+                "title": "Test commitment",
                 "account_id": first.id,
                 "amount": sum(amt for _, amt in account_amounts),
                 "account_fiscal_year_id": self.fy.id,

@@ -85,26 +85,9 @@ class AdvancePaymentReturnLine(models.Model):
             if rec.amount <= 0:
                 raise ValidationError(_("Return amount must be greater than zero."))
 
-    @api.constrains("amount", "agreement_id")
-    def _check_total_not_exceeding(self):
-        for rec in self:
-            agreement = rec.agreement_id
-            total_used = sum(agreement.usage_line_ids.mapped("amount"))
-            total_returned = sum(
-                agreement.return_line_ids.filtered(
-                    lambda l: l.state not in ("rejected",)
-                ).mapped("amount")
-            )
-            if total_used + total_returned > agreement.loan_amount:
-                raise ValidationError(
-                    _(
-                        "Total usage (%(used)s) + returns (%(returned)s)"
-                        " exceeds loan amount (%(loan)s).",
-                        used=total_used,
-                        returned=total_returned,
-                        loan=agreement.loan_amount,
-                    )
-                )
+    # NOTE: over-return is intentionally allowed — the excess is handled by the
+    # donation-consent flow on the agreement (ADR-0003), so there is no
+    # "not exceeding" constraint here.
 
     def unlink(self):
         if self.filtered(lambda r: r.state in ("pending_review", "done")):
@@ -123,7 +106,6 @@ class AdvancePaymentReturnLine(models.Model):
             "partner_id": self.agreement_id.requested_by.partner_id.id,
             "amount": self.amount,
             "currency_id": self.currency_id.id,
-            "analytic_distribution": self.agreement_id.analytic_distribution,
             "kmitl_payment_type_id": payment_type.id,
             "payment_type": payment_type.direction,
         }
@@ -135,9 +117,9 @@ class AdvancePaymentReturnLine(models.Model):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft return lines can be confirmed."))
-            if rec.agreement_id.state != "in_progress":
+            if rec.agreement_id.state != "to_reconcile":
                 raise UserError(
-                    _("Returns can only be confirmed for in-progress agreements.")
+                    _("Returns can only be confirmed while awaiting reconciliation.")
                 )
             rec.write({"state": "pending_review"})
 
@@ -153,7 +135,7 @@ class AdvancePaymentReturnLine(models.Model):
             rec.write({"state": "done", "payment_id": payment.id})
             rec.agreement_id.message_post(
                 body=_(
-                    "Return of <b>%(amount)s %(currency)s</b> approved."
+                    "Return of <b>%(amount)s %(currency)s</b> reconciled."
                     " Payment"
                     " <a href='/web#id=%(pid)s&amp;model=account.payment'>"
                     "<b>%(pname)s</b></a> created.",
@@ -164,6 +146,8 @@ class AdvancePaymentReturnLine(models.Model):
                 ),
                 subtype_xmlid="mail.mt_note",
             )
+            # Settle the agreement automatically once fully returned (ADR-0003).
+            rec.agreement_id._try_auto_close()
 
     def action_reject(self):
         for rec in self:
@@ -190,7 +174,7 @@ class AdvancePaymentReturnLine(models.Model):
             if rec.payment_id:
                 payment = rec.payment_id
                 if payment.state == "posted":
-                    payment.button_draft()
+                    payment.action_draft()
                 if payment.state != "cancel":
                     payment.action_cancel()
             rec.write({"state": "draft", "payment_id": False})
