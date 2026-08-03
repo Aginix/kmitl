@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-28 10:07+0000\n"
-"PO-Revision-Date: 2026-07-28 10:07+0000\n"
+"POT-Creation-Date: 2026-07-31 07:24+0000\n"
+"PO-Revision-Date: 2026-07-31 07:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1020,8 +1020,8 @@ msgid ""
 "The account move request <a href=\"%(link)s\" "
 "target=\"_blank\">'%(name)s'</a> has been linked to this record."
 msgstr ""
-"รายการบัญชี <a href=\"%(link)s\" "
-"target=\"_blank\">'%(name)s'</a> ถูกเชื่อมโยงกับเอกสารนี้แล้ว"
+"รายการบัญชี <a href=\"%(link)s\" target=\"_blank\">'%(name)s'</a> "
+"ถูกเชื่อมโยงกับเอกสารนี้แล้ว"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
@@ -1090,7 +1090,7 @@ msgstr "รีเซ็ตเป็นร่าง"
 #: code:addons/agx_approval/models/approval_request.py:0
 #, python-format
 msgid "กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s"
-msgstr "กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s"
+msgstr ""
 
 #. module: agx_approval
 #. odoo-python
@@ -1351,12 +1351,12 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
 msgid "รอตรวจสอบ / จองงบประมาณ"
-msgstr "ขอการอนุมัติ"
+msgstr "รอตรวจสอบ/รอจองงบประมาณ"
 
 #. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_send
 msgid "รอส่งขออนุมัติ"
-msgstr ""
+msgstr "รอส่งขออนุมัติค่าใช้จ่าย"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.report_approval_request_document
@@ -1439,7 +1439,7 @@ msgstr ""
 #. module: agx_approval
 #: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__sent
 msgid "ส่งขออนุมัติแล้ว"
-msgstr ""
+msgstr "รอลงนาม/อนุมัติ"
 
 #. module: agx_approval
 #. odoo-python
