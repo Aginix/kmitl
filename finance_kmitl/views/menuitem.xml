@@ -135,6 +135,13 @@
         sequence="7"
     />
     <menuitem
+        id="menu_settings_paying_accounts"
+        name="หัวจ่าย (Paying Accounts)"
+        parent="menu_payment_settings"
+        action="action_paying_account"
+        sequence="8"
+    />
+    <menuitem
         id="menu_settings_cheque_layout"
         name="Cheque Layouts"
         parent="menu_payment_settings"

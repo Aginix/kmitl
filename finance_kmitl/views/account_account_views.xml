@@ -72,13 +72,8 @@
         </field>
     </record>
 
-    <menuitem
-        id="menu_settings_paying_accounts"
-        name="หัวจ่าย (Paying Accounts)"
-        parent="menu_payment_settings"
-        action="action_paying_account"
-        sequence="8"
-    />
+    <!-- The menu lives in views/menuitem.xml, which is where its Settings
+         parent is defined — this file is loaded before it. -->
 
     <!-- The institute-wide fallback: a payee whose bank is not one of the main
          paying banks is paid from this account. -->
