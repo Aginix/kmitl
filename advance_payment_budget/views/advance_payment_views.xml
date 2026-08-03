@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_advance_payment_form_budget" model="ir.ui.view">
+        <field name="name">advance.payment.form.budget</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
+        <field name="arch" type="xml">
+            <!-- The earmark the cash is drawn against, next to the source
+                 document it was copied from. -->
+            <xpath expr="//field[@name='loan_reason']" position="before">
+                <field name="budget_commitment_id"
+                    attrs="{'invisible': [('budget_commitment_id', '=', False)]}" />
+            </xpath>
+
+            <!-- Dimensions are locked once a source document supplies them
+                 (`is_locked_by_reference` is already in the core form). -->
+            <xpath expr="//group[@name='actual_expense']" position="before">
+                <group name="analytic_dimensions" string="มิติทางบัญชี">
+                    <field name="department_analytic_id"
+                        attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('is_locked_by_reference', '=', True)]}" />
+                    <field name="source_analytic_id"
+                        attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('is_locked_by_reference', '=', True)]}" />
+                    <field name="fund_analytic_id"
+                        attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('is_locked_by_reference', '=', True)]}" />
+                    <field name="activity_analytic_id"
+                        attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('is_locked_by_reference', '=', True)]}" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
