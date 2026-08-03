@@ -5,8 +5,9 @@ from odoo.exceptions import UserError
 class BudgetCommitmentReturnWizard(models.TransientModel):
     """Confirmation wizard to return leftover reserved budget (ส่งคืนเงินเหลือจ่าย).
 
-    Read-only confirmation: it shows the computed return amount (the unconsumed
-    remainder of the reservation), the budget code and analytic dimensions, then
+    Read-only confirmation: it shows the computed return amount (the unobligated
+    remainder of the reservation, จอง − ผูกพัน), the budget code and analytic
+    dimensions, then
     posts a single negative ``reserve`` line (``is_return=True``) to release the
     earmark back to the pool. The commitment is not cancelled; it auto-closes to
     ``done`` once the leftover is returned. See ``budget/CONTEXT.md``
@@ -22,7 +23,9 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
         required=True,
         readonly=True,
     )
-    # Full picture shown alongside the return amount: จองทั้งหมด − เบิกจ่ายแล้ว = ส่งคืน.
+    # Shown for context alongside ส่งคืน (= จองทั้งหมด − ผูกพัน = available_to_obligate):
+    # จองทั้งหมด and เบิกจ่ายแล้ว — these reconcile as จอง − เบิก = ส่งคืน only under the
+    # current obligate≡consume flow (ADR-0001); once obligate runs ahead they will not.
     total_reserved = fields.Monetary(
         related="commitment_id.total_reserved",
         string="ยอดจองทั้งหมด",
@@ -37,7 +40,7 @@ class BudgetCommitmentReturnWizard(models.TransientModel):
         related="commitment_id.available_to_obligate",
         string="ยอดส่งคืน",
         currency_field="currency_id",
-        help="ยอดเงินจองที่ยังไม่ได้ตัด ซึ่งจะถูกส่งคืนเข้ากระเป๋างบประมาณ",
+        help="ยอดเงินจองที่ยังไม่ได้ผูกพัน ซึ่งจะถูกส่งคืนเข้ากระเป๋างบประมาณ",
     )
     name = fields.Char(
         string="รายละเอียด",
