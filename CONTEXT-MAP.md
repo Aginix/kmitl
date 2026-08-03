@@ -91,10 +91,20 @@ upfront.
   ADR-0001).
 - **All contexts → Todos**: a workflow schedules/clears a `mail.activity` (a Todo) at
   its own state transitions; Todos only aggregates and surfaces them and holds no
-  business state (`mail_activity_todo` ADR-0001). v1 source is Procurement Plan only;
-  the next actor is either a single user or a role-in-unit group (`base_user_role` role
-  ∩ operating unit, resolved live — `mail_activity_todo` ADR-0002); dynamic
-  `tier.validation` routing is deferred.
+  business state (`mail_activity_todo` ADR-0001). Sources today include Procurement
+  Plan, Purchase Request (พ.1) and the Accounting Workflow; **e-Saraban** is designed
+  next (see below — docs-first, not yet built); the next actor is either a single user
+  or a role-in-unit group (`base_user_role` role ∩ operating unit, resolved live —
+  `mail_activity_todo` ADR-0002); dynamic `tier.validation` routing is deferred.
+- **e-Saraban → Todos** (designed docs-first, **not yet built** — `agx_sarabun`
+  ADR-0013/0014): e-Saraban will raise a native `mail.activity` per active routing-step
+  holder — **gating and รับทราบ / CC alike** — instead of its own systray; the bespoke
+  Action tray + `sarabun_inbox` bus are **to be dissolved** and an `agx_sarabun_todo`
+  bridge will tag each activity as `execution` (a step that gates or signs) or
+  `acknowledgement` (a pure รับทราบ), so all e-Saraban work lands in the one Todo inbox
+  (a read-only involved user opens it via `_mail_post_access='read'`, ADR-0013). A
+  separate opt-in `mail_activity_todo_sound` add-on plays a per-user notification sound,
+  which the bridge refines into per-source (sarabun vs general) on/off toggles.
 - **KRIS Project → In Cash / In Kind**: `kris_project_in_cash_in_kind` inherits
   `kris.project` and, on research projects, turns `project_value` into a derived sum of
   `in_cash + in_kind`; every cash-flow compute repoints from `project_value` to a

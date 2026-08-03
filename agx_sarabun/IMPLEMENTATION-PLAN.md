@@ -148,8 +148,8 @@ P1.5 Position ──────┘                                             
 - **mail.activity** "action required" scheduled on the **active step's actor(s)** (the snapshot holders' `user_id`s):
   - Multi-holder step → notify **ALL** holders.
   - When one acts (first-to-act-wins), **auto-clear the others' activities**.
-- **Sarabun inbox / systray tray** (lightweight) + **bus** realtime push (keep `bus` dep; reuse the ting sound asset if desired). Rebuild the systray as an OWL component listing the user's active-step documents.
-- **Access / record-rules (Route visibility, CONTEXT §Access):**
+- **Sarabun inbox / systray tray** (lightweight) + **bus** realtime push (keep `bus` dep; reuse the ting sound asset if desired). Rebuild the systray as an OWL component listing the user's active-step documents. _(Superseded docs-first by [ADR-0014](./docs/adr/0014-dissolve-inbox-tray-onto-native-activity-and-todo-bridge.md): this bespoke tray + bus are to be **dissolved** in favour of native `mail.activity` + the `agx_sarabun_todo` bridge; every active step — gating **and** รับทราบ / CC — raises an activity.)_
+- **Access / record-rules (Route visibility, CONTEXT §Access):** _(refined by [ADR-0013](./docs/adr/0013-e-saraban-access-control-model.md): visibility keys on the **reach ledger** `reached_user_ids` and **persists across ตีกลับ / ดึงกลับ / Reset**; `_mail_post_access='read'` lets a read-only involved user open their native-activity Todo.)_
   - Readable by: the **sender**, plus snapshot actors of any step that is **`active` or `done`**.
   - Steps `waiting`/future grant **NO** visibility, even if pre-seeded with a named person.
   - **Acting** permitted only to the actor of an **active** step.
