@@ -24,6 +24,13 @@ class SarabunDocument(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin", "thai.date.mixin"]
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "subject"]
+    # An involved holder is read-only on the หนังสือ (see security.xml), yet the
+    # awaiting-action surface is now native mail.activity (ADR-0014), whose
+    # read/search/read_group delegate to this document's _mail_post_access
+    # (mail.thread default 'write'). Set it to 'read' so a read-only holder can
+    # read / count / open their own Todo without AccessError (ADR-0013). Accepted
+    # side effect: a document-reader may also post chatter on the หนังสือ.
+    _mail_post_access = "read"
 
     # === Identification ===
     name = fields.Char(
@@ -204,6 +211,21 @@ class SarabunDocument(models.Model):
         copy=False,
         help="Generation counter bumped on each re-send so prior attempts survive "
         "as history (ADR-0002 §3.4).",
+    )
+    reached_user_ids = fields.Many2many(
+        comodel_name="res.users",
+        relation="sarabun_document_reached_user_rel",
+        column1="document_id",
+        column2="user_id",
+        string="Reached Users",
+        compute="_compute_reached_user_ids",
+        store=True,
+        help="Everyone the หนังสือ has ever reached — the union of "
+        "sarabun.step.recipient holders across ACTIVE and ARCHIVED steps. The "
+        "read-visibility key (ADR-0013): being involved is a property of the "
+        "หนังสือ, not of the current attempt, so read persists after completion and "
+        "across ตีกลับ / ดึงกลับ / Reset. It only grows — a recipient row is never "
+        "removed — matching the permanent per-person reach ledger of the Incoming box.",
     )
     strongest_verb_id = fields.Many2one(
         comodel_name="sarabun.verb",
@@ -414,6 +436,30 @@ class SarabunDocument(models.Model):
                     if origin.exists():
                         ref = origin.display_name
             record.origin_reference = ref
+
+    @api.depends(
+        "routing_step_ids.recipient_ids.user_id",
+        "archived_step_ids.recipient_ids.user_id",
+    )
+    def _compute_reached_user_ids(self):
+        """Aggregate every recipient holder across ACTIVE and ARCHIVED steps
+        (ADR-0013). Recipient rows carry a stored ``document_id``, so a direct
+        search — under ``sudo`` and ``active_test=False`` — spans archived attempts
+        that the ``active``-scoped ``routing_step_ids`` traversal would drop. The
+        field only ever grows (rows are never deleted), so read never lapses."""
+        Recipient = (
+            self.env["sarabun.step.recipient"]
+            .sudo()
+            .with_context(active_test=False)
+        )
+        for record in self:
+            rid = record.id if isinstance(record.id, int) else record._origin.id
+            recips = (
+                Recipient.search([("document_id", "=", rid)])
+                if rid
+                else Recipient.browse()
+            )
+            record.reached_user_ids = [(6, 0, recips.user_id.ids)]
 
     @api.depends(
         "routing_step_ids.state",
@@ -778,30 +824,9 @@ class SarabunDocument(models.Model):
             "context": {"default_step_id": self.my_active_step_id.id},
         }
 
-    # === Inbox tray (P4 — systray) ===
-    @api.model
-    def get_my_sarabun_inbox(self, limit=20):
-        """Documents awaiting the current user's action — powers the systray tray.
-
-        The inbox is every หนังสือ with an *active* step whose snapshot holders
-        include the current user (gating or รับทราบ alike). Returns the live total
-        plus a capped, display-ready list. Runs as the user, so record rules apply.
-        """
-        steps = self.env["sarabun.routing.step"].search(
-            [("state", "=", "active"), ("actor_user_ids", "in", self.env.user.id)]
-        )
-        docs = steps.mapped("document_id").filtered(lambda d: d.state == "circulating")
-        documents = [
-            {
-                "id": d.id,
-                "name": d.name,
-                "subject": d.subject or "",
-                "date": fields.Date.to_string(d.date) if d.date else "",
-                "document_type": d.type_id.display_name or "",
-            }
-            for d in docs[:limit]
-        ]
-        return {"documents": documents, "total_count": len(docs)}
+    # The awaiting-action surface is native mail.activity now (ADR-0014): the
+    # bespoke systray + its get_my_sarabun_inbox RPC and sarabun_inbox bus were
+    # dissolved. The persistent กล่องหนังสือเข้า (Incoming box) menu/action stays.
 
     def action_duplicate_to_draft(self):
         """rejected → a NEW draft linked to the same origin (1:N — ADR-0002 #8)."""

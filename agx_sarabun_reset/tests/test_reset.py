@@ -165,6 +165,30 @@ class TestSarabunReset(SarabunCommon):
         with self.assertRaises(UserError):
             self._reset(doc, reason="")
 
+    def test_read_persists_after_reset(self):
+        """Reset archives the finished attempt and re-seeds the ORIGINAL Route as
+        fresh waiting steps; a user reached in the archived attempt keeps READ via
+        reached_user_ids (ADR-0013) — being involved is a property of the หนังสือ."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", target_mode="person",
+                       user=self.user_b)
+        with self.mute_pdf():
+            doc.with_user(self.user_a).action_send()
+            step = self._active_step(doc)
+            step.with_user(self.user_b).act_on_step("complete", actor=self.user_b)
+        self.assertEqual(doc.state, "completed")
+        can_read = bool(self.Doc.with_user(self.user_b).search([("id", "=", doc.id)]))
+        self.assertTrue(can_read, "reached actor reads the completed หนังสือ")
+
+        self._reset(doc, reason="แก้คำผิด")
+
+        self.assertEqual(doc.state, "draft")
+        self.assertTrue(doc.archived_step_ids)
+        # new attempt's step is only waiting (not yet reached), but the archived
+        # attempt's recipient row keeps user_b in reached_user_ids → still readable
+        still_reads = bool(self.Doc.with_user(self.user_b).search([("id", "=", doc.id)]))
+        self.assertTrue(still_reads, "read persists across reset")
+
     def test_can_reset_flag(self):
         """can_reset drives the button: True for a reset admin on a non-draft doc,
         False on a draft and False for a non-admin."""
