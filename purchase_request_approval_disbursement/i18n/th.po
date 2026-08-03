@@ -203,8 +203,8 @@ msgstr "สร้างสัญญา / ใบสั่งซื้อ / ใบ
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__contract_mode__no_po
-msgid "No Contract (Direct Payment)"
-msgstr "ไม่ทำสัญญา (จ่ายตรง)"
+msgid "No Contract / Purchase Order"
+msgstr "ไม่ทำสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_request_approval_disbursement
 #. odoo-python

@@ -23,7 +23,7 @@ class PurchaseRequestApproval(models.Model):
     contract_mode = fields.Selection(
         selection=[
             ("with_po", "Create Contract / Purchase Order"),
-            ("no_po", "No Contract (Direct Payment)"),
+            ("no_po", "No Contract / Purchase Order"),
         ],
         string="Contract Mode",
         tracking=True,
