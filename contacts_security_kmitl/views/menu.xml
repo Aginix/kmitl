@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="contacts.menu_contacts"
+        groups="purchase.group_purchase_user,account.group_account_invoice"
+    />
+    <menuitem
+        id="contacts.res_partner_menu_contacts"
+        groups="purchase.group_purchase_user,account.group_account_invoice"
+    />
+</odoo>
