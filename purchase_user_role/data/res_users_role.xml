@@ -8,6 +8,73 @@
                 eval="[(6, 0, [
                 ref('purchase_request.group_purchase_request_user'),
                 ref('budget.group_budget_viewer'),
+                ref('agx_sarabun.group_sarabun_user'),
+            ])]"
+            />
+        </record>
+        <record id="purchase_role_officer" model="res.users.role">
+            <field name="name">ธุรการ</field>
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('purchase_request_kmitl.group_purchase_request_user_all'),
+                ref('budget.group_budget_viewer'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('purchase.group_purchase_user'),
+            ])]"
+            />
+        </record>
+        <record id="purchase_role_commitment" model="res.users.role">
+            <field name="name">เจ้าหน้าที่การเงิน</field>
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('purchase_request_kmitl.group_purchase_request_user'),
+                ref('budget.group_budget_user'),
+                ref('budget.group_budget_commitment'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('purchase.group_purchase_user'),
+            ])]"
+            />
+        </record>
+        <record id="purchase_role_procurement" model="res.users.role">
+            <field name="name">เจ้าหน้าที่พัสดุหน่วยงาน</field>
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('purchase_request_kmitl.group_purchase_request_user_all'),
+                ref('budget.group_budget_user'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('purchase.group_purchase_user'),
+                ref('account.group_account_invoice'),
+            ])]"
+            />
+        </record>
+        <record id="purchase_role_procurement_admin" model="res.users.role">
+            <field name="name">แอดมินเจ้าหน้าที่พัสดุ</field>
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('purchase_request.group_purchase_manager'),
+                ref('budget.group_budget_user'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('purchase.group_purchase_manager'),
+                ref('account.group_account_invoice'),
+                ref('operating_unit_access_all.group_all_operating_unit'),
+                ref('purchase_manual_delivery_security.group_enable_incoming_shipment'),
+            ])]"
+            />
+        </record>
+        <record id="purchase_role_finance" model="res.users.role">
+            <field name="name">เจ้าหน้าที่คลัง</field>
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('purchase_request.group_purchase_user'),
+                ref('budget.group_budget_viewer'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('purchase.group_purchase_user'),
+                ref('account.group_account_invoice'),
             ])]"
             />
         </record>
