@@ -12,6 +12,6 @@
         parent="purchase_request.parent_menu_purchase_request"
         action="action_purchase_request_dashboard"
         sequence="1"
-        group_id="purchase_request_kmitl.group_purchase_request_user_all"
+        groups="purchase_request_kmitl.group_purchase_request_user_all"
     />
 </odoo>
