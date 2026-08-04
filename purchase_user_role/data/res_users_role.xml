@@ -55,7 +55,7 @@
             <field
                 name="implied_ids"
                 eval="[(6, 0, [
-                ref('purchase_request.group_purchase_manager'),
+                ref('purchase_request.group_purchase_request_manager'),
                 ref('budget.group_budget_user'),
                 ref('agx_sarabun.group_sarabun_user'),
                 ref('purchase.group_purchase_manager'),
@@ -70,7 +70,7 @@
             <field
                 name="implied_ids"
                 eval="[(6, 0, [
-                ref('purchase_request.group_purchase_user'),
+                ref('purchase_request.group_purchase_request_user'),
                 ref('budget.group_budget_viewer'),
                 ref('agx_sarabun.group_sarabun_user'),
                 ref('purchase.group_purchase_user'),
