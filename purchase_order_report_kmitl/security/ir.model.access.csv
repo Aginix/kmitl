@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_po_material_withdrawal_wizard_user,purchase.order.material.withdrawal.wizard,model_purchase_order_material_withdrawal_wizard,purchase.group_purchase_user,1,1,1,1
+access_po_material_withdrawal_wizard_manager,purchase.order.material.withdrawal.wizard,model_purchase_order_material_withdrawal_wizard,purchase.group_purchase_manager,1,1,1,1

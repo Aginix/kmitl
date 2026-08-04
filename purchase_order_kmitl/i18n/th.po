@@ -696,7 +696,7 @@ msgstr "อนุมัติสั่งซื้อ"
 #: model:ir.model,name:purchase_order_kmitl.model_ir_attachment
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 msgid "Attachment"
-msgstr "การแนบ"
+msgstr "เอกสารแนบ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_attachment_count

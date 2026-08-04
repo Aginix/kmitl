@@ -8,6 +8,7 @@
         "purchase_request_kmitl",
         "purchase_request_budget",
         "advance_payment",
+        "advance_payment_budget",
     ],
     "data": [
         "views/purchase_request_views.xml",

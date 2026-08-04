@@ -213,7 +213,13 @@ class PurchaseRequestApproval(models.Model):
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
     analytic_distribution = fields.Json(related="request_id.analytic_distribution")
-    attachment_ids = fields.One2many(related="request_id.attachment_ids")
+    attachment_ids = fields.One2many(
+        comodel_name="ir.attachment",
+        inverse_name="res_id",
+        string="Document Attachments",
+        domain=[("res_model", "=", "purchase.request.approval")],
+        auto_join=True,
+    )
     work_acceptance_committee_ids = fields.One2many(
         related="request_id.work_acceptance_committee_ids"
     )
@@ -340,6 +346,17 @@ class PurchaseRequestApproval(models.Model):
             "type": "ir.actions.act_window",
             "name": _("ยกเลิกใบขออนุมัติ (พจ.1)"),
             "res_model": "purchase.request.approval.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def action_open_material_withdrawal_wizard(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("พิมพ์ใบเบิกวัสดุ (พ.43)"),
+            "res_model": "purchase.request.approval.material.withdrawal.wizard",
             "view_mode": "form",
             "target": "new",
             "context": {"default_approval_id": self.id},

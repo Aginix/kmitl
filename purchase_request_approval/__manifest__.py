@@ -25,9 +25,11 @@
         "views/purchase_request_approval_report.xml",
         "wizards/purchase_request_approval_cancel_wizard_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
+        "wizards/material_withdrawal_wizard_views.xml",
         "views/purchase_request_approval_views.xml",
         "views/purchase_request_views.xml",
         "report/report_purchase_request_approval.xml",
+        "report/report_material_withdrawal.xml",
     ],
     "assets": {
         "web.assets_backend": ["purchase_request_approval/static/src/**/*"],

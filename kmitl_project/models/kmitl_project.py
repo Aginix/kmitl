@@ -618,6 +618,9 @@ class KmitlProject(models.Model):
                 "company_id": self.company_id.id,
                 "date": fields.Date.context_today(self),
                 "ref": self.key or self.name,
+                # ชื่อโครงการ = ชื่อใบจอง (shown next to the number wherever a
+                # reservation is offered, so it can be told apart from others).
+                "title": self.name,
                 "description": self.name,
                 "kmitl_project_id": self.id,
                 "user_id": self.env.user.id,

@@ -89,6 +89,12 @@
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
                     />
+                    <button
+                        name="action_open_material_withdrawal_wizard"
+                        string="พิมพ์ใบเบิกวัสดุ"
+                        type="object"
+                        states="approved"
+                    />
                     <field
                         name="state"
                         widget="statusbar"
@@ -231,6 +237,11 @@
                                     <field name="requesting_department_id" readonly="1" />
                                 </group>
                             </group>
+                        </page>
+                        <page name="document" string="Attachment">
+                            <field name="attachment_ids"
+                                   widget="many2many_binary"
+                                   context="{'default_res_model': 'purchase.request.approval'}"/>
                         </page>
                     </notebook>
                 </sheet>

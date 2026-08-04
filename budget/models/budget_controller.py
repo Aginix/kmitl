@@ -467,6 +467,9 @@ class BudgetController(models.AbstractModel):
 
         return {
             "name": commitment_name,
+            # title is required on budget.commitment; the service path already
+            # derives a human label for the (legacy) name, so reuse it.
+            "title": commitment_name,
             "date": fields.Date.today(),
             "analytic_distribution": header_dist or False,
             "account_fiscal_year_id": fiscal_year_id,
