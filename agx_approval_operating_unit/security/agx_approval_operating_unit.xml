@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="ir_rule_approval_request_allowed_operating_units" model="ir.rule">
+            <field name="name">Approval Request from allowed operating units</field>
+            <field name="model_id" ref="agx_approval.model_approval_request"/>
+            <field name="domain_force">
+                ['|', ('operating_unit_id', '=', False), ('operating_unit_id', 'in', user.operating_unit_ids.ids)]
+            </field>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="global" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
