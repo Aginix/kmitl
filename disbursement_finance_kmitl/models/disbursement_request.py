@@ -118,14 +118,20 @@ class DisbursementRequest(models.Model):
         previous subject follows the new one.
         """
         if self.payment_subject_id:
-            derived = self.line_ids.filtered(
+            # Work on payment_line_ids, the alias the การจ่ายเงิน page edits:
+            # in an onchange the two one2many fields are separate pseudo-record
+            # sets, and only changes to the field whose sub-view carries the
+            # method / paying-account columns reach the screen. On real records
+            # both resolve to the same rows.
+            lines = self.payment_line_ids
+            derived = lines.filtered(
                 lambda l: l.paying_account_match != "manual"
             )
             derived.update(
                 {"payment_method": False, "paying_account_id": False,
                  "paying_account_match": False}
             )
-            self._apply_subject_defaults(self.line_ids)
+            self._apply_subject_defaults(lines)
 
     def _apply_subject_defaults(self, lines):
         """Fill method and paying account (หัวจ่าย) on ``lines`` from the

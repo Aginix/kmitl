@@ -125,8 +125,13 @@
                                    options="{'no_create': True}"
                                    domain="[('is_paying_account', '=', True)]"/>
                             <!-- How the account was chosen: the fallback rows
-                                 light up amber for the auditor to re-check. -->
+                                 light up amber for the auditor to re-check.
+                                 force_save: the field is readonly (only the
+                                 system and the paying-account onchange set
+                                 it), and without it the client drops the
+                                 value on save. -->
                             <field name="paying_account_match" widget="badge"
+                                   force_save="1"
                                    decoration-success="paying_account_match == 'bank'"
                                    decoration-warning="paying_account_match == 'fallback'"
                                    decoration-info="paying_account_match == 'main'"
