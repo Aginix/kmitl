@@ -94,7 +94,7 @@
                       attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
                     <field name="attachment_ids"
                            attrs="{'readonly': [('state', '!=', 'draft')]}"
-                           context="{'default_res_model': 'work.acceptance'}">
+                           context="{'default_res_model': 'work.acceptance', 'default_res_id': active_id}">
                         <tree default_order="sequence">
                             <field name="sequence" widget="handle"/>
                             <field name="name" string="File Name" required="1"/>
