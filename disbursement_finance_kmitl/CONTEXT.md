@@ -45,7 +45,7 @@ Set by the **auditor** during Payment Audit. Three orthogonal concepts:
   institute-wide default on the company. Set per DR **line** at audit time.
 - **Match Result / ผลลัพธ์การจับคู่** (`paying_account_match` on the line):
   how the line's paying account was chosen — ตรงธนาคารผู้รับ (`bank`),
-  ใช้หัวจ่ายสำรอง (`fallback`, highlighted for the auditor to re-check),
+  ไม่ตรงกับหัวจ่ายหลัก (`fallback`, highlighted for the auditor to re-check),
   หัวจ่ายหลัก (`main`), or เลือกเอง (`manual`, set when the auditor picks the
   account by hand). Switching the subject re-derives every line except the
   `manual` ones.

@@ -30,7 +30,7 @@ class DisbursementRequestLine(models.Model):
     paying_account_match = fields.Selection(
         selection=[
             ("bank", "ตรงธนาคารผู้รับ"),
-            ("fallback", "ใช้หัวจ่ายสำรอง"),
+            ("fallback", "ไม่ตรงกับหัวจ่ายหลัก"),
             ("main", "หัวจ่ายหลัก"),
             ("manual", "เลือกเอง"),
         ],
