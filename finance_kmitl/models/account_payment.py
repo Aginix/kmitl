@@ -56,20 +56,23 @@ class AccountPayment(models.Model):
     )
 
     paying_account_id = fields.Many2one(
-        comodel_name="account.account",
+        comodel_name="res.partner.bank",
         string="Paying Account",
         domain="[('is_paying_account', '=', True)]",
-        check_company=True,
         copy=False,
         tracking=True,
         states={"draft": [("readonly", False)]},
         readonly=True,
-        help="หัวจ่าย — the account the money leaves from. KMITL settles a "
-        "payable in one step (no outstanding/transit account), so this is the "
-        "account the payment is booked against.",
+        help="หัวจ่าย — the institute's bank account the money leaves from. "
+        "KMITL settles a payable in one step (no outstanding/transit "
+        "account), so the payment is booked against its GL account.",
     )
 
-    @api.depends("paying_account_id", "payment_method_line_id", "payment_type")
+    @api.depends(
+        "paying_account_id.payment_account_id",
+        "payment_method_line_id",
+        "payment_type",
+    )
     def _compute_outstanding_account_id(self):
         """Book the payment straight against the paying account (หัวจ่าย).
 
@@ -82,8 +85,10 @@ class AccountPayment(models.Model):
         """
         super()._compute_outstanding_account_id()
         for payment in self:
-            if payment.paying_account_id:
-                payment.outstanding_account_id = payment.paying_account_id
+            if payment.paying_account_id.payment_account_id:
+                payment.outstanding_account_id = (
+                    payment.paying_account_id.payment_account_id
+                )
 
     def _get_valid_liquidity_accounts(self):
         """Accept the paying account as the payment's money account.
@@ -95,7 +100,10 @@ class AccountPayment(models.Model):
         files it as a write-off and every create/write on the payment fails the
         "one and only one outstanding account" check.
         """
-        return super()._get_valid_liquidity_accounts() | self.paying_account_id
+        return (
+            super()._get_valid_liquidity_accounts()
+            | self.paying_account_id.payment_account_id
+        )
 
     def action_mark_bank_result_success(self):
         """Finance manually confirms a cheque payment was actually paid.
@@ -385,11 +393,12 @@ class AccountPayment(models.Model):
             lines = stale_lines.get(payment.id)
             if not payment.paying_account_id or not lines:
                 continue
-            stale = lines.filtered(
-                lambda l: l.account_id != payment.paying_account_id
-            )
+            gl_account = payment.paying_account_id.payment_account_id
+            if not gl_account:
+                continue
+            stale = lines.filtered(lambda l: l.account_id != gl_account)
             if stale:
                 stale.with_context(
                     skip_account_move_synchronization=True
-                ).write({"account_id": payment.paying_account_id.id})
+                ).write({"account_id": gl_account.id})
 

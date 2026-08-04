@@ -47,7 +47,7 @@ class KmitlPaymentSubject(models.Model):
         "off, every payee is paid from the main paying account.",
     )
     default_paying_account_id = fields.Many2one(
-        comodel_name="account.account",
+        comodel_name="res.partner.bank",
         string="Main / Fallback Paying Account",
         domain="[('is_paying_account', '=', True)]",
         help="With auto-match off: the one account (หัวจ่ายหลัก) every payee "
@@ -56,10 +56,10 @@ class KmitlPaymentSubject(models.Model):
         "institute-wide default on the company applies.",
     )
     allowed_paying_account_ids = fields.Many2many(
-        comodel_name="account.account",
-        relation="kmitl_payment_subject_paying_account_rel",
+        comodel_name="res.partner.bank",
+        relation="kmitl_payment_subject_paying_bank_rel",
         column1="subject_id",
-        column2="account_id",
+        column2="bank_account_id",
         string="Allowed Paying Accounts",
         domain="[('is_paying_account', '=', True)]",
         help="หัวจ่ายที่อนุญาต — the accounts auto-match may pick from, one "
@@ -114,7 +114,7 @@ class KmitlPaymentSubject(models.Model):
         self.ensure_one()
         allowed = self.allowed_paying_account_ids
         if self.auto_match_payee_bank and bank:
-            match = allowed.filtered(lambda a: a.paying_bank_id == bank)
+            match = allowed.filtered(lambda a: a.bank_id == bank)
             if match:
                 return match[0], "bank"
         how = "fallback" if self.auto_match_payee_bank else "main"

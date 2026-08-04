@@ -66,7 +66,7 @@ class BankPaymentExportLine(models.Model):
     # (in l10n_th_bank_payment_export_format) keeps the journal's own bank
     # account as the fallback for payments made outside the disbursement flow.
     sending_account_id = fields.Many2one(
-        comodel_name="account.account",
+        comodel_name="res.partner.bank",
         related="payment_id.paying_account_id",
         string="Sending Account",
         readonly=True,
@@ -77,9 +77,9 @@ class BankPaymentExportLine(models.Model):
         super()._compute_sending_account()
         for line in self:
             paying_account = line.payment_id.paying_account_id
-            if paying_account.paying_bank_id or paying_account.paying_acc_number:
-                line.sending_bank_id = paying_account.paying_bank_id
-                line.sending_acc_number = paying_account.paying_acc_number
+            if paying_account:
+                line.sending_bank_id = paying_account.bank_id
+                line.sending_acc_number = paying_account.acc_number
 
     # -------------------------------------------------------------------------
     # E-payment result confirmation (manual)

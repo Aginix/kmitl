@@ -74,21 +74,27 @@ SUBJECT_PAYING_ACCOUNTS = {
 
 
 def _flag_main_paying_accounts(env, company):
-    """Flag the main paying accounts and record their bank / account number.
+    """Create/flag the main paying accounts — the institute's own bank
+    accounts — and bind each to the GL account its payments are booked
+    against (matched by chart code).
 
-    Idempotent and best-effort: an account already flagged keeps whatever the
-    treasury office configured, and a chart without a code is skipped with a
-    warning rather than failing the install.
+    Idempotent and best-effort: an existing bank account with the same
+    (sanitized) number is reused and, once flagged, keeps whatever the
+    treasury office configured; a chart without the GL code skips that
+    account with a warning rather than failing the install.
     """
+    from odoo.addons.base.models.res_bank import sanitize_account_number
+
     accounts = {}
     Bank = env["res.bank"]
+    PartnerBank = env["res.partner.bank"]
     provisional = []
     for entry in MAIN_PAYING_ACCOUNTS:
-        account = env["account.account"].search(
+        gl_account = env["account.account"].search(
             [("code", "=", entry["code"]), ("company_id", "=", company.id)],
             limit=1,
         )
-        if not account:
+        if not gl_account:
             _logger.warning(
                 "finance_kmitl: account code %s not found for %s; add its "
                 "paying account by hand.",
@@ -96,26 +102,43 @@ def _flag_main_paying_accounts(env, company):
                 company.display_name,
             )
             continue
-        accounts[entry["code"]] = account
-        if account.is_paying_account:
-            continue
-        vals = {"is_paying_account": True}
-        if not account.paying_acc_number:
-            vals["paying_acc_number"] = entry["acc_number"]
-        if not account.paying_bank_id:
-            bank = Bank.search([("bic", "=", entry["bic"])], limit=1)
-            if bank:
-                vals["paying_bank_id"] = bank.id
-            else:
-                _logger.warning(
-                    "finance_kmitl: no bank with BIC %s; set the bank on "
-                    "paying account %s by hand.",
-                    entry["bic"],
-                    account.display_name,
-                )
-        account.write(vals)
+        bank = Bank.search([("bic", "=", entry["bic"])], limit=1)
+        bank_account = PartnerBank.search(
+            [
+                ("partner_id", "=", company.partner_id.id),
+                (
+                    "sanitized_acc_number",
+                    "=",
+                    sanitize_account_number(entry["acc_number"]),
+                ),
+            ],
+            limit=1,
+        )
+        if not bank_account:
+            bank_account = PartnerBank.create(
+                {
+                    "partner_id": company.partner_id.id,
+                    "acc_number": entry["acc_number"],
+                    "bank_id": bank.id if bank else False,
+                    "acc_holder_name": company.name,
+                    "is_paying_account": True,
+                    "payment_account_id": gl_account.id,
+                }
+            )
+        accounts[entry["code"]] = bank_account
+        if not bank_account.is_paying_account:
+            bank_account.write(
+                {
+                    "is_paying_account": True,
+                    "payment_account_id": (
+                        bank_account.payment_account_id.id or gl_account.id
+                    ),
+                }
+            )
+        if not bank_account.bank_id and bank:
+            bank_account.bank_id = bank.id
         if not entry["confirmed"]:
-            provisional.append(account.display_name)
+            provisional.append(bank_account.display_name)
     if provisional:
         _logger.warning(
             "finance_kmitl: provisional paying accounts seeded — have the "

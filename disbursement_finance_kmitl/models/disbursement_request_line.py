@@ -19,7 +19,7 @@ class DisbursementRequestLine(models.Model):
         "method (one bill per payee, paid in full by one payment).",
     )
     paying_account_id = fields.Many2one(
-        comodel_name="account.account",
+        comodel_name="res.partner.bank",
         string="Paying Account",
         domain="[('is_paying_account', '=', True)]",
         copy=False,

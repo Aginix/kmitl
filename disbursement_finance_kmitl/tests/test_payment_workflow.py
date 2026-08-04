@@ -78,14 +78,18 @@ class TestPaymentWorkflow(TransactionCase):
 
     @classmethod
     def _make_paying_account(cls, code, name, bank, acc_number):
-        return cls.env["account.account"].create({
+        gl_account = cls.env["account.account"].create({
             "name": name,
             "code": code,
             "account_type": "asset_cash",
             "company_id": cls.company.id,
+        })
+        return cls.env["res.partner.bank"].create({
+            "partner_id": cls.company.partner_id.id,
+            "acc_number": acc_number,
+            "bank_id": bank.id,
             "is_paying_account": True,
-            "paying_bank_id": bank.id,
-            "paying_acc_number": acc_number,
+            "payment_account_id": gl_account.id,
         })
 
     def _make_billed_request(self, subject=None, partner=None, bank=None):
@@ -296,14 +300,15 @@ class TestPaymentWorkflow(TransactionCase):
     # ------------------------------------------------------------------
     # Paying account master data
     # ------------------------------------------------------------------
-    def test_paying_account_at_bank_needs_number(self):
+    def test_paying_account_needs_gl_account(self):
         from odoo.exceptions import ValidationError
 
         with self.assertRaises(ValidationError):
-            self.env["account.account"].create({
-                "name": "Bank no number", "code": "PAYNONUM",
-                "account_type": "asset_cash", "company_id": self.company.id,
-                "is_paying_account": True, "paying_bank_id": self.ktb.id,
+            self.env["res.partner.bank"].create({
+                "partner_id": self.company.partner_id.id,
+                "acc_number": "444-4-44444-4",
+                "bank_id": self.ktb.id,
+                "is_paying_account": True,
             })
 
     def test_subject_default_must_be_allowed(self):

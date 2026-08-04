@@ -28,13 +28,13 @@ Set by the **auditor** during Payment Audit. Three orthogonal concepts:
   (direct/advance/prepaid, inherited from the approval) nor with
   `kmitl.payment.type` (the mechanical operation type that carries
   `is_cheque` / journal / override account).
-- **Paying Account / หัวจ่าย** (`account.account` flagged
-  `is_paying_account`): *which* account the money leaves from. In the KMITL
-  chart one GL account is one real bank account, so the account itself carries
-  `paying_bank_id` and `paying_acc_number` — the bank export and the cheque
-  register read them there instead of from a journal. Cash accounts qualify
-  too (KMITL types cash-in-hand `asset_current` and banks `asset_cash`, so the
-  flag, not the type, decides).
+- **Paying Account / หัวจ่าย** (`res.partner.bank` of the institute, flagged
+  `is_paying_account`): *which* bank account the money leaves from. Being a
+  real bank account it natively carries the bank and the account number — the
+  bank export and the cheque register read them there instead of from a
+  journal — and it adds `payment_account_id`, the GL account the payment is
+  booked against. Cash qualifies too: a bank-less record (e.g. numbered
+  "CASH") pointing at the cash GL account.
 - **Auto-match / จับคู่ตามธนาคารผู้รับ** (flag on the subject): when on, each
   payee is served from the **allowed** account held at the bank of their own
   bank account (เงินยืม/สำรองจ่าย); a payee whose bank matches none falls to

@@ -603,29 +603,43 @@ def _bill_dr(dr, wht_tax=None):
 
 
 def _demo_paying_account(env, company, bank):
-    """Flag a KTB bank account in the chart as a paying account (หัวจ่าย)."""
-    account = env["account.account"].search(
+    """Flag one of the institute's bank accounts as a paying account."""
+    PartnerBank = env["res.partner.bank"]
+    bank_account = PartnerBank.search(
         [
-            ("company_id", "=", company.id),
+            ("partner_id", "=", company.partner_id.id),
             ("is_paying_account", "=", True),
-            ("paying_bank_id", "=", bank.id if bank else False),
+            ("bank_id", "=", bank.id if bank else False),
         ],
         limit=1,
     )
-    if account:
-        return account
-    account = env["account.account"].search(
+    if bank_account:
+        return bank_account
+    gl_account = env["account.account"].search(
         [("company_id", "=", company.id), ("account_type", "=", "asset_cash")],
         limit=1,
     )
-    if not account:
-        return account
-    account.write({
+    if not gl_account:
+        return PartnerBank
+    bank_account = PartnerBank.search(
+        [
+            ("partner_id", "=", company.partner_id.id),
+            ("bank_id", "=", bank.id if bank else False),
+        ],
+        limit=1,
+    )
+    if not bank_account:
+        bank_account = PartnerBank.create({
+            "partner_id": company.partner_id.id,
+            "acc_number": "028-1-03878-3",
+            "bank_id": bank.id if bank else False,
+            "acc_holder_name": company.name,
+        })
+    bank_account.write({
         "is_paying_account": True,
-        "paying_bank_id": bank.id if bank else False,
-        "paying_acc_number": "0281038783",
+        "payment_account_id": gl_account.id,
     })
-    return account
+    return bank_account
 
 
 def _classify_dr(env, dr):

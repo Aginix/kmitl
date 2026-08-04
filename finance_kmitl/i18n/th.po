@@ -737,3 +737,13 @@ msgstr "หัวจ่ายหลัก / หัวจ่ายสำรอง
 #: model:ir.model.fields,field_description:finance_kmitl.field_kmitl_payment_subject__allowed_paying_account_ids
 msgid "Allowed Paying Accounts"
 msgstr "หัวจ่ายที่อนุญาต"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_res_partner_bank__is_paying_account
+msgid "Paying Account (หัวจ่าย)"
+msgstr "หัวจ่าย"
+
+#. module: finance_kmitl
+#: model:ir.model.fields,field_description:finance_kmitl.field_res_partner_bank__payment_account_id
+msgid "GL Account"
+msgstr "บัญชีแยกประเภท (GL)"
