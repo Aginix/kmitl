@@ -4,14 +4,11 @@
     <t t-name="budget.BudgetReservationPicker" owl="1">
         <div class="o_budget_dashboard o_budget_reservation_picker d-flex flex-column">
             <div class="o_bd_controls">
-                <!-- ปีงบยึดตามเอกสาร (ทาง A): the year is fixed to the host's
-                     account_fiscal_year_id (passed as default_fiscal_year_id), so the
-                     grid can only ever show — and a reservation can only ever pick — a
-                     code budgeted in the document's own fiscal year. Locked, not
-                     switchable, to avoid showing a year the reserve check would reject. -->
+                <!-- ปีงบเริ่มต้นจากเอกสาร (default_fiscal_year_id) แต่ผู้ใช้เลือกปีอื่นได้
+                     เผื่อกรณีต้องจองงบข้ามปีงบประมาณ. -->
                 <div class="o_bd_filter">
                     <label>ปีงบประมาณ</label>
-                    <select disabled="disabled" title="ปีงบประมาณยึดตามเอกสาร">
+                    <select t-on-change="onFiscalYearChange">
                         <t t-foreach="fiscalYears" t-as="fy" t-key="fy.id">
                             <option t-att-value="fy.id" t-att-selected="fy.id === state.fiscalYearId">
                                 <t t-esc="fy.name"/>
