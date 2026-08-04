@@ -51,6 +51,11 @@ class WorkAcceptance(models.Model):
 
     @api.depends("supporting_document_ids")
     def _compute_attachment_ids(self):
+        # Filter ("res_field", "=", False) is defensive: legacy rows still
+        # carry res_field='supporting_document_ids' from PR #1026, and any
+        # read on them raises AccessError for non-system users. Even after
+        # the SQL cleanup that resets them, the filter also guards against
+        # future stray res_field values leaking into this list.
         Attachment = self.env["ir.attachment"]
         for rec in self:
             if not isinstance(rec.id, int):
@@ -59,6 +64,7 @@ class WorkAcceptance(models.Model):
             atts = Attachment.search([
                 ("res_model", "=", "work.acceptance"),
                 ("res_id", "=", rec.id),
+                ("res_field", "=", False),
             ])
             rec.attachment_ids = atts - rec.supporting_document_ids
 
