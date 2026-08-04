@@ -177,7 +177,6 @@
                             <field name="payment_type" readonly="1" />
                             <field
                                 name="partner_id"
-                                required="1"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
@@ -363,12 +362,14 @@
         id="purchase_request_approval_menu"
         parent="purchase.menu_purchase_root"
         action="action_purchase_request_approval"
+        groups="purchase.group_purchase_user"
         sequence="4"
     />
     <menuitem
         id="purchase_request_approval_menu_purchase_request"
         parent="purchase_request.parent_menu_purchase_request"
         action="action_purchase_request_approval"
+        groups="purchase.group_purchase_user"
         sequence="20"
     />
 </odoo>
