@@ -155,6 +155,7 @@ class PurchaseRequestApproval(models.Model):
     partner_id = fields.Many2one(
         "res.partner",
         string="Vendor",
+        required=True,
         tracking=True,
     )
     vat_included = fields.Selection(
