@@ -177,6 +177,7 @@
                             <field name="payment_type" readonly="1" />
                             <field
                                 name="partner_id"
+                                required="1"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
