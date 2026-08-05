@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="ir_cron_gc_read_dismissed_todos" model="ir.cron">
+        <field name="name">Todos: garbage-collect read dismissed activities past retention</field>
+        <field name="model_id" ref="mail.model_mail_activity" />
+        <field name="state">code</field>
+        <field name="code">model._gc_read_dismissed_todos()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True" />
+    </record>
+
+    <!-- Tunable retention window (days) for read dismissable Todos
+         (Acknowledgement + uncategorised). -->
+    <record id="config_dismissed_retention_days" model="ir.config_parameter">
+        <field name="key">mail_activity_todo.dismissed_retention_days</field>
+        <field name="value">180</field>
+    </record>
+</odoo>

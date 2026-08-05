@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Search: "Pending Approval" filter + group by maker (for the standard
+         account.move views) -->
+    <record id="view_account_move_filter_workflow" model="ir.ui.view">
+        <field name="name">account.move.select.workflow</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <separator/>
+                <filter name="filter_to_approve" string="Pending Approval"
+                        domain="[('workflow_state', '=', 'to_approve')]"/>
+                <filter name="group_submitted_by" string="Submitted By"
+                        context="{'group_by': 'submitted_by'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Approval queue: a custom OWL accordion screen (inline-expandable rows).
+         New xml id (the old act_window id is dropped → orphan-cleaned on update). -->
+    <record id="action_approval_queue" model="ir.actions.client">
+        <field name="name">Approval List</field>
+        <field name="tag">accounting_kmitl_workflow.approval_queue</field>
+    </record>
+
+    <!-- Approved entries: a standard list (history of what was approved) -->
+    <record id="view_account_move_approved_tree" model="ir.ui.view">
+        <field name="name">account.move.approved.tree</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree string="Approved" create="false" edit="false" default_order="approved_date desc">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="journal_id"/>
+                <field name="submitted_by"/>
+                <field name="approved_by"/>
+                <field name="approved_date"/>
+                <field name="amount_total" sum="Total" string="Total"/>
+                <field name="display_state" widget="badge"
+                       decoration-success="display_state == 'posted'"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_approved_moves" model="ir.actions.act_window">
+        <field name="name">Approved</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_account_move_approved_tree"/>
+        <field name="domain">[('workflow_state', '=', 'approved')]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ยังไม่มีรายการที่อนุมัติแล้ว
+            </p>
+            <p>
+                รายการบัญชีที่ผู้อนุมัติอนุมัติและลงบัญชีแล้ว
+            </p>
+        </field>
+    </record>
+
+    <!-- Approver menu -> Approval List submenu -->
+    <!-- Placed right after "Journal Entries" / รายการบันทึกบัญชี
+         (menu_journal_entries, seq 20) and before "Reports" (seq 80). -->
+    <menuitem
+        id="menu_approver_root"
+        name="Approver"
+        parent="accounting_kmitl.menu_accounting_root"
+        sequence="25"
+        groups="accounting_kmitl.group_accounting_kmitl_manager"/>
+
+    <menuitem
+        id="menu_account_move_approval_queue"
+        name="Approval List"
+        parent="menu_approver_root"
+        action="action_approval_queue"
+        sequence="10"
+        groups="accounting_kmitl.group_accounting_kmitl_manager"/>
+
+    <menuitem
+        id="menu_approved_moves"
+        name="Approved"
+        parent="menu_approver_root"
+        action="action_approved_moves"
+        sequence="20"
+        groups="accounting_kmitl.group_accounting_kmitl_manager"/>
+
+</odoo>

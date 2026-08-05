@@ -17,6 +17,7 @@
                     icon="fa-file-contract"
                     string="PA"
                     attrs="{'invisible': [('purchase_request_approval_id', '=', False)]}"
+                    groups="purchase.group_purchase_user"
                 ></button>
             </xpath>
         </field>

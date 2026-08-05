@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ธุรการหน่วยงาน config — mark which units are document offices (หน่วยงานธุรการ)
+         and assign the clerks that act for them when a routing step targets them in
+         ธุรการหน่วยงาน mode. Only flagged units are selectable as a routing target.
+         High priority so these standalone hr.department views are never picked as the
+         default elsewhere; they are bound explicitly to the action below. -->
+    <record id="view_sarabun_department_officer_tree" model="ir.ui.view">
+        <field name="name">sarabun.department.officer.tree</field>
+        <field name="model">hr.department</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="complete_name" string="หน่วยงาน"/>
+                <field name="is_sarabun_office"/>
+                <field name="sarabun_officer_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sarabun_department_officer_form" model="ir.ui.view">
+        <field name="name">sarabun.department.officer.form</field>
+        <field name="model">hr.department</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form string="ธุรการหน่วยงาน">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="complete_name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <field name="is_sarabun_office"
+                               help="ติ๊กหากหน่วยงานนี้ทำหน้าที่ธุรการ (รับ-ส่งสารบรรณ). เฉพาะหน่วยงานที่ติ๊กเท่านั้นจึงจะเลือกเป็นเป้าหมาย 'ธุรการหน่วยงาน' ในเส้นทางเอกสารได้"/>
+                        <field name="default_sarabun_sequence_id"
+                               options="{'no_create': True, 'no_open': True}"
+                               help="เล่มทะเบียนที่หนังสือของหน่วยงานนี้ใช้เป็นค่าเริ่มต้น — ผู้จัดทำเลือกเล่มอื่นได้รายฉบับ"/>
+                    </group>
+                    <!-- หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน (ADR-0012) — ตั้งค่าเล่มได้จากที่นี่. -->
+                    <group string="เล่มทะเบียนหนังสือ (Registers)" col="2">
+                        <field name="sarabun_sequence_ids" nolabel="1" colspan="2"
+                               context="{'default_sender_department_id': id}">
+                            <tree>
+                                <field name="name"/>
+                                <field name="prefix"/>
+                                <field name="reset_period"/>
+                                <field name="next_counter"/>
+                                <field name="active" widget="boolean_toggle"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group string="ธุรการหน่วยงาน"
+                           attrs="{'invisible': [('is_sarabun_office', '=', False)]}"
+                           help="ผู้ที่ทำหน้าที่ธุรการของหน่วยงานนี้ เมื่อเส้นทางเอกสารระบุเป้าหมายเป็น 'ธุรการหน่วยงาน' (อาจมีมากกว่า 1 คน)"
+                           col="2">
+                        <field name="sarabun_officer_ids" nolabel="1" colspan="2">
+                            <tree>
+                                <field name="name"/>
+                                <field name="work_email"/>
+                                <field name="job_title"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sarabun_department_officer_search" model="ir.ui.view">
+        <field name="name">sarabun.department.officer.search</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="complete_name" string="หน่วยงาน"/>
+                <filter name="is_sarabun_office" string="หน่วยงานธุรการ"
+                        domain="[('is_sarabun_office', '=', True)]"/>
+                <searchpanel>
+                    <field name="parent_id" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_sarabun_department_officer" model="ir.actions.act_window">
+        <field name="name">ธุรการหน่วยงาน</field>
+        <field name="res_model">hr.department</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="agx_sarabun.view_sarabun_department_officer_search"/>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_sarabun_department_officer_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_sarabun_department_officer_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">กำหนดหน่วยงานธุรการ</p>
+            <p>ติ๊ก "หน่วยงานธุรการ" ให้หน่วยงานที่รับ-ส่งสารบรรณ แล้วระบุผู้ที่ทำหน้าที่ธุรการ เพื่อให้เส้นทางเอกสารแบบ "ธุรการหน่วยงาน" ส่งถึงบุคคลเหล่านี้</p>
+        </field>
+    </record>
+</odoo>

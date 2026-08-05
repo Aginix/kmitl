@@ -59,7 +59,7 @@
                         domain="[('display_type', '=', 'payment_term')]"/>
                 <filter name="payable_lines" string="Payable Lines"
                         domain="[('account_id.account_type', '=', 'liability_payable')]"/>
-                <group expand="0" string="Group By">
+                <group expand="0" name="group_by" string="Group By">
                     <filter name="group_by_move" string="Bill"
                             context="{'group_by': 'move_id'}"/>
                     <filter name="group_by_partner" string="Partner"
@@ -99,14 +99,5 @@
             </p>
         </field>
     </record>
-
-    <!-- Menu: Bill Lines Review -->
-    <menuitem
-        id="menu_disbursement_move_lines"
-        name="ตรวจสอบรายการบัญชี"
-        parent="accounting_kmitl.menu_accounting_root"
-        action="action_disbursement_move_lines"
-        sequence="6"
-    />
 
 </odoo>

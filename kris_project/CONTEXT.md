@@ -24,3 +24,45 @@ An executive of a faculty/office who needs read-only access to projects belongin
 
 **Operating Unit (OU)**:
 A faculty or office, identified by a numeric code (`01` Engineering … `99` KRIS). Provided by the `operating_unit` module. Intended as the scoping dimension for OU Executive read access.
+
+**Maintenance Deduction** (ค่าบำรุง / ค่าบำรุงสถาบัน):
+The institutional fee KRIS deducts from a project's operating expense; the deducted total is the pool that is then allocated to departments. One of three **methods** determines the amount:
+
+- **Tiered** (ขั้นบันได): progressive rate brackets applied to the operating expense.
+- **Custom %** (กำหนดเปอร์เซ็นต์เอง): a manually entered percentage of the operating expense.
+- **Fixed Amount** (ระบุจำนวนเงิน): a manually entered baht figure used verbatim, independent of the operating expense.
+
+_Avoid_: "Custom" unqualified — ambiguous now that both Custom % and Fixed Amount are manually entered. Name the method (Custom % vs Fixed Amount).
+
+### Project & money
+
+**Installment** (งวดงาน):
+A scheduled milestone of contracted work, each with its own due date and payment amount; a project's value is broken down into these. `kris.project.installment`.
+_Avoid_: work period, work phase, payment schedule, payment installment
+
+**Receipt** (รายรับ):
+A single recorded payment received against a project — one document with a number, date and amount. `kris.project.receipt`.
+_Avoid_: revenue (a single one is never "a revenue")
+
+**Revenue**:
+The aggregate received on a project — the running sum of its Receipts. A total, not a record.
+
+**Project Value** (มูลค่าโครงการ):
+The total contracted value of a project; the baseline its operating expense, maintenance deduction and installment totals are derived from or checked against.
+
+**Installment-free project** (ไม่มีงวดงานกำกับ):
+A project whose งวด schedule isn't fixed or known up front (typically test/trial work), so it is not governed by งวด targets. Flag `no_installment_tracking`; see ADR-0001 for what this relaxes.
+
+### Contracts
+
+A project is governed by two distinct contracts that must not be conflated:
+
+**Project Code** (รหัสโครงการ):
+KRIS's internal identifier for the project (`project_code`, e.g. `สญ.67-004`). Historically mislabelled "เลขที่สัญญา" / `contract_number`, but its values were always internal codes, never an external contract identifier.
+_Avoid_: "contract number" (ambiguous with the employer's).
+
+**Institute–Employer Contract** (สัญญาสถาบัน-ผู้ว่าจ้าง):
+The external contract between KMITL (the institute) and the Employer. Identified by `contract_number` (the employer's own contract id); period bounded by `date_contract_start` / `date_contract_end`.
+
+**KRIS–Project Manager Contract/MOU** (สัญญา/บันทึกข้อตกลง KRIS-หัวหน้าโครงการ):
+The internal agreement between the KRIS unit and the Project Manager that authorises the work and its compensation. Identified by its issue date (`kris_contract_date`). May be either a สัญญา (contract) or a บันทึกข้อตกลง (MOU) — same field covers both.

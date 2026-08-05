@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Surface activities (Todos) in the plan's chatter -->
+    <record id="view_procurement_plan_form_todo" model="ir.ui.view">
+        <field name="name">procurement.plan.form.todo</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//div[@class='oe_chatter']/field[@name='message_follower_ids']"
+                position="after"
+            >
+                <field name="activity_ids" widget="mail_activity" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Document Types -->
+        <!-- Document types. The fixed behaviour axis is `kind`; these records are
+             the admin-configurable concrete types pointing at a kind. -->
         <record id="document_type_memo" model="sarabun.document.type">
-            <field name="name">Internal Memo</field>
-            <field name="code">memo</field>
+            <field name="name">บันทึกข้อความ</field>
+            <field name="kind">memo</field>
             <field name="sequence">10</field>
             <field name="description">Internal correspondence within the organization (บันทึกข้อความ)</field>
         </record>
 
         <record id="document_type_circular" model="sarabun.document.type">
-            <field name="name">Circular</field>
-            <field name="code">circular</field>
+            <field name="name">หนังสือเวียน</field>
+            <field name="kind">circular</field>
             <field name="sequence">20</field>
-            <field name="description">Documents sent to multiple recipients (หนังสือเวียน)</field>
+            <field name="description">Documents circulated to multiple recipients (หนังสือเวียน)</field>
         </record>
 
+        <!-- xmlid consumed by sarabun.document.mixin._prepare_sarabun_document_vals -->
         <record id="document_type_from_record" model="sarabun.document.type">
-            <field name="name">From Record</field>
-            <field name="code">from_record</field>
+            <field name="name">เอกสารจากระบบงาน</field>
+            <field name="kind">from_record</field>
             <field name="sequence">30</field>
-            <field name="description">Documents created from other records (หนังสือจากข้อมูลอื่น)</field>
+            <field name="description">Documents created from origin records (from_record e-flow)</field>
         </record>
     </data>
 </odoo>

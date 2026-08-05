@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_kmitl_project_purchase_request_user,kmitl.project purchasing read (PR user),kmitl_project.model_kmitl_project,purchase_request.group_purchase_request_user,1,0,0,0
+access_kmitl_project_purchase_user,kmitl.project purchasing read (purchase user),kmitl_project.model_kmitl_project,purchase.group_purchase_user,1,0,0,0

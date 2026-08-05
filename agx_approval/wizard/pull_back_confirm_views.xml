@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_request_pull_back_confirm_view_form" model="ir.ui.view">
+        <field name="name">approval.request.pull.back.confirm.form</field>
+        <field name="model">approval.request.pull.back.confirm</field>
+        <field name="arch" type="xml">
+            <form string="Pull Back Request">
+                <field name="request_id" invisible="1"/>
+                <div class="alert alert-warning" role="alert">
+                    Confirm pulling this request back to "Draft" — the reserved budget will be released.
+                </div>
+                <group>
+                    <field name="reason" placeholder="Reason for pulling back (optional)"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm Pull Back" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

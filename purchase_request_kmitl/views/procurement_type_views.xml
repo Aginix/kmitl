@@ -58,4 +58,5 @@
         action="procurement_type_action"
         groups="purchase.group_purchase_manager"
     />
+
 </odoo>

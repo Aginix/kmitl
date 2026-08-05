@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-inherit="mail.AttachmentCard" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_AttachmentCard_details')]" position="inside">
+            <small
+                t-if="attachmentCard.attachment.documentTypeName"
+                class="o_AttachmentCard_doctype badge text-bg-secondary mt-1 align-self-start"
+                t-esc="attachmentCard.attachment.documentTypeName"
+            />
+        </xpath>
+    </t>
+
+</templates>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Thai Date Utils',
-    'version': '16.0.1.0.0',
+    'version': '16.0.1.1.0',
     'summary': """ Thai Date Utils Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",

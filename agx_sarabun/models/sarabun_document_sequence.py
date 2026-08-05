@@ -1,387 +1,178 @@
 # -*- coding: utf-8 -*-
+"""The Register (ลงทะเบียน) — atomic, per-เล่มทะเบียน, ปีงบประมาณ-reset numbering.
+Replaces the old max()+1 race and the broken fiscal reset (ADR-0002, DESIGN §4).
+
+A ส่วนงาน may keep SEVERAL เล่มทะเบียน (ADR-0012); the หนังสือ picks the book it is
+issued from (defaulting to the unit's เล่มทะเบียนหลัก).
+"""
+import logging
+
+import psycopg2
+
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class SarabunDocumentSequence(models.Model):
-    """
-    Configurable document numbering sequence.
-    Each sequence can be assigned to specific departments or shared across all.
-    """
-
     _name = "sarabun.document.sequence"
-    _description = "Sarabun Document Sequence"
+    _description = "Sarabun Register (เล่มทะเบียนหนังสือ)"
     _order = "name"
 
-    name = fields.Char(
-        string="Sequence Name",
-        required=True,
-    )
-    code = fields.Char(
-        string="Code",
-        trim=False,
-        required=True,
-        help="Unique code for this sequence",
-    )
+    name = fields.Char(required=True)
     active = fields.Boolean(default=True)
-    prefix = fields.Char(
-        string="Prefix",
-        trim=False,
-        help="Prefix for document numbers (e.g., 'สจล.', 'อว 6801.')",
+
+    # === Owning unit: a ส่วนงาน may keep several เล่มทะเบียน (ADR-0012) ===
+    sender_department_id = fields.Many2one(
+        "hr.department", string="ส่วนงาน (Issuing Unit)", required=True, index=True,
+        help="หน่วยงานเจ้าของเล่มทะเบียนนี้ — หนึ่งหน่วยงานมีได้หลายเล่มทะเบียน; "
+        "หนังสือจะเลือกว่าจะออกเลขจากเล่มใด (ค่าเริ่มต้น = เล่มทะเบียนหลักของหน่วยงาน).",
     )
-    suffix = fields.Char(
-        string="Suffix",
-        trim=False,
-        help="Suffix for document numbers",
-    )
-    padding = fields.Integer(
-        string="Number Padding",
-        default=4,
-        help="Number of digits (e.g., 4 = 0001)",
-    )
+
+    # === Rendering ===
+    prefix = fields.Char(help="Rendered, not stored on the number (e.g. 'อว 6801.1/').")
+    suffix = fields.Char()
+    padding = fields.Integer(default=4, help="Zero-pad width of the counter.")
     reset_period = fields.Selection(
-        selection=[
-            ("never", "Never"),
-            ("yearly", "Every Year"),
-            ("fiscal_year", "Every Fiscal Year"),
-        ],
-        string="Reset Period",
-        default="yearly",
+        [("fiscal_year", "ปีงบประมาณ (Fiscal Year, Oct–Sep)"),
+         ("yearly", "Calendar Year"),
+         ("never", "Never")],
+        default="fiscal_year",
         required=True,
-    )
-    current_year = fields.Integer(
-        string="Current Year",
-        default=lambda self: fields.Date.today().year,
+        help="fiscal_year (ต.ค.–ก.ย.) is the regulation default.",
     )
 
-    # Department assignment
-    department_ids = fields.Many2many(
-        comodel_name="hr.department",
-        relation="sarabun_sequence_department_rel",
-        column1="sequence_id",
-        column2="department_id",
-        string="Departments",
-        help="Leave empty to allow all departments to use this sequence",
-    )
-    is_shared = fields.Boolean(
-        string="Shared Sequence",
-        compute="_compute_is_shared",
-        store=True,
-    )
+    number_ids = fields.One2many("sarabun.document.number", "sequence_id", string="Numbers")
+    next_counter = fields.Integer(compute="_compute_next_counter", string="Next Number")
 
-    # Document type assignment
-    document_type_ids = fields.Many2many(
-        comodel_name="sarabun.document.type",
-        relation="sarabun_sequence_doctype_rel",
-        column1="sequence_id",
-        column2="document_type_id",
-        string="Document Types",
-        help="Leave empty to allow all document types",
-    )
+    # NOTE: no unique constraint — a ส่วนงาน keeps as many เล่มทะเบียน as it needs
+    # (ADR-0012) and books are identified by ส่วนงาน + ชื่อเล่ม. The old required,
+    # institute-unique ``code`` was dropped: nothing resolved or rendered from it,
+    # so it only forced the admin to invent a unique string per book.
 
-    # Related numbers
-    number_ids = fields.One2many(
-        comodel_name="sarabun.document.number",
-        inverse_name="sequence_id",
-        string="Numbers",
-    )
-
-    # Statistics
-    next_number = fields.Integer(
-        string="Next Number",
-        compute="_compute_next_number",
-    )
-    reserved_count = fields.Integer(
-        string="Reserved Count",
-        compute="_compute_number_stats",
-    )
-    used_count = fields.Integer(
-        string="Used Count",
-        compute="_compute_number_stats",
-    )
-
-    _sql_constraints = [
-        ("code_uniq", "unique(code)", "Sequence code must be unique!"),
-    ]
-
-    @api.depends("department_ids")
-    def _compute_is_shared(self):
-        for record in self:
-            record.is_shared = len(record.department_ids) == 0
-
-    @api.depends("number_ids", "number_ids.state")
-    def _compute_next_number(self):
-        for record in self:
-            used_numbers = record.number_ids.filtered(
-                lambda n: n.state in ("used", "reserved") and n.year == record.current_year
-            ).mapped("number")
-            if used_numbers:
-                record.next_number = max(used_numbers) + 1
-            else:
-                record.next_number = 1
-
-    @api.depends("number_ids", "number_ids.state")
-    def _compute_number_stats(self):
-        for record in self:
-            current_year_numbers = record.number_ids.filtered(
-                lambda n: n.year == record.current_year
-            )
-            record.reserved_count = len(
-                current_year_numbers.filtered(lambda n: n.state == "reserved")
-            )
-            record.used_count = len(
-                current_year_numbers.filtered(lambda n: n.state == "used")
-            )
-
-    def _check_year_reset(self):
-        """Check if year has changed and reset if needed"""
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        """Suffix the duplicate's ชื่อเล่ม. Two books of one ส่วนงาน are told apart by
+        their name alone, so a plain copy would be indistinguishable in the list."""
         self.ensure_one()
-        current_year = fields.Date.today().year
-        if self.reset_period == "yearly" and self.current_year != current_year:
-            self.current_year = current_year
+        default = dict(default or {})
+        default.setdefault("name", _("%s (สำเนา)") % (self.name or ""))
+        return super().copy(default)
 
-    def get_next_number(self):
-        """Get the next available number"""
+    # ------------------------------------------------------------------ helpers
+    def _fiscal_year_for(self, date):
+        """ปีงบประมาณ (Oct–Sep). Oct–Dec roll into the next budget year. Returns พ.ศ.
+
+        ``never`` → 0 (single perpetual bucket); ``yearly`` → plain calendar year.
+        """
         self.ensure_one()
-        self._check_year_reset()
-        return self.next_number
+        if self.reset_period == "never":
+            return 0
+        by = date.year + 1 if date.month >= 10 else date.year
+        if self.reset_period == "yearly":
+            by = date.year
+        return by + 543  # → พ.ศ.
 
-    def get_available_numbers(self, limit=20):
-        """Get list of available (gap) numbers"""
+    @api.depends("number_ids.counter", "number_ids.fiscal_year")
+    def _compute_next_counter(self):
+        today = fields.Date.context_today(self)
+        for seq in self:
+            fy = seq._fiscal_year_for(today) if seq.id else 0
+            current = seq.number_ids.filtered(lambda n: n.fiscal_year == fy)
+            seq.next_counter = (max(current.mapped("counter"), default=0) + 1)
+
+    # ------------------------------------------------------------- allocation
+    def allocate(self, document, counter=None, max_retries=3):
+        """Atomically register the next official number (DESIGN §4.3).
+
+        Row-locks the register, computes ``MAX(counter)+1`` (per fiscal_year) under
+        the lock — or uses the given ``counter`` (manual/gap) — writes the ledger
+        row, and relies on ``unique(sequence_id, counter, fiscal_year)`` + a bounded
+        retry as the backstop. Replaces the old max()+1 race.
+        """
         self.ensure_one()
-        self._check_year_reset()
-
-        used_numbers = set(
-            self.number_ids.filtered(
-                lambda n: n.state in ("used", "reserved") and n.year == self.current_year
-            ).mapped("number")
-        )
-
-        if not used_numbers:
-            return list(range(1, limit + 1))
-
-        max_used = max(used_numbers)
-        all_numbers = set(range(1, max_used + 1))
-        available = sorted(all_numbers - used_numbers)
-
-        return available[:limit]
-
-    def reserve_number(self, number, user_id=None, note=None):
-        """Reserve a specific number"""
-        self.ensure_one()
-        self._check_year_reset()
-
-        # Check if number is already used or reserved
-        existing = self.number_ids.filtered(
-            lambda n: n.number == number and n.year == self.current_year
-        )
-        if existing:
-            if existing.state == "used":
-                raise UserError(_("Number %s is already used.") % number)
-            elif existing.state == "reserved":
-                raise UserError(
-                    _("Number %s is already reserved by %s.")
-                    % (number, existing.reserved_by_id.name)
-                )
-
-        # Create reservation
-        return self.env["sarabun.document.number"].create(
-            {
-                "sequence_id": self.id,
-                "number": number,
-                "year": self.current_year,
-                "state": "reserved",
-                "reserved_by_id": user_id or self.env.user.id,
-                "reserved_date": fields.Datetime.now(),
-                "note": note,
-            }
-        )
-
-    def use_number(self, number, document_id):
-        """Mark a number as used by a document"""
-        self.ensure_one()
-        self._check_year_reset()
-
-        existing = self.number_ids.filtered(
-            lambda n: n.number == number and n.year == self.current_year
-        )
-
-        if existing:
-            if existing.state == "used":
-                raise UserError(_("Number %s is already used.") % number)
-            # Use reserved number
-            existing.write(
-                {
-                    "state": "used",
-                    "document_id": document_id,
-                    "used_date": fields.Datetime.now(),
-                }
-            )
-            return existing
-        else:
-            # Create new used number
-            return self.env["sarabun.document.number"].create(
-                {
-                    "sequence_id": self.id,
-                    "number": number,
-                    "year": self.current_year,
-                    "state": "used",
-                    "document_id": document_id,
-                    "used_date": fields.Datetime.now(),
-                }
-            )
-
-    def format_number(self, number):
-        """Format number with prefix/suffix"""
-        self.ensure_one()
-        formatted = str(number).zfill(self.padding)
-
-        parts = []
-        if self.prefix:
-            parts.append(self.prefix)
-        parts.append(formatted)
-        if self.suffix:
-            parts.append(self.suffix)
-
-        return "".join(parts)
-
-    def get_next_and_use(self, document_id):
-        """Get next number and mark as used in one step"""
-        self.ensure_one()
-        next_num = self.get_next_number()
-        self.use_number(next_num, document_id)
-        return self.format_number(next_num)
-
-    def action_view_numbers(self):
-        """View all used numbers"""
-        self.ensure_one()
-        return {
-            "name": _("Used Numbers"),
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.document.number",
-            "view_mode": "tree,form",
-            "domain": [("sequence_id", "=", self.id), ("state", "=", "used")],
-            "context": {"default_sequence_id": self.id},
-        }
-
-    def action_view_reserved(self):
-        """View all reserved numbers"""
-        self.ensure_one()
-        return {
-            "name": _("Reserved Numbers"),
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.document.number",
-            "view_mode": "tree,form",
-            "domain": [("sequence_id", "=", self.id), ("state", "=", "reserved")],
-            "context": {"default_sequence_id": self.id},
-        }
+        fy = self._fiscal_year_for(fields.Date.context_today(self))
+        Number = self.env["sarabun.document.number"]
+        for attempt in range(max_retries):
+            try:
+                with self.env.cr.savepoint():
+                    self.env.cr.execute(
+                        "SELECT id FROM sarabun_document_sequence WHERE id = %s FOR UPDATE",
+                        (self.id,),
+                    )
+                    if counter is None:
+                        self.env.cr.execute(
+                            "SELECT COALESCE(MAX(counter), 0) + 1 "
+                            "FROM sarabun_document_number "
+                            "WHERE sequence_id = %s AND fiscal_year = %s",
+                            (self.id, fy),
+                        )
+                        use_counter = self.env.cr.fetchone()[0]
+                    else:
+                        use_counter = counter
+                    number = Number.create({
+                        "sequence_id": self.id,
+                        "counter": use_counter,
+                        "fiscal_year": fy,
+                        "state": "used",
+                        "document_id": document.id,
+                        "used_date": fields.Datetime.now(),
+                    })
+                    number.flush_recordset()  # force INSERT so a collision raises here
+                return number
+            except psycopg2.IntegrityError:
+                if attempt + 1 == max_retries:
+                    raise UserError(_(
+                        "Could not allocate a register number (number %s is taken). "
+                        "Please try again."
+                    ) % (counter if counter is not None else ""))
+                continue
 
 
 class SarabunDocumentNumber(models.Model):
-    """
-    Individual document numbers - tracks reserved, used, and available numbers.
-    """
-
     _name = "sarabun.document.number"
-    _description = "Sarabun Document Number"
-    _order = "year desc, number desc"
-    _rec_name = "display_name"
+    _description = "Sarabun Register Number (ledger)"
+    _order = "fiscal_year desc, counter desc"
+    _rec_name = "register_number"
 
     sequence_id = fields.Many2one(
-        comodel_name="sarabun.document.sequence",
-        string="Sequence",
-        required=True,
-        ondelete="cascade",
-        index=True,
+        "sarabun.document.sequence", required=True, index=True, ondelete="cascade",
     )
-    number = fields.Integer(
-        string="Number",
-        required=True,
-        index=True,
-    )
-    year = fields.Integer(
-        string="Year",
-        required=True,
-        index=True,
+    counter = fields.Integer(required=True, index=True, help="Running integer, scoped per fiscal_year.")
+    fiscal_year = fields.Integer(
+        string="ปีงบประมาณ (พ.ศ.)", required=True, index=True,
+        help="Fiscal-year bucket; 0 when the register never resets.",
     )
     state = fields.Selection(
-        selection=[
-            ("reserved", "Reserved"),
-            ("used", "Used"),
-            ("cancelled", "Cancelled"),
-        ],
-        string="State",
-        default="reserved",
-        required=True,
+        [("reserved", "Reserved"), ("used", "Used"), ("voided", "Voided (ยกเลิก)")],
+        default="used", required=True, index=True,
     )
-
-    # Reservation info
-    reserved_by_id = fields.Many2one(
-        comodel_name="res.users",
-        string="Reserved By",
-    )
-    reserved_date = fields.Datetime(
-        string="Reserved Date",
-    )
-    note = fields.Text(
-        string="Note",
-        help="Reason for reservation",
-    )
-
-    # Usage info
     document_id = fields.Many2one(
-        comodel_name="sarabun.document",
-        string="Document",
-        ondelete="set null",
+        "sarabun.document", string="Document", ondelete="restrict",
+        help="A used number must keep its document link for audit.",
     )
-    used_date = fields.Datetime(
-        string="Used Date",
-    )
+    register_number = fields.Char(compute="_compute_register_number", store=True)
+    used_date = fields.Datetime()
 
-    display_name = fields.Char(
-        compute="_compute_display_name",
-        store=True,
-    )
-    formatted_number = fields.Char(
-        compute="_compute_formatted_number",
-    )
+    # reserve mode (manual compose — phase-2 UX)
+    reserved_by_id = fields.Many2one("res.users")
+    reserved_date = fields.Datetime()
+    note = fields.Text()
+
+    # voiding (§4.7)
+    void_reason = fields.Selection([("rejected", "Rejected"), ("cancelled", "Cancelled")])
+    void_date = fields.Datetime()
 
     _sql_constraints = [
-        (
-            "number_year_sequence_uniq",
-            "unique(sequence_id, number, year)",
-            "Number must be unique per sequence per year!",
-        ),
+        ("counter_fy_seq_uniq", "unique(sequence_id, counter, fiscal_year)",
+         "A register number must be unique per register per fiscal year!"),
     ]
 
-    @api.depends("sequence_id", "number", "year")
-    def _compute_display_name(self):
-        for record in self:
-            record.display_name = f"{record.sequence_id.code}/{record.year}/{record.number}"
-
-    @api.depends("sequence_id", "number")
-    def _compute_formatted_number(self):
-        for record in self:
-            if record.sequence_id:
-                record.formatted_number = record.sequence_id.format_number(record.number)
-            else:
-                record.formatted_number = str(record.number)
-
-    def action_cancel_reservation(self):
-        """Cancel a reservation"""
-        for record in self:
-            if record.state != "reserved":
-                raise UserError(_("Only reserved numbers can be cancelled."))
-            record.state = "cancelled"
-
-    def action_release(self):
-        """Release a used number (make it available again)"""
-        for record in self:
-            if record.state != "used":
-                raise UserError(_("Only used numbers can be released."))
-            if record.document_id:
-                raise UserError(
-                    _("Cannot release number still linked to document %s.")
-                    % record.document_id.name
-                )
-            record.unlink()
+    @api.depends("sequence_id", "counter", "fiscal_year")
+    def _compute_register_number(self):
+        for n in self:
+            seq = n.sequence_id
+            counter = str(n.counter).zfill(seq.padding or 1)
+            fy = ("/%s" % n.fiscal_year) if n.fiscal_year else ""
+            n.register_number = f"{seq.prefix or ''}{counter}{seq.suffix or ''}{fy}"

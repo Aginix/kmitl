@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_send_wizard_form" model="ir.ui.view">
+        <field name="name">sarabun.send.wizard.form</field>
+        <field name="model">sarabun.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="ยืนยันการส่งเอกสาร">
+                <field name="document_id" invisible="1"/>
+                <field name="sender_department_id" invisible="1"/>
+                <div class="mb-2">
+                    <p class="fw-bold mb-1">ยืนยันส่งเอกสาร?</p>
+                </div>
+                <footer>
+                    <button name="action_confirm" type="object" string="ยืนยันส่ง"
+                            class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

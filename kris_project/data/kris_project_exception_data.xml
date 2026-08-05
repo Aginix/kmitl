@@ -41,6 +41,18 @@ if self.state == 'draft' and not self.department_analytic_id:
         <field name="active" eval="True"/>
     </record>
 
+    <record id="kris_excep_maintenance_exceeds_expense" model="exception.rule">
+        <field name="name">มูลค่าหักค่าบำรุงเกินค่าดำเนินการ</field>
+        <field name="description">มูลค่าหักค่าบำรุงต้องไม่เกินค่าดำเนินการ (Operating Expense)</field>
+        <field name="sequence">18</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and self.warn_maintenance_exceeds_expense:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
     <record id="kris_excep_allocation_mismatch" model="exception.rule">
         <field name="name">The allocated total does not match the maintenance fee.</field>
         <field name="description">The total allocated revenue does not equal the value minus maintenance fees.</field>
@@ -71,7 +83,7 @@ if self.state == 'draft' and self.allocation_line_ids and any(not line.departmen
         <field name="sequence">30</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and not self.installment_ids:
+if self.state == 'draft' and not self.no_installment_tracking and not self.installment_ids:
     failed = True
         </field>
         <field name="active" eval="True"/>
@@ -83,7 +95,19 @@ if self.state == 'draft' and not self.installment_ids:
         <field name="sequence">40</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and self.installment_ids and self.warn_installment_total_mismatch:
+if self.state == 'draft' and not self.no_installment_tracking and self.installment_ids and self.warn_installment_total_mismatch:
+    failed = True
+        </field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kris_excep_received_total_mismatch" model="exception.rule">
+        <field name="name">ยอดรับจากผู้ว่าจ้างรวมไม่ตรงกับมูลค่าโครงการ</field>
+        <field name="description">ผลรวมของยอดรับจากผู้ว่าจ้างทุกงวดไม่เท่ากับมูลค่าโครงการ</field>
+        <field name="sequence">45</field>
+        <field name="model">kris.project</field>
+        <field name="code">
+if self.state == 'draft' and not self.no_installment_tracking and self.installment_ids and self.warn_installment_total_mismatch:
     failed = True
         </field>
         <field name="active" eval="True"/>
@@ -95,7 +119,7 @@ if self.state == 'draft' and self.installment_ids and self.warn_installment_tota
         <field name="sequence">50</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and self.installment_ids and self.warn_installment_maintenance_mismatch:
+if self.state == 'draft' and not self.no_installment_tracking and self.installment_ids and self.warn_installment_maintenance_mismatch:
     failed = True
         </field>
         <field name="active" eval="True"/>
@@ -126,12 +150,12 @@ if self.state == 'draft' and not self.user_id:
     </record>
 
     <record id="kris_excep_no_contract_number" model="exception.rule">
-        <field name="name">ต้องมีเลขที่สัญญา</field>
-        <field name="description">จำเป็นต้องระบุเลขที่สัญญา</field>
+        <field name="name">ต้องมีรหัสโครงการ</field>
+        <field name="description">จำเป็นต้องระบุรหัสโครงการ</field>
         <field name="sequence">120</field>
         <field name="model">kris.project</field>
         <field name="code">
-if self.state == 'draft' and not self.contract_number:
+if self.state == 'draft' and not self.project_code:
     failed = True
         </field>
         <field name="active" eval="True"/>
@@ -234,7 +258,7 @@ if self.state == 'in_progress' and self.installment_ids and any(i.state != 'rece
 if self.state == 'in_progress' and self.revenue_remaining > 0:
     failed = True
         </field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
 
     <!-- ============================================================ -->

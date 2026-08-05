@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_inventory_form" model="ir.ui.view">
+        <field name="name">view.stock.inventory.form (KMITL)</field>
+        <field name="model">stock.inventory</field>
+        <field name="inherit_id" ref="stock_inventory.view_inventory_group_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='exclude_sublocation']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='owner_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='owner_id']" position="after">
+                <field name="department_id"/>
+            </xpath>
+            <xpath expr="//field[@name='responsible_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Restrict the Inventory Adjustments menu to authorized users -->
+    <record id="stock_inventory.menu_action_inventory_tree" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('stock_kmitl.can_do_inventory_adjustment'))]"/>
+    </record>
+</odoo>

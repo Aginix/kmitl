@@ -1,6 +1,4 @@
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-from odoo.tools import float_compare
+from odoo import fields, models
 
 
 class KrisProjectReceiptAllocation(models.Model):
@@ -35,21 +33,3 @@ class KrisProjectReceiptAllocation(models.Model):
         related="receipt_id.currency_id",
         readonly=True,
     )
-
-    @api.constrains("amount", "allocation_line_id")
-    def _check_actual_not_exceed_estimated(self):
-        prec = self.env["decimal.precision"].precision_get("Account")
-        for alloc_line in self.mapped("allocation_line_id"):
-            actual = sum(alloc_line.receipt_allocation_ids.mapped("amount"))
-            if (
-                float_compare(
-                    actual, alloc_line.estimated_amount, precision_digits=prec
-                )
-                > 0
-            ):
-                raise ValidationError(
-                    _(
-                        "ยอดจัดสรรจริงของ %s (%.2f บาท) เกินประมาณการ (%.2f บาท)"
-                    )
-                    % (alloc_line.name or "", actual, alloc_line.estimated_amount)
-                )

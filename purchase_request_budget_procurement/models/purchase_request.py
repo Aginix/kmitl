@@ -41,6 +41,24 @@ class PurchaseRequest(models.Model):
     def _domain_budget_account_id(self):
         return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
 
+    def _domain_reservation_commitment_id(self):
+        # A plan's shared commitment is drawn only through the plan's own
+        # create-from-plan flow (one active PR per plan, ADR-0006) — keep it out
+        # of the generic reservation picker.
+        return super()._domain_reservation_commitment_id() + [
+            ("procurement_plan_id", "=", False)
+        ]
+
+    def _check_drawable_commitment(self, commitment):
+        if commitment.procurement_plan_id:
+            raise UserError(
+                _(
+                    "ใบจองงบประมาณของแผนจัดซื้อจัดจ้างต้องหยิบผ่านการสร้าง"
+                    "ใบขอซื้อจากแผนเท่านั้น"
+                )
+            )
+        return super()._check_drawable_commitment(commitment)
+
     def _inverse_procurement_analytic(self):
         """Update distribution when source changes"""
         for line in self:
@@ -216,6 +234,19 @@ class PurchaseRequest(models.Model):
 
 class ProcurementPlan(models.Model):
     _inherit = "procurement.plan"
+
+    procurement_method_id = fields.Many2one(
+        comodel_name="procurement.method",
+        string="Procurement Method",
+        required=False,
+        tracking=True,
+    )
+
+    def action_ready(self):
+        for rec in self:
+            if not rec.procurement_method_id:
+                raise UserError(_("กรุณาระบุแผนการดำเนินงานให้เสร็จสิ้นทั้งหมด"))
+        return super().action_ready()
 
     purchase_request_count = fields.Integer(
         string="Purchase Requests Count", compute="_compute_purchase_request_count"

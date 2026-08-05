@@ -56,6 +56,24 @@ class PurchaseRequest(models.Model):
         # code (read-only), so the domain never blocks them.
         return super()._domain_budget_account_id() + [("is_project", "=", False)]
 
+    def _domain_reservation_commitment_id(self):
+        # A project's shared commitment is drawn only through the project's own
+        # create-from-project flow (capped at budget_amount, ADR-0007) — keep it
+        # out of the generic reservation picker.
+        return super()._domain_reservation_commitment_id() + [
+            ("kmitl_project_id", "=", False)
+        ]
+
+    def _check_drawable_commitment(self, commitment):
+        if commitment.kmitl_project_id:
+            raise UserError(
+                _(
+                    "ใบจองงบประมาณของโครงการต้องหยิบผ่านการสร้าง"
+                    "ใบขอซื้อจากโครงการเท่านั้น"
+                )
+            )
+        return super()._check_drawable_commitment(commitment)
+
     @api.depends("state", "use_project", "kmitl_project_id")
     def _compute_is_budget_editable(self):
         super()._compute_is_budget_editable()
@@ -115,7 +133,9 @@ class PurchaseRequest(models.Model):
                 )
             self.budget_commitment_id = commitment.id
             if project.state == "new":
-                project.button_in_progress()
+                # Purchasing/budget staff have read — not write — on the project;
+                # advancing it is a system side-effect of reserving, so elevate it.
+                project.sudo().button_in_progress()
             self.button_to_approve()
             return {
                 "type": "ir.actions.act_window",
@@ -177,7 +197,10 @@ class PurchaseRequest(models.Model):
                 {"analytic_distribution": project.analytic_distribution}
             )
         if project.state == "new":
-            project.button_in_progress()
+            # The PR creator (purchase request user) has read — not write — on the
+            # project; advancing it to in_progress is a system side-effect of
+            # creating the พ.1, so elevate just this state write.
+            project.sudo().button_in_progress()
 
 
 class KmitlProject(models.Model):

@@ -35,19 +35,6 @@
             <!-- Lock: header with state buttons -->
             <xpath expr="//sheet" position="before">
                 <header>
-                    <button
-                        name="button_draft"
-                        states="lock"
-                        string="Draft"
-                        type="object"
-                    />
-                    <button
-                        name="button_lock"
-                        states="draft"
-                        string="Lock"
-                        type="object"
-                        class="oe_highlight"
-                    />
                     <field
                         name="state"
                         widget="statusbar"
@@ -139,11 +126,6 @@
                 </attribute>
             </xpath>
 
-            <!-- Hide analytic field -->
-            <xpath expr="//field[@name='analytic_distribution']" position="attributes">
-                <attribute name="groups">base.group_no_one</attribute>
-            </xpath>
-
             <!-- No invoice/bill: hide invoice/bill fields -->
             <xpath expr="//field[@name='invoice_ids']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -152,51 +134,22 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <!-- Attachment tab -->
+            <!-- Hide Analytic -->
+            <xpath expr="//field[@name='analytic_distribution']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Guarantee & Attachment -->
             <xpath expr="//sheet" position="inside">
-                <notebook>
-                    <page name="document" string="Attachment">
-                        <field
-                            name="attachment_ids"
-                            context="{'default_res_model': 'purchase.guarantee'}"
-                        >
-                            <tree>
-                                <field name="name" string="File Name" required="1"/>
-                                <field name="description"/>
-                            </tree>
-                            <form>
-                                <sheet>
-                                    <group>
-                                        <field
-                                            name="res_model"
-                                            invisible="1"
-                                            readonly="0"
-                                        />
-                                        <field
-                                            name="res_id"
-                                            invisible="1"
-                                            readonly="0"
-                                        />
-                                        <field
-                                            name="name"
-                                            required="1"
-                                            invisible="1"
-                                        />
-                                        <field
-                                            name="datas"
-                                            filename="name"
-                                            required="1"
-                                        />
-                                        <field
-                                            name="description"
-                                            placeholder="Description"
-                                        />
-                                    </group>
-                                </sheet>
-                            </form>
-                        </field>
-                    </page>
-                </notebook>
+                <group name="analytic" string="Analytic for Guarantee">
+                    <field name="analytic_distribution" groups="analytic.group_analytic_accounting" widget="analytic_distribution" readonly="1"/>
+                </group>
+                <group name="attachment" string="Attachment for Guarantee">
+                    <field name="attachment_ids"
+                        widget="many2many_binary"
+                        attrs="{'readonly': [('is_editable', '=', False)]}">
+                    </field>
+                </group>
             </xpath>
         </field>
     </record>

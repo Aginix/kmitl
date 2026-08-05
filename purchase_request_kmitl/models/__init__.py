@@ -1,9 +1,6 @@
-from . import (
-    ir_attachment,
-    procurement_committee,
-    procurement_method,
-    procurement_type,
-    purchase_request,
-    purchase_request_line,
-    purchase_type,
-)
+from . import procurement_committee  # noqa: F401
+from . import procurement_method  # noqa: F401
+from . import procurement_type  # noqa: F401
+from . import purchase_request  # noqa: F401
+from . import purchase_request_line  # noqa: F401
+from . import purchase_order  # noqa: F401

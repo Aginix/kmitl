@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KMITL Project",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.4.0",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -21,6 +21,7 @@
         "report/paperformat.xml",
         "report/report_kmitl_project.xml",
         "data/account.analytic.plan.csv",
+        "data/sequence.xml",
         "data/kmitl_project_exception_data.xml",
         "data/project.evaluation.csv",
         "data/project.fight.csv",

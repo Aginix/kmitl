@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_purchase_request_approval_form" model="ir.ui.view">
         <field name="name">view.form(Approval Disbursement)</field>
@@ -68,18 +68,70 @@
             </xpath>
             <xpath expr="//group[1]" position="before">
                 <h2>Purchase Request Approval Form</h2>
-                <group>
-                    <group>
-                        <field
-                            name="use_purchase_order"
-                            attrs="{'readonly': [('state', 'not in', ['draft'])]}"
-                        />
-                        <div class="alert alert-info mt16" role="alert" colspan="2"
-                            attrs="{'invisible': [('use_purchase_order', '=', False)]}">
-                            <strong>Note:</strong>
-                            If you select "Use Purchase Order", you must create a Purchase Order.
-                        </div>
-                    </group>
+                <field name="use_purchase_order" invisible="1" />
+            </xpath>
+            <xpath
+                expr="//group[@name='procurement_info']/field[@name='procurement_type_id']"
+                position="before"
+            >
+                <label
+                    for="contract_mode"
+                    string="Contract Mode"
+                    class="o_required_modifier"
+                />
+                <field
+                    name="contract_mode"
+                    nolabel="1"
+                    class="o_required_modifier"
+                    attrs="{'readonly': [('state', 'not in', ['draft'])]}"
+                />
+            </xpath>
+            <!-- Return-to-source correction: Confirm button + statusbar + fields -->
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="before">
+                <button
+                    name="action_confirm_correction"
+                    type="object"
+                    string="Confirm Correction"
+                    class="oe_highlight"
+                    attrs="{'invisible': [('state', '!=', 'returned')]}"
+                />
+            </xpath>
+            <xpath
+                expr="//field[@name='state'][@widget='statusbar']"
+                position="attributes"
+            >
+                <attribute
+                    name="statusbar_visible"
+                >draft,validate,to_approve,approved,returned</attribute>
+            </xpath>
+            <xpath expr="//header" position="after">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('state', '!=', 'returned')]}"
+                >
+                    <p><strong
+                        >Returned for correction.</strong> The disbursement officer returned the linked disbursement request. Correct the payee bank account and note and/or attach evidence below, then click <b
+                        >Confirm Correction</b>.</p>
+                </div>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <group
+                    name="disbursement_correction"
+                    string="Disbursement Correction"
+                    attrs="{'invisible': [('state', '!=', 'returned')]}"
+                >
+                    <field name="partner_id" invisible="1" />
+                    <field
+                        name="disbursement_return_bank_id"
+                        domain="[('partner_id', '=', partner_id)]"
+                        options="{'no_create': True}"
+                    />
+                    <field name="disbursement_return_note" />
+                    <field
+                        name="disbursement_return_attachment_ids"
+                        widget="many2many_binary"
+                    />
                 </group>
             </xpath>
         </field>
@@ -94,11 +146,11 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='requested_by']" position="before">
-                <field name="billing_status" optional="show"/>
+                <field name="billing_status" optional="show" />
             </xpath>
 
             <xpath expr="//field[@name='department_id']" position="after">
-                <field name="display_purchase_order" optional="show"/>
+                <field name="display_purchase_order" optional="show" />
             </xpath>
         </field>
     </record>

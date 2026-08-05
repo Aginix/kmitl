@@ -34,8 +34,15 @@ class WorkAcceptance(models.Model):
         "ir.attachment",
         "res_id",
         string="Document Attachments",
-        domain=[("res_model", "=", "work.acceptance")],
+        domain=[("res_model", "=", "work.acceptance"), ("res_field", "=", False)],
         tracking=True,
+    )
+    supporting_document_ids = fields.Many2many(
+        "ir.attachment",
+        "work_acceptance_supporting_doc_rel",
+        "wa_id",
+        "attachment_id",
+        string="Supporting Documents",
     )
 
     work_acceptance_committee_ids = fields.One2many(
@@ -71,12 +78,12 @@ class WorkAcceptance(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    date_receive = fields.Date(
-        string="Received Date",
-        default=lambda self: self._default_start_date(),
-        required=True,
+
+    deliverables = fields.Text(
+        string="Deliverables",
+        related="installment_id.deliverables",
         readonly=True,
-        states={"draft": [("readonly", False)]},
+        store=False,
     )
 
     # PO date snapshots (captured at WA creation, immune to PO edits)
@@ -189,6 +196,28 @@ class WorkAcceptance(models.Model):
 
     def _default_start_date(self):
         return fields.Date.today()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._set_supporting_doc_res_field()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "supporting_document_ids" in vals:
+            self._set_supporting_doc_res_field()
+        return res
+
+    def _set_supporting_doc_res_field(self):
+        for record in self:
+            attachments = record.supporting_document_ids.filtered(
+                lambda a: a.res_field != "supporting_document_ids"
+            )
+            if attachments:
+                attachments.sudo().write(
+                    {"res_field": "supporting_document_ids"}
+                )
 
     @api.depends("requested_delivery_date", "date_due")
     def _compute_is_delivery_late(self):

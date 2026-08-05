@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from odoo import models, fields, api, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -35,34 +36,28 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
                     'employee_name': committee.name,
                     'approve_role': committee.approve_role,
                     'status': committee.status,
-                    'note': committee.note,
+                    'reason': committee.note,
                     'is_done': bool(committee.status),
                 }))
             res['line_ids'] = lines
         return res
 
     def button_confirm(self):
-        if any(not line.status for line in self.line_ids):
-            raise UserError(_("Please fill in all the inspection results."))
-        
         self.ensure_one()
+        # Only validate the lines the current user is responsible for.
+        # Already-done lines are readonly and their reason is not round-tripped
+        # by the web client, so re-validating them would raise spurious errors.
+        pending_lines = self.line_ids.filtered(lambda line: not line.is_done)
+        if any(not line.status for line in pending_lines):
+            raise UserError(_("Please fill in all the inspection results."))
+        if any(line.status == 'other' and not line.reason for line in pending_lines):
+            raise UserError(_("Please fill in the reason for all 'Other' results."))
 
-        for line in self.line_ids:
-            if line.is_done:
-                continue
-            if line.reason:
-                reason_label = dict(
-                    line._fields['reason'].selection
-                ).get(line.reason, line.reason)
-                note_value = reason_label
-            else:
-                note_value = line.note
-
-            vals = {
+        for line in pending_lines:
+            line.committee_id.write({
                 'status': line.status,
-                'note': note_value,
-            }
-            line.committee_id.write(vals)
+                'note': line.reason,
+            })
 
         self.wa_id.with_context(
             skip_committee_wizard=True,
@@ -106,18 +101,12 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
         string='Status',
     )
 
-    note = fields.Text(string='Note')
-
     reason = fields.Selection(
         selection=[
-            ('leave', 'ลา'),
-            ('mission', 'ติดภารกิจ'),
+            ('leave', 'Leave'),
+            ('on_duty', 'On Duty'),
         ],
         string='Reason',
-    )
-
-    is_reason_editable = fields.Boolean(
-        compute='_compute_is_reason_editable'
     )
 
     is_done = fields.Boolean(
@@ -128,11 +117,4 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
     @api.onchange('status')
     def _onchange_status(self):
         if self.status == 'accept':
-            self.note = False
-
-    @api.depends('status', 'note')
-    def _compute_is_reason_editable(self):
-        for rec in self:
-            rec.is_reason_editable = (
-                rec.status == 'other' and not rec.note
-            )
+            self.reason = False

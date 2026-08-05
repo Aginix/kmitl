@@ -35,6 +35,25 @@ class BudgetCommitmentMixin(models.AbstractModel):
     _commitment_id_field = "budget_commitment_id"
     _commitment_account_id_field = "budget_account_id"
 
+    def _get_commitment_title(self):
+        """The ชื่อรายการจอง to stamp on a commitment this host reserves.
+
+        ``budget.commitment.title`` is required — a reservation is picked by what
+        it is for, not by its number — so every host must name the one it
+        creates. Falls back through the host's own human label (``title`` on
+        purchase.request, ``description`` on approval.request) to its
+        ``display_name``, which is never empty.
+        """
+        self.ensure_one()
+        for fname in ("title", "description"):
+            if fname in self._fields:
+                # First non-blank line: description is a Text on both hosts, and a
+                # whitespace-only value must not win (nor blow up on splitlines).
+                for line in (self[fname] or "").splitlines():
+                    if line.strip():
+                        return line.strip()
+        return self.display_name
+
     def _get_commitment_field_value(self, field_name):
         """Get the value of a dynamic commitment field."""
         self.ensure_one()
@@ -213,10 +232,18 @@ class BudgetCommitmentMixin(models.AbstractModel):
             "amount": amount,
             "analytic_distribution": header_analytic or False,
             "ref": ref,
+            # Not a positional parameter: the vals are built three frames below
+            # _create_budget_commitment, and every layer forwards **kwargs — so an
+            # explicit title rides in there and the hook covers everyone else,
+            # without changing a signature the bridges override.
+            "title": kwargs.get("title") or self._get_commitment_title(),
             "description": description or "",
             "user_id": self.env.user.id,
             "line_ids": [(0, 0, line_vals)],
         }
+
+        if kwargs.get("operating_unit_id"):
+            commitment_vals["operating_unit_id"] = kwargs["operating_unit_id"]
 
         if include_company:
             commitment_vals["company_id"] = self.env.company.id

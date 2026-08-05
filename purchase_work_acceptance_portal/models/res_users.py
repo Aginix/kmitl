@@ -27,7 +27,7 @@ class ResUsers(models.Model):
                 .search([
                     ("wa_id", "in", entries.mapped("work_acceptance_id").ids),
                     ("employee_id", "=", employee.id),
-                    ("status", "in", ("accept", "not_accept", "other")),
+                    ("status", "in", ("accept", "accept_conditionally", "not_accept", "other")),
                 ])
                 .mapped("wa_id")
                 .ids
@@ -78,7 +78,7 @@ class ResUsers(models.Model):
                 .search([
                     ("wa_id", "in", entries.mapped("work_acceptance_id").ids),
                     ("employee_id", "=", employee.id),
-                    ("status", "in", ("accept", "not_accept", "other")),
+                    ("status", "in", ("accept", "accept_conditionally", "not_accept", "other")),
                 ])
                 .mapped("wa_id")
                 .ids

@@ -26,6 +26,9 @@ def post_init(cr, registry):
     users = env["res.users"].search([])
     users.lang = "th_TH"
 
+    # Seed e-Saraban org demo data (positions / document offices / registers)
+    _setup_sarabun_org_demo(env)
+
     # Create end-to-end purchase request → purchase order demo data
     _create_e2e_purchase_demo(env)
 
@@ -239,33 +242,115 @@ def _create_budget_appropriation(
     return move
 
 
-def _process_sarabun_approve(env, origin_record, admin_user, department):
-    """Drive sarabun document from creation through approval."""
-    result = origin_record.action_submit_to_sarabun()
-    doc = env["sarabun.document"].browse(result.get("res_id"))
+def _ensure_sarabun_register(env, department):
+    """Seed a per-ส่วนงาน register so action_send can allocate a number.
 
-    # Add routing line: admin as approver
-    env["sarabun.routing.line"].create(
+    The rebuilt engine (P3) blocks send when no sarabun.document.sequence exists
+    for the issuing unit, so the demo must provide one. One register per unit,
+    shared across all document types. Idempotent (unique per department).
+    """
+    seq = env["sarabun.document.sequence"].search(
+        [("sender_department_id", "=", department.id)],
+        limit=1,
+    )
+    if not seq:
+        seq = env["sarabun.document.sequence"].create(
+            {
+                "name": "ทะเบียนหนังสือ %s" % department.display_name,
+                "sender_department_id": department.id,
+            }
+        )
+    return seq
+
+
+def _ensure_sarabun_position(env, name, code, department=None, sequence=10):
+    """Create a สารบรรณ Position (idempotent by code). Seeded with NO holder — a
+    res.users id in holder_ids would break the hr.employee FK; assign the real
+    personnel (คณบดี / ผอ. / อธิการบดี) before go-live."""
+    Position = env["sarabun.position"]
+    position = Position.search([("code", "=", code)], limit=1)
+    if not position:
+        position = Position.create(
+            {
+                "name": name,
+                "code": code,
+                "sequence": sequence,
+                "department_id": department.id if department else False,
+            }
+        )
+    return position
+
+
+def _setup_sarabun_org_demo(env):
+    """Seed e-Saraban org demo data across the whole KMITL tree:
+
+    - one อธิการบดี Position, a คณบดี for each faculty/college (คณะ/วิทยาลัย) and a
+      ผู้อำนวยการ for each office (สำนัก);
+    - every root ส่วนงาน marked as a document office (ธุรการหน่วยงาน,
+      ``is_sarabun_office``);
+    - a register (ทะเบียนหนังสือ) per root ส่วนงาน.
+
+    Root = a ส่วนงาน with no parent; the unit kind is read from the name prefix.
+    Positions carry no holder (see :func:`_ensure_sarabun_position`).
+    """
+    _logger.info("Seeding e-Saraban org demo (positions / offices / registers)...")
+    _ensure_sarabun_position(env, "อธิการบดี", "RECTOR", sequence=1)
+
+    roots = env["hr.department"].search([("parent_id", "=", False)], order="id")
+    for dept in roots:
+        name = dept.name or ""
+        code = dept.code or str(dept.id)
+        if name.startswith(("คณะ", "วิทยาลัย")):
+            _ensure_sarabun_position(
+                env, "คณบดี%s" % name, "DEAN-%s" % code, dept, sequence=5
+            )
+        elif name.startswith("สำนัก"):
+            _ensure_sarabun_position(
+                env, "ผู้อำนวยการ%s" % name, "DIR-%s" % code, dept, sequence=5
+            )
+        # ธุรการหน่วยงาน — every root ส่วนงาน is a document office
+        dept.is_sarabun_office = True
+        # ทะเบียนหนังสือ — one register per root ส่วนงาน
+        _ensure_sarabun_register(env, dept)
+    _logger.info("e-Saraban org demo seeded (%d root ส่วนงาน)", len(roots))
+
+
+def _process_sarabun_approve(env, origin_record, admin_user, department):
+    """Drive a sarabun document from creation through approval (new engine API)."""
+    _ensure_sarabun_register(env, department)
+
+    origin_record.action_submit_to_sarabun()
+    doc = origin_record.active_sarabun_document_id
+
+    # post_init runs as SUPERUSER (no employee department), so set the issuing
+    # unit explicitly; addressee (เรียน) replaces the old free-text recipient.
+    doc.sender_department_id = department.id
+    doc.addressee = "ผู้บริหาร"
+
+    # Seed one ลงนาม-อนุมัติ step targeting the admin (was sarabun.routing.line).
+    # Sarabun person targets are hr.employee now — resolve (or create) admin's.
+    admin_employee = env["hr.employee"].search(
+        [("user_id", "=", admin_user.id)], limit=1
+    ) or env["hr.employee"].create(
+        {"name": admin_user.name, "user_id": admin_user.id}
+    )
+    env["sarabun.routing.step"].create(
         {
             "document_id": doc.id,
-            "sequence": 100,
-            "routing_type": "approve",
-            "recipient_type": "user",
-            "user_id": admin_user.id,
+            "order": 10,
+            "verb": env.ref("agx_sarabun.verb_sign_approve").id,
+            "target_mode": "person",
+            "employee_id": admin_employee.id,
+            "state": "waiting",
         }
     )
 
-    # Set required fields
-    doc.recipient = "ผู้บริหาร"
-
-    # Send document
+    # Send: draft → circulating (registers a number, activates stage 1, snapshots).
     doc.action_send()
 
-    # Approve as admin (switch user since post_init runs as SUPERUSER_ID)
-    doc_as_admin = doc.with_user(admin_user)
-    recipient = doc_as_admin.recipient_ids.filtered(lambda r: r.state == "new")
-    role = env.ref("agx_sarabun.role_system_admin")
-    recipient.with_user(admin_user).action_do_approve(signed_as_role_id=role.id)
+    # Act on the now-active step as its snapshot holder (admin).
+    active_step = doc.routing_step_ids.filtered(lambda s: s.state == "active")[:1]
+    active_step.act_on_step("complete", actor=admin_user)
 
     _logger.info(
         "Sarabun %s completed for %s,%s",
@@ -390,12 +475,9 @@ def _run_non_egp_flow(env, pr, admin_user, department):
     _process_sarabun_approve(env, pr, admin_user, department)
     _logger.info("PR %s sarabun approved, state=%s", pr.name, pr.state)
 
-    pr.button_create_approval()
     pa = pr.request_approval_ids[0]
-    _logger.info("PA %s created, state=%s", pa.name, pa.state)
-
-    pa.button_validate()
-    _logger.info("PA %s validated, state=%s", pa.name, pa.state)
+    pa.contract_mode = "with_po"
+    _logger.info("PA %s auto-created, state=%s", pa.name, pa.state)
 
     _process_sarabun_approve(env, pa, admin_user, department)
     _logger.info("PA %s sarabun approved, state=%s", pa.name, pa.state)
@@ -494,431 +576,3 @@ def _create_e2e_purchase_demo(env):
             _run_non_egp_flow(env, pr, admin, department)
 
     _logger.info("End-to-end purchase demo data created successfully! (10 cases)")
-
-    # Disbursement-flow demo (10 more cases, ending at DR created)
-    _create_disbursement_flow_demo(
-        env,
-        admin=admin,
-        fiscal_year=env.ref("kmitl_demo.account_fiscal_year_y2568"),
-        admin_employee=admin_employee,
-        supervisor_employee=supervisor_employee,
-        wa_committee_employees=wa_committee_employees,
-    )
-
-
-# === Disbursement-flow demo (PR → PA → PO → WA → DR) ===
-#
-# 10 PRs in FY 2568, each with a different (budget_account, fund, source,
-# activity) combination. Case #1 mirrors the reference memo อว 7001.14/14309
-# (สำนักงานพัสดุ, ค่าโปรแกรมคอมพิวเตอร์). Amounts are kept ≤ 100,000 ฿ so
-# is_egp stays False and every case follows the non-EGP PA chain through to
-# disbursement-request creation.
-
-DR_CASES = [
-    # Case 1 — image reference (ค่าโปรแกรมคอมพิวเตอร์, สำนักงานพัสดุ)
-    {
-        "title": "[E2E-DR] จัดซื้อโปรแกรมคอมพิวเตอร์ (อิงตามภาพ อว 7001.14/14309)",
-        "description": (
-            "บันทึกข้อความ อว 7001.14/14309 ลว. 4 ธ.ค. 2567 — "
-            "ขออนุมัติเบิกค่าโปรแกรมคอมพิวเตอร์ ปีงบประมาณ 2568 "
-            "(จำนวนเงินตัวอย่างปรับลงเพื่อเลี่ยง e-GP threshold)"
-        ),
-        "price_unit": 95_000,
-        "vendor": "kmitl_demo.vendor_demo_002",
-        "budget_account": "budget.budget_account_5414000001",
-        "fund": "account_analytic_kmitl.fund_0600",
-        "source": "account_analytic_kmitl.source_1",
-        "activity": "account_analytic_kmitl.activity_09007",
-        "dept": "account_analytic_kmitl.dept_89390",
-        "department": "kmitl_demo.89390",
-        "operating_unit": "operating_unit_kmitl.operating_unit_89",
-        "proc_type": "purchase_request_kmitl.procurement_type_004",
-        "payment_type": "direct",
-    },
-    {
-        "title": "[E2E-DR] จัดซื้อวัสดุสำนักงาน",
-        "description": "วัสดุสำนักงานสำหรับการดำเนินงานทั่วไป",
-        "price_unit": 25_000,
-        "vendor": "kmitl_demo.vendor_demo_004",
-        "budget_account": "budget.budget_account_5104010101",
-        "fund": "account_analytic_kmitl.fund_0200",
-        "source": "account_analytic_kmitl.source_2",
-        "activity": "account_analytic_kmitl.activity_06",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_004",
-        "payment_type": "direct",
-    },
-    {
-        "title": "[E2E-DR] จัดซื้อวัสดุคอมพิวเตอร์",
-        "description": "วัสดุคอมพิวเตอร์และอิเล็กทรอนิกส์",
-        "price_unit": 18_000,
-        "vendor": "kmitl_demo.vendor_demo_002",
-        "budget_account": "budget.budget_account_5104010109",
-        "fund": "account_analytic_kmitl.fund_0100",
-        "source": "account_analytic_kmitl.source_1",
-        "activity": "account_analytic_kmitl.activity_09",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_004",
-        "payment_type": "direct",
-    },
-    {
-        "title": "[E2E-DR] จัดซื้อวัสดุวิทยาศาสตร์",
-        "description": "วัสดุวิทยาศาสตร์สำหรับห้องปฏิบัติการ",
-        "price_unit": 32_000,
-        "vendor": "kmitl_demo.vendor_demo_008",
-        "budget_account": "budget.budget_account_5104010115",
-        "fund": "account_analytic_kmitl.fund_0100",
-        "source": "account_analytic_kmitl.source_1",
-        "activity": "account_analytic_kmitl.activity_09",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_004",
-        "payment_type": "prepaid",
-    },
-    {
-        "title": "[E2E-DR] เช่าทรัพย์สิน (เครื่องถ่ายเอกสาร)",
-        "description": "เช่าเครื่องถ่ายเอกสารประจำสำนักงาน",
-        "price_unit": 48_000,
-        "vendor": "kmitl_demo.vendor_demo_005",
-        "budget_account": "budget.budget_account_5104010208",
-        "fund": "account_analytic_kmitl.fund_0200",
-        "source": "account_analytic_kmitl.source_2",
-        "activity": "account_analytic_kmitl.activity_06",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_005",
-        "payment_type": "advance",
-    },
-    {
-        "title": "[E2E-DR] จ้างที่ปรึกษา (ค่าผู้เชี่ยวชาญ)",
-        "description": "จ้างที่ปรึกษา/ผู้เชี่ยวชาญด้านวิจัย",
-        "price_unit": 65_000,
-        "vendor": "kmitl_demo.vendor_demo_013",
-        "budget_account": "budget.budget_account_5104030202",
-        "fund": "account_analytic_kmitl.fund_0300",
-        "source": "account_analytic_kmitl.source_2",
-        "activity": "account_analytic_kmitl.activity_00",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_007",
-        "payment_type": "prepaid",
-    },
-    {
-        "title": "[E2E-DR] จ้างเหมาบริการทำความสะอาด",
-        "description": "จ้างเหมาบริการดูแลความสะอาดอาคาร",
-        "price_unit": 55_000,
-        "vendor": "kmitl_demo.vendor_demo_015",
-        "budget_account": "budget.budget_account_5104010203",
-        "fund": "account_analytic_kmitl.fund_0100",
-        "source": "account_analytic_kmitl.source_1",
-        "activity": "account_analytic_kmitl.activity_09",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_007",
-        "payment_type": "direct",
-    },
-    {
-        "title": "[E2E-DR] จ้างซ่อมแซมและบำรุงรักษาครุภัณฑ์",
-        "description": "ซ่อมบำรุงครุภัณฑ์สำนักงาน",
-        "price_unit": 38_000,
-        "vendor": "kmitl_demo.vendor_demo_017",
-        "budget_account": "budget.budget_account_5104010204",
-        "fund": "account_analytic_kmitl.fund_0500",
-        "source": "account_analytic_kmitl.source_2",
-        "activity": "account_analytic_kmitl.activity_06",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_007",
-        "payment_type": "direct",
-    },
-    {
-        "title": "[E2E-DR] จ้างซ่อมแซมและบำรุงรักษาสิ่งก่อสร้าง",
-        "description": "ปรับปรุงซ่อมแซมอาคาร",
-        "price_unit": 72_000,
-        "vendor": "kmitl_demo.vendor_demo_006",
-        "budget_account": "budget.budget_account_5104010206",
-        "fund": "account_analytic_kmitl.fund_0400",
-        "source": "account_analytic_kmitl.source_3",
-        "activity": "account_analytic_kmitl.activity_06",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_006",
-        "payment_type": "direct",
-    },
-    {
-        "title": "[E2E-DR] ค่าใช้จ่ายในการจัดอบรมของหน่วยงาน",
-        "description": "จัดอบรมสัมมนาเพื่อพัฒนาบุคลากร",
-        "price_unit": 60_000,
-        "vendor": "kmitl_demo.vendor_demo_007",
-        "budget_account": "budget.budget_account_5104010214",
-        "fund": "account_analytic_kmitl.fund_0400",
-        "source": "account_analytic_kmitl.source_2",
-        "activity": "account_analytic_kmitl.activity_06",
-        "dept": "account_analytic_kmitl.dept_01",
-        "department": "kmitl_demo.01",
-        "operating_unit": "operating_unit_kmitl.operating_unit_01",
-        "proc_type": "purchase_request_kmitl.procurement_type_007",
-        "payment_type": "direct",
-    },
-]
-
-
-def _create_dr_pr_with_line(
-    env,
-    case,
-    admin_user,
-    fiscal_year,
-    admin_employee,
-    supervisor_employee,
-    wa_committee_employees,
-):
-    """Create a PR (with line and committees) for the disbursement-flow demo.
-
-    Differs from `_create_pr_with_line` in that budget_account / dept / department /
-    operating_unit are read from the case dict (varied per case), and
-    procurement_method is locked to procurement_specific to keep is_egp=False.
-    """
-    activity = env.ref(case["activity"])
-    fund = env.ref(case["fund"])
-    source = env.ref(case["source"])
-    dept = env.ref(case["dept"])
-    department = env.ref(case["department"])
-    operating_unit = env.ref(case["operating_unit"])
-    budget_account = env.ref(case["budget_account"])
-    vendor = env.ref(case["vendor"])
-    procurement_type = env.ref(case["proc_type"])
-    procurement_method = env.ref("purchase_request_kmitl.procurement_specific")
-
-    pr = env["purchase.request"].create(
-        {
-            "title": case["title"],
-            "description": case["description"],
-            "account_fiscal_year_id": fiscal_year.id,
-            "procurement_type_id": procurement_type.id,
-            "procurement_method_id": procurement_method.id,
-            "payment_type": case["payment_type"],
-            "requested_by": admin_user.id,
-            "partner_id": vendor.id,
-            "user_id": admin_user.id,
-            "department_id": department.id,
-            "operating_unit_id": operating_unit.id,
-            "budget_account_id": budget_account.id,
-            "activity_analytic_id": activity.id,
-            "department_analytic_id": dept.id,
-            "fund_analytic_id": fund.id,
-            "source_analytic_id": source.id,
-        }
-    )
-
-    product = budget_account.product_id
-    env["purchase.request.line"].create(
-        {
-            "request_id": pr.id,
-            "product_id": product.id,
-            "name": product.display_name,
-            "product_uom_id": product.uom_id.id,
-            "price_unit": case["price_unit"],
-            "product_qty": 1.0,
-        }
-    )
-
-    env["procurement.committee"].create(
-        {
-            "request_id": pr.id,
-            "employee_id": admin_employee.id,
-            "committee_type": "work_acceptance",
-            "approve_role": "chairman",
-            "name": admin_employee.name,
-            "phone": admin_employee.work_phone or "",
-        }
-    )
-    for emp in wa_committee_employees:
-        env["procurement.committee"].create(
-            {
-                "request_id": pr.id,
-                "employee_id": emp.id,
-                "committee_type": "work_acceptance",
-                "approve_role": "committee",
-                "name": emp.name,
-                "phone": emp.work_phone or "",
-            }
-        )
-    env["procurement.committee"].create(
-        {
-            "request_id": pr.id,
-            "employee_id": supervisor_employee.id,
-            "committee_type": "work_supervisor",
-            "approve_role": "chairman",
-            "name": supervisor_employee.name,
-            "phone": supervisor_employee.work_phone or "",
-        }
-    )
-
-    pr.action_ignore_exceptions()
-    pr.button_to_verify()
-
-    _logger.info(
-        "DR-PR %s created (title=%s, amount=%s, is_egp=%s)",
-        pr.name,
-        case["title"],
-        case["price_unit"],
-        pr.is_egp,
-    )
-    return pr
-
-
-def _create_wa_and_accept(env, pr, pa, po, admin_employee, wa_committee_employees):
-    """Create a Work Acceptance for the given PO/PA pair and accept it.
-
-    Uses paperless tier validation and pre-fills committee status='accept' so
-    the WA can be force-accepted via skip_committee_wizard, no UI involved.
-    """
-    committees = [
-        Command.create(
-            {
-                "employee_id": admin_employee.id,
-                "name": admin_employee.name,
-                "approve_role": "chairman",
-                "status": "accept",
-            }
-        )
-    ]
-    for emp in wa_committee_employees:
-        committees.append(
-            Command.create(
-                {
-                    "employee_id": emp.id,
-                    "name": emp.name,
-                    "approve_role": "committee",
-                    "status": "accept",
-                }
-            )
-        )
-
-    wa_lines = [
-        Command.create(
-            {
-                "purchase_line_id": line.id,
-                "name": line.name,
-                "product_uom": line.product_uom.id,
-                "product_id": line.product_id.id,
-                "price_unit": line.price_unit,
-                "product_qty": line._get_product_qty(),
-            }
-        )
-        for line in po.order_line
-        if line._get_product_qty() != 0
-    ]
-
-    wa = env["work.acceptance"].create(
-        {
-            "purchase_id": po.id,
-            "approval_id": pa.id,
-            "partner_id": po.partner_id.id,
-            "company_id": po.company_id.id,
-            "currency_id": po.currency_id.id,
-            "wa_tier_validation": True,
-            "wa_line_ids": wa_lines,
-            "work_acceptance_committee_ids": committees,
-        }
-    )
-    wa.with_context(skip_committee_wizard=True).button_accept()
-    _logger.info(
-        "WA %s accepted, completeness=%s, state=%s",
-        wa.name,
-        wa.completeness,
-        wa.state,
-    )
-    return wa
-
-
-def _advance_to_disbursement_request(
-    env, pr, admin, department, admin_employee, wa_committee_employees
-):
-    """Drive PR → PA → PO confirm → WA accept → DR created."""
-    _run_non_egp_flow(env, pr, admin, department)
-
-    pa = pr.request_approval_ids[:1]
-    po = pr.line_ids.purchase_lines.order_id[:1]
-    if not pa or not po:
-        raise RuntimeError("DR demo flow expected PA and PO for PR %s" % pr.name)
-
-    if po.state in ("draft", "sent"):
-        po.button_confirm()
-    _logger.info("PO %s confirmed, state=%s", po.name, po.state)
-
-    _create_wa_and_accept(env, pr, pa, po, admin_employee, wa_committee_employees)
-
-    dr = pa._create_disbursement_request()
-    _logger.info(
-        "DR %s created from PA %s, state=%s, total=%s",
-        dr.name,
-        pa.name,
-        dr.state,
-        dr.amount_total,
-    )
-    return dr
-
-
-def _create_disbursement_flow_demo(
-    env, admin, fiscal_year, admin_employee, supervisor_employee, wa_committee_employees
-):
-    """Create 10 PR → DR demo records, each with a distinct budget combination."""
-    _logger.info("Creating disbursement-flow demo data (10 cases)...")
-
-    # One appropriation per unique (budget_account, activity, fund, source, dept) tuple
-    # in DR_CASES. Sized at 1.5× the case price to comfortably cover commitments.
-    seen = set()
-    for case in DR_CASES:
-        key = (
-            case["budget_account"],
-            case["activity"],
-            case["fund"],
-            case["source"],
-            case["dept"],
-        )
-        if key in seen:
-            continue
-        seen.add(key)
-        _create_budget_appropriation(
-            env,
-            env.ref(case["budget_account"]),
-            env.ref(case["activity"]),
-            env.ref(case["dept"]),
-            env.ref(case["fund"]),
-            env.ref(case["source"]),
-            fiscal_year,
-            int(case["price_unit"] * 1.5),
-        )
-
-    for i, case in enumerate(DR_CASES, 1):
-        _logger.info("=== DR Case %d: %s ===", i, case["title"])
-        pr = _create_dr_pr_with_line(
-            env,
-            case,
-            admin_user=admin,
-            fiscal_year=fiscal_year,
-            admin_employee=admin_employee,
-            supervisor_employee=supervisor_employee,
-            wa_committee_employees=wa_committee_employees,
-        )
-        _advance_to_disbursement_request(
-            env,
-            pr,
-            admin,
-            env.ref(case["department"]),
-            admin_employee,
-            wa_committee_employees,
-        )
-
-    _logger.info("Disbursement-flow demo data created successfully! (10 cases)")

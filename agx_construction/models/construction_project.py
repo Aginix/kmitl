@@ -16,6 +16,14 @@ class ConstructionProject(models.Model):
 
     ref = fields.Char(string="Reference", default="/", readonly=True, copy=False)
 
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Responsible",
+        default=lambda self: self.env.user,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
     department_id = fields.Many2one(
         comodel_name="hr.department",
         string="Department",
@@ -38,11 +46,19 @@ class ConstructionProject(models.Model):
         compute="_compute_purchase_order_ids",
     )
 
-    main_sarabun_document_id = fields.Many2one(
+    active_sarabun_document_id = fields.Many2one(
         comodel_name="sarabun.document",
-        string="Main Sarabun Document",
-        related='purchase_request_ids.main_sarabun_document_id'
+        string="Active Sarabun Document",
+        compute="_compute_active_sarabun_document_id",
     )
+
+    def _compute_active_sarabun_document_id(self):
+        for record in self:
+            docs = record.purchase_request_ids.mapped(
+                "active_sarabun_document_id"
+            )
+            live = docs.filtered(lambda d: not d.is_terminal)
+            record.active_sarabun_document_id = live[:1] or docs[:1]
 
     def _compute_purchase_order_ids(self):
         for record in self:
