@@ -12,7 +12,7 @@
         <field name="target">main</field>
     </record>
 
-    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="3" web_icon="procurement_plan,static/description/logo.png" groups="procurement_plan.group_procurement_plan_user">
+    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10" web_icon="procurement_plan,static/description/logo.png" groups="procurement_plan.group_procurement_plan_user">
         <menuitem
             id="action_procurement_plan_menu_action"
             name="Procurement Plan"
