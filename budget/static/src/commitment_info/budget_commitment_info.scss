@@ -1,11 +1,3 @@
-// The reservation card is a summary, not a table. Left full-width it stretched
-// each label away from its own value again on a wide screen — the very problem
-// the two-column grid was meant to fix — so cap it at a width that still fits
-// two columns of Thai analytic names side by side.
-.o_budget_commitment_info {
-    max-width: 40rem;
-}
-
 // Long analytic names (ส่วนงาน / กิจกรรม / โครงการ) routinely exceed a single
 // half-card line at the 40rem cap. Wrap to two lines instead of ellipsing on
 // one — the card grows just enough for the long dimensions, short ones still
