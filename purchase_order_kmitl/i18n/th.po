@@ -2219,7 +2219,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
 #, python-format
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "แบบขอให้จัดหา (พ.1)"
 
 #. module: purchase_order_kmitl
 #: model:ir.model,name:purchase_order_kmitl.model_purchase_request_line_make_purchase_order

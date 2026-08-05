@@ -25,6 +25,9 @@
                          signing (ADR-0009), falling back to live master data for legacy /
                          in-flight rows — so a later HR / position / signature edit never
                          rewrites an already-signed หนังสือ. -->
+                    <div t-if="sig.note" style="font-size:0.9em; color:#555;">
+                        <span t-out="sig.note"/>
+                    </div>
                     <t t-set="sig_image" t-value="sig.signed_signature or sig.acted_by_id.employee_id.signature"/>
                     <div t-if="sig_image">
                         <img t-att-src="image_data_uri(sig_image)" style="max-height:60px;"/>
@@ -36,9 +39,6 @@
                     <div t-out="sig.signed_position_name or sig.signed_as_position_id.name or sig.position_id.name"/>
                     <div t-if="sig.acted_date"
                          t-out="doc.format_datetime_thai_sign(sig.acted_date)"/>
-                    <div t-if="sig.note" style="font-size:0.9em; color:#555;">
-                        <span t-out="sig.note"/>
-                    </div>
                 </div>
             </div>
         </t>
