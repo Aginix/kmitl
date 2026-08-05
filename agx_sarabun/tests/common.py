@@ -116,7 +116,6 @@ class SarabunCommon(TransactionCase):
         cls.sequence = cls.Sequence.create(
             {
                 "name": "ทะเบียนหนังสือ กองทดสอบ",
-                "code": "REG-TEST",
                 "sender_department_id": cls.dept.id,
             }
         )

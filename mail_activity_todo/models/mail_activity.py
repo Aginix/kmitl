@@ -131,21 +131,37 @@ class MailActivity(models.Model):
                 partners |= act.user_id.partner_id
         return partners
 
-    def _todo_notify(self, partners=None):
-        """Ping affected users' bus channels so their systray badge refetches."""
+    def _todo_notify(self, partners=None, sound=False):
+        """Ping affected users' bus channels so their systray badge refetches.
+
+        ``sound`` carries a *new-work* intent (create → True; write/unlink → False):
+        the payload is built per-partner via ``_todo_payload`` so an add-on
+        (``mail_activity_todo_sound``) can turn that intent into an audible ding
+        under a per-user preference — the bus payload alone (``{refresh: True}``)
+        cannot distinguish new work from a clear (ADR-0014).
+        """
         if partners is None:
             partners = self._todo_recipient_partners()
         for partner in partners:
             self.env["bus.bus"]._sendone(
-                partner, "mail_activity_todo/updated", {"refresh": True}
+                partner,
+                "mail_activity_todo/updated",
+                self._todo_payload(partner, sound),
             )
+
+    def _todo_payload(self, partner, sound):
+        """The bus payload for one recipient. Core only asks the badge to refetch;
+        the ``sound`` intent is a hook for add-ons (kept out of core so the
+        high-volume inbox stays silent by default — ADR-0014)."""
+        return {"refresh": True}
 
     @api.model_create_multi
     def create(self, vals_list):
         activities = super().create(vals_list)
         # Every assigned activity is in someone's inbox now (ADR-0006), so the
-        # badge must react to all of them, not only categorised Todos.
-        activities._todo_notify()
+        # badge must react to all of them, not only categorised Todos. A create is
+        # new work → carry the sound intent (add-ons decide whether to play it).
+        activities._todo_notify(sound=True)
         return activities
 
     def write(self, vals):

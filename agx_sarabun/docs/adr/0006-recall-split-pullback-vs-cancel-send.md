@@ -1,5 +1,7 @@
 # Recall split: ดึงกลับ (pull-back, keep number) vs ยกเลิกการส่ง (cancel-send, void)
 
+> **Update (2026-07-23 · [ADR-0010](./0010-register-number-at-completion-not-at-send.md)):** the *number*-based half of this split is subsumed. Since the number now runs only at **completion**, a circulating หนังสือ has **no number** — so ดึงกลับ has none "to keep" and ยกเลิกการส่ง has none "to void". The two acts now differ only as **pull-back-to-edit-and-re-send** (`→ returned`) vs **terminal cancel** (`→ cancelled`); the signature guard (`has_signed`) is unchanged.
+
 **Supersedes the recall decision in [ADR-0002](./0002-document-lifecycle-negative-paths.md).** ADR-0002 modelled a single **Recall (เรียกคืน)** = withdraw a circulating Document into `cancelled` and **void its number** (a permanent register gap), on the records-regulation principle that a released number is never reused. In real use this is too blunt: a sender who spots a typo or a mis-route **before any signature** must be able to pull the หนังสือ back, fix it, and re-send **on the same number** — voiding a number on every correction floods the register with permanent gaps that a clerk has to account for.
 
 We therefore **split the single recall into two distinct sender actions**, landing the recoverable one on the existing `returned` path:

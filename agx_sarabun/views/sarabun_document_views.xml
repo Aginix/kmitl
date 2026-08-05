@@ -52,6 +52,11 @@
                            statusbar_visible="draft,circulating,completed"/>
                 </header>
                 <sheet>
+                    <!-- ยกเลิก / ปฏิเสธ are terminal states the statusbar does not show
+                         (statusbar_visible = draft,circulating,completed) — the ribbon
+                         is what tells the reader the หนังสือ is dead. -->
+                    <widget name="web_ribbon" title="ยกเลิกการส่ง" bg_color="bg-danger"
+                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_origin" type="object"
                                 class="oe_stat_button" icon="fa-external-link"
@@ -69,8 +74,9 @@
                     </group>
                     <!-- Header laid out to mirror the หนังสือ (cf. report/sarabun_reports):
                          ส่วนราชการ (หน่วยงาน)  |  ที่ · วันที่  →  เรื่อง  →  เรียน.
-                         No banner headline: ที่ (name) is '/' until numbered at send,
-                         so it lives as a small register field like on the real document. -->
+                         No banner headline: ที่ (name) is '/' until numbered at
+                         completion (final ลงนาม/อนุมัติ — ADR-0010), so it lives as a
+                         small register field like on the real document. -->
                     <group>
                         <!-- readonly is set per-field: a `readonly` attrs on the <group>
                              is NOT propagated to child fields by Odoo 16 (each node's
@@ -86,6 +92,12 @@
                         <group name="doc_meta" string="ทะเบียนหนังสือ">
                             <field name="name" string="ที่" readonly="1"/>
                             <field name="date" string="วันที่" readonly="1"/>
+                            <!-- เล่มทะเบียน — which of the unit's registers issues the
+                                 number (ADR-0012). Prefilled from the unit's default;
+                                 pinned at send, so read-only afterwards. -->
+                            <field name="sequence_id" string="เล่มทะเบียน"
+                                   attrs="{'readonly': [('is_editable', '=', False)]}"
+                                   options="{'no_create': True, 'no_open': True}"/>
                             <!-- เลขที่หนังสือ sits with ที่ (same concern) — manual compose only. -->
                             <field name="numbering_mode"
                                    attrs="{'invisible': ['|', ('kind', '=', 'from_record'), ('state', 'not in', ('draft', 'returned'))]}"/>
@@ -171,7 +183,7 @@
                                         <group name="step_what">
                                             <field name="order" string="ลำดับ"
                                                    attrs="{'readonly': [('is_originator', '=', True)]}"/>
-                                            <field name="verb"/>
+                                            <field name="verb" widget="selection" />
                                         </group>
                                         <group>
                                             <field name="for_info" string="สำเนาเรียน (CC)"
@@ -195,7 +207,7 @@
                                         </field>
                                     </group>
 
-                                    <group string="ไทม์ไลน์ (Timeline)" col="2">
+                                    <group string="ไทม์ไลน์ (Timeline)" col="2" name="timeline">
                                         <field name="activated_date" readonly="1"/>
                                         <field name="read_date" readonly="1"/>
                                         <field name="sent_date" readonly="1"/>
@@ -204,22 +216,11 @@
                                     </group>
                                 </form>
                             </field>
-                            <separator string="ประวัติการเดินเรื่อง (History)"
-                                       attrs="{'invisible': [('archived_step_ids', '=', [])]}"/>
-                            <field name="archived_step_ids" readonly="1"
-                                   attrs="{'invisible': [('archived_step_ids', '=', [])]}">
-                                <tree>
-                                    <field name="attempt_seq"/>
-                                    <field name="order"/>
-                                    <field name="verb"/>
-                                    <field name="target_name"/>
-                                    <field name="state"/>
-                                    <field name="disposition"/>
-                                    <field name="acted_by_id"/>
-                                    <field name="acted_date"/>
-                                    <field name="note"/>
-                                </tree>
-                            </field>
+                            <!-- No ประวัติการเดินเรื่อง (History) list here: ดึงกลับ /
+                                 ตีกลับ / รีเซ็ต all mean "run the whole เส้นทาง again",
+                                 so the prior attempt is noise on the form. The rows are
+                                 still archived (audit / archived_step_ids), just not
+                                 shown beside the live Route. -->
                         </page>
                         <page string="อ้างถึง (References)" name="references">
                             <separator string="อ้างถึง — ในระบบ (prior หนังสือ)"/>

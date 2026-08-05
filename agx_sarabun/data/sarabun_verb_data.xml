@@ -31,8 +31,18 @@
             <field name="is_signature" eval="False"/>
         </record>
 
+        <!-- UAT verb catalogue (ADR-0008 / CONTEXT §Step verbs). The earlier
+             behaviour-derived 6 were replaced 6→8 on UAT feedback: the labels are the
+             human instruction the actor reads, so distinct instructions earn distinct
+             records even when the three axes coincide. Load-bearing xmlids/flags are
+             preserved (verb_acknowledge / verb_verify / verb_endorse / verb_sign_approve
+             — the engine defaults and 60+ tests reference them); verb_consider /
+             verb_forward are re-labelled + re-flagged; the old ส่งต่อ (Forward) is
+             dropped (verb_forward is repurposed to ตรวจสอบและลงนามกำกับ). -->
+
+        <!-- รับทราบ (read-only) — for information; no gate, no signature. -->
         <record id="verb_acknowledge" model="sarabun.verb">
-            <field name="name">รับทราบ (Acknowledge)</field>
+            <field name="name">รับทราบ/ถือปฏิบัติ/จัดเก็บเข้าแฟ้ม (อ่านอย่างเดียว)</field>
             <field name="sequence">10</field>
             <field name="rank">1</field>
             <field name="gating" eval="False"/>
@@ -40,10 +50,21 @@
             <field name="is_signature" eval="False"/>
         </record>
 
-        <!-- ตรวจสอบ / พิจารณา — an intermediate actor must review before the หนังสือ
-             moves on, but carries no signature (name in the Route only). Gating. -->
+        <!-- รับทราบและลงนาม — an acknowledgement that also puts a signature on the
+             letter; still non-gating (never blocks the chain). -->
+        <record id="verb_acknowledge_sign" model="sarabun.verb">
+            <field name="name">รับทราบและลงนาม</field>
+            <field name="sequence">11</field>
+            <field name="rank">1</field>
+            <field name="gating" eval="False"/>
+            <field name="show_signature" eval="True"/>
+            <field name="is_signature" eval="False"/>
+        </record>
+
+        <!-- ตรวจเอกสาร — an intermediate actor must check before the หนังสือ moves on,
+             but carries no signature (name in the Route only). Gating. -->
         <record id="verb_verify" model="sarabun.verb">
-            <field name="name">ตรวจสอบ (Verify)</field>
+            <field name="name">ตรวจเอกสาร</field>
             <field name="sequence">15</field>
             <field name="rank">2</field>
             <field name="gating" eval="True"/>
@@ -51,30 +72,33 @@
             <field name="is_signature" eval="False"/>
         </record>
 
+        <!-- ผ่านเรื่อง / กลั่นกรอง — a screening gate the matter must pass; the screener
+             signs (ลงนามกำกับ). Gating + show_signature; not the authoritative sign. -->
         <record id="verb_consider" model="sarabun.verb">
-            <field name="name">พิจารณา (Consider)</field>
+            <field name="name">ผ่านเรื่อง/กลั่นกรอง</field>
             <field name="sequence">16</field>
             <field name="rank">2</field>
             <field name="gating" eval="True"/>
-            <field name="show_signature" eval="False"/>
+            <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
         </record>
 
-        <!-- ส่งต่อ — a pass-along in the chain; name in the Route, no signature,
-             non-gating. -->
+        <!-- ตรวจสอบและลงนามกำกับ — verify and countersign. Gating + show_signature;
+             not the authoritative sign (does not close recall). -->
         <record id="verb_forward" model="sarabun.verb">
-            <field name="name">ส่งต่อ (Forward)</field>
+            <field name="name">ตรวจสอบและลงนามกำกับ</field>
             <field name="sequence">17</field>
-            <field name="rank">1</field>
-            <field name="gating" eval="False"/>
-            <field name="show_signature" eval="False"/>
+            <field name="rank">2</field>
+            <field name="gating" eval="True"/>
+            <field name="show_signature" eval="True"/>
             <field name="is_signature" eval="False"/>
         </record>
 
-        <!-- เห็นชอบ — mid-chain gatekeeping; signs the endorsement (show_signature) but
-             is not the authoritative sign (does not close recall). Gating. -->
+        <!-- พิจารณา / ให้ความเห็นและลงนามกำกับ — give an opinion and countersign, passing
+             upward. Gating + show_signature; may also ตีกลับ / ปฏิเสธ; not the
+             authoritative sign (does not close recall). -->
         <record id="verb_endorse" model="sarabun.verb">
-            <field name="name">เห็นชอบ (Endorse)</field>
+            <field name="name">พิจารณา/ให้ความเห็นและลงนามกำกับ</field>
             <field name="sequence">20</field>
             <field name="rank">2</field>
             <field name="gating" eval="True"/>
@@ -82,11 +106,24 @@
             <field name="is_signature" eval="False"/>
         </record>
 
-        <!-- ลงนาม-อนุมัติ — the authoritative sign = ส่งออก. Gating + show_signature +
-             is_signature (closes the recall window; signs in the step's Position). -->
+        <!-- ลงนามในใบปะหน้า / เอกสารเพื่อลงนาม — the authoritative signature that issues
+             the หนังสือ (ส่งออก), in the step's Position capacity. Gating + show_signature
+             + is_signature (closes the recall window). -->
         <record id="verb_sign_approve" model="sarabun.verb">
-            <field name="name">ลงนาม-อนุมัติ (Sign/Approve)</field>
+            <field name="name">ลงนามในใบปะหน้า/เอกสารเพื่อลงนาม</field>
             <field name="sequence">30</field>
+            <field name="rank">3</field>
+            <field name="gating" eval="True"/>
+            <field name="show_signature" eval="True"/>
+            <field name="is_signature" eval="True"/>
+        </record>
+
+        <!-- อนุมัติ / อนุญาต / เห็นชอบและลงนามกำกับ — an approving authority's decision and
+             signature. Also authoritative (is_signature); a หนังสือ may have more than one
+             authoritative sign, the first to occur closes ดึงกลับ / ยกเลิก. -->
+        <record id="verb_approve" model="sarabun.verb">
+            <field name="name">อนุมัติ/อนุญาต/เห็นชอบและลงนามกำกับ</field>
+            <field name="sequence">31</field>
             <field name="rank">3</field>
             <field name="gating" eval="True"/>
             <field name="show_signature" eval="True"/>

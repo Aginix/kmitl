@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_document_form_reset" model="ir.ui.view">
+        <field name="name">sarabun.document.form.reset</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
+        <field name="arch" type="xml">
+            <!-- Admin reset-to-draft button (ADR-0011). An inherited view cannot carry
+                 groups_id on the record (Odoo raises on install), so the reset-admin gate
+                 lives as a `groups` attribute on the button itself; can_reset hides it
+                 while the หนังสือ is already a draft. -->
+            <xpath expr="//header/button[@name='action_duplicate_to_draft']" position="after">
+                <field name="can_reset" invisible="1"/>
+                <button name="action_open_reset_wizard" type="object"
+                        string="รีเซ็ต (Reset)"
+                        groups="agx_sarabun_reset.group_sarabun_reset"
+                        confirm="รีเซ็ตเอกสารกลับเป็นร่าง? การลงนาม/สถานะปัจจุบันจะถูกเก็บเป็นประวัติ"
+                        attrs="{'invisible': [('can_reset', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

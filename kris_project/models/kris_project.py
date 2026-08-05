@@ -246,11 +246,10 @@ class KrisProject(models.Model):
         string="การจัดสรรรายได้",
         copy=True,
     )
-    attachment_ids = fields.Many2many(
+    attachment_ids = fields.One2many(
         comodel_name="ir.attachment",
-        relation="kris_project_attachment_rel",
-        column1="project_id",
-        column2="attachment_id",
+        inverse_name="res_id",
+        domain=[("res_model", "=", "kris.project")],
         string="Attachment",
     )
     # --- Computed totals ---

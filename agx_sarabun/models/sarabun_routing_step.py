@@ -11,12 +11,8 @@ phase-2 magic-link controller can drive the same path. Holder resolution and
 notification (mail.activity) are wired here but the notification body itself is a
 P4 concern (stubbed). Numbering (P3) and freeze/sign (P5) live on the document.
 """
-import logging
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-
-_logger = logging.getLogger(__name__)
 
 # Keep in sync with sarabun_route_template.py
 TARGET_MODE = [
@@ -315,64 +311,60 @@ class SarabunRoutingStep(models.Model):
             step.activated_date = fields.Datetime.now()
             step._snapshot_holders()
         self._schedule_activities()
-        for step in self:
-            step._notify_inbox({
-                "document_id": step.document_id.id,
-                "subject": step.document_id.subject,
-            })
 
     def _activity_summary(self):
         self.ensure_one()
         return self.verb.name
 
+    def _activity_type_xmlid(self):
+        """The awaiting-action activity type for this step (ADR-0014): EXECUTION iff
+        the step gates or physically signs the letter (``gating`` OR
+        ``show_signature`` — so รับทราบและลงนาม is execution, a signature can't be
+        Mark-as-Read'd away), else ACKNOWLEDGEMENT (a pure read-only รับทราบ)."""
+        self.ensure_one()
+        if self.gating or self.verb.show_signature:
+            return "agx_sarabun.mail_activity_sarabun_action"
+        return "agx_sarabun.mail_activity_sarabun_ack"
+
     def _schedule_activities(self):
-        """One 'action required' mail.activity per snapshot holder of each active
-        GATING step (§7.2). รับทราบ / for_info steps never raise an activity — they
-        live in the inbox tray only (P4-tray)."""
-        Link = self.env["sarabun.routing.step.activity"]
-        act_type = self.env.ref(
-            "agx_sarabun.mail_activity_sarabun_action", raise_if_not_found=False
-        )
-        for step in self.filtered(lambda s: s.state == "active" and s.gating):
+        """One awaiting-action mail.activity per snapshot holder of each ACTIVE step
+        — gating AND non-gating (รับทราบ / สำเนาเรียน / รับทราบและลงนาม) alike
+        (ADR-0014); the old gating-only filter is gone so no awaiting-action work is
+        invisible once the systray is dissolved. The type is picked per step by
+        ``_activity_type_xmlid`` (execution vs acknowledgement). Base e-Saraban
+        stands on native mail.activity; the agx_sarabun_todo bridge tags the types
+        with ``todo_category`` to route them into the unified Todo inbox.
+
+        The step↔activity Link is engine-owned bookkeeping (like the recipient
+        rows): created via sudo so a plain sender/actor needs no write on it."""
+        Link = self.env["sarabun.routing.step.activity"].sudo()
+        for step in self.filtered(lambda s: s.state == "active"):
+            xmlid = step._activity_type_xmlid()
+            if not self.env.ref(xmlid, raise_if_not_found=False):
+                continue
             doc = step.document_id
             for usr in step.actor_user_ids:
                 act = doc.activity_schedule(
-                    act_type_xmlid="agx_sarabun.mail_activity_sarabun_action",
+                    act_type_xmlid=xmlid,
                     summary=step._activity_summary(),
                     user_id=usr.id,
-                ) if act_type else False
+                )
                 if act:
                     Link.create({"step_id": step.id, "activity_id": act.id, "user_id": usr.id})
 
     def _clear_activities(self):
-        """Clear every action-required activity tied to these steps (all holders) —
-        first-to-act and on every lifecycle close (§7.2)."""
-        links = self.env["sarabun.routing.step.activity"].search(
+        """Clear every awaiting-action activity tied to these steps (all holders) —
+        first-to-act and on every lifecycle close (§7.2). Kept in core: the reset
+        add-on (agx_sarabun_reset) depends on it."""
+        # sudo: the to-dos being cleared belong to the OTHER actors (mail.activity's
+        # ir.rule only lets a user unlink their own / self-created ones), and clearing
+        # them is an engine operation — e.g. the sender's ดึงกลับ drops the approvers'
+        # pending activities.
+        links = self.env["sarabun.routing.step.activity"].sudo().search(
             [("step_id", "in", self.ids)]
         )
         links.mapped("activity_id").unlink()
         links.unlink()
-        for step in self:
-            step._notify_inbox({"refresh": True})
-
-    def _notify_inbox(self, payload=None):
-        """Push a systray-inbox refresh to each snapshot holder (P4 realtime).
-
-        A payload carrying ``subject``/``document_id`` makes the client play a
-        sound + browser notification; ``{"refresh": True}`` only updates the badge.
-        Best-effort: never let a bus hiccup break the routing transaction.
-        """
-        self.ensure_one()
-        partners = self.actor_user_ids.partner_id
-        if not partners:
-            return
-        payload = payload or {}
-        try:
-            self.env["bus.bus"]._sendmany(
-                [(partner, "sarabun_inbox/updated", payload) for partner in partners]
-            )
-        except Exception:  # noqa: BLE001 — a tray hiccup must not roll back routing
-            _logger.warning("Failed to push e-Sarabun inbox notification", exc_info=True)
 
     # ----------------------------------------------------------------- acting
     def _check_act_authority(self, actor):

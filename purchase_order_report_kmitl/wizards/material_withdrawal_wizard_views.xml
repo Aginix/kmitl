@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_po_material_withdrawal_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.order.material.withdrawal.wizard.form</field>
+        <field name="model">purchase.order.material.withdrawal.wizard</field>
+        <field name="arch" type="xml">
+            <form string="พิมพ์ใบเบิกวัสดุ (พ.43)">
+                <sheet>
+                    <group>
+                        <field name="order_id" invisible="1"/>
+                        <field name="requester_id" options="{'no_create': True}"/>
+                        <field name="dept_head_id" options="{'no_create': True}"/>
+                        <field name="disburser_id" options="{'no_create': True}"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_print" type="object"
+                            string="พิมพ์ใบเบิกวัสดุ" class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_po_material_withdrawal_wizard" model="ir.actions.act_window">
+        <field name="name">พิมพ์ใบเบิกวัสดุ (พ.43)</field>
+        <field name="res_model">purchase.order.material.withdrawal.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

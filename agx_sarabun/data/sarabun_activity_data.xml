@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- The "action required" activity raised on the active gating step's holders -->
+        <!-- Two awaiting-action activity types, one per behaviour axis (ADR-0014).
+             Every ACTIVE step raises an activity for each snapshot holder now —
+             gating and non-gating (รับทราบ / CC / รับทราบและลงนาม) alike; the old
+             gating-only filter was dropped so no awaiting-action work is invisible
+             once the systray is gone. _schedule_activities picks the type by
+             discriminator: EXECUTION iff the step gates or physically signs the
+             letter (gating OR show_signature), else ACKNOWLEDGEMENT (a pure รับทราบ).
+             The agx_sarabun_todo bridge tags these with todo_category so they flow
+             into the unified Todo inbox (execution clears by acting at the หนังสือ,
+             acknowledgement clears by Mark as Read). -->
+
+        <!-- EXECUTION — the step must be acted on / signed at the หนังสือ. -->
         <record id="mail_activity_sarabun_action" model="mail.activity.type">
             <field name="name">Sarabun: ต้องดำเนินการ (Action Required)</field>
             <field name="icon">fa-pencil-square-o</field>
+            <field name="res_model">sarabun.document</field>
+            <field name="category">default</field>
+        </record>
+
+        <!-- ACKNOWLEDGEMENT — a pure รับทราบ / สำเนาเรียน (CC); read-only. -->
+        <record id="mail_activity_sarabun_ack" model="mail.activity.type">
+            <field name="name">Sarabun: รับทราบ (Acknowledge)</field>
+            <field name="icon">fa-eye</field>
             <field name="res_model">sarabun.document</field>
             <field name="category">default</field>
         </record>

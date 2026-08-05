@@ -24,6 +24,13 @@ class SarabunDocument(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin", "thai.date.mixin"]
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "subject"]
+    # An involved holder is read-only on the หนังสือ (see security.xml), yet the
+    # awaiting-action surface is now native mail.activity (ADR-0014), whose
+    # read/search/read_group delegate to this document's _mail_post_access
+    # (mail.thread default 'write'). Set it to 'read' so a read-only holder can
+    # read / count / open their own Todo without AccessError (ADR-0013). Accepted
+    # side effect: a document-reader may also post chatter on the หนังสือ.
+    _mail_post_access = "read"
 
     # === Identification ===
     name = fields.Char(
@@ -34,8 +41,8 @@ class SarabunDocument(models.Model):
         default="/",
         tracking=True,
         index="trigram",
-        help="Official registered number (rendered in พ.ศ.). Assigned at send (P3); "
-        "stays '/' while draft.",
+        help="Official registered number (rendered in พ.ศ.). Assigned only when the "
+        "final approver signs — completion (ADR-0010); stays '/' while draft/circulating.",
     )
 
     # === Classification (kind / type) ===
@@ -59,8 +66,11 @@ class SarabunDocument(models.Model):
         required=True,
         default=fields.Date.context_today,
         tracking=True,
-        help="Defaults to today at creation (auto). Kept read-only in the form for "
-        "now; making it editable is a later phase.",
+        help="ลงวันที่ — the หนังสือ's official date, printed beside ที่. It is the "
+        "date it is ส่ง (issued into circulation), (re)stamped at action_send "
+        "(ADR-0010), NOT the create-draft date — so a draft held over ปีงบประมาณ "
+        "year-end is dated in the new year when actually sent. Owner-editable is a "
+        "later phase; kept read-only in the form for now.",
     )
     addressee_prefix_id = fields.Many2one(
         comodel_name="sarabun.addressee.prefix",
@@ -184,6 +194,13 @@ class SarabunDocument(models.Model):
         inverse_name="document_id",
         string="Routing History",
         domain=[("active", "=", False)],
+        # Audit accessor only — the form no longer lists prior attempts beside the
+        # live Route (a ดึงกลับ / ตีกลับ / รีเซ็ต re-runs the whole เส้นทาง).
+        # Without active_test=False the ORM drops every archived row on the way out
+        # (_RelationalMulti.convert_to_record filters x2many values by `active`
+        # whenever active_test is on): the domain fetches them and the record
+        # conversion then hands back an empty set, so every reader saw nothing.
+        context={"active_test": False},
         copy=False,
         help="Frozen steps of closed attempts (kept for the เกษียน trail).",
     )
@@ -194,6 +211,21 @@ class SarabunDocument(models.Model):
         copy=False,
         help="Generation counter bumped on each re-send so prior attempts survive "
         "as history (ADR-0002 §3.4).",
+    )
+    reached_user_ids = fields.Many2many(
+        comodel_name="res.users",
+        relation="sarabun_document_reached_user_rel",
+        column1="document_id",
+        column2="user_id",
+        string="Reached Users",
+        compute="_compute_reached_user_ids",
+        store=True,
+        help="Everyone the หนังสือ has ever reached — the union of "
+        "sarabun.step.recipient holders across ACTIVE and ARCHIVED steps. The "
+        "read-visibility key (ADR-0013): being involved is a property of the "
+        "หนังสือ, not of the current attempt, so read persists after completion and "
+        "across ตีกลับ / ดึงกลับ / Reset. It only grows — a recipient row is never "
+        "removed — matching the permanent per-person reach ledger of the Incoming box.",
     )
     strongest_verb_id = fields.Many2one(
         comodel_name="sarabun.verb",
@@ -258,12 +290,23 @@ class SarabunDocument(models.Model):
     )
 
     # === Numbering / Register (P3 — ADR-0002 §4) ===
+    sequence_id = fields.Many2one(
+        comodel_name="sarabun.document.sequence",
+        string="เล่มทะเบียน (Register Book)",
+        compute="_compute_sequence_id",
+        store=True,
+        readonly=False,
+        copy=False,
+        domain="[('sender_department_id', '=', sender_department_id), ('active', '=', True)]",
+        help="เล่มทะเบียนที่จะใช้ออกเลขหนังสือฉบับนี้ (ADR-0012) — ตั้งต้นจากเล่มทะเบียนหลัก "
+        "ของหน่วยงาน เปลี่ยนได้ก่อนส่ง และถูกตรึงไว้ตอนส่ง.",
+    )
     register_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
         string="Register Number",
         readonly=True,
         copy=False,
-        help="The register ledger row assigned by ลงทะเบียน at send.",
+        help="The register ledger row assigned by ลงทะเบียน at completion (ADR-0010).",
     )
     numbering_mode = fields.Selection(
         selection=[
@@ -285,7 +328,7 @@ class SarabunDocument(models.Model):
     reserved_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
         string="Reserved Number",
-        domain="[('state', '=', 'reserved')]",
+        domain="[('state', '=', 'reserved'), ('sequence_id', '=', sequence_id)]",
     )
 
     # === Signing / official record (P5 — DESIGN §5) ===
@@ -353,6 +396,32 @@ class SarabunDocument(models.Model):
             record.is_terminal = record.state in ("rejected", "cancelled")
             record.is_editable = record.state in ("draft", "returned")
 
+    @api.depends("sender_department_id")
+    def _compute_sequence_id(self):
+        """Default the เล่มทะเบียน from the unit (its เล่มทะเบียนหลัก, or its only book)
+        — so the drafter never has to pick when the unit keeps a single register.
+        Editable (readonly=False) until sent; a numbered หนังสือ keeps the book its
+        number actually came from."""
+        for record in self:
+            if record.register_number_id:
+                record.sequence_id = record.register_number_id.sequence_id
+            elif record.sender_department_id:
+                record.sequence_id = record.sender_department_id._sarabun_default_sequence()
+            else:
+                record.sequence_id = False
+
+    @api.constrains("sequence_id", "sender_department_id")
+    def _check_sequence_department(self):
+        for record in self:
+            seq = record.sequence_id
+            if seq and seq.sender_department_id != record.sender_department_id:
+                raise ValidationError(_(
+                    "เล่มทะเบียน '%(book)s' ไม่ใช่ของหน่วยงาน '%(unit)s'."
+                ) % {
+                    "book": seq.display_name,
+                    "unit": record.sender_department_id.display_name,
+                })
+
     @api.depends("origin_model", "origin_res_id")
     def _compute_origin_reference(self):
         for record in self:
@@ -367,6 +436,30 @@ class SarabunDocument(models.Model):
                     if origin.exists():
                         ref = origin.display_name
             record.origin_reference = ref
+
+    @api.depends(
+        "routing_step_ids.recipient_ids.user_id",
+        "archived_step_ids.recipient_ids.user_id",
+    )
+    def _compute_reached_user_ids(self):
+        """Aggregate every recipient holder across ACTIVE and ARCHIVED steps
+        (ADR-0013). Recipient rows carry a stored ``document_id``, so a direct
+        search — under ``sudo`` and ``active_test=False`` — spans archived attempts
+        that the ``active``-scoped ``routing_step_ids`` traversal would drop. The
+        field only ever grows (rows are never deleted), so read never lapses."""
+        Recipient = (
+            self.env["sarabun.step.recipient"]
+            .sudo()
+            .with_context(active_test=False)
+        )
+        for record in self:
+            rid = record.id if isinstance(record.id, int) else record._origin.id
+            recips = (
+                Recipient.search([("document_id", "=", rid)])
+                if rid
+                else Recipient.browse()
+            )
+            record.reached_user_ids = [(6, 0, recips.user_id.ids)]
 
     @api.depends(
         "routing_step_ids.state",
@@ -486,12 +579,22 @@ class SarabunDocument(models.Model):
 
     # === Display ===
     def name_get(self):
+        # While unnumbered (draft → circulating → returned, until completion —
+        # ADR-0010) the หนังสือ is identified purely by its เรื่อง; no interim
+        # code. The official number prefixes the เรื่อง only once ลงทะเบียน runs
+        # at completion.
         result = []
         for record in self:
-            name = record.name if record.name and record.name != "/" else _("New")
-            if record.subject:
-                name = f"{name} — {record.subject}"
-            result.append((record.id, name))
+            numbered = record.name and record.name != "/"
+            if numbered:
+                label = (
+                    f"{record.name} — {record.subject}"
+                    if record.subject
+                    else record.name
+                )
+            else:
+                label = record.subject or _("(ยังไม่มีเรื่อง)")
+            result.append((record.id, label))
         return result
 
     def _status_label(self):
@@ -549,8 +652,10 @@ class SarabunDocument(models.Model):
     # === Send / Recall (lifecycle transitions) ===
     def action_send(self):
         """draft|returned → circulating: ensure the ผู้จัดทำ step, seed the approver
-        chain (if needed), auto-sign the originator (ส่ง = ลงนามผู้จัดทำ), register (P3),
-        activate stage 1."""
+        chain (if needed), auto-sign the originator (ส่ง = ลงนามผู้จัดทำ), activate
+        stage 1. The official number is NOT assigned here — ลงทะเบียน now runs only
+        when the final approver signs (see ``_complete_document``); send merely
+        verifies a register resolves so the route can't strand at completion."""
         for doc in self:
             if doc.state not in ("draft", "returned"):
                 raise UserError(_("Only draft or returned documents can be sent."))
@@ -565,8 +670,16 @@ class SarabunDocument(models.Model):
                 raise UserError(_(
                     "Add at least one gating step (เห็นชอบ or ลงนาม-อนุมัติ) before sending."
                 ))
+            # P3: fail fast if no register resolves, and PIN the resolved เล่มทะเบียน
+            # so a later config change can't move the หนังสือ to another book between
+            # ส่ง and ลงทะเบียน (which runs at completion — ADR-0010/0011).
+            doc.sequence_id = doc._resolve_sequence()
             doc._sign_originator_step()  # ส่ง = ลงนามของผู้จัดทำ (auto)
-            doc._assign_register_number()  # P3: atomic per-(ส่วนงาน × type) allocation
+            # ลงวันที่ = the ส่ง (issue) date, not the create-draft date (ADR-0010): a
+            # draft held over from the old ปีงบประมาณ is dated when it is actually sent
+            # in the new one, so ที่ and ลงวันที่ stay in the same fiscal year (a หนังสือ
+            # never straddles the year boundary). Re-stamped on each re-send.
+            doc.date = fields.Date.context_today(doc)
             doc.state = "circulating"
             doc.message_post(body=_("Document sent for routing."))
             doc._call_origin("_on_sarabun_circulating", doc)
@@ -711,30 +824,9 @@ class SarabunDocument(models.Model):
             "context": {"default_step_id": self.my_active_step_id.id},
         }
 
-    # === Inbox tray (P4 — systray) ===
-    @api.model
-    def get_my_sarabun_inbox(self, limit=20):
-        """Documents awaiting the current user's action — powers the systray tray.
-
-        The inbox is every หนังสือ with an *active* step whose snapshot holders
-        include the current user (gating or รับทราบ alike). Returns the live total
-        plus a capped, display-ready list. Runs as the user, so record rules apply.
-        """
-        steps = self.env["sarabun.routing.step"].search(
-            [("state", "=", "active"), ("actor_user_ids", "in", self.env.user.id)]
-        )
-        docs = steps.mapped("document_id").filtered(lambda d: d.state == "circulating")
-        documents = [
-            {
-                "id": d.id,
-                "name": d.name,
-                "subject": d.subject or "",
-                "date": fields.Date.to_string(d.date) if d.date else "",
-                "document_type": d.type_id.display_name or "",
-            }
-            for d in docs[:limit]
-        ]
-        return {"documents": documents, "total_count": len(docs)}
+    # The awaiting-action surface is native mail.activity now (ADR-0014): the
+    # bespoke systray + its get_my_sarabun_inbox RPC and sarabun_inbox bus were
+    # dissolved. The persistent กล่องหนังสือเข้า (Incoming box) menu/action stays.
 
     def action_duplicate_to_draft(self):
         """rejected → a NEW draft linked to the same origin (1:N — ADR-0002 #8)."""
@@ -800,6 +892,9 @@ class SarabunDocument(models.Model):
             return
         self.state = "completed"
         self.routing_step_ids._clear_activities()  # clear any remaining to-dos
+        # ลงทะเบียน happens HERE — the number runs only once the final ลงนาม/อนุมัติ is
+        # in (ADR-0010). Must precede the freeze so the frozen PDF carries the number.
+        self._assign_register_number()
         self._freeze_signed_copy()  # P5
         self.message_post(body=_("All routing completed. Document is now complete."))
         self._call_origin("_on_sarabun_completed", self)
@@ -847,9 +942,14 @@ class SarabunDocument(models.Model):
         self._call_origin("_on_sarabun_rejected", self, step)
 
     def _bump_attempt_and_archive(self):
-        """Freeze the current attempt's steps as history and start a new attempt."""
+        """Freeze the current attempt's steps as history and start a new attempt.
+
+        sudo: archiving is an ENGINE write over the whole chain — the originator row
+        included — so it must pass the ผู้จัดทำ/ผู้ส่ง write-guard. Without it the
+        sender's own ดึงกลับ (which runs in their user env, unlike a returner's
+        sudoed ตีกลับ) died on "the ผู้จัดทำ/ผู้ส่ง step is fixed"."""
         self.ensure_one()
-        self.routing_step_ids.write({"active": False})
+        self.routing_step_ids.sudo().write({"active": False})
         self.attempt_seq = (self.attempt_seq or 1) + 1
 
     def _restart_chain(self):
@@ -901,25 +1001,37 @@ class SarabunDocument(models.Model):
                 ))
 
     def _resolve_sequence(self):
-        """Resolve the register from the sender ส่วนงาน — one shared register per
-        unit across all document types. Block on missing; never number from a
-        default pool (DESIGN §4.2)."""
+        """Resolve the เล่มทะเบียน this หนังสือ issues from (ADR-0012): the book chosen
+        on the document, else the unit's เล่มทะเบียนหลัก / only book. Block on missing
+        or ambiguous; never number from a default pool (DESIGN §4.2)."""
         self.ensure_one()
-        seq = self.env["sarabun.document.sequence"].search([
-            ("sender_department_id", "=", self.sender_department_id.id),
-            ("active", "=", True),
-        ], limit=1)
+        dept = self.sender_department_id
+        # An archived book must not issue a number: sequence_id is a stored compute
+        # snapshotted at create, so a draft can still hold a book the unit retired
+        # afterwards. Treat an inactive pick as unset and fall back to the unit's
+        # (active) default — everywhere else already filters archived books out.
+        seq = (self.sequence_id.active and self.sequence_id) or (
+            dept and dept._sarabun_default_sequence()
+        )
         if not seq:
+            unit = dept.display_name
+            if dept and dept._sarabun_registers():
+                raise UserError(_(
+                    "ส่วนงาน '%(unit)s' มีหลายเล่มทะเบียน — โปรดเลือกเล่มทะเบียนที่จะใช้ส่ง "
+                    "(หรือกำหนดเล่มทะเบียนหลักของหน่วยงาน)."
+                ) % {"unit": unit})
             raise UserError(_(
                 "ไม่พบทะเบียนหนังสือสำหรับส่วนงาน '%(unit)s'. "
                 "(No register configured for unit '%(unit)s'.) "
                 "Configure a register before sending."
-            ) % {"unit": self.sender_department_id.display_name})
+            ) % {"unit": unit})
         return seq
 
     def _assign_register_number(self):
         """ลงทะเบียน — the distinct Register seam (phase-2 clerk gate lands here).
-        Idempotent: a returned document keeps its number on re-send.
+        Called at completion (ADR-0010): the number runs only once the final
+        ลงนาม/อนุมัติ is in, so a document that is rejected/cancelled mid-route never
+        consumes a number. Idempotent (guarded on ``register_number_id``).
 
         NOTE: do not rename back to ``_register`` — that name is reserved by
         Odoo's ORM (BaseModel._register, the registry-visibility flag) and gets
@@ -947,7 +1059,11 @@ class SarabunDocument(models.Model):
         self.name = number.register_number
 
     def _void_register(self, reason):
-        """Void the register number as a permanent gap (เลขยกเลิก) — never reissued."""
+        """Void the register number as a permanent gap (เลขยกเลิก) — never reissued.
+
+        Since ADR-0010 the number is assigned at completion, so reject/cancel (both
+        pre-completion) find no number to void — this is a guarded no-op on the normal
+        path, kept for the ledger's reserved/manual paths and belt-and-braces."""
         self.ensure_one()
         if self.register_number_id:
             self.register_number_id.write({

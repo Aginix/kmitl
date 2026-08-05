@@ -77,28 +77,38 @@ class TestP4Access(SarabunCommon):
         # the other holder's pending activity is auto-cleared
         self.assertFalse(self._activities(doc, self.user_b))
 
-    def test_acknowledge_step_schedules_no_activity(self):
-        """รับทราบ / non-gating steps never raise an activity (inbox-tray only)."""
+    def test_acknowledge_step_schedules_ack_activity(self):
+        """Every active step now raises an activity (ADR-0014) — gating AND a pure
+        รับทราบ / CC alike — picking the type by discriminator (gating OR
+        show_signature): a gating step → EXECUTION (_action), a read-only รับทราบ →
+        ACKNOWLEDGEMENT (_ack)."""
+        action_type = self.env.ref("agx_sarabun.mail_activity_sarabun_action")
+        ack_type = self.env.ref("agx_sarabun.mail_activity_sarabun_ack")
         doc = self._make_doc()
         self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
         self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
-                       user=self.user_b)  # non-gating
+                       user=self.user_b)  # non-gating รับทราบ
         doc.action_send()
-        self.assertTrue(self._activities(doc, self.user_a))      # gating → activity
-        self.assertFalse(self._activities(doc, self.user_b))     # acknowledge → none
+        acts_a = self._activities(doc, self.user_a)
+        acts_b = self._activities(doc, self.user_b)
+        self.assertTrue(acts_a)
+        self.assertTrue(acts_b, "รับทราบ now raises an activity too (ADR-0014)")
+        self.assertEqual(acts_a.activity_type_id, action_type)  # gating → execution
+        self.assertEqual(acts_b.activity_type_id, ack_type)     # รับทราบ → acknowledgement
 
-    # ------------------------------------------------------------- inbox tray
-    def test_inbox_lists_my_active_step_documents(self):
-        """get_my_sarabun_inbox (systray tray) returns docs where I have an active step."""
+    def test_acknowledge_sign_step_schedules_execution_activity(self):
+        """รับทราบและลงนาม is non-gating yet SIGNS the letter (show_signature), so its
+        activity is EXECUTION (_action) — a signature can't be Mark-as-Read'd away
+        (discriminator = gating OR show_signature)."""
+        action_type = self.env.ref("agx_sarabun.mail_activity_sarabun_action")
         doc = self._make_doc()
-        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_a)  # gating
+        self._add_step(doc, order=10, verb="acknowledge_sign", target_mode="person",
+                       user=self.user_b)  # non-gating but show_signature
         doc.action_send()
-        inbox_a = self.Doc.with_user(self.user_a).get_my_sarabun_inbox()
-        self.assertEqual(inbox_a["total_count"], 1)
-        self.assertEqual(inbox_a["documents"][0]["id"], doc.id)
-        # a user with no active step has an empty inbox
-        inbox_b = self.Doc.with_user(self.user_b).get_my_sarabun_inbox()
-        self.assertEqual(inbox_b["total_count"], 0)
+        acts_b = self._activities(doc, self.user_b)
+        self.assertTrue(acts_b)
+        self.assertEqual(acts_b.activity_type_id, action_type)
 
     # -------------------------------------------- acting as a non-sender actor (ACL)
     def test_non_sender_actor_can_complete(self):
@@ -193,3 +203,88 @@ class TestP4Access(SarabunCommon):
         self.assertTrue(
             seen.get("su"), "origin report must resolve under sudo, not the user's ACL"
         )
+
+    # === Acting as the actual actor (with_user) — the whole engine must run under
+    #     the acting user's ACL, not admin, so the authority-check-then-sudo path is
+    #     exercised end to end (ADR-0013). ===
+    def test_plain_user_send_schedules_activities(self):
+        """A plain sarabun user (not admin) sends their own หนังสือ: send runs under
+        their ACL, mints recipient rows + native activities for the holders, and the
+        holder becomes readable — the send path is no longer masked by an admin env."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
+        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
+                       user=self.user_a)  # a รับทราบ CC too
+        doc.with_user(self.user_a).action_send()
+        self.assertEqual(doc.state, "circulating")
+        self.assertTrue(self._activities(doc, self.user_b))   # execution
+        self.assertTrue(self._activities(doc, self.user_a))   # acknowledgement
+        self.assertTrue(self._can_read(doc, self.user_b))
+
+    def test_direct_by_actor_schedules_next_holder_activity(self):
+        """เกษียนสั่งการ (Direct) by the active actor inserts the next step and the new
+        holder gets an activity — driven with_user(actor), no admin env."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.with_user(self.user_a).action_send()
+        step = self._active_step(doc)
+        step.with_user(self.user_b).act_on_step(
+            "direct", {"note": "ส่งต่อ", "verb": self._verb("acknowledge").id,
+                       "target_mode": "person", "employee_id": self.emp_a.id},
+            actor=self.user_b,
+        )
+        # user_a is the new holder of the inserted step → has an activity + can read
+        self.assertTrue(self._activities(doc, self.user_a))
+        self.assertTrue(self._can_read(doc, self.user_a))
+
+    def test_delegate_by_actor_moves_activity_to_new_holder(self):
+        """มอบหมาย (Delegate) reassigns THIS step: the original holder's to-do is
+        cleared and the new holder gets a fresh one — driven with_user(actor)."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.with_user(self.user_a).action_send()
+        step = self._active_step(doc)
+        self.assertTrue(self._activities(doc, self.user_b))
+        step.with_user(self.user_b).act_on_step(
+            "delegate", {"target_mode": "person", "employee_id": self.emp_a.id},
+            actor=self.user_b,
+        )
+        self.assertFalse(self._activities(doc, self.user_b), "original to-do cleared")
+        self.assertTrue(self._activities(doc, self.user_a), "new holder to-do")
+        self.assertTrue(self._can_read(doc, self.user_a))
+
+    # === Archive-path visibility (ADR-0013): read persists across the transitions
+    #     that archive the whole chain (active=False) — ตีกลับ / ดึงกลับ. reached_user_ids
+    #     spans archived attempts, so a prior actor never loses the audit trail. ===
+    def test_read_persists_after_return(self):
+        """ตีกลับ (Return) archives the chain; the returner (and a reached CC) keep read."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)  # gating
+        self._add_step(doc, order=10, verb="acknowledge", target_mode="person",
+                       user=self.manager)  # reached CC, will not act
+        doc.with_user(self.user_a).action_send()
+        self.assertTrue(self._can_read(doc, self.user_b))
+        step = doc.routing_step_ids.filtered(
+            lambda s: s.verb == self._verb("sign_approve") and s.state == "active"
+        )
+        step.with_user(self.user_b).act_on_step(
+            "return", {"note": "แก้ไข", "destination": "sender_restart"},
+            actor=self.user_b,
+        )
+        self.assertEqual(doc.state, "returned")
+        # the chain is archived — routing_step_ids re-seeded fresh — yet the prior
+        # attempt's holders stay readable via reached_user_ids
+        self.assertTrue(doc.archived_step_ids)
+        self.assertTrue(self._can_read(doc, self.user_b))
+
+    def test_read_persists_after_pull_back(self):
+        """ดึงกลับ (Recall) by the sender archives the chain; a holder reached in the
+        pulled-back attempt keeps read."""
+        doc = self._make_doc(sender=self.user_a)
+        self._add_step(doc, order=10, verb="sign_approve", user=self.user_b)
+        doc.with_user(self.user_a).action_send()
+        self.assertTrue(self._can_read(doc, self.user_b))
+        doc.with_user(self.user_a).action_pull_back(reason="ขอแก้")
+        self.assertEqual(doc.state, "returned")
+        self.assertTrue(doc.archived_step_ids)
+        self.assertTrue(self._can_read(doc, self.user_b))  # reached in prior attempt

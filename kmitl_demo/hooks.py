@@ -257,7 +257,6 @@ def _ensure_sarabun_register(env, department):
         seq = env["sarabun.document.sequence"].create(
             {
                 "name": "ทะเบียนหนังสือ %s" % department.display_name,
-                "code": "REG-%s" % department.id,
                 "sender_department_id": department.id,
             }
         )
@@ -476,12 +475,9 @@ def _run_non_egp_flow(env, pr, admin_user, department):
     _process_sarabun_approve(env, pr, admin_user, department)
     _logger.info("PR %s sarabun approved, state=%s", pr.name, pr.state)
 
-    pr.button_create_approval()
     pa = pr.request_approval_ids[0]
-    _logger.info("PA %s created, state=%s", pa.name, pa.state)
-
-    pa.button_validate()
-    _logger.info("PA %s validated, state=%s", pa.name, pa.state)
+    pa.contract_mode = "with_po"
+    _logger.info("PA %s auto-created, state=%s", pa.name, pa.state)
 
     _process_sarabun_approve(env, pa, admin_user, department)
     _logger.info("PA %s sarabun approved, state=%s", pa.name, pa.state)

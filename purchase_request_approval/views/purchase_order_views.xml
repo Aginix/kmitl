@@ -11,6 +11,7 @@
                     type="object"
                     name="action_view_purchase_request_approval"
                     attrs="{'invisible':[('approval_count', '=', 0)]}"
+                    groups="purchase.group_purchase_user"
                     icon="fa-file-contract"
                     string="PA"
                 />

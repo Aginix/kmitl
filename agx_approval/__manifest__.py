@@ -1,6 +1,6 @@
 {
     "name": "Aginix Approval",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.2.0",
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
@@ -20,7 +20,9 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "wizard/approval_request_exception_confirm_view.xml",
-        "wizard/update_actual_amount_wizard_views.xml",
+        "wizard/pull_back_confirm_views.xml",
+        "reports/paperformat_approval_request.xml",
+        "reports/report_disbursement_voucher.xml",
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",
         "views/approval_request_views.xml",
@@ -28,8 +30,14 @@
         "data/approval_sequence.xml",
         "data/approval_category_group.xml",
         "data/approval_category.xml",
-        "reports/paperformat_approval_request.xml",
+        "data/approval_request_exception_data.xml",
         "reports/report_approval_request.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "agx_approval/static/src/components/allocation_grouped/allocation_grouped.esm.js",
+            "agx_approval/static/src/components/allocation_grouped/allocation_grouped.xml",
+        ],
+    },
     "license": "LGPL-3",
 }
