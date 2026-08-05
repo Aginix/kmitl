@@ -10,10 +10,8 @@
         'purchase_work_acceptance_kmitl',
         'purchase_order_kmitl',
         'portal',
-        'mail_activity_todo',
     ],
     "data": [
-        "data/mail_activity_type.xml",
         "views/work_acceptance_views.xml",
         "views/purchase_order_portal_template.xml",
         "views/work_acceptance_portal_template.xml",
