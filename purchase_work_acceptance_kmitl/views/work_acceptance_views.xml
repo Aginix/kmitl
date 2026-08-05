@@ -286,7 +286,7 @@
 
                 <widget
                     name="web_ribbon"
-                    title="Accepted"
+                    title="Work Accepted"
                     bg_color="bg-success"
                     attrs="{'invisible': [('state', '!=', 'accept')]}"
                 />
@@ -369,6 +369,11 @@
                         <field name="late_days" />
                         <field name="fines_rate" />
                         <field name="fines_late" readonly="1"/>
+                    </group>
+                </group>
+                <group string="Supporting Documents" name="support_document">
+                    <group>
+                        <field name="supporting_document_ids" nolabel="1" colspan="2" widget="many2many_binary"/>
                     </group>
                 </group>
             </xpath>

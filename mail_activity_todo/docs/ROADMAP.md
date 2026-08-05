@@ -1,7 +1,7 @@
 # mail_activity_todo — Roadmap & Backlog
 
 Forward-looking backlog for the unified Todos inbox. Design rationale for what
-already exists lives in [`docs/adr/`](./adr) (ADR-0001..0005) and the glossary
+already exists lives in [`docs/adr/`](./adr) (ADR-0001..0006) and the glossary
 in [`../CONTEXT.md`](../CONTEXT.md). This file tracks what is **shipped** vs
 **remaining**, with enough detail to pick up each item. Effort = S/M/L,
 Value = high/med/low.
@@ -49,13 +49,19 @@ PoC + review hardening + quick wins are merged on
   `tier.review` → ~5 workflows covered at once.
 - **Grounded in:** ADR-0001 (the explicitly-deferred "hard part").
 
-### 3. Converge `sarabun.inbox` + `work.acceptance.inbox` onto Todos — L
-- **Problem:** three parallel inboxes / read tables / bells — the fragmentation
-  this module set out to kill.
-- **Proposal:** replace bespoke inbox rows with Acknowledgement-category Todos
-  dismissed via `kmitl.todo.read`; retire legacy `bus.bus` broadcasts; start
-  with work.acceptance as proof. Sequence **after** item 1 (the helper).
-- **Grounded in:** ADR-0001 + README "Known limitations".
+### 3. Converge the e-Saraban tray + `work.acceptance.inbox` onto Todos — L
+- **Problem:** parallel inboxes / read tables / bells — the fragmentation this
+  module set out to kill. (The names predate the rebuilt engine: e-Saraban's
+  surface is now `sarabun.routing.step` + a `SarabunSystray`, not a
+  `sarabun.inbox` table.)
+- **e-Saraban half — DESIGNED (docs-first), not yet built:** dissolve the sarabun
+  Action tray + `sarabun_inbox` bus; base e-Saraban raises a native `mail.activity`
+  per active step (gating **and** รับทราบ / CC), and an `agx_sarabun_todo` bridge
+  tags each `execution` (gating/signing) or `acknowledgement` (รับทราบ) — see
+  `agx_sarabun` ADR-0014 (+ ADR-0013 for the `_mail_post_access='read'` access fix).
+- **Proposal (remainder):** apply the same pattern to `work.acceptance.inbox`;
+  retire its legacy `bus.bus` broadcasts. Sequence **after** item 1 (the helper).
+- **Grounded in:** ADR-0001 + README "Known limitations" + `agx_sarabun` ADR-0014.
 
 ### 4. Personal / manual Todos (จดเอง) — M
 - **Problem:** the inbox is a passive mirror; no way to jot a personal reminder.
@@ -86,14 +92,32 @@ PoC + review hardening + quick wins are merged on
   cycle-time / on-time pivot+graph. S.
 - **Per-user inbox preferences** — default OU, hide-claimed, default group-by on
   `res.users`, fed into `_my_todo_domain`. M. Pairs with Claim.
+- **Notification sound (opt-in add-on `mail_activity_todo_sound`)** — DESIGNED
+  (docs-first, `agx_sarabun` ADR-0014). Play a sound on a *new* Todo with a
+  per-user on/off toggle in Preferences; decided **server-side** via a
+  `_todo_notify(sound=…)` hook (create→sound, write/unlink→silent) since the bus
+  payload is only `{refresh:True}` and can't distinguish new-vs-clear or carry the
+  source model. The `agx_sarabun_todo` bridge refines it into **per-source**
+  (sarabun vs general) toggles routed by `res_model`, so users can silence general
+  Todos but keep e-Saraban audible. Browser Notification + a distinct sarabun
+  sound = enhancements. S/M.
 - **Auditor group for the Completed log** — a dedicated group with a broader
   `ir.rule` so compliance can read all history (today everyone, incl. admins,
-  sees only their own scope). S.
+  sees only their own scope, via `todo_log_own_rule`). **This is the real
+  enabler of accountability review** — without it a supervisor cannot read
+  another user's completion record. S.
+- **Log every completed activity, not only categorised Todos** — drop the
+  `filtered("todo_category")` gate on `_log_completed` so built-in / personal
+  activity completions are captured too. Deferred: adds write amplification and
+  is only useful once the auditor group above exists. S.
 
 ## Remaining — Tech debt / polish
 
-- **Backfill `todo_category`** on already-shipped activity types and any future
-  ones (the inbox now *hides* uncategorised, but tagging them surfaces them). S.
+- **Tag `todo_category` = `execution`** on activity types that must clear at the
+  source. Since [ADR-0006](./adr/0006-inbox-shows-all-assigned-activities.md) the
+  inbox shows uncategorised activities too (cleared via Mark as Read, like
+  Acknowledgement), so tagging is now about *clear-behaviour + grouping*, not
+  visibility. S.
 - **i18n** — export `i18n/kmitl_todo.pot` + `th.po` (Thai source via the agreed
   i18n route; ensure JS systray strings use `_t`). S.
 - **Document the security model** in CONTEXT.md/ADR-0001: Todo visibility ==

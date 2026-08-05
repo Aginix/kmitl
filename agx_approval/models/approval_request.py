@@ -1,5 +1,5 @@
 from odoo import api, fields, models, tools, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 
 
@@ -15,15 +15,6 @@ class ApprovalRequest(models.Model):
     ]
     _order = "name desc"
 
-    READONLY_STATES = {
-        "to_verify": [("readonly", True)],
-        "submitted": [("readonly", True)],
-        "approved": [("readonly", True)],
-        "ready_to_bill": [("readonly", True)],
-        "billed": [("readonly", True)],
-        "rejected": [("readonly", True)],
-    }
-
     attachment_ids = fields.One2many(
         'ir.attachment',
         'res_id',
@@ -37,24 +28,23 @@ class ApprovalRequest(models.Model):
         tracking=True,
     )
 
-    payment_type = fields.Selection(
-        selection=[
-            ("direct", "Direct paid"),
-            ("advance", "Advance"),
-            ("prepaid", "Prepaid")
-        ],
-        tracking=True,
-        string="Payment Type",
-        states=READONLY_STATES,
-    )
+    # -- editability gates -------------------------------------------------
+    # The plan (expense lines, participants, header details) is editable while
+    # the request is a draft. Bridges widen this: a Sarabun-returned request
+    # reopens the plan for editing (except budget) — see agx_approval_sarabun.
+    is_plan_editable = fields.Boolean(compute="_compute_is_plan_editable")
+    # The actual expense allocation is filled after the mission, in `actual`.
+    is_actual_editable = fields.Boolean(compute="_compute_is_actual_editable")
+    # Return-correction mode — only clerical fields (recipient bank,
+    # description, evidence) are editable. Always False in base; a bridge sets
+    # it (e.g. agx_approval_disbursement, when a disbursement is returned).
+    is_correction = fields.Boolean(compute="_compute_is_correction")
 
     is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
 
     hide_reserve_budget_button = fields.Boolean(
         compute="_compute_hide_reserve_budget_button"
     )
-
-    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
 
     currency_id = fields.Many2one(
         string="Currency",
@@ -82,7 +72,6 @@ class ApprovalRequest(models.Model):
         comodel_name="approval.category",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     name = fields.Char(
@@ -91,7 +80,6 @@ class ApprovalRequest(models.Model):
         required=True,
         copy=False,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     date = fields.Date(
@@ -99,7 +87,6 @@ class ApprovalRequest(models.Model):
         required=True,
         default=fields.Date.context_today,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     owner_id = fields.Many2one(
@@ -108,7 +95,6 @@ class ApprovalRequest(models.Model):
         default=lambda self: self.env.user.employee_id,
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     user_id = fields.Many2one(
@@ -122,32 +108,27 @@ class ApprovalRequest(models.Model):
     description = fields.Text(
         string="Description",
         tracking=True,
-        states=READONLY_STATES,
     )
 
     date_start = fields.Date(
         string="Date Start",
         tracking=True,
-        states=READONLY_STATES,
     )
 
     date_end = fields.Date(
         string="Date End",
         tracking=True,
-        states=READONLY_STATES,
     )
 
     city = fields.Char(
         string="City",
         tracking=True,
-        states=READONLY_STATES,
     )
 
     country_id = fields.Many2one(
         string="Country",
         comodel_name="res.country",
         tracking=True,
-        states=READONLY_STATES,
     )
 
     company_id = fields.Many2one(
@@ -155,7 +136,6 @@ class ApprovalRequest(models.Model):
         comodel_name="res.company",
         default=lambda self: self.env.company,
         required=True,
-        states=READONLY_STATES,
     )
 
     line_ids = fields.One2many(
@@ -165,11 +145,18 @@ class ApprovalRequest(models.Model):
         copy=True,
     )
 
-    payee_ids = fields.One2many(
-        "approval.request.payee",
+    participant_ids = fields.One2many(
+        "approval.request.participant",
         "request_id",
-        string="Payees",
+        string="รายชื่อ",
         copy=True,
+    )
+
+    allocation_ids = fields.One2many(
+        "approval.request.allocation",
+        "request_id",
+        string="ค่าใช้จ่ายจริง",
+        copy=False,
     )
 
     has_period = fields.Boolean(
@@ -186,17 +173,19 @@ class ApprovalRequest(models.Model):
 
     state = fields.Selection([
         ("draft", "Draft"),
-        ("to_verify", "To Verify"),
-        ("submitted", "Submitted"),
-        ("validated", "Validated"),
-        ("approved", "Approved"),
-        ("ready_to_bill", "Ready to Bill"),
-        ("billed", "Billed"),
-        ("rejected", "Rejected"),
+        ("to_verify", "รอตรวจสอบ / จองงบประมาณ"),
+        ("to_send", "รอส่งขออนุมัติ"),
+        ("sent", "ส่งขออนุมัติแล้ว"),
+        ("approved", "คำขอได้รับอนุมัติแล้ว"),
+        ("actual", "บันทึกค่าใช้จ่ายจริง"),
+        ("billed", "เบิกแล้ว"),
+        ("returned", "ตีกลับ"),
+        ("rejected", "ปฏิเสธ"),
     ],
         default="draft",
         copy=False,
-        string="state"
+        tracking=True,
+        string="สถานะ"
     )
 
     budget_commitment_id = fields.Many2one(
@@ -233,6 +222,72 @@ class ApprovalRequest(models.Model):
         request rejects.
         """
         return super()._reservation_account_domain() + self._domain_budget_account_id()
+
+    def _get_commitment_title(self):
+        """ชื่อรายการจอง of a commitment this request reserves = its ประเภทคำขออนุมัติ.
+
+        The mixin's default would take the request's free-text ``description``,
+        which is written for the approver, not as a label — often a whole
+        paragraph. The approval category is the request's actual kind, is
+        required on every request, and is what the budget side recognises the
+        reservation by.
+        """
+        self.ensure_one()
+        if self.category_id:
+            return self.category_id.name
+        return super()._get_commitment_title()
+
+    budget_commitment_state = fields.Selection(
+        related="budget_commitment_id.state",
+        string="สถานะใบจอง",
+        readonly=True,
+        help=(
+            "ใช้ในฟอร์มเพื่อแยก 'มีใบจองที่ยังใช้งานอยู่' ออกจาก 'ใบจองถูกยกเลิกแล้ว' "
+            "— การยกเลิกใบจองไม่ล้างค่า budget_commitment_id จึงต้องดูสถานะประกอบ"
+        ),
+    )
+    budget_selection_mode = fields.Selection(
+        selection=[
+            ("chart", "เลือกจากผังงบประมาณ (จองงบใหม่)"),
+            ("reservation", "หยิบจากใบจองงบประมาณที่มีอยู่"),
+        ],
+        string="วิธีเลือกงบประมาณ",
+        default="chart",
+        copy=False,
+        help=(
+            "เลือกว่าจะจองงบใหม่โดยเลือกมิติจากผังงบประมาณ "
+            "หรือหยิบใบจองงบประมาณที่หน่วยงานอื่นจองไว้ให้แล้วไปใช้"
+        ),
+    )
+    reservation_commitment_id = fields.Many2one(
+        "budget.commitment",
+        string="ใบจองงบประมาณ",
+        domain=lambda self: self._domain_reservation_commitment_id(),
+        copy=False,
+        tracking=True,
+        help=(
+            "เลือกใบจองงบประมาณที่มีอยู่แล้วเพื่อหยิบไปใช้ (draw down) แทนการจองใหม่ "
+            "— เอกสารจะสืบทอดรหัสงบ/มิติจากใบจองแบบล็อก และไม่จองซ้ำ. "
+            "ใช้เมื่อเลือกวิธี 'หยิบจากใบจองงบประมาณที่มีอยู่'."
+        ),
+    )
+
+    def _domain_reservation_commitment_id(self):
+        """Reservations this request may draw down (phase-1 dropdown). OU
+        visibility (owner or beneficiary unit) is enforced by the record rules
+        (ADR-0011). Plan/project shared commitments are drawn only through their
+        dedicated create-from-source flows (ADR-0006/0007), so they are excluded
+        here — guarded by field existence since agx_approval does not depend on
+        procurement_plan / kmitl_project."""
+        domain = [
+            ("state", "in", ("reserved", "partial")),
+            ("available_to_obligate", ">", 0),
+        ]
+        Commitment = self.env["budget.commitment"]
+        for fname in ("procurement_plan_id", "kmitl_project_id"):
+            if fname in Commitment._fields:
+                domain.append((fname, "=", False))
+        return domain
 
     def apply_reservation_selection(self, selections, dims=None):
         """Picker write-back: set the budget code + dimensions, then push the
@@ -307,6 +362,7 @@ class ApprovalRequest(models.Model):
     @api.onchange("category_id")
     def _onchange_category_id(self):
         self.line_ids = False
+        self.participant_ids = False
         self.description = self.category_id.default_description
         if self.category_id:
             self.budget_account_id = self.category_id.budget_account_id
@@ -414,46 +470,55 @@ class ApprovalRequest(models.Model):
         """Update distribution when source changes"""
         for line in self:
             line._update_analytic_distribution("sources")
-    
+
+    # -- transitions -------------------------------------------------------
     def action_to_verify(self):
-        for record in self:
-            if record.state != "draft":
-                raise UserError(_("Only draft requests can be verified."))
-            missing = record.payee_ids.filtered(lambda p: not p.partner_bank_id)
-            if missing:
-                raise UserError(_(
-                    "Please select a recipient bank for all payees: %s"
-                ) % ", ".join(missing.mapped("partner_id.name")))
-            record.state = "to_verify"
+        self.ensure_one()
+        if self.state != "draft":
+            raise UserError(_("Only draft requests can be verified."))
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self.with_context(
+                agx_exception_action="action_to_verify"
+            )._popup_exceptions()
+        self.state = "to_verify"
         return True
 
     def action_submit(self):
         for record in self:
             if record.state != "to_verify":
                 raise UserError(_("Only To Verify requests can be submitted."))
-            record.state = "submitted"
-        return True
-
-    def action_validate(self):
-        for record in self:
-            if record.state != "submitted":
-                raise UserError(_("Only submitted requests can be validated."))
-            record.state = "validated"
+            record.state = "to_send"
         return True
 
     def action_approve(self):
+        """Internal approval fallback for installations without the Sarabun
+        bridge. When agx_approval_sarabun is installed the request is approved
+        by the Sarabun document outcome instead (see _on_sarabun_completed)."""
         for record in self:
-            if record.state not in ("submitted", "validated"):
+            if record.state not in ("to_send", "sent"):
                 raise UserError(
-                    _("Only submitted or validated requests can be approved.")
+                    _("Only submitted requests can be approved.")
                 )
             record.state = "approved"
         return True
 
+    def action_record_actual(self):
+        """Approved → actual: the requester comes back from the mission and
+        records the actual expense allocation before billing."""
+        for record in self:
+            if record.state != "approved":
+                raise UserError(
+                    _("Only approved requests can record actual expenses.")
+                )
+            record.state = "actual"
+        return True
+
     def action_bill(self):
         for record in self:
-            if record.state not in ("approved", "ready_to_bill"):
-                raise UserError(_("Only approved requests can be billed."))
+            if record.state != "actual":
+                raise UserError(
+                    _("Only requests with recorded actuals can be billed.")
+                )
             record.state = "billed"
         return True
 
@@ -462,46 +527,53 @@ class ApprovalRequest(models.Model):
             if record.state == "rejected":
                 raise UserError(_("Request is already rejected."))
             record.state = "rejected"
-            if record.budget_commitment_id:
-                try:
-                    record._cancel_budget_commitment()
-                    record.message_post(
-                        body=_("Budget commitment %s has been cancelled")
-                        % record.budget_commitment_id.name
-                    )
-                except UserError as e:
-                    record.message_post(
-                        body=_("Warning: Could not cancel budget commitment: %s")
-                        % str(e)
-                    )
+            record._release_budget_commitment(_("cancelled"))
         return True
 
     def action_draft(self):
         for record in self:
             record.state = "draft"
+            record._release_budget_commitment(_("reset to draft"))
+        return True
+
+    def action_open_pull_back_wizard(self):
+        """ดึงกลับ (pre-routing): open the confirm wizard that returns a
+        not-yet-sent request to draft."""
+        self.ensure_one()
+        if self.state not in ("to_verify", "to_send"):
+            raise UserError(
+                _("ดึงกลับได้เฉพาะสถานะ 'รอตรวจสอบ' หรือ 'รอส่งขออนุมัติ'")
+            )
+        wizard = self.env["approval.request.pull.back.confirm"].create({
+            "request_id": self.id,
+        })
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ดึงกลับคำขอ"),
+            "res_model": "approval.request.pull.back.confirm",
+            "view_mode": "form",
+            "res_id": wizard.id,
+            "target": "new",
+        }
+
+    def _release_budget_commitment(self, reason):
+        """Cancel the reserved commitment (if any), logging the reason."""
+        for record in self:
             if record.budget_commitment_id:
                 try:
                     record._cancel_budget_commitment()
                     record.message_post(
-                        body=_("Budget commitment %s has been rejected")
-                        % record.budget_commitment_id.name
+                        body=_("Budget commitment %(name)s has been cancelled (%(reason)s)")
+                        % {
+                            "name": record.budget_commitment_id.name,
+                            "reason": reason,
+                        }
                     )
                 except UserError as e:
                     record.message_post(
                         body=_("Warning: Could not cancel budget commitment: %s")
                         % str(e)
                     )
-        return True
-
-    def write(self, vals):
-        result = super().write(vals)
-        if vals.get("state") == "approved":
-            for record in self:
-                for line in record.line_ids.filtered(lambda l: not l.actual_amount):
-                    line.actual_amount = line.total_amount
-        if "line_ids" in vals:
-            self._sync_payees()
-        return result
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -511,12 +583,11 @@ class ApprovalRequest(models.Model):
                     "approval.request"
                 ) or "/"
 
-        lines = super().create(vals_list)
-        for rec in lines:
+        records = super().create(vals_list)
+        for rec in records:
             if rec.budget_commitment_id:
                 rec._log_budget_commitment_linked()
-        lines._sync_payees()
-        return lines
+        return records
 
     def _log_budget_commitment_linked(self):
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
@@ -549,10 +620,40 @@ class ApprovalRequest(models.Model):
             "res_id": self.budget_commitment_id.id,
             "target": "current",
         }
-    
+
     def action_reserve_budget(self):
-        """Reserve budget by creating commitment"""
+        """Reserve budget: either draw an existing reservation or reserve anew."""
         self.ensure_one()
+
+        # Draw-down mode: the user picked an existing ใบจองงบประมาณ. Adopt it
+        # instead of creating a new commitment (ADR-0010).
+        if self.reservation_commitment_id:
+            return self._action_draw_from_reservation()
+
+        # Chose "หยิบจากใบจอง" but picked nothing: say so, instead of falling
+        # through to reserve-new and complaining about the dimensions the mode
+        # switch deliberately cleared.
+        if self.budget_selection_mode == "reservation":
+            raise UserError(_("กรุณาเลือกใบจองงบประมาณที่ต้องการหยิบไปใช้"))
+
+        # รหัสงบประมาณ / มิติทางบัญชี ไม่บังคับกรอกในฟอร์ม — ตรวจครบที่เดียว
+        # ตอนกดจองงบประมาณ (budget engine จับคู่แบบครบทุกมิติหรือไม่มีเลย)
+        missing = []
+        if not self.budget_account_id:
+            missing.append(_("รหัสงบประมาณ"))
+        if not self.department_analytic_id:
+            missing.append(_("ส่วนงาน"))
+        if not self.source_analytic_id:
+            missing.append(_("แหล่งเงิน"))
+        if not self.fund_analytic_id:
+            missing.append(_("กองทุน"))
+        if not self.activity_analytic_id:
+            missing.append(_("กิจกรรม"))
+        if missing:
+            raise UserError(
+                _("กรุณาระบุข้อมูลงบประมาณให้ครบก่อนจองงบประมาณ: %s")
+                % ", ".join(missing)
+            )
 
         amount = sum(self.line_ids.mapped("total_amount"))
 
@@ -601,9 +702,124 @@ class ApprovalRequest(models.Model):
 
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
-        
-    @api.depends("state", "budget_commitment_id", "budget_commitment_id.state")
+
+    def _action_draw_from_reservation(self):
+        """Draw down an existing reservation (ใบจองงบประมาณ) instead of reserving.
+
+        Adopts the reservation's budget code and full dimension distribution —
+        locked onto the request and its lines — links it as the request's
+        commitment, and submits the request exactly like the reserve-new path. No
+        new reservation and no availability re-check: the money is already locked;
+        obligate/consume happen downstream at the disbursement (ADR-0010). The
+        request keeps its own computed fiscal year; the shared commitment carries
+        the fiscal year it was reserved in."""
+        self.ensure_one()
+        commitment = self.reservation_commitment_id
+        if commitment.state not in ("reserved", "partial"):
+            raise UserError(
+                _("ใบจองงบประมาณ %s ไม่อยู่ในสถานะที่หยิบไปใช้ได้") % commitment.name
+            )
+        self._check_drawable_commitment(commitment)
+        self.write(
+            {
+                "budget_commitment_id": commitment.id,
+                "budget_account_id": commitment.account_id.id,
+                "analytic_distribution": commitment.analytic_distribution or False,
+            }
+        )
+        if (
+            self.line_ids
+            and commitment.analytic_distribution
+            and "analytic_distribution" in self.line_ids._fields
+        ):
+            self.line_ids.update(
+                {"analytic_distribution": commitment.analytic_distribution}
+            )
+        self.message_post(
+            body=_("หยิบใบจองงบประมาณ %s มาใช้ (draw down)") % commitment.name
+        )
+        self.action_submit()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "approval.request",
+            "view_mode": "form",
+            "res_id": self.id,
+            "target": "current",
+            "context": self.env.context,
+        }
+
+    def _check_drawable_commitment(self, commitment):
+        """Block drawing a reservation this request must not use: a plan/project
+        shared commitment (drawn only through their create-from-source flows,
+        ADR-0006/0007) or a budget code this request could not itself select
+        (must be purchasable + product-backed)."""
+        for fname, label in (
+            ("procurement_plan_id", _("แผนจัดซื้อจัดจ้าง")),
+            ("kmitl_project_id", _("โครงการ")),
+        ):
+            if fname in commitment._fields and commitment[fname]:
+                raise UserError(
+                    _("ใบจองงบประมาณของ%sต้องหยิบผ่านเอกสารต้นทางเท่านั้น") % label
+                )
+        if not self.env["budget.account"].search_count(
+            self._reservation_account_domain()
+            + [("id", "=", commitment.account_id.id)]
+        ):
+            raise UserError(
+                _("รหัสงบประมาณของใบจองที่เลือกไม่สามารถใช้กับเอกสารนี้ได้")
+            )
+        return True
+
+    @api.onchange("reservation_commitment_id")
+    def _onchange_reservation_commitment_id(self):
+        """Preview the picked reservation's budget code on the live form. The
+        dimension distribution is written server-side on draw-down, not here —
+        re-assigning analytic_distribution in an onchange wipes it on the unsaved
+        record (its compute is a no-op)."""
+        if self.reservation_commitment_id:
+            self.budget_account_id = self.reservation_commitment_id.account_id.id
+
+    @api.onchange("budget_selection_mode")
+    def _onchange_budget_selection_mode(self):
+        """Clear whichever side of the choice is now inactive.
+
+        ``budget_selection_mode`` is a **UI affordance only** — the server still
+        keys draw-down off the presence of ``reservation_commitment_id``
+        (ADR-0010), never off this field. Leaving the unused side filled would
+        make the form say one thing and the reserve action do another: a stale
+        chart selection under "หยิบจากใบจอง", or a stale slip under "เลือกจากผัง"
+        that would silently draw instead of reserving.
+        """
+        if self.budget_selection_mode == "chart":
+            self.reservation_commitment_id = False
+        else:
+            self.budget_account_id = False
+            self.analytic_distribution = False
+
+    def _cancel_budget_commitment(self):
+        """A drawn reservation belongs to its owner, never to this request — detach
+        instead of cancelling when this request drew an existing reservation
+        (ADR-0010)."""
+        self.ensure_one()
+        if self.reservation_commitment_id:
+            self.write(
+                {"budget_commitment_id": False, "reservation_commitment_id": False}
+            )
+            return True
+        return super()._cancel_budget_commitment()
+
+    @api.depends(
+        "state",
+        "budget_commitment_id",
+        "budget_commitment_id.state",
+    )
     def _compute_is_budget_editable(self):
+        # Means "budget selection is still open on this request", which is also
+        # exactly when a reservation may be picked — so the reservation field
+        # rides on this rather than re-listing states (they come from several
+        # modules). Drawing an existing reservation does not close selection: the
+        # user must be able to un-pick. The chart picker is hidden view-side
+        # while a reservation is picked, since dimensions then come from it.
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
             if rec.state in ("to_verify") and (
@@ -612,95 +828,86 @@ class ApprovalRequest(models.Model):
             ):
                 rec.is_budget_editable = can_edit
             else:
-                rec.is_budget_editable = rec.is_editable
+                rec.is_budget_editable = rec.state == "draft"
 
     @api.depends("state", "budget_commitment_id")
     def _compute_hide_reserve_budget_button(self):
         for rec in self:
-            if rec.state in ("to_verify") and (
+            if rec.state == "to_verify" and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
                 rec.hide_reserve_budget_button = False
             else:
                 rec.hide_reserve_budget_button = True
-    
-    @api.depends("state")
-    def _compute_is_editable(self):
-        for rec in self:
-            if rec.state in (
-                "to_verify",
-                "submitted",
-                "validated",
-                "approved",
-                "ready_to_bill",
-                "billed",
-                "rejected"
-            ):
-                rec.is_editable = False
-            else:
-                rec.is_editable = True
 
-    def action_open_actual_amount_wizard(self):
-        self.ensure_one()
-        wizard = self.env["approval.update.actual.amount.wizard"].create({
-            "approval_request_id": self.id,
-            "line_ids": [
-                (0, 0, {
-                    "approval_line_id": line.id,
-                    "actual_amount": line.actual_amount,
-                })
-                for line in self.line_ids
-            ],
-        })
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Update actual amount"),
-            "res_model": "approval.update.actual.amount.wizard",
-            "view_mode": "form",
-            "res_id": wizard.id,
-            "target": "new",
-        }
+    @api.depends("state")
+    def _compute_is_plan_editable(self):
+        """The plan (expense lines, participants, header) is editable only in
+        draft by default. agx_approval_sarabun widens this to a Sarabun-returned
+        request (edit everything except budget)."""
+        for rec in self:
+            rec.is_plan_editable = rec.state == "draft"
+
+    @api.depends("state")
+    def _compute_is_actual_editable(self):
+        for rec in self:
+            rec.is_actual_editable = rec.state == "actual"
+
+    def _compute_is_correction(self):
+        # Base has no return-correction mode; bridges override this.
+        for rec in self:
+            rec.is_correction = False
 
     @api.depends("line_ids.total_amount")
     def _compute_total_amount(self):
         for rec in self:
             rec.total_amount = sum(rec.line_ids.mapped("total_amount"))
 
-    @api.depends("line_ids.actual_amount")
+    @api.depends("allocation_ids.amount")
     def _compute_total_actual_amount(self):
         for rec in self:
-            rec.total_actual_amount = sum(rec.line_ids.mapped("actual_amount"))
+            rec.total_actual_amount = sum(rec.allocation_ids.mapped("amount"))
 
-    def _sync_payees(self):
+    def _voucher_groups(self):
+        """งบหน้าใบสำคัญคู่จ่าย data: the disbursed actual allocation — จ่ายตรง /
+        สำรองจ่าย only; เงินยืม is excluded (it clears against the สัญญายืม, not a
+        disbursement) — grouped per recipient, with the per-recipient subtotal,
+        withholding-tax total and voucher (line) count."""
+        self.ensure_one()
+        groups = []
+        allocations = self.allocation_ids.filtered(
+            lambda a: a.payment_type != "advance"
+        )
+        for recipient in allocations.mapped("partner_id"):
+            allocs = allocations.filtered(
+                lambda a: a.partner_id == recipient
+            )
+            wht_total = sum(a._wht_amount() for a in allocs)
+            groups.append({
+                "recipient": recipient,
+                "allocs": allocs,
+                "subtotal": sum(allocs.mapped("amount")),
+                "wht_total": wht_total,
+                "voucher_count": len(allocs),
+                "has_wht": bool(wht_total),
+            })
+        return groups
+
+    @api.constrains("allocation_ids", "state")
+    def _check_allocation_within_budget(self):
+        """The recorded actuals may not exceed the approved plan / reserved
+        budget."""
         for rec in self:
-            seen = set()
-            partners_in_order = []
-            for line in rec.line_ids:
-                pid = line.partner_id.id
-                if pid and pid not in seen:
-                    seen.add(pid)
-                    partners_in_order.append(line.partner_id)
-            existing_partner_ids = set()
-            commands = []
-            for payee in rec.payee_ids:
-                if not payee.partner_id or payee.partner_id.id not in seen:
-                    commands.append((2, payee.id))
-                else:
-                    existing_partner_ids.add(payee.partner_id.id)
-            for partner in partners_in_order:
-                if partner.id not in existing_partner_ids:
-                    banks = partner.bank_ids.filtered(
-                        lambda b: not b.company_id
-                        or b.company_id == rec.company_id
+            if not rec.allocation_ids:
+                continue
+            cap = rec.budget_commitment_amount or rec.total_amount
+            if cap and rec.currency_id.compare_amounts(
+                rec.total_actual_amount, cap
+            ) > 0:
+                raise ValidationError(
+                    _(
+                        "ยอดค่าใช้จ่ายจริง (%(actual)s) เกินงบที่อนุมัติ/จองไว้ (%(cap)s)"
                     )
-                    commands.append((0, 0, {
-                        "partner_id": partner.id,
-                        "partner_bank_id": banks[:1].id if banks else False,
-                    }))
-            if commands:
-                rec.payee_ids = commands
-
-    @api.onchange("line_ids")
-    def _onchange_line_ids_sync_payees(self):
-        self._sync_payees()
+                    % {"actual": rec.total_actual_amount, "cap": cap}
+                )

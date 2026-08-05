@@ -146,9 +146,13 @@ msgstr "วันที่ตรวจรับ"
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__status__accept
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
-#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
 msgid "Accepted"
 msgstr "ได้รับการตอบรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
+msgid "Work Accepted"
+msgstr "ตรวจรับแล้ว"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
@@ -216,7 +220,7 @@ msgstr ""
 #: model:ir.model,name:purchase_work_acceptance_kmitl.model_ir_attachment
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_gov
 msgid "Attachment"
-msgstr "การแนบ"
+msgstr "หลักฐานเอกสารการตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_attachment_count
@@ -1684,3 +1688,9 @@ msgstr "จำนวนที่เหลือ"
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__amount
 msgid "Amount"
 msgstr "มูลค่า"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__supporting_document_ids
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
+msgid "Supporting Documents"
+msgstr "เอกสารประกอบการตรวจรับ"

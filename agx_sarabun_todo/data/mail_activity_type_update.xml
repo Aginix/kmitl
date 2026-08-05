@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+      Tag the two e-Saraban activity types (defined in agx_sarabun core, which stays
+      Todo-agnostic) with a behavioural todo_category so they flow into the unified
+      inbox (ADR-0014). todo_category is a mail_activity_todo field, so only this
+      bridge — never core — may set it.
+
+        _action (gating / signing)  -> execution      (clears by acting at the หนังสือ)
+        _ack    (pure รับทราบ / CC) -> acknowledgement (clears by Mark as Read)
+
+      noupdate defaults to 0 so the tag is (re)applied on install/upgrade.
+    -->
+    <record id="agx_sarabun.mail_activity_sarabun_action" model="mail.activity.type">
+        <field name="todo_category">execution</field>
+    </record>
+    <record id="agx_sarabun.mail_activity_sarabun_ack" model="mail.activity.type">
+        <field name="todo_category">acknowledgement</field>
+    </record>
+</odoo>

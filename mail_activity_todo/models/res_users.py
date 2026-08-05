@@ -5,10 +5,19 @@ class ResUsers(models.Model):
     _inherit = "res.users"
 
     def _my_todo_count_domain(self):
+        # Fork A (ADR-0006): the inbox is every open activity assigned to me,
+        # minus the ones I've dismissed with Mark as Read. Category is not a gate.
         return [
             ("is_my_todo", "=", True),
             ("is_read_by_me", "=", False),
-            ("todo_category", "!=", False),
+        ]
+
+    def _my_read_todo_domain(self):
+        # History (ADR-0003): the inbox's read complement — my Todos that I have
+        # dismissed with Mark as Read. Same recipient base, flipped read flag.
+        return [
+            ("is_my_todo", "=", True),
+            ("is_read_by_me", "=", True),
         ]
 
     @api.model

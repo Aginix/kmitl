@@ -1,13 +1,17 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class ApprovalRequest(models.Model):
     _inherit = "approval.request"
 
-    advance_payment_id = fields.Many2one(
+    # A request may back several loans — one per participant who chose to borrow
+    # (ADR-0003). Loans are pulled from the loan side; the request never creates
+    # them, so there is no create button here.
+    advance_payment_ids = fields.One2many(
         comodel_name="advance.payment",
-        string="Advance Payment",
+        inverse_name="approval_request_id",
+        string="สัญญายืมเงิน",
         readonly=True,
         copy=False,
     )
@@ -16,114 +20,117 @@ class ApprovalRequest(models.Model):
         compute="_compute_advance_payment_count",
     )
 
-    show_create_advance_payment_button = fields.Boolean(
-        compute="_compute_show_create_advance_payment_button",
+    borrowing_cap = fields.Monetary(
+        string="วงเงินยืมของคำขอ",
+        compute="_compute_borrowing_headroom",
+        help="Reserved budget if there is one, else the plan total.",
+    )
+
+    borrowed_amount = fields.Monetary(
+        string="ยืมไปแล้ว",
+        compute="_compute_borrowing_headroom",
+    )
+
+    borrowing_headroom = fields.Monetary(
+        string="วงเงินยืมคงเหลือ",
+        compute="_compute_borrowing_headroom",
+        help="วงเงินของคำขอ หักสัญญายืมทุกใบที่ยังไม่ถูกยกเลิก — สัญญาที่ปิดแล้วยังนับ "
+        "เพราะเงินก้อนนั้นออกไปตามคำขอนี้แล้ว",
+    )
+
+    has_advance_divergence = fields.Boolean(
+        compute="_compute_has_advance_divergence",
     )
 
     show_create_disbursement_button = fields.Boolean(
         compute="_compute_show_create_disbursement_button",
     )
 
-    @api.depends("advance_payment_id")
+    @api.depends("advance_payment_ids")
     def _compute_advance_payment_count(self):
         for rec in self:
-            rec.advance_payment_count = 1 if rec.advance_payment_id else 0
-
-    @api.depends("state", "payment_type", "advance_payment_id")
-    def _compute_show_create_advance_payment_button(self):
-        for rec in self:
-            rec.show_create_advance_payment_button = (
-                rec.state == "approved"
-                and rec.payment_type == "advance"
-                and rec.owner_id.user_id == self.env.user
-                and not rec.advance_payment_id
-            )
+            rec.advance_payment_count = len(rec.advance_payment_ids)
 
     @api.depends(
-        "state",
-        "payment_type",
-        "advance_payment_id",
-        "advance_payment_id.state",
-        "disbursement_request_ids.state",
+        "budget_commitment_amount",
+        "total_amount",
+        "advance_payment_ids.loan_amount",
+        "advance_payment_ids.state",
     )
-    def _compute_show_create_disbursement_button(self):
+    def _compute_borrowing_headroom(self):
         for rec in self:
-            if rec.payment_type == "advance":
-                # Show "Create Bill" only when the linked advance payment
-                # has funds disbursed (in_progress state)
-                rec.show_create_disbursement_button = (
-                    rec.state in ("approved", "billed")
-                    and bool(rec.advance_payment_id)
-                    and rec.advance_payment_id.state == "in_progress"
-                    and not rec.has_active_disbursement
+            cap = rec.budget_commitment_amount or rec.total_amount
+            drawn = sum(
+                rec.advance_payment_ids.filtered(
+                    lambda loan: loan.state != "cancel"
+                ).mapped("loan_amount")
+            )
+            rec.borrowing_cap = cap
+            rec.borrowed_amount = drawn
+            rec.borrowing_headroom = cap - drawn
+
+    @api.depends(
+        "advance_payment_ids.has_expense_divergence",
+        "allocation_ids.amount",
+        "allocation_ids.advance_payment_id",
+    )
+    def _compute_has_advance_divergence(self):
+        for rec in self:
+            rec.has_advance_divergence = any(
+                rec.advance_payment_ids.mapped("has_expense_divergence")
+            )
+
+    @api.depends("state", "has_active_disbursement")
+    def _compute_show_create_disbursement_button(self):
+        """เงินยืม rows never enter a disbursement (ADR-0002), so the direct and
+        prepaid recipients must not be gated on anyone's loan state (ADR-0003)."""
+        for rec in self:
+            rec.show_create_disbursement_button = (
+                rec.state == "actual" and not rec.has_active_disbursement
+            )
+
+    @api.constrains("allocation_ids", "state")
+    def _check_advance_rows_have_funding_loan(self):
+        """Billing an `advance` row without naming the loan it came out of would
+        claim payment from a สัญญายืม that may not exist (ADR-0003)."""
+        for rec in self.filtered(lambda r: r.state == "billed"):
+            orphans = rec.allocation_ids.filtered(
+                lambda a: a.payment_type == "advance" and not a.advance_payment_id
+            )
+            if orphans:
+                raise ValidationError(
+                    _(
+                        "กรุณาระบุสัญญายืมเงินที่เป็นแหล่งเงินของทุกแถวเงินยืมก่อนส่งเบิก: %s"
+                    )
+                    % ", ".join(orphans.mapped("partner_id.name"))
                 )
-            else:
-                # Direct/prepaid go through the ready_to_bill handoff: the
-                # finance officer bills only once clerical staff confirmed.
-                rec.show_create_disbursement_button = (
-                    rec.state == "ready_to_bill"
-                    and not rec.has_active_disbursement
+
+    def action_cancel(self):
+        """A request may not be cancelled while it still backs a live loan: the
+        cash is out and the debt is the borrower's to clear (ADR-0003). No
+        cascade in either direction."""
+        for rec in self:
+            live = rec.advance_payment_ids.filtered(
+                lambda loan: loan.state not in ("cancel", "done")
+            )
+            if live:
+                raise UserError(
+                    _(
+                        "ยกเลิกคำขอนี้ไม่ได้ เพราะยังมีสัญญายืมเงินผูกอยู่: %(loans)s"
+                        " — ผู้ยืมต้องปิดหรือยกเลิกสัญญาของตนเองก่อน"
+                        " (ทริปที่ล่มคือรายงานค่าใช้จ่ายยอด 0 แล้วคืนเงินทั้งก้อน)",
+                        loans=", ".join(live.mapped("name")),
+                    )
                 )
-
-    def _prepare_advance_payment_vals(self):
-        self.ensure_one()
-        loan_type = self.env.ref("advance_payment.loan_type_other")
-        return {
-            "requested_by": self.owner_id.user_id.id or self.env.user.id,
-            "department_id": self.owner_id.department_id.id,
-            "loan_reason": self.description or "",
-            "loan_amount": self.total_amount,
-            "loan_type_id": loan_type.id,
-            "reference": "approval.request,%s" % self.id,
-            "analytic_distribution": self.analytic_distribution,
-            "approval_request_id": self.id,
-        }
-
-    def action_create_advance_payment(self):
-        self.ensure_one()
-        if self.state != "approved":
-            raise UserError(
-                _("Only approved approval requests can create advance payments.")
-            )
-        if self.payment_type != "advance":
-            raise UserError(
-                _("Payment type must be 'Advance' to create an advance payment.")
-            )
-        if self.advance_payment_id:
-            raise UserError(
-                _("An advance payment already exists for this approval request.")
-            )
-
-        vals = self._prepare_advance_payment_vals()
-        advance_payment = self.env["advance.payment"].create(vals)
-        self.advance_payment_id = advance_payment.id
-        self.message_post(
-            body=_(
-                "สร้างสัญญายืมเงิน"
-                " <a href='/web#id=%(id)s&amp;model=advance.payment'>"
-                "<b>%(name)s</b></a> แล้ว"
-                " จำนวน <b>%(amount)s %(currency)s</b>",
-                id=advance_payment.id,
-                name=advance_payment.name,
-                amount=advance_payment.loan_amount,
-                currency=advance_payment.currency_id.name,
-            ),
-            subtype_xmlid="mail.mt_note",
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "advance.payment",
-            "res_id": advance_payment.id,
-            "view_mode": "form",
-            "target": "current",
-        }
+        return super().action_cancel()
 
     def action_view_advance_payment(self):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
+            "name": _("สัญญายืมเงิน"),
             "res_model": "advance.payment",
-            "res_id": self.advance_payment_id.id,
-            "view_mode": "form",
+            "view_mode": "tree,form",
+            "domain": [("id", "in", self.advance_payment_ids.ids)],
             "target": "current",
         }

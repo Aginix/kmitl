@@ -1,0 +1,28 @@
+// Give the หนังสือ rich-text areas a sane default height so the form reads like
+// a document (content ~10 rows, หมายเหตุ ~4 rows) instead of a one-line box.
+.o_sarabun_content {
+    .note-editable,
+    .odoo-editor-editable {
+        min-height: 15rem;
+    }
+}
+
+.o_sarabun_remark {
+    .note-editable,
+    .odoo-editor-editable {
+        min-height: 6rem;
+    }
+}
+
+// PDF preview iframes (ADR-0007): embedded in the form (inline) and in the draft
+// modal. A tall viewport-relative height so the document reads like a page.
+.o_sarabun_pdf_frame {
+    width: 100%;
+    border: 0;
+}
+
+.o_sarabun_pdf_inline_frame,
+.o_sarabun_pdf_modal_frame {
+    height: 75vh;
+    min-height: 480px;
+}

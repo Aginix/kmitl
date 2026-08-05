@@ -9,16 +9,53 @@
         <field name="inherit_id" ref="advance_payment.view_advance_payment_form" />
         <field name="arch" type="xml">
 
-            <!-- Declare approval_request_id for use in attrs -->
-            <xpath expr="//field[@name='is_locked_by_reference']" position="after">
-                <field name="approval_request_id" invisible="1" />
-            </xpath>
-
             <!-- Allow loan_type_id to be edited when linked to an approval request -->
             <xpath expr="//field[@name='loan_type_id']" position="attributes">
                 <attribute name="attrs">
                     {'readonly': ['|', ('state', '!=', 'draft'), '&amp;', ('is_locked_by_reference', '=', True), ('approval_request_id', '=', False)]}
                 </attribute>
+            </xpath>
+
+            <!-- The borrower's own picker: requests they are a participant of,
+                 approved. Replaces the generic Reference widget for this model,
+                 which cannot carry a per-model domain (ADR-0003). -->
+            <xpath expr="//field[@name='reference']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': ['|', ('is_reference_visible', '=', False),
+                                  ('loan_type_reference_model', '=', 'approval.request')],
+                    'readonly': ['|', ('is_locked_by_reference', '=', True), ('id', '!=', False)]
+                }</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='reference']" position="after">
+                <field name="loan_type_reference_model" invisible="1" />
+                <field name="approval_request_id"
+                    options="{'no_create': True, 'no_create_edit': True}"
+                    domain="[('state', '=', 'approved'),
+                             ('participant_ids.partner_id', '=', requested_by_partner_id)]"
+                    attrs="{
+                        'invisible': [('loan_type_reference_model', '!=', 'approval.request')],
+                        'readonly': [('state', '!=', 'draft')],
+                        'required': [('loan_type_reference_model', '=', 'approval.request')]
+                    }" />
+            </xpath>
+
+            <!-- Expense report vs what the request itemises against this loan -->
+            <xpath expr="//field[@name='actual_expense_amount']" position="after">
+                <field name="allocation_expense_amount"
+                    attrs="{'invisible': [('approval_request_count', '=', 0)]}" />
+                <field name="has_expense_divergence" invisible="1" />
+                <button name="action_prefill_expense_from_allocation"
+                    type="object"
+                    string="ดึงยอดจากใบขออนุมัติ"
+                    class="btn-link"
+                    attrs="{'invisible': ['|', ('state', '!=', 'in_progress'),
+                                          ('approval_request_count', '=', 0)]}" />
+                <div class="alert alert-warning mb-0" role="alert" colspan="2"
+                    attrs="{'invisible': [('has_expense_divergence', '=', False)]}">
+                    ยอดค่าใช้จ่ายจริงที่รายงาน ไม่เท่ากับผลรวมแถวเงินยืมในใบขออนุมัติ
+                    — ยืนยันว่าถูกต้องได้ แต่โปรดตรวจสอบก่อนส่ง
+                </div>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -32,6 +69,32 @@
                 </button>
             </xpath>
 
+        </field>
+    </record>
+
+    <record id="view_advance_payment_list_approval_request" model="ir.ui.view">
+        <field name="name">advance.payment.list.approval.request</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_list" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="approval_request_id" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_search_approval_request" model="ir.ui.view">
+        <field name="name">advance.payment.search.approval.request</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_search" />
+        <field name="arch" type="xml">
+            <field name="requested_by" position="after">
+                <field name="approval_request_id" />
+            </field>
+            <filter name="group_loan_type" position="after">
+                <filter string="Approval Request" name="group_approval_request"
+                    context="{'group_by': 'approval_request_id'}" />
+            </filter>
         </field>
     </record>
 </odoo>

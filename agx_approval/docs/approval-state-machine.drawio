@@ -1,0 +1,69 @@
+<mxfile host="Electron" modified="2026-07-21T00:00:00.000Z" version="26.0.0">
+  <diagram id="approval-sm" name="approval.request state machine">
+    <mxGraphModel dx="1050" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="approval.request — state machine (อนุมัติผ่าน e-Saraban) · ดู ADR-0001" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="800" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="leg_t" value="สี / สัญลักษณ์" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1120" y="30" width="200" height="20" as="geometry" /></mxCell>
+        <mxCell id="leg1" value="" style="rounded=0;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="1120" y="55" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="leg1t" value="ระหว่างสารบรรณ / ระบบภายนอก" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1150" y="53" width="230" height="20" as="geometry" /></mxCell>
+        <mxCell id="leg2" value="" style="rounded=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1"><mxGeometry x="1120" y="78" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="leg2t" value="เริ่ม / สิ้นสุด" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1150" y="76" width="230" height="20" as="geometry" /></mxCell>
+        <mxCell id="leg3" value="" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1"><mxGeometry x="1120" y="101" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="leg3t" value="ปฏิเสธ (terminal)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1150" y="99" width="230" height="20" as="geometry" /></mxCell>
+        <mxCell id="leg4" value="" style="rounded=0;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1"><mxGeometry x="1120" y="124" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="leg4t" value="ตีกลับ (แก้ไขได้ แล้วส่งใหม่)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1150" y="122" width="240" height="20" as="geometry" /></mxCell>
+        <mxCell id="leg5t" value="- - - = ทางเลือก / นอกเส้นหลัก" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1120" y="146" width="260" height="20" as="geometry" /></mxCell>
+
+        <!-- Spine -->
+        <mxCell id="draft" value="&lt;b&gt;draft&lt;/b&gt;&lt;br&gt;เสนอแผน (ธุรการ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1"><mxGeometry x="420" y="96" width="240" height="52" as="geometry" /></mxCell>
+        <mxCell id="to_verify" value="&lt;b&gt;to_verify&lt;/b&gt;&lt;br&gt;รอตรวจสอบ / จองงบประมาณ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1"><mxGeometry x="420" y="188" width="240" height="52" as="geometry" /></mxCell>
+        <mxCell id="submitted" value="&lt;b&gt;submitted&lt;/b&gt;&lt;br&gt;รอส่งขออนุมัติ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1"><mxGeometry x="420" y="280" width="240" height="52" as="geometry" /></mxCell>
+        <mxCell id="sent" value="&lt;b&gt;sent&lt;/b&gt;&lt;br&gt;ส่งขออนุมัติแล้ว (สารบรรณเวียน)&lt;br&gt;&lt;i&gt;_on_sarabun_circulating&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="420" y="372" width="240" height="62" as="geometry" /></mxCell>
+        <mxCell id="approved" value="&lt;b&gt;approved&lt;/b&gt;&lt;br&gt;คำขอได้รับอนุมัติแล้ว&lt;br&gt;&lt;i&gt;_on_sarabun_completed&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1"><mxGeometry x="420" y="498" width="240" height="58" as="geometry" /></mxCell>
+        <mxCell id="actual" value="&lt;b&gt;actual&lt;/b&gt;&lt;br&gt;บันทึกค่าใช้จ่ายจริง (ธุรการ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;fontStyle=1;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="420" y="592" width="240" height="56" as="geometry" /></mxCell>
+        <mxCell id="billed" value="&lt;b&gt;billed&lt;/b&gt;&lt;br&gt;เบิกแล้ว (สร้าง DR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;strokeWidth=3;" vertex="1" parent="1"><mxGeometry x="420" y="692" width="240" height="54" as="geometry" /></mxCell>
+
+        <!-- Sarabun engine + outcomes -->
+        <mxCell id="sarabun" value="e-Saraban engine (agx_sarabun)&#10;เห็นชอบ / ลงนาม-อนุมัติ · ตีกลับ · ปฏิเสธ&#10;ดึงกลับ (ผู้ส่ง) · ยกเลิกการส่ง" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=left;dashed=1;" vertex="1" parent="1"><mxGeometry x="730" y="360" width="300" height="66" as="geometry" /></mxCell>
+        <mxCell id="rejected" value="&lt;b&gt;rejected&lt;/b&gt; · ปฏิเสธ (terminal)&lt;br&gt;&lt;i&gt;_on_sarabun_rejected&lt;/i&gt; · ปลดจองงบ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1"><mxGeometry x="770" y="452" width="250" height="48" as="geometry" /></mxCell>
+        <mxCell id="returned" value="&lt;b&gt;returned&lt;/b&gt; · ตีกลับ&lt;br&gt;&lt;i&gt;_on_sarabun_returned / _recalled&lt;/i&gt;&lt;br&gt;(หรือ DR ตีกลับหลังเบิก)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="770" y="556" width="250" height="72" as="geometry" /></mxCell>
+
+        <!-- Notes -->
+        <mxCell id="note_nopaytype" value="&lt;b&gt;draft = เสนอแผน&lt;/b&gt; (หน้าเดียว):&#10;ค่าใช้จ่าย(แผน) + รายชื่อ&#10;ไม่มี &#39;ประเภทการจ่าย&#39; — ยืมเงิน/สำรองจ่าย&#10;เป็น action หลัง approved (รายคน)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="90" width="290" height="82" as="geometry" /></mxCell>
+        <mxCell id="note_pullback" value="&lt;b&gt;ดึงกลับ (AR — ก่อนส่งสารบรรณ)&lt;/b&gt; [D1]&#10;เฉพาะ to_verify / submitted → draft&#10;confirm wizard + ปลดจองงบ&#10;(คนละตัวกับ ดึงกลับ ของ e-Saraban)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="236" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="note_actual" value="&lt;b&gt;ค่าใช้จ่ายจริง&lt;/b&gt; (inline, จัดกลุ่มรายผู้รับเงิน):&#10;ผู้รับเงิน(จากรายชื่อ)/รายการ/จำนวนเงิน/บัญชี&#10;1 แถว = 1 บรรทัด DR (multi-partner)&#10;→ งบหน้าใบสำคัญคู่จ่าย PDF (WHT รายคน)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="578" width="310" height="84" as="geometry" /></mxCell>
+        <mxCell id="note_returned" value="&lt;b&gt;returned = state เดียว, 2 ที่มา&lt;/b&gt; [D2/D3]&#10;• สารบรรณตีกลับ (ก่อนอนุมัติ): แก้ได้ทุกอย่างยกเว้นงบ → ส่งสารบรรณใหม่&#10;• DR ตีกลับ (หลังเบิก): แก้ได้เฉพาะบัญชี/คำอธิบาย/หลักฐาน → ยืนยัน → billed" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1;align=left;fontSize=11;" vertex="1" parent="1"><mxGeometry x="770" y="648" width="340" height="86" as="geometry" /></mxCell>
+
+        <!-- Spine edges -->
+        <mxCell id="e1" value="Verify Request" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="draft" target="to_verify" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="Reserve Budget (จองงบ)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="to_verify" target="submitted" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="สร้าง+ส่งสารบรรณ" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;fontStyle=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="submitted" target="sent" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="อนุมัติ (completed)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="sent" target="approved" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="กลับจากภารกิจ → บันทึกจริง" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;fontStyle=1;" edge="1" source="approved" target="actual" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="ส่งเบิก (สร้าง DR multi-partner)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;fontStyle=1;" edge="1" source="actual" target="billed" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Sarabun link + outcomes -->
+        <mxCell id="e7" value="route" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;endArrow=open;" edge="1" source="sent" target="sarabun" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" value="ปฏิเสธ" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;strokeColor=#b85450;" edge="1" source="sent" target="rejected" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" value="ตีกลับ / ดึงกลับ" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;strokeColor=#d79b00;" edge="1" source="sent" target="returned" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" value="แก้ (ยกเว้นงบ) → ส่งใหม่" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;strokeColor=#d79b00;exitX=0;exitY=0.25;entryX=1;entryY=0.5;" edge="1" source="returned" target="sent" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" value="ยกเลิกการส่ง (คงงบ)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="sent" target="submitted" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- AR pull-back -->
+        <mxCell id="e12" value="ดึงกลับ" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;exitX=0;exitY=0.5;entryX=0;entryY=0.6;" edge="1" source="to_verify" target="draft" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" value="ดึงกลับ" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;exitX=0;exitY=0.5;entryX=0;entryY=0.85;" edge="1" source="submitted" target="draft" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- DR return -->
+        <mxCell id="e14" value="DR ตีกลับ" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;strokeColor=#d79b00;exitX=1;exitY=0.4;entryX=0.5;entryY=1;" edge="1" source="billed" target="returned" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" value="แก้บัญชี/คำอธิบาย/หลักฐาน + ยืนยัน" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;exitX=0;exitY=0.75;entryX=1;entryY=0.4;" edge="1" source="returned" target="billed" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

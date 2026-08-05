@@ -45,6 +45,10 @@ class KrisProjectReceiptWizard(models.TransientModel):
         inverse_name="wizard_id",
         string="Allocation",
     )
+    attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        string="Attachment",
+    )
     note = fields.Text(
         string="Note",
     )
@@ -122,6 +126,16 @@ class KrisProjectReceiptWizard(models.TransientModel):
                     "allocation_line_id": line.allocation_line_id.id,
                     "amount": line.amount,
                     "remaining_amount": line.remaining_amount,
+                }
+            )
+        # Attachments were uploaded to ir.attachment by the widget while the
+        # wizard was open; re-point them from the transient wizard to the newly
+        # created receipt so they show up on the receipt form.
+        if self.attachment_ids:
+            self.attachment_ids.write(
+                {
+                    "res_model": "kris.project.receipt",
+                    "res_id": receipt.id,
                 }
             )
         return {"type": "ir.actions.act_window_close"}

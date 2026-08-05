@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="agx_approval.AllocationGrouped.Rows" t-inherit="web.ListRenderer.Rows" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='list.records']/t[@t-call]" position="before">
+            <tr t-if="getGroupHeader(record)" class="o_allocation_group_header fw-bold table-light">
+                <td t-att-colspan="nbCols">
+                    <i class="fa fa-user-o me-2" role="img" aria-label="Recipient" title="Recipient"/>
+                    <t t-esc="getGroupHeader(record)"/>
+                </td>
+            </tr>
+        </xpath>
+        <xpath expr="//t[@t-foreach='list.records']/t[@t-call]" position="after">
+            <tr t-if="displayRowCreates and getGroupFooter(record)" class="o_allocation_group_footer">
+                <td t-att-colspan="nbCols">
+                    <a role="button" class="btn btn-link btn-sm o_allocation_add_line ps-4" t-on-click="() => this.addLineForRecord(record)">
+                        <i class="fa fa-plus me-1" role="img" aria-label="Add" title="Add"/>เพิ่มรายการของ <t t-esc="getGroupFooter(record)[1]"/>
+                    </a>
+                </td>
+            </tr>
+        </xpath>
+        <xpath expr="//t[@t-foreach='list.records']" position="attributes">
+            <attribute name="t-foreach">displayRecords</attribute>
+        </xpath>
+    </t>
+
+</templates>

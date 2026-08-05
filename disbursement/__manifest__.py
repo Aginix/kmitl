@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement",
-    "version": "16.0.4.3.0",
+    "version": "16.0.6.0.0",
     "category": "Disbursement",
     "license": "LGPL-3",
     "author": "KMITL",
@@ -16,6 +16,7 @@
         "l10n_th_amount_to_text",
         "base_fontawesome",
         "partner_type_aginix",
+        "mail_activity_todo",
     ],
     "data": [
         "security/security.xml",
@@ -23,22 +24,27 @@
         "data/sequence.xml",
         "data/mail_activity_type_data.xml",
         "wizards/disbursement_exception_confirm.xml",
-        "wizards/assign_officer_wizard_views.xml",
         "wizards/return_request_wizard_views.xml",
+        "wizards/disbursement_reject_wizard_views.xml",
         "views/disbursement_request_views.xml",
-        "views/disbursement_request_assignment_views.xml",
+        "views/disbursement_approval_queue_views.xml",
+        "views/disbursement_return_views.xml",
         "views/budget_commitment_views.xml",
         "views/exception_rule_views.xml",
-        "views/assignment_rule_views.xml",
         "report/paperformat.xml",
         "report/report_disbursement_request_action.xml",
         "report/report_disbursement_request.xml",
         "views/portal_templates.xml",
-        "views/disbursement_verification_menus.xml",
     ],
     "assets": {
         "web.assets_frontend": [
             "disbursement/static/src/js/disbursement_sidebar.js",
+        ],
+        "web.assets_backend": [
+            "disbursement/static/src/approval_queue/multi_record_select.js",
+            "disbursement/static/src/approval_queue/approval_queue.js",
+            "disbursement/static/src/approval_queue/approval_queue.xml",
+            "disbursement/static/src/approval_queue/approval_queue.scss",
         ],
     },
     "installable": True,

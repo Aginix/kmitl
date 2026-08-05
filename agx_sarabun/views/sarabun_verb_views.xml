@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sarabun_verb_tree" model="ir.ui.view">
+        <field name="name">sarabun.verb.tree</field>
+        <field name="model">sarabun.verb</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="rank"/>
+                <field name="gating" widget="boolean_toggle"/>
+                <field name="show_signature" widget="boolean_toggle"/>
+                <field name="is_signature" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sarabun_verb_form" model="ir.ui.view">
+        <field name="name">sarabun.verb.form</field>
+        <field name="model">sarabun.verb</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="เช่น เห็นชอบ (Endorse)"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="พฤติกรรม (Behaviour)">
+                            <field name="rank"/>
+                            <field name="gating"/>
+                            <field name="show_signature"/>
+                            <field name="is_signature"/>
+                        </group>
+                    </group>
+                    <div class="text-muted">
+                        <strong>Gating</strong> steps must be completed for a stage to
+                        pass; <strong>แสดงลายเซ็น (Show signature)</strong> renders a
+                        signature block on the official document (leave it off for
+                        ตรวจสอบ / พิจารณา / ส่งต่อ — name in the Route only);
+                        <strong>ลายเซ็นเชิงอำนาจ (Authoritative sign)</strong> also blocks
+                        Recall and always shows. The built-in verbs are referenced by the
+                        engine via their XML id — relabel freely, but don't delete them.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sarabun_verb" model="ir.actions.act_window">
+        <field name="name">Verbs (การดำเนินการ)</field>
+        <field name="res_model">sarabun.verb</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

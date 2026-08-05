@@ -131,6 +131,7 @@ class TestBudgetCommitment(TransactionCase):
         """Create a commitment in draft state with a single reserve line."""
         vals = {
             "date": date.today(),
+            "title": "Test commitment",
             "account_id": (account_id or self.account_1).id,
             "amount": amount,
             "analytic_distribution": self._header_analytic(),
@@ -182,6 +183,7 @@ class TestBudgetCommitment(TransactionCase):
         c = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
+                "title": "Test commitment",
                 "account_id": self.account_1.id,
                 "amount": 50_000,
                 "analytic_distribution": self._header_analytic(),
@@ -398,6 +400,7 @@ class TestBudgetCommitment(TransactionCase):
             self.env["budget.commitment"].create(
                 {
                     "date": date.today(),
+                "title": "Test commitment",
                     "account_id": self.account_1.id,
                     "amount": 0,
                     "analytic_distribution": self._header_analytic(),
@@ -413,6 +416,7 @@ class TestBudgetCommitment(TransactionCase):
             self.env["budget.commitment"].create(
                 {
                     "date": date.today(),
+                "title": "Test commitment",
                     "account_id": self.account_1.id,
                     "amount": -1,
                     "analytic_distribution": self._header_analytic(),
