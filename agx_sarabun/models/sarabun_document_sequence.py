@@ -157,10 +157,13 @@ class SarabunDocumentNumber(models.Model):
          "A register number must be unique per register per fiscal year!"),
     ]
 
-    @api.depends("sequence_id", "counter", "fiscal_year")
+    @api.depends("sequence_id", "counter")
     def _compute_register_number(self):
+        # เลขที่หนังสือไม่มีเลขปี (feedback): the running number renders prefix + counter
+        # + suffix only. The ปีงบ still buckets and resets the counter (the fiscal_year
+        # field + unique(sequence_id, counter, fiscal_year) constraint) but is no longer
+        # printed in the number itself — the ลงวันที่ on the หนังสือ carries the year.
         for n in self:
             seq = n.sequence_id
             counter = str(n.counter).zfill(seq.padding or 1)
-            fy = ("/%s" % n.fiscal_year) if n.fiscal_year else ""
-            n.register_number = f"{seq.prefix or ''}{counter}{seq.suffix or ''}{fy}"
+            n.register_number = f"{seq.prefix or ''}{counter}{seq.suffix or ''}"

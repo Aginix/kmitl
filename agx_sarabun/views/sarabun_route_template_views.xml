@@ -37,7 +37,8 @@
                         </group>
                     </group>
                     <separator string="Route Steps (seed)"/>
-                    <field name="line_ids">
+                    <field name="next_line_order" invisible="1"/>
+                    <field name="line_ids" context="{'default_order': next_line_order}">
                         <tree editable="bottom">
                             <field name="order"/>
                             <field name="verb"/>

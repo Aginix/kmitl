@@ -39,6 +39,17 @@ class SarabunRouteTemplate(models.Model):
     line_ids = fields.One2many(
         "sarabun.route.template.line", "template_id", string="Steps", copy=True
     )
+    next_line_order = fields.Integer(
+        compute="_compute_next_line_order",
+        help="Default ลำดับ for the next seed line — max(existing) + 1 so new lines "
+        "auto-increment instead of always starting at 1 (fed to line_ids' context).",
+    )
+
+    @api.depends("line_ids.order")
+    def _compute_next_line_order(self):
+        for record in self:
+            orders = record.line_ids.mapped("order")
+            record.next_line_order = (max(orders) + 1) if orders else 1
 
     def match_origin_record(self, origin_record):
         self.ensure_one()
