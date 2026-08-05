@@ -4,7 +4,7 @@
     <menuitem id="menu_sarabun_root"
               name="e-Sarabun"
               web_icon="agx_sarabun,static/description/icon.png"
-              sequence="20"/>
+              sequence="6"/>
 
     <!-- My Inbox (กล่องหนังสือเข้า) -->
     <menuitem id="menu_sarabun_inbox"
