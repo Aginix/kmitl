@@ -17,11 +17,8 @@
             <field name="partner_id" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')]}</attribute>
             </field>
-            <field name="vat_included" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_editable', '=', False)], 'invisible': [('procurement_mode', '=', 'by_officer')]}</attribute>
-            </field>
             <field name="tax_id" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('vat_included', '=', 'exclusive'), ('procurement_mode', '=', 'by_officer')], 'required': ['&amp;', ('vat_included', '=', 'inclusive'), ('procurement_mode', '!=', 'by_officer')], 'readonly': [('is_editable', '=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('is_editable', '=', False)]}</attribute>
             </field>
         </field>
     </record>

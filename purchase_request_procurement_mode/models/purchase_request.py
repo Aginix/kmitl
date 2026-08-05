@@ -19,5 +19,3 @@ class PurchaseRequest(models.Model):
     def _onchange_procurement_mode(self):
         if self.procurement_mode == "by_officer":
             self.partner_id = False
-            self.vat_included = "exclusive"
-            self.tax_id = False
