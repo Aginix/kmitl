@@ -402,7 +402,7 @@ msgstr ""
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__attachment_ids
 msgid "Document Attachments"
-msgstr ""
+msgstr "เอกสารแนบ"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__draft

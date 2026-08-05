@@ -92,10 +92,14 @@
                 </page>
                 <page name="document" string="Attachment"
                       attrs="{'invisible': [('wa_tier_validation', '=', True)]}">
-                    <field name="attachment_ids"
-                           widget="many2many_binary"
-                           attrs="{'readonly': [('state', '!=', 'draft')]}"
-                           context="{'default_res_model': 'work.acceptance', 'default_res_id': active_id}"/>
+                    <group>
+                        <field name="attachment_ids"
+                               widget="many2many_binary"
+                               colspan="2"
+                               nolabel="1"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"
+                               context="{'default_res_model': 'work.acceptance', 'default_res_id': active_id}"/>
+                    </group>
                 </page>
             </xpath>
         </field>
