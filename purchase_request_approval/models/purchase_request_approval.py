@@ -147,8 +147,10 @@ class PurchaseRequestApproval(models.Model):
     )
 
     # == Related fields (read-through to purchase.request) ==
-    title = fields.Char(related="request_id.title")
-    description = fields.Text(related="request_id.description")
+    # Note: `title` and `description` are PA-own copied fields (per ADR-0004);
+    # they used to be re-declared as `related=request_id.*` here, which
+    # accidentally shadowed the own declarations above and prevented PA-side
+    # divergence. Removed to restore ADR-0004 intent.
     requested_by = fields.Many2one(related="request_id.requested_by")
     department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
