@@ -1,3 +1,14 @@
+// Stretch the embedded budget lists to the full width of the tab.
+.o_field_widget[name="income_line_ids"],
+.o_field_widget[name="expense_line_ids"] {
+    width: 100%;
+
+    .o_list_renderer,
+    table.o_list_table {
+        width: 100%;
+    }
+}
+
 .o_field_widget[name="expense_line_ids"] {
     .o_budget_section_header {
         > td {

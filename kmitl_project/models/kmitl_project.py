@@ -259,6 +259,14 @@ class KmitlProject(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
+    has_income = fields.Boolean(
+        string="โครงการนี้มีรายรับ",
+        help="ติ๊กเมื่อโครงการมีรายรับ (เช่น ค่าลงทะเบียน/เงินบริจาค/เงินรายได้) "
+        "เพื่อแสดงตารางกรอกงบประมาณรายรับ; รายจ่ายจะแสดงเสมอ",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
     income_line_ids = fields.One2many(
         "project.budget.line",
         "project_id",
@@ -267,6 +275,12 @@ class KmitlProject(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+
+    @api.onchange("has_income")
+    def _onchange_has_income(self):
+        """Drop any income lines when the project is marked as having no income."""
+        if not self.has_income:
+            self.income_line_ids = [(5, 0, 0)]
 
     expense_line_ids = fields.One2many(
         "project.budget.line",
@@ -473,9 +487,10 @@ class KmitlProject(models.Model):
         blank/zero while drafting, but every line must carry a positive amount
         before the project is confirmed."""
         self.ensure_one()
-        bad = (self.income_line_ids | self.expense_line_ids).filtered(
-            lambda line: line.amount <= 0
-        )
+        lines = self.expense_line_ids
+        if self.has_income:
+            lines |= self.income_line_ids
+        bad = lines.filtered(lambda line: line.amount <= 0)
         if bad:
             raise UserError(
                 _(

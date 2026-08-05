@@ -2,15 +2,15 @@
 <templates xml:space="preserve">
     <t t-name="kmitl_project.ProjectBudgetTableRows" t-inherit="web.ListRenderer.Rows" t-inherit-mode="primary" owl="1">
         <xpath expr="//t[@t-foreach='list.records']" position="replace">
-            <t t-foreach="list.records" t-as="record" t-key="record.id">
-                <tr t-if="startsSection(record)" class="o_budget_section_header">
+            <t t-foreach="sortedRecords" t-as="record" t-key="record.id">
+                <tr t-if="startsSection(record, record_index)" class="o_budget_section_header">
                     <td colspan="99">
                         <i class="fa fa-folder-open-o me-2" role="img" aria-label="Section" />
                         <t t-esc="sectionName(record)" />
                     </td>
                 </tr>
                 <t t-call="{{ constructor.recordRowTemplate }}" />
-                <tr t-if="endsSection(record)" class="o_budget_section_subtotal">
+                <tr t-if="endsSection(record, record_index)" class="o_budget_section_subtotal">
                     <td t-if="hasSelectors" />
                     <td t-att-colspan="colsBeforeAmount(record)" class="text-end">
                         รวม
@@ -20,7 +20,7 @@
                     </td>
                     <td colspan="99" />
                 </tr>
-                <tr t-if="endsSection(record) and displayRowCreates" class="o_budget_section_add">
+                <tr t-if="endsSection(record, record_index) and displayRowCreates" class="o_budget_section_add">
                     <td colspan="99">
                         <a href="#" role="button" class="o_budget_section_add_link"
                             t-att-tabindex="props.list.editedRecord ? '-1' : '0'"

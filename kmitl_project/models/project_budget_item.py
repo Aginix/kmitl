@@ -31,6 +31,9 @@ class ProjectBudgetItem(models.Model):
     _parent_store = True
     _parent_name = "parent_id"
     _order = "parent_path"
+    # Let the picker match what it displays (the full "ประเภทงบ / รายการ" path),
+    # not just the leaf name.
+    _rec_names_search = ["complete_name", "name"]
 
     sequence = fields.Integer(default=10)
     name = fields.Char(string="ชื่อรายการ", required=True, tracking=True)

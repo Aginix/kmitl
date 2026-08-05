@@ -13,21 +13,42 @@ import {formatFloat} from "@web/views/fields/formatters";
  * only the rows template is extended (see project_budget_table.xml).
  */
 export class ProjectBudgetTableRenderer extends ListRenderer {
+    /** Records grouped by budget category so a freshly added line shows inside
+     * its section instead of at the end of the list. Category-less rows (a new
+     * line before its item is picked) sort to the bottom; stable within a
+     * category so sequence/insertion order is kept. */
+    get sortedRecords() {
+        return [...this.props.list.records].sort((a, b) => {
+            const ka = this.categoryKey(a);
+            const kb = this.categoryKey(b);
+            if (ka === kb) {
+                return 0;
+            }
+            if (!ka) {
+                return 1;
+            }
+            if (!kb) {
+                return -1;
+            }
+            return ka - kb;
+        });
+    }
+
     /** True when this record opens a new section (or is the first row). */
-    startsSection(record) {
-        const records = this.props.list.records;
-        const index = records.indexOf(record);
+    startsSection(record, index) {
         if (index <= 0) {
             return true;
         }
-        return this.categoryKey(records[index - 1]) !== this.categoryKey(record);
+        return (
+            this.categoryKey(this.sortedRecords[index - 1]) !==
+            this.categoryKey(record)
+        );
     }
 
     /** True when this record is the last of its section (or the last row). */
-    endsSection(record) {
-        const records = this.props.list.records;
-        const index = records.indexOf(record);
-        if (index === records.length - 1) {
+    endsSection(record, index) {
+        const records = this.sortedRecords;
+        if (index >= records.length - 1) {
             return true;
         }
         return this.categoryKey(records[index + 1]) !== this.categoryKey(record);
