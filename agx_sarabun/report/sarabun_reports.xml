@@ -25,14 +25,14 @@
                          signing (ADR-0009), falling back to live master data for legacy /
                          in-flight rows — so a later HR / position / signature edit never
                          rewrites an already-signed หนังสือ. -->
-                    <div t-if="sig.note" style="font-size:0.9em; color:#555;">
-                        <span t-out="sig.note"/>
-                    </div>
                     <t t-set="sig_image" t-value="sig.signed_signature or sig.acted_by_id.employee_id.signature"/>
                     <div t-if="sig_image">
                         <img t-att-src="image_data_uri(sig_image)" style="max-height:60px;"/>
                     </div>
                     <div t-else="" style="height:60px;"/>
+                    <div t-if="sig.note" style="font-size:0.9em; color:#555;">
+                        <span t-out="sig.note"/>
+                    </div>
                     <div>(<span t-out="sig.signed_name or sig.acted_by_id.employee_id.name or sig.acted_by_id.name"/>)</div>
                     <!-- capacity/position only (never the person name, already shown
                          above): snapshot → signed capacity → targeted Position → blank. -->
