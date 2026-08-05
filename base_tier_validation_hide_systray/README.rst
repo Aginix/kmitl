@@ -1,13 +1,9 @@
-================================
-Tier Validation Todo Bridge
-================================
+==========================================
+Tier Validation — Hide Reviewer Menu Systray
+==========================================
 
-Auto-installed bridge between ``base_tier_validation`` (OCA) and
-``mail_activity_todo``. It removes the OCA "Reviewer Menu" systray so the
-unified Todo bell is the single inbox for every pending action across every
-module.
-
-This is intentionally a **hide-only** first cut. Routing every
-``tier.review`` to a ``mail.activity`` on the target record — so that
-non-WA tier-validated flows also surface in the unified inbox — is a
-follow-up planned for this same module.
+Removes the OCA ``base_tier_validation`` "Reviewer Menu" bell from the
+systray. Install this in setups where the bell duplicates another
+notification surface (e.g. a unified Todo inbox) and needs to go. It
+touches no data and adds no Python — one JS service that runs after
+``base_tier_validation``'s own systray service and calls ``registry.remove``.

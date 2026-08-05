@@ -1,22 +1,20 @@
 {
-    "name": "Tier Validation Todo Bridge",
+    "name": "Tier Validation — Hide Reviewer Menu Systray",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Productivity",
-    "summary": "Suppress the OCA tier_validation ReviewerMenu so the unified "
-    "mail_activity_todo bell is the single inbox.",
+    "summary": "Suppress the OCA tier_validation ReviewerMenu bell.",
     "depends": [
-        "mail_activity_todo",
         "base_tier_validation",
     ],
     "data": [],
     "assets": {
         "web.assets_backend": [
-            "base_tier_validation_todo/static/src/js/hide_tier_validation_systray.esm.js",
+            "base_tier_validation_hide_systray/static/src/js/hide_systray.esm.js",
         ],
     },
     "installable": True,
-    "auto_install": True,
+    "auto_install": False,
     "license": "LGPL-3",
 }
