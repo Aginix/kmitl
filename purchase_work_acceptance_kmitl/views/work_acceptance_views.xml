@@ -371,6 +371,11 @@
                         <field name="fines_late" readonly="1"/>
                     </group>
                 </group>
+                <group string="Supporting Documents" name="support_document">
+                    <group>
+                        <field name="supporting_document_ids" nolabel="1" colspan="2" widget="many2many_binary"/>
+                    </group>
+                </group>
             </xpath>
 
             <xpath expr="//field[@name='wa_line_ids']" position="after">

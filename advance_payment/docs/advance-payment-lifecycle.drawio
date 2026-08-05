@@ -1,0 +1,128 @@
+<mxfile host="Electron" modified="" version="26.0.0">
+  <diagram id="ap-lifecycle" name="Advance Payment Lifecycle">
+    <mxGraphModel dx="1422" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="สัญญายืมเงิน (Advance Payment) — วงจรสถานะ" style="text;html=1;strokeColor=none;fillColor=none;fontSize=18;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="340" y="10" width="560" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend" value="เส้นทึบเขียว = happy path&lt;br/&gt;เส้นประแดง = negative (ส่งกลับ/ไม่อนุมัติ/ยกเลิก)&lt;br/&gt;เส้นประม่วง = ดึงกลับ (ผู้สร้าง, ก่อนอนุมัติ)&lt;br/&gt;เทา=ร่าง · เหลือง=รอ · ฟ้า=active · แดง=จบเชิงลบ" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;fontSize=11;align=left;verticalAlign=top;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="770" y="45" width="360" height="92" as="geometry" />
+        </mxCell>
+
+        <!-- Happy path column -->
+        <mxCell id="start" value="สร้างสัญญา" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="400" y="44" width="120" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="s_draft" value="draft&lt;br/&gt;(แบบร่าง)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="360" y="108" width="200" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="s_verify" value="to_verify&lt;br/&gt;(รอตรวจสอบคำขอ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="360" y="204" width="200" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="s_approve" value="to_approve&lt;br/&gt;(รออนุมัติ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="360" y="300" width="200" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="s_transfer" value="waiting_transfer&lt;br/&gt;(รอการโอนเงิน)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="360" y="396" width="200" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="s_inprogress" value="in_progress&lt;br/&gt;(จ่ายเงินแล้ว · ลูกหนี้โดยสมบูรณ์)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="360" y="492" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s_report" value="to_verify_report&lt;br/&gt;(รอตรวจรับรายงาน)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="360" y="612" width="200" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="s_reconcile" value="to_reconcile&lt;br/&gt;(รอตรวจสอบเงินคืน)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="360" y="726" width="200" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="s_done" value="done&lt;br/&gt;(ปิดสัญญา)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="390" y="840" width="140" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- Negative states -->
+        <mxCell id="s_cancel" value="cancel&lt;br/&gt;(ยกเลิกสัญญา)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="740" y="410" width="180" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- Notes -->
+        <mxCell id="noteA" value="① ส่งคำขอ: รันเลข &lt;b&gt;ADV&lt;/b&gt; + เช็คกฎ &quot;1 คน = 1 สัญญา active&quot;" style="text;html=1;strokeColor=#6c8ebf;fillColor=#eef4fc;fontSize=10;align=left;verticalAlign=top;spacing=6;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="150" width="300" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="editNote" value="สิทธิ์ช่วง to_verify: ผู้สร้างแก้ &lt;b&gt;loan_reason + แนบไฟล์&lt;/b&gt;&lt;br/&gt;· จนท.: reset→draft / แก้ได้ตลอด" style="text;html=1;strokeColor=#6c8ebf;fillColor=#eef4fc;fontSize=10;align=left;verticalAlign=top;spacing=6;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="256" width="300" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="noteB" value="④ auto เมื่อการเงินโอนเสร็จ: รันเลข &lt;b&gt;เลขที่สัญญา&lt;/b&gt; (TBD)&lt;br/&gt;+ stamp &lt;b&gt;Effective Date&lt;/b&gt; → &quot;ลูกหนี้โดยสมบูรณ์&quot;" style="text;html=1;strokeColor=#6c8ebf;fillColor=#eef4fc;fontSize=10;align=left;verticalAlign=top;spacing=6;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="450" width="320" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="noteSettle" value="&lt;b&gt;การล้างหนี้/ปิด (operational — ยังไม่ลงบัญชี ADR-0002)&lt;/b&gt;&lt;br/&gt;⑤ รายงานระบุ ยอดใช้จริง + ยอดคงเหลือ&lt;br/&gt;⑥ จนท.เงินยืม &quot;ตรวจรับรายงาน&quot;:&lt;br/&gt;&#160;&#160;• ไม่มีเงินเหลือ → จนท.กดปิดสัญญาเอง&lt;br/&gt;&#160;&#160;• มีเงินเหลือ → ผู้ยืมโอนคืน (ยอด=ที่โอนจริง)&lt;br/&gt;⑦ การเงิน reconcile เงินเข้าบัญชี:&lt;br/&gt;&#160;&#160;• คืนครบ (หลายงวดได้) → ปิดอัตโนมัติ&lt;br/&gt;&#160;&#160;• คืนเกิน → ผู้ยืมยืนยัน &lt;b&gt;บริจาคส่วนเกิน&lt;/b&gt; (บังคับ consent + audit)&lt;br/&gt;&#160;&#160;• ไม่ตรง/ไม่คืน → ค้าง (แจ้งเตือน)&lt;br/&gt;(ไม่ต้องออกใบเสร็จ)" style="text;html=1;strokeColor=#6c8ebf;fillColor=#eef4fc;fontSize=10;align=left;verticalAlign=top;spacing=6;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="560" width="410" height="230" as="geometry" />
+        </mxCell>
+
+        <!-- Happy edges -->
+        <mxCell id="e_start_draft" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="start" target="s_draft" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_draft_verify" value="① ส่งคำขอ (Submit)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.6;entryY=0;entryDx=0;entryDy=0;" edge="1" source="s_draft" target="s_verify" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_verify_approve" value="② ตรวจสอบ (จนท.การเงิน)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_verify" target="s_approve" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_approve_transfer" value="③ อนุมัติ (ผู้จัดการ)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_approve" target="s_transfer" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_transfer_inprogress" value="④ การเงินโอนเสร็จ (auto)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_transfer" target="s_inprogress" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_inprogress_report" value="⑤ นำส่งรายงานค่าใช้จ่าย + หลักฐาน" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_inprogress" target="s_report" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_report_reconcile" value="⑥ ตรวจรับ + มีเงินเหลือ → โอนคืน" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.6;entryY=0;entryDx=0;entryDy=0;" edge="1" source="s_report" target="s_reconcile" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_report_done" value="⑥ ไม่มีเงินเหลือ → จนท.ปิด" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="s_report" target="s_done" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="330" y="639" />
+              <mxPoint x="330" y="864" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_reconcile_done" value="⑦ reconcile ตรงพอดี (auto)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=2;endArrow=block;" edge="1" source="s_reconcile" target="s_done" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Negative edges (dashed red) -->
+        <mxCell id="e_verify_draft" value="ส่งกลับแก้ไข (จนท.)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;dashed=1;endArrow=block;exitX=0.15;exitY=0;exitDx=0;exitDy=0;entryX=0.15;entryY=1;entryDx=0;entryDy=0;" edge="1" source="s_verify" target="s_draft" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_approve_cancel" value="ยกเลิก" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;dashed=1;endArrow=block;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.2;entryDx=0;entryDy=0;" edge="1" source="s_approve" target="s_cancel" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_transfer_cancel" value="ยกเลิก" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;dashed=1;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="s_transfer" target="s_cancel" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_inprogress_cancel" value="ยกเลิก" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;dashed=1;endArrow=block;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" source="s_inprogress" target="s_cancel" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Recall edges (dashed purple) -->
+        <mxCell id="e_verify_recall" value="ดึงกลับ (ผู้สร้าง)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#9673a6;dashed=1;endArrow=block;exitX=0.4;exitY=0;exitDx=0;exitDy=0;entryX=0.4;entryY=1;entryDx=0;entryDy=0;" edge="1" source="s_verify" target="s_draft" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_approve_recall" value="ดึงกลับ (ผู้สร้าง)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#9673a6;dashed=1;endArrow=block;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" source="s_approve" target="s_draft" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="345" y="324" />
+              <mxPoint x="345" y="132" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

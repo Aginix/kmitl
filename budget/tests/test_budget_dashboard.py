@@ -63,6 +63,7 @@ class TestBudgetDashboard(TransactionCase):
         commitment = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
+                "title": "Test commitment",
                 "account_id": account.id,
                 "amount": amount,
                 "account_fiscal_year_id": self.fy.id,
@@ -151,6 +152,7 @@ class TestBudgetDashboard(TransactionCase):
         commitment = self.env["budget.commitment"].create(
             {
                 "date": date.today(),
+                "title": "Test commitment",
                 "account_id": account.id,
                 "amount": amount,
                 "analytic_distribution": dist,

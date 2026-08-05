@@ -17,4 +17,30 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_advance_payment_list_purchase_request" model="ir.ui.view">
+        <field name="name">advance.payment.list.purchase_request</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_list"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="purchase_request_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_search_purchase_request" model="ir.ui.view">
+        <field name="name">advance.payment.search.purchase_request</field>
+        <field name="model">advance.payment</field>
+        <field name="inherit_id" ref="advance_payment.view_advance_payment_search"/>
+        <field name="arch" type="xml">
+            <field name="requested_by" position="after">
+                <field name="purchase_request_id"/>
+            </field>
+            <filter name="group_loan_type" position="after">
+                <filter string="คำขอซื้อขอจ้าง" name="group_purchase_request"
+                    context="{'group_by': 'purchase_request_id'}"/>
+            </filter>
+        </field>
+    </record>
 </odoo>

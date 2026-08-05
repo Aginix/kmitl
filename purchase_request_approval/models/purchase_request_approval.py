@@ -147,14 +147,17 @@ class PurchaseRequestApproval(models.Model):
     )
 
     # == Related fields (read-through to purchase.request) ==
-    title = fields.Char(related="request_id.title")
-    description = fields.Text(related="request_id.description")
+    # Note: `title` and `description` are PA-own copied fields (per ADR-0004);
+    # they used to be re-declared as `related=request_id.*` here, which
+    # accidentally shadowed the own declarations above and prevented PA-side
+    # divergence. Removed to restore ADR-0004 intent.
     requested_by = fields.Many2one(related="request_id.requested_by")
     department_id = fields.Many2one(related="request_id.department_id", store=True)
     company_id = fields.Many2one(related="request_id.company_id", store=True)
     partner_id = fields.Many2one(
         "res.partner",
         string="Vendor",
+        required=True,
         tracking=True,
     )
     vat_included = fields.Selection(
@@ -213,7 +216,13 @@ class PurchaseRequestApproval(models.Model):
     budget_account_id = fields.Many2one(related="request_id.budget_account_id")
     budget_commitment_id = fields.Many2one(related="request_id.budget_commitment_id")
     analytic_distribution = fields.Json(related="request_id.analytic_distribution")
-    attachment_ids = fields.One2many(related="request_id.attachment_ids")
+    attachment_ids = fields.One2many(
+        comodel_name="ir.attachment",
+        inverse_name="res_id",
+        string="Document Attachments",
+        domain=[("res_model", "=", "purchase.request.approval")],
+        auto_join=True,
+    )
     work_acceptance_committee_ids = fields.One2many(
         related="request_id.work_acceptance_committee_ids"
     )
@@ -340,6 +349,17 @@ class PurchaseRequestApproval(models.Model):
             "type": "ir.actions.act_window",
             "name": _("ยกเลิกใบขออนุมัติ (พจ.1)"),
             "res_model": "purchase.request.approval.cancel.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_approval_id": self.id},
+        }
+
+    def action_open_material_withdrawal_wizard(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("พิมพ์ใบเบิกวัสดุ (พ.43)"),
+            "res_model": "purchase.request.approval.material.withdrawal.wizard",
             "view_mode": "form",
             "target": "new",
             "context": {"default_approval_id": self.id},

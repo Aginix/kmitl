@@ -17,7 +17,7 @@ access_sarabun_enclosure_user,sarabun.enclosure.user,model_sarabun_enclosure,gro
 access_sarabun_enclosure_manager,sarabun.enclosure.manager,model_sarabun_enclosure,group_sarabun_manager,1,1,1,1
 access_sarabun_routing_step_user,sarabun.routing.step.user,model_sarabun_routing_step,group_sarabun_user,1,1,1,1
 access_sarabun_routing_step_manager,sarabun.routing.step.manager,model_sarabun_routing_step,group_sarabun_manager,1,1,1,1
-access_sarabun_routing_step_activity_user,sarabun.routing.step.activity.user,model_sarabun_routing_step_activity,group_sarabun_user,1,1,1,1
+access_sarabun_routing_step_activity_user,sarabun.routing.step.activity.user,model_sarabun_routing_step_activity,group_sarabun_user,1,0,0,0
 access_sarabun_routing_step_activity_manager,sarabun.routing.step.activity.manager,model_sarabun_routing_step_activity,group_sarabun_manager,1,1,1,1
 access_sarabun_step_recipient_user,sarabun.step.recipient.user,model_sarabun_step_recipient,group_sarabun_user,1,0,0,0
 access_sarabun_step_recipient_manager,sarabun.step.recipient.manager,model_sarabun_step_recipient,group_sarabun_manager,1,1,1,1

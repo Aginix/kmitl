@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- The standard Many2one picker, with the selected reservation's details
+         appended underneath so the user can confirm they picked the right slip.
+
+         Laid out as a grid rather than a label/value table: at form width a table
+         pushed every value to a single far column, leaving a wide empty gutter
+         down the middle and one line per dimension. Stacking the label above its
+         value in half-width cells removes the gutter, gives long analytic names
+         the room they need, and halves the height. -->
+    <t t-name="budget.BudgetCommitmentInfoField" t-inherit="web.Many2OneField"
+        t-inherit-mode="primary" owl="1">
+        <xpath expr="." position="inside">
+            <div t-if="info.data" class="o_budget_commitment_info card mt-2">
+                <div class="card-body p-2">
+
+                    <div class="d-flex align-items-center gap-1 mb-2">
+                        <i class="fa fa-bookmark text-primary" title="ใบจองงบประมาณ"/>
+                        <strong class="text-nowrap" t-esc="info.data.name"/>
+                        <span t-if="info.data.title" class="text-truncate"
+                            t-att-title="info.data.title">
+                            · <t t-esc="info.data.title"/>
+                        </span>
+                        <!-- bg-info + text-dark, not text-bg-info: Odoo 16 ships
+                             Bootstrap 5.1.3 and text-bg-* only exists from 5.2. -->
+                        <span class="badge rounded-pill bg-info text-dark ms-auto text-nowrap"
+                            t-esc="info.data.state_label"/>
+                    </div>
+
+                    <div class="row g-2">
+                        <div t-foreach="info.data.rows" t-as="row" t-key="row_index"
+                            class="col-12 col-md-6">
+                            <small class="d-block text-muted lh-1" t-esc="row.label"/>
+                            <span class="d-block text-truncate" t-att-title="row.value"
+                                t-esc="row.value"/>
+                        </div>
+                    </div>
+
+                    <div t-foreach="info.data.amounts" t-as="amount"
+                        t-key="'amount_' + amount_index"
+                        class="d-flex justify-content-between align-items-baseline gap-2 border-top mt-2 pt-2">
+                        <small class="text-muted text-truncate"
+                            t-att-title="amount.label" t-esc="amount.label"/>
+                        <span class="fw-bold text-nowrap" t-esc="amount.value"/>
+                    </div>
+
+                </div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

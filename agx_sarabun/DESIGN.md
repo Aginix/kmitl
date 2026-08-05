@@ -1781,6 +1781,8 @@ old `sarabun.document.recipient._send_notification()` (routed by the dropped
 
 ### 7.3 Sarabun inbox + systray tray + bus realtime ("หนังสือเข้า")
 
+> **Superseded (docs-first) by [ADR-0014](./docs/adr/0014-dissolve-inbox-tray-onto-native-activity-and-todo-bridge.md):** the bespoke **Action tray** + `sarabun_inbox` bus + `get_my_sarabun_inbox` are being **dissolved**. Base e-Saraban will surface awaiting-action work as native `mail.activity` (raised for **every** active step — including รับทราบ / CC, not just gating), and an `agx_sarabun_todo` bridge routes it into the unified Todo inbox. The **กล่องหนังสือเข้า (Incoming box)** backend menu below stays. This section describes the current as-built tray until that change lands.
+
 The inbox is the informational unread tray — it includes รับทราบ / สำเนาเรียน that
 have **no** activity. As-built there is **no `sarabun.inbox` model**: the tray is a
 filtered view of `sarabun.document` and read state lives on `sarabun.step.recipient`:

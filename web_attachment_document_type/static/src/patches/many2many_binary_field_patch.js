@@ -213,7 +213,14 @@ patch(
                     if (target) {
                         await target.load();
                     }
-                    await this.props.record.load();
+                    // Skip the parent reload when the form is dirty:
+                    // Record.load() refetches from the DB and clobbers the
+                    // user's unsaved edits. The chatter tracking message
+                    // ("Document Type: old → new") will surface on the next
+                    // form save/reload — worth trading against data loss.
+                    if (!this.props.record.isDirty) {
+                        await this.props.record.load();
+                    }
                     // Odoo 16's Record.load() does not fire model.notify()
                     // at the end, so OWL doesn't know the data has moved —
                     // components watching these records stay stale until a

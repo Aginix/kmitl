@@ -88,6 +88,12 @@
                         type="object"
                         groups="purchase_request.group_purchase_request_manager"
                     />
+                    <button
+                        name="action_open_material_withdrawal_wizard"
+                        string="พิมพ์ใบเบิกวัสดุ"
+                        type="object"
+                        states="approved"
+                    />
                     <field
                         name="state"
                         widget="statusbar"
@@ -170,7 +176,6 @@
                             <field name="payment_type" readonly="1" />
                             <field
                                 name="partner_id"
-                                required="1"
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"
                             />
@@ -193,6 +198,7 @@
                                     <field name="currency_id" invisible="1"/>
                                     <field name="product_id" readonly="1" />
                                     <field name="name" readonly="1"/>
+                                    <field name="product_uom_id"/>
                                     <field name="product_qty"/>
                                     <field name="price_unit"/>
                                     <field name="tax_id" optional="hide"/>
@@ -229,6 +235,11 @@
                                     <field name="requesting_department_id" readonly="1" />
                                 </group>
                             </group>
+                        </page>
+                        <page name="document" string="Attachment">
+                            <field name="attachment_ids"
+                                   widget="many2many_binary"
+                                   context="{'default_res_model': 'purchase.request.approval'}"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -350,12 +361,14 @@
         id="purchase_request_approval_menu"
         parent="purchase.menu_purchase_root"
         action="action_purchase_request_approval"
+        groups="purchase.group_purchase_user"
         sequence="4"
     />
     <menuitem
         id="purchase_request_approval_menu_purchase_request"
         parent="purchase_request.parent_menu_purchase_request"
         action="action_purchase_request_approval"
+        groups="purchase.group_purchase_user"
         sequence="20"
     />
 </odoo>
