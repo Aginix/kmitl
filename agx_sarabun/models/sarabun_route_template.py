@@ -29,12 +29,42 @@ class SarabunRouteTemplate(models.Model):
     # Scope (for from_record auto-matching)
     department_id = fields.Many2one("hr.department", string="Department")
     document_type_id = fields.Many2one("sarabun.document.type", string="Document Type")
-    origin_model = fields.Char(string="Origin Model")
-    condition_domain = fields.Text(
+    # origin_model (the technical name) stays the source of truth — the bridge seed
+    # data (purchase_request_sarabun, disbursement_sarabun, …) sets it as a Char and
+    # find_matching_templates keys off it — while origin_model_id is a convenience
+    # ir.model picker layered over it (compute reads it, inverse writes it back).
+    origin_model_id = fields.Many2one(
+        "ir.model",
+        string="Origin Model",
+        compute="_compute_origin_model_id",
+        inverse="_inverse_origin_model_id",
+        help="แหล่งที่มา — the source record's model this template auto-matches "
+        "(e.g. purchase.request). Empty = match any source model.",
+    )
+    origin_model = fields.Char(string="Origin Model (technical)")
+    condition_domain = fields.Char(
         string="Condition Domain",
         help="Python domain evaluated against the origin record, e.g. "
         "[('amount_total', '>=', 100000)]. Empty = match all.",
     )
+
+    @api.depends("origin_model")
+    def _compute_origin_model_id(self):
+        IrModel = self.env["ir.model"]
+        for template in self:
+            template.origin_model_id = (
+                IrModel._get(template.origin_model) if template.origin_model else False
+            )
+
+    def _inverse_origin_model_id(self):
+        for template in self:
+            template.origin_model = template.origin_model_id.model or False
+
+    @api.onchange("origin_model_id")
+    def _onchange_origin_model_id(self):
+        # Keep the technical name live so the condition_domain widget (which reads
+        # origin_model) re-targets the moment a model is picked, before save.
+        self.origin_model = self.origin_model_id.model or False
 
     line_ids = fields.One2many(
         "sarabun.route.template.line", "template_id", string="Steps", copy=True

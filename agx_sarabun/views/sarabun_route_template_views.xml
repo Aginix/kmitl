@@ -9,7 +9,7 @@
                 <field name="name"/>
                 <field name="document_type_id"/>
                 <field name="department_id"/>
-                <field name="origin_model"/>
+                <field name="origin_model_id"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -28,8 +28,12 @@
                         <group string="Scope (auto-match for from_record)">
                             <field name="document_type_id"/>
                             <field name="department_id"/>
-                            <field name="origin_model" placeholder="purchase.request"/>
-                            <field name="condition_domain" placeholder="[('amount_total', '&gt;=', 100000)]"/>
+                            <field name="origin_model_id" options="{'no_create': True}"/>
+                            <!-- invisible origin_model backs the domain widget's model
+                                 option (it resolves the technical name from this field). -->
+                            <field name="origin_model" invisible="1"/>
+                            <field name="condition_domain" widget="domain"
+                                   options="{'model': 'origin_model'}"/>
                         </group>
                         <group>
                             <field name="sequence"/>
