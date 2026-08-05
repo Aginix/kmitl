@@ -303,7 +303,17 @@
                                     <div class="col-9 offset-3 text-center">
                                         <div style="white-space: nowrap">
                                             (ลงชื่อ)
-                                            <span class="sig-line"></span>
+                                            <t
+                                                t-if="o.state == 'accept' and line.employee_id.signature"
+                                            >
+                                                <img
+                                                    t-att-src="image_data_uri(line.employee_id.signature)"
+                                                    style="height: 40px; vertical-align: middle;"
+                                                />
+                                            </t>
+                                            <t t-else="">
+                                                <span class="sig-line"></span>
+                                            </t>
                                             <span t-field="line.approve_role" />
                                         </div>
                                         <div class="mt-2">
@@ -319,7 +329,17 @@
                                     <div class="col-9 offset-3 text-center">
                                         <div style="white-space: nowrap">
                                             (ลงชื่อ)
-                                            <span class="sig-line"></span>
+                                            <t
+                                                t-if="o.state == 'accept' and line.employee_id.signature"
+                                            >
+                                                <img
+                                                    t-att-src="image_data_uri(line.employee_id.signature)"
+                                                    style="height: 40px; vertical-align: middle;"
+                                                />
+                                            </t>
+                                            <t t-else="">
+                                                <span class="sig-line"></span>
+                                            </t>
                                             <span t-field="line.approve_role" />
                                         </div>
                                         <div class="mt-2">
