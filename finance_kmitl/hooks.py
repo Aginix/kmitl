@@ -73,14 +73,19 @@ SUBJECT_PAYING_ACCOUNTS = {
 }
 
 
-def _flag_main_paying_accounts(env, company):
-    """Create/flag the main paying accounts — the institute's own bank
-    accounts — and bind each to the GL account its payments are booked
-    against (matched by chart code).
+def _seed_main_paying_accounts(env, company):
+    """Create the main paying accounts (หัวจ่าย) — the institute's own bank
+    accounts paired with **เงินโอน** — and bind each to the GL account its
+    transfers are booked against (matched by chart code).
+
+    Only the transfer pairs are seeded. A cheque pair is booked against a
+    separate "เช็คจ่าย" account per bank, and that account cannot be guessed
+    from a chart code here: the treasury office creates those in
+    Finance ▸ Settings ▸ หัวจ่าย.
 
     Idempotent and best-effort: an existing bank account with the same
-    (sanitized) number is reused and, once flagged, keeps whatever the
-    treasury office configured; a chart without the GL code skips that
+    (sanitized) number is reused and an existing paying account keeps whatever
+    the treasury office configured; a chart without the GL code skips that
     account with a warning rather than failing the install.
     """
     from odoo.addons.base.models.res_bank import sanitize_account_number
@@ -88,6 +93,16 @@ def _flag_main_paying_accounts(env, company):
     accounts = {}
     Bank = env["res.bank"]
     PartnerBank = env["res.partner.bank"]
+    PayingAccount = env["kmitl.paying.account"]
+    transfer_type = env.ref(
+        "finance_kmitl.payment_type_normal_outbound", raise_if_not_found=False
+    )
+    if not transfer_type:
+        _logger.warning(
+            "finance_kmitl: the เงินโอน payment type is missing; paying "
+            "accounts must be created by hand."
+        )
+        return accounts
     provisional = []
     for entry in MAIN_PAYING_ACCOUNTS:
         gl_account = env["account.account"].search(
@@ -121,24 +136,28 @@ def _flag_main_paying_accounts(env, company):
                     "acc_number": entry["acc_number"],
                     "bank_id": bank.id if bank else False,
                     "acc_holder_name": company.name,
-                    "is_paying_account": True,
-                    "payment_account_id": gl_account.id,
-                }
-            )
-        accounts[entry["code"]] = bank_account
-        if not bank_account.is_paying_account:
-            bank_account.write(
-                {
-                    "is_paying_account": True,
-                    "payment_account_id": (
-                        bank_account.payment_account_id.id or gl_account.id
-                    ),
                 }
             )
         if not bank_account.bank_id and bank:
             bank_account.bank_id = bank.id
+        paying_account = PayingAccount.search(
+            [
+                ("bank_account_id", "=", bank_account.id),
+                ("payment_type_id", "=", transfer_type.id),
+                ("company_id", "=", company.id),
+            ],
+            limit=1,
+        ) or PayingAccount.create(
+            {
+                "bank_account_id": bank_account.id,
+                "payment_type_id": transfer_type.id,
+                "payment_account_id": gl_account.id,
+                "company_id": company.id,
+            }
+        )
+        accounts[entry["code"]] = paying_account
         if not entry["confirmed"]:
-            provisional.append(bank_account.display_name)
+            provisional.append(paying_account.display_name)
     if provisional:
         _logger.warning(
             "finance_kmitl: provisional paying accounts seeded — have the "
@@ -161,9 +180,24 @@ def _setup_subject_paying_accounts(env, accounts):
 
     Subjects an administrator already configured are left untouched.
     """
+    transfer_type = env.ref(
+        "finance_kmitl.payment_type_normal_outbound", raise_if_not_found=False
+    )
     for xmlid, config in SUBJECT_PAYING_ACCOUNTS.items():
         subject = env.ref(xmlid, raise_if_not_found=False)
         if not subject or subject.allowed_paying_account_ids:
+            continue
+        # Only transfer paying accounts are seeded, so a subject paid another
+        # way is left for the treasury office rather than bound to an account
+        # that pays the wrong way out of the wrong GL.
+        if subject.default_payment_type_id != transfer_type:
+            _logger.warning(
+                "finance_kmitl: subject '%s' is paid by %s — create its "
+                "paying account in Finance ▸ Settings ▸ หัวจ่าย and bind it "
+                "to the subject.",
+                subject.name,
+                subject.default_payment_type_id.name,
+            )
             continue
         allowed = [
             accounts[code].id
@@ -186,7 +220,7 @@ def _setup_subject_paying_accounts(env, accounts):
 
 def setup_paying_accounts(env):
     for company in env["res.company"].search([]):
-        accounts = _flag_main_paying_accounts(env, company)
+        accounts = _seed_main_paying_accounts(env, company)
         _setup_default_paying_account(env, company, accounts)
         if company == env.ref("base.main_company", raise_if_not_found=False):
             _setup_subject_paying_accounts(env, accounts)

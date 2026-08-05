@@ -603,24 +603,30 @@ def _bill_dr(dr, wht_tax=None):
 
 
 def _demo_paying_account(env, company, bank):
-    """Flag one of the institute's bank accounts as a paying account."""
+    """A paying account (หัวจ่าย) for transfers out of the institute's bank."""
+    PayingAccount = env["kmitl.paying.account"]
     PartnerBank = env["res.partner.bank"]
-    bank_account = PartnerBank.search(
+    transfer_type = env.ref(
+        "finance_kmitl.payment_type_normal_outbound", raise_if_not_found=False
+    )
+    if not transfer_type:
+        return PayingAccount
+    paying_account = PayingAccount.search(
         [
-            ("partner_id", "=", company.partner_id.id),
-            ("is_paying_account", "=", True),
+            ("company_id", "=", company.id),
+            ("payment_type_id", "=", transfer_type.id),
             ("bank_id", "=", bank.id if bank else False),
         ],
         limit=1,
     )
-    if bank_account:
-        return bank_account
+    if paying_account:
+        return paying_account
     gl_account = env["account.account"].search(
         [("company_id", "=", company.id), ("account_type", "=", "asset_cash")],
         limit=1,
     )
     if not gl_account:
-        return PartnerBank
+        return PayingAccount
     bank_account = PartnerBank.search(
         [
             ("partner_id", "=", company.partner_id.id),
@@ -635,11 +641,12 @@ def _demo_paying_account(env, company, bank):
             "bank_id": bank.id if bank else False,
             "acc_holder_name": company.name,
         })
-    bank_account.write({
-        "is_paying_account": True,
+    return PayingAccount.create({
+        "bank_account_id": bank_account.id,
+        "payment_type_id": transfer_type.id,
         "payment_account_id": gl_account.id,
+        "company_id": company.id,
     })
-    return bank_account
 
 
 def _classify_dr(env, dr):

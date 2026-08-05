@@ -165,7 +165,7 @@ class BankPaymentExport(models.Model):
             paying_account = payment.paying_account_id
             if paying_account:
                 senders.add(("account", paying_account.id))
-                bics.add(paying_account.bank_id.bic)
+                bics.add(paying_account.bank_account_id.bank_id.bic)
             else:
                 senders.add(("journal", payment.journal_id.id))
                 bics.add(payment.journal_id.bank_id.bic)

@@ -17,14 +17,14 @@
     <record id="payment_subject_salary" model="kmitl.payment.subject">
         <field name="name">เงินเดือน</field>
         <field name="sequence">10</field>
-        <field name="default_method">transfer</field>
+        <field name="default_payment_type_id" ref="payment_type_normal_outbound"/>
     </record>
 
     <!-- เงินยืม/สำรองจ่าย: จ่ายจากหัวจ่ายธนาคารเดียวกับบัญชีผู้รับ -->
     <record id="payment_subject_advance_reimburse" model="kmitl.payment.subject">
         <field name="name">เงินยืม/สำรองจ่าย</field>
         <field name="sequence">20</field>
-        <field name="default_method">transfer</field>
+        <field name="default_payment_type_id" ref="payment_type_normal_outbound"/>
         <field name="auto_match_payee_bank" eval="True"/>
     </record>
 
@@ -32,14 +32,14 @@
     <record id="payment_subject_vendor_direct" model="kmitl.payment.subject">
         <field name="name">จ่ายตรงคู่ค้า</field>
         <field name="sequence">30</field>
-        <field name="default_method">transfer</field>
+        <field name="default_payment_type_id" ref="payment_type_normal_outbound"/>
     </record>
 
     <!-- ค่าน้ำค่าไฟ: ออกเป็นเช็คธนาคาร -->
     <record id="payment_subject_utilities" model="kmitl.payment.subject">
         <field name="name">ค่าน้ำค่าไฟ</field>
         <field name="sequence">40</field>
-        <field name="default_method">cheque</field>
+        <field name="default_payment_type_id" ref="payment_type_cheque_outbound"/>
     </record>
 
 </odoo>

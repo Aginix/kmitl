@@ -14,6 +14,11 @@ class KmitlPaymentSubject(models.Model):
     - *out of which account* — a default paying account (หัวจ่าย) plus the set
       of accounts allowed for this subject.
 
+    A paying account already names its method, so the method here is what
+    **disambiguates** the allowed set: the same bank can hold a transfer paying
+    account and a cheque one, and auto-matching a payee's bank has to know which
+    of the two this subject means.
+
     The allowed set is what makes the real cases fall out of one mechanism:
     salary allows only the KTB account; a staff advance allows all four bank
     accounts and each payee is served from the account at their own bank;
@@ -27,17 +32,14 @@ class KmitlPaymentSubject(models.Model):
     name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
-    default_method = fields.Selection(
-        selection=[
-            ("transfer", "เงินโอน"),
-            ("cheque", "เช็ค"),
-            ("cash", "เงินสด"),
-        ],
+    default_payment_type_id = fields.Many2one(
+        comodel_name="kmitl.payment.type",
         string="Default Method",
         required=True,
-        default="transfer",
-        help="Payment method applied to every request line by default; the "
-        "auditor can override individual lines.",
+        domain="[('direction', '=', 'outbound')]",
+        help="วิธีจ่าย this subject is normally paid by. It picks which of the "
+        "allowed paying accounts apply — the auditor overrides by choosing a "
+        "paying account of another method.",
     )
     auto_match_payee_bank = fields.Boolean(
         string="Auto-match by Payee's Bank",
@@ -47,23 +49,21 @@ class KmitlPaymentSubject(models.Model):
         "off, every payee is paid from the main paying account.",
     )
     default_paying_account_id = fields.Many2one(
-        comodel_name="res.partner.bank",
+        comodel_name="kmitl.paying.account",
         string="Main / Fallback Paying Account",
-        domain="[('is_paying_account', '=', True)]",
         help="With auto-match off: the one account (หัวจ่ายหลัก) every payee "
         "is paid from. With auto-match on: the fallback (หัวจ่ายสำรอง) for a "
         "payee whose bank matches no allowed account. Left empty, the "
         "institute-wide default on the company applies.",
     )
     allowed_paying_account_ids = fields.Many2many(
-        comodel_name="res.partner.bank",
-        relation="kmitl_payment_subject_paying_bank_rel",
+        comodel_name="kmitl.paying.account",
+        relation="kmitl_payment_subject_paying_account_rel",
         column1="subject_id",
-        column2="bank_account_id",
+        column2="paying_account_id",
         string="Allowed Paying Accounts",
-        domain="[('is_paying_account', '=', True)]",
         help="หัวจ่ายที่อนุญาต — the accounts auto-match may pick from, one "
-        "per bank.",
+        "per bank per method.",
     )
 
     @api.onchange("default_paying_account_id")
@@ -93,6 +93,30 @@ class KmitlPaymentSubject(models.Model):
                     % subject.name
                 )
 
+    @api.constrains("default_paying_account_id", "default_payment_type_id")
+    def _check_default_account_method(self):
+        """The main/fallback account has to be able to pay the subject's way.
+
+        A cheque subject falling back to a transfer account would pay the wrong
+        way out of the wrong GL, and nothing downstream would notice.
+        """
+        for subject in self:
+            account = subject.default_paying_account_id
+            if (
+                account
+                and account.payment_type_id != subject.default_payment_type_id
+            ):
+                raise ValidationError(
+                    _(
+                        "The main/fallback paying account of '%(subject)s' is "
+                        "%(account_method)s but the subject is paid by "
+                        "%(subject_method)s.",
+                        subject=subject.name,
+                        account_method=account.payment_type_id.name,
+                        subject_method=subject.default_payment_type_id.name,
+                    )
+                )
+
     def _paying_account_for_bank(self, bank, company=None):
         return self._paying_account_with_match(bank, company=company)[0]
 
@@ -110,9 +134,15 @@ class KmitlPaymentSubject(models.Model):
 
         The match code is recorded on the disbursement line so the auditor can
         see which payees fell to the fallback and double-check them.
+
+        Only the allowed accounts of the subject's own method are candidates: a
+        bank may hold both a transfer and a cheque paying account, and matching
+        on the bank alone would pick whichever came first.
         """
         self.ensure_one()
-        allowed = self.allowed_paying_account_ids
+        allowed = self.allowed_paying_account_ids.filtered(
+            lambda a: a.payment_type_id == self.default_payment_type_id
+        )
         if self.auto_match_payee_bank and bank:
             match = allowed.filtered(lambda a: a.bank_id == bank)
             if match:

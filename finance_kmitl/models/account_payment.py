@@ -56,16 +56,16 @@ class AccountPayment(models.Model):
     )
 
     paying_account_id = fields.Many2one(
-        comodel_name="res.partner.bank",
+        comodel_name="kmitl.paying.account",
         string="Paying Account",
-        domain="[('is_paying_account', '=', True)]",
         copy=False,
         tracking=True,
         states={"draft": [("readonly", False)]},
         readonly=True,
-        help="หัวจ่าย — the institute's bank account the money leaves from. "
-        "KMITL settles a payable in one step (no outstanding/transit "
-        "account), so the payment is booked against its GL account.",
+        help="หัวจ่าย — the institute's bank account the money leaves from, "
+        "paired with the way it leaves. KMITL settles a payable in one step "
+        "(no outstanding/transit account), so the payment is booked against "
+        "that pair's GL account.",
     )
 
     @api.depends(

@@ -67,7 +67,7 @@ class BankPaymentExportLine(models.Model):
     # account as the fallback for payments made outside the disbursement flow.
     sending_account_id = fields.Many2one(
         comodel_name="res.partner.bank",
-        related="payment_id.paying_account_id",
+        related="payment_id.paying_account_id.bank_account_id",
         string="Sending Account",
         readonly=True,
     )
@@ -76,10 +76,10 @@ class BankPaymentExportLine(models.Model):
     def _compute_sending_account(self):
         super()._compute_sending_account()
         for line in self:
-            paying_account = line.payment_id.paying_account_id
-            if paying_account:
-                line.sending_bank_id = paying_account.bank_id
-                line.sending_acc_number = paying_account.acc_number
+            bank_account = line.payment_id.paying_account_id.bank_account_id
+            if bank_account:
+                line.sending_bank_id = bank_account.bank_id
+                line.sending_acc_number = bank_account.acc_number
 
     # -------------------------------------------------------------------------
     # E-payment result confirmation (manual)
