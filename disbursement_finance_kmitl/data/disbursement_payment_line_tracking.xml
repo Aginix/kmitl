@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Track the payment lines into the request's chatter: who changed a
+         paying account or a recipient bank, from what to what, and when. For a
+         document that moves money that trail is the answer to the question that
+         actually gets asked, so it covers the auditor's changes and the
+         system's derivations too, not only the finance office's corrections. -->
+    <record id="disbursement.model_disbursement_request" model="ir.model">
+        <field name="active_custom_tracking" eval="True"/>
+    </record>
+
+    <record
+        id="field_disbursement_request__payment_line_ids"
+        model="ir.model.fields"
+    >
+        <field name="custom_tracking" eval="True"/>
+    </record>
+
+</odoo>

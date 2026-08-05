@@ -85,7 +85,10 @@
                         confirm="ยืนยันอนุมัติให้เบิกจ่ายเงินตามใบขอเบิกนี้?"
                         attrs="{'invisible': [('state', '!=', 'payment_audited')]}"
                         groups="disbursement_finance_kmitl.group_disbursement_payment_authorizer"/>
-                <button name="action_create_payment"
+                <!-- Opens the Payment Review; the dialog's footer is what
+                     creates the payments. The label states the officer's
+                     intent, not the mechanism. -->
+                <button name="action_open_payment_wizard"
                         string="Create Payment"
                         type="object"
                         class="oe_highlight"
@@ -100,8 +103,9 @@
                         groups="disbursement_finance_kmitl.group_disbursement_payment_finance"/>
             </xpath>
 
-            <!-- Payment page: per-line method / payee bank, editable by the
-                 auditor at bills_posted (base line_ids is readonly then). -->
+            <!-- Payment page: one row per payee — the payment lines that each
+                 become exactly one payment — editable by the auditor while the
+                 audit is open. -->
             <xpath expr="//page[@name='wht']" position="after">
                 <page string="การจ่ายเงิน" name="payment_classification"
                       attrs="{'invisible': [('state', 'not in', ('bills_posted', 'payment_audited', 'payment_authorized', 'paid', 'cleared'))]}">
@@ -113,30 +117,41 @@
                                options="{'no_create': True}"
                                attrs="{'readonly': [('state', '!=', 'bills_posted')], 'required': [('state', '=', 'bills_posted')]}"
                                force_save="1"/>
+                        <field name="payment_subject_auto_match"/>
                     </group>
                     <field name="payment_line_ids" nolabel="1"
                            attrs="{'readonly': [('state', '!=', 'bills_posted')]}">
-                        <tree editable="bottom" create="0" delete="0">
-                            <field name="partner_id" readonly="1" string="Payee"/>
+                        <tree editable="bottom" create="0" delete="0"
+                              decoration-warning="paying_account_match == 'fallback'">
+                            <field name="partner_id" readonly="1"/>
                             <field name="partner_bank_id"
                                    domain="[('partner_id', '=', partner_id)]"/>
-                            <field name="payment_method"/>
+                            <!-- The domain comes from the field: it narrows to
+                                 the subject's allowed accounts, so the policy
+                                 is enforced while choosing rather than
+                                 rejected on save. Picking the account picks
+                                 the method with it — there is no second field
+                                 that could disagree. -->
+                            <field name="allowed_paying_account_ids" invisible="1"/>
                             <field name="paying_account_id"
-                                   options="{'no_create': True}"
-                                   domain="[('is_paying_account', '=', True)]"/>
+                                   options="{'no_create': True}"/>
+                            <field name="payment_type_id" optional="show"/>
                             <!-- How the account was chosen: the fallback rows
-                                 light up amber for the auditor to re-check.
+                                 light up amber to be re-checked.
                                  force_save: the field is readonly (only the
-                                 system and the paying-account onchange set
-                                 it), and without it the client drops the
-                                 value on save. -->
+                                 system and the two onchanges set it), and
+                                 without it the client drops the value on
+                                 save. -->
                             <field name="paying_account_match" widget="badge"
                                    force_save="1"
                                    decoration-success="paying_account_match == 'bank'"
                                    decoration-warning="paying_account_match == 'fallback'"
                                    decoration-info="paying_account_match == 'main'"
                                    decoration-muted="paying_account_match == 'manual'"/>
-                            <field name="price_total" readonly="1"/>
+                            <field name="amount_bill" optional="show"/>
+                            <field name="amount_wht" optional="show"/>
+                            <field name="amount_net"/>
+                            <field name="payment_id" optional="hide"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
                         </tree>
@@ -152,7 +167,7 @@
                         icon="fa-money"
                         attrs="{'invisible': [('payment_count', '=', 0)]}">
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">รายการจ่ายเงิน <field name="payment_count" nolabel="1" /></span>
+                        <span class="o_stat_text">Payment Vouchers <field name="payment_count" nolabel="1" /></span>
                         <span class="o_stat_text text-muted small"><field name="payment_status_display" nolabel="1" /></span>
                     </div>
                 </button>
@@ -166,6 +181,75 @@
                     </div>
                 </button>
             </xpath>
+        </field>
+    </record>
+
+    <!-- Payment Review: the finance office's read-back of every payment line
+         before the payments are created. A form view of the request rather than
+         a transient wizard, so the rows shown are the very rows the payments
+         are built from — nothing is copied and nothing can drift. Closing the
+         dialog discards the corrections; the footer saves them and creates. -->
+    <record id="view_disbursement_request_payment_review" model="ir.ui.view">
+        <field name="name">disbursement.request.form.payment.review</field>
+        <field name="model">disbursement.request</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form string="Payment Review" create="0">
+                <group>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="payment_subject_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <!-- A fallback row only reads as a problem when the
+                             subject is auto-matching, so the officer has to be
+                             able to see which one it is. -->
+                        <field name="payment_subject_auto_match"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                </group>
+                <field name="payment_line_ids" nolabel="1">
+                    <tree editable="bottom" create="0" delete="0"
+                          decoration-warning="paying_account_match == 'fallback'">
+                        <field name="partner_id" readonly="1"/>
+                        <!-- The three banking coordinates finance may correct:
+                             out of which account, into which account, by which
+                             means. Everything else is readonly — who is paid
+                             and how much are not theirs to touch. -->
+                        <field name="partner_bank_id"
+                               domain="[('partner_id', '=', partner_id)]"/>
+                        <field name="allowed_paying_account_ids" invisible="1"/>
+                        <field name="paying_account_id"
+                               options="{'no_create': True}"/>
+                        <field name="payment_type_id" optional="show"/>
+                        <field name="paying_account_match" widget="badge"
+                               force_save="1"
+                               decoration-success="paying_account_match == 'bank'"
+                               decoration-warning="paying_account_match == 'fallback'"
+                               decoration-info="paying_account_match == 'main'"
+                               decoration-muted="paying_account_match == 'manual'"/>
+                        <field name="amount_bill" optional="show"/>
+                        <field name="amount_wht" optional="show"/>
+                        <field name="amount_net"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                    </tree>
+                </field>
+                <group class="oe_subtotal_footer oe_right">
+                    <field name="payment_amount_net"
+                           class="oe_subtotal_footer_separator"/>
+                </group>
+                <div class="oe_clear"/>
+                <footer>
+                    <button name="action_create_payment"
+                            string="Confirm and Create Payment"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
         </field>
     </record>
 

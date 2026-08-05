@@ -98,44 +98,62 @@ class DisbursementRequest(models.Model):
         help="เรื่องที่จ่าย — drives how the paying bank (หัวจ่าย) is chosen "
         "and the default payment method per line.",
     )
-    # Editable alias of line_ids for the Payment page: the base line_ids
-    # one2many is readonly after draft (READONLY_STATES), but the auditor must
-    # set the per-line payment method at bills_posted.
+    payment_subject_auto_match = fields.Boolean(
+        related="payment_subject_id.auto_match_payee_bank",
+        string="Auto-match by Payee's Bank",
+        readonly=True,
+        help="Shown with the payment lines because a fallback row only reads "
+        "as a problem when the subject is auto-matching in the first place.",
+    )
+    # One payee, one payment: the payee-level rows that each become exactly one
+    # account.payment against exactly one posted bill.
     payment_line_ids = fields.One2many(
-        comodel_name="disbursement.request.line",
+        comodel_name="disbursement.payment.line",
         inverse_name="request_id",
         string="Payment Lines",
         copy=False,
     )
+    payment_amount_net = fields.Monetary(
+        string="Total Net to Pay",
+        compute="_compute_payment_amount_net",
+        currency_field="currency_id",
+        help="What will actually leave the bank for the payments about to be "
+        "created.",
+    )
+
+    @api.depends(
+        "payment_line_ids.amount_net",
+        "payment_line_ids.payment_id",
+        "payment_line_ids.bill_id.state",
+        "payment_line_ids.bill_id.payment_state",
+    )
+    def _compute_payment_amount_net(self):
+        for record in self:
+            record.payment_amount_net = sum(
+                record._payable_payment_lines().mapped("amount_net")
+            )
 
     @api.onchange("payment_subject_id")
     def _onchange_payment_subject_id(self):
-        """Default every line's method and paying account from the subject.
+        """Re-derive the payment lines the auditor did not pick by hand.
 
-        Switching the subject re-derives the lines the auditor did not pick by
-        hand — their match result records who chose them, so a hand-picked
-        account (``manual``) is preserved while everything derived from the
-        previous subject follows the new one.
+        The match result records who chose each paying account, so a hand-picked
+        one (``manual``) is preserved while everything derived from the previous
+        subject follows the new one.
         """
         if self.payment_subject_id:
-            # Work on payment_line_ids, the alias the การจ่ายเงิน page edits:
-            # in an onchange the two one2many fields are separate pseudo-record
-            # sets, and only changes to the field whose sub-view carries the
-            # method / paying-account columns reach the screen. On real records
-            # both resolve to the same rows.
-            lines = self.payment_line_ids
+            lines = self.payment_line_ids.filtered(lambda l: not l.payment_id)
             derived = lines.filtered(
                 lambda l: l.paying_account_match != "manual"
             )
             derived.update(
-                {"payment_method": False, "paying_account_id": False,
-                 "paying_account_match": False}
+                {"paying_account_id": False, "paying_account_match": False}
             )
             self._apply_subject_defaults(lines)
 
     def _apply_subject_defaults(self, lines):
-        """Fill method and paying account (หัวจ่าย) on ``lines`` from the
-        subject, leaving values the auditor already set alone.
+        """Fill the paying account (หัวจ่าย) on ``lines`` from the subject,
+        leaving values a person already set alone.
 
         A subject that auto-matches serves each payee from the allowed account
         held at their own bank — that is what pays a staff advance out of the
@@ -146,15 +164,74 @@ class DisbursementRequest(models.Model):
         subject = self.payment_subject_id
         if not subject:
             return
-        for line in lines:
-            if not line.payment_method:
-                line.payment_method = subject.default_method
+        for line in lines.filtered(lambda l: not l.payment_id):
             if not line.paying_account_id:
                 account, match = subject._paying_account_with_match(
                     line.partner_bank_id.bank_id, company=self.company_id
                 )
                 line.paying_account_id = account
                 line.paying_account_match = match if account else False
+
+    # ------------------------------------------------------------------
+    # Payment lines (one payee, one payment)
+    # ------------------------------------------------------------------
+    def _ensure_payment_lines(self):
+        """Make a payment line for every posted bill that has none, then bring
+        the amounts of the rows no payment has frozen up to date.
+
+        Idempotent and cheap to call, so it runs at every door into the payment
+        phase rather than only at the ``bills_posted`` transition: a request can
+        then never show an empty payment tab, a bill accounting reversed and
+        re-issued picks up its own row unaided, and a database whose requests
+        predate this model needs no migration.
+
+        Runs sudo because it is a system derivation — the accounting user who
+        posts the last bill triggers it without holding rights on these rows.
+
+        See ``docs/adr/0003-ensure-payment-lines-on-access.md``.
+        """
+        PaymentLine = self.env["disbursement.payment.line"].sudo()
+        for record in self.sudo():
+            billed = record.payment_line_ids.mapped("bill_id")
+            missing = record.bill_ids.filtered(
+                lambda bill: bill.state == "posted" and bill not in billed
+            )
+            if missing:
+                PaymentLine.create([
+                    record._prepare_payment_line_vals(bill) for bill in missing
+                ])
+            record._apply_subject_defaults(record.payment_line_ids)
+            record.payment_line_ids._refresh_amounts()
+        # Read back through the caller's own environment: the rows were made
+        # sudo, and everything downstream reads them as the acting user.
+        self.invalidate_recordset(["payment_line_ids"])
+        return True
+
+    def _prepare_payment_line_vals(self, bill):
+        """Prepare a payment line for ``bill``.
+
+        The payee's bank starts from the bill, which is the recipient the
+        accounting document already states.
+        """
+        self.ensure_one()
+        return {
+            "request_id": self.id,
+            "bill_id": bill.id,
+            "partner_bank_id": bill.partner_bank_id.id or False,
+        }
+
+    def _payable_payment_lines(self):
+        """The payment lines a payment is still to be created for.
+
+        A row whose bill was reversed or already paid stays on the request as a
+        record of what was reviewed, but is not paid again.
+        """
+        self.ensure_one()
+        return self.payment_line_ids.filtered(
+            lambda line: not line.payment_id
+            and line.bill_id.state == "posted"
+            and line.bill_id.payment_state == "not_paid"
+        )
 
     # One2many via the stored back-reference on account.payment, so payment
     # progress recomputes reactively (no search() inside computes).
@@ -235,8 +312,10 @@ class DisbursementRequest(models.Model):
     def write(self, vals):
         res = super().write(vals)
         # Entering bills_posted (set by the accounting bridge when the last
-        # bill posts) opens the payment-execution phase: notify the auditors.
+        # bill posts) opens the payment-execution phase: lay out the payee-level
+        # payment lines and notify the auditors.
         if vals.get("state") == "bills_posted":
+            self._ensure_payment_lines()
             self._schedule_payment_todo(TO_AUDIT_ACTIVITY, AUDITOR_GROUP)
         return res
 
@@ -244,11 +323,17 @@ class DisbursementRequest(models.Model):
     # Payment classification helpers
     # ------------------------------------------------------------------
     def _check_payment_classification(self):
-        """Validate the auditor's classification before confirming the audit.
+        """Validate the classification before confirming the audit.
 
         Fills the empty method / paying account from the subject, then blocks
         with an actionable error listing the offending payees when the
         classification cannot drive payment creation.
+
+        The checks that once forced every item of a payee into agreement are
+        gone: one payee is one payment line, so mixed methods, mixed paying
+        accounts and mixed recipient banks are no longer states the data can
+        reach. Nor can a method disagree with its account — the account names
+        the method.
         """
         for record in self:
             subject = record.payment_subject_id
@@ -257,11 +342,10 @@ class DisbursementRequest(models.Model):
                     _("Select the payment subject (เรื่องที่จ่าย) before "
                       "confirming the audit.")
                 )
-            record._apply_subject_defaults(record.line_ids)
+            record._ensure_payment_lines()
+            lines = record._payable_payment_lines()
 
-            no_account = record.line_ids.filtered(
-                lambda l: not l.paying_account_id
-            )
+            no_account = lines.filtered(lambda l: not l.paying_account_id)
             if no_account:
                 raise UserError(
                     _(
@@ -275,7 +359,7 @@ class DisbursementRequest(models.Model):
                     )
                 )
             if subject.allowed_paying_account_ids:
-                not_allowed = record.line_ids.filtered(
+                not_allowed = lines.filtered(
                     lambda l: l.paying_account_id
                     not in subject.allowed_paying_account_ids
                 )
@@ -295,38 +379,11 @@ class DisbursementRequest(models.Model):
                         )
                     )
 
-            # One bill per payee, paid in full by one payment — so all lines of
-            # the same payee must share one method, one payee bank account and
-            # one paying account.
-            lines_by_partner = record._lines_by_partner()
-            for field_name, message in (
-                (
-                    "payment_method",
-                    _("Payees with mixed payment methods (each payee must use "
-                      "a single method): %s"),
-                ),
-                (
-                    "partner_bank_id",
-                    _("Payees with more than one bank account on their lines "
-                      "(the bill and its payment can only carry one, so pick a "
-                      "single account per payee): %s"),
-                ),
-                (
-                    "paying_account_id",
-                    _("Payees paid from more than one paying account (หัวจ่าย) "
-                      "— one payment per payee can only draw on one: %s"),
-                ),
-            ):
-                mixed = [
-                    partner.name
-                    for partner, lines in lines_by_partner.items()
-                    if len(set(lines.mapped(field_name))) > 1
-                ]
-                if mixed:
-                    raise UserError(message % ", ".join(mixed))
-
-            transfer_lines = record.line_ids.filtered(
-                lambda l: l.payment_method == "transfer"
+            # A cheque is handed over and cash is counted out; only a payment
+            # that travels through the banking system needs the payee's account.
+            transfer_lines = lines.filtered(
+                lambda l: not l.paying_account_id.is_cheque
+                and not l.paying_account_id.is_cash
             )
             no_bank = transfer_lines.filtered(lambda l: not l.partner_bank_id)
             if no_bank:
@@ -338,17 +395,6 @@ class DisbursementRequest(models.Model):
                     % ", ".join(no_bank.mapped("partner_id.name"))
                 )
         return True
-
-    def _lines_by_partner(self):
-        """Group request lines by payee partner (mirrors the bill grouping)."""
-        self.ensure_one()
-        grouped = {}
-        for line in self.line_ids:
-            grouped.setdefault(
-                line.partner_id, self.env["disbursement.request.line"]
-            )
-            grouped[line.partner_id] |= line
-        return grouped
 
     # ------------------------------------------------------------------
     # Workflow actions (forward-only, no reject in this phase)
@@ -489,10 +535,14 @@ class DisbursementRequest(models.Model):
         return super().action_cancel()
 
     # ------------------------------------------------------------------
-    # Payment creation (finance)
+    # Payment review and creation (finance)
     # ------------------------------------------------------------------
-    def action_create_payment(self):
-        """Create draft payments from the DR, one per posted unpaid bill."""
+    def _check_payment_ready(self):
+        """Refuse to review or create payments the request cannot support.
+
+        Runs before the review opens so the officer meets the problem on the
+        button rather than after reading through twenty rows.
+        """
         self.ensure_one()
         if self.state != "payment_authorized":
             raise UserError(
@@ -511,9 +561,9 @@ class DisbursementRequest(models.Model):
                 )
                 % ", ".join(existing_payments.mapped("name"))
             )
-        posted_bills = self.bill_ids.filtered(lambda b: b.state == "posted")
-        partial_bills = posted_bills.filtered(
-            lambda b: b.payment_state == "partial"
+        self._ensure_payment_lines()
+        partial_bills = self.bill_ids.filtered(
+            lambda b: b.state == "posted" and b.payment_state == "partial"
         )
         if partial_bills:
             raise UserError(
@@ -523,45 +573,56 @@ class DisbursementRequest(models.Model):
                 )
                 % ", ".join(partial_bills.mapped("name"))
             )
-        unpaid_bills = posted_bills.filtered(
-            lambda b: b.payment_state == "not_paid"
-        )
-        if not unpaid_bills:
+        lines = self._payable_payment_lines()
+        if not lines:
             raise UserError(_("No posted unpaid bills to pay."))
+        return lines
 
-        # The paying account (หัวจ่าย) and the operation type come from the
-        # auditor's classification; the journal is the voucher type (ใบสำคัญ)
-        # configured on the operation type, not a bank account.
-        self._check_payment_classification()
-        transfer_type = self.env.ref(
-            "finance_kmitl.payment_type_normal_outbound",
-            raise_if_not_found=False,
-        )
-        cheque_type = self.env.ref(
-            "finance_kmitl.payment_type_cheque_outbound",
-            raise_if_not_found=False,
-        )
-        cash_type = self.env.ref(
-            "finance_kmitl.payment_type_cash_outbound",
-            raise_if_not_found=False,
-        )
-        type_by_method = {
-            "cheque": cheque_type,
-            "cash": cash_type or transfer_type,
+    def action_open_payment_wizard(self):
+        """Open the Payment Review — the finance office's read-back of every
+        payment line before the payments are created.
+
+        A checkpoint, not an approval: nothing changes state here. Only the
+        banking coordinates may be corrected, and closing the dialog leaves the
+        request exactly as it was.
+        """
+        self.ensure_one()
+        self._check_payment_ready()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Payment Review"),
+            "res_model": "disbursement.request",
+            "res_id": self.id,
+            "view_mode": "form",
+            "views": [(
+                self.env.ref(
+                    "disbursement_finance_kmitl."
+                    "view_disbursement_request_payment_review"
+                ).id,
+                "form",
+            )],
+            "target": "new",
         }
-        lines_by_partner = self._lines_by_partner()
+
+    def action_create_payment(self):
+        """Create draft payments from the DR, one per payment line.
+
+        Submitting them is deliberately left to the officer: submitting is what
+        makes a payment exportable to the bank and what registers a cheque, so
+        it is a decision about timing rather than a consequence of creation.
+        """
+        self.ensure_one()
+        lines = self._check_payment_ready()
+
+        # The paying account (หัวจ่าย) carries both the account the money leaves
+        # and the operation type it leaves by; the journal is the voucher type
+        # (ใบสำคัญ) configured on that operation type, not a bank account.
+        self._check_payment_classification()
 
         payments = self.env["account.payment"]
-        for bill in unpaid_bills:
-            partner_lines = lines_by_partner.get(bill.partner_id)
-            if not partner_lines:
-                raise UserError(
-                    _("No request lines found for payee %s.")
-                    % bill.partner_id.name
-                )
-            method = partner_lines[0].payment_method or "transfer"
-            paying_account = partner_lines[0].paying_account_id
-            payment_type = type_by_method.get(method) or transfer_type
+        for line in lines:
+            bill = line.bill_id
+            payment_type = line.paying_account_id.payment_type_id
             journal = payment_type.journal_id if payment_type else False
             if not journal:
                 journal = self.env["account.journal"].search(
@@ -585,38 +646,24 @@ class DisbursementRequest(models.Model):
                 lambda l: l.account_type == "liability_payable"
                 and not l.reconciled
             )
-            amount = abs(bill.amount_residual)
-
-            wht_lines = bill.line_ids.filtered("wht_tax_id")
-            write_off_line_vals = []
-            if wht_lines:
-                deduction_list, amount_wht = (
-                    wht_lines._prepare_deduction_list(
-                        fields.Date.context_today(self),
-                        bill.currency_id,
-                    )
-                )
-                if deduction_list and amount_wht:
-                    amount -= amount_wht
-                    for deduct in deduction_list:
-                        write_off_line_vals.append({
-                            "name": deduct["name"],
-                            "account_id": deduct["account_id"],
-                            "partner_id": bill.partner_id.id,
-                            "currency_id": bill.currency_id.id,
-                            "amount_currency": -deduct["amount"],
-                            "balance": -deduct["amount"],
-                            "wht_tax_id": deduct["wht_tax_id"],
-                            "tax_base_amount": deduct["wht_amount_base"],
-                        })
+            # One helper works out the money for both the row the officer just
+            # reviewed and the payment about to carry it, so the two cannot
+            # state different amounts.
+            amount_bill, amount_wht, write_off_line_vals = (
+                line._payment_amount_vals()
+            )
 
             payment_vals = {
                 "disbursement_request_id": self.id,
                 "partner_id": bill.partner_id.id,
-                "amount": amount,
+                "amount": amount_bill - amount_wht,
                 "currency_id": bill.currency_id.id,
                 "journal_id": journal.id,
-                "paying_account_id": paying_account.id,
+                # The recipient bank is the one reviewed on the payment line:
+                # left to Odoo's compute it would silently fall back to the
+                # payee's first account, which is not what anyone chose.
+                "partner_bank_id": line.partner_bank_id.id or False,
+                "paying_account_id": line.paying_account_id.id,
                 "payment_type": "outbound",
                 "partner_type": "supplier",
                 "ref": _("%s - %s", self.name, bill.name),
@@ -633,6 +680,14 @@ class DisbursementRequest(models.Model):
                 payment.move_id.line_ids.write(
                     {"analytic_distribution": bill.analytic_distribution}
                 )
+            # Stamping the payment freezes the row: from here the payment is
+            # the record of what left the bank.
+            line.write({
+                "amount_bill": amount_bill,
+                "amount_wht": amount_wht,
+                "amount_net": amount_bill - amount_wht,
+                "payment_id": payment.id,
+            })
             payments |= payment
 
         for payment in payments:
