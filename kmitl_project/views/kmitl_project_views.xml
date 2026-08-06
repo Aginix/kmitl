@@ -183,6 +183,7 @@
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />
                                         <field name="budget_type" invisible="1" />
+                                        <field name="category_id" invisible="1" />
                                         <field name="name" placeholder="ชื่อรายการรายรับ (พิมพ์เอง)" />
                                         <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="show" />
                                         <field name="description" placeholder="คำอธิบาย" optional="hide" />
