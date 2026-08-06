@@ -445,9 +445,24 @@
                             aria-label="Basic radio toggle button group"
                         >
                             <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'complete' else 'outline-secondary' }}"
-                                for="complete"
-                                >แล้วเสร็จ</label
+                                t-attf-class="btn btn-{{ 'primary' if kmitl_project.state == 'draft' else 'outline-secondary' }}"
+                                for="draft"
+                                >แบบร่าง</label
+                            >
+                            <label
+                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'to_verify' else 'outline-secondary' }}"
+                                for="to_verify"
+                                >รอตรวจสอบ/จองงบ</label
+                            >
+                            <label
+                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'to_send' else 'outline-secondary' }}"
+                                for="to_send"
+                                >รอส่งขออนุมัติ</label
+                            >
+                            <label
+                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'sent' else 'outline-secondary' }}"
+                                for="sent"
+                                >รอลงนาม/อนุมัติ</label
                             >
                             <label
                                 t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'in_progress' else 'outline-secondary' }}"
@@ -455,24 +470,24 @@
                                 >กำลังดำเนินการ</label
                             >
                             <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'on_hold' else 'outline-secondary' }}"
-                                for="on_hold"
-                                >ชะลอ</label
+                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'complete' else 'outline-secondary' }}"
+                                for="complete"
+                                >แล้วเสร็จ</label
                             >
                             <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'new' else 'outline-secondary' }}"
-                                for="new"
-                                >ยังไม่เริ่มดำเนินการ</label
+                                t-attf-class="btn btn-{{ 'warning' if kmitl_project.state == 'returned' else 'outline-secondary' }}"
+                                for="returned"
+                                >ถูกตีกลับ</label
                             >
                             <label
-                                t-attf-class="btn btn-{{ 'success' if kmitl_project.state == 'cancel' else 'outline-secondary' }}"
+                                t-attf-class="btn btn-{{ 'danger' if kmitl_project.state == 'rejected' else 'outline-secondary' }}"
+                                for="rejected"
+                                >ถูกปฏิเสธ</label
+                            >
+                            <label
+                                t-attf-class="btn btn-{{ 'danger' if kmitl_project.state == 'cancel' else 'outline-secondary' }}"
                                 for="cancel"
                                 >ยกเลิก</label
-                            >
-                            <label
-                                t-attf-class="btn btn-{{ 'primary' if kmitl_project.state == 'draft' else 'outline-secondary' }}"
-                                for="draft"
-                                >แบบร่าง</label
                             >
                         </div>
                     </div>

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
@@ -22,18 +21,18 @@ class KmitlProject(models.Model):
     def _reverse_field(self):
         return "kmitl_project_ids"
 
-    def button_draft(self):
-        res = super().button_draft()
+    def action_draft(self):
+        res = super().action_draft()
         for request in self:
             request.exception_ids = False
             request.main_exception_id = False
             request.ignore_exception = False
         return res
 
-    def button_confirm(self):
+    def action_confirm(self):
         if self.detect_exceptions() and not self.ignore_exception:
             return self._popup_exceptions()
-        return super().button_confirm()
+        return super().action_confirm()
 
     @api.model
     def _get_popup_action(self):

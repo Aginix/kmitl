@@ -1,6 +1,6 @@
 # KMITL Project
 
-Institutional project/activity planning (โครงการ/กิจกรรม) for KMITL. A project is authored against a *floating* project-type budget code, reserves its full budget when confirmed, and is then spent down through purchase requests and disbursements — behaving like a procurement plan from the reserve point onward.
+Institutional project/activity planning (โครงการ/กิจกรรม) for KMITL. A project is authored against a *floating* project-type budget code, reserves its full budget partway through an **e-Saraban-routed approval**, and is then spent down through purchase requests and disbursements — behaving like a procurement plan from the reserve point onward.
 
 ## Language
 
@@ -12,12 +12,16 @@ _Avoid_: activity (the record is the whole โครงการ/กิจกร
 A `kmitl.project` with `project_type = strategic_project` — same shape as a Project but must align to all four strategic-plan levels (national → master → NESDC → KMITL).
 _Avoid_: strategic plan (that names the `project.strategic.plan` it aligns to, not the project)
 
+**Project Approval (ขออนุมัติจัดโครงการและค่าใช้จ่าย)**:
+The formal authorization a project obtains before it may execute — a หนังสือ (e-Saraban Document) requesting approval to *run the project and incur its expenses*, routed through the endorsement/signing chain. The project reserves its budget first, then raises the หนังสือ; when the หนังสือ is signed the project is authorized and **execution begins immediately** (it may raise purchase requests and disbursements at once — there is no idle "approved, not started" resting state). Carried on `kmitl.project` itself (the project *is* the approvable entity) through the `kmitl_project_sarabun` bridge, mirroring [Approval Request](../agx_approval/CONTEXT.md)'s approval front.
+_Avoid_: approval request (that is the separate `agx_approval` เอกสาร; a project carries its **own** approval states — it does not spawn an `approval.request`)
+
 **Project Budget (`budget_amount`)**:
-The full amount a project earmarks from its floating budget code. Reserved as one shared `budget.commitment` when the project is confirmed (`draft→new`); drawn down by the project's purchase requests and disbursements. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
+The full amount a project earmarks from its floating budget code. Reserved as one shared `budget.commitment` at the **budget-reservation step of the project's approval** (state `to_verify`, *before* the ขออนุมัติ หนังสือ is sent) and **released if the approval is rejected**; drawn down by the project's purchase requests and disbursements. See [budget » Reserve / Floating Budget](../budget/CONTEXT.md).
 _Avoid_: allocation, cost
 
 **Project Number (เลขที่รันโครงการ, `key`)**:
-A sequential running number that identifies a Project. Minted once, when the project is first confirmed (`draft→new`), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which is therefore frozen once a Project Number exists. Reused as the `code` of the project's analytic account.
+A sequential running number that identifies a Project. Minted once, at the **budget-reservation step of its approval** (`to_verify→to_send`, จองงบประมาณ — the moment its `budget.commitment` and analytic account are created), and stable for the project's life — a later reset-to-draft never re-issues or clears it. Stamped with the project's **fiscal year** (`account_fiscal_year_id`), which is therefore frozen once a Project Number exists. Reused as the `code` of the project's analytic account.
 _Avoid_: Project Code (รหัสโครงการ) — a distinct approval-time identifier, **not yet implemented**; do not conflate it with the Project Number even though both currently share the `key` field.
 
 **Project Budget Remaining (งบประมาณคงเหลือ)**:

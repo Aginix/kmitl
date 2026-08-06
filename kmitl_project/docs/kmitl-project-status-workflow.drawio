@@ -1,0 +1,182 @@
+<mxfile host="Electron" modified="2026-08-06T00:00:00.000Z" version="26.0.0">
+  <diagram id="kmitl-project-status-v2" name="Approval-Gated Workflow (ADR-0002)">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Banner + Title -->
+        <mxCell id="banner" value="⚠ DESIGN TARGET — ยังไม่ build (docs-first, ADR-0002) · โค้ดปัจจุบันยังเป็นเครื่องสถานะเดิม draft→new→in_progress→on_hold→complete" style="text;html=1;strokeColor=none;fillColor=#FDECEA;align=left;verticalAlign=middle;fontSize=12;fontColor=#B03A2E;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="16" width="1120" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="โครงการ/กิจกรรม (kmitl.project) — Approval-Gated Status Workflow" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="44" width="1200" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- ============ STATE NODES ============ -->
+        <mxCell id="n_start" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#333333;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="70" y="272" width="24" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_draft" value="&lt;b&gt;draft&lt;/b&gt;&lt;br&gt;แบบร่าง&lt;br&gt;(แก้ไขได้)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="140" y="250" width="160" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n_verify" value="&lt;b&gt;to_verify&lt;/b&gt;&lt;br&gt;รอตรวจสอบ /&lt;br&gt;จองงบประมาณ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="250" width="160" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n_tosend" value="&lt;b&gt;to_send&lt;/b&gt;&lt;br&gt;รอส่งขออนุมัติ&lt;br&gt;จัดโครงการฯ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="250" width="160" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n_sent" value="&lt;b&gt;sent&lt;/b&gt;&lt;br&gt;ส่งขออนุมัติแล้ว&lt;br&gt;(หนังสือเวียนลงนาม)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="250" width="160" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n_inprog" value="&lt;b&gt;in_progress&lt;/b&gt;&lt;br&gt;กำลังดำเนินการ&lt;br&gt;(สั่งซื้อ/เบิกได้)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d0e0f5;strokeColor=#4a7bb5;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="250" width="160" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n_complete" value="&lt;b&gt;complete&lt;/b&gt;&lt;br&gt;เสร็จสิ้น&lt;br&gt;(terminal)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1660" y="250" width="160" height="72" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_returned" value="&lt;b&gt;returned&lt;/b&gt;&lt;br&gt;ถูกตีกลับ/ดึงกลับ&lt;br&gt;(คงงบ · แก้ได้ทุกฟิลด์)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="480" width="180" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n_rejected" value="&lt;b&gt;rejected&lt;/b&gt;&lt;br&gt;ถูกปฏิเสธ&lt;br&gt;(คืนงบ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="480" width="160" height="72" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_cancel" value="&lt;b&gt;cancel&lt;/b&gt;&lt;br&gt;ยกเลิก" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6b8b7;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1690" y="870" width="160" height="64" as="geometry" />
+        </mxCell>
+
+        <!-- ============ FORWARD EDGES ============ -->
+        <mxCell id="e_start" value="สร้าง" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#333333;fontSize=10;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="n_start" target="n_draft">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="ยืนยัน&lt;br&gt;► เช็ค exception" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565C0;strokeWidth=2;fontColor=#0D3C61;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="n_draft" target="n_verify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="จองงบประมาณ&lt;br&gt;► mint เลข+analytic+จอง" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#1565C0;strokeWidth=2;fontColor=#0D3C61;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="n_verify" target="n_tosend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="สร้างหนังสือ&lt;br&gt;action_submit_to_sarabun&lt;br&gt;[bridge]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6A1B9A;strokeWidth=2;fontColor=#4A148C;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="n_tosend" target="n_sent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="ลงนามแล้ว (อัตโนมัติ)&lt;br&gt;_on_sarabun_completed&lt;br&gt;[bridge]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2E7D32;strokeWidth=2;fontColor=#1B5E20;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="n_sent" target="n_inprog">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="Complete&lt;br&gt;(manual)&lt;br&gt;► ไม่คืนงบเหลือ" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2E7D32;strokeWidth=2;fontColor=#1B5E20;fontSize=11;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="n_inprog" target="n_complete">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Fallback: to_send -> in_progress (no bridge) -->
+        <mxCell id="e_fallback" value="fallback: อนุมัติ manual (base ไม่มี bridge)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#78909C;strokeWidth=1.5;fontColor=#546E7A;fontSize=10;dashed=1;endArrow=block;endFill=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="n_tosend" target="n_inprog">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="150" />
+              <mxPoint x="1440" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ยกเลิกการส่ง: sent -> to_send -->
+        <mxCell id="e_cancelsend" value="ยกเลิกการส่ง · _on_sarabun_cancelled&lt;br&gt;► คงงบ · ทำหนังสือใหม่" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#E67E22;strokeWidth=1.5;fontColor=#A04000;fontSize=10;endArrow=block;endFill=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="n_sent" target="n_tosend">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1120" y="205" />
+              <mxPoint x="820" y="205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ============ SARABUN NEGATIVE (from sent) ============ -->
+        <mxCell id="e_returned" value="ตีกลับ / ดึงกลับ&lt;br&gt;_on_sarabun_returned&lt;br&gt;► คงงบ" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#D4A017;strokeWidth=1.5;fontColor=#7E5109;fontSize=10;endArrow=block;endFill=1;exitX=0.35;exitY=1;entryX=0.6;entryY=0;" edge="1" parent="1" source="n_sent" target="n_returned">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_resend" value="ส่งใหม่&lt;br&gt;► re-check งบ" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#D4A017;strokeWidth=1.5;fontColor=#7E5109;fontSize=10;endArrow=block;endFill=1;exitX=0.85;exitY=0;entryX=0.15;entryY=1;" edge="1" parent="1" source="n_returned" target="n_sent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rejected" value="ปฏิเสธ · _on_sarabun_rejected&lt;br&gt;► คืนงบ" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#C0392B;strokeWidth=1.5;fontColor=#7B241C;fontSize=10;endArrow=block;endFill=1;exitX=0.65;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="n_sent" target="n_rejected">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1300" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ============ GROUPED: CANCEL ============ -->
+        <mxCell id="note_cancel" value="&lt;b&gt;ยกเลิก (Cancel · mgr)&lt;/b&gt;&lt;br&gt;จาก: draft · to_verify · to_send · returned · rejected · in_progress&lt;br&gt;► คืนงบ (เก็บไว้ถ้าใช้จ่ายไปแล้ว)&lt;br&gt;✗ บล็อกจาก sent (ต้องดึงกลับ/ยกเลิกการส่งก่อน) และ complete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdecea;strokeColor=#C0392B;fontSize=11;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="864" width="500" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cancel_grp" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#C0392B;strokeWidth=1.5;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="note_cancel" target="n_cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============ GROUPED: RESET TO DRAFT ============ -->
+        <mxCell id="note_reset" value="&lt;b&gt;Reset to Draft → draft&lt;/b&gt;&lt;br&gt;จาก: to_verify · to_send · returned · rejected · cancel&lt;br&gt;► คืนงบ (ถ้าจองไว้) · คงเลขที่รันโครงการเดิม&lt;br&gt;✗ บล็อกจาก sent, in_progress, complete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f4f6f6;strokeColor=#7F8C8D;fontSize=11;align=left;verticalAlign=middle;spacingLeft=8;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="900" width="520" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="e_reset_grp" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#7F8C8D;strokeWidth=1.5;dashed=1;endArrow=block;endFill=1;exitX=0;exitY=0.5;entryX=0.5;entryY=1;" edge="1" parent="1" source="note_reset" target="n_draft">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="936" />
+              <mxPoint x="220" y="322" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ============ LEGEND ============ -->
+        <mxCell id="lg_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="380" width="330" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="lg_h" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="388" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1" value="เดินหน้า (ยืนยัน/จองงบ)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1592" y="410" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1s" value="" style="rounded=0;html=1;fillColor=#1565C0;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="415" width="30" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" value="สารบรรณ/ลงนาม (bridge)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1592" y="434" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2s" value="" style="rounded=0;html=1;fillColor=#6A1B9A;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="439" width="30" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3" value="อนุมัติ→ดำเนินการ/เสร็จ" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1592" y="458" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3s" value="" style="rounded=0;html=1;fillColor=#2E7D32;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="463" width="30" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4" value="ตีกลับ/ดึงกลับ (คงงบ)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1592" y="482" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4s" value="" style="rounded=0;html=1;fillColor=#D4A017;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="487" width="30" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5" value="ปฏิเสธ/ยกเลิก (คืนงบ)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1592" y="506" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5s" value="" style="rounded=0;html=1;fillColor=#C0392B;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="511" width="30" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="lg6" value="Reset / fallback (dashed)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1592" y="530" width="270" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg6s" value="" style="rounded=0;html=1;fillColor=none;strokeColor=#7F8C8D;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="535" width="30" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="lg7" value="► = ผลต่อการจองงบ · [bridge] = kmitl_project_sarabun · (mgr) = project manager" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontColor=#555555;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1552" y="550" width="310" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ============ NOTES ============ -->
+        <mxCell id="note_key" value="&lt;b&gt;จุดสำคัญของดีไซน์:&lt;/b&gt;&lt;br&gt;• จองงบ + ออกเลขที่รัน + analytic ที่ &lt;b&gt;to_verify→to_send&lt;/b&gt; (เดิม draft→new) — ปล่อยคืนเมื่อ ปฏิเสธ/reset/ยกเลิก(ยังไม่ใช้)&lt;br&gt;• อนุมัติ = เริ่มทันที (ยุบ approved เข้า in_progress ไม่มีสถานะ 'อนุมัติแต่ยังไม่เริ่ม')&lt;br&gt;• ตัด on_hold ทิ้ง · in_progress/on_hold ถอยกลับ draft ไม่ได้ (ออกได้แค่ complete/cancel)&lt;br&gt;• base นิยาม state ครบ + มี fallback manual · bridge เพิ่มแค่ สร้างหนังสือ + callback&lt;br&gt;• ผู้สร้างขับเองทั้งส่วนหน้า (ยืนยัน→จองงบ→สร้างหนังสือ) — รอทดสอบกับผู้ใช้จริง" style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF9E6;strokeColor=#D6B656;fontSize=11;align=left;verticalAlign=top;size=16;spacingLeft=4;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="600" width="330" height="220" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
