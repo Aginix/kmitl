@@ -167,6 +167,24 @@
                 <attribute name="required">1</attribute>
             </xpath>
 
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_qty']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='price_unit']"
+                position="attributes"
+            >
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.state', '!=', 'draft')]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='line_ids']//tree" position="attributes">
                 <attribute name="no_open">1</attribute>
             </xpath>
@@ -195,7 +213,7 @@
                             name="department_id"
                             string="Department"
                             options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            attrs="{'readonly': [('is_editable', '=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
                     </group>
