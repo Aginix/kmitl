@@ -73,36 +73,47 @@ class TestPaymentWorkflow(TransactionCase):
             "company_id": cls.company.id,
         })
 
-        cls.transfer_type = cls.env.ref(
-            "finance_kmitl.payment_type_normal_outbound"
+        cls.transfer_method = cls.env.ref(
+            "account_kmitl.payment_method_transfer_out"
         )
-        cls.cheque_type = cls.env.ref(
-            "finance_kmitl.payment_type_cheque_outbound"
+        cls.cheque_method = cls.env.ref(
+            "account_kmitl.payment_method_cheque_out"
         )
+        # A paying account is a method line on a voucher journal (ใบสำคัญ).
+        cls.voucher_journal = cls.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", cls.company.id)],
+            order="sequence, id",
+            limit=1,
+        ) or cls.env["account.journal"].create({
+            "name": "Test Voucher PV", "code": "TPV", "type": "bank",
+            "company_id": cls.company.id,
+        })
 
-        # Paying accounts (หัวจ่าย): one per bank per method, as in the KMITL
-        # chart. The KTB cheque account shares the bank account with the KTB
-        # transfer account but books to its own GL.
+        # Paying accounts (หัวจ่าย): method lines on the voucher journal, one
+        # per bank account per way of paying out of it.
         cls.paying_ktb = cls._make_paying_account(
             "PAYKTB", "ธ.กรุงไทย test", cls.ktb, "028-1-03878-3"
         )
         cls.paying_scb = cls._make_paying_account(
             "PAYSCB", "ธ.ไทยพาณิชย์ test", cls.scb, "088-2-11066-5"
         )
+        # The same bank account paid out of a second way: same GL, because the
+        # money leaves the same account however it is paid.
         cls.paying_ktb_cheque = cls._make_paying_account(
-            "PAYKTBCQ", "เช็คจ่าย-ธ.กรุงไทย test", cls.ktb, None,
-            payment_type=cls.cheque_type,
+            None, "เช็ค – ธ.กรุงไทย test", cls.ktb, None,
+            method=cls.cheque_method,
             bank_account=cls.paying_ktb.bank_account_id,
+            gl_account=cls.paying_ktb.payment_account_id,
         )
         cls.subject_single = cls.env["kmitl.payment.subject"].create({
             "name": "Salary test",
-            "default_payment_type_id": cls.transfer_type.id,
+            "default_payment_method_id": cls.transfer_method.id,
             "allowed_paying_account_ids": [(6, 0, cls.paying_ktb.ids)],
             "default_paying_account_id": cls.paying_ktb.id,
         })
         cls.subject_multi = cls.env["kmitl.payment.subject"].create({
             "name": "Advance test",
-            "default_payment_type_id": cls.transfer_type.id,
+            "default_payment_method_id": cls.transfer_method.id,
             "auto_match_payee_bank": True,
             "allowed_paying_account_ids": [
                 (6, 0, (cls.paying_ktb + cls.paying_scb).ids)
@@ -111,20 +122,21 @@ class TestPaymentWorkflow(TransactionCase):
         })
         cls.subject_cheque = cls.env["kmitl.payment.subject"].create({
             "name": "Utilities test",
-            "default_payment_type_id": cls.cheque_type.id,
+            "default_payment_method_id": cls.cheque_method.id,
             "allowed_paying_account_ids": [(6, 0, cls.paying_ktb_cheque.ids)],
             "default_paying_account_id": cls.paying_ktb_cheque.id,
         })
 
     @classmethod
     def _make_paying_account(cls, code, name, bank, acc_number,
-                             payment_type=None, bank_account=None):
-        """A หัวจ่าย: one of the institute's bank accounts paired with a method.
+                             method=None, bank_account=None, gl_account=None):
+        """A หัวจ่าย: a payment method line on the voucher journal that names the
+        bank account money leaves from and the GL account it is booked against.
 
-        The GL account belongs to the pair — a cheque drawn on the same bank
-        account is booked elsewhere than a transfer — so each call makes its own.
+        The GL account belongs to the bank account, not to the pairing, so a
+        second way of paying out of the same account reuses it.
         """
-        gl_account = cls.env["account.account"].create({
+        gl_account = gl_account or cls.env["account.account"].create({
             "name": name,
             "code": code,
             "account_type": "asset_cash",
@@ -135,11 +147,12 @@ class TestPaymentWorkflow(TransactionCase):
             "acc_number": acc_number,
             "bank_id": bank.id,
         })
-        return cls.env["kmitl.paying.account"].create({
+        return cls.env["account.payment.method.line"].create({
+            "name": name,
+            "payment_method_id": (method or cls.transfer_method).id,
+            "journal_id": cls.voucher_journal.id,
             "bank_account_id": bank_account.id,
-            "payment_type_id": (payment_type or cls.transfer_type).id,
             "payment_account_id": gl_account.id,
-            "company_id": cls.company.id,
         })
 
     def _make_bill(self, request, partner, partner_bank, amount):
@@ -203,7 +216,7 @@ class TestPaymentWorkflow(TransactionCase):
         self.assertEqual(request.state, "payment_audited")
         # The audit fills method and paying account from the subject.
         self.assertEqual(
-            request.payment_line_ids.payment_type_id, self.transfer_type
+            request.payment_line_ids.payment_method_id, self.transfer_method
         )
         self.assertEqual(request.payment_line_ids.paying_account_id, self.paying_ktb)
         request.action_authorize()
@@ -252,7 +265,7 @@ class TestPaymentWorkflow(TransactionCase):
     def test_subject_with_no_account_blocks(self):
         subject = self.env["kmitl.payment.subject"].create({
             "name": "No account",
-            "default_payment_type_id": self.transfer_type.id,
+            "default_payment_method_id": self.transfer_method.id,
         })
         request = self._make_billed_request(subject=subject)
         with self.assertRaisesRegex(UserError, "Vendor A"):
@@ -283,7 +296,7 @@ class TestPaymentWorkflow(TransactionCase):
         from the main account, even when another allowed account matches."""
         subject = self.env["kmitl.payment.subject"].create({
             "name": "Fixed multi test",
-            "default_payment_type_id": self.transfer_type.id,
+            "default_payment_method_id": self.transfer_method.id,
             "auto_match_payee_bank": False,
             "allowed_paying_account_ids": [
                 (6, 0, (self.paying_ktb + self.paying_scb).ids)
@@ -353,31 +366,35 @@ class TestPaymentWorkflow(TransactionCase):
     # ------------------------------------------------------------------
     # Paying account master data
     # ------------------------------------------------------------------
-    def test_paying_account_gl_cannot_be_payable(self):
-        """The money side may not be a receivable/payable account: Odoo tests it
-        first when classifying the payment's lines and would swallow the
-        counterpart. (That a paying account *has* a GL account is structural —
-        the field is required — so only this needs a test.)"""
+    def test_paying_accounts_on_one_bank_account_share_the_gl(self):
+        """Money leaving one bank account leaves the same ledger account however
+        it is paid, so a second paying account on it cannot book elsewhere."""
+        from odoo.exceptions import ValidationError
+
+        other_gl = self.env["account.account"].create({
+            "name": "Other cash", "code": "TESTOTH",
+            "account_type": "asset_cash", "company_id": self.company.id,
+        })
+        with self.assertRaises(ValidationError):
+            self._make_paying_account(
+                None, "เช็ค – ธ.กรุงไทย wrong GL", self.ktb, None,
+                method=self.cheque_method,
+                bank_account=self.paying_scb.bank_account_id,
+                gl_account=other_gl,
+            )
+
+    def test_banked_paying_account_needs_a_bank_account(self):
+        """A transfer or a cheque travels through a bank, so the export and the
+        cheque register have to be able to name the account it came from."""
         from odoo.exceptions import ValidationError
 
         with self.assertRaises(ValidationError):
-            self.env["kmitl.paying.account"].create({
-                "bank_account_id": self.paying_scb.bank_account_id.id,
-                "payment_type_id": self.cheque_type.id,
-                "payment_account_id": self.payable_account.id,
-                "company_id": self.company.id,
+            self.env["account.payment.method.line"].create({
+                "name": "เงินโอน – no bank account",
+                "payment_method_id": self.transfer_method.id,
+                "journal_id": self.voucher_journal.id,
+                "payment_account_id": self.paying_ktb.payment_account_id.id,
             })
-
-    def test_paying_account_is_unique_per_method(self):
-        """The same bank account pairs with each method once — that uniqueness is
-        what makes "which GL does a cheque on this account use" answerable."""
-        from psycopg2 import IntegrityError
-
-        with self.assertRaises(IntegrityError), self.env.cr.savepoint():
-            self._make_paying_account(
-                "PAYKTBDUP", "ธ.กรุงไทย dup test", self.ktb, None,
-                bank_account=self.paying_ktb.bank_account_id,
-            )
 
     def test_subject_default_account_must_match_subject_method(self):
         """A cheque subject cannot fall back to a transfer account: it would pay
@@ -387,7 +404,7 @@ class TestPaymentWorkflow(TransactionCase):
         with self.assertRaises(ValidationError):
             self.env["kmitl.payment.subject"].create({
                 "name": "Cheque subject with transfer fallback",
-                "default_payment_type_id": self.cheque_type.id,
+                "default_payment_method_id": self.cheque_method.id,
                 "allowed_paying_account_ids": [(6, 0, self.paying_ktb.ids)],
                 "default_paying_account_id": self.paying_ktb.id,
             })
@@ -398,7 +415,7 @@ class TestPaymentWorkflow(TransactionCase):
         with self.assertRaises(ValidationError):
             self.env["kmitl.payment.subject"].create({
                 "name": "Bad default",
-                "default_payment_type_id": self.transfer_type.id,
+                "default_payment_method_id": self.transfer_method.id,
                 "allowed_paying_account_ids": [(6, 0, self.paying_ktb.ids)],
                 "default_paying_account_id": self.paying_scb.id,
             })

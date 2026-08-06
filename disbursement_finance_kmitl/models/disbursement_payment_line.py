@@ -68,7 +68,7 @@ class DisbursementPaymentLine(models.Model):
         "from the bill; it is what the payment and the bank export carry.",
     )
     paying_account_id = fields.Many2one(
-        comodel_name="kmitl.paying.account",
+        comodel_name="account.payment.method.line",
         string="Paying Account",
         domain="[('id', 'in', allowed_paying_account_ids)]",
         copy=False,
@@ -76,15 +76,15 @@ class DisbursementPaymentLine(models.Model):
         "payment method too. Defaulted from the request's payment subject (the "
         "account at the payee's own bank when the subject auto-matches).",
     )
-    payment_type_id = fields.Many2one(
-        related="paying_account_id.payment_type_id",
+    payment_method_id = fields.Many2one(
+        related="paying_account_id.payment_method_id",
         string="Payment Method",
         readonly=True,
         help="วิธีจ่าย — a property of the chosen paying account rather than a "
         "second choice, so the two cannot contradict each other.",
     )
     allowed_paying_account_ids = fields.Many2many(
-        comodel_name="kmitl.paying.account",
+        comodel_name="account.payment.method.line",
         string="Allowed Paying Accounts",
         compute="_compute_allowed_paying_account_ids",
         help="What the paying account may be set to, so the subject's policy "
@@ -161,9 +161,12 @@ class DisbursementPaymentLine(models.Model):
         a subject that lists none allows every paying account.
 
         The list spans methods on purpose: switching a payee from เงินโอน to
-        เช็ค *is* picking a different paying account.
+        เช็ค *is* picking a different paying account. A method line that names no
+        GL account is not a paying account and never appears.
         """
-        every = self.env["kmitl.paying.account"].search([])
+        every = self.env["account.payment.method.line"].search(
+            [("payment_account_id", "!=", False), ("payment_type", "=", "outbound")]
+        )
         for line in self:
             allowed = (
                 line.request_id.payment_subject_id.allowed_paying_account_ids

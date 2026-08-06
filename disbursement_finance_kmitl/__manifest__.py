@@ -2,7 +2,7 @@
 
 {
     "name": "Disbursement ↔ KMITL Finance Bridge",
-    "version": "16.0.5.0.0",
+    "version": "16.0.6.0.0",
     "category": "KMITL/Finance",
     "summary": "DR ↔ Payment: post-bill payment-execution workflow "
     "(audit → authorize → review → pay → clear), payee-level payment lines, "

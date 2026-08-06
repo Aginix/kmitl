@@ -27,18 +27,20 @@ Terms). Three orthogonal concepts:
   for (e.g. เงินเดือน, เงินยืม/สำรองจ่าย, จ่ายตรงคู่ค้า, ค่าน้ำค่าไฟ). Admins
   maintain the list. Not to be confused with `DR.payment_type`
   (direct/advance/prepaid, inherited from the approval) nor with
-  `kmitl.payment.type` (the mechanical operation type that carries
-  `is_cheque` / journal / override account).
-- **Paying Account / หัวจ่าย** (`kmitl.paying.account`): one of the institute's
-  bank accounts **paired with the way money leaves it** — *which* account and
-  *how*, as one choice. The pair exists because the GL account belongs to it and
-  not to either half: a cheque drawn on the KTB account is booked against
-  เช็คจ่าย-KTB until it clears, a transfer straight against the KTB bank
-  account. The bank account itself stays a `res.partner.bank` on the company's
-  partner, so the bank, the account number and the BIC are still read from the
-  model that natively carries them. Cash qualifies too: a bank-less record (e.g.
-  numbered "CASH") paired with the cash method. See
-  `finance_kmitl/docs/adr/0001-paying-account-pairs-a-bank-account-with-a-method.md`.
+  `kmitl.payment.type` (see the two sides of an entry, below).
+- **Paying Account / หัวจ่าย** (`account.payment.method.line`): out of which
+  account the money leaves, by which means, under which voucher — one choice, and
+  one of Odoo's own records. A method line names a journal (the ใบสำคัญ), a
+  payment method (เงินโอน / เช็ค / เงินสด) and the GL account the money is booked
+  against; this module adds the institute's own bank account, which the e-payment
+  file needs as its sending account and the cheque register as the cheque book.
+  **What makes a line a paying account is that it names its GL account** — the
+  lines Odoo seeds on every bank journal by default do not, and are not offered.
+  That is also how cash qualifies, with no bank account at all. A bank account may
+  hold several: a current account can be transferred from and drawn cheques on,
+  and all of its paying accounts book to the same GL, because money leaving one
+  bank account leaves one ledger account however it is paid. See
+  `finance_kmitl/docs/adr/0001-paying-account-is-a-payment-method-line.md`.
 - **Auto-match / จับคู่ตามธนาคารผู้รับ** (flag on the subject): when on, each
   payee is served from the **allowed** account held at the bank of their own
   bank account (เงินยืม/สำรองจ่าย); a payee whose bank matches none falls to
@@ -56,17 +58,36 @@ Terms). Three orthogonal concepts:
   and the payee's own bank — so changing *either* re-derives every line except
   the `manual` ones, which stay frozen because a person already decided them.
 - **Voucher journal / ใบสำคัญ** (`account.payment.journal_id`): the document
-  type (PV/RV/PVR/PAR) that numbers the payment. It is *not* a bank account —
-  KMITL settles a payable in one step (no bank statement, no outstanding
-  account), so the money side of the entry is booked straight against the
-  paying account (`_compute_outstanding_account_id` is overridden to return
-  it).
-- **Payment Method / วิธีจ่าย** (`kmitl.payment.type`, outbound): *how* a payee
-  is paid — เงินโอน / เช็ค / เงินสด. It is **not a field anyone sets on a
+  type (PV/RV/PVR/PAR) that numbers the payment — its sequence *is* the voucher
+  number, which is why it stays a document type and never becomes a bank account.
+  A paying account is therefore one of the journal's payment method lines, and
+  several banks appear as several lines on one journal. Choosing the paying
+  account settles the voucher, not the other way round. KMITL settles a payable in
+  one step (no bank statement), so nothing later clears the money account: what
+  Odoo calls the outstanding account is simply the final one here.
+- **Payment Method / วิธีจ่าย** (`account.payment.method`, outbound): *how* a
+  payee is paid — เงินโอน / เช็ค / เงินสด. It is **not a field anyone sets on a
   payment line**: a paying account already names its method, so choosing the
-  account chooses the method, and the two cannot contradict each other. The
-  subject carries one (`default_payment_type_id`) for a single purpose — to say
+  account chooses the method and the two cannot contradict each other. The
+  subject carries one (`default_payment_method_id`) for a single purpose — to say
   which of a bank's paying accounts auto-matching means.
+
+## The two sides of a payment entry have two owners
+
+Every payment writes one entry with two sides, and each side has its own master
+data. Conflating them is what produced two competing notions of "payment method".
+
+- **Money side** — out of (or into) which account, by which means, under which
+  voucher: the **paying account** above, i.e. one of Odoo's payment method lines.
+- **Counterpart side** — what the money *is*, i.e. which receivable, payable or
+  deposit liability it settles or creates: `kmitl.payment.type`
+  (เงินรับฝากค้ำประกัน, เงินยืม, …) through its override account. This is why
+  `advance_payment` and `purchase_guarantee` add records of their own. It says
+  nothing about how money moves; a record that did (จ่ายเช็ค, จ่ายเงินสด) was on
+  the wrong side of the entry and is gone.
+
+A record describing the money side has no business in `kmitl.payment.type`, and
+vice versa.
 
 ## Terms
 
@@ -111,12 +132,11 @@ Terms). Three orthogonal concepts:
   **submit** (not at post, as non-DR cheque payments do), because in this
   workflow posting happens last (clearing) while the physical cheque must be
   numbered, printed and handed over long before that.
-- **Cheque clearing is outside the system.** A cheque is booked against its
-  paying account's เช็คจ่าย GL, so clearing the request records
-  Dr เจ้าหนี้ / Cr เช็คจ่าย. The entry that finally credits the bank —
-  Dr เช็คจ่าย / Cr ธนาคาร, once the cheque is presented — is posted **by hand**
-  by the treasury office; the register's `clearing_date` marks which cheques are
-  due it. Nothing in the system does this, deliberately.
+- **A cheque is booked against the bank account it is drawn on**, the same GL a
+  transfer out of that account would use — there is no "เช็คจ่าย" holding
+  account and therefore no second entry when the cheque is presented. That a
+  cheque is issued but not yet presented is tracked by the cheque register
+  (`clearing_date`), not by the ledger.
 - **Paid** (`action_confirm_paid`, `payment_authorized → paid`): the finance
   office confirms every payment of the request succeeded at the bank. The money
   has left; the accounting entry is **not** posted yet.

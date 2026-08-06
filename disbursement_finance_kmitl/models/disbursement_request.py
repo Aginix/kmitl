@@ -382,8 +382,8 @@ class DisbursementRequest(models.Model):
             # A cheque is handed over and cash is counted out; only a payment
             # that travels through the banking system needs the payee's account.
             transfer_lines = lines.filtered(
-                lambda l: not l.paying_account_id.is_cheque
-                and not l.paying_account_id.is_cash
+                lambda l: l.paying_account_id.payment_method_id.code
+                not in ("kmitl_cheque", "kmitl_cash")
             )
             no_bank = transfer_lines.filtered(lambda l: not l.partner_bank_id)
             if no_bank:
@@ -614,34 +614,21 @@ class DisbursementRequest(models.Model):
         self.ensure_one()
         lines = self._check_payment_ready()
 
-        # The paying account (หัวจ่าย) carries both the account the money leaves
-        # and the operation type it leaves by; the journal is the voucher type
-        # (ใบสำคัญ) configured on that operation type, not a bank account.
+        # The paying account (หัวจ่าย) is a payment method line: it names the
+        # account the money leaves from, the way it leaves and — because a
+        # method line belongs to one journal — the voucher (ใบสำคัญ) it is
+        # recorded under. Nothing else has to be worked out.
         self._check_payment_classification()
+        purpose = self.env.ref(
+            "finance_kmitl.payment_type_normal_outbound",
+            raise_if_not_found=False,
+        )
 
         payments = self.env["account.payment"]
         for line in lines:
             bill = line.bill_id
-            payment_type = line.paying_account_id.payment_type_id
-            journal = payment_type.journal_id if payment_type else False
-            if not journal:
-                journal = self.env["account.journal"].search(
-                    [
-                        ("type", "=", "bank"),
-                        ("company_id", "=", self.company_id.id),
-                    ],
-                    order="sequence, id",
-                    limit=1,
-                )
-            if not journal:
-                raise UserError(
-                    _(
-                        "No voucher journal (ใบสำคัญ) configured on the "
-                        "outbound payment type, and no bank journal found for "
-                        "company %s."
-                    )
-                    % self.company_id.name
-                )
+            paying_account = line.paying_account_id
+            journal = paying_account.journal_id
             payable_lines = bill.line_ids.filtered(
                 lambda l: l.account_type == "liability_payable"
                 and not l.reconciled
@@ -663,7 +650,7 @@ class DisbursementRequest(models.Model):
                 # left to Odoo's compute it would silently fall back to the
                 # payee's first account, which is not what anyone chose.
                 "partner_bank_id": line.partner_bank_id.id or False,
-                "paying_account_id": line.paying_account_id.id,
+                "payment_method_line_id": paying_account.id,
                 "payment_type": "outbound",
                 "partner_type": "supplier",
                 "ref": _("%s - %s", self.name, bill.name),
@@ -671,8 +658,10 @@ class DisbursementRequest(models.Model):
             }
             if write_off_line_vals:
                 payment_vals["write_off_line_vals"] = write_off_line_vals
-            if payment_type:
-                payment_vals["kmitl_payment_type_id"] = payment_type.id
+            if purpose:
+                # The counterpart side: a disbursement settles an ordinary
+                # payable, so it carries the neutral outbound purpose.
+                payment_vals["kmitl_payment_type_id"] = purpose.id
 
             payment = self.env["account.payment"].create(payment_vals)
             payment.to_reconcile_payment_line_ids = payable_lines

@@ -26,7 +26,6 @@ class AccountPayment(models.Model):
         """
         res = super().action_submit()
         self.filtered(
-            lambda p: p.disbursement_request_id
-            and p.kmitl_payment_type_id.is_cheque
+            lambda p: p.disbursement_request_id and p.is_cheque_payment
         )._create_cheque_register_entries()
         return res
