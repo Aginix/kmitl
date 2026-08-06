@@ -108,4 +108,9 @@ class ProjectBudgetItem(models.Model):
         return super().unlink()
 
     def name_get(self):
-        return [(item.id, item.complete_name) for item in self]
+        # Display just the leaf name (e.g. "ค่าใช้สอย") — the ประเภทงบ context is
+        # already carried by the table's section header, so the full path would only
+        # be noise in the picked value. Search still matches the full path via
+        # _rec_names_search, and complete_name is used explicitly where the path is
+        # needed (portal, config column, validation messages).
+        return [(item.id, item.name) for item in self]
