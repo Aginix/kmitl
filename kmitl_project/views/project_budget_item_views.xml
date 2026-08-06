@@ -9,7 +9,7 @@
             <tree decoration-muted="not active">
                 <field name="active" invisible="1" />
                 <field name="budget_type" />
-                <field name="parent_id" />
+                <field name="category_id" />
                 <field name="name" />
                 <field name="unit" />
                 <field name="unit_price" />
@@ -39,7 +39,7 @@
                     <group>
                         <group string="ประเภท">
                             <field name="budget_type" />
-                            <field name="parent_id" domain="[('parent_id', '=', False)]" options="{'no_create': True}" />
+                            <field name="category_id" options="{'no_create': True}" attrs="{'invisible': [('budget_type', '=', 'income')], 'required': [('budget_type', '=', 'expense')]}" />
                             <field name="sequence" />
                         </group>
                         <group string="เรตมาตรฐาน (อ้างอิง)">
@@ -67,21 +67,19 @@
         <field name="arch" type="xml">
             <search>
                 <field name="complete_name" string="รายการ" filter_domain="['|', ('name', 'ilike', self), ('complete_name', 'ilike', self)]" />
-                <field name="parent_id" />
+                <field name="category_id" />
                 <filter name="income" string="รายรับ" domain="[('budget_type', '=', 'income')]" />
                 <filter name="expense" string="รายจ่าย" domain="[('budget_type', '=', 'expense')]" />
-                <separator />
-                <filter name="roots" string="ประเภทงบ (รายการหลัก)" domain="[('parent_id', '=', False)]" />
                 <separator />
                 <filter name="archived" string="เก็บถาวร" domain="[('active', '=', False)]" />
                 <group expand="1" name="group_by" string="Group By">
                     <filter string="ประเภท" name="group_budget_type" domain="[]" context="{'group_by': 'budget_type'}" />
-                    <filter string="ประเภทงบ" name="group_parent" domain="[]" context="{'group_by': 'parent_id'}" />
+                    <filter string="ประเภทงบ" name="group_category" domain="[]" context="{'group_by': 'category_id'}" />
                 </group>
                 <!-- Hierarchical search panel (mirrors budget.account) -->
                 <searchpanel class="project_budget_item">
                     <field name="budget_type" string="ประเภท" icon="fa-tags" select="multi" />
-                    <field name="parent_id" string="ประเภทงบ" icon="fa-sitemap" limit="0" />
+                    <field name="category_id" string="ประเภทงบ" icon="fa-sitemap" limit="0" />
                 </searchpanel>
             </search>
         </field>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ประเภทงบ (expense budget-type categories). Top-level only for now; add
+         sub-levels (up to three) here as more detail is needed. -->
+    <record id="category_personnel" model="project.budget.category">
+        <field name="name">งบบุคลากร</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="category_operating" model="project.budget.category">
+        <field name="name">งบดำเนินงาน</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="category_subsidy" model="project.budget.category">
+        <field name="name">งบอุดหนุน</field>
+        <field name="sequence">30</field>
+    </record>
+
+</odoo>

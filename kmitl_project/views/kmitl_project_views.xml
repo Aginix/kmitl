@@ -316,13 +316,14 @@
             <tree editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="budget_type" invisible="1" />
-                <field name="budget_category_id" invisible="1" />
+                <field name="category_id" invisible="1" />
+                <field name="category_complete_name" invisible="1" />
+                <field name="category_parent_path" invisible="1" />
                 <field name="budget_item_id" options="{'no_create': True, 'no_open': True}" />
                 <field name="unit" optional="hide" />
                 <field name="unit_price" optional="hide" />
                 <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />
                 <field name="amount" sum="รวม" />
-                <field name="note" placeholder="หมายเหตุ" />
             </tree>
         </field>
     </record>

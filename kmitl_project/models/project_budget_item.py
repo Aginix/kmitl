@@ -6,12 +6,10 @@ from odoo.exceptions import ValidationError, UserError
 
 _logger = logging.getLogger(__name__)
 
-# budget_type classifies a budget item (and its whole subtree) as either income
-# (รายรับ) or expense (รายจ่าย). The former ประเภทงบ categories
-# (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน) are no longer selection values here — they are
-# now root records of the expense tree, seeded in
-# data/project_budget_item_data.xml. Imported by project_budget_line so both
-# models stay in sync.
+# budget_type classifies a budget item as either income (รายรับ) or expense
+# (รายจ่าย). The ประเภทงบ categories (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน) live in their
+# own hierarchical model ``project.budget.category``; an expense item points at one
+# via ``category_id``. Imported by project_budget_line so both models stay in sync.
 BUDGET_TYPE_SELECTION = [
     ("income", "รายรับ"),
     ("expense", "รายจ่าย"),
@@ -19,20 +17,18 @@ BUDGET_TYPE_SELECTION = [
 
 
 class ProjectBudgetItem(models.Model):
-    """Hierarchical catalog (master data) for the Project Budget Plan. Expense
-    roots are the ประเภทงบ categories and their children are the selectable expense
-    items; income items are flat (no root). Each item carries a standard
-    description, unit and unit price used only as reference when planning; project
-    budget lines pick the leaf items. Configured on its own settings page."""
+    """Flat catalog (master data) for the Project Budget Plan. Each item is income
+    (รายรับ) or expense (รายจ่าย); an expense item is filed under a ประเภทงบ category
+    (``project.budget.category``) while income items have none. Each item carries a
+    standard description, unit and unit price used only as reference when planning;
+    project budget lines pick these items. Configured on its own settings page."""
 
     _name = "project.budget.item"
     _description = "รายการงบประมาณโครงการ"
     _inherit = ["mail.thread"]
-    _parent_store = True
-    _parent_name = "parent_id"
-    _order = "parent_path"
+    _order = "budget_type, category_id, sequence, id"
     # Let the picker match what it displays (the full "ประเภทงบ / รายการ" path),
-    # not just the leaf name.
+    # not just the item name.
     _rec_names_search = ["complete_name", "name"]
 
     sequence = fields.Integer(default=10)
@@ -40,14 +36,22 @@ class ProjectBudgetItem(models.Model):
     complete_name = fields.Char(
         string="รายการ",
         compute="_compute_complete_name",
-        recursive=True,
         store=True,
     )
     budget_type = fields.Selection(
         BUDGET_TYPE_SELECTION,
         string="ประเภท",
         required=True,
+        default="expense",
         tracking=True,
+    )
+    category_id = fields.Many2one(
+        "project.budget.category",
+        string="ประเภทงบ",
+        ondelete="restrict",
+        index=True,
+        tracking=True,
+        help="หมวดประเภทงบของรายการรายจ่าย (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน หรือหมวดย่อย)",
     )
     # Standard rate-card reference values — informational only (the plan line's
     # amount is entered manually, not computed from these; see ADR-0002).
@@ -57,62 +61,37 @@ class ProjectBudgetItem(models.Model):
         string="ราคาต่อหน่วย", digits="Product Price", tracking=True
     )
     note = fields.Text(string="หมายเหตุ", tracking=True)
-    parent_id = fields.Many2one(
-        "project.budget.item",
-        string="อยู่ภายใต้ประเภทงบ",
-        ondelete="cascade",
-        index=True,
-        tracking=True,
-    )
-    parent_path = fields.Char(index=True)
-    child_ids = fields.One2many(
-        "project.budget.item", "parent_id", string="รายการย่อย"
-    )
     active = fields.Boolean(default=True, tracking=True)
 
-    @api.depends("name", "parent_id.complete_name")
+    @api.depends("name", "category_id.complete_name")
     def _compute_complete_name(self):
         for item in self:
-            if item.parent_id:
+            if item.category_id:
                 item.complete_name = "%s / %s" % (
-                    item.parent_id.complete_name,
+                    item.category_id.complete_name,
                     item.name,
                 )
             else:
                 item.complete_name = item.name
 
-    @api.constrains("parent_id")
-    def _check_parent_recursion(self):
-        if not self._check_recursion():
-            raise ValidationError(_("ไม่สามารถสร้างลำดับชั้นแบบวนซ้ำได้"))
-
-    @api.constrains("budget_type", "parent_id")
-    def _check_budget_type_consistency(self):
+    @api.constrains("budget_type", "category_id")
+    def _check_category_matches_type(self):
         for item in self:
-            if item.parent_id and item.budget_type != item.parent_id.budget_type:
-                raise ValidationError(
-                    _("ประเภท (รายรับ/รายจ่าย) ต้องตรงกับรายการหลัก")
-                )
+            if item.budget_type == "expense" and not item.category_id:
+                raise ValidationError(_("รายการรายจ่ายต้องระบุประเภทงบ"))
+            if item.budget_type == "income" and item.category_id:
+                raise ValidationError(_("รายการรายรับต้องไม่มีประเภทงบ"))
 
-    @api.onchange("parent_id")
-    def _onchange_parent_id(self):
-        if self.parent_id:
-            self.budget_type = self.parent_id.budget_type
+    @api.onchange("budget_type")
+    def _onchange_budget_type(self):
+        """Income items carry no ประเภทงบ — clear it when switching to income."""
+        if self.budget_type == "income":
+            self.category_id = False
 
     def unlink(self):
-        """Block deletion of an item that is still in use — as a parent category
-        (has children) or referenced by any Project Budget Plan line. The line
-        lookup runs sudo so the check is global, not limited to the deleter's
+        """Block deletion of an item referenced by any Project Budget Plan line. The
+        line lookup runs sudo so the check is global, not limited to the deleter's
         visible projects. In-use items should be archived instead."""
-        for item in self:
-            if item.child_ids:
-                raise UserError(
-                    _(
-                        "ไม่สามารถลบ '%s' ได้ เนื่องจากยังมีรายการย่อยอยู่ "
-                        "กรุณาลบรายการย่อยก่อน"
-                    )
-                    % item.complete_name
-                )
         used = (
             self.env["project.budget.line"]
             .sudo()

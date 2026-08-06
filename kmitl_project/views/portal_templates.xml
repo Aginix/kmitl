@@ -375,7 +375,6 @@
                                         <th>รายการ</th>
                                         <th>คำอธิบาย</th>
                                         <th class="text-end" style="min-width: 120px">จำนวนเงิน</th>
-                                        <th>หมายเหตุ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -390,9 +389,6 @@
                                             <td class="text-end">
                                                 <span t-field="expense.amount" />
                                             </td>
-                                            <td>
-                                                <span t-field="expense.note" />
-                                            </td>
                                         </tr>
                                     </t>
                                     <tr>
@@ -400,7 +396,6 @@
                                         <td class="text-end fw-bold">
                                             <span t-out="'{:,.2f}'.format(sum(section['lines'].mapped('amount')))" />
                                         </td>
-                                        <td />
                                     </tr>
                                 </tbody>
                             </table>
