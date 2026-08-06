@@ -25,9 +25,13 @@ A project's reserved `budget_amount` minus what has actually been **consumed (�
 _Avoid_: remaining (unqualified — clashes with [budget » Remaining (f)](../budget/CONTEXT.md))
 
 **Project Budget Plan (แผนงบประมาณโครงการ)**:
-The project's own itemised plan of expected income (รายรับ) and expenses (รายจ่าย), kept for internal management of the project. Realised as `project.budget.line` records on the project, each picking a catalog **Budget Item** (`project.budget.item`). Independent of the [budget](../budget/CONTEXT.md) engine and of the **Project Budget** (`budget_amount`) envelope — the two are never reconciled automatically.
+The project's own itemised plan of expected income (รายรับ) and expenses (รายจ่าย), kept for internal management of the project. Realised as `project.budget.line` records, each picking a catalog **Budget Item**. Expenses are always planned and grouped into **ประเภทงบ** sections; income is optional per project (the `has_income` flag) and kept as one flat list. A line's amount is entered manually — never computed from the item's unit price (ADR-0002). Independent of the [budget](../budget/CONTEXT.md) engine and of the **Project Budget** (`budget_amount`) envelope — the two are never reconciled automatically.
 _Avoid_: Project Budget / งบประมาณ (that names the reserved `budget_amount` envelope, a different thing); budget (the appropriation engine); the monthly spending schedule (`project.plan`, แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ) — a separate concept on its own tab
 
 **Budget Item (รายการงบประมาณ)**:
-A reusable catalog entry (`project.budget.item`) a Project Budget Plan line points at, classified income or expense and arranged in a hierarchy whose expense roots are the ประเภทงบ categories (งบบุคลากร/งบดำเนินงาน/งบอุดหนุน).
-_Avoid_: expense item (income items exist too), product (not an `product.product`)
+A reusable catalog entry (`project.budget.item`) a Project Budget Plan line points at — classified income or expense and arranged in a hierarchy whose expense roots are the **ประเภทงบ** categories. Expense lines pick a leaf; each item also carries a standard unit and unit price shown only as on-screen reference.
+_Avoid_: expense item (income items exist too); product (not a `product.product`)
+
+**ประเภทงบ (Budget Type category)**:
+The top-level expense categories — งบบุคลากร (personnel), งบดำเนินงาน (operating), งบอุดหนุน (subsidy) — seeded as the roots of the expense **Budget Item** hierarchy and referenced by a line as `budget_category_id`. They divide the expense side of a Project Budget Plan into subtotalled sections. Income has no ประเภทงบ.
+_Avoid_: the `budget_type` field on `project.budget.line`/`project.budget.item` (that is the income-vs-expense axis, a different thing); `budget.account`'s `budget_type` (expense vs revenue, unrelated)
