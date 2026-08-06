@@ -326,11 +326,12 @@
             <tree editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="budget_type" invisible="1" />
+                <field name="is_custom" invisible="1" />
                 <field name="category_complete_name" invisible="1" />
                 <field name="category_parent_path" invisible="1" />
-                <field name="category_id" string="ประเภทงบ" options="{'no_create': True}" optional="show" />
-                <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="show" />
-                <field name="name" placeholder="ชื่อรายการรายจ่าย (พิมพ์เอง)" />
+                <field name="category_id" string="ประเภทงบ" options="{'no_create': True}" attrs="{'invisible': [('category_id', '!=', False)]}" />
+                <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" attrs="{'invisible': [('is_custom', '=', True)]}" />
+                <field name="name" placeholder="ระบุรายการ" />
                 <field name="unit" optional="hide" />
                 <field name="unit_price" optional="hide" />
                 <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />

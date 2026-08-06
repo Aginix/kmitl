@@ -55,6 +55,10 @@ class ProjectBudgetLine(models.Model):
         " ('category_id', 'child_of', category_id)] if category_id"
         " else [('budget_type', '=', budget_type)]",
     )
+    # A free-text line (added via "เพิ่มอื่น ๆ") vs one picked from the catalog (added
+    # via "เพิ่มจากรายการ"). Drives the table: custom lines hide the catalog picker and
+    # show only รายการ / คำอธิบาย / จำนวนเงิน. Set from the add button's context.
+    is_custom = fields.Boolean(string="พิมพ์เอง", default=False)
     # The chosen category's label and materialised path, exposed so the OWL table
     # can build the nested section headers client-side without extra RPCs. Stored so
     # the list can also order by the path server-side.

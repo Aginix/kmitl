@@ -25,12 +25,12 @@
                         <td colspan="99" t-attf-style="{{ indent(row.level + 1) }}">
                             <a href="#" role="button" class="o_budget_section_add_link o_budget_add_catalog"
                                 t-att-tabindex="props.list.editedRecord ? '-1' : '0'"
-                                t-on-click.stop.prevent="() => this.addInSection(row.categoryId)">
+                                t-on-click.stop.prevent="() => this.addInSection(row.categoryId, false)">
                                 <i class="fa fa-list-ul me-1" />เพิ่มรายการ
                             </a>
                             <a href="#" role="button" class="o_budget_section_add_link o_budget_add_free ms-3"
                                 t-att-tabindex="props.list.editedRecord ? '-1' : '0'"
-                                t-on-click.stop.prevent="() => this.addInSection(row.categoryId)">
+                                t-on-click.stop.prevent="() => this.addInSection(row.categoryId, true)">
                                 <i class="fa fa-pencil me-1" />เพิ่มอื่น ๆ
                             </a>
                         </td>

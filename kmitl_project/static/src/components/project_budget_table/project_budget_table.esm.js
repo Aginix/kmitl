@@ -158,9 +158,14 @@ export class ProjectBudgetTableRenderer extends ListRenderer {
     }
 
     /** Add a line pre-scoped to a category node, so the new line lands in that
-     * section and its item picker is filtered to the node's subtree. */
-    addInSection(categoryId) {
-        const context = {default_budget_type: "expense"};
+     * section (its ประเภทงบ pre-filled and hidden) and its item picker is filtered to
+     * the node's subtree. ``isCustom`` marks a free-text line ("เพิ่มอื่น ๆ"): the
+     * catalog picker is hidden and only รายการ / คำอธิบาย / จำนวนเงิน are shown. */
+    addInSection(categoryId, isCustom) {
+        const context = {
+            default_budget_type: "expense",
+            default_is_custom: Boolean(isCustom),
+        };
         if (categoryId) {
             context.default_category_id = categoryId;
         }
