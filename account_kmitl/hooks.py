@@ -21,6 +21,27 @@ JOURNALS = [
     {"xmlid": "journal_ap", "code": "AP", "name": "ใบสำคัญซื้อ", "type": "purchase", "sequence": 80, "account": "5000000000"},
 ]
 
+# The institute's paying accounts (หัวจ่าย) as given by the treasury office: the
+# bank account money leaves from, identified by the chart code of its GL account,
+# and the way it normally leaves. A current account can be both transferred from
+# and drawn cheques on, so a second method for the same account is added by hand
+# when it is needed rather than assumed here.
+#
+# They all hang off ใบสำคัญจ่าย (PV): a paying account is a payment method line,
+# and a method line belongs to a journal.
+PAYING_ACCOUNTS = [
+    {"account": "1112210004", "method": "kmitl_transfer"},
+    {"account": "1112220015", "method": "kmitl_cheque"},
+    {"account": "1112110012", "method": "kmitl_transfer"},
+    {"account": "1112120003", "method": "kmitl_transfer"},
+    {"account": "1112120002", "method": "kmitl_transfer"},
+    {"account": "1112120016", "method": "kmitl_transfer"},
+    {"account": "1112120006", "method": "kmitl_transfer"},
+]
+
+# The voucher (ใบสำคัญ) the paying accounts belong to.
+PAYING_ACCOUNT_JOURNAL_CODE = "PV"
+
 # Account codes other modules reference. The chart loader assigns real accounts a
 # company-prefixed external id (``account_kmitl.1_a_<code>``); we publish a stable,
 # company-independent ``account_kmitl.account_<code>`` for each so downstream data
@@ -194,6 +215,106 @@ def _setup_payment_method_lines(env, company):
         ).unlink()
 
 
+def _setup_paying_account_lines(env, company):
+    """Give ใบสำคัญจ่าย one outbound payment method line per paying account.
+
+    A paying account (หัวจ่าย) is "out of which bank account the money leaves, by
+    which means, booked against which GL account" — which is what a payment
+    method line already says, so it needs no model of its own. This turns the
+    generic lines ``_setup_payment_method_lines`` puts on the journal into the
+    treasury office's actual list: one line per account, named after it, booked
+    against it.
+
+    Only the outbound side of PV is reshaped. Its inbound lines are left alone
+    because PV is the lowest-sequence bank journal and therefore the journal every
+    payment falls back to, receipts included; the other journals are left alone
+    too.
+
+    Idempotent: a line already booked against the right account is reused as it
+    is, and a generic line of the same method is repointed rather than duplicated.
+    Each create runs in its own savepoint so that a chart missing one account, or
+    a core constraint refusing a second line of the same method on one journal,
+    is reported instead of aborting the install.
+    """
+    Account = env["account.account"]
+    MethodLine = env["account.payment.method.line"]
+    journal = env["account.journal"].search(
+        [
+            ("code", "=", PAYING_ACCOUNT_JOURNAL_CODE),
+            ("company_id", "=", company.id),
+        ],
+        limit=1,
+    )
+    if not journal:
+        _logger.warning(
+            "account_kmitl: journal %s not found for %s; paying accounts must "
+            "be set up by hand.",
+            PAYING_ACCOUNT_JOURNAL_CODE,
+            company.display_name,
+        )
+        return
+
+    existing = journal.outbound_payment_method_line_ids
+    claimed = MethodLine.browse()
+    failed = []
+    for sequence, entry in enumerate(PAYING_ACCOUNTS, start=1):
+        gl_account = Account.search(
+            [("code", "=", entry["account"]), ("company_id", "=", company.id)],
+            limit=1,
+        )
+        method = env.ref(
+            "account_kmitl.payment_method_%s_out"
+            % entry["method"].removeprefix("kmitl_"),
+            raise_if_not_found=False,
+        )
+        if not gl_account or not method:
+            failed.append("%s (%s)" % (entry["account"], entry["method"]))
+            continue
+        name = "%s – %s" % (method.name, gl_account.name)
+        vals = {
+            "name": name,
+            "payment_account_id": gl_account.id,
+            "sequence": sequence * 10,
+        }
+        # Already the right account: leave it exactly as configured.
+        line = (existing - claimed).filtered(
+            lambda l: l.payment_method_id == method
+            and l.payment_account_id == gl_account
+        )[:1]
+        if not line:
+            # A generic line of the same method — repoint it instead of adding a
+            # duplicate alongside it.
+            line = (existing - claimed).filtered(
+                lambda l: l.payment_method_id == method
+            )[:1]
+        try:
+            with env.cr.savepoint():
+                if line:
+                    line.write(vals)
+                else:
+                    line = MethodLine.create(
+                        dict(vals, journal_id=journal.id, payment_method_id=method.id)
+                    )
+        except Exception as error:  # noqa: BLE001 - never abort the install
+            failed.append("%s (%s: %s)" % (entry["account"], entry["method"], error))
+            continue
+        claimed |= line
+
+    if claimed:
+        _logger.info(
+            "account_kmitl: %d paying account(s) (หัวจ่าย) set up on %s.",
+            len(claimed),
+            journal.display_name,
+        )
+    if failed:
+        _logger.warning(
+            "account_kmitl: could not set up paying account(s) on %s: %s — "
+            "add them by hand in the journal's Outgoing Payments.",
+            journal.display_name,
+            "; ".join(failed),
+        )
+
+
 def _register_account_xmlids(env, company):
     """Publish stable, company-independent external ids for the accounts that
     other modules reference (e.g. account_asset_kmitl asset profiles,
@@ -329,6 +450,7 @@ def post_init_hook(cr, registry):
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
     _setup_payment_method_lines(env, company)
+    _setup_paying_account_lines(env, company)
     _register_account_xmlids(env, company)
     _deactivate_default_journals(env, company)
     _create_withholding_taxes(env, company)
