@@ -62,6 +62,36 @@ REFERENCED_ACCOUNTS = [
 ]
 
 
+def _drop_dedicated_payment_sequence(journal):
+    """Number a payment PV/… rather than PPV/….
+
+    Core keeps a *dedicated payment sequence* on bank and cash journals so that
+    payments do not share a running number with the invoices in the same journal:
+    ``account.move._get_starting_sequence`` prefixes a "P" onto the journal code
+    for payment moves whenever ``payment_sequence`` is set, and the compute turns
+    it on for every bank/cash journal.
+
+    A KMITL journal code *is* the voucher type (ใบสำคัญ) and its sequence *is* the
+    voucher number, so ใบสำคัญจ่าย has to number PV/2026/08/0001. There is nothing
+    to keep the payments apart from either — a voucher journal carries payments
+    and nothing else.
+
+    Guarded on the field's presence: it belongs to core, not to us, and a rename
+    there should leave the numbering wrong rather than break the install.
+    """
+    if "payment_sequence" not in journal._fields:
+        _logger.warning(
+            "account_kmitl: account.journal has no payment_sequence field; "
+            "payments on %s may be numbered P%s/… instead of %s/….",
+            journal.display_name,
+            journal.code,
+            journal.code,
+        )
+        return
+    if journal.payment_sequence:
+        journal.payment_sequence = False
+
+
 def _create_journals(env, company):
     """Create KMITL journals after the chart of accounts is loaded.
 
@@ -106,6 +136,7 @@ def _create_journals(env, company):
         elif account and not journal.default_account_id:
             # Backfill a default account added after the journal was created.
             journal.default_account_id = account.id
+        _drop_dedicated_payment_sequence(journal)
         env["ir.model.data"]._update_xmlids(
             [
                 {
