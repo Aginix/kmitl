@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""The Register (ลงทะเบียน) — atomic, per-เล่มทะเบียน, ปีงบประมาณ-reset numbering.
-Replaces the old max()+1 race and the broken fiscal reset (ADR-0002, DESIGN §4).
+"""The Register (ลงทะเบียน) — atomic, per-เล่มทะเบียน, calendar-year-reset numbering.
+Replaces the old max()+1 race and the broken year reset (ADR-0002, DESIGN §4).
 
 A ส่วนงาน may keep SEVERAL เล่มทะเบียน (ADR-0012); the หนังสือ picks the book it is
 issued from (defaulting to the unit's เล่มทะเบียนหลัก).
@@ -34,14 +34,6 @@ class SarabunDocumentSequence(models.Model):
     prefix = fields.Char(help="Rendered, not stored on the number (e.g. 'อว 6801.1/').")
     suffix = fields.Char()
     padding = fields.Integer(default=4, help="Zero-pad width of the counter.")
-    reset_period = fields.Selection(
-        [("fiscal_year", "ปีงบประมาณ (Fiscal Year, Oct–Sep)"),
-         ("yearly", "Calendar Year"),
-         ("never", "Never")],
-        default="fiscal_year",
-        required=True,
-        help="fiscal_year (ต.ค.–ก.ย.) is the regulation default.",
-    )
 
     number_ids = fields.One2many("sarabun.document.number", "sequence_id", string="Numbers")
     next_counter = fields.Integer(compute="_compute_next_counter", string="Next Number")
@@ -62,17 +54,13 @@ class SarabunDocumentSequence(models.Model):
 
     # ------------------------------------------------------------------ helpers
     def _fiscal_year_for(self, date):
-        """ปีงบประมาณ (Oct–Sep). Oct–Dec roll into the next budget year. Returns พ.ศ.
+        """The counter's year bucket (พ.ศ.) — resets each calendar year.
 
-        ``never`` → 0 (single perpetual bucket); ``yearly`` → plain calendar year.
+        Named ``_fiscal_year_for`` for continuity; the register now always resets
+        on the calendar year, so the month is irrelevant.
         """
         self.ensure_one()
-        if self.reset_period == "never":
-            return 0
-        by = date.year + 1 if date.month >= 10 else date.year
-        if self.reset_period == "yearly":
-            by = date.year
-        return by + 543  # → พ.ศ.
+        return date.year + 543  # → พ.ศ.
 
     @api.depends("number_ids.counter", "number_ids.fiscal_year")
     def _compute_next_counter(self):
@@ -141,8 +129,8 @@ class SarabunDocumentNumber(models.Model):
     )
     counter = fields.Integer(required=True, index=True, help="Running integer, scoped per fiscal_year.")
     fiscal_year = fields.Integer(
-        string="ปีงบประมาณ (พ.ศ.)", required=True, index=True,
-        help="Fiscal-year bucket; 0 when the register never resets.",
+        string="ปี (พ.ศ.)", required=True, index=True,
+        help="Calendar-year bucket (พ.ศ.); the counter resets each January.",
     )
     state = fields.Selection(
         [("reserved", "Reserved"), ("used", "Used"), ("voided", "Voided (ยกเลิก)")],
