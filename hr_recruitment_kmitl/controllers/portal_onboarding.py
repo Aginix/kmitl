@@ -1,4 +1,6 @@
 import base64
+import re
+
 from odoo import _, fields, http
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.exceptions import UserError, ValidationError
@@ -313,37 +315,93 @@ class PortalOnboardingController(http.Controller):
             return False
         return bool(getattr(onboarding, f"{prefix}_file"))
 
-    def _validate_required_files(self, onboarding, post, files):
-        required = [
+    def _validate_submit(self, onboarding, post, files):
+        """Aggregate every submit-time validation and raise a single combined
+        error so the user sees all missing/invalid fields at once (across tabs).
+
+        Only runs on the "submit" action — saving a draft stays lenient.
+        """
+        form = request.httprequest.form
+        missing = []
+
+        # --- Required document uploads -------------------------------------
+        required_files = [
             ("health_employee", "เอกสารของตัวพนักงาน (ประกันสุขภาพกลุ่ม)"),
             ("accident_employee", "เอกสารของผู้สมัคร (ประกันอุบัติเหตุกลุ่ม)"),
+            ("beneficiary_declaration", "หนังสือแสดงเจตนาระบุตัวผู้รับประโยชน์"),
+            ("salary_book", "สำเนาสมุดบัญชีธนาคารกรุงไทย"),
+            ("medical_certificate", "ใบรับรองแพทย์"),
         ]
         if onboarding.applicant_id.job_id.kmitl_employee_type in ("N", "B"):
-            required.append(
+            required_files.append(
                 ("letter_of_consent", "Letter of Consent (ยินยอมให้ตรวจสอบคุณวุฒิ)")
             )
-        missing = [
+        missing += [
             label
-            for prefix, label in required
+            for prefix, label in required_files
             if not self._is_file_present(onboarding, prefix, post, files)
         ]
-        if missing:
-            raise UserError(_("กรุณากรอกข้อมูลให้ครบถ้วน:\n• ") + "\n• ".join(missing))
 
-    def _validate_starting_date(self, onboarding, post, files):
-        """If the applicant cannot start on time, the postponement details
-        (date, explanation note and attached document) are all required."""
-        if post.get("can_start_on_time") != "no":
-            return
-        missing = []
-        if not post.get("starting_date"):
-            missing.append("วันแรกที่เริ่มปฏิบัติงาน")
-        if not (post.get("starting_date_note") or "").strip():
-            missing.append("หนังสือชี้แจงเหตุผล (เรียนอธิการบดี)")
-        if not self._is_file_present(
-            onboarding, "starting_date_attachment", post, files
-        ):
-            missing.append("แนบเอกสารชี้แจงเหตุผล")
+        # --- Starting date (work tab) --------------------------------------
+        if not post.get("can_start_on_time"):
+            missing.append("ความพร้อมในการเริ่มปฏิบัติงาน")
+        elif post.get("can_start_on_time") == "no":
+            if not post.get("starting_date"):
+                missing.append("วันแรกที่เริ่มปฏิบัติงาน")
+            if not (post.get("starting_date_note") or "").strip():
+                missing.append("หนังสือชี้แจงเหตุผล (เรียนอธิการบดี)")
+            if not self._is_file_present(
+                onboarding, "starting_date_attachment", post, files
+            ):
+                missing.append("แนบเอกสารชี้แจงเหตุผล")
+
+        # --- Confirmation tab ----------------------------------------------
+        if not post.get("background_check_location_type"):
+            missing.append("สถานที่ตรวจสอบประวัติอาชญากรรม")
+        bank_account = (post.get("krungthai_bank_account") or "").strip()
+        if not bank_account:
+            missing.append("เลขที่บัญชีธนาคารกรุงไทย")
+        elif not re.match(r"^[0-9]+$", bank_account):
+            missing.append("เลขที่บัญชีธนาคารกรุงไทย (กรอกเฉพาะตัวเลขเท่านั้น)")
+        if post.get("pdpa_consent") != "yes":
+            missing.append("ความยินยอมตามนโยบาย PDPA (ต้องยินยอมเพื่อส่งข้อมูล)")
+        if "final_confirm" not in post:
+            missing.append("ยืนยันความถูกต้องของข้อมูล")
+
+        # --- Family rows ---------------------------------------------------
+        # A row is "active" once ANY field is filled, so a row with data but no
+        # relation is flagged (instead of being silently dropped on save).
+        required_fields = [
+            (form.getlist("family_relation_id"), "ความสัมพันธ์"),
+            (form.getlist("family_prefix_id"), "คำนำหน้า"),
+            (form.getlist("family_first_name"), "ชื่อ"),
+            (form.getlist("family_last_name"), "นามสกุล"),
+            (form.getlist("family_status"), "สถานะ"),
+            (form.getlist("family_identification_id"), "เลขประจำตัวประชาชน"),
+            (form.getlist("family_date_of_birth"), "วันเกิด"),
+        ]
+        optional_fields = [
+            form.getlist("family_middle_name"),
+            form.getlist("family_job"),
+            form.getlist("family_phone"),
+        ]
+        all_lists = [values for values, _label in required_fields] + optional_fields
+
+        def _cell(values, i):
+            return values[i].strip() if i < len(values) and values[i] else ""
+
+        row_count = max((len(values) for values in all_lists), default=0)
+        for i in range(row_count):
+            if not any(_cell(values, i) for values in all_lists):
+                continue
+            row_missing = [
+                label for values, label in required_fields if not _cell(values, i)
+            ]
+            if row_missing:
+                missing.append(
+                    _("สมาชิกครอบครัวคนที่ %s: ") % (i + 1) + ", ".join(row_missing)
+                )
+
         if missing:
             raise UserError(_("กรุณากรอกข้อมูลให้ครบถ้วน:\n• ") + "\n• ".join(missing))
 
@@ -451,12 +509,7 @@ class PortalOnboardingController(http.Controller):
             action = post.get("action") or "submit"
             try:
                 if action == "submit":
-                    self._validate_required_files(
-                        onboarding, post, request.httprequest.files
-                    )
-                    self._validate_starting_date(
-                        onboarding, post, request.httprequest.files
-                    )
+                    self._validate_submit(onboarding, post, request.httprequest.files)
 
                 self._save_main(onboarding, post, request.httprequest.files)
                 self._save_family(onboarding, request.httprequest.form)

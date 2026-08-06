@@ -222,9 +222,7 @@
                         rows="4"
                         readonly="readonly"
                         required=""
-                    >
-                        <t t-esc="default.get('address_address') or ''" />
-                    </textarea>
+                    ><t t-esc="default.get('address_address') or ''" /></textarea>
                     <!-- prettier-ignore-end -->
                 </div>
                 <label
@@ -242,9 +240,7 @@
                         name="current_address_from"
                         readonly="readonly"
                         required=""
-                    >
-                        <t t-esc="default.get('current_address') or ''" />
-                    </textarea>
+                    ><t t-esc="default.get('current_address') or ''" /></textarea>
                     <!-- prettier-ignore-end -->
                 </div>
             </div>

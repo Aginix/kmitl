@@ -326,9 +326,10 @@
                                         <label
                                             class="col-form-label"
                                         >ความสัมพันธ์</label>
+                                        <span class="text-danger">*</span>
                                         <select
-                                            name="family_relation_id"
                                             class="form-select"
+                                            disabled="disabled"
                                         >
                                             <option value="">เลือกความสัมพันธ์</option>
                                             <t
@@ -343,12 +344,21 @@
                                                 </option>
                                             </t>
                                         </select>
+                                        <!-- Disabled selects are not submitted;
+                                             carry the (locked) relation value so
+                                             the row is not dropped on save. -->
+                                        <input
+                                            type="hidden"
+                                            name="family_relation_id"
+                                            t-att-value="family.relation_id.id or ''"
+                                        />
                                     </div>
 
                                     <div class="col-md-4 mb-3">
                                         <label
                                             class="col-form-label"
                                         >เลขบัตรประชาชน</label>
+                                        <span class="text-danger">*</span>
                                         <input
                                             type="text"
                                             name="family_identification_id"
@@ -359,6 +369,7 @@
 
                                     <div class="col-md-4 mb-3">
                                         <label class="col-form-label">คำนำหน้า</label>
+                                        <span class="text-danger">*</span>
                                         <select
                                             name="family_prefix_id"
                                             class="form-select"
@@ -382,6 +393,7 @@
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <label class="col-form-label">ชื่อ</label>
+                                        <span class="text-danger">*</span>
                                         <input
                                             type="text"
                                             name="family_first_name"
@@ -402,6 +414,7 @@
 
                                     <div class="col-md-4 mb-3">
                                         <label class="col-form-label">นามสกุล</label>
+                                        <span class="text-danger">*</span>
                                         <input
                                             type="text"
                                             name="family_last_name"
@@ -414,6 +427,7 @@
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <label class="col-form-label">วันเกิด</label>
+                                        <span class="text-danger">*</span>
                                         <input
                                             type="date"
                                             name="family_date_of_birth"
@@ -448,6 +462,7 @@
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <label class="col-form-label">สถานะภาพ</label>
+                                        <span class="text-danger">*</span>
                                         <select
                                             name="family_status"
                                             class="form-select"
@@ -482,7 +497,7 @@
                                                 t-set="name"
                                                 t-valuef="family_house_registration_#{family_index}"
                                             />
-                                            <t t-set="label">สำเนาทะเบียนบ้าน</t>
+                                            <t t-set="label">สำเนาทะเบียนบ้าน <span class="text-danger">*</span></t>
                                             <t
                                                 t-set="description"
                                             >รองรับ PDF หรือรูปภาพ</t>
@@ -505,7 +520,7 @@
                                                 t-set="name"
                                                 t-valuef="family_id_card_#{family_index}"
                                             />
-                                            <t t-set="label">บัตรประชาชน / สูติบัตร</t>
+                                            <t t-set="label">บัตรประชาชน / สูติบัตร <span class="text-danger">*</span></t>
                                             <t
                                                 t-set="description"
                                             >รองรับ PDF หรือรูปภาพ</t>
@@ -576,6 +591,7 @@
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="col-form-label">ความสัมพันธ์</label>
+                                    <span class="text-danger">*</span>
                                     <select
                                         name="family_relation_id"
                                         class="form-select"
@@ -593,6 +609,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="col-form-label">เลขบัตรประชาชน</label>
+                                    <span class="text-danger">*</span>
                                     <input
                                         type="text"
                                         name="family_identification_id"
@@ -601,6 +618,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="col-form-label">คำนำหน้า</label>
+                                    <span class="text-danger">*</span>
                                     <select name="family_prefix_id" class="form-select">
                                         <option value="">เลือกคำนำหน้า</option>
                                         <t
@@ -618,6 +636,7 @@
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="col-form-label">ชื่อ</label>
+                                    <span class="text-danger">*</span>
                                     <input
                                         type="text"
                                         name="family_first_name"
@@ -634,6 +653,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="col-form-label">นามสกุล</label>
+                                    <span class="text-danger">*</span>
                                     <input
                                         type="text"
                                         name="family_last_name"
@@ -645,6 +665,7 @@
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="col-form-label">วันเกิด</label>
+                                    <span class="text-danger">*</span>
                                     <input
                                         type="date"
                                         name="family_date_of_birth"
@@ -672,6 +693,7 @@
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="col-form-label">สถานะภาพ</label>
+                                    <span class="text-danger">*</span>
                                     <select name="family_status" class="form-select">
                                         <option value="">เลือกสถานะภาพ</option>
                                         <option value="alive">มีชีวิต</option>
@@ -690,7 +712,7 @@
                                         <t
                                             t-set="name"
                                         >family_house_registration___INDEX__</t>
-                                        <t t-set="label">สำเนาทะเบียนบ้าน</t>
+                                        <t t-set="label">สำเนาทะเบียนบ้าน <span class="text-danger">*</span></t>
                                         <t t-set="description">รองรับ PDF หรือรูปภาพ</t>
                                         <t t-set="required" t-value="False" />
                                     </t>
@@ -700,7 +722,7 @@
                                         t-call="hr_recruitment_kmitl.document_upload_item"
                                     >
                                         <t t-set="name">family_id_card___INDEX__</t>
-                                        <t t-set="label">บัตรประชาชน / สูติบัตร</t>
+                                        <t t-set="label">บัตรประชาชน / สูติบัตร <span class="text-danger">*</span></t>
                                         <t t-set="description">รองรับ PDF หรือรูปภาพ</t>
                                         <t t-set="required" t-value="False" />
                                     </t>
@@ -1759,17 +1781,6 @@
                             </label>
                         </div>
                     </div>
-                </div>
-                <!-- Submit -->
-                <div
-                    class="d-flex justify-content-end border-top border-secondary pt-4 s_website_form_submit"
-                    data-name="Submit Button"
-                >
-                    <button
-                        type="submit"
-                        class="btn btn-primary px-5 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center s_website_form_send"
-                    >
-                        <i class="fa fa-paper-plane-o me-2" /> ส่งข้อมูล </button>
                 </div>
             </div>
         </div>

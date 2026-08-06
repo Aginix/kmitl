@@ -53,6 +53,8 @@
             "hr_recruitment_kmitl/static/src/js/apply_page.js",
             "hr_recruitment_kmitl/static/src/js/onboarding_family.js",
             "hr_recruitment_kmitl/static/src/js/onboarding_starting_date.js",
+            "hr_recruitment_kmitl/static/src/js/onboarding_validation.js",
+            "hr_recruitment_kmitl/static/src/js/onboarding_tabs.js",
         ],
         "web._assets_frontend_helpers": [
             (

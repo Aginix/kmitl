@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Add "My Profile" link to portal home -->
     <template
@@ -384,7 +384,7 @@
                                             />
                                         </div>
                                     </div>
-                                    <!-- Row: Birthday | Age -->
+                                    <!-- Row: Birthday | Age | Gender -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-4">
                                             <label
@@ -411,10 +411,7 @@
                                                 readonly="readonly"
                                             />
                                         </div>
-                                    </div>
-                                    <!-- Row: Gender -->
-                                    <div class="row">
-                                        <div class="mb-3 col-lg-4">
+                                        <div class="mb-3 col-lg-6">
                                             <label
                                                 class="col-form-label"
                                                 for="gender"
@@ -556,7 +553,8 @@
                                                 <label
                                                     class="col-form-label"
                                                     for="current_zip_id"
-                                                >รหัสไปรษณีย์ แขวง เขต จังหวัด</label>
+                                                >รหัสไปรษณีย์ แขวง เขต
+                                                    จังหวัด</label>
                                                 <span class="text-danger ms-1">*</span>
                                                 <select
                                                     name="current_zip_id"
@@ -1579,8 +1577,7 @@
                                                 <t
                                                     t-set="label"
                                                 >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
-                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร <br
-                                                    /> (ใบ สด.8
+                                                    หรือได้รับการยกเว้นการเกณฑ์ทหาร <br /> (ใบ สด.8
                                                     สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ)<span
                                                         class="text-danger ms-1"
                                                     >*</span></t>
