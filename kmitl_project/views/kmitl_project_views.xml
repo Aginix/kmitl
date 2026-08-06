@@ -329,8 +329,8 @@
                 <field name="category_complete_name" invisible="1" />
                 <field name="category_parent_path" invisible="1" />
                 <field name="category_id" string="ประเภทงบ" options="{'no_create': True}" optional="show" />
+                <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="show" />
                 <field name="name" placeholder="ชื่อรายการรายจ่าย (พิมพ์เอง)" />
-                <field name="budget_item_id" string="เลือกจากรายการ" options="{'no_create': True, 'no_open': True}" optional="hide" />
                 <field name="unit" optional="hide" />
                 <field name="unit_price" optional="hide" />
                 <field name="description" placeholder="คำอธิบาย (แตกตัวคูณ)" />

@@ -35,6 +35,10 @@ sub-categories, not catalog entries.
 - The OWL expense table groups purely on the category path (`category_parent_path` /
   `category_complete_name`), independent of `budget_item_id`, so free-text and
   catalog-backed lines nest identically.
+- Each section offers **two** add buttons — **เพิ่มจากรายการ** (fill the line from the
+  catalog picker) and **เพิ่มแบบพิมพ์เอง** (type a free-text name) — so free text is an
+  *addition* to the catalog, never a replacement. Both create the same kind of line
+  in that section; the catalog picker column stays visible for either path.
 - Portal and the confirmation message show the line `name` (with the ประเภทงบ path as
   muted context on the portal), not the catalog `complete_name`.
 - Possible follow-up: render every seeded ประเภทงบ as an always-present section (even
