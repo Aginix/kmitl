@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_form_leadtime" model="ir.ui.view">
+        <field name="name">purchase.request.form.leadtime</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="before">
+                <field name="state_entry_date"
+                       widget="state_leadtime_live"
+                       readonly="1"
+                       nolabel="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

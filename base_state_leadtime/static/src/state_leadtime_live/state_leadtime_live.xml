@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="base_state_leadtime.StateLeadtimeLive" owl="1">
+        <span class="o_state_leadtime_live badge rounded-pill text-bg-secondary">
+            <i class="fa fa-clock-o me-1" aria-hidden="true"/>
+            <t t-esc="state.display"/>
+        </span>
+    </t>
+
+</templates>
