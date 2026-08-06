@@ -797,3 +797,22 @@ class KmitlProject(models.Model):
                 project.message_post(
                     body=_("ยกเลิกการจองงบประมาณ %s") % commitment.name
                 )
+
+    def _resync_project_commitment(self):
+        """Re-align the reservation with the current ``budget_amount`` / dimensions
+        after the project was edited in ``returned`` (ADR-0002 reopens every field
+        there). Safe only pre-approval — no obligate/consume yet — so cancel the
+        stale commitment and reserve afresh, which re-runs the availability check
+        against the new figures. No-op when nothing budget-relevant changed."""
+        self.ensure_one()
+        active = self.budget_commitment_ids.filtered(
+            lambda c: c.state != "cancel"
+        )[:1]
+        if not active:
+            return
+        dist = dict(self.analytic_distribution or {})
+        if active.amount != self.budget_amount or (
+            active.analytic_distribution or {}
+        ) != dist:
+            self._release_project_commitment()
+            self._reserve_project_commitment()

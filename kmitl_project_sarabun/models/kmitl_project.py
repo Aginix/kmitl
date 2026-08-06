@@ -28,6 +28,10 @@ class KmitlProject(models.Model):
         # หนังสือเริ่มเวียนลงนาม → "ส่งขออนุมัติแล้ว". Also covers re-sending a
         # หนังสือ that was ตีกลับ/ดึงกลับ (returned → sent).
         if self.state in ("to_send", "returned"):
+            # Editing in returned may have changed budget_amount / dimensions —
+            # realign the reservation before the หนังสือ goes back out (ADR-0002).
+            if self.state == "returned":
+                self._resync_project_commitment()
             self.state = "sent"
         return super()._on_sarabun_circulating(document)
 
@@ -57,3 +61,30 @@ class KmitlProject(models.Model):
     def _get_sarabun_report_action(self):
         # Render the หนังสือ PDF from the project's own report.
         return self.env.ref("kmitl_project.action_report_kmitl_project")
+
+    # -- Discard the stale หนังสือ when abandoning the approval ------------
+    def _abandon_stale_sarabun_documents(self):
+        """Discard any un-numbered หนังสือ (a draft not yet sent, or one ตีกลับ/
+        ดึงกลับ for revision) still attached when the project is reset to draft or
+        cancelled — otherwise ``sarabun_has_live_document`` keeps blocking a fresh
+        submission. Completed (numbered, signed) and terminal docs are audit
+        records and are kept; only ``draft``/``returned`` docs — which never
+        consumed a register number — are removed (unlink cascades their routing
+        steps). The engine offers no withdraw for a non-circulating doc, so an
+        unlink is the supported discard here."""
+        for project in self:
+            stale = project.sarabun_document_ids.filtered(
+                lambda d: d.state in ("draft", "returned")
+            )
+            if stale:
+                stale.sudo().unlink()
+
+    def action_draft(self):
+        res = super().action_draft()
+        self._abandon_stale_sarabun_documents()
+        return res
+
+    def action_cancel(self):
+        res = super().action_cancel()
+        self._abandon_stale_sarabun_documents()
+        return res
