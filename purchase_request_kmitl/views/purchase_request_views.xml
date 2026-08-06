@@ -165,6 +165,20 @@
                 position="attributes"
             >
                 <attribute name="required">1</attribute>
+                <attribute name="readonly">0</attribute>
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.is_editable', '=', False)]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id']"
+                position="attributes"
+            >
+                <attribute name="readonly">0</attribute>
+                <attribute
+                    name="attrs"
+                >{'readonly': [('parent.is_editable', '=', False)]}</attribute>
             </xpath>
 
             <xpath
