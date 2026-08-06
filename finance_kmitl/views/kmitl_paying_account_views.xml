@@ -46,12 +46,12 @@
                             <field name="available_payment_method_ids" invisible="1"/>
                             <field name="payment_method_id"
                                    options="{'no_create': True}"/>
-                            <field name="code" invisible="1"/>
                         </group>
                         <group string="บัญชีและการลงบัญชี">
                             <!-- The institute's own bank account: the sending
                                  account of the e-payment file and the cheque
                                  book the register controls. Empty for cash. -->
+                            <field name="payment_method_code" invisible="1"/>
                             <field name="bank_account_id"
                                    options="{'no_create': True}"/>
                             <!-- Naming this account is what makes the line a
@@ -59,7 +59,7 @@
                             <field name="payment_account_id"
                                    options="{'no_create': True}"/>
                             <field name="cheque_layout_id"
-                                   attrs="{'invisible': [('code', '!=', 'kmitl_cheque')]}"
+                                   attrs="{'invisible': [('payment_method_code', '!=', 'kmitl_cheque')]}"
                                    options="{'no_create': True}"/>
                             <field name="company_id"
                                    groups="base.group_multi_company"/>

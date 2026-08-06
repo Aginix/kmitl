@@ -619,7 +619,7 @@ def _demo_paying_account(env, company, bank):
         return MethodLine
     existing = MethodLine.search(
         [
-            ("company_id", "=", company.id),
+            ("journal_id.company_id", "=", company.id),
             ("payment_method_id", "=", method.id),
             ("payment_account_id", "!=", False),
             ("bank_id", "=", bank.id if bank else False),

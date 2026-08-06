@@ -56,6 +56,12 @@ class AccountPaymentMethodLine(models.Model):
         string="Cheque Layout",
         help="Print calibration for the cheque book drawn on this account.",
     )
+    payment_method_code = fields.Char(
+        related="payment_method_id.code",
+        string="Method Code",
+        readonly=True,
+        help="Exposed for the form's attrs, which cannot follow a relation.",
+    )
 
     @api.onchange("bank_account_id")
     def _onchange_bank_account_id(self):

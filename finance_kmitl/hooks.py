@@ -176,7 +176,7 @@ def _find_paying_accounts(env, company, bank_accounts):
                 ("bank_account_id", "=", bank_account.id),
                 ("payment_account_id", "!=", False),
                 ("payment_method_id.code", "=", entry["method"]),
-                ("company_id", "=", company.id),
+                ("journal_id.company_id", "=", company.id),
             ],
             limit=1,
         )

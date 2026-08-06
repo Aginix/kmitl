@@ -32,9 +32,11 @@
                             <field name="journal_id"/>
                             <field name="active"/>
                         </group>
+                        <!-- The counterpart side of the entry: which liability
+                             the money creates or settles. How the money moves is
+                             the paying account's business, not this record's. -->
                         <group name="account_overrides" string="Account Overrides">
                             <field name="override_account_id"/>
-                            <field name="is_cheque"/>
                         </group>
                     </group>
                 </sheet>
