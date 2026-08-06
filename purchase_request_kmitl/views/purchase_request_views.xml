@@ -82,6 +82,12 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('is_editable', '=', False)]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='line_ids']" position="before">
                 <group>
                     <group>
@@ -165,20 +171,6 @@
                 position="attributes"
             >
                 <attribute name="required">1</attribute>
-                <attribute name="readonly">0</attribute>
-                <attribute
-                    name="attrs"
-                >{'readonly': [('parent.is_editable', '=', False)]}</attribute>
-            </xpath>
-
-            <xpath
-                expr="//field[@name='line_ids']//tree/field[@name='product_uom_id']"
-                position="attributes"
-            >
-                <attribute name="readonly">0</attribute>
-                <attribute
-                    name="attrs"
-                >{'readonly': [('parent.is_editable', '=', False)]}</attribute>
             </xpath>
 
             <xpath
