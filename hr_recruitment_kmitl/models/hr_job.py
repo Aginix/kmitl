@@ -53,6 +53,15 @@ class HrJob(models.Model):
         string="Employee Type",
     )
 
+    def name_get(self):
+        result = []
+        for record in self:
+            name = record.name
+            if record.old_code:
+                name = f"{name} ({record.old_code})"
+            result.append((record.id, name))
+        return result
+
     @api.model_create_multi
     def create(self, vals):
         record = super().create(vals)
