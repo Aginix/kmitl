@@ -40,10 +40,16 @@ sub-categories, not catalog entries.
   line: `is_custom=True`, the picker is hidden and only รายการ / คำอธิบาย / จำนวนเงิน
   show, à la Sales' section/note lines). So free text is an *addition* to the
   catalog, never a replacement.
-- A line added under a section carries that section's `category_id`, so the **ประเภทงบ**
-  picker is hidden on it (`attrs` invisible once `category_id` is set) — the planner
-  focuses on the item. It reappears only on an un-categorised line (e.g. one added
-  via the list's bottom "Add a line"), letting them file it, after which it hides.
+- The expense table shows a **single "รายการ" column** rendered by a polymorphic cell
+  widget (`budget_line_item`, à la Sales' `section_and_note`): per row it follows
+  `is_custom` — a catalog line renders the `budget_item_id` many2one, a custom line
+  renders the free-text `name` char — for both the read-only value and the inline
+  editor. The former separate "เลือกจากรายการ" column is gone. `budget_item_id` stays
+  in the arch **invisible** so `record.activeFields` carries its domain/options for
+  the manual `<Field/>`.
+- The **ประเภทงบ** column is dropped entirely; a line is filed by picking a catalog
+  item (onchange copies its `category_id`, so the line self-nests) or by the section's
+  add buttons (which pre-set the category). No per-row category picker is shown.
 - Portal and the confirmation message show the line `name` (with the ประเภทงบ path as
   muted context on the portal), not the catalog `complete_name`.
 - Possible follow-up: render every seeded ประเภทงบ as an always-present section (even
